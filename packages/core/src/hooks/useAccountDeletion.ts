@@ -1,5 +1,5 @@
-import { useAccountLifecycle } from '@repo/core/hooks/useAccountLifecycle';
 import { authAPI } from '@repo/core/api/auth';
+import { useAccountLifecycle } from '@repo/core/hooks/useAccountLifecycle';
 import {
   type AccountLifecycleCommand,
   completeAccountLifecycleCommand,

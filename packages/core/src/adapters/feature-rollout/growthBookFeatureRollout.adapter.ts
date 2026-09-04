@@ -1,5 +1,4 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
-import { trackProductEvent } from '@repo/core/monitoring';
 import { storage } from '@repo/core/lib/storage';
 import type {
   FeatureRolloutSnapshot,
@@ -7,6 +6,7 @@ import type {
 } from '@repo/core/logic/ports/featureRollout.port';
 import { FEATURE_FLAG_MANIFEST } from '@repo/core/logic/registry/featureLifecycleManifest';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
+import { trackProductEvent } from '@repo/core/monitoring';
 
 // Apply the platform-agnostic storage polyfill for GrowthBook cache persistence
 setPolyfills({

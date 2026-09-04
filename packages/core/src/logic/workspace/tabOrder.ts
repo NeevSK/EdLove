@@ -20,7 +20,12 @@ export const DEFAULT_TAB_ORDER_WEB: readonly TabId[] = [
   'profile',
 ] as const;
 
-export const DEFAULT_COMMUNITY_MODE_ORDER = ['feed', 'circles', 'messages', 'announcements'] as const;
+export const DEFAULT_COMMUNITY_MODE_ORDER = [
+  'feed',
+  'circles',
+  'messages',
+  'announcements',
+] as const;
 
 export function normalizeTabOrder(
   raw: string[] | null | undefined,

@@ -1,4 +1,6 @@
-import { v7 as uuidv7 } from 'uuid';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { assertHighway } from '@repo/core/api/highways';
+import { identityAPI } from '@repo/core/api/identity';
 import {
   DEVICE_SECURITY_MUTATIONS,
   isOfflineLikeError,
@@ -7,9 +9,7 @@ import {
 import { networkManager } from '@repo/core/logic/managers/NetworkManager';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';
-import { assertHighway } from '@repo/core/api/highways';
-import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { v7 as uuidv7 } from 'uuid';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -438,13 +438,10 @@ export const deviceTrustAPI = {
   }) {
     const resolvedAccountId = await requireAccountId();
     const revokeSessions = input.revokeSessions ?? true;
-    const { data, error } = await supabaseClient.rpc(
-      'unlink_my_device',
-      {
-        p_device_id: input.deviceId,
-        p_revoke_sessions: revokeSessions,
-      },
-    );
+    const { data, error } = await supabaseClient.rpc('unlink_my_device', {
+      p_device_id: input.deviceId,
+      p_revoke_sessions: revokeSessions,
+    });
 
     if (error) {
       throw new APIError('Failed to unlink device.', error.code, error);
@@ -517,13 +514,10 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'manual';
-    const { data, error } = await supabaseClient.rpc(
-      'revoke_my_other_security_sessions',
-      {
-        p_keep_session_id: input.keepSessionId ?? null,
-        p_reason: reason,
-      },
-    );
+    const { data, error } = await supabaseClient.rpc('revoke_my_other_security_sessions', {
+      p_keep_session_id: input.keepSessionId ?? null,
+      p_reason: reason,
+    });
 
     if (error) {
       throw new APIError('Failed to revoke other security sessions.', error.code, error);
@@ -557,13 +551,10 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'signed_out_locally';
-    const { data, error } = await supabaseClient.rpc(
-      'revoke_my_install_security_sessions',
-      {
-        p_install_id: input.installId,
-        p_reason: reason,
-      },
-    );
+    const { data, error } = await supabaseClient.rpc('revoke_my_install_security_sessions', {
+      p_install_id: input.installId,
+      p_reason: reason,
+    });
 
     if (error) {
       throw new APIError('Failed to revoke current install security sessions.', error.code, error);
@@ -619,15 +610,12 @@ export const deviceTrustAPI = {
         input.idempotencyKey ?? (input.metadata?.idempotency_key as string | null) ?? null,
     };
 
-    const { data, error } = await supabaseClient.rpc(
-      'log_my_device_audit',
-      {
-        p_action: input.action,
-        p_device_id: deviceId,
-        p_account_id: resolvedAccountId,
-        p_metadata: nextMetadata,
-      },
-    );
+    const { data, error } = await supabaseClient.rpc('log_my_device_audit', {
+      p_action: input.action,
+      p_device_id: deviceId,
+      p_account_id: resolvedAccountId,
+      p_metadata: nextMetadata,
+    });
 
     if (error) {
       throw new APIError('Failed to write device audit log.', error.code, error);

@@ -1,4 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TeacherInsightsRepository } from '@repo/core/logic/domains/teacherInsights/ports';
 import {
   type TeacherInsightAuditEvent,
@@ -20,6 +19,7 @@ import {
   type TeacherStudentPotentialZod,
 } from '@repo/core/logic/schemas/teacher-insights.schema';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const privateAudit = (ownerId: string) => ({
   audit_required: true as const,

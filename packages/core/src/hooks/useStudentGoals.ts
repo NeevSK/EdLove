@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface StudentGoal {
   id: string;

@@ -1,3 +1,4 @@
+import type { StudentGrade } from '@repo/core/logic/schemas/grading.schema';
 import {
   type GPACalculationOptions,
   type GradebookEntry,
@@ -6,7 +7,6 @@ import {
   STANDARD_GRADING_SCALE,
   WEIGHTED_GRADING_SCALE,
 } from '@repo/core/types/Grading';
-import type { StudentGrade } from '@repo/core/logic/schemas/grading.schema';
 
 export class GPACalculator {
   private scale: GradingScale;

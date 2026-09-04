@@ -1,4 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { selectLatestTemporalRecordsAsOf } from '@repo/core/lib/temporalEvents';
 import type { PrincipalWorkspaceRepository } from '@repo/core/logic/domains/principalWorkspace/ports';
 import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
@@ -18,6 +17,7 @@ import {
 } from '@repo/core/logic/schemas/principal-workspace.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
@@ -79,9 +79,7 @@ export const createSupabasePrincipalWorkspaceRepository = (
     async listInviteCodes(schoolId) {
       const { data, error } = await supabase
         .from('invite_codes')
-        .select(
-          'code, school_id, role, created_by, is_active, uses_count, created_at',
-        )
+        .select('code, school_id, role, created_by, is_active, uses_count, created_at')
         .eq('school_id', schoolId)
         .order('created_at', { ascending: false });
 

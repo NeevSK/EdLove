@@ -1,6 +1,12 @@
 import crypto from 'isomorphic-webcrypto';
 
-export type IdempotencyPayload = Record<string, unknown> | unknown[] | string | number | boolean | null;
+export type IdempotencyPayload =
+  | Record<string, unknown>
+  | unknown[]
+  | string
+  | number
+  | boolean
+  | null;
 
 /**
  * generateIdempotencyKey

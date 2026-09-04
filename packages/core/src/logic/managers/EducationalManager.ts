@@ -246,8 +246,12 @@ export class EducationalManager {
     createSection: (schoolId: string, name: string) => this.repo.createSection(schoolId, name),
     createGrade: (sectionId: string, number: number) => this.repo.createGrade(sectionId, number),
     getInviteCodes: (schoolId: string) => this.repo.getInviteCodes(schoolId),
-    generateInviteCode: (schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string) =>
-      this.repo.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey),
+    generateInviteCode: (
+      schoolId: string,
+      capacity: string,
+      createdBy: string,
+      idempotencyKey?: string,
+    ) => this.repo.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey),
 
     // Academic Cycles
     getAcademicCycles: (schoolId: string) => this.repo.getAcademicCycles(schoolId),

@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { presenceAPI } from '@repo/core/api/presence';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
  * Hook for managing community presence logic.

@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   LongitudinalEntityTypeSchema,
   StudentLongitudinalSnapshotSchema,
   StudentLongitudinalTimelineSchema,
 } from '@repo/core/logic/schemas/temporal.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const longitudinalAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

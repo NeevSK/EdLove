@@ -1,5 +1,5 @@
-import type { Context } from 'hono';
 import { dispatchPushSafely } from '@repo/core/api/pushDispatcher';
+import type { Context } from 'hono';
 
 /**
  * Community Domain Handlers (Hono + ZenStack ReBAC)

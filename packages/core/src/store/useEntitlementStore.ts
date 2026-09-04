@@ -1,5 +1,3 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import type {
@@ -8,6 +6,8 @@ import type {
   EntitlementScopeContext,
   EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 /** Cached commercial access may support offline continuity for one day. */
 export const ENTITLEMENT_SNAPSHOT_MAX_AGE_MS = 24 * 60 * 60 * 1000;

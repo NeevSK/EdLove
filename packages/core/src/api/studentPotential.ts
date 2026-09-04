@@ -4,9 +4,9 @@
  * Handles multi-perspective analysis for students, focusing on finding potential.
  */
 
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { studentPotentialContract } from '@repo/core/api/studentPotential.contract';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 

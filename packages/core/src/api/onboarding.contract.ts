@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const userIdentity = (action: 'update') =>
   ({
@@ -66,7 +66,8 @@ export const onboardingContract = {
     responses: {
       200: {
         schema: z.object({ success: z.literal(true) }),
-        description: 'Revoke a school bond for the authenticated user or an authorized administrator',
+        description:
+          'Revoke a school bond for the authenticated user or an authorized administrator',
       },
     },
     metadata: userIdentity('update'),

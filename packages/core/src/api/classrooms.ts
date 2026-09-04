@@ -1,5 +1,5 @@
-import { APIError } from '@repo/core/types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * CLASSROOMS API (Sovereign RPC Proxy)

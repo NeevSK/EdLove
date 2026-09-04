@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   ClassroomNoteLifecycleEventSchema,
   ClassroomNoteSchema,
   ClassroomNoteTypeSchema,
   ClassroomNoteVisibilitySchema,
 } from '@repo/core/logic/schemas/classroom-note.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const classroomNoteAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

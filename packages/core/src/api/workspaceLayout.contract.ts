@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   WorkspaceLayoutDeleteSchema,
   WorkspaceLayoutRecordSchema,
   WorkspaceLayoutUpsertSchema,
 } from '@repo/core/logic/schemas/workspace-layout.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) =>
   ({

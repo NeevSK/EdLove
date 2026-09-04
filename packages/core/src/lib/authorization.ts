@@ -1,9 +1,9 @@
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type { Action } from '@repo/core/types/authorization';
 import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
 import { APIError } from '@repo/core/types/API';
+import type { Action } from '@repo/core/types/authorization';
 
 /**
  * requireAuth  Ensures the user is authenticated.

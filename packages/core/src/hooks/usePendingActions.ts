@@ -10,8 +10,8 @@
  * Gracefully degrades on any DB error  returns empty arrays rather than throwing.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface PendingAttendanceItem {
   classroomId: string;

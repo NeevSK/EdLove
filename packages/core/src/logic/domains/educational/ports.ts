@@ -196,7 +196,12 @@ export interface EducationalRepository {
   createSection(schoolId: string, name: string): Promise<any>;
   createGrade(sectionId: string, number: number): Promise<any>;
   getInviteCodes(schoolId: string): Promise<any[]>;
-  generateInviteCode(schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string): Promise<any>;
+  generateInviteCode(
+    schoolId: string,
+    capacity: string,
+    createdBy: string,
+    idempotencyKey?: string,
+  ): Promise<any>;
 
   // Academic Cycles
   getAcademicCycles(schoolId: string): Promise<any[]>;

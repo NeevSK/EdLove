@@ -1,10 +1,10 @@
-import { z } from 'zod';
 import { KnowledgeTopologySchema } from '@repo/core/logic/schemas/dashboard.schema';
 import {
   LibraryCollectionSchema,
   LibraryResourceSchema,
   ResourceEngagementSchema,
 } from '@repo/core/logic/schemas/library.schema';
+import { z } from 'zod';
 
 const collectionIdSchema = z.union([z.uuid(), z.string().regex(/^(subject|topic):.+$/)]);
 const libraryAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
@@ -18,7 +18,10 @@ export const libraryORPCContract = {
     path: '/library/counts',
     request: { query: z.object({}) },
     responses: {
-      200: { schema: z.object({ resource_count: z.number(), collection_count: z.number() }), description: 'Retrieve Library resource and collection counts' },
+      200: {
+        schema: z.object({ resource_count: z.number(), collection_count: z.number() }),
+        description: 'Retrieve Library resource and collection counts',
+      },
     },
     metadata: libraryAuthority('read'),
   },
@@ -40,7 +43,9 @@ export const libraryORPCContract = {
         source: z.enum(['core', 'community']).optional(),
         verified_only: z.coerce.boolean().optional(),
         tags: z.string().optional(),
-        sort_by: z.enum(['recent', 'popular', 'most_used', 'most_endorsed', 'most_bookmarked']).optional(),
+        sort_by: z
+          .enum(['recent', 'popular', 'most_used', 'most_endorsed', 'most_bookmarked'])
+          .optional(),
         view_date: z.string().datetime().optional(),
         limit: z.coerce.number().optional(),
         offset: z.coerce.number().optional(),
@@ -128,23 +133,25 @@ export const libraryORPCContract = {
     path: '/library/resources/:id',
     request: {
       params: z.object({ id: z.uuid() }),
-      body: z.object({
-        title: z.string().min(1).optional(),
-        description: z.string().nullable().optional(),
-        type: z.string().min(1).optional(),
-        format: z.string().min(1).optional(),
-        url: z.string().nullable().optional(),
-        file_path: z.string().nullable().optional(),
-        subjects: z.array(z.string()).optional(),
-        topics: z.array(z.string()).optional(),
-        grades: z.array(z.number().int()).optional(),
-        difficulty: z.string().nullable().optional(),
-        language: z.array(z.string()).optional(),
-        visibility: z.string().optional(),
-        tags: z.array(z.string()).optional(),
-        thumbnail_url: z.string().nullable().optional(),
-        copyright_notice: z.string().nullable().optional(),
-      }).refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
+      body: z
+        .object({
+          title: z.string().min(1).optional(),
+          description: z.string().nullable().optional(),
+          type: z.string().min(1).optional(),
+          format: z.string().min(1).optional(),
+          url: z.string().nullable().optional(),
+          file_path: z.string().nullable().optional(),
+          subjects: z.array(z.string()).optional(),
+          topics: z.array(z.string()).optional(),
+          grades: z.array(z.number().int()).optional(),
+          difficulty: z.string().nullable().optional(),
+          language: z.array(z.string()).optional(),
+          visibility: z.string().optional(),
+          tags: z.array(z.string()).optional(),
+          thumbnail_url: z.string().nullable().optional(),
+          copyright_notice: z.string().nullable().optional(),
+        })
+        .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
     },
     responses: {
       200: { schema: LibraryResourceSchema, description: 'Update a library resource' },
@@ -157,7 +164,10 @@ export const libraryORPCContract = {
     path: '/library/resources/:id',
     request: { params: z.object({ id: z.uuid() }) },
     responses: {
-      200: { schema: z.object({ success: z.literal(true) }), description: 'Delete a library resource' },
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Delete a library resource',
+      },
     },
     metadata: libraryAuthority('delete'),
   },
@@ -177,7 +187,10 @@ export const libraryORPCContract = {
     path: '/library/resources/:id/broken-link',
     request: { params: z.object({ id: z.uuid() }) },
     responses: {
-      200: { schema: z.object({ success: z.literal(true) }), description: 'Record a failed resource link check' },
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Record a failed resource link check',
+      },
     },
     metadata: libraryAuthority('update'),
   },
@@ -240,7 +253,10 @@ export const libraryORPCContract = {
     path: '/library/map/topology',
     request: { query: z.object({}) },
     responses: {
-      200: { schema: KnowledgeTopologySchema, description: 'Retrieve the public Library knowledge graph' },
+      200: {
+        schema: KnowledgeTopologySchema,
+        description: 'Retrieve the public Library knowledge graph',
+      },
     },
     metadata: libraryAuthority('read'),
   },
@@ -273,7 +289,10 @@ export const libraryORPCContract = {
       body: z.object({ resource_id: z.uuid() }),
     },
     responses: {
-      200: { schema: z.object({ success: z.literal(true) }), description: 'Add a resource to a collection' },
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Add a resource to a collection',
+      },
     },
     metadata: libraryAuthority('create'),
   },
@@ -283,7 +302,10 @@ export const libraryORPCContract = {
     path: '/library/collections/:id/resources/:resourceId',
     request: { params: z.object({ id: z.uuid(), resourceId: z.uuid() }) },
     responses: {
-      200: { schema: z.object({ success: z.literal(true) }), description: 'Remove a resource from a collection' },
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Remove a resource from a collection',
+      },
     },
     metadata: libraryAuthority('delete'),
   },
@@ -293,14 +315,16 @@ export const libraryORPCContract = {
     path: '/library/collections/:id',
     request: {
       params: z.object({ id: z.uuid() }),
-      body: z.object({
-        name: z.string().min(1).optional(),
-        description: z.string().nullable().optional(),
-        visibility: z.string().optional(),
-        subjects: z.array(z.string()).optional(),
-        topics: z.array(z.string()).optional(),
-        grades: z.array(z.number().int()).optional(),
-      }).refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
+      body: z
+        .object({
+          name: z.string().min(1).optional(),
+          description: z.string().nullable().optional(),
+          visibility: z.string().optional(),
+          subjects: z.array(z.string()).optional(),
+          topics: z.array(z.string()).optional(),
+          grades: z.array(z.number().int()).optional(),
+        })
+        .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
     },
     responses: {
       200: { schema: LibraryCollectionSchema, description: 'Update a library collection' },
@@ -313,7 +337,10 @@ export const libraryORPCContract = {
     path: '/library/collections/:id',
     request: { params: z.object({ id: z.uuid() }) },
     responses: {
-      200: { schema: z.object({ success: z.literal(true) }), description: 'Delete a library collection' },
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Delete a library collection',
+      },
     },
     metadata: libraryAuthority('delete'),
   },

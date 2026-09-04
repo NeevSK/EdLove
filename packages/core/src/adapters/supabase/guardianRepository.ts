@@ -207,17 +207,19 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
           relationshipError.code,
           relationshipError,
         );
-      if (!relationship)
-        throw new APIError('Guardian relationship not found', 'NOT_FOUND');
+      if (!relationship) throw new APIError('Guardian relationship not found', 'NOT_FOUND');
 
-      const assessmentPermission = permissions.find((permission) => permission.category === 'grades');
+      const assessmentPermission = permissions.find(
+        (permission) => permission.category === 'grades',
+      );
       const { error } = await supabase
         .from('guardian_assessment_permissions')
         .update({ revoked_at: new Date().toISOString() })
         .eq('relationship_id', relationship.id)
         .eq('permission_key', 'assessment_results')
         .is('revoked_at', null);
-      if (error) throw new APIError('Failed to revoke guardian assessment permission', error.code, error);
+      if (error)
+        throw new APIError('Failed to revoke guardian assessment permission', error.code, error);
 
       if (assessmentPermission && assessmentPermission.level !== 'none') {
         const { error: grantError } = await supabase
@@ -230,7 +232,11 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
             access_level: 'read',
           });
         if (grantError)
-          throw new APIError('Failed to grant guardian assessment permission', grantError.code, grantError);
+          throw new APIError(
+            'Failed to grant guardian assessment permission',
+            grantError.code,
+            grantError,
+          );
       }
     },
     async getGuardianRelationships(guardianId: string) {
@@ -250,9 +256,16 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
         .eq('permission_key', 'assessment_results')
         .eq('access_level', 'read')
         .is('revoked_at', null)
-        .in('relationship_id', relationships.map((relationship) => relationship.id));
+        .in(
+          'relationship_id',
+          relationships.map((relationship) => relationship.id),
+        );
       if (permissionError)
-        throw new APIError('Failed to fetch guardian permissions', permissionError.code, permissionError);
+        throw new APIError(
+          'Failed to fetch guardian permissions',
+          permissionError.code,
+          permissionError,
+        );
 
       const permissionsByRelationship = new Map<string, GuardianPermissionConfig[]>();
       for (const permission of permissionRows || []) {

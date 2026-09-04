@@ -1,11 +1,9 @@
 import { createSupabaseEducationalRepository } from '@repo/core/adapters/supabase/educationalRepository';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { createEducationalServices } from '@repo/core/logic/domains/educational/services';
 import { useStore } from '@repo/core/store/useStore';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
-const educationalRepository = createSupabaseEducationalRepository(
-  supabaseClient,
-);
+const educationalRepository = createSupabaseEducationalRepository(supabaseClient);
 
 const sideEffects = {
   getCurrentUserId: async () => useStore.getState().user?.id || null,

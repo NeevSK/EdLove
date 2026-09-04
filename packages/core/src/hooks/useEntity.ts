@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '@repo/core/api/client'; // Use common API
-import type { EntityInstance, EntityMode, EntityType } from '@repo/core/logic/entities/entity-protocol';
+import type {
+  EntityInstance,
+  EntityMode,
+  EntityType,
+} from '@repo/core/logic/entities/entity-protocol';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface UseEntityOptions {
   type: EntityType;

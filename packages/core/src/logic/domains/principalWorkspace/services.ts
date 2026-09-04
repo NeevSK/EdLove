@@ -1,3 +1,4 @@
+import type { PrincipalWorkspaceRepository } from '@repo/core/logic/domains/principalWorkspace/ports';
 import type {
   InviteCodeZod,
   PrincipalGovernanceEventZod,
@@ -7,7 +8,6 @@ import type {
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
 } from '@repo/core/logic/schemas/principal-workspace.schema';
-import type { PrincipalWorkspaceRepository } from '@repo/core/logic/domains/principalWorkspace/ports';
 
 export interface PrincipalWorkspaceServices {
   listInviteCodes(schoolId: string): Promise<InviteCodeZod[]>;

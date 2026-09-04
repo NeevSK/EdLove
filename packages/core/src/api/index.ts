@@ -27,6 +27,7 @@ import {
   proAPI,
   ripplesAPI,
 } from '@repo/core/api/orchestration/growth';
+import { type ORPCClient, type ORPCUtils, orpc, orpcClient } from '@repo/core/api/orpcClient';
 import { presenceAPI } from '@repo/core/api/presence';
 import { principalNotesAPI } from '@repo/core/api/principalNotes';
 import { privacyAPI } from '@repo/core/api/privacy';
@@ -40,7 +41,6 @@ import { studentPotentialAPI } from '@repo/core/api/studentPotential';
 import { tasksAPI } from '@repo/core/api/teacher';
 import { trackingAPI } from '@repo/core/api/tracking';
 import { warmMirrorAPI } from '@repo/core/api/warmMirror';
-import { orpcClient, orpc, type ORPCClient, type ORPCUtils } from '@repo/core/api/orpcClient';
 
 export * from '@repo/core/api/base';
 
@@ -84,8 +84,8 @@ export * from '@repo/core/api/contractCoverage';
 export * from '@repo/core/api/contracts';
 export * from '@repo/core/api/decisionJournal.contract';
 export * from '@repo/core/api/durableAgents.contract';
-export * from '@repo/core/api/educational.contract';
 export * from '@repo/core/api/editorial.contract';
+export * from '@repo/core/api/educational.contract';
 export * from '@repo/core/api/erp';
 export * from '@repo/core/api/erp.contract';
 export * from '@repo/core/api/forms.contract';
@@ -151,7 +151,7 @@ export type {
 } from '@repo/core/types/Growth';
 export type { PrincipalNote } from '@repo/core/types/PrincipalNote';
 export type { CalendarEvent } from '@repo/schema/generated/orm/models';
-
+export type { ORPCClient, ORPCUtils };
 export {
   academicCyclesAPI,
   agentAPI,
@@ -177,6 +177,8 @@ export {
   messagingAPI,
   missionsAPI,
   onboardingAPI,
+  orpc,
+  orpcClient,
   presenceAPI,
   profileAPI,
   readLocalFirst,
@@ -188,10 +190,7 @@ export {
   studentsAPI,
   tasksAPI,
   writeLocalFirst,
-  orpcClient,
-  orpc,
 };
-export type { ORPCClient, ORPCUtils };
 
 /**
  * Unified API Object (Sovereign Orchestration)

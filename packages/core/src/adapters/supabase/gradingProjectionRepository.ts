@@ -1,4 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { selectLatestPublishedSnapshots } from '@repo/core/lib/gradePublication';
 import type { GradingProjectionRepository } from '@repo/core/logic/domains/gradingProjection/ports';
 import {
@@ -7,6 +6,7 @@ import {
   type SchoolGradingCompletion,
   SchoolGradingCompletionSchema,
 } from '@repo/core/logic/schemas/grading.schema';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const createSupabaseGradingProjectionRepository = (
   supabase: SupabaseClient,

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { growth } from '@repo/core/logic';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * useNaturePaths

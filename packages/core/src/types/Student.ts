@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import type { StudentSchema } from '@repo/core/logic/schemas/student.schema';
+import { z } from 'zod';
 
 /**
  * Student - Authoritative domain type.

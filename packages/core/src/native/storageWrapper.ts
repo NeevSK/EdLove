@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { StateStorage } from 'zustand/middleware';
 import { storage } from '@repo/core/native/storage';
+import type { StateStorage } from 'zustand/middleware';
 
 /**
  * A failsafe storage wrapper for Zustand.

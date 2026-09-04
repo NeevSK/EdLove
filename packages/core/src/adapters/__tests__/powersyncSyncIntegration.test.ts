@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { setActiveAccountId } from '../../lib/accountScope';
 import { getDrizzleDB, registerPermissionValidator } from '../powersync/database';
 import { SupabasePowerSyncConnector } from '../powersync/SupabasePowerSyncConnector';
-import { setActiveAccountId } from '../../lib/accountScope';
 
 // Mock store state
 vi.mock('../../store/useStore', () => ({

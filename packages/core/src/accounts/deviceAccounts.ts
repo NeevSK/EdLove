@@ -1,10 +1,7 @@
-import type { Session } from '@supabase/supabase-js';
-import * as Effect from 'effect/Effect';
-import * as Queue from 'effect/Queue';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { accountPin } from '@repo/core/lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';
@@ -14,13 +11,16 @@ import {
   removeStoredSessionForAccount,
   setStoredSessionForAccount,
 } from '@repo/core/lib/supabaseAuthStorage';
-import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import {
-  completeAccountLifecycleCommand,
   type AccountLifecycleAvailableCapability,
   type AccountLifecycleCommand,
+  completeAccountLifecycleCommand,
 } from '@repo/core/logic/accountLifecycle';
+import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
+import type { Session } from '@supabase/supabase-js';
+import * as Effect from 'effect/Effect';
+import * as Queue from 'effect/Queue';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
 const ACTIVE_ACCOUNT_KEY = 'gurudevi-active-account-id';
@@ -314,29 +314,26 @@ export const deviceAccounts = {
     await writeRegistry(nextAccounts);
 
     if (!isActiveAccount) {
-      return completeLocalAccountLifecycle(
+      return completeLocalAccountLifecycle({ kind: 'remove-remembered-account', accountId }, [
         { kind: 'remove-remembered-account', accountId },
-        [{ kind: 'remove-remembered-account', accountId }],
-      );
+      ]);
     }
 
     const fallback = nextAccounts[0]?.accountId ?? null;
     if (fallback) {
       await this.switchTo(fallback);
-      return completeLocalAccountLifecycle(
+      return completeLocalAccountLifecycle({ kind: 'remove-remembered-account', accountId }, [
         { kind: 'remove-remembered-account', accountId },
-        [{ kind: 'remove-remembered-account', accountId }],
-      );
+      ]);
     }
 
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
     await supabaseClient.auth.signOut({ scope: 'local' });
-    return completeLocalAccountLifecycle(
+    return completeLocalAccountLifecycle({ kind: 'remove-remembered-account', accountId }, [
       { kind: 'remove-remembered-account', accountId },
-      [{ kind: 'remove-remembered-account', accountId }],
-    );
+    ]);
   },
 
   async signOutCurrentAccount() {
@@ -345,10 +342,9 @@ export const deviceAccounts = {
       await supabaseClient.auth.signOut({ scope: 'local' });
       resetScopedStores();
       await rehydrateScopedStores();
-      return completeLocalAccountLifecycle(
-        { kind: 'sign-out-current-device' },
-        [{ kind: 'clear-current-session' }],
-      );
+      return completeLocalAccountLifecycle({ kind: 'sign-out-current-device' }, [
+        { kind: 'clear-current-session' },
+      ]);
     }
 
     const installId = await deviceTrustAPI.getInstallId();
@@ -368,10 +364,9 @@ export const deviceAccounts = {
     }
 
     await this.removeAccount(activeAccountId);
-    return completeLocalAccountLifecycle(
-      { kind: 'sign-out-current-device' },
-      [{ kind: 'clear-current-session' }],
-    );
+    return completeLocalAccountLifecycle({ kind: 'sign-out-current-device' }, [
+      { kind: 'clear-current-session' },
+    ]);
   },
 
   async signOutAllAccounts() {
@@ -405,9 +400,8 @@ export const deviceAccounts = {
     resetScopedStores();
     await rehydrateScopedStores();
     await supabaseClient.auth.signOut({ scope: 'local' });
-    return completeLocalAccountLifecycle(
-      { kind: 'sign-out-all-local-accounts' },
-      [{ kind: 'clear-all-remembered-accounts' }],
-    );
+    return completeLocalAccountLifecycle({ kind: 'sign-out-all-local-accounts' }, [
+      { kind: 'clear-all-remembered-accounts' },
+    ]);
   },
 };

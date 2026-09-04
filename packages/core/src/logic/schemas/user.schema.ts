@@ -1,6 +1,10 @@
+import {
+  BondSchema,
+  CapacitySchema,
+  IdentityStateSchema,
+} from '@repo/core/logic/schemas/identity.schema';
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
-import { BondSchema, CapacitySchema, IdentityStateSchema } from '@repo/core/logic/schemas/identity.schema';
 
 const sanctuaryDateTime = z.coerce.date().transform((d) => d.toISOString());
 

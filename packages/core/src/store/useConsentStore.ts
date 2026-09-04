@@ -1,6 +1,6 @@
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 
 interface ConsentState {
   hasDecidedConsent: boolean;

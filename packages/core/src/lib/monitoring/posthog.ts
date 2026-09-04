@@ -10,13 +10,13 @@
 
 declare const __DEV__: boolean | undefined;
 
-import { sanitizeTelemetryData } from './safeData';
 import type { IAnalyticsPort } from '@repo/core/logic/ports/analytics.port';
 import type {
   ProductAnalyticsContext,
   ProductAnalyticsEventName,
   ProductAnalyticsEventProperties,
 } from '@repo/core/logic/ports/productAnalytics.port';
+import { sanitizeTelemetryData } from './safeData';
 
 export type IPostHog = IAnalyticsPort;
 

@@ -5,8 +5,8 @@
  * Delegates to TelemetryManager via the Adapter pattern.
  */
 
-import { sanitizeTelemetryData } from './safeData';
 import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
+import { sanitizeTelemetryData } from './safeData';
 
 export const initSentry = () => {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;

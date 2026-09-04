@@ -12,20 +12,18 @@ export class SupabasePushNotificationAdapter implements IPushNotificationPort {
     deviceId: string,
     platform: string,
   ): Promise<void> {
-    const { error } = await supabaseClient
-      .from('user_push_tokens')
-      .upsert(
-        {
-          user_id: userId,
-          push_token: token,
-          device_id: deviceId,
-          platform,
-          last_seen_at: new Date().toISOString(),
-        },
-        {
-          onConflict: 'user_id,device_id',
-        },
-      );
+    const { error } = await supabaseClient.from('user_push_tokens').upsert(
+      {
+        user_id: userId,
+        push_token: token,
+        device_id: deviceId,
+        platform,
+        last_seen_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id,device_id',
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to register push token', error.code, error);

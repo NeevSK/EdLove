@@ -162,13 +162,12 @@ export class FlowResolver {
 
       if (!classroom?.teacher_id) {
         // Unclaimed classroom  claim atomically, only if still null
-        const { data: claimed, error: updateError } =
-          await supabaseClient
-            .from('classrooms')
-            .update({ teacher_id: userId })
-            .eq('id', finalClassroomId)
-            .is('teacher_id', null)
-            .select('id');
+        const { data: claimed, error: updateError } = await supabaseClient
+          .from('classrooms')
+          .update({ teacher_id: userId })
+          .eq('id', finalClassroomId)
+          .is('teacher_id', null)
+          .select('id');
         if (updateError) throw updateError;
         // If 0 rows were updated another teacher claimed it first  navigate as a visitor
         if (!claimed || claimed.length === 0) {
@@ -189,10 +188,7 @@ export class FlowResolver {
     };
   }
 
-  private static async executeJoinGroup(
-    groupId: string,
-    handle?: string,
-  ): Promise<FlowResult> {
+  private static async executeJoinGroup(groupId: string, handle?: string): Promise<FlowResult> {
     let finalGroupId = groupId;
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
@@ -227,13 +223,10 @@ export class FlowResolver {
       }
 
       // Atomic RPC call
-      const { data, error } = await supabaseClient.rpc(
-        'claim_invite_code',
-        {
-          p_invite_code: inviteCode,
-          p_user_id: userId,
-        },
-      );
+      const { data, error } = await supabaseClient.rpc('claim_invite_code', {
+        p_invite_code: inviteCode,
+        p_user_id: userId,
+      });
 
       if (error) throw error;
       if (data && !data.success) {

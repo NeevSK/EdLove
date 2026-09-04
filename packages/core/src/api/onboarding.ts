@@ -1,13 +1,17 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { trackProductEvent } from '@repo/core/monitoring';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { trackProductEvent } from '@repo/core/monitoring';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { APIError } from '@repo/core/types/API';
 import type { Perspective } from '@repo/core/types/Identity';
-import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '@repo/core/types/Onboarding';
+import type {
+  ClassroomJoinRequest,
+  RequestStatus,
+  SchoolJoinRequest,
+} from '@repo/core/types/Onboarding';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 

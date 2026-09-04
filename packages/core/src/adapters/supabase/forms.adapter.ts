@@ -5,8 +5,8 @@ import type {
   FormResponse,
   FormSchema,
 } from '@intuitui-labs/form-builder-engine/schema';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * SupabaseFormsAdapter

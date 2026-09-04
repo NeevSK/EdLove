@@ -1,5 +1,5 @@
-import { v7 as uuidv7 } from 'uuid';
 import { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
+import { v7 as uuidv7 } from 'uuid';
 
 const PIN_RECORD_VERSION = 1;
 const PIN_HASH_ROUNDS = 200;

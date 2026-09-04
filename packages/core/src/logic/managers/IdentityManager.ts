@@ -1,8 +1,8 @@
 import type { Identity } from '@repo/core/api/identity.generated';
-import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
-import type { User } from '@repo/core/types/User';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import type { ISessionPort } from '@repo/core/logic/ports/session.port';
+import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
+import type { User } from '@repo/core/types/User';
 
 /**
  * IdentityManager: The Sovereign Orchestrator.

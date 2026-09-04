@@ -1,5 +1,9 @@
 import { marksToGPA } from '@repo/core/lib/grading';
-import { APIError } from '@repo/core/types/API';
+import type {
+  EducationalRepository,
+  EducationalSideEffects,
+  EnrollmentRecord,
+} from '@repo/core/logic/domains/educational/ports';
 import type { Attendance as AttendanceRecord } from '@repo/core/logic/schemas/attendance.schema';
 import type {
   Assignment,
@@ -19,7 +23,7 @@ import type {
 import type { ClassroomGradingSettings, Grade } from '@repo/core/logic/schemas/grading.schema';
 import type { Lesson } from '@repo/core/logic/schemas/lesson.schema';
 import type { Material as LessonMaterial } from '@repo/core/logic/schemas/material.schema';
-import type { EducationalRepository, EducationalSideEffects, EnrollmentRecord } from '@repo/core/logic/domains/educational/ports';
+import { APIError } from '@repo/core/types/API';
 
 export interface EducationalServices {
   classrooms: {

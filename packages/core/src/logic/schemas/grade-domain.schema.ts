@@ -10,12 +10,7 @@ const AuditFieldsSchema = z.object({
   updated_at: auditTimestamp,
 });
 
-export const AcademicCycleStatusSchema = z.enum([
-  'planned',
-  'active',
-  'completed',
-  'archived',
-]);
+export const AcademicCycleStatusSchema = z.enum(['planned', 'active', 'completed', 'archived']);
 
 export const AcademicCycleSchema = z
   .object({
@@ -81,11 +76,7 @@ export const GradeClassSchema = z
   })
   .merge(AuditFieldsSchema);
 
-export const GradeClassTeacherAssignmentStatusSchema = z.enum([
-  'active',
-  'completed',
-  'ended',
-]);
+export const GradeClassTeacherAssignmentStatusSchema = z.enum(['active', 'completed', 'ended']);
 
 /** A historical teacher assignment is explicitly role- and subject-scoped. */
 export const GradeClassTeacherAssignmentSchema = z
@@ -169,8 +160,6 @@ export type AcademicCycleContract = z.infer<typeof AcademicCycleSchema>;
 export type Term = z.infer<typeof TermSchema>;
 export type GradeLevel = z.infer<typeof GradeLevelSchema>;
 export type GradeClass = z.infer<typeof GradeClassSchema>;
-export type GradeClassTeacherAssignment = z.infer<
-  typeof GradeClassTeacherAssignmentSchema
->;
+export type GradeClassTeacherAssignment = z.infer<typeof GradeClassTeacherAssignmentSchema>;
 export type GradeMarkPublicationState = z.infer<typeof GradeMarkPublicationStateSchema>;
 export type GradeMark = z.infer<typeof GradeMarkSchema>;

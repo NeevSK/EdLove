@@ -1,5 +1,10 @@
 import { growth } from '@repo/core/logic';
-import type { BanyanStage, CrystalDiscovery, CrystalTier, RiverStage } from '@repo/core/types/Growth';
+import type {
+  BanyanStage,
+  CrystalDiscovery,
+  CrystalTier,
+  RiverStage,
+} from '@repo/core/types/Growth';
 
 /**
  * naturePathsAPI (Legacy Proxy)

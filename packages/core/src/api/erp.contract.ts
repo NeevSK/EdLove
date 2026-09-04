@@ -1,11 +1,14 @@
-import { z } from 'zod';
-import { AccountSchema, FinancialTransactionSchema } from '@repo/core/logic/schemas/accounting.schema';
+import type { SovereignContract } from '@repo/core/api/contracts';
+import {
+  AccountSchema,
+  FinancialTransactionSchema,
+} from '@repo/core/logic/schemas/accounting.schema';
 import {
   InvoiceSchema,
   PaymentIntentSchema,
   ReceiptSchema,
 } from '@repo/core/logic/schemas/payments.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const erpAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;
@@ -50,12 +53,16 @@ export const erpContract = {
         description: z.string().trim().min(1).max(500),
         referenceNo: z.string().trim().max(120).optional().nullable(),
         metadata: z.record(z.string(), z.any()).optional(),
-        entries: z.array(z.object({
-          accountId: z.string(),
-          amount: z.number().finite().positive(),
-          side: z.enum(['debit', 'credit']),
-          description: z.string().max(500).optional().nullable(),
-        })).min(2),
+        entries: z
+          .array(
+            z.object({
+              accountId: z.string(),
+              amount: z.number().finite().positive(),
+              side: z.enum(['debit', 'credit']),
+              description: z.string().max(500).optional().nullable(),
+            }),
+          )
+          .min(2),
       }),
     },
     responses: {

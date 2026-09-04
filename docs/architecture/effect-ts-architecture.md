@@ -45,12 +45,17 @@ All Effect imports live in exactly **13 files** inside `packages/core/src`:
 
 | File | Role | Effect modules |
 |---|---|---|
+| `effect/index.ts` | **Canonical package facade** | Unified exports: schedules, errors, runtime, layers |
 | `effect/Schedules.ts` | **Canonical retry policies** | `Schedule`, `Duration` |
-| `utils/effect.ts` | **Primary boundary facade** | `Effect`, `Schedule` (re-exported from Schedules.ts) |
+| `effect/Errors.ts` | **Tagged domain errors** | `Data.TaggedError` classes |
+| `effect/Runtime.ts` | **Runtime & boundary helpers** | `Effect`, `Fiber`, `Layer`, safe runners |
+| `effect/Layers.ts` | **DI layer registry** | `Layer`, `Context` |
+| `utils/effect.ts` | **Backward-compatibility facade** | Re-exports from `effect/index.ts` |
 | `utils/mutation.ts` | Offline mutation queue | `Data`, `Duration`, `Effect`, `Schedule` |
 | `api/attendance.ts` | Attendance API with retry | `Data`, `Duration`, `Effect` |
 | `adapters/supabaseIdentity.adapter.ts` | Supabase auth queries with retry | `Data`, `Duration`, `Effect` |
-| `adapters/powersync/SupabasePowerSyncConnector.ts` | PowerSync upload with retry | `Duration`, `Effect`, `Schedule` |
+| `adapters/powersync/SupabasePowerSyncConnector.ts` | PowerSync upload with `strictRetryPolicy` | `Effect` |
+| `api/handlers/sync.ts` | PowerSync transactional sync | `Data` (via `Errors.ts`) |
 | `accounts/deviceAccounts.ts` | Audit queue (lazy singleton) | `Effect`, `Queue` |
 | `native/guestDataManager.ts` | MMKV typed storage ops | `Data`, `Effect` |
 | `native/useAuthLifecycle.ts` | Auth state machine | `Effect` |

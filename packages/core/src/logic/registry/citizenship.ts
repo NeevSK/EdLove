@@ -18,7 +18,7 @@ export const CITIZENSHIP = {
   THIRD_CLASS: 3,
 } as const;
 
-export type CitizenshipLevel = typeof CITIZENSHIP[keyof typeof CITIZENSHIP];
+export type CitizenshipLevel = (typeof CITIZENSHIP)[keyof typeof CITIZENSHIP];
 // resolves to: 1 | 2 | 3
 
 export type CitizenshipName = keyof typeof CITIZENSHIP;

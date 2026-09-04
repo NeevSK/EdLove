@@ -1,4 +1,3 @@
-import type { SocialLink, User } from '@repo/core/types';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -10,6 +9,7 @@ import type {
   ProfileTemporalReadOptions,
   PulseMetrics,
 } from '@repo/core/logic/domains/profile/ports';
+import type { SocialLink, User } from '@repo/core/types';
 
 export interface ProfileServices {
   getUserProfile(userId: string): Promise<User | null>;

@@ -1,8 +1,5 @@
 import { orpcClient } from '@repo/core/api/orpcClient';
-import type {
-  UserRewards,
-  UserRewardsHistory,
-} from '@repo/core/api/rewards.orpc.contract';
+import type { UserRewards, UserRewardsHistory } from '@repo/core/api/rewards.orpc.contract';
 
 export const rewardsAPI = {
   async getRewards(userId: string): Promise<UserRewards | null> {

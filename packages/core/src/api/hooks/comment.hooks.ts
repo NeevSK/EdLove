@@ -1,8 +1,8 @@
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { communityAPI } from '@repo/core/api/community';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { communityAPI } from '@repo/core/api/community';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export const commentKeys = {
   all: ['community', 'comments'] as const,

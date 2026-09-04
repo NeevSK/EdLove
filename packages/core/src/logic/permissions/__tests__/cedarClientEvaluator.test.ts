@@ -154,7 +154,11 @@ describe('cedarClientEvaluator', () => {
 
     it('returns true after successful evaluation', async () => {
       mockEvaluate.mockResolvedValue({ decision: 'Allow' });
-      await evaluateShape1(basePolicy, { user: baseUser, action: 'read', resourceType: 'Classroom' });
+      await evaluateShape1(basePolicy, {
+        user: baseUser,
+        action: 'read',
+        resourceType: 'Classroom',
+      });
       expect(isCedarWasmLoaded()).toBe(true);
     });
   });

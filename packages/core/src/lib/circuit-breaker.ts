@@ -1,9 +1,9 @@
 /**
  * Circuit Breaker Pattern Implementation
- * 
+ *
  * Prevents cascade failures by stopping calls to failing services
  * after a threshold of failures is reached.
- * 
+ *
  * States:
  * - closed: Normal operation, requests go through
  * - open: Short-circuiting, requests fail fast
@@ -59,7 +59,7 @@ export class CircuitBreaker {
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     const state = this.getState();
-    
+
     if (state === 'open') {
       throw new CircuitBreakerOpenError('Circuit breaker is open');
     }
@@ -76,7 +76,7 @@ export class CircuitBreaker {
 
   private onSuccess(): void {
     this.failures = 0;
-    
+
     if (this.state === 'half-open') {
       this.successes++;
       if (this.successes >= this.config.successThreshold) {
@@ -87,11 +87,11 @@ export class CircuitBreaker {
 
   private onFailure(error: unknown): void {
     this.successes = 0;
-    
+
     if (this.config.isFailure(error)) {
       this.failures++;
       this.lastFailureTime = Date.now();
-      
+
       if (this.state === 'half-open') {
         this.transitionToOpen();
       } else if (this.state === 'closed' && this.failures >= this.config.failureThreshold) {

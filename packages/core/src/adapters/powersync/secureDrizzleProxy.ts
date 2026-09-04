@@ -1,13 +1,15 @@
+import type { CapabilityToken } from '@repo/core/logic/ports/authz.port';
 import { useStore } from '@repo/core/store/useStore';
 import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
-import type { CapabilityToken } from '@repo/core/logic/ports/authz.port';
 
 let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
 let _activeToken: CapabilityToken | null = null;
 let _currentPolicyHash: string | null = null;
 let _currentOperationContext: string | null = null;
 
-export function registerPermissionValidator(validator: ((params: any) => Promise<boolean>) | null): void {
+export function registerPermissionValidator(
+  validator: ((params: any) => Promise<boolean>) | null,
+): void {
   _permissionValidator = validator;
 }
 

@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
 
 /**
  * Sovereign Identity Hook

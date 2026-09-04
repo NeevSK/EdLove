@@ -1,29 +1,6 @@
 import { createHash } from 'node:crypto';
+import { SyncDelegateError, SyncOperationError, SyncTableError } from '@repo/core/effect/Errors';
 import type { Context } from 'hono';
-
-class SyncTableError {
-  readonly _tag = 'SyncTableError';
-  constructor(readonly table: string) {}
-  get message() {
-    return `Unsupported sync table: ${this.table}`;
-  }
-}
-
-class SyncDelegateError {
-  readonly _tag = 'SyncDelegateError';
-  constructor(readonly modelKey: string) {}
-  get message() {
-    return `Model delegate "${this.modelKey}" not found in transaction context`;
-  }
-}
-
-class SyncOperationError {
-  readonly _tag = 'SyncOperationError';
-  constructor(readonly op: string) {}
-  get message() {
-    return `Unsupported operations mode: ${this.op}`;
-  }
-}
 
 const tableToModelMap: Record<string, string> = {
   bonds: 'bond',
@@ -134,12 +111,12 @@ export async function applyPowerSyncBatch(
 
         if (!modelKey) {
           console.warn(`[Sync] No active Prisma model mapping for table: "${table}"`);
-          throw new SyncTableError(table);
+          throw new SyncTableError({ table });
         }
 
         const delegate = tx[modelKey];
         if (!delegate) {
-          throw new SyncDelegateError(modelKey);
+          throw new SyncDelegateError({ modelKey });
         }
 
         switch (op) {
@@ -160,7 +137,7 @@ export async function applyPowerSyncBatch(
             break;
 
           default:
-            throw new SyncOperationError(op);
+            throw new SyncOperationError({ op });
         }
       }
 

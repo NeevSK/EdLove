@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { z } from 'zod';
 import type {
   Assignment,
   AssignmentSubmission,
@@ -13,6 +11,8 @@ import {
   StudentSubmissionSummarySchema,
 } from '@repo/core/logic/schemas/classroom.schema';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 
 export const createAssignmentRepository = (supabase: SupabaseClient) => ({
   async getAssignments(classroomId: string) {

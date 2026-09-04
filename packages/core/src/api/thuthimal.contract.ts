@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const thuthimalAuthority = (action: 'create' | 'read' | 'update') =>
   ({ policy: { action, subject: 'User' } }) as const;
@@ -59,7 +59,12 @@ export const thuthimalContract = {
   getMyGifts: {
     method: 'get',
     path: '/thuthimal/gifts',
-    responses: { 200: { schema: z.array(giftSummary), description: 'List gifts created by the authenticated user' } },
+    responses: {
+      200: {
+        schema: z.array(giftSummary),
+        description: 'List gifts created by the authenticated user',
+      },
+    },
     metadata: thuthimalAuthority('read'),
   },
   previewGift: {
@@ -68,7 +73,9 @@ export const thuthimalContract = {
     request: { params: z.object({ giftToken: z.string() }) },
     responses: {
       200: {
-        schema: z.object({ gifter_name: z.string(), recipient_tier: z.enum(['teacher', 'principal']) }).nullable(),
+        schema: z
+          .object({ gifter_name: z.string(), recipient_tier: z.enum(['teacher', 'principal']) })
+          .nullable(),
         description: 'Preview an unclaimed, unexpired gratitude gift',
       },
     },

@@ -1,5 +1,5 @@
-import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
+import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import * as BrowserSentry from '@sentry/browser';
 
 type SentryLevel = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';

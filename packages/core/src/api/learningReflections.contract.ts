@@ -1,10 +1,11 @@
-import { z } from 'zod';
-import { LearningReflectionSchema } from '@repo/core/logic/schemas/classroom.schema';
 import type { SovereignContract } from '@repo/core/api/contracts';
+import { LearningReflectionSchema } from '@repo/core/logic/schemas/classroom.schema';
+import { z } from 'zod';
 
-const learningReflectionAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
-  policy: { action, subject: 'LearningReflection' },
-}) as const;
+const learningReflectionAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'LearningReflection' },
+  }) as const;
 
 export const learningReflectionsContract = {
   saveLearningReflection: {
@@ -16,15 +17,29 @@ export const learningReflectionsContract = {
         assignment_id: z.uuid().optional(),
         thought: z.string().min(1),
         situation: z.string().nullable().optional(),
-        emotion: z.object({ label: z.string(), intensity: z.number().int().min(1).max(10) }).nullable().optional(),
-        trap_ids: z.array(z.object({ id: z.string(), label: z.string().optional() })).nullable().optional(),
+        emotion: z
+          .object({ label: z.string(), intensity: z.number().int().min(1).max(10) })
+          .nullable()
+          .optional(),
+        trap_ids: z
+          .array(z.object({ id: z.string(), label: z.string().optional() }))
+          .nullable()
+          .optional(),
         evidence_for: z.string().optional(),
         evidence_against: z.string().optional(),
         reframe: z.string().optional(),
         mood_before: z.number().int().min(1).max(5).optional(),
         mood_after: z.number().int().min(1).max(5).optional(),
         post_outcome: z.string().optional(),
-        follow_up: z.object({ due_at: z.string(), completed_at: z.string().optional(), outcome: z.string().optional(), reflection: z.string().optional() }).nullable().optional(),
+        follow_up: z
+          .object({
+            due_at: z.string(),
+            completed_at: z.string().optional(),
+            outcome: z.string().optional(),
+            reflection: z.string().optional(),
+          })
+          .nullable()
+          .optional(),
       }),
     },
     responses: {
@@ -63,7 +78,15 @@ export const learningReflectionsContract = {
       params: z.object({ id: z.uuid() }),
       body: z.object({
         post_outcome: z.string().optional(),
-        follow_up: z.object({ due_at: z.string(), completed_at: z.string().optional(), outcome: z.string().optional(), reflection: z.string().optional() }).nullable().optional(),
+        follow_up: z
+          .object({
+            due_at: z.string(),
+            completed_at: z.string().optional(),
+            outcome: z.string().optional(),
+            reflection: z.string().optional(),
+          })
+          .nullable()
+          .optional(),
       }),
     },
     responses: {

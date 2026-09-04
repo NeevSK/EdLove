@@ -29,7 +29,14 @@ export interface AccountDeletionRequest {
 }
 
 export interface AccountLifecycleStatus {
-  status: 'active' | 'pending_verification' | 'scheduled' | 'deactivated' | 'cancelled' | 'completed' | 'blocked';
+  status:
+    | 'active'
+    | 'pending_verification'
+    | 'scheduled'
+    | 'deactivated'
+    | 'cancelled'
+    | 'completed'
+    | 'blocked';
   deactivated_at: string | null;
   request_id: string | null;
   scheduled_for: string | null;

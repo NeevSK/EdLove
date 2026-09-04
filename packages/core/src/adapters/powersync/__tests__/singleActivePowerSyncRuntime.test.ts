@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  SingleActivePowerSyncRuntime,
   type ManagedPowerSyncDatabase,
+  SingleActivePowerSyncRuntime,
 } from '../singleActivePowerSyncRuntime';
 
 describe('SingleActivePowerSyncRuntime', () => {

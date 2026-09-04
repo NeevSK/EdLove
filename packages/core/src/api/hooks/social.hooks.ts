@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
-import { useStore } from '@repo/core/store/useStore';
 import { socialAPI } from '@repo/core/api/social';
+import { useStore } from '@repo/core/store/useStore';
+import { useMutation } from '@tanstack/react-query';
 
 /**
  * Hook for social shielding (blocking, reporting) promoted to @repo/core.

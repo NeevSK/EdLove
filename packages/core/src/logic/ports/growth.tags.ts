@@ -1,9 +1,9 @@
+import { SupabaseGrowthAdapter } from '@repo/core/adapters/supabase/growth.adapter';
+import { GrowthManager } from '@repo/core/logic/managers/GrowthManager';
+import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
 import * as Context from 'effect/Context';
 import * as Effect from 'effect/Effect';
 import * as Layer from 'effect/Layer';
-import { SupabaseGrowthAdapter } from '@repo/core/adapters/supabase/growth.adapter';
-import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
-import { GrowthManager } from '@repo/core/logic/managers/GrowthManager';
 
 /**
  * GrowthPort — Effect Context.Tag for the growth data port.
@@ -41,7 +41,10 @@ export class GrowthPort extends Context.Tag('app/GrowthPort')<GrowthPort, IGrowt
  *    should wrap with Effect.tryPromise({ try: () => gm.method(), catch })
  *    so rejected Promises remain visible in the typed failure channel.
  */
-export class GrowthManagerTag extends Context.Tag('app/GrowthManager')<GrowthManagerTag, GrowthManager>() {}
+export class GrowthManagerTag extends Context.Tag('app/GrowthManager')<
+  GrowthManagerTag,
+  GrowthManager
+>() {}
 
 /**
  * Live implementation of GrowthPort backed by Supabase.

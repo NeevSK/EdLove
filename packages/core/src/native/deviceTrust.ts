@@ -1,8 +1,8 @@
-import { v7 as uuidv7 } from 'uuid';
-import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';
+import { v7 as uuidv7 } from 'uuid';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -196,15 +196,12 @@ export const deviceTrustAPI = {
     const deviceId =
       (await getStoredServerDeviceId()) ?? (await this.ensureDeviceRegistered()).deviceId;
 
-    const { data, error } = await supabaseClient.rpc(
-      'log_my_device_audit',
-      {
-        p_action: action,
-        p_device_id: deviceId,
-        p_account_id: resolvedAccountId,
-        p_metadata: metadata,
-      },
-    );
+    const { data, error } = await supabaseClient.rpc('log_my_device_audit', {
+      p_action: action,
+      p_device_id: deviceId,
+      p_account_id: resolvedAccountId,
+      p_metadata: metadata,
+    });
 
     if (error) {
       throw new APIError('Failed to write device audit log.', error.code, error);

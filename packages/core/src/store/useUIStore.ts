@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { createUISlice, type UISlice } from '@repo/core/store/slices/ui.slice';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 /**
  * useUIStore: Sovereign store for UI state, themes, and global notifications.

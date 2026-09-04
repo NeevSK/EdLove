@@ -155,8 +155,9 @@ describe('SupabaseAuthAdapter', () => {
     expect(resultWithoutOptions.user?.id).toBe('anon-1');
 
     const resultWithOptions = await adapter.signInAnonymously({ data: { role: 'guest' } });
-    expect(mockAuth.signInAnonymously).toHaveBeenCalledWith({ options: { data: { role: 'guest' } } });
+    expect(mockAuth.signInAnonymously).toHaveBeenCalledWith({
+      options: { data: { role: 'guest' } },
+    });
     expect(resultWithOptions.user?.id).toBe('anon-1');
   });
 });
-

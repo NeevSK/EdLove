@@ -88,7 +88,12 @@ export const attendanceAPI = {
     return toPromise(
       apiEffect(() =>
         orpcClient.attendance.getReport({
-          query: { schoolId: school_id, startDate: start_date, endDate: end_date, gradeClassId: classroom_id },
+          query: {
+            schoolId: school_id,
+            startDate: start_date,
+            endDate: end_date,
+            gradeClassId: classroom_id,
+          },
         }),
       ),
     );
@@ -128,7 +133,12 @@ export const attendanceAPI$ = {
   ) =>
     apiEffect(() =>
       orpcClient.attendance.getReport({
-        query: { schoolId: school_id, startDate: start_date, endDate: end_date, gradeClassId: classroom_id },
+        query: {
+          schoolId: school_id,
+          startDate: start_date,
+          endDate: end_date,
+          gradeClassId: classroom_id,
+        },
       }),
     ),
 };

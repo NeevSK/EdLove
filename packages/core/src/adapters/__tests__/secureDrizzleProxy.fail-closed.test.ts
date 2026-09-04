@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  createSecureDrizzleProxy,
-  resetSecureDrizzleState,
-} from '../powersync/secureDrizzleProxy';
+import { createSecureDrizzleProxy, resetSecureDrizzleState } from '../powersync/secureDrizzleProxy';
 
 describe('secureDrizzleProxy authorization boundary', () => {
   const execute = vi.fn().mockResolvedValue('driver_success');

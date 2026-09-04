@@ -38,13 +38,15 @@ export const messagingAPI = {
     viewDate?: string,
     _viewScale?: TemporalScale,
   ) {
-    return (await orpcClient.messaging.getMessages({
-      query: {
-        conversationId,
-        limit,
-        viewDate: viewDate ?? undefined,
-      },
-    })).map(mapMessage);
+    return (
+      await orpcClient.messaging.getMessages({
+        query: {
+          conversationId,
+          limit,
+          viewDate: viewDate ?? undefined,
+        },
+      })
+    ).map(mapMessage);
   },
 
   async sendDirectMessage(conversationId: string, content: string) {

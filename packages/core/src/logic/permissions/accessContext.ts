@@ -1,4 +1,7 @@
-import type { EntitlementReadiness, EntitlementSnapshot } from '@repo/core/logic/ports/entitlement.port';
+import type {
+  EntitlementReadiness,
+  EntitlementSnapshot,
+} from '@repo/core/logic/ports/entitlement.port';
 import type { CitizenshipLevel } from '@repo/core/logic/registry/citizenship';
 
 /**

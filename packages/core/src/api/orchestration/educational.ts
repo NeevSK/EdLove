@@ -1,5 +1,8 @@
 import { assignmentsAPI as rawAssignmentsAPI } from '@repo/core/api/assignments';
-import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '@repo/core/api/classroom';
+import {
+  lessonsAPI as rawLessonsAPI,
+  studentsAPI as rawStudentsAPI,
+} from '@repo/core/api/classroom';
 import { classroomGroupsAPI as rawClassroomGroupsAPI } from '@repo/core/api/classroomGroups';
 import { classroomNotesAPI as rawClassroomNotesAPI } from '@repo/core/api/classroomNotes';
 import { classroomStudentsAPI as rawClassroomStudentsAPI } from '@repo/core/api/classroomStudents';

@@ -4,9 +4,9 @@
  * CRUD for qualitative teacher observations about students.
  */
 
-import { APIError } from '@repo/core/types/API';
 import { identityAPI } from '@repo/core/api/identity';
 import { teacherInsightsAPI } from '@repo/core/api/teacherInsights';
+import { APIError } from '@repo/core/types/API';
 
 export interface StudentObservation {
   id: string;

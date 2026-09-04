@@ -7,8 +7,8 @@ vi.mock('@sentry/browser', () => ({
   setUser: vi.fn(),
 }));
 
-import * as BrowserSentry from '@sentry/browser';
 import { BrowserSentryTelemetryAdapter } from '@repo/core/adapters/web/SentryTelemetryAdapter';
+import * as BrowserSentry from '@sentry/browser';
 
 describe('BrowserSentryTelemetryAdapter', () => {
   beforeEach(() => vi.clearAllMocks());
@@ -34,10 +34,9 @@ describe('BrowserSentryTelemetryAdapter', () => {
     });
     adapter.setUser({ id: 'user-1', email: 'teacher@example.com', username: 'Teacher' });
 
-    expect(BrowserSentry.captureException).toHaveBeenCalledWith(
-      expect.any(Error),
-      { extra: { operation: 'save_profile' } },
-    );
+    expect(BrowserSentry.captureException).toHaveBeenCalledWith(expect.any(Error), {
+      extra: { operation: 'save_profile' },
+    });
     expect(BrowserSentry.setUser).toHaveBeenCalledWith({ id: 'user-1' });
   });
 });

@@ -1,5 +1,5 @@
-import { APIError } from '@repo/core/types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * COMMUNITY API (Sovereign RPC Proxy)
@@ -48,7 +48,11 @@ export const communityAPI = {
     return await res.json();
   },
 
-  async updateMemberStatus(groupId: string, userId: string, status: 'active' | 'rejected' | 'pending') {
+  async updateMemberStatus(
+    groupId: string,
+    userId: string,
+    status: 'active' | 'rejected' | 'pending',
+  ) {
     const res = await (client.api as any).community.groups[':groupId'].members.status.$patch({
       param: { groupId },
       json: { groupId, userId, status },
@@ -85,10 +89,12 @@ export const communityAPI = {
   },
 
   async approveAllMembers(groupId: string) {
-    const res = await (client.api as any).community.groups[':groupId'].members['approve-all'].$post({
-      param: { groupId },
-      json: { groupId },
-    });
+    const res = await (client.api as any).community.groups[':groupId'].members['approve-all'].$post(
+      {
+        param: { groupId },
+        json: { groupId },
+      },
+    );
     if (!res.ok) throw new APIError('Failed to approve group members', res.status.toString());
     return await res.json();
   },

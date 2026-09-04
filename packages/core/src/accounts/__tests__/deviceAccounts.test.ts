@@ -37,8 +37,7 @@ vi.mock('../../api/deviceTrust', () => ({
     getInstallId: (...args: unknown[]) => mockGetInstallId(...args),
     revokeMyInstallSecuritySessions: (...args: unknown[]) =>
       mockRevokeMyInstallSecuritySessions(...args),
-    upsertCurrentSecuritySession: (...args: unknown[]) =>
-      mockUpsertCurrentSecuritySession(...args),
+    upsertCurrentSecuritySession: (...args: unknown[]) => mockUpsertCurrentSecuritySession(...args),
   },
 }));
 
@@ -88,8 +87,8 @@ vi.mock('../../adapters/powersync/database', () => ({
   clearPowerSyncAccount: (...args: unknown[]) => mockClearPowerSyncAccount(...args),
 }));
 
-import { deviceAccounts } from '../deviceAccounts';
 import { setActiveAccountId } from '../../lib/accountScope';
+import { deviceAccounts } from '../deviceAccounts';
 
 const validAccessToken =
   'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJ1c2VyLTEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJleHAiOjQxMDI0NDQ4MDB9.signature';
@@ -215,7 +214,10 @@ describe('deviceAccounts', () => {
     mockGetStoredSessionForAccount.mockImplementation((accountId: string) =>
       Promise.resolve(
         accountId === 'account-2'
-          ? { access_token: `${validAccessToken.slice(0, -9)}account2`, refresh_token: 'refresh-token-account-2' }
+          ? {
+              access_token: `${validAccessToken.slice(0, -9)}account2`,
+              refresh_token: 'refresh-token-account-2',
+            }
           : { access_token: validAccessToken, refresh_token: validRefreshToken },
       ),
     );

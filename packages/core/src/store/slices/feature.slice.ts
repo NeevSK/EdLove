@@ -1,10 +1,10 @@
-import type { StateCreator } from 'zustand';
 import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
 import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
 import { FEATURE_FLAG_MANIFEST } from '@repo/core/logic/registry/featureLifecycleManifest';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
-import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@repo/core/store/types/featureFlags';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
+import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@repo/core/store/types/featureFlags';
+import type { StateCreator } from 'zustand';
 
 export interface FeatureSlice {
   flags: FeatureFlags;

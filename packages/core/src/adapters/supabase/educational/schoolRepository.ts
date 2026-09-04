@@ -1,9 +1,9 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { APIError } from '@repo/core/types/API';
 import {
   SchoolJoinApprovalSchema,
   SchoolRegistryClaimApprovalSchema,
 } from '@repo/core/logic/schemas/identity.schema';
+import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const createSchoolRepository = (supabase: SupabaseClient) => ({
   async createSchool(data: {
@@ -139,7 +139,11 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
       .eq('id', sectionId)
       .single();
     if (sectionError || !section?.school_id) {
-      throw new APIError('Failed to resolve section school', sectionError?.code ?? 'SECTION_SCHOOL_NOT_FOUND', sectionError);
+      throw new APIError(
+        'Failed to resolve section school',
+        sectionError?.code ?? 'SECTION_SCHOOL_NOT_FOUND',
+        sectionError,
+      );
     }
 
     const { data, error } = await supabase
@@ -165,7 +169,12 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
     }));
   },
 
-  async generateInviteCode(schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string) {
+  async generateInviteCode(
+    schoolId: string,
+    capacity: string,
+    createdBy: string,
+    idempotencyKey?: string,
+  ) {
     const { data, error } = await supabase.rpc('create_school_invite_code', {
       p_school_id: schoolId,
       p_role: capacity,

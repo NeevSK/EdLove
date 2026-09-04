@@ -13,12 +13,7 @@ export const announcementAPI = {
     return orpcClient.announcements.getAnnouncements({ query: { schoolId } });
   },
 
-  async createAnnouncement(
-    schoolId: string,
-    _authorId: string,
-    content: string,
-    isPinned = false,
-  ) {
+  async createAnnouncement(schoolId: string, _authorId: string, content: string, isPinned = false) {
     return orpcClient.announcements.createAnnouncement({
       body: {
         schoolId,

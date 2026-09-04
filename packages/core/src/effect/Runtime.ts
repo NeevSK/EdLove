@@ -1,8 +1,8 @@
+import { captureException } from '@repo/core/monitoring';
+import { APIError } from '@repo/core/types/API';
 import * as Effect from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
 import * as Layer from 'effect/Layer';
-import { captureException } from '@repo/core/monitoring';
-import { APIError } from '@repo/core/types/API';
 
 /**
  * Runtime execution boundary for @repo/core.
@@ -64,7 +64,9 @@ export function runToPromise<T, E extends { message?: string }>(
           captureException(e, { operation: errorCode ?? 'EFFECT_ERROR', boundary: 'effect' });
         }).pipe(
           Effect.zipRight(
-            Effect.fail(new APIError(e.message ?? 'Unknown error', errorCode ?? 'EFFECT_ERROR', e, true)),
+            Effect.fail(
+              new APIError(e.message ?? 'Unknown error', errorCode ?? 'EFFECT_ERROR', e, true),
+            ),
           ),
         ),
       ),

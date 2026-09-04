@@ -94,7 +94,9 @@ export const nativeHapticsProvider: HapticsProvider = {
     );
   },
   selection: () => {
-    void Haptics.selectionAsync().catch((error) => console.warn('[Haptics] selection failed', error));
+    void Haptics.selectionAsync().catch((error) =>
+      console.warn('[Haptics] selection failed', error),
+    );
   },
 };
 

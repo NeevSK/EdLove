@@ -14,9 +14,8 @@ const makeSenderId = () => {
 /** Coordinates the single active PowerSync account across browser tabs. */
 export class BrowserPowerSyncAccountCoordinator {
   private readonly senderId = makeSenderId();
-  private readonly channel = typeof BroadcastChannel !== 'undefined'
-    ? new BroadcastChannel(CHANNEL_NAME)
-    : null;
+  private readonly channel =
+    typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null;
 
   announce(accountId: string | null): void {
     const signal: BrowserAccountSignal = {

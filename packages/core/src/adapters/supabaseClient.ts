@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { supabaseAuthStorage } from '@repo/core/lib/authStorage';
+import { createClient } from '@supabase/supabase-js';
 
 type PublicRuntimeConfig = {
   supabaseUrl?: string;
@@ -18,9 +18,12 @@ const getExpoPublicRuntime = (): PublicRuntimeConfig | undefined => {
 
 const publicRuntime = getExpoPublicRuntime();
 
-let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || publicRuntime?.supabaseUrl;
+let supabaseUrl =
+  process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || publicRuntime?.supabaseUrl;
 let supabasePublishableKey =
-  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || publicRuntime?.supabasePublishableKey;
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  publicRuntime?.supabasePublishableKey;
 const baseFetch = globalThis.fetch.bind(globalThis);
 
 const urlStringFromInput = (url: Parameters<typeof fetch>[0]): string =>
@@ -37,9 +40,7 @@ const sanitizeSupabaseUrl = (url: Parameters<typeof fetch>[0]): string => {
     if (!urlObj.searchParams.has('onboarding_status')) return urlStr;
     urlObj.searchParams.delete('onboarding_status');
     if (typeof globalThis !== 'undefined' && (globalThis as any).__DEV__) {
-      console.warn(
-        `[Supabase] Stripped ghost param 'onboarding_status' from ${urlObj.pathname}`,
-      );
+      console.warn(`[Supabase] Stripped ghost param 'onboarding_status' from ${urlObj.pathname}`);
     }
     return urlObj.toString();
   } catch {
@@ -74,8 +75,4 @@ const supabaseOptions: any = {
 };
 
 /** Canonical client owned by the Supabase adapter boundary. */
-export const supabaseClient = createClient(
-  supabaseUrl,
-  supabasePublishableKey,
-  supabaseOptions,
-);
+export const supabaseClient = createClient(supabaseUrl, supabasePublishableKey, supabaseOptions);

@@ -1,5 +1,5 @@
-export * from '@repo/core/logic/schemas/accounting.schema';
 export * from '@repo/core/logic/schemas/academic-lifecycle.schema';
+export * from '@repo/core/logic/schemas/accounting.schema';
 export * from '@repo/core/logic/schemas/attendance.schema';
 export * from '@repo/core/logic/schemas/capacity.schema';
 export * from '@repo/core/logic/schemas/classroom.schema';

@@ -1,12 +1,18 @@
 import { educational } from '@repo/core/logic/managers/factory';
 import {
+  EduSchoolSchema,
   SchoolGradeSchema,
   SchoolSchema,
   SchoolStatsSchema,
   SectionSchema,
-  EduSchoolSchema,
 } from '@repo/core/logic/schemas/school.schema';
-import type { EduSchool, SchoolGrade as Grade, School, SchoolStats, Section } from '@repo/core/types';
+import type {
+  EduSchool,
+  SchoolGrade as Grade,
+  School,
+  SchoolStats,
+  Section,
+} from '@repo/core/types';
 
 /**
  * API methods for Managing School Institutions.
@@ -130,7 +136,17 @@ export const schoolAPI = {
   /**
    * Generate a new invite code for a school
    */
-  async generateInviteCode(schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string): Promise<any> {
-    return educational.institutions.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey);
+  async generateInviteCode(
+    schoolId: string,
+    capacity: string,
+    createdBy: string,
+    idempotencyKey?: string,
+  ): Promise<any> {
+    return educational.institutions.generateInviteCode(
+      schoolId,
+      capacity,
+      createdBy,
+      idempotencyKey,
+    );
   },
 };

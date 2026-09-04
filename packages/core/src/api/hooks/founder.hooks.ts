@@ -1,12 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { z } from 'zod';
+import { founderAPI } from '@repo/core/api/founder';
 import {
   EcosystemPulseSchema,
   EcosystemStatsSchema,
   GlobalUserSchema,
   SentinelAuditLogSchema,
 } from '@repo/core/logic/schemas/founder.schema';
-import { founderAPI } from '@repo/core/api/founder';
+import { useQuery } from '@tanstack/react-query';
+import { z } from 'zod';
 
 /**
  * Hook for ecosystem-wide statistics.

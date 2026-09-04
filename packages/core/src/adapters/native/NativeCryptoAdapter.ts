@@ -1,6 +1,6 @@
+import type { ICrypto } from '@repo/core/logic/interfaces/crypto.port';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import type { ICrypto } from '@repo/core/logic/interfaces/crypto.port';
 
 export class NativeCryptoAdapter implements ICrypto {
   async digestStringAsync(algorithm: string, data: string): Promise<string> {

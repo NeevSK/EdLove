@@ -14,31 +14,28 @@ import { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } fro
  * - @repo/core/effect/layers    — Dependency injection layers
  */
 
-// ─── 1. Canonical Schedules ──────────────────────────────────────────
-export { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from './Schedules';
-
 // ─── 2. Tagged Domain Errors ─────────────────────────────────────────
 export {
-  OfflineMutationError,
-  NetworkError,
-  UnauthorizedError,
   DatabaseQueryError,
-  SyncTableError,
+  NetworkError,
+  OfflineMutationError,
   SyncDelegateError,
   SyncOperationError,
+  SyncTableError,
+  UnauthorizedError,
 } from './Errors';
-
 // ─── 3. DI Layers ────────────────────────────────────────────────────
 export {
-  GrowthPort,
-  GrowthManagerTag,
-  GrowthPortLive,
-  GrowthManagerLive,
   GrowthLayer,
+  GrowthManagerLive,
+  GrowthManagerTag,
+  GrowthPort,
+  GrowthPortLive,
 } from './Layers';
-
 // ─── 4. Runtime Boundaries & Adapters ────────────────────────────────
 export { reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
+// ─── 1. Canonical Schedules ──────────────────────────────────────────
+export { defaultRetryPolicy, retryPolicy, strictRetryPolicy } from './Schedules';
 
 /**
  * Shared Promise-to-Effect adapter for fallible I/O.
@@ -88,7 +85,9 @@ export function fromSupabase<T>(
     Effect.tryPromise({ try: fn, catch: (e) => new Error(String(e)) }),
     Effect.flatMap(({ data, error }) =>
       error
-        ? Effect.fail(new Error(`[${label ?? 'Supabase'}] ${String((error as any)?.message ?? error)}`))
+        ? Effect.fail(
+            new Error(`[${label ?? 'Supabase'}] ${String((error as any)?.message ?? error)}`),
+          )
         : data !== null
           ? Effect.succeed(data)
           : Effect.fail(new Error(`[${label ?? 'Supabase'}] returned null data`)),

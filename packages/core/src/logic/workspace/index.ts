@@ -1,15 +1,15 @@
 export {
   createDefaultWorkspaceLayout,
+  getMaxPinnedForWorkspace,
   groupResolvedWorkspaceSurfacesByZone,
+  MAX_PINNED_WORKSPACE_SURFACES,
   normalizeWorkspaceLayout,
   resolveWorkspaceSurfaceLayout,
   setWorkspaceSurfaceHidden,
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
-  MAX_PINNED_WORKSPACE_SURFACES,
   WORKSPACE_CANVAS_ZONES,
-  getMaxPinnedForWorkspace,
 } from '@repo/core/logic/workspace/canvas';
 export {
   buildWorkspaceLayoutStorageKey,

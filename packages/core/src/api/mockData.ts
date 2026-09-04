@@ -1,10 +1,10 @@
-import type { Assignment, Classroom, ClassroomResource, Lesson, Student } from '@repo/core/types';
 import type {
   StaffLeaveDTO,
   StaffPresenceSummary,
   StudentAttendancePulse,
   TeacherCarouselItem,
 } from '@repo/core/api/staffManagement';
+import type { Assignment, Classroom, ClassroomResource, Lesson, Student } from '@repo/core/types';
 
 export const MOCK_CLASSROOMS: Classroom[] = [
   {

@@ -1,12 +1,12 @@
-import { create } from 'zustand';
 import type {
   AuthEvent,
   DeviceSecurityEvent,
-  DeviceSecuritySession,
   DeviceSecurityMutationResult,
+  DeviceSecuritySession,
   DeviceTrustSummary,
 } from '@repo/core/api/deviceTrust';
 import { deviceSecurity } from '@repo/core/logic/managers/factory';
+import { create } from 'zustand';
 
 interface DeviceSecurityState {
   devices: DeviceTrustSummary[];

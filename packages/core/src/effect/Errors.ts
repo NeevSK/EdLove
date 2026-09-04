@@ -13,7 +13,7 @@ export class OfflineMutationError extends Data.TaggedError('OfflineMutationError
   readonly cause: unknown;
   readonly operation?: string;
 }> {
-  get message(): string {
+  override get message(): string {
     return this.operation
       ? `Offline mutation failed for operation: ${this.operation}`
       : 'Offline mutation failed';
@@ -40,7 +40,7 @@ export class DatabaseQueryError extends Data.TaggedError('DatabaseQueryError')<{
 export class SyncTableError extends Data.TaggedError('SyncTableError')<{
   readonly table: string;
 }> {
-  get message(): string {
+  override get message(): string {
     return `Unsupported sync table: ${this.table}`;
   }
 }
@@ -48,7 +48,7 @@ export class SyncTableError extends Data.TaggedError('SyncTableError')<{
 export class SyncDelegateError extends Data.TaggedError('SyncDelegateError')<{
   readonly modelKey: string;
 }> {
-  get message(): string {
+  override get message(): string {
     return `Model delegate "${this.modelKey}" not found in transaction context`;
   }
 }
@@ -56,7 +56,7 @@ export class SyncDelegateError extends Data.TaggedError('SyncDelegateError')<{
 export class SyncOperationError extends Data.TaggedError('SyncOperationError')<{
   readonly op: string;
 }> {
-  get message(): string {
+  override get message(): string {
     return `Unsupported operations mode: ${this.op}`;
   }
 }

@@ -1,3 +1,4 @@
+import type { FounderRepository } from '@repo/core/logic/domains/founder/ports';
 import type { Classroom } from '@repo/core/logic/schemas/classroom.schema';
 import type { CommunityGroup } from '@repo/core/logic/schemas/community.schema';
 import type {
@@ -7,7 +8,6 @@ import type {
   SentinelAuditLog,
 } from '@repo/core/logic/schemas/founder.schema';
 import type { SchoolZod } from '@repo/core/logic/schemas/school.schema';
-import type { FounderRepository } from '@repo/core/logic/domains/founder/ports';
 
 export interface FounderServices {
   getEcosystemStats(): Promise<EcosystemStats>;

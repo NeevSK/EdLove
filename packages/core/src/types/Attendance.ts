@@ -1,4 +1,3 @@
-import type { z } from 'zod';
 import type {
   AttendanceReportSchema,
   AttendanceSchema,
@@ -6,6 +5,7 @@ import type {
   AttendanceTrendPointSchema,
   StudentAttendanceSchema,
 } from '@repo/core/logic/schemas/attendance.schema';
+import type { z } from 'zod';
 
 /**
  * Attendance - Authoritative domain type.

@@ -1,3 +1,8 @@
+import {
+  type TemporalCapability,
+  type TemporalScale,
+  useTemporalStore,
+} from '@repo/core/store/useTemporalStore';
 import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import {
   endOfDay,
@@ -11,11 +16,6 @@ import {
   startOfWeek,
   startOfYear,
 } from 'date-fns';
-import {
-  type TemporalCapability,
-  type TemporalScale,
-  useTemporalStore,
-} from '@repo/core/store/useTemporalStore';
 
 export interface TemporalRange {
   start: string; // ISO string

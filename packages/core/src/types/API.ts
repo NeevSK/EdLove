@@ -4,12 +4,7 @@ export class APIError extends SovereignError {
   public readonly code: string;
   public readonly reportedToTelemetry: boolean;
 
-  constructor(
-    message: string,
-    code = 'API_ERROR',
-    details?: unknown,
-    reportedToTelemetry = false,
-  ) {
+  constructor(message: string, code = 'API_ERROR', details?: unknown, reportedToTelemetry = false) {
     const normalizedCode = code;
     super({
       title: message,

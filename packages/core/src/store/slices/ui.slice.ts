@@ -1,5 +1,5 @@
-import type { StateCreator } from 'zustand';
 import type { ResourceType } from '@repo/core/types/Resource';
+import type { StateCreator } from 'zustand';
 
 export interface DeskItem {
   id: string;

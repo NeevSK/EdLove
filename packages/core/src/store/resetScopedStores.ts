@@ -1,4 +1,3 @@
-import type { QueryClient } from '@tanstack/react-query';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
 import { DeviceTrustEngine } from '@repo/core/lib/security/deviceTrust';
@@ -7,9 +6,10 @@ import type { UISlice } from '@repo/core/store/slices/ui.slice';
 import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useGrowthStore } from '@repo/core/store/useGrowthStore';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { useUIStore } from '@repo/core/store/useUIStore';
-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+import type { QueryClient } from '@tanstack/react-query';
 
 const authScopedDefaults = {
   userName: 'Gurudevi',

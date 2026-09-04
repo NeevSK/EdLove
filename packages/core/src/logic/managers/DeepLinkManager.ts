@@ -1,5 +1,5 @@
-import type { AuthManager } from '@repo/core/logic/managers/AuthManager';
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
+import type { AuthManager } from '@repo/core/logic/managers/AuthManager';
 
 /**
  * DeepLinkType

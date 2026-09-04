@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const DailyContentSchema = z.strictObject({
   id: z.string(),

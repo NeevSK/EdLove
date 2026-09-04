@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 // Repositories
 import { createSupabaseAttendanceProjectionRepository } from '@repo/core/adapters/supabase/attendanceProjectionRepository';
 import { createSupabaseEducationalRepository } from '@repo/core/adapters/supabase/educational';
@@ -22,6 +20,7 @@ import { createGuardianServices } from '@repo/core/logic/domains/guardian/servic
 import { createPrincipalWorkspaceServices } from '@repo/core/logic/domains/principalWorkspace/services';
 import { createTeacherInsightsServices } from '@repo/core/logic/domains/teacherInsights/services';
 import { createWorkspaceLayoutServices } from '@repo/core/logic/domains/workspaceLayout/services';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * The 'Alchemist' Domain Factory.

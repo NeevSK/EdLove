@@ -1,6 +1,3 @@
-import { useCallback, useEffect } from 'react';
-import { useConflictStore } from '@repo/core/store/useConflictStore';
-import { useStore } from '@repo/core/store/useStore';
 import { classifyError } from '@repo/core/lib/sync/errorClassifier';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
@@ -8,6 +5,9 @@ import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
+import { useConflictStore } from '@repo/core/store/useConflictStore';
+import { useStore } from '@repo/core/store/useStore';
+import { useCallback, useEffect } from 'react';
 
 /**
  * SyncManager
@@ -84,7 +84,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
         // Success! (Resonance achieved)
         removeFromQueue(item.id);
         updateEntry(item.id, 'success');
-        leaveBreadcrumb('sync', `Mutation succeeded: ${item.name}`, 'info', { mutationId: item.id });
+        leaveBreadcrumb('sync', `Mutation succeeded: ${item.name}`, 'info', {
+          mutationId: item.id,
+        });
         sovereignBus.emit('sync:item_succeeded', {
           mutationId: item.id,
           name: item.name,
@@ -102,7 +104,10 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
           if (__DEV__) {
             console.error(`[SyncManager] Terminal: ${item.name}  reason=${exitReason}`, error);
           }
-          leaveBreadcrumb('sync', `Mutation terminal: ${item.name} (${exitReason})`, 'error', { mutationId: item.id, error: error.message });
+          leaveBreadcrumb('sync', `Mutation terminal: ${item.name} (${exitReason})`, 'error', {
+            mutationId: item.id,
+            error: error.message,
+          });
 
           moveToDeadLetter(item.id, error.message);
           updateEntry(item.id, 'dead_letter', error.message);
@@ -124,7 +129,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
             remoteData: error.remoteState || null,
             timestamp: Date.now(),
           });
-          leaveBreadcrumb('sync', `Conflict detected: ${item.name}`, 'warning', { mutationId: item.id });
+          leaveBreadcrumb('sync', `Conflict detected: ${item.name}`, 'warning', {
+            mutationId: item.id,
+          });
           failedCount++;
           showToast(`Conflict detected in ${item.name}`, 'info');
           updateEntry(item.id, 'terminal_abort', 'Data Conflict Detected');
@@ -136,7 +143,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
           if (__DEV__) {
             console.log(`[SyncManager] Backoff: ${item.name} retrying in ${backoffMs}ms`);
           }
-          leaveBreadcrumb('sync', `Mutation retry: ${item.name} (attempt ${retryCount})`, 'info', { mutationId: item.id });
+          leaveBreadcrumb('sync', `Mutation retry: ${item.name} (attempt ${retryCount})`, 'info', {
+            mutationId: item.id,
+          });
           updateMutation(item.id, {
             retryCount,
             backoffUntil,
@@ -148,7 +157,11 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     }
 
     setSyncing(false);
-    leaveBreadcrumb('sync', `Sync completed: ${processedCount} processed, ${failedCount} failed`, 'info');
+    leaveBreadcrumb(
+      'sync',
+      `Sync completed: ${processedCount} processed, ${failedCount} failed`,
+      'info',
+    );
     sovereignBus.emit('sync:completed', { processedCount, failedCount });
 
     if (processedCount > 0) {

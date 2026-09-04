@@ -1,10 +1,10 @@
-import { z } from 'zod';
 import {
   AcademicCycleSchema,
   GradeClassSchema,
   GradeLevelSchema,
   TermSchema,
 } from '@repo/core/logic/schemas/grade-domain.schema';
+import { z } from 'zod';
 
 const uuid = z.uuid();
 const auditTimestamp = z.iso.datetime();
@@ -164,12 +164,7 @@ export const GradeClassSubjectContextSchema = z
     }
   });
 
-export const DailyAttendanceStatusSchema = z.enum([
-  'present',
-  'absent',
-  'late',
-  'excused',
-]);
+export const DailyAttendanceStatusSchema = z.enum(['present', 'absent', 'late', 'excused']);
 
 /** One student’s daily attendance record; session detail may refine it. */
 export const DailyAttendanceSchema = z
@@ -186,11 +181,7 @@ export const DailyAttendanceSchema = z
   })
   .merge(AuditFieldsSchema);
 
-export const AttendanceSessionKindSchema = z.enum([
-  'lesson',
-  'arrival',
-  'departure',
-]);
+export const AttendanceSessionKindSchema = z.enum(['lesson', 'arrival', 'departure']);
 
 /** A lesson, arrival, or departure observation attached to a daily record. */
 export const AttendanceSessionSchema = z

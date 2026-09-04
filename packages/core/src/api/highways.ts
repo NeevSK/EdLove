@@ -33,7 +33,8 @@ export const DATA_HIGHWAYS: Record<string, DataHighwayRule> = {
   },
   principal_notes_core: {
     highway: 'direct-api',
-    reason: 'Principal notes are private authoritative records and must not bypass server authorization.',
+    reason:
+      'Principal notes are private authoritative records and must not bypass server authorization.',
     failLoudly: true,
   },
   messaging_core: {

@@ -1,29 +1,24 @@
-import type { Session } from '@supabase/supabase-js';
-import * as Effect from 'effect/Effect';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { setActiveCapabilityToken } from '@repo/core/adapters/powersync/database';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import {
-  clearSentryUser,
-  identifyUser,
-  initSentry,
-  setSentryUser,
-} from '@repo/core/monitoring';
-import {
-  type IdentityAvailability,
   getSessionIdentityMode,
+  type IdentityAvailability,
 } from '@repo/core/logic/auth/identityState';
 import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import { clearSentryUser, identifyUser, initSentry, setSentryUser } from '@repo/core/monitoring';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useStore } from '@repo/core/store/useStore';
 import { APIError } from '@repo/core/types/API';
 import type { Bond } from '@repo/core/types/Identity';
 import { tryPromise } from '@repo/core/utils/effect';
+import type { Session } from '@supabase/supabase-js';
+import * as Effect from 'effect/Effect';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * useAuthLifecycle (Native)
@@ -49,86 +44,89 @@ export function useAuthLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
-  const fetchAndSetUserProfile = useCallback(async (sessionToInspect?: Session | null) => {
-    setIsProfileResolving(true);
-    setProfileError(null);
-    setIsProfileLoading(true);
-    try {
-      assertHighway('identity_bootstrap', 'direct-api');
-      // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-      // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
-      const identity = await identityAPI.identifyActiveCitizen();
+  const fetchAndSetUserProfile = useCallback(
+    async (sessionToInspect?: Session | null) => {
+      setIsProfileResolving(true);
+      setProfileError(null);
+      setIsProfileLoading(true);
+      try {
+        assertHighway('identity_bootstrap', 'direct-api');
+        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+        // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
+        const identity = await identityAPI.identifyActiveCitizen();
 
-      if (identity) {
-        setIdentityAvailability('active');
-        setAccountLifecycleStatus(null);
-        // 2. Update store
-        // Cast simplified bonds to full Bond type - the store layer fills in additional fields
-        setUser(identity as unknown as Parameters<typeof setUser>[0]);
-        setAvailableBonds(identity.availableBonds as unknown as Bond[]);
+        if (identity) {
+          setIdentityAvailability('active');
+          setAccountLifecycleStatus(null);
+          // 2. Update store
+          // Cast simplified bonds to full Bond type - the store layer fills in additional fields
+          setUser(identity as unknown as Parameters<typeof setUser>[0]);
+          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
 
-        setPerspective({
-          activeBond: identity.activeBond as unknown as Bond | undefined,
-          availableBonds: identity.availableBonds as unknown as Bond[],
-        });
+          setPerspective({
+            activeBond: identity.activeBond as unknown as Bond | undefined,
+            availableBonds: identity.availableBonds as unknown as Bond[],
+          });
 
-        const isEffectivelyOnboarded = !!identity.onboarding_completed;
-        if (isEffectivelyOnboarded) {
-          setOnboardingCompleted(true);
-        }
-
-        if (identity.schoolId) {
-          const { data: schoolData } = await supabaseClient
-            .from('schools')
-            .select('type')
-            .eq('id', identity.schoolId)
-            .single();
-
-          if (schoolData) {
-            setSchoolType(schoolData.type as SchoolType | null);
+          const isEffectivelyOnboarded = !!identity.onboarding_completed;
+          if (isEffectivelyOnboarded) {
+            setOnboardingCompleted(true);
           }
+
+          if (identity.schoolId) {
+            const { data: schoolData } = await supabaseClient
+              .from('schools')
+              .select('type')
+              .eq('id', identity.schoolId)
+              .single();
+
+            if (schoolData) {
+              setSchoolType(schoolData.type as SchoolType | null);
+            }
+          } else {
+            setSchoolType(null);
+          }
+
+          // Monitoring identification
+          setSentryUser({
+            id: identity.id,
+            email: identity.email,
+            username: identity.display_name,
+          });
+
+          identifyUser(identity.id);
         } else {
+          // A soft-deactivated profile is not an active app identity. Clear
+          // derived state while leaving the auth session available for policy UX.
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
           setSchoolType(null);
-        }
-
-        // Monitoring identification
-        setSentryUser({
-          id: identity.id,
-          email: identity.email,
-          username: identity.display_name,
-        });
-
-        identifyUser(identity.id);
-      } else {
-        // A soft-deactivated profile is not an active app identity. Clear
-        // derived state while leaving the auth session available for policy UX.
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-        setAccountLifecycleStatus(null);
-        if (getSessionIdentityMode(sessionToInspect) === 'authenticated') {
-          const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
-          setAccountLifecycleStatus(lifecycleStatus);
-          if (lifecycleStatus.status === 'deactivated') {
-            setIdentityAvailability('inactive');
+          setOnboardingCompleted(false);
+          setAccountLifecycleStatus(null);
+          if (getSessionIdentityMode(sessionToInspect) === 'authenticated') {
+            const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
+            setAccountLifecycleStatus(lifecycleStatus);
+            if (lifecycleStatus.status === 'deactivated') {
+              setIdentityAvailability('inactive');
+            } else {
+              setIdentityAvailability('unknown');
+              setProfileError('Unable to restore your account profile.');
+            }
           } else {
             setIdentityAvailability('unknown');
-            setProfileError('Unable to restore your account profile.');
           }
-        } else {
-          setIdentityAvailability('unknown');
         }
+      } catch (error) {
+        console.warn('❌ Profile: Fetching encountered an error:', error);
+        setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
+      } finally {
+        setIsProfileLoading(false);
+        setIsProfileResolving(false);
       }
-    } catch (error) {
-      console.warn('❌ Profile: Fetching encountered an error:', error);
-      setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
-    } finally {
-      setIsProfileLoading(false);
-      setIsProfileResolving(false);
-    }
-  }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
+    },
+    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
+  );
 
   const refreshProfile = useCallback(async () => {
     const currentSession = (await authAPI.getAuthSession()) as Session | null;
@@ -187,39 +185,37 @@ export function useAuthLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        setSession(currentSession);
-        setAuthSession(currentSession);
-        setAuthSessionResolved(true);
+    } = supabaseClient.auth.onAuthStateChange(async (event, currentSession) => {
+      setSession(currentSession);
+      setAuthSession(currentSession);
+      setAuthSessionResolved(true);
 
-        const currentMode = getSessionIdentityMode(currentSession);
-        if (currentMode === 'authenticated' || currentMode === 'anonymous') {
-          await fetchAndSetUserProfile(currentSession);
-        } else if (currentSession?.user) {
-          setUser(null);
-          setPerspective(null);
-          setAvailableBonds([]);
-          setSchoolType(null);
-          setOnboardingCompleted(false);
-          setIdentityAvailability('unknown');
-          setAccountLifecycleStatus(null);
-          useCedarDecisionStore.getState().clearDecisions();
-          setActiveCapabilityToken(null);
-        } else if (event === 'SIGNED_OUT') {
-          clearSentryUser();
-          setUser(null);
-          setPerspective(null);
-          setAvailableBonds([]);
-          setSchoolType(null);
-          setOnboardingCompleted(false);
-          setIdentityAvailability('unknown');
-          setAccountLifecycleStatus(null);
-          useCedarDecisionStore.getState().clearDecisions();
-          setActiveCapabilityToken(null);
-        }
-      },
-    );
+      const currentMode = getSessionIdentityMode(currentSession);
+      if (currentMode === 'authenticated' || currentMode === 'anonymous') {
+        await fetchAndSetUserProfile(currentSession);
+      } else if (currentSession?.user) {
+        setUser(null);
+        setPerspective(null);
+        setAvailableBonds([]);
+        setSchoolType(null);
+        setOnboardingCompleted(false);
+        setIdentityAvailability('unknown');
+        setAccountLifecycleStatus(null);
+        useCedarDecisionStore.getState().clearDecisions();
+        setActiveCapabilityToken(null);
+      } else if (event === 'SIGNED_OUT') {
+        clearSentryUser();
+        setUser(null);
+        setPerspective(null);
+        setAvailableBonds([]);
+        setSchoolType(null);
+        setOnboardingCompleted(false);
+        setIdentityAvailability('unknown');
+        setAccountLifecycleStatus(null);
+        useCedarDecisionStore.getState().clearDecisions();
+        setActiveCapabilityToken(null);
+      }
+    });
 
     return () => subscription.unsubscribe();
   }, [

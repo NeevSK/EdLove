@@ -1,23 +1,15 @@
+import { type DeviceAccountProfile, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import {
-  type DeviceAccountProfile,
-  deviceAccounts,
-} from '@repo/core/accounts/deviceAccounts';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import {
-  clearSentryUser,
-  identifyUser,
-  initSentry,
-  setSentryUser,
-} from '@repo/core/monitoring';
-import {
-  type IdentityAvailability,
   getSessionIdentityMode,
+  type IdentityAvailability,
 } from '@repo/core/logic/auth/identityState';
 import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import { clearSentryUser, identifyUser, initSentry, setSentryUser } from '@repo/core/monitoring';
 import { useStore } from '@repo/core/store/useStore';
 import type { User } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
@@ -83,124 +75,133 @@ export function useAuthLifecycle() {
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
   const setDemoMode = useStore((state) => state.setDemoMode);
 
-  const fetchAndSetUserProfile = useCallback(async (sessionToCapture?: Session | null) => {
-    // Only block the UI with a loading spinner on the very first boot fetch.
-    // All subsequent fetches (tab focus, token refresh) run silently.
-    const isFirstLoad = !hasBootstrappedRef.current;
-    setIsProfileResolving(true);
-    setProfileError(null);
-    if (isFirstLoad) {
-      setIsProfileLoading(true);
-    }
-    try {
-      assertHighway('identity_bootstrap', 'direct-api');
-      // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-      // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
-      const identity = await identityAPI.identifyActiveCitizen();
+  const fetchAndSetUserProfile = useCallback(
+    async (sessionToCapture?: Session | null) => {
+      // Only block the UI with a loading spinner on the very first boot fetch.
+      // All subsequent fetches (tab focus, token refresh) run silently.
+      const isFirstLoad = !hasBootstrappedRef.current;
+      setIsProfileResolving(true);
+      setProfileError(null);
+      if (isFirstLoad) {
+        setIsProfileLoading(true);
+      }
+      try {
+        assertHighway('identity_bootstrap', 'direct-api');
+        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+        // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
+        const identity = await identityAPI.identifyActiveCitizen();
 
-      if (identity) {
-        setIdentityAvailability('active');
-        setAccountLifecycleStatus(null);
-        // 2. Update Store with ReBAC data
-        // Cast simplified bonds to full Bond type - the store layer fills in additional fields
-        setUser(identity as unknown as User);
-        setAvailableBonds(identity.availableBonds as unknown as Bond[]);
+        if (identity) {
+          setIdentityAvailability('active');
+          setAccountLifecycleStatus(null);
+          // 2. Update Store with ReBAC data
+          // Cast simplified bonds to full Bond type - the store layer fills in additional fields
+          setUser(identity as unknown as User);
+          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
 
-        // Re-calculate perspective from bonds
-        setPerspective({
-          activeBond: identity.activeBond as unknown as Bond | undefined,
-          availableBonds: identity.availableBonds as unknown as Bond[],
-        });
+          // Re-calculate perspective from bonds
+          setPerspective({
+            activeBond: identity.activeBond as unknown as Bond | undefined,
+            availableBonds: identity.availableBonds as unknown as Bond[],
+          });
 
-        const deviceAccountProfile = getVerifiedDeviceAccountProfile(sessionToCapture ?? null, identity);
-        const captureKey = sessionToCapture
-          ? `${sessionToCapture.user.id}:${sessionToCapture.access_token}`
-          : null;
-        if (
-          deviceAccountProfile &&
-          captureKey &&
-          !capturedSessionKeysRef.current.has(captureKey) &&
-          !capturingSessionKeysRef.current.has(captureKey)
-        ) {
-          capturingSessionKeysRef.current.add(captureKey);
-          try {
-            await deviceAccounts.captureCurrentAccount(sessionToCapture ?? null, deviceAccountProfile);
-            capturedSessionKeysRef.current.add(captureKey);
-          } catch (error) {
-            // A registry failure must not invalidate an otherwise verified
-            // session. Leaving the key uncaptured permits a later auth refresh
-            // to retry without duplicating successful captures.
-            console.warn('[auth] Device account capture deferred:', error);
-          } finally {
-            capturingSessionKeysRef.current.delete(captureKey);
+          const deviceAccountProfile = getVerifiedDeviceAccountProfile(
+            sessionToCapture ?? null,
+            identity,
+          );
+          const captureKey = sessionToCapture
+            ? `${sessionToCapture.user.id}:${sessionToCapture.access_token}`
+            : null;
+          if (
+            deviceAccountProfile &&
+            captureKey &&
+            !capturedSessionKeysRef.current.has(captureKey) &&
+            !capturingSessionKeysRef.current.has(captureKey)
+          ) {
+            capturingSessionKeysRef.current.add(captureKey);
+            try {
+              await deviceAccounts.captureCurrentAccount(
+                sessionToCapture ?? null,
+                deviceAccountProfile,
+              );
+              capturedSessionKeysRef.current.add(captureKey);
+            } catch (error) {
+              // A registry failure must not invalidate an otherwise verified
+              // session. Leaving the key uncaptured permits a later auth refresh
+              // to retry without duplicating successful captures.
+              console.warn('[auth] Device account capture deferred:', error);
+            } finally {
+              capturingSessionKeysRef.current.delete(captureKey);
+            }
           }
-        }
 
-        // 3. Handle Onboarding & School Logic
-        const isEffectivelyOnboarded = !!identity.onboarding_completed;
-        if (isEffectivelyOnboarded) {
-          setOnboardingCompleted(true);
-        }
-
-        const schoolId = identity.schoolId || null;
-        if (schoolId) {
-          const { data: schoolData } = await supabaseClient
-            .from('schools')
-            .select('type')
-            .eq('id', schoolId)
-            .single();
-
-          if (schoolData) {
-            setSchoolType(schoolData.type as SchoolType | null);
+          // 3. Handle Onboarding & School Logic
+          const isEffectivelyOnboarded = !!identity.onboarding_completed;
+          if (isEffectivelyOnboarded) {
+            setOnboardingCompleted(true);
           }
+
+          const schoolId = identity.schoolId || null;
+          if (schoolId) {
+            const { data: schoolData } = await supabaseClient
+              .from('schools')
+              .select('type')
+              .eq('id', schoolId)
+              .single();
+
+            if (schoolData) {
+              setSchoolType(schoolData.type as SchoolType | null);
+            }
+          } else {
+            setSchoolType(null);
+          }
+
+          // 4. Monitoring identification (Relationship-aware)
+          setSentryUser({
+            id: identity.id,
+            email: identity.email,
+            username: identity.display_name,
+          });
+
+          identifyUser(identity.id);
         } else {
+          // A soft-deactivated profile is intentionally not an active identity.
+          // Clear derived state so stale local data cannot keep rendering the app
+          // shell while the auth session is still present.
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
           setSchoolType(null);
-        }
-
-        // 4. Monitoring identification (Relationship-aware)
-        setSentryUser({
-          id: identity.id,
-          email: identity.email,
-          username: identity.display_name,
-        });
-
-        identifyUser(identity.id);
-      } else {
-        // A soft-deactivated profile is intentionally not an active identity.
-        // Clear derived state so stale local data cannot keep rendering the app
-        // shell while the auth session is still present.
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-        setAccountLifecycleStatus(null);
-        if (getSessionIdentityMode(sessionToCapture) === 'authenticated') {
-          const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
-          setAccountLifecycleStatus(lifecycleStatus);
-          if (lifecycleStatus.status === 'deactivated') {
-            setIdentityAvailability('inactive');
+          setOnboardingCompleted(false);
+          setAccountLifecycleStatus(null);
+          if (getSessionIdentityMode(sessionToCapture) === 'authenticated') {
+            const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
+            setAccountLifecycleStatus(lifecycleStatus);
+            if (lifecycleStatus.status === 'deactivated') {
+              setIdentityAvailability('inactive');
+            } else {
+              setIdentityAvailability('unknown');
+              setProfileError('Unable to restore your account profile.');
+            }
           } else {
             setIdentityAvailability('unknown');
-            setProfileError('Unable to restore your account profile.');
           }
-        } else {
-          setIdentityAvailability('unknown');
         }
+      } catch (error) {
+        console.warn('❌ Profile: Fetching encountered an error:', error);
+        setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
+      } finally {
+        setIsProfileResolving(false);
+        if (isFirstLoad) {
+          setIsProfileLoading(false);
+        }
+        // Mark bootstrap as complete after the first attempt, whether it succeeded
+        // or failed — so tab switches never trigger the spinner again.
+        hasBootstrappedRef.current = true;
       }
-    } catch (error) {
-      console.warn('❌ Profile: Fetching encountered an error:', error);
-      setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
-    } finally {
-      setIsProfileResolving(false);
-      if (isFirstLoad) {
-        setIsProfileLoading(false);
-      }
-      // Mark bootstrap as complete after the first attempt, whether it succeeded
-      // or failed — so tab switches never trigger the spinner again.
-      hasBootstrappedRef.current = true;
-    }
-  }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
+    },
+    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
+  );
 
   const refreshProfile = useCallback(async () => {
     const currentSession = (await authAPI.getAuthSession()) as Session | null;

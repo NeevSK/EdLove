@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { useTracking } from '@repo/core/hooks/useTracking';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
-import { useTracking } from '@repo/core/hooks/useTracking';
+import { useCallback, useMemo, useState } from 'react';
 
 export interface SnapshotMoment {
   id: string;

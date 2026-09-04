@@ -1,4 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { WorkspaceLayoutRepository } from '@repo/core/logic/domains/workspaceLayout/ports';
 import {
   type WorkspaceLayoutDelete,
@@ -10,6 +9,7 @@ import {
   WorkspaceLayoutUpsertSchema,
 } from '@repo/core/logic/schemas/workspace-layout.schema';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLayoutRecord =>
   WorkspaceLayoutRecordSchema.parse({

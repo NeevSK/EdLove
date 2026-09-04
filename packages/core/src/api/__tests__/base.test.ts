@@ -2,7 +2,9 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { createSovereignClient, SOVEREIGN_API_URL, SOVEREIGN_ORPC_URL } from '../base';
 
 describe('Sovereign API transport URLs', { tags: ['pure', 'fast'] }, () => {
-  it('keeps Hono at the API origin and targets ORPC at its mounted prefix', async ({ annotate }) => {
+  it('keeps Hono at the API origin and targets ORPC at its mounted prefix', async ({
+    annotate,
+  }) => {
     const origin = SOVEREIGN_API_URL.replace(/\/+$/, '');
     const calculatedOrpcUrl = origin.endsWith('/api') ? origin : `${origin}/api`;
 

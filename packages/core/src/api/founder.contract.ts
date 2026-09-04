@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import { ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
 import { CommunityGroupSchema } from '@repo/core/logic/schemas/community.schema';
 import {
@@ -8,7 +8,7 @@ import {
   SentinelAuditLogSchema,
 } from '@repo/core/logic/schemas/founder.schema';
 import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;

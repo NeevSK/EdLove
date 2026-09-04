@@ -1,9 +1,12 @@
-"use client";
-import { useWindowDimensions, Platform } from 'react-native';
-import { useRef, useState, useEffect } from 'react';
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
 
 // Simple debounce utility
-function debounce<T extends (...args: any[]) => any>(fn: T, wait: number): (...args: Parameters<T>) => void {
+function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  wait: number,
+): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | undefined;
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout);

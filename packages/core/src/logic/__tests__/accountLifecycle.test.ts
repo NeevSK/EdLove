@@ -22,14 +22,7 @@ describe('account lifecycle contracts', () => {
 
     expect(
       commands.map((command) => getAccountLifecycleCapability(command, 'web').availability),
-    ).toEqual([
-      'supported',
-      'supported',
-      'supported',
-      'unavailable',
-      'unavailable',
-      'supported',
-    ]);
+    ).toEqual(['supported', 'supported', 'supported', 'unavailable', 'unavailable', 'supported']);
   });
 
   it('keeps local lifecycle capability parity between web and native', () => {

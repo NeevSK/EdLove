@@ -1,10 +1,10 @@
 /**
  * Idempotency Key Pattern Implementation
- * 
+ *
  * Ensures mutations are safely retryable by storing the result
  * of the first execution and returning it on subsequent calls
  * with the same idempotency key.
- * 
+ *
  * Usage:
  * - Client generates: crypto.randomUUID() per user action
  * - Server extracts from Idempotency-Key header
@@ -104,7 +104,7 @@ function hashRequest(method: string, path: string, body: unknown): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return Math.abs(hash).toString(36);
@@ -128,7 +128,7 @@ export function createIdempotencyMiddleware(config: IdempotencyConfig = {}) {
 
     // Extract idempotency key from context (set by Hono middleware)
     const idempotencyKey = context.idempotencyKey;
-    
+
     if (!idempotencyKey) {
       if (!finalConfig.optional) {
         throw new ORPCError('BAD_REQUEST', {
@@ -194,25 +194,25 @@ export function createIdempotencyMiddleware(config: IdempotencyConfig = {}) {
  */
 export function idempotencyHeaderMiddleware(config: IdempotencyConfig = {}) {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
-  
+
   return async (c: any, next: any) => {
     const method = c.req.method.toUpperCase();
-    
+
     if (!finalConfig.requiredMethods.includes(method)) {
       return next();
     }
 
     const key = c.req.header(finalConfig.headerName);
-    
+
     if (!key) {
       if (!finalConfig.optional) {
         return c.json(
-          { 
-            error: 'BAD_REQUEST', 
+          {
+            error: 'BAD_REQUEST',
             message: `Missing required header: ${finalConfig.headerName}`,
-            code: 'IDEMPOTENCY_KEY_REQUIRED'
+            code: 'IDEMPOTENCY_KEY_REQUIRED',
           },
-          400
+          400,
         );
       }
       return next();
@@ -222,12 +222,12 @@ export function idempotencyHeaderMiddleware(config: IdempotencyConfig = {}) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(key)) {
       return c.json(
-        { 
-          error: 'BAD_REQUEST', 
+        {
+          error: 'BAD_REQUEST',
           message: 'Invalid idempotency key format (must be UUID)',
-          code: 'IDEMPOTENCY_KEY_INVALID'
+          code: 'IDEMPOTENCY_KEY_INVALID',
         },
-        400
+        400,
       );
     }
 
@@ -241,7 +241,11 @@ export function idempotencyHeaderMiddleware(config: IdempotencyConfig = {}) {
  * Helper to generate idempotency key on client
  */
 export function generateIdempotencyKey(): string {
-  if (typeof globalThis !== 'undefined' && globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis.crypto &&
+    typeof globalThis.crypto.randomUUID === 'function'
+  ) {
     return globalThis.crypto.randomUUID();
   }
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -257,27 +261,29 @@ export function generateIdempotencyKey(): string {
 export async function withIdempotency<T>(
   key: string,
   fn: () => Promise<T>,
-  options: { retries?: number; retryDelay?: number } = {}
+  options: { retries?: number; retryDelay?: number } = {},
 ): Promise<T> {
   const { retries = 3, retryDelay = 1000 } = options;
-  
+
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       return await fn();
     } catch (error: any) {
       // If idempotency conflict, don't retry
-      if (error?.data?.code === 'IDEMPOTENCY_KEY_CONFLICT' || 
-          error?.data?.code === 'IDEMPOTENCY_KEY_MISMATCH') {
+      if (
+        error?.data?.code === 'IDEMPOTENCY_KEY_CONFLICT' ||
+        error?.data?.code === 'IDEMPOTENCY_KEY_MISMATCH'
+      ) {
         throw error;
       }
-      
+
       if (attempt === retries) throw error;
-      
+
       // Exponential backoff
-      await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
+      await new Promise((resolve) => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
     }
   }
-  
+
   throw new Error('Unreachable');
 }
 

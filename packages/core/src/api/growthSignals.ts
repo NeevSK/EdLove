@@ -1,5 +1,5 @@
-import { growth } from '@repo/core/logic/managers/factory';
 import type { GrowthSignalType } from '@repo/core/api/growthSignals.generated';
+import { growth } from '@repo/core/logic/managers/factory';
 
 export const growthSignalsAPI = {
   /**

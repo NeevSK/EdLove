@@ -1,6 +1,6 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TeacherRepository } from '@repo/core/logic/domains/teacher/ports';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const createSupabaseTeacherRepository = (supabase: SupabaseClient): TeacherRepository => ({
   async getTasks(teacherId: string) {

@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { UserRewardsSnapshot } from '@repo/core/logic/domains/profile/ports';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import type { UserGrowthState } from '@repo/core/types/Growth';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 export interface JourneyEvent {
   id: string;
@@ -40,10 +40,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = supabaseClient
-        .from('mood_logs')
-        .select('*')
-        .eq('user_id', userId);
+      let query = supabaseClient.from('mood_logs').select('*').eq('user_id', userId);
       query = applyTemporalFilter(query, {
         column: 'created_at',
         mode: 'event_time',
@@ -71,10 +68,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_journal', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-      let query = supabaseClient
-        .from('journal_entries')
-        .select('*')
-        .eq('user_id', userId);
+      let query = supabaseClient.from('journal_entries').select('*').eq('user_id', userId);
       query = applyTemporalFilter(query, {
         column: 'created_at',
         mode: 'event_time',

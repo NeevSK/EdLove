@@ -25,8 +25,9 @@
  *       ),
  *   });
  */
-import { useMemo } from 'react';
+
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMemo } from 'react';
 
 interface UseOptimisticMergeOptions<T> {
   /** The data snapshot returned from `withResilience` or React Query */

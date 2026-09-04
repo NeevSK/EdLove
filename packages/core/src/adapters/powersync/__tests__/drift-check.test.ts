@@ -9,11 +9,16 @@
  * - tableToModelMap in sync.ts contains exactly the 4 published tables
  */
 
-import { describe, it, expect } from 'vitest';
-import { AppSchema, LOCAL_ONLY_TABLES, isLocalOnlyTable } from '@repo/core/adapters/powersync';
+import { AppSchema, isLocalOnlyTable, LOCAL_ONLY_TABLES } from '@repo/core/adapters/powersync';
+import { describe, expect, it } from 'vitest';
 
 describe('Storage Contract: AppSchema ↔ Postgres Alignment', () => {
-  const SYNCED_TABLES = ['bonds', 'school_memberships', 'classrooms', 'classroom_students'] as const;
+  const SYNCED_TABLES = [
+    'bonds',
+    'school_memberships',
+    'classrooms',
+    'classroom_students',
+  ] as const;
   const LOCAL_ONLY_TABLES_LIST = [
     'pricingManifest',
     'userEntitlementGrants',

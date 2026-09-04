@@ -42,18 +42,20 @@ export function parseCacheIndex(raw: string): CacheIndex {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
 
     return Object.fromEntries(
-      Object.entries(parsed).filter(([, value]) => {
-        if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-        const entry = value as { lastAccess?: unknown; size?: unknown };
-        return (
-          typeof entry.lastAccess === 'number' &&
-          Number.isFinite(entry.lastAccess) &&
-          entry.lastAccess > 0 &&
-          typeof entry.size === 'number' &&
-          Number.isFinite(entry.size) &&
-          entry.size >= 0
-        );
-      }).filter(([fileName]) => isSafeCacheFileName(fileName)),
+      Object.entries(parsed)
+        .filter(([, value]) => {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+          const entry = value as { lastAccess?: unknown; size?: unknown };
+          return (
+            typeof entry.lastAccess === 'number' &&
+            Number.isFinite(entry.lastAccess) &&
+            entry.lastAccess > 0 &&
+            typeof entry.size === 'number' &&
+            Number.isFinite(entry.size) &&
+            entry.size >= 0
+          );
+        })
+        .filter(([fileName]) => isSafeCacheFileName(fileName)),
     ) as CacheIndex;
   } catch {
     return {};

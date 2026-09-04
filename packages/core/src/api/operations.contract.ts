@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   AttendanceReportSchema,
   AttendanceSchema,
   SchoolAttendancePulseSchema,
 } from '@repo/core/logic/schemas/attendance.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const operationsAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

@@ -19,7 +19,9 @@ export const principalNotesAPI = {
   },
 
   async getRecent(schoolId: string, limit = 3): Promise<PrincipalNote[]> {
-    return (await orpcClient.principalNotes.getRecent({ query: { schoolId, limit } })).map(asPrincipalNote);
+    return (await orpcClient.principalNotes.getRecent({ query: { schoolId, limit } })).map(
+      asPrincipalNote,
+    );
   },
 
   async create(note: {
@@ -33,12 +35,12 @@ export const principalNotesAPI = {
     return asPrincipalNote(
       await orpcClient.principalNotes.create({
         body: {
-        schoolId: note.school_id,
-        content: note.content,
-        noteType: note.note_type,
-        contextTeacherId: note.context_teacher_id ?? null,
-        contextClassroomId: note.context_classroom_id ?? null,
-        targetDate: note.target_date ?? null,
+          schoolId: note.school_id,
+          content: note.content,
+          noteType: note.note_type,
+          contextTeacherId: note.context_teacher_id ?? null,
+          contextClassroomId: note.context_classroom_id ?? null,
+          targetDate: note.target_date ?? null,
         },
       }),
     );
@@ -52,9 +54,9 @@ export const principalNotesAPI = {
       await orpcClient.principalNotes.update({
         params: { id },
         body: {
-        ...(updates.content !== undefined ? { content: updates.content } : {}),
-        ...(updates.is_pinned !== undefined ? { isPinned: updates.is_pinned } : {}),
-        ...(updates.is_done !== undefined ? { isDone: updates.is_done } : {}),
+          ...(updates.content !== undefined ? { content: updates.content } : {}),
+          ...(updates.is_pinned !== undefined ? { isPinned: updates.is_pinned } : {}),
+          ...(updates.is_done !== undefined ? { isDone: updates.is_done } : {}),
         },
       }),
     );

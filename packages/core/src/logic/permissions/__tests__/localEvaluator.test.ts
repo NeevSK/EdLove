@@ -89,10 +89,13 @@ describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
       { resourceType: 'NonExistentA', id: 'id-a' },
       { resourceType: 'NonExistentB', id: 'id-b' },
       { resourceType: 'RandomEntity', id: 'id-c' },
-    ])('returns empty record for unknown entity $resourceType (T17 test.for)', async ({ resourceType, id }) => {
-      const res = await getLocalResourceAttributes(resourceType as any, id);
-      expect(res).toEqual({});
-    });
+    ])(
+      'returns empty record for unknown entity $resourceType (T17 test.for)',
+      async ({ resourceType, id }) => {
+        const res = await getLocalResourceAttributes(resourceType as any, id);
+        expect(res).toEqual({});
+      },
+    );
   });
 
   describe('checkLocalPermission', () => {

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   CITIZENSHIP,
@@ -14,6 +13,7 @@ import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useMemo } from 'react';
 
 export function useSanctuaryFeature(
   action: string,

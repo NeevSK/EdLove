@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { EducationalRepository } from '@repo/core/logic/domains/educational/ports';
 import { createAssignmentRepository } from '@repo/core/adapters/supabase/educational/assignmentRepository';
 import { createAttendanceRepository } from '@repo/core/adapters/supabase/educational/attendanceRepository';
 import { createSupabaseClassroomNotesRepository } from '@repo/core/adapters/supabase/educational/classroomNotesRepository';
@@ -10,6 +8,8 @@ import { createLessonRepository } from '@repo/core/adapters/supabase/educational
 import { createMaterialRepository } from '@repo/core/adapters/supabase/educational/materialRepository';
 import { createSchoolRepository } from '@repo/core/adapters/supabase/educational/schoolRepository';
 import { createStatsRepository } from '@repo/core/adapters/supabase/educational/statsRepository';
+import type { EducationalRepository } from '@repo/core/logic/domains/educational/ports';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const createSupabaseEducationalRepository = (
   supabase: SupabaseClient,

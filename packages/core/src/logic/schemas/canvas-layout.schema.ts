@@ -1,7 +1,14 @@
 import { z } from 'zod';
 import { WorkspaceLayoutZoneSchema } from './workspace-layout.schema';
 
-export const CanvasSurfaceKindSchema = z.enum(['widget', 'section', 'mode', 'shortcut', 'tool', 'group']);
+export const CanvasSurfaceKindSchema = z.enum([
+  'widget',
+  'section',
+  'mode',
+  'shortcut',
+  'tool',
+  'group',
+]);
 
 export const CanvasSurfaceMetadataSchema = z.object({
   kind: CanvasSurfaceKindSchema.default('widget'),

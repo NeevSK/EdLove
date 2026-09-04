@@ -1,3 +1,4 @@
+import type { TeacherInsightsRepository } from '@repo/core/logic/domains/teacherInsights/ports';
 import type {
   TeacherInsightAuditEvent,
   TeacherInsightLifecycleEvent,
@@ -11,7 +12,6 @@ import type {
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
 } from '@repo/core/logic/schemas/teacher-insights.schema';
-import type { TeacherInsightsRepository } from '@repo/core/logic/domains/teacherInsights/ports';
 
 export interface TeacherInsightsServices {
   listPrivateNotes(

@@ -1,3 +1,5 @@
+import { principalWorkspaceContract } from '@repo/core/api/principalWorkspace.contract';
+import { principalWorkspaceServices } from '@repo/core/api/runtimes/principalWorkspace.runtime';
 import type {
   InviteCodeZod,
   PrincipalGovernanceEventZod,
@@ -7,8 +9,6 @@ import type {
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
 } from '@repo/core/logic/schemas/principal-workspace.schema';
-import { principalWorkspaceContract } from '@repo/core/api/principalWorkspace.contract';
-import { principalWorkspaceServices } from '@repo/core/api/runtimes/principalWorkspace.runtime';
 
 export type { PrincipalGovernanceEventZod } from '@repo/core/logic/schemas/principal-workspace.schema';
 
@@ -36,7 +36,12 @@ export const principalWorkspaceAPI = {
     createdBy: string,
     idempotencyKey?: string,
   ): Promise<InviteCodeZod> {
-    return principalWorkspaceServices.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey);
+    return principalWorkspaceServices.generateInviteCode(
+      schoolId,
+      capacity,
+      createdBy,
+      idempotencyKey,
+    );
   },
 
   /**

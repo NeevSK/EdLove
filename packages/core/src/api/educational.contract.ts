@@ -484,7 +484,7 @@ export const educationalContract = {
       }),
     },
     responses: { 201: { schema: submission, description: 'Submitted assignment' } },
-    metadata: ({ policy: { action: 'create', subject: 'AssignmentSubmission' } }) as const,
+    metadata: { policy: { action: 'create', subject: 'AssignmentSubmission' } } as const,
   },
 
   gradeAssignmentSubmission: {

@@ -73,7 +73,7 @@ export const useGrowthStore = create<GrowthState>()(
 
       setGrowthState: (newState) => {
         const currentState = get();
-        
+
         // Track the deltas by storing the previous signal values
         const updatedDeltas: Partial<GrowthState> = {};
         if (newState.presence_signals !== undefined) {

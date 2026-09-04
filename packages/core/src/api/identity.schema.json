@@ -30,7 +30,15 @@
         "entity_id": { "type": "string" },
         "entity_type": {
           "type": "string",
-          "enum": ["PLATFORM", "SCHOOL", "CLASSROOM", "COMMUNITY", "GROUP", "PERSONAL", "PERSONAL_CLASSROOM"]
+          "enum": [
+            "PLATFORM",
+            "SCHOOL",
+            "CLASSROOM",
+            "COMMUNITY",
+            "GROUP",
+            "PERSONAL",
+            "PERSONAL_CLASSROOM"
+          ]
         },
         "capacity": { "$ref": "#/definitions/Capacity" },
         "status": {
@@ -46,10 +54,7 @@
       "properties": {
         "id": { "type": "string", "format": "uuid" },
         "email": {
-          "anyOf": [
-            { "type": "null" },
-            { "type": "string", "format": "email" }
-          ]
+          "anyOf": [{ "type": "null" }, { "type": "string", "format": "email" }]
         },
         "name": { "type": "string" },
         "display_name": { "type": "string" },
@@ -85,10 +90,7 @@
           "enum": ["anonymous", "onboarded", "verified"]
         },
         "email": {
-          "anyOf": [
-            { "type": "null" },
-            { "type": "string", "format": "email" }
-          ]
+          "anyOf": [{ "type": "null" }, { "type": "string", "format": "email" }]
         },
         "tenant_kind": { "type": "string" },
         "onboarding_completed": { "type": "boolean" }

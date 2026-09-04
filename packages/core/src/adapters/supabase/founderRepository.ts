@@ -1,8 +1,9 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { z } from 'zod';
 import type { FounderRepository } from '@repo/core/logic/domains/founder/ports';
 import { type Classroom, ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
-import { type CommunityGroup, CommunityGroupSchema } from '@repo/core/logic/schemas/community.schema';
+import {
+  type CommunityGroup,
+  CommunityGroupSchema,
+} from '@repo/core/logic/schemas/community.schema';
 import {
   type EcosystemPulse,
   EcosystemPulseSchema,
@@ -15,6 +16,8 @@ import {
 } from '@repo/core/logic/schemas/founder.schema';
 import { SchoolSchema, type SchoolZod } from '@repo/core/logic/schemas/school.schema';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 
 export const createSupabaseFounderRepository = (supabase: SupabaseClient): FounderRepository => ({
   async getEcosystemStats() {

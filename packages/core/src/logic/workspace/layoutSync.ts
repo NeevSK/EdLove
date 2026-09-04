@@ -1,9 +1,9 @@
-import type { WorkspaceLayout } from '@repo/core/types';
 import type {
   WorkspaceLayoutRecord,
   WorkspaceLayoutTarget,
   WorkspaceLayoutUpsert,
 } from '@repo/core/logic/schemas/workspace-layout.schema';
+import type { WorkspaceLayout } from '@repo/core/types';
 
 export type WorkspaceLayoutPlatformKind = 'web' | 'native';
 export type WorkspaceLayoutScreenClass = 'compact' | 'expanded';
@@ -55,7 +55,8 @@ export function toWorkspaceLayoutRecord<TSurfaceId extends string = string>(
       Record<TSurfaceId, WorkspaceLayout<TSurfaceId>['zoneBySurface'][TSurfaceId]>
     >,
     isDefault: record.is_default ?? true,
-    surfaceMetadata: (record.surface_metadata as WorkspaceLayout<TSurfaceId>['surfaceMetadata']) ?? {},
+    surfaceMetadata:
+      (record.surface_metadata as WorkspaceLayout<TSurfaceId>['surfaceMetadata']) ?? {},
     updatedAt: record.updated_at,
   };
 }

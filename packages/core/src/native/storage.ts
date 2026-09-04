@@ -108,9 +108,6 @@ class RobustAsyncStorage implements StorageInterface {
   }
 }
 
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
-
 /**
  * Storage singleton \u2014 lazily initialized on first access.
  *
@@ -135,6 +132,8 @@ import { Platform } from 'react-native';
  *      MMKV being added will silently fall back to AsyncStorage.
  */
 import { Runtime } from '@repo/core/native/runtime';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'react-native';
 
 let _storageInstance: StorageInterface | null = null;
 
@@ -159,9 +158,9 @@ function createStorage(): StorageInterface {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createMMKV } = require('react-native-mmkv');
-    
+
     // Create MMKV instance with compareBeforeSet for write reduction on hot keys
-    const mmkv = createMMKV({ 
+    const mmkv = createMMKV({
       id: 'gurudevi-store',
       compareBeforeSet: true, // Skip disk write if value unchanged (hot keys: flags, localSeq)
     });

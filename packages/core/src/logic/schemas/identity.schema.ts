@@ -66,7 +66,11 @@ export const ClassroomStudentProjectionSchema = z
     invite_code: z.string().nullable().optional(),
     roll_number: z.number().int().nullable().optional(),
     enrolled_at: z.coerce.date().transform((d) => d.toISOString()),
-    claimed_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
+    claimed_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
     status: z.string().default('active'),
     joined_at: z.coerce.date().transform((d) => d.toISOString()),
     notes: z.string().nullable().optional(),
@@ -83,16 +87,44 @@ export const SchoolMembershipProjectionSchema = z
     school_id: z.uuid(),
     role: z.string(),
     status: z.string().default('active'),
-    start_date: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
-    end_date: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
+    start_date: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
+    end_date: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
     is_primary: z.boolean().nullable().optional(),
-    deleted_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
-    created_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
-    updated_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
+    deleted_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
+    created_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
+    updated_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
     deleted_by: z.uuid().nullable().optional(),
     deletion_reason: z.string().nullable().optional(),
-    joined_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
-    left_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
+    joined_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
+    left_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
   })
   .catchall(z.unknown());
 
@@ -106,8 +138,16 @@ export const SchoolJoinRequestSchema = z
     school_id: z.uuid().nullable().optional(),
     role: z.string(),
     status: z.string().default('pending'),
-    created_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
-    updated_at: z.coerce.date().transform((d) => d.toISOString()).nullable().optional(),
+    created_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
+    updated_at: z.coerce
+      .date()
+      .transform((d) => d.toISOString())
+      .nullable()
+      .optional(),
   })
   .catchall(z.unknown());
 

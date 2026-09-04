@@ -12,7 +12,14 @@
  * these tests must be updated to reflect the new behavior.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getDrizzleDB, registerPermissionValidator, setActiveCapabilityToken, registerPolicyVersionHash, registerOperationContext, resetSecureDrizzleState } from '../powersync/database';
+import {
+  getDrizzleDB,
+  registerOperationContext,
+  registerPermissionValidator,
+  registerPolicyVersionHash,
+  resetSecureDrizzleState,
+  setActiveCapabilityToken,
+} from '../powersync/database';
 
 vi.mock('../../store/useStore', () => ({
   useStore: {
@@ -141,7 +148,9 @@ describe('secureDrizzleProxy — current per-write behavior (characterization)',
     registerPermissionValidator(mockValidator);
     const tableObj = { _: { name: 'students' } };
 
-    await expect(secureDb.insert(tableObj).execute()).rejects.toThrow('Unauthorized Local Mutation');
+    await expect(secureDb.insert(tableObj).execute()).rejects.toThrow(
+      'Unauthorized Local Mutation',
+    );
     // The DB driver should NOT have been called
     expect(mockExecute).not.toHaveBeenCalled();
   });

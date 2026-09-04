@@ -1,9 +1,9 @@
 /**
  * Audit Logging Middleware
- * 
+ *
  * Provides immutable audit trail for sensitive operations.
  * Writes to PostgreSQL (immutable) and PostHog (analytics).
- * 
+ *
  * Coverage:
  * - Authentication events (login, logout, MFA)
  * - Payment operations
@@ -53,7 +53,7 @@ function generateAuditId(): string {
 
 function shouldAudit(procedurePath: string, action: string): boolean {
   if (AUDIT_ACTIONS.includes(action.toLowerCase())) return true;
-  return AUDIT_PREFIXES.some(prefix => procedurePath.startsWith(prefix));
+  return AUDIT_PREFIXES.some((prefix) => procedurePath.startsWith(prefix));
 }
 
 function extractResourceType(path: string): string {
@@ -88,16 +88,16 @@ if (typeof process !== 'undefined' && process.env.POSTHOG_API_KEY && process.env
 
 async function logAudit(entry: any): Promise<void> {
   const auditId = `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   const logEntry = {
     id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     ...entry,
     timestamp: new Date(),
   };
-  
+
   // Store in memory for development
   auditLogStore.set(auditId, logEntry);
-  
+
   // Send to PostHog for analytics
   if (posthog) {
     posthog.capture({
@@ -115,43 +115,47 @@ async function logAudit(entry: any): Promise<void> {
       timestamp: entry.timestamp,
     });
   }
-  
-  console.log('[AUDIT]', JSON.stringify({
-    id: logEntry.id,
-    user: logEntry.userId,
-    action: logEntry.action,
-    resource: `${logEntry.resourceType}:${logEntry.resourceId}`,
-    school: logEntry.schoolId,
-    trace: logEntry.traceId,
-  }));
+
+  console.log(
+    '[AUDIT]',
+    JSON.stringify({
+      id: logEntry.id,
+      user: logEntry.userId,
+      action: logEntry.action,
+      resource: `${logEntry.resourceType}:${logEntry.resourceId}`,
+      school: logEntry.schoolId,
+      trace: logEntry.traceId,
+    }),
+  );
 }
-
-
 
 /**
  * Create audit logging middleware for oRPC
  */
 export function createAuditMiddleware() {
-  return async (options: { context: ORPCContext; procedure: any; input: any }, next: () => Promise<any>) => {
+  return async (
+    options: { context: ORPCContext; procedure: any; input: any },
+    next: () => Promise<any>,
+  ) => {
     const { context, procedure, input } = options;
     const procedurePath = (procedure as any).path || 'unknown';
     const action = (procedure as any).method?.toUpperCase() || 'UNKNOWN';
-    
+
     // Skip if not an auditable procedure
     if (!shouldAudit(procedurePath, action)) {
       return next();
     }
-    
+
     const startTime = Date.now();
     const requestId = context.requestId || 'unknown';
     const traceId = context.traceId || 'unknown';
-    
+
     let result: any;
     const statusCode = 200;
-    
+
     try {
       result = await next();
-      
+
       // Log successful operation
       await logAudit({
         userId: context.user?.id || 'anonymous',
@@ -172,7 +176,7 @@ export function createAuditMiddleware() {
         },
         statusCode: 200,
       });
-      
+
       return result;
     } catch (error: any) {
       // Log failed operation
@@ -194,7 +198,7 @@ export function createAuditMiddleware() {
           durationMs: Date.now() - startTime,
           error: error?.message,
         },
-        statusCode: error instanceof ORPCError ? ((error as any).status || 500) : 500,
+        statusCode: error instanceof ORPCError ? (error as any).status || 500 : 500,
       });
       throw error;
     }

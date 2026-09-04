@@ -6,11 +6,20 @@
 
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { formResponse, formsContract, formTemplate } from '@repo/core/api/forms.contract';
-import { APIError, type FormResponse, type FormTemplate, type PaginationParams } from '@repo/core/types';
+import {
+  APIError,
+  type FormResponse,
+  type FormTemplate,
+  type PaginationParams,
+} from '@repo/core/types';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
-const parse = async <T>(response: Response, schema: { parse: (value: unknown) => T }, message: string) => {
+const parse = async <T>(
+  response: Response,
+  schema: { parse: (value: unknown) => T },
+  message: string,
+) => {
   if (!response.ok) throw new APIError(message, response.status.toString());
   return schema.parse(await response.json());
 };
@@ -73,7 +82,8 @@ export const formTemplatesAPI = {
       param: { ownerId },
       query: pageQuery(params),
     });
-    if (!response.ok) throw new APIError('Failed to fetch user templates', response.status.toString());
+    if (!response.ok)
+      throw new APIError('Failed to fetch user templates', response.status.toString());
     return (await response.json()).map((row: unknown) => formTemplate.parse(row)) as FormTemplate[];
   },
 
@@ -103,7 +113,8 @@ export const formTemplatesAPI = {
    */
   async delete(id: string): Promise<void> {
     const response = await (client.api as any).forms.templates[':id'].$delete({ param: { id } });
-    if (!response.ok) throw new APIError('Failed to delete form template', response.status.toString());
+    if (!response.ok)
+      throw new APIError('Failed to delete form template', response.status.toString());
   },
 
   /**
@@ -127,7 +138,8 @@ export const formTemplatesAPI = {
       param: { templateId },
       query: pageQuery(params),
     });
-    if (!response.ok) throw new APIError('Failed to fetch form responses', response.status.toString());
+    if (!response.ok)
+      throw new APIError('Failed to fetch form responses', response.status.toString());
     return (await response.json()).map((row: unknown) => formResponse.parse(row)) as FormResponse[];
   },
 };

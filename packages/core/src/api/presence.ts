@@ -1,8 +1,8 @@
+import { orpcClient } from '@repo/core/api/orpcClient';
 import {
   type PresenceSessionOptions,
   startPresenceRealtime,
 } from '@repo/core/api/presenceRealtime';
-import { orpcClient } from '@repo/core/api/orpcClient';
 
 export interface PresenceFallbackCountOptions {
   targetCapacities: string[];

@@ -455,7 +455,15 @@ function isAccountLifecycleStatus(value: unknown): value is AccountLifecycleStat
   const status = value as Record<string, unknown>;
   return (
     typeof status.status === 'string' &&
-    ['active', 'pending_verification', 'scheduled', 'deactivated', 'cancelled', 'completed', 'blocked'].includes(status.status) &&
+    [
+      'active',
+      'pending_verification',
+      'scheduled',
+      'deactivated',
+      'cancelled',
+      'completed',
+      'blocked',
+    ].includes(status.status) &&
     (typeof status.deactivated_at === 'string' || status.deactivated_at === null) &&
     (typeof status.request_id === 'string' || status.request_id === null) &&
     (typeof status.scheduled_for === 'string' || status.scheduled_for === null) &&

@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it } from 'vitest';
 import {
   _resetCatalogForTesting,
   getAllDomains,
@@ -7,6 +6,7 @@ import {
 import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
 import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
 import { validateFeatureFlagManifest } from '@repo/core/logic/registry/featureLifecycleManifest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 const baseEntry: DomainEntry = {
   id: 'community.hearth',

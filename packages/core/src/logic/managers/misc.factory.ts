@@ -2,8 +2,8 @@ import { createSupabaseRealtimeAdapter } from '@repo/core/adapters/realtime/supa
 import { createSupabaseAuditRepository } from '@repo/core/adapters/supabase/auditRepository';
 import { createSupabaseTeacherInsightsRepository } from '@repo/core/adapters/supabase/teacherInsightsRepository';
 import { createSupabaseTeacherRepository } from '@repo/core/adapters/supabase/teacherRepository';
-import { SupabaseDeviceSecurityAdapter } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { SupabaseDeviceSecurityAdapter } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
 import { AuditManager } from '@repo/core/logic/managers/AuditManager';
 import { auth } from '@repo/core/logic/managers/auth.factory';
 import { DeepLinkManager } from '@repo/core/logic/managers/DeepLinkManager';
@@ -26,23 +26,17 @@ export const deviceSecurity = new DeviceSecurityManager(new SupabaseDeviceSecuri
 /**
  * realtime: The Global Sovereign Realtime Instance.
  */
-export const realtime = new RealtimeManager(
-  createSupabaseRealtimeAdapter(supabaseClient),
-);
+export const realtime = new RealtimeManager(createSupabaseRealtimeAdapter(supabaseClient));
 
 /**
  * audit: The Global Sovereign Audit Instance.
  */
-export const audit = new AuditManager(
-  createSupabaseAuditRepository(supabaseClient),
-);
+export const audit = new AuditManager(createSupabaseAuditRepository(supabaseClient));
 
 /**
  * teacher: The Global Sovereign Teacher Instance.
  */
-export const teacher = new TeacherManager(
-  createSupabaseTeacherRepository(supabaseClient),
-);
+export const teacher = new TeacherManager(createSupabaseTeacherRepository(supabaseClient));
 
 /**
  * teacherInsights: The Global Sovereign Teacher Insights Instance.

@@ -112,7 +112,8 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
 ): WorkspaceLayout<TSurfaceId> {
   // v1 -> v2 migration: backfill isDefault / surfaceMetadata if missing
   const migratedIsDefault = (layout as unknown as { isDefault?: boolean }).isDefault ?? true;
-  const migratedMetadata = (layout as unknown as { surfaceMetadata?: Record<string, unknown> }).surfaceMetadata ?? {};
+  const migratedMetadata =
+    (layout as unknown as { surfaceMetadata?: Record<string, unknown> }).surfaceMetadata ?? {};
   const surfaceMap = toSurfaceMap(surfaces);
   const defaultOrder = sortSurfaceIdsByDefault(surfaces);
   const remainingSurfaceIds = new Set(defaultOrder);
@@ -285,9 +286,7 @@ export function setWorkspaceSurfacePinned<TSurfaceId extends string>(
 
   return {
     ...layout,
-    pinned: pinned
-      ? currentPinned
-      : currentPinned.filter((candidate) => candidate !== surfaceId),
+    pinned: pinned ? currentPinned : currentPinned.filter((candidate) => candidate !== surfaceId),
     isDefault: false,
     updatedAt,
   };

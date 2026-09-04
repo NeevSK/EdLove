@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
 import {
-  MAX_PINNED_WORKSPACE_SURFACES,
   createDefaultWorkspaceLayout,
+  MAX_PINNED_WORKSPACE_SURFACES,
   normalizeWorkspaceLayout,
   setWorkspaceSurfacePinned,
 } from '@repo/core/logic/workspace/canvas';
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
+import { describe, expect, it } from 'vitest';
 
 type SurfaceId = `surface-${number}`;
 

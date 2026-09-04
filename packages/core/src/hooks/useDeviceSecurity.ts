@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useOptimistic, useTransition } from 'react';
 import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useDeviceSecurityStore } from '@repo/core/store/useDeviceSecurityStore';
+import { useCallback, useEffect, useMemo, useOptimistic, useTransition } from 'react';
 
 /**
  * useDeviceSecurity

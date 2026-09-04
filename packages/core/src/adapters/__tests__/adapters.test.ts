@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+// Mock cedarClientEvaluator
+import { evaluateShape2 as mockEvaluateShape2 } from '../../logic/permissions/cedarClientEvaluator';
 import { CedarAuthorizationAdapter } from '../cedar/cedarAuthorization.adapter';
 import { SupabaseEntitlementAdapter } from '../supabase/supabaseEntitlement.adapter';
 
-// Mock cedarClientEvaluator
-import { evaluateShape2 as mockEvaluateShape2 } from '../../logic/permissions/cedarClientEvaluator';
 vi.mock('../../logic/permissions/cedarClientEvaluator', () => ({
   evaluateShape2: vi.fn(async () => true),
 }));
@@ -64,9 +64,7 @@ vi.mock('@repo/core/adapters/supabaseClient', () => ({
 const mockLimit = vi.fn();
 const mockWhere = vi.fn(() => ({ limit: mockLimit }));
 
-const POLICIES_RESULT = [
-  { id: '1', content: 'permit(principal, action, resource);' },
-];
+const POLICIES_RESULT = [{ id: '1', content: 'permit(principal, action, resource);' }];
 const mockFrom = vi.fn(() => {
   const chain = { where: mockWhere };
   // Make the chain thenable so await resolves to the policies array

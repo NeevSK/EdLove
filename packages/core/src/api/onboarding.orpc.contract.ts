@@ -16,7 +16,10 @@ export const onboardingORPCContract = {
       }),
     },
     responses: {
-      200: { schema: z.object({ success: z.boolean() }), description: 'Initial bond and user profile created' },
+      200: {
+        schema: z.object({ success: z.boolean() }),
+        description: 'Initial bond and user profile created',
+      },
     },
     metadata: userIdentity('update'),
   },
@@ -37,7 +40,10 @@ export const onboardingORPCContract = {
       body: z.object({ schoolId: z.string() }),
     },
     responses: {
-      200: { schema: z.object({ success: z.literal(true), bondId: z.string() }), description: 'Create or return the authenticated founder school bond' },
+      200: {
+        schema: z.object({ success: z.literal(true), bondId: z.string() }),
+        description: 'Create or return the authenticated founder school bond',
+      },
     },
     metadata: userIdentity('update'),
   },

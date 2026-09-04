@@ -1,8 +1,8 @@
-import type { Session } from '@supabase/supabase-js';
-import type { StateCreator } from 'zustand';
+import { leaveBreadcrumb } from '@repo/core/monitoring';
 import type { User } from '@repo/core/types';
 import type { Bond, Perspective } from '@repo/core/types/Identity';
-import { leaveBreadcrumb } from '@repo/core/monitoring';
+import type { Session } from '@supabase/supabase-js';
+import type { StateCreator } from 'zustand';
 
 export interface AuthSlice {
   // Sovereign Identity (ReBAC)

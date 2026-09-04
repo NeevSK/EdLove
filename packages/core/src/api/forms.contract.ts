@@ -35,9 +35,10 @@ const templateFields = {
   category: z.string().trim().max(100).nullable().optional(),
 };
 
-const formAuthority = (action: 'read' | 'create' | 'update' | 'delete') => ({
-  policy: { action, subject: 'FormTemplate' },
-}) as const;
+const formAuthority = (action: 'read' | 'create' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'FormTemplate' },
+  }) as const;
 
 export const formsContract = {
   create: {
@@ -58,7 +59,9 @@ export const formsContract = {
     method: 'get',
     path: '/forms/templates/slug/:slug',
     request: { params: z.object({ slug: z.string().trim().min(1).max(200) }) },
-    responses: { 200: { schema: formTemplate, description: 'Get a published form template by slug' } },
+    responses: {
+      200: { schema: formTemplate, description: 'Get a published form template by slug' },
+    },
     metadata: formAuthority('read'),
   },
   getByOwner: {
@@ -85,7 +88,12 @@ export const formsContract = {
     method: 'delete',
     path: '/forms/templates/:id',
     request: { params: z.object({ id: z.string().uuid() }) },
-    responses: { 200: { schema: z.object({ success: z.literal(true) }), description: 'Delete an owned form template' } },
+    responses: {
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Delete an owned form template',
+      },
+    },
     metadata: formAuthority('delete'),
   },
   submitResponse: {
@@ -94,7 +102,9 @@ export const formsContract = {
     request: {
       body: z.object({ template_id: z.string().uuid(), data: z.record(z.string(), z.unknown()) }),
     },
-    responses: { 201: { schema: formResponse, description: 'Submit a response to a published form' } },
+    responses: {
+      201: { schema: formResponse, description: 'Submit a response to a published form' },
+    },
     metadata: formAuthority('create'),
   },
   getResponses: {
@@ -104,7 +114,12 @@ export const formsContract = {
       params: z.object({ templateId: z.string().uuid() }),
       query: page,
     },
-    responses: { 200: { schema: z.array(formResponse), description: 'List responses owned by the template owner' } },
+    responses: {
+      200: {
+        schema: z.array(formResponse),
+        description: 'List responses owned by the template owner',
+      },
+    },
     metadata: formAuthority('read'),
   },
 } as const satisfies SovereignContract;

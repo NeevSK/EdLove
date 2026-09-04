@@ -9,6 +9,7 @@ export {
 export { isDemo } from '@repo/core/api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+export * from '@repo/core/efficiency';
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
@@ -23,18 +24,6 @@ export {
   getMediaThumbnail,
   getMediaUrl,
 } from '@repo/core/lib/mediaUtils';
-export type { IPostHog } from './monitoring';
-export {
-  identifyUser,
-  initPostHog,
-  injectPostHog,
-  trackEvent,
-  captureException,
-  clearSentryUser,
-  initSentry,
-  logBreadcrumb,
-  setSentryUser,
-} from './monitoring';
 export {
   clearPendingGateAction,
   getPendingGateAction,
@@ -118,20 +107,31 @@ export {
   type ResilienceOptions,
   withResilience,
 } from '@repo/core/offline/resilience';
+export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 export { AuthorityLifecycleProvider } from '@repo/core/providers/AuthorityLifecycleProvider';
-export * from '@repo/core/efficiency';
 // 3. Auth & Context
 export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export type { FeatureSlice } from '@repo/core/store/slices/feature.slice';
-export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 // 2. Logic State & Storage (Zustand & Supabase)
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
 export * from '@repo/core/types';
+export type { IPostHog } from './monitoring';
+export {
+  captureException,
+  clearSentryUser,
+  identifyUser,
+  initPostHog,
+  initSentry,
+  injectPostHog,
+  logBreadcrumb,
+  setSentryUser,
+  trackEvent,
+} from './monitoring';
 
 import { z } from 'zod';
 
@@ -158,11 +158,11 @@ export {
 export * from '@repo/core/constants/SriLankanSchools';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
 export {
+  type AccountLifecycleExecutor,
+  type AccountLifecycleState,
   accountLifecycleReducer,
   initialAccountLifecycleState,
   useAccountLifecycle,
-  type AccountLifecycleExecutor,
-  type AccountLifecycleState,
 } from '@repo/core/hooks/useAccountLifecycle';
 export { useBanyanGrowth } from '@repo/core/hooks/useBanyanGrowth';
 export { useClassroomCreation } from '@repo/core/hooks/useClassroomCreation';
@@ -225,14 +225,6 @@ export type {
 } from '@repo/core/logic/entities/entity-protocol';
 export { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
 export * from '@repo/core/logic/permissions';
-export type { Attendance } from '@repo/core/logic/schemas/attendance.schema';
-export {
-  type AttendanceReport,
-  AttendanceSchema,
-  AttendanceStatusSchema,
-  StudentAttendanceSchema,
-} from '@repo/core/logic/schemas/attendance.schema';
-export { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 export {
   AcademicCycleLeadershipAssignmentSchema,
   AcademicCycleLeadershipAssignmentStatusSchema,
@@ -242,26 +234,18 @@ export {
   AttendanceSessionSchema,
   DailyAttendanceSchema,
   DailyAttendanceStatusSchema,
-  GradeClassSubjectSchema,
   GradeClassSubjectContextSchema,
+  GradeClassSubjectSchema,
   GradeClassSubjectStatusSchema,
 } from '@repo/core/logic/schemas/academic-lifecycle.schema';
+export type { Attendance } from '@repo/core/logic/schemas/attendance.schema';
 export {
-  AcademicCycleSchema,
-  AcademicCycleStatusSchema,
-  GradeMarkCollectionSchema,
-  GradeMarkLetterGradeSchema,
-  GradeMarkPublicationStateSchema,
-  GradeMarkSchema,
-  GradeClassSchema,
-  GradeClassStatusSchema,
-  GradeClassTeacherAssignmentSchema,
-  GradeClassTeacherAssignmentStatusSchema,
-  GradeLevelSchema,
-  TermKindSchema,
-  TermSchema,
-  selectGuardianVisibleGradeMarks,
-} from '@repo/core/logic/schemas/grade-domain.schema';
+  type AttendanceReport,
+  AttendanceSchema,
+  AttendanceStatusSchema,
+  StudentAttendanceSchema,
+} from '@repo/core/logic/schemas/attendance.schema';
+export { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 export type {
   Echo,
   TeacherStats,
@@ -277,6 +261,22 @@ export {
   KnowledgeTopologySchema,
   PulseMetricsSchema,
 } from '@repo/core/logic/schemas/dashboard.schema';
+export {
+  AcademicCycleSchema,
+  AcademicCycleStatusSchema,
+  GradeClassSchema,
+  GradeClassStatusSchema,
+  GradeClassTeacherAssignmentSchema,
+  GradeClassTeacherAssignmentStatusSchema,
+  GradeLevelSchema,
+  GradeMarkCollectionSchema,
+  GradeMarkLetterGradeSchema,
+  GradeMarkPublicationStateSchema,
+  GradeMarkSchema,
+  selectGuardianVisibleGradeMarks,
+  TermKindSchema,
+  TermSchema,
+} from '@repo/core/logic/schemas/grade-domain.schema';
 export type {
   Assessment,
   GradebookSnapshot,

@@ -1,4 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { selectLatestTemporalRecordsAsOf } from '@repo/core/lib/temporalEvents';
 import type { ClassroomNotesRepository } from '@repo/core/logic/domains/classroomNotes/ports';
 import {
@@ -12,6 +11,7 @@ import {
   ClassroomNoteUpdateSchema,
 } from '@repo/core/logic/schemas/classroom-note.schema';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 type ClassroomNoteRow = Record<string, unknown> & {
   id: string;

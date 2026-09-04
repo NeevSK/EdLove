@@ -1,5 +1,5 @@
-import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
+import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import * as NativeSentry from '@sentry/react-native';
 
 export class SentryTelemetryAdapter implements ITelemetry {

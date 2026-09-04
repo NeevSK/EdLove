@@ -1,5 +1,5 @@
-import type { Inngest } from 'inngest';
 import type { DomainEvent, IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
+import type { Inngest } from 'inngest';
 
 /**
  * InngestEventBusAdapter

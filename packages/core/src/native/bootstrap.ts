@@ -1,5 +1,3 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
 import { startNetworkBusAdapter } from '@repo/core/adapters/NetworkBusAdapter';
 // Adapters
 import { AsyncStorageAdapter } from '@repo/core/adapters/native/AsyncStorageAdapter';
@@ -16,10 +14,11 @@ import { networkManager } from '@repo/core/logic/managers/NetworkManager';
 // Managers
 import { storage } from '@repo/core/logic/managers/StorageManager';
 import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
-
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { Runtime } from '@repo/core/native/runtime';
 import { nativeRuntimeEnvironment, webRuntimeEnvironment } from '@repo/core/native/runtimeAdapter';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'react-native';
 
 let bootstrapPromise: Promise<void> | null = null;
 

@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
+import { z } from 'zod';
 
 export const PrincipalInviteRoleSchema = z.enum([
   'teacher',

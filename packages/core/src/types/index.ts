@@ -3,14 +3,6 @@ import type { DeviceMetadata } from './runtime';
 import type { User } from './User';
 
 export type {
-  Actor,
-  ActorRelationship,
-  ActorType,
-  ContactChannel,
-} from './Actor';
-export type { PaginatedResponse, PaginationParams } from './API';
-export type { Assignment } from './Assignment';
-export type {
   AcademicCycleLeadershipAssignment,
   AcademicCycleLeadershipRole,
   AttendanceSession,
@@ -19,6 +11,14 @@ export type {
   DailyAttendanceStatus,
   GradeClassSubject,
 } from './AcademicLifecycle';
+export type {
+  Actor,
+  ActorRelationship,
+  ActorType,
+  ContactChannel,
+} from './Actor';
+export type { PaginatedResponse, PaginationParams } from './API';
+export type { Assignment } from './Assignment';
 export type {
   AttendanceRecord,
   AttendanceStatus,
@@ -137,8 +137,8 @@ export {
 } from './runtime';
 export type {
   AcademicCycle,
-  EduSchool,
   Announcement,
+  EduSchool,
   Grade as SchoolGradeAlias,
   InviteCode,
   School,

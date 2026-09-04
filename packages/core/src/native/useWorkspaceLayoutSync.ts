@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, useWindowDimensions } from 'react-native';
 import { workspaceLayoutAPI } from '@repo/core/api/workspaceLayout';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-layout.schema';
@@ -27,6 +25,8 @@ import type {
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
 } from '@repo/core/types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -250,7 +250,16 @@ export function useWorkspaceLayoutSync<
     return () => {
       isMounted = false;
     };
-  }, [userId, workspaceId, layoutTarget, storageKey, defaultLayout, surfaces, enableRemoteSync, surfacesHash]);
+  }, [
+    userId,
+    workspaceId,
+    layoutTarget,
+    storageKey,
+    defaultLayout,
+    surfaces,
+    enableRemoteSync,
+    surfacesHash,
+  ]);
 
   useEffect(() => {
     if (!layout || !storageKey || !isHydrated) return;

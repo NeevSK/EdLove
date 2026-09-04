@@ -1,8 +1,8 @@
-import type React from 'react';
-import type { ReactNode } from 'react';
 import { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 import { AuthorityLifecycleProvider } from '@repo/core/providers/AuthorityLifecycleProvider';
 import { AuthProvider } from '@repo/core/providers/AuthProvider';
+import type React from 'react';
+import type { ReactNode } from 'react';
 
 interface GlobalProviderProps {
   children: ReactNode;

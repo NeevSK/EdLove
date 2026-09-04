@@ -1,4 +1,8 @@
-import { type DomainEntry, DomainEntrySchema, type TabDomain } from '@repo/core/logic/registry/domainEntry';
+import {
+  type DomainEntry,
+  DomainEntrySchema,
+  type TabDomain,
+} from '@repo/core/logic/registry/domainEntry';
 import {
   FEATURE_FLAG_MANIFEST,
   validateFeatureFlagManifest,

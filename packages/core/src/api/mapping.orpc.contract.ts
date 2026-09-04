@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { KnowledgeTopologySchema } from '@repo/core/logic/schemas/dashboard.schema';
+import { z } from 'zod';
 
 const mappingTopology = KnowledgeTopologySchema.extend({
   id: z.string(),

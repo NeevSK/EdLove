@@ -5,10 +5,9 @@
  * It manages the connection lifecycle automatically based on the userId.
  */
 
-import { useEffect, useMemo } from 'react';
 import { useNotificationStore } from '@repo/core/store/useNotificationStore';
-
 import type { AppNotification } from '@repo/core/types';
+import { useEffect, useMemo } from 'react';
 
 // Types now provided by @repo/core/types
 

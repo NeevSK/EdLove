@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   TeacherInsightAuditEventSchema,
   TeacherInsightLifecycleEventSchema,
@@ -11,7 +11,7 @@ import {
   TeacherStudentPotentialSchema,
   TeacherStudentPotentialUpsertSchema,
 } from '@repo/core/logic/schemas/teacher-insights.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const teacherInsightAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

@@ -1,4 +1,3 @@
-import { eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '@repo/core/adapters/powersync/database';
 import { cedarPolicies, classrooms, schools } from '@repo/core/adapters/powersync/schema';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
@@ -7,6 +6,7 @@ import { isAnonymousIdentity } from '@repo/core/logic/auth/identityState';
 import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import type { Action, Subject } from '@repo/core/types/authorization';
+import { eq } from 'drizzle-orm';
 
 const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
 

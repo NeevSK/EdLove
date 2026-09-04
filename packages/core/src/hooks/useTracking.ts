@@ -1,10 +1,10 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { identityAPI } from '@repo/core/api/identity';
 import { trackingAPI } from '@repo/core/api/tracking';
-import { trackProductEvent } from '@repo/core/monitoring';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import type { ProductAnalyticsContext } from '@repo/core/logic/ports/productAnalytics.port';
+import { trackProductEvent } from '@repo/core/monitoring';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * Hook for tracking feature discovery and exploration status.

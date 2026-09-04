@@ -141,14 +141,16 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
   });
 
   it('requests account deletion without deleting the account or signing out', async () => {
-    vi.when(authPort.executeRpc).calledWith('request_account_deletion').thenResolve([
-      {
-        status: 'pending_verification',
-        request_id: 'request-1',
-        requested_at: '2026-09-01T00:00:00.000Z',
-        reason: 'fresh_authentication_required',
-      },
-    ]);
+    vi.when(authPort.executeRpc)
+      .calledWith('request_account_deletion')
+      .thenResolve([
+        {
+          status: 'pending_verification',
+          request_id: 'request-1',
+          requested_at: '2026-09-01T00:00:00.000Z',
+          reason: 'fresh_authentication_required',
+        },
+      ]);
 
     const managerWithHooks = new AuthManager(authPort as any, identityPort as any, {
       storage: {

@@ -13,10 +13,11 @@
  *   <Stack>...</Stack>
  * </PowerSyncGate>
  */
-import { type PropsWithChildren } from 'react';
+
 import { getActivePowerSyncDB } from '@repo/core/adapters/powersync/database';
 import { PowerSyncContext } from '@repo/core/adapters/powersync/powersync-react-shim';
 import { useStore } from '@repo/core/store/useStore';
+import { type PropsWithChildren } from 'react';
 
 interface PowerSyncGateProps extends PropsWithChildren {
   /** Override — if false, renders children without PowerSync context. */

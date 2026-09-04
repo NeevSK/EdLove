@@ -1,17 +1,16 @@
-import * as Data from 'effect/Data';
-import * as Duration from 'effect/Duration';
-import * as Effect from 'effect/Effect';
-import { pipe } from 'effect/Function';
-import { strictRetryPolicy } from '@repo/core/utils/effect';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
 import type { Identity } from '@repo/core/api/identity.generated';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { storage } from '@repo/core/lib/storage';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { APIError } from '@repo/core/types/API';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
-import { tryPromise } from '@repo/core/utils/effect';
+import { strictRetryPolicy, tryPromise } from '@repo/core/utils/effect';
+import * as Data from 'effect/Data';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import { pipe } from 'effect/Function';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
 
@@ -42,7 +41,6 @@ registerActiveBondIdResolver(async () => {
 class SupabaseQueryError extends Data.TaggedError('SupabaseQueryError')<{
   readonly message: string;
 }> {}
-
 
 function supabaseCall<T>(
   fn: () => PromiseLike<{ data: T; error: any }>,
@@ -139,20 +137,13 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     let internalId = this.cachedInternalId;
 
     if (!internalId) {
-      internalId = await this.resolveInternalId(
-        'supabaseClient',
-        authUid,
-      );
+      internalId = await this.resolveInternalId('supabaseClient', authUid);
       this.cachedAuthUid = authUid;
 
       if (!internalId) {
         const legacyResult = await runEffect(
           supabaseCall(() =>
-            supabaseClient
-              .from('users')
-              .select('id')
-              .eq('id', authUid)
-              .maybeSingle(),
+            supabaseClient.from('users').select('id').eq('id', authUid).maybeSingle(),
           ).pipe(Effect.optionFromOptional),
         );
 
@@ -186,13 +177,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
   async getProfile(userId: string): Promise<User> {
     return runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .select('*')
-          .eq('id', userId)
-          .single(),
-      ),
+      supabaseCall(() => supabaseClient.from('users').select('*').eq('id', userId).single()),
     ) as Promise<User>;
   }
 
@@ -307,11 +292,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     const profile = await runEffect(
       supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .select('is_anonymous')
-          .eq('id', userId)
-          .single(),
+        supabaseClient.from('users').select('is_anonymous').eq('id', userId).single(),
       ).pipe(Effect.map((r: any) => r as { is_anonymous: boolean | null })),
     );
 
@@ -458,12 +439,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     }
 
     await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update(normalizedUpdates)
-          .eq('id', userId),
-      ),
+      supabaseCall(() => supabaseClient.from('users').update(normalizedUpdates).eq('id', userId)),
     );
   }
 
@@ -524,7 +500,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
         );
 
         if (bonds.length === 0) {
-        const profile = yield* tryPromise(() => self.getProfile(userId)).pipe(
+          const profile = yield* tryPromise(() => self.getProfile(userId)).pipe(
             Effect.catchAll(() => Effect.succeed(null)),
           );
 

@@ -121,9 +121,10 @@ describe('sanctuaryFeature', () => {
   });
 
   it('fails closed when Cedar has no decision', () => {
-    expect(
-      sanctuaryFeature({ ...baseCtx, cedarDecision: 'no_decision' }, baseReq),
-    ).toEqual({ reason: 'authz', permitted: false });
+    expect(sanctuaryFeature({ ...baseCtx, cedarDecision: 'no_decision' }, baseReq)).toEqual({
+      reason: 'authz',
+      permitted: false,
+    });
   });
 
   it('does not expose entitlement failure before Cedar authorization', () => {

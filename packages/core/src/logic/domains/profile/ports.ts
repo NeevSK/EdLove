@@ -1,6 +1,6 @@
-import type { UserGrowthState } from '@repo/schema/contracts';
 import type { TemporalScale } from '@repo/core/store';
 import type { SocialLink, User } from '@repo/core/types';
+import type { UserGrowthState } from '@repo/schema/contracts';
 
 export type { UserGrowthState };
 

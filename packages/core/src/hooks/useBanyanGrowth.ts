@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { growth } from '@repo/core/logic';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * useBanyanGrowth
@@ -11,11 +11,11 @@ import { useGrowthStore } from '@repo/core/store/useGrowthStore';
 export function useBanyanGrowth() {
   const { context } = usePermissions();
   const userId = context.userId || null;
-  
+
   const banyanStage = useGrowthStore((state) => state.banyan_stage);
   const peerMentoredCount = useGrowthStore((state) => state.peer_mentored_count);
   const circlesFacilitatedCount = useGrowthStore((state) => state.circles_facilitated_count);
-  
+
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshBanyan = useCallback(async () => {

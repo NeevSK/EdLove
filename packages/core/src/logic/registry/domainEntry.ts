@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
+import { z } from 'zod';
 
 /**
  * DomainEntry — the canonical definition of one domain/tab/surface
