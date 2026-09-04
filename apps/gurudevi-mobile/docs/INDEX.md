@@ -53,6 +53,7 @@ These documents are the current authority for capability inventory, rollout, sta
 7. [Product Analytics Developer Guide](./architecture/product-analytics-guide.md) — practical rules for adding product events.
 8. [Effect-TS Coding Guide](./Core/effect-ts-coding-guide.md) — Effect patterns and anti-patterns.
 9. [Product Analytics Future Work](./architecture/product-analytics-future-work.md) — remaining privacy, event-quality, dashboard, and offline-verification work.
+10. [Effect-TS Architecture & Migration Guide (Repo-Wide)](../../../docs/architecture/effect-ts-architecture.md) — canonical source of truth for Effect-TS resilience, retry policies, and v4 migration readiness.
 
 ---
 

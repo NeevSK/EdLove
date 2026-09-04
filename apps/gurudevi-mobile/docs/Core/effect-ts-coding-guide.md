@@ -41,6 +41,8 @@ This document is the **living reference** for Effect-TS usage across the Polymat
 - Integration with React (hooks), Zustand, and TanStack Query
 - Testing strategies
 
+> **Repo-Wide Single Source of Truth**: For authoritative architectural boundaries, the unified retry policy system, lazy runtime singleton patterns, and the comprehensive Effect v4 migration readiness matrix, see [`docs/architecture/effect-ts-architecture.md`](../../../docs/architecture/effect-ts-architecture.md).
+
 **Not covered:** General TypeScript practices, React patterns, Zustand usage — see the respective guides.
 
 ---
@@ -243,8 +245,10 @@ import { Data, Effect, pipe } from 'effect';
 // For React hooks
 import { Effect, Fiber, Runtime } from 'effect';
 
-// Shared utilities (prefer before writing custom helpers)
-import { fireAndForget, fromSupabase, runEffect, defaultRetryPolicy } from '~/utils/effect';
+// Shared utilities and canonical retry schedules
+import { fireAndForget, fromSupabase, runEffect, defaultRetryPolicy } from '@repo/core/utils/effect';
+// Or canonical schedules directly:
+import { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/effect/schedules';
 ```
 
 ### Future (v4 — when stable)
@@ -783,12 +787,12 @@ const exit = Effect.runSyncExit(myEffect);
 if (exit._tag === 'Success') { /* handle success */ }
 ```
 
-### 8.5 Shared Utilities (`packages/core/src/utils/effect.ts`)
+### 8.5 Shared Utilities & Canonical Schedules (`@repo/core/utils/effect`, `@repo/core/effect/schedules`)
 
-All Effect adoptions should import from the shared utilities before writing custom helpers:
+All Effect adoptions must import from the shared utilities and canonical schedules before writing custom helpers. **Never redeclare retry policies locally.**
 
 ```typescript
-import { fireAndForget, runEffect, fromSupabase, defaultRetryPolicy } from '~/utils/effect';
+import { fireAndForget, runEffect, fromSupabase, defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/utils/effect';
 ```
 
 **`fireAndForget(fn, label)`** — run a promise in a forked fiber, errors logged not swallowed.
@@ -827,12 +831,12 @@ const user = yield* fromSupabase(
 );
 ```
 
-**`defaultRetryPolicy`** / **`strictRetryPolicy`** / **`retryPolicy(n)`** — reusable schedules.
+**`defaultRetryPolicy`** / **`strictRetryPolicy`** / **`retryPolicy(n)`** — canonical schedules defined in `packages/core/src/effect/Schedules.ts`.
 
 ```typescript
-Effect.retry(defaultRetryPolicy)   // 4 attempts (200ms, 400ms, 800ms, 1600ms)
-Effect.retry(strictRetryPolicy)    // 3 attempts
-Effect.retry(retryPolicy(5))       // 6 attempts
+Effect.retry(defaultRetryPolicy)   // 4 attempts (200ms exponential, recurs(3))
+Effect.retry(strictRetryPolicy)    // 3 attempts (200ms exponential, recurs(2))
+Effect.retry(retryPolicy(5))       // 6 attempts (200ms exponential, recurs(5))
 ```
 
 ### 8.6 Storage Operation Pattern (`readStorage$` / `writeStorage$`)
@@ -972,11 +976,11 @@ Each Effect pattern solves a specific problem but carries costs. These tradeoffs
 
 | Queue type | Persistence | Rationale |
 |---|---|---|
-| **Audit logs** (`deviceAccounts.ts`) | In-memory (`Queue` + fiber) | Best-effort by design. Losing audit entries on crash is the existing behavior (was `console.warn`). Persist only if audits become mandatory (hard-block untrusted devices). |
+| **Audit logs** (`deviceAccounts.ts`) | In-memory (`Queue` + fiber, lazy `getAuditQueue()`) | Best-effort by design. Losing audit entries on crash is the existing behavior (was `console.warn`). Uses lazy initialization (`getAuditQueue()`) to avoid top-level `Effect.runSync` module parse-time execution (v4 owned-runtime ready). Persist only if audits become mandatory. |
 | **Mutation queue** (`useSafeMutation`) | Zustand persist (MMKV) | **Critical for offline-first.** Mutations must survive app restart. Zustand persist is already in place — Effect adoption did not change this. |
 | **Analytics / telemetry** | In-memory or MMKV | If telemetry must survive crash, persist. If best-effort, in-memory is fine and simpler. |
 
-**Rule:** Persist queues when data loss causes incorrect behavior (e.g., a mutation that should go through silently disappears). Don't persist when the operation is advisory and failure is expected (audit, telemetry).
+**Rule:** Persist queues when data loss causes incorrect behavior (e.g., a mutation that should go through silently disappears). Don't persist when the operation is advisory and failure is expected (audit, telemetry). **Never instantiate queues at module top level with `Effect.runSync`** — always use lazy initialization to remain forward-compatible with Effect v4 owned-runtime models.
 
 #### 8.9.3 Effect.all Concurrency: When to Parallelize
 
