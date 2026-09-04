@@ -1,6 +1,6 @@
 {
   "name": "@repo/library",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -168,7 +168,7 @@
     "tailwindcss": "4.3.0",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "@repo/ui": "*",

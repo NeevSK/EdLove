@@ -73,7 +73,7 @@
     "react-native-gesture-handler": "3.0.2",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "@supabase/supabase-js": "*",

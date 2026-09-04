@@ -64,7 +64,7 @@
     "tsx": "^4.23.12",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11",
+    "vitest": "^5.0.0",
     "xlsx": "^0.18.5"
   },
   "_originalScripts": {

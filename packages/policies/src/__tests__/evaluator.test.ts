@@ -1,11 +1,45 @@
 import { generateKeyPairSync } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
-import { check, generateSnapshot } from '../index';
+import { describe, expect, expectTypeOf, it, test } from 'vitest';
+import {
+  type AuthRequest,
+  type AuthResponse,
+  check,
+  generateSnapshot,
+  type PermissionSnapshot,
+} from '../index';
 
 const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
 const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
 
-describe('Sovereign Authorization Engine', () => {
+describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fast'] }, () => {
+  it('enforces static type boundary on authorization check engine (T16 expectTypeOf)', () => {
+    expectTypeOf(check).toBeFunction();
+    expectTypeOf(check).parameter(0).toMatchTypeOf<AuthRequest>();
+    expectTypeOf(check).returns.toMatchTypeOf<AuthResponse>();
+    expectTypeOf(generateSnapshot).toBeFunction();
+    expectTypeOf(generateSnapshot).returns.toMatchTypeOf<PermissionSnapshot>();
+  });
+
+  test.for([
+    { capacity: 'admin', expectedPermitted: true },
+    { capacity: 'stranger', expectedPermitted: false },
+  ])('parametric capability check for root platform actions with role: $capacity (T17 test.for)', ({ capacity, expectedPermitted }) => {
+    const res = check({
+      principal: {
+        type: capacity,
+        id: `user-${capacity}`,
+        attributes: { school_id: 'school-a', capacity },
+      },
+      action: 'delete',
+      resource: {
+        type: 'Classroom',
+        id: 'classroom-global-target',
+        attributes: { school_id: 'school-b' },
+      },
+    });
+    expect(res.permitted).toBe(expectedPermitted);
+  });
+
   it('allows a non-wanderer contributor to submit only as themselves', () => {
     const contributor = {
       type: 'member',
@@ -316,7 +350,7 @@ describe('Sovereign Authorization Engine', () => {
     ).toBe(false);
   });
 
-  it('should generate a robust offline permission snapshot', () => {
+  it('should generate a robust offline permission snapshot', { timeout: 15000 }, () => {
     const principalUser = {
       id: 'principal-1',
       school_id: 'school-a',

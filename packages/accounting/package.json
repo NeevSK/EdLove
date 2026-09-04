@@ -1,6 +1,6 @@
 {
   "name": "@repo/accounting",
-  "version": "0.0.2",
+  "version": "1.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -39,7 +39,7 @@
     "eslint": "^10.9.1",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

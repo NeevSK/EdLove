@@ -1,6 +1,6 @@
 {
   "name": "@repo/classroom",
-  "version": "0.0.2",
+  "version": "1.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -92,7 +92,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "@shopify/react-native-skia": ">=2.6.5",
