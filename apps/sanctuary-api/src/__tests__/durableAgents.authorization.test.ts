@@ -1,6 +1,6 @@
+import { SovereignError } from '@repo/core/types/Errors';
 import { Hono } from 'hono';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SovereignError } from '@repo/core/types/Errors';
 
 const database = vi.hoisted(() => ({ queryDatabaseRows: vi.fn() }));
 const agents = vi.hoisted(() => ({ send: vi.fn() }));
@@ -183,9 +183,7 @@ describe('durable-agent authoritative scope', () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload.runs).toEqual([
-      expect.objectContaining({ runId, status: 'failed', studentId }),
-    ]);
+    expect(payload.runs).toEqual([expect.objectContaining({ runId, status: 'failed', studentId })]);
     expect(payload.runs[0]).not.toHaveProperty('studentName');
     expect(payload.runs[0]).not.toHaveProperty('summaryDraft');
     expect(payload.runs[0]).not.toHaveProperty('evidence');

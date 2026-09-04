@@ -1,9 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  registerActiveBondIdResolver,
-  registerTokenResolver,
-} from '@repo/core/api/clientRuntime';
+import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('shared oRPC client authentication', () => {
   afterEach(() => {

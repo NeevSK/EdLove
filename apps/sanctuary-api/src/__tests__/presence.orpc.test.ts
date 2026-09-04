@@ -70,9 +70,7 @@ describe('presence API', () => {
 
   describe('markSeen', () => {
     it('requires authentication', async () => {
-      await expect(
-        createTestORPCClient().presence.markSeen({ body: {} }),
-      ).rejects.toMatchObject({
+      await expect(createTestORPCClient().presence.markSeen({ body: {} })).rejects.toMatchObject({
         status: 403,
       });
     });

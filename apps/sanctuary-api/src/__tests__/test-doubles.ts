@@ -30,7 +30,11 @@ interface ModelMock<T> {
   findFirst: (args?: FindManyArgs<T>) => Promise<T | null>;
   create: (args: { data: DeepPartial<T> }) => Promise<T>;
   update: (args: { where: WhereClause<T>; data: DeepPartial<T> }) => Promise<T | null>;
-  upsert: (args: { where: WhereClause<T>; create: DeepPartial<T>; update: DeepPartial<T> }) => Promise<T>;
+  upsert: (args: {
+    where: WhereClause<T>;
+    create: DeepPartial<T>;
+    update: DeepPartial<T>;
+  }) => Promise<T>;
   delete: (args: { where: WhereClause<T> }) => Promise<T | null>;
   deleteMany: (args: { where?: WhereClause<T> }) => Promise<{ count: number }>;
   count: (args: { where?: WhereClause<T> }) => Promise<number>;
@@ -162,10 +166,10 @@ interface SanctuaryManifesto {
 
 function createModelMock<T extends { id?: string }>(initialData: T[] = []): ModelMock<T> {
   let data = [...initialData];
-  
-  const generateId = (prefix: string) => 
+
+  const generateId = (prefix: string) =>
     `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-  
+
   const matches = (item: T, where: WhereClause<T>): boolean => {
     return Object.entries(where).every(([key, value]) => {
       if (value === undefined) return true;
@@ -184,14 +188,14 @@ function createModelMock<T extends { id?: string }>(initialData: T[] = []): Mode
 
   const mock: ModelMock<T> = {
     findUnique: async ({ where }) => {
-      const results = data.filter(d => matches(d, where));
+      const results = data.filter((d) => matches(d, where));
       return results[0] || null;
     },
-    
+
     findMany: async (args: FindManyArgs<T> = {}) => {
       const { where, orderBy, take, select } = args;
-      let results = data.filter(d => matches(d, where || {}));
-      
+      let results = data.filter((d) => matches(d, where || {}));
+
       if (orderBy) {
         const [field, direction] = Object.entries(orderBy)[0];
         results = [...results].sort((a, b) => {
@@ -200,11 +204,11 @@ function createModelMock<T extends { id?: string }>(initialData: T[] = []): Mode
           return direction === 'desc' ? bVal - aVal : aVal - bVal;
         });
       }
-      
+
       if (take) results = results.slice(0, take);
-      
+
       if (select) {
-        results = results.map(item => {
+        results = results.map((item) => {
           const selected: any = {};
           for (const key of Object.keys(select)) {
             selected[key] = item[key as keyof T];
@@ -212,18 +216,18 @@ function createModelMock<T extends { id?: string }>(initialData: T[] = []): Mode
           return selected;
         });
       }
-      
+
       return results;
     },
-    
+
     findFirst: async (args: FindManyArgs<T> = {}) => {
       const results = await mock.findMany({ ...args, take: 1 });
       return results[0] || null;
     },
-    
+
     create: async ({ data: input }): Promise<T> => {
-      const newRecord = { 
-        ...input, 
+      const newRecord = {
+        ...input,
         id: (input as any).id || `mock-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         created_at: (input as any).created_at || new Date(),
         updated_at: (input as any).updated_at || new Date(),
@@ -231,14 +235,14 @@ function createModelMock<T extends { id?: string }>(initialData: T[] = []): Mode
       data.unshift(newRecord as any);
       return newRecord as unknown as T;
     },
-    
+
     update: async ({ where, data: input }) => {
-      const index = data.findIndex(d => matches(d, where));
+      const index = data.findIndex((d) => matches(d, where));
       if (index < 0) return null;
       data[index] = { ...data[index], ...input, updated_at: new Date() };
       return data[index];
     },
-    
+
     upsert: async ({ where, create, update }): Promise<T> => {
       const existing = await mock.findUnique({ where });
       if (existing) {
@@ -247,24 +251,24 @@ function createModelMock<T extends { id?: string }>(initialData: T[] = []): Mode
       }
       return mock.create({ data: create });
     },
-    
+
     delete: async ({ where }) => {
-      const index = data.findIndex(d => matches(d, where));
+      const index = data.findIndex((d) => matches(d, where));
       if (index < 0) return null;
       return data.splice(index, 1)[0];
     },
-    
+
     deleteMany: async ({ where }) => {
       const initialLength = data.length;
-      data = data.filter(d => !matches(d, where || {}));
+      data = data.filter((d) => !matches(d, where || {}));
       return { count: initialLength - data.length };
     },
-    
+
     count: async ({ where }) => {
       return (await mock.findMany({ where })).length;
     },
   };
-  
+
   return mock;
 }
 
@@ -293,7 +297,9 @@ interface TestDatabaseContext {
 // Test Database Factory
 // -----------------------------------------------------------------------------
 
-function createTestDatabase(overrides: Partial<Record<keyof TestDatabaseContext, any>> = {}): TestDatabaseContext {
+function createTestDatabase(
+  overrides: Partial<Record<keyof TestDatabaseContext, any>> = {},
+): TestDatabaseContext {
   const db: TestDatabaseContext = {
     moodLog: createModelMock(),
     fireJournalEntry: createModelMock(),
@@ -307,11 +313,11 @@ function createTestDatabase(overrides: Partial<Record<keyof TestDatabaseContext,
     classroomNote: createModelMock(),
     bond: createModelMock(),
     sanctuaryManifesto: createModelMock(),
-    
+
     $queryRaw: async () => [],
     $transaction: async (callback) => callback(db),
   };
-  
+
   Object.assign(db, overrides);
   return db;
 }
@@ -324,16 +330,16 @@ class TestContextBuilder {
   private db: TestDatabaseContext;
   private activeBond: any = null;
   private zenStackAvailable = true;
-  
+
   constructor() {
     this.db = createTestDatabase();
   }
-  
+
   withZenStackDb(available: boolean): this {
     this.zenStackAvailable = available;
     return this;
   }
-  
+
   withActiveBond(bond: any): this {
     this.activeBond = {
       id: 'bond-test',
@@ -346,111 +352,125 @@ class TestContextBuilder {
     };
     return this;
   }
-  
+
   withUser(user: any): this {
-    this.db.user = createModelMock([{
-      id: 'test-user-id',
-      email: 'test@example.com',
-      full_name: 'Test User',
-      onboarding_completed: true,
-      onboarding_state: 'COMPLETED',
-      ...user,
-    }]);
+    this.db.user = createModelMock([
+      {
+        id: 'test-user-id',
+        email: 'test@example.com',
+        full_name: 'Test User',
+        onboarding_completed: true,
+        onboarding_state: 'COMPLETED',
+        ...user,
+      },
+    ]);
     return this;
   }
-  
+
   withUsers(users: any[]): this {
-    this.db.user = createModelMock(users.map(u => ({
-      id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      email: 'test@example.com',
-      full_name: 'Test User',
-      onboarding_completed: true,
-      onboarding_state: 'COMPLETED',
-      ...u,
-    })));
+    this.db.user = createModelMock(
+      users.map((u) => ({
+        id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        email: 'test@example.com',
+        full_name: 'Test User',
+        onboarding_completed: true,
+        onboarding_state: 'COMPLETED',
+        ...u,
+      })),
+    );
     return this;
   }
-  
+
   withCollectionNodeEvents(events: any[]): this {
-    this.db.collectionNodeEvent = createModelMock(events.map(e => ({
-      id: `cne-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      collection_id: 'test-collection',
-      node_id: 'test-node',
-      event_type: 'added',
-      position: 0,
-      occurred_at: new Date(),
-      actor_id: null,
-      ...e,
-    })));
+    this.db.collectionNodeEvent = createModelMock(
+      events.map((e) => ({
+        id: `cne-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        collection_id: 'test-collection',
+        node_id: 'test-node',
+        event_type: 'added',
+        position: 0,
+        occurred_at: new Date(),
+        actor_id: null,
+        ...e,
+      })),
+    );
     return this;
   }
-  
+
   withUsersList(users: any[]): this {
-    this.db.user = createModelMock(users.map(u => ({
-      id: u.id || `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      email: 'test@example.com',
-      full_name: 'Test User',
-      onboarding_completed: true,
-      onboarding_state: 'COMPLETED',
-      ...u,
-    })));
+    this.db.user = createModelMock(
+      users.map((u) => ({
+        id: u.id || `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        email: 'test@example.com',
+        full_name: 'Test User',
+        onboarding_completed: true,
+        onboarding_state: 'COMPLETED',
+        ...u,
+      })),
+    );
     return this;
   }
-  
+
   withUserRewards(rewards: any): this {
-    this.db.userRewards = createModelMock([{
-      id: 'rewards-1',
-      user_id: 'test-user-id',
-      points: 0,
-      badges: [],
-      created_at: new Date(),
-      updated_at: new Date(),
-      ...rewards,
-    }]);
+    this.db.userRewards = createModelMock([
+      {
+        id: 'rewards-1',
+        user_id: 'test-user-id',
+        points: 0,
+        badges: [],
+        created_at: new Date(),
+        updated_at: new Date(),
+        ...rewards,
+      },
+    ]);
     return this;
   }
-  
+
   withUserRewardsVersions(versions: any[]): this {
-    this.db.userRewardsVersions = createModelMock(versions.map(v => ({
-      id: `vr-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      user_id: 'test-user-id',
-      operation: 'test',
-      recorded_at: new Date(),
-      recorded_by: 'test-user-id',
-      snapshot: {},
-      ...v,
-    })));
+    this.db.userRewardsVersions = createModelMock(
+      versions.map((v) => ({
+        id: `vr-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        user_id: 'test-user-id',
+        operation: 'test',
+        recorded_at: new Date(),
+        recorded_by: 'test-user-id',
+        snapshot: {},
+        ...v,
+      })),
+    );
     return this;
   }
-  
+
   withWhisperedMoments(moments: any[]): this {
-    this.db.whisperedMoment = createModelMock(moments.map(m => ({
-      id: `wm-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      user_id: 'test-user-id',
-      key: 'test',
-      name: 'Test Moment',
-      description: 'Test description',
-      stage: 'test',
-      created_at: new Date(),
-      ...m,
-    })));
+    this.db.whisperedMoment = createModelMock(
+      moments.map((m) => ({
+        id: `wm-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        user_id: 'test-user-id',
+        key: 'test',
+        name: 'Test Moment',
+        description: 'Test description',
+        stage: 'test',
+        created_at: new Date(),
+        ...m,
+      })),
+    );
     return this;
   }
-  
+
   withFeatureUsage(features: string[]): this {
     // Mock queryDatabaseRows for feature_usage_log queries
     // This would need to be implemented in the queryDatabaseRows mock
     // For now, we'll just note it
     return this;
   }
-  
+
   build(): any {
     if (this.activeBond) {
       this.db.bond = createModelMock([this.activeBond]);
     }
     return this.db;
   }
-  
+
   getDatabase() {
     return this.db;
   }
@@ -474,13 +494,13 @@ function createTestORPCClient(headers: Record<string, string> = {}) {
   const { createORPCClient } = require('@orpc/client');
   const { RPCLink } = require('@orpc/client/fetch');
   const app = getApp();
-  
+
   const link = new RPCLink({
     url: 'http://sanctuary.test/api',
     headers,
     fetch: async (request: Request, init: RequestInit) => app.fetch(new Request(request, init)),
   });
-  
+
   return createORPCClient(link);
 }
 
@@ -498,7 +518,7 @@ export function getTestDatabase() {
 }
 
 export function resetTestDatabase(builder?: (b: any) => any): any {
-  const builderFn = builder || (b => b);
+  const builderFn = builder || ((b) => b);
   _globalTestDb = builderFn(new TestContextBuilder()).build();
   return _globalTestDb;
 }
@@ -507,18 +527,5 @@ export function resetTestDatabase(builder?: (b: any) => any): any {
 // Export all utilities
 // -----------------------------------------------------------------------------
 
-export {
-  createModelMock,
-  createTestDatabase,
-  TestContextBuilder,
-  createTestORPCClient,
-};
-
-export type {
-  TestDatabaseContext,
-  ModelMock,
-  WhereClause,
-  FindManyArgs,
-};
-
-export { vi };
+export type { FindManyArgs, ModelMock, TestDatabaseContext, WhereClause };
+export { createModelMock, createTestDatabase, createTestORPCClient, TestContextBuilder, vi };

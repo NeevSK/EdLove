@@ -313,6 +313,16 @@
       "import": "./src/logic/utils/*.ts",
       "default": "./src/logic/utils/*.ts"
     },
+    "./effect": {
+      "types": "./src/effect/index.ts",
+      "import": "./src/effect/index.ts",
+      "default": "./src/effect/index.ts"
+    },
+    "./effect/*": {
+      "types": "./src/effect/*.ts",
+      "import": "./src/effect/*.ts",
+      "default": "./src/effect/*.ts"
+    },
     "./package.json": "./package.json",
     "./*": {
       "types": "./src/*.ts",

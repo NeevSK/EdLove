@@ -1,6 +1,6 @@
 import './setup';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { app } from '../core/app.js';
 import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';

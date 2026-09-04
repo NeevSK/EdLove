@@ -70,7 +70,7 @@ export function createAdRewardRoutes(getEnv: Environment) {
         // 1. Check idempotency / Replay guard
         const existing = await queryDatabaseRows<{ id: string }>(
           `SELECT id FROM ad_reward_transactions WHERE transaction_id = $1 LIMIT 1`,
-          [transactionId]
+          [transactionId],
         );
 
         if (existing.length > 0) {
@@ -81,7 +81,7 @@ export function createAdRewardRoutes(getEnv: Environment) {
         const dailyCheck = await queryDatabaseRows<{ count: string }>(
           `SELECT COUNT(*) as count FROM ad_reward_transactions 
            WHERE user_id = $1 AND created_at > NOW() - INTERVAL '24 hours'`,
-          [userId]
+          [userId],
         );
 
         const recentCount = parseInt(dailyCheck[0]?.count || '0', 10);
@@ -90,7 +90,14 @@ export function createAdRewardRoutes(getEnv: Environment) {
           await executeDatabaseCommand(
             `INSERT INTO ad_reward_transactions (id, user_id, provider, transaction_id, reward_amount, verified, metadata, created_at)
              VALUES (gen_random_uuid(), $1, 'admob', $2, 0, false, $3, NOW())`,
-            [userId, transactionId, JSON.stringify({ reason: 'DAILY_CAP_EXCEEDED', query: Object.fromEntries(params.entries()) })]
+            [
+              userId,
+              transactionId,
+              JSON.stringify({
+                reason: 'DAILY_CAP_EXCEEDED',
+                query: Object.fromEntries(params.entries()),
+              }),
+            ],
           );
           return c.text('OK (Cap Reached)', 200);
         }
@@ -105,7 +112,7 @@ export function createAdRewardRoutes(getEnv: Environment) {
             rewardAmount,
             signature || null,
             JSON.stringify({ key_id: keyId, reward_item: rewardItem }),
-          ]
+          ],
         );
 
         await executeDatabaseCommand(
@@ -116,10 +123,13 @@ export function createAdRewardRoutes(getEnv: Environment) {
              total_earned = user_energy_balances.total_earned + $2,
              daily_count = user_energy_balances.daily_count + 1,
              updated_at = NOW()`,
-          [userId, rewardAmount]
+          [userId, rewardAmount],
         );
       } catch (dbErr) {
-        console.warn('[AdRewards] SSV DB query skipped (local dev fallback):', (dbErr as Error).message);
+        console.warn(
+          '[AdRewards] SSV DB query skipped (local dev fallback):',
+          (dbErr as Error).message,
+        );
       }
 
       return c.text('OK', 200);
@@ -154,7 +164,7 @@ export function createAdRewardRoutes(getEnv: Environment) {
           daily_count: number;
         }>(
           `SELECT balance, total_earned, total_spent, daily_count FROM user_energy_balances WHERE user_id = $1 LIMIT 1`,
-          [userId]
+          [userId],
         );
         if (rows[0]) data = rows[0];
       } catch (dbErr) {

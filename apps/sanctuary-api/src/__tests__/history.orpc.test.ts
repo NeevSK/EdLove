@@ -8,16 +8,14 @@ vi.mock('@repo/database/client', () => ({
   createZenStackDb: () => {
     // Lazy import to avoid circular dependency
     const { TestContextBuilder } = require('./test-doubles');
-    const builder = new TestContextBuilder()
-      .withZenStackDb(true)
-      .withActiveBond({
-        id: 'bond-history',
-        user_id: '123e4567-e89b-12d3-a456-426614174000',
-        entity_id: '123e4567-e89b-12d3-a456-426614174002',
-        entity_type: 'SCHOOL',
-        capacity: 'teacher',
-        status: 'active',
-      });
+    const builder = new TestContextBuilder().withZenStackDb(true).withActiveBond({
+      id: 'bond-history',
+      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      entity_id: '123e4567-e89b-12d3-a456-426614174002',
+      entity_type: 'SCHOOL',
+      capacity: 'teacher',
+      status: 'active',
+    });
     return builder.build();
   },
 }));
@@ -31,8 +29,7 @@ vi.mock('@repo/database', () => ({
 
 // Now import test utilities after mocks are registered
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TestContextBuilder, resetTestDatabase } from './test-doubles';
-import { createTestORPCClient } from './test-doubles';
+import { createTestORPCClient, resetTestDatabase, TestContextBuilder } from './test-doubles';
 
 describe('history API', () => {
   const userId = '123e4567-e89b-12d3-a456-426614174000';
@@ -41,7 +38,7 @@ describe('history API', () => {
 
   beforeEach(() => {
     // Reset test database with a fresh builder for each test
-    resetTestDatabase(builder => 
+    resetTestDatabase((builder) =>
       builder
         .withZenStackDb(true)
         .withActiveBond({
@@ -52,9 +49,7 @@ describe('history API', () => {
           capacity: 'teacher',
           status: 'active',
         })
-        .withUsersList([
-          { id: actorId, full_name: 'Test Actor' },
-        ])
+        .withUsersList([{ id: actorId, full_name: 'Test Actor' }]),
     );
   });
 
@@ -66,9 +61,11 @@ describe('history API', () => {
     });
 
     it('returns empty array when no events exist', async () => {
-      resetTestDatabase(builder => builder.withCollectionNodeEvents([]));
-      
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCollectionMembershipTimeline({
+      resetTestDatabase((builder) => builder.withCollectionNodeEvents([]));
+
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCollectionMembershipTimeline({
         collectionId: '123e4567-e89b-12d3-a456-426614174003',
       });
 
@@ -76,24 +73,25 @@ describe('history API', () => {
     });
 
     it('returns timeline events with actor info', async () => {
-      resetTestDatabase(builder => builder
-        .withCollectionNodeEvents([
-          {
-            id: 'event-1',
-            collection_id: '123e4567-e89b-12d3-a456-426614174003',
-            node_id: '123e4567-e89b-12d3-a456-426614174004',
-            event_type: 'added',
-            position: 0,
-            occurred_at: '2026-08-14T10:00:00.000Z',
-            actor_id: actorId,
-          },
-        ])
-        .withUsersList([
-          { id: actorId, full_name: 'Test Actor' },
-        ])
+      resetTestDatabase((builder) =>
+        builder
+          .withCollectionNodeEvents([
+            {
+              id: 'event-1',
+              collection_id: '123e4567-e89b-12d3-a456-426614174003',
+              node_id: '123e4567-e89b-12d3-a456-426614174004',
+              event_type: 'added',
+              position: 0,
+              occurred_at: '2026-08-14T10:00:00.000Z',
+              actor_id: actorId,
+            },
+          ])
+          .withUsersList([{ id: actorId, full_name: 'Test Actor' }]),
       );
 
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCollectionMembershipTimeline({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCollectionMembershipTimeline({
         collectionId: '123e4567-e89b-12d3-a456-426614174003',
       });
 
@@ -109,22 +107,25 @@ describe('history API', () => {
     });
 
     it('returns timeline events with null actor when actor not found', async () => {
-      resetTestDatabase(builder => builder
-        .withCollectionNodeEvents([
-          {
-            id: 'event-1',
-            collection_id: '123e4567-e89b-12d3-a456-426614174003',
-            node_id: '123e4567-e89b-12d3-a456-426614174004',
-            event_type: 'added',
-            position: 0,
-            occurred_at: '2026-08-14T10:00:00.000Z',
-            actor_id: 'unknown-actor',
-          },
-        ])
-        .withUsersList([])
+      resetTestDatabase((builder) =>
+        builder
+          .withCollectionNodeEvents([
+            {
+              id: 'event-1',
+              collection_id: '123e4567-e89b-12d3-a456-426614174003',
+              node_id: '123e4567-e89b-12d3-a456-426614174004',
+              event_type: 'added',
+              position: 0,
+              occurred_at: '2026-08-14T10:00:00.000Z',
+              actor_id: 'unknown-actor',
+            },
+          ])
+          .withUsersList([]),
       );
 
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCollectionMembershipTimeline({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCollectionMembershipTimeline({
         collectionId: '123e4567-e89b-12d3-a456-426614174003',
       });
 
@@ -134,9 +135,11 @@ describe('history API', () => {
 
   describe('getCollectionMembershipAsOf', () => {
     it('returns empty array when no events exist', async () => {
-      resetTestDatabase(builder => builder.withCollectionNodeEvents([]));
+      resetTestDatabase((builder) => builder.withCollectionNodeEvents([]));
 
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCollectionMembershipAsOf({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCollectionMembershipAsOf({
         collectionId: '123e4567-e89b-12d3-a456-426614174003',
         asOf: '2026-08-14T10:00:00.000Z',
       });
@@ -145,24 +148,28 @@ describe('history API', () => {
     });
 
     it('returns current members as of given date', async () => {
-      resetTestDatabase(builder => builder.withCollectionNodeEvents([
-        {
-          id: 'event-1',
-          node_id: '123e4567-e89b-12d3-a456-426614174004',
-          event_type: 'added',
-          position: 0,
-          occurred_at: '2026-08-14T09:00:00.000Z',
-        },
-        {
-          id: 'event-2',
-          node_id: '123e4567-e89b-12d3-a456-426614174004',
-          event_type: 'removed',
-          position: 0,
-          occurred_at: '2026-08-14T11:00:00.000Z',
-        },
-      ]));
+      resetTestDatabase((builder) =>
+        builder.withCollectionNodeEvents([
+          {
+            id: 'event-1',
+            node_id: '123e4567-e89b-12d3-a456-426614174004',
+            event_type: 'added',
+            position: 0,
+            occurred_at: '2026-08-14T09:00:00.000Z',
+          },
+          {
+            id: 'event-2',
+            node_id: '123e4567-e89b-12d3-a456-426614174004',
+            event_type: 'removed',
+            position: 0,
+            occurred_at: '2026-08-14T11:00:00.000Z',
+          },
+        ]),
+      );
 
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCollectionMembershipAsOf({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCollectionMembershipAsOf({
         collectionId: '123e4567-e89b-12d3-a456-426614174003',
         asOf: '2026-08-14T10:00:00.000Z',
       });
@@ -175,7 +182,9 @@ describe('history API', () => {
 
   describe('getLibraryEntityHistory', () => {
     it('returns empty array when no version history exists', async () => {
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getLibraryEntityHistory({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getLibraryEntityHistory({
         entityType: 'collection',
         entityId: '123e4567-e89b-12d3-a456-426614174005',
       });
@@ -186,7 +195,9 @@ describe('history API', () => {
     it('returns version history for public entity', async () => {
       // This test would need queryDatabaseRows mocking for the raw SQL query
       // For now, we test the empty case and leave the full integration for integration tests
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getLibraryEntityHistory({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getLibraryEntityHistory({
         entityType: 'collection',
         entityId: '123e4567-e89b-12d3-a456-426614174005',
       });
@@ -197,7 +208,9 @@ describe('history API', () => {
 
   describe('getCommunityEntityHistory', () => {
     it('returns empty array when no version history exists', async () => {
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCommunityEntityHistory({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCommunityEntityHistory({
         entityType: 'community_post',
         entityId: '123e4567-e89b-12d3-a456-426614174006',
       });
@@ -206,7 +219,9 @@ describe('history API', () => {
     });
 
     it('returns version history for community entity', async () => {
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getCommunityEntityHistory({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getCommunityEntityHistory({
         entityType: 'community_post',
         entityId: '123e4567-e89b-12d3-a456-426614174006',
       });
@@ -217,7 +232,9 @@ describe('history API', () => {
 
   describe('getClassroomNoteHistory', () => {
     it('returns empty array when note not found', async () => {
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getClassroomNoteHistory({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getClassroomNoteHistory({
         recordId: '123e4567-e89b-12d3-a456-426614174007',
       });
 
@@ -227,7 +244,9 @@ describe('history API', () => {
     it('returns audit log for classroom note', async () => {
       // This test would need queryDatabaseRows mocking for the raw SQL query
       // For now, we test the empty case and leave the full integration for integration tests
-      const response = await createTestORPCClient({ Authorization: `Bearer ${userId}` }).history.getClassroomNoteHistory({
+      const response = await createTestORPCClient({
+        Authorization: `Bearer ${userId}`,
+      }).history.getClassroomNoteHistory({
         recordId: '123e4567-e89b-12d3-a456-426614174007',
       });
 

@@ -1,7 +1,7 @@
 import './setup';
+import { guardianAssessmentContract } from '@repo/core/api/guardian-assessment.contract';
 import { describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
-import { guardianAssessmentContract } from '@repo/core/api/guardian-assessment.contract';
 
 const studentId = '22222222-2222-4222-8222-222222222222';
 
@@ -17,8 +17,9 @@ describe('Sanctuary API: guardian published assessment summary', () => {
 
   it('rejects invalid pagination through the declared contract schema', () => {
     expect(
-      guardianAssessmentContract.getPublishedAssessmentSummary.request.query.safeParse({ limit: 51 })
-        .success,
+      guardianAssessmentContract.getPublishedAssessmentSummary.request.query.safeParse({
+        limit: 51,
+      }).success,
     ).toBe(false);
   });
 
