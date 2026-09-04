@@ -9,6 +9,7 @@ export { redeemPendingQRAction, useQRDeepLink } from '@repo/scanner-kit/hooks/us
 export { default as OCRScanner } from '@repo/scanner-kit/OCRScanner';
 // OCR adapter pipeline  providers, parsers, pipeline
 export * from '@repo/scanner-kit/ocr';
+export * from '@repo/scanner-kit/adapters';
 export { default as QRShareButton } from '@repo/scanner-kit/qr/QRShareButton';
 export { default as ScannerModal } from '@repo/scanner-kit/ScannerModal';
 export { default as QRHandlerScreen } from '@repo/scanner-kit/screens/QRHandlerScreen';

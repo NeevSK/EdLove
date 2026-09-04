@@ -25,10 +25,10 @@
     "@modelcontextprotocol/core": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
     "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
-    "@swmansion/argent": "^0.20.0",
+    "@swmansion/argent": "^0.23.0",
     "agent-device": "^0.20.10",
     "dotenv": "^17.4.2",
-    "zod": "4.4.3"
+    "zod": "4.5.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
@@ -38,7 +38,7 @@
     "mcp-remote": "^0.1.49",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "_originalScripts": {
     "build": "tsc",

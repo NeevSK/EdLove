@@ -351,4 +351,95 @@ export class DiscoveryService {
       return toText(`Jina Reader failed: ${e.message}`, true);
     }
   }
+
+  handleParsePdf(args: { target: string; maxPages?: number; extractTables?: boolean }) {
+    const rawTarget = args.target;
+    if (!rawTarget) {
+      return toText('Missing required argument: "target" (path to PDF file).', true);
+    }
+
+    const resolvedTarget = normalizeTarget(rawTarget);
+    if (!fs.existsSync(resolvedTarget)) {
+      return toText(`PDF file not found at: ${resolvedTarget}`, true);
+    }
+
+    const maxPages = args.maxPages ?? 300;
+    const extractTables = args.extractTables !== false;
+
+    console.error(`Parsing PDF: ${resolvedTarget} (maxPages: ${maxPages}, tables: ${extractTables})`);
+
+    const pythonScript = `
+import sys
+import json
+import pdfplumber
+
+target_path = sys.argv[1]
+max_pages = int(sys.argv[2])
+extract_tables = sys.argv[3].lower() == 'true'
+
+try:
+    with pdfplumber.open(target_path) as pdf:
+        total_pages = len(pdf.pages)
+        # Dynamically only process up to what actually exists in the document
+        pages_to_process = min(total_pages, max_pages) if max_pages > 0 else total_pages
+        output_sections = []
+        
+        output_sections.append(f"# PDF Extraction: {target_path}\\n")
+        output_sections.append(f"> **Total Pages in Document:** {total_pages} | **Processed Pages:** {pages_to_process}\\n")
+        
+        for i in range(pages_to_process):
+            page = pdf.pages[i]
+            page_num = i + 1
+            output_sections.append(f"## Page {page_num} of {total_pages}\\n")
+            
+            text = (page.extract_text() or '').strip()
+            if text:
+                output_sections.append(text + "\\n")
+            else:
+                output_sections.append("*(No extractable text on this page)*\\n")
+                
+            if extract_tables:
+                tables = page.extract_tables()
+                if tables:
+                    for t_idx, table in enumerate(tables):
+                        output_sections.append(f"### Table {t_idx + 1} (Page {page_num})\\n")
+                        table_rows = []
+                        for row in table:
+                            clean_row = [str(c or '').replace('|', '\\\\|').replace('\\n', ' ') for c in row]
+                            table_rows.append("| " + " | ".join(clean_row) + " |")
+                        if len(table_rows) > 0:
+                            header = table_rows[0]
+                            col_count = header.count('|') - 1
+                            separator = "| " + " | ".join(["---"] * col_count) + " |"
+                            table_md = [header, separator] + table_rows[1:]
+                            output_sections.append("\\n".join(table_md) + "\\n")
+                            
+        print("\\n".join(output_sections))
+except Exception as e:
+    print(f"Error parsing PDF: {e}", file=sys.stderr)
+    sys.exit(1)
+`;
+
+    const result = runCommand('python', [
+      '-c',
+      pythonScript,
+      resolvedTarget,
+      String(maxPages),
+      String(extractTables),
+    ]);
+
+    if (!result.ok) {
+      return toText(`PDF extraction failed: ${result.combined}`, true);
+    }
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: result.stdout || 'PDF parsed successfully (no output generated).',
+        },
+      ],
+    };
+  }
 }
+

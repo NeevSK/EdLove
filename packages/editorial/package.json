@@ -24,11 +24,14 @@
     "lint:biome": "biome check src",
     "lint:eslint": "eslint src"
   },
+  "dependencies": {
+    "@intuitui-labs/editorial": "link:C:/projects/packages/editorial"
+  },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
     "@biomejs/biome": "^2.5.11",
+    "@repo/typescript-config": "workspace:*",
     "eslint": "^10.9.1",
     "typescript": "7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   }
 }

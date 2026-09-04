@@ -41,13 +41,14 @@ Access all functionality through these four primary entry points:
 4. **sovereign_guide**: Philosophy, orientation, tool inventory, and integration guidance.
 
 ## 🌟 The Shiny Toolchain
-We integrate industry-leading Rust-based tools for extreme performance:
+We integrate industry-leading Rust-based tools and native extractors for extreme performance:
 - **Ripgrep (grep)**: 100x faster content search.
 - **fd (find)**: Intuitive filename discovery.
 - **bat (view)**: Syntax-highlighted, Git-aware file viewing.
 - **tokei (stats)**: Instant LOC and language analysis.
 - **dust (disk_usage)**: Visual disk usage analysis.
 - **typos (spellcheck)**: Source code spell checking.
+- **PDF Parser (parse_pdf)**: Fast local PDF text & markdown table extraction (supports up to 300 pages dynamically).
 
 ## Quick Access
 - Run \`sovereign_guide(action: 'inventory')\` to see the full list of specialized actions.
@@ -121,6 +122,7 @@ If you want token-efficient orchestration across multiple MCP servers, place Run
 | **native_leaks** | \`find_native_leaks\` | Detects RN primitives in web-only shells. |
 | **metro_debug** | \`debug_metro\` | Debugs Metro ID resolution. |
 | **jina** | [NEW] | Free web-to-markdown ingestion using Jina AI Reader. |
+| **parse_pdf** | [NEW] | Free local PDF parser & markdown table extraction. |
 | **impact** | \`trace_deletion_impact\` | Traces impact of symbol deletion. |
 
 ## Audit Gateway (\`sovereign_audit\`)
@@ -212,6 +214,13 @@ Before changing a "Project Pillar" component (like \`Button\` or \`Tag\`), you c
 - Categorizes impact by domain and generates Mermaid visualizations.
 - **Strategic Scenarios**: Automatically presents multiple remediation paths (Tactical Patch vs. Sovereign Refactor) for systemic changes.
 - *Action*: \`sovereign_discovery(action: 'simulate', params: { symbol: 'ComponentName' })\`
+
+## 📄 Document Intelligence: Free Local PDF Parser
+Added native zero-cost document parsing:
+- Extracts text per page with complete page numbering.
+- Automatically detects and renders tables into Markdown table structures.
+- Default limit: 300 pages (dynamically reads only pages actually present in the document).
+- *Action*: \`sovereign_discovery(action: 'parse_pdf', params: { target: 'path/to/doc.pdf', maxPages: 300 })\`
 
 ## 🛡️ Performance & Hygiene Sentinels
 Respecting the constraints of memory, network, and human cognitive load:

@@ -521,6 +521,7 @@ class PolymathPlatformServer {
       'structural_search',
       'shiny_view',
       'shiny_find',
+      'parse_pdf',
       'audit_monorepo_hygiene',
       'audit_legacy_ui',
       'check_package_types',
@@ -693,6 +694,7 @@ class PolymathPlatformServer {
           'metro_debug',
           'impact',
           'jina',
+          'parse_pdf',
           'spellcheck',
           'disk_usage',
         ]),
@@ -734,6 +736,8 @@ class PolymathPlatformServer {
             return this.discovery.handleTraceDeletionImpact(params as any);
           case 'jina':
             return this.discovery.handleJinaReader(params as any);
+          case 'parse_pdf':
+            return this.discovery.handleParsePdf(params as any);
           case 'spellcheck':
             return this.discovery.handleCheckSpelling(params as any);
           case 'disk_usage':
@@ -1427,6 +1431,25 @@ class PolymathPlatformServer {
           type: 'debt',
           ...args,
         } as any);
+      },
+    );
+
+    this.registerPlatformTool(
+      'parse_pdf',
+      'Extracts structured text and markdown tables from PDF files with page numbering and dynamic page limits.',
+      z.object({
+        target: z.string().describe('Relative or absolute path to the PDF file'),
+        maxPages: z
+          .number()
+          .optional()
+          .describe('Maximum number of pages to parse (default: 300; dynamically bounded by document size)'),
+        extractTables: z
+          .boolean()
+          .optional()
+          .describe('Whether to extract tables as markdown tables (default: true)'),
+      }),
+      async (args) => {
+        return this.discovery.handleParsePdf(args as any);
       },
     );
   }

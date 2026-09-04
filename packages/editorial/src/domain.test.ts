@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it, test } from 'vitest';
 import {
   createLinkedInAdapter,
   createMemoryDispatchLedger,
@@ -7,10 +7,12 @@ import {
   linkedinAdapter,
 } from './distribution';
 import {
+  type AuthorProfile,
   canTransitionSubmission,
   createArticlePublishedEvent,
   createDelivery,
   MemoryDistributionLedger,
+  type SubmissionStatus,
   transitionDelivery,
 } from './domain';
 
@@ -25,7 +27,16 @@ const event = createArticlePublishedEvent({
   policy: { channels: ['linkedin'], excerptOnly: ['linkedin'], utmCampaign: 'journal-launch' },
 });
 
-describe('editorial distribution contracts', () => {
+describe('editorial distribution contracts', { tags: ['editorial', 'pure', 'fast'] }, () => {
+  it('enforces static type boundaries on core editorial models (T16 expectTypeOf)', () => {
+    expectTypeOf<AuthorProfile['displayName']>().toBeString();
+    expectTypeOf<SubmissionStatus>().toEqualTypeOf<
+      'submitted' | 'in_review' | 'rights_review' | 'approved' | 'rejected' | 'withdrawn'
+    >();
+    expectTypeOf(canTransitionSubmission).toBeFunction();
+    expectTypeOf(canTransitionSubmission).parameter(0).toBeString();
+  });
+
   it('creates stable idempotent delivery keys', () => {
     expect(createDelivery(event, 'linkedin', 'edlove-main', event.occurredAt).idempotencyKey).toBe(
       'evt-1:linkedin:edlove-main',
@@ -46,7 +57,9 @@ describe('editorial distribution contracts', () => {
   it('prepares channel-specific links and excerpts', () => {
     const payload = linkedinAdapter.prepare(event, { title: 'Title', text: 'x'.repeat(400) });
     expect(payload.text).toHaveLength(280);
+    expect(payload.url).toMatch(/utm_source=linkedin/);
     expect(payload.url).toContain('utm_source=linkedin');
+    expect(payload.text.trim()).toBe('x'.repeat(280));
   });
 
   it('deduplicates deliveries through the ledger', () => {
@@ -87,11 +100,13 @@ describe('editorial distribution contracts', () => {
     expect(deliveries[0]?.status).toBe('skipped');
   });
 
-  it('keeps submission approval behind review states', () => {
-    expect(canTransitionSubmission('submitted', 'approved')).toBe(false);
-    expect(canTransitionSubmission('in_review', 'rights_review')).toBe(true);
-    expect(canTransitionSubmission('rights_review', 'approved')).toBe(true);
-    expect(canTransitionSubmission('approved', 'in_review')).toBe(false);
+  test.for([
+    { from: 'submitted', to: 'approved', allowed: false },
+    { from: 'in_review', to: 'rights_review', allowed: true },
+    { from: 'rights_review', to: 'approved', allowed: true },
+    { from: 'approved', to: 'in_review', allowed: false },
+  ])('submission lifecycle: from $from -> to $to is allowed=$allowed (T17 test.for capability)', ({ from, to, allowed }) => {
+    expect(canTransitionSubmission(from as any, to as any)).toBe(allowed);
   });
 
   it('publishes a LinkedIn post through the supported Posts API shape', async () => {

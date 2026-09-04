@@ -1,3 +1,1 @@
-export * from './distribution';
-export * from './domain';
-export * from './syndication';
+export * from '@intuitui-labs/editorial';
