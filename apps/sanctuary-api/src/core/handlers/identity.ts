@@ -59,7 +59,20 @@ export const identityRouter = impl.router({
       },
     });
 
-    if (!identity) throw SovereignError.notFound('Identity');
+    if (!identity) {
+      return {
+        id: context.user.id,
+        email: null,
+        name: '',
+        display_name: '',
+        school_id: null,
+        schoolId: null,
+        onboarding_completed: false,
+        onboarding_state: 'ARRIVAL',
+        activeBond: null,
+        availableBonds: [],
+      } as any;
+    }
     return mapToIdentityPayload(identity) as any;
   }),
 
@@ -101,7 +114,17 @@ export const identityRouter = impl.router({
       }),
     ]);
 
-    if (!user) throw SovereignError.notFound('User');
+    if (!user) {
+      return {
+        user_id: input.params.id,
+        school_id: null,
+        profile_completed: false,
+        onboarding_completed: false,
+        onboarding_state: 'ARRIVAL',
+        real_class_count: 0,
+        profile: {} as any,
+      };
+    }
 
     return {
       user_id: input.params.id,

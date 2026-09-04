@@ -30,7 +30,7 @@ const languages: Language[] = [
 
 <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-5xl transition-all duration-300" id="main-header">
   <nav class="bg-white/40 backdrop-blur-md border border-black/5 rounded-full px-8 h-16 flex items-center justify-between shadow-sm">
-      <a href="/" class="flex items-center gap-2 group shrink-0">
+      <a href="/" class="flex items-center gap-2 group shrink-0" aria-label="EdLove Home">
           <span class="text-2xl group-hover:scale-110 transition-transform duration-500 ease-out">🕊️</span>
           <span class="font-heading text-lg font-bold tracking-tight text-[var(--color-midnightInk)]">EdLove</span>
       </a>
@@ -63,69 +63,95 @@ const languages: Language[] = [
         class="lg:hidden text-[var(--color-midnightInk)] p-2 focus-ring hover:bg-black/5 rounded-full transition-colors"
         aria-label="Toggle mobile menu"
         aria-expanded="false"
+        aria-controls="mobile-menu"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="menu-icon">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
         </svg>
       </button>
   </nav>
-
 </header>
 
-<!-- Mobile Menu Overlay -->
+<!-- Mobile Menu Overlay (Scrollable, with Safe-Area insets and zero scroll-lock trapping) -->
 <div 
   id="mobile-menu" 
-  class="lg:hidden fixed inset-0 z-[110] opacity-0 pointer-events-none transition-all duration-500"
+  class="lg:hidden fixed inset-0 z-[110] opacity-0 pointer-events-none transition-opacity duration-300 overflow-y-auto overscroll-contain"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Mobile Navigation"
 >
   <!-- Blurred Backdrop -->
-  <div class="absolute inset-0 bg-white/95 backdrop-blur-xl" id="mobile-menu-backdrop"></div>
+  <div class="fixed inset-0 bg-white/95 backdrop-blur-xl" id="mobile-menu-backdrop"></div>
   
-  <!-- Menu Content -->
-  <div class="relative h-full flex flex-col items-center justify-center p-8">
-      <!-- Close Button (Bottom for Thumb-Friendly) -->
-      <button id="mobile-menu-close" class="absolute bottom-16 p-5 bg-[var(--color-midnightInk)] text-white rounded-full shadow-2xl focus-ring active:scale-95 transition-transform">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      
-      <div class="flex flex-col items-center gap-6 w-full max-w-xs" id="mobile-links">
+  <!-- Menu Content (Fully Scrollable Container) -->
+  <div class="relative min-h-full flex flex-col items-center justify-between p-6 pt-12 pb-[max(2rem,env(safe-area-inset-bottom))]">
+      <div class="w-full max-w-sm flex items-center justify-between pb-6 border-b border-black/5">
+        <a href="/" class="flex items-center gap-2" aria-label="EdLove Home">
+          <span class="text-2xl">🕊️</span>
+          <span class="font-heading text-lg font-bold tracking-tight text-[var(--color-midnightInk)]">EdLove</span>
+        </a>
+        <button id="mobile-menu-close-top" class="p-2.5 rounded-full bg-black/5 text-[var(--color-midnightInk)] hover:bg-black/10 transition-colors focus-ring" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex flex-col items-center gap-5 w-full max-w-sm py-8" id="mobile-links">
           {links.map((link: NavLink) => (
             <a 
               href={link.href} 
-              class="font-heading text-3xl font-bold text-[var(--color-midnightInk)] hover:text-[var(--color-gold)] transition-all active:scale-95"
+              class="font-heading text-2xl font-bold text-[var(--color-midnightInk)] hover:text-[var(--color-gold)] transition-all active:scale-95 text-center py-1"
             >
               {link.name}
             </a>
           ))}
           
-          <div class="h-px w-12 bg-[var(--color-midnightInk)]/10 my-4"></div>
+          <div class="h-px w-16 bg-[var(--color-midnightInk)]/10 my-2"></div>
           
-          <div class="flex flex-wrap justify-center gap-4">
+          <div class="flex flex-wrap justify-center gap-3">
             {languages.map((lang: Language) => (
-                <a href={lang.href} class="px-4 py-2 rounded-full border border-black/5 font-heading text-sm font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] hover:bg-white transition-all">
+                <a href={lang.href} class="px-4 py-2 rounded-full border border-black/5 font-heading text-xs font-bold text-[var(--color-midnightInk)]/60 hover:text-[var(--color-gold)] hover:bg-white transition-all">
                     {lang.label}
                 </a>
             ))}
           </div>
+      </div>
+
+      <!-- Close Button (Bottom for Thumb-Friendly Accessibility) -->
+      <div class="pt-4 pb-2">
+        <button id="mobile-menu-close" class="p-4 bg-[var(--color-midnightInk)] text-white rounded-full shadow-xl focus-ring active:scale-95 transition-transform flex items-center gap-2 px-6" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span class="font-heading text-sm font-bold">Close</span>
+        </button>
       </div>
   </div>
 </div>
 
 <script>
   function setupNavigation() {
+    // Unconditionally release any leftover scroll lock
+    document.body.style.overflow = '';
+
     const menuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const menuBackdrop = document.getElementById('mobile-menu-backdrop');
     const closeButton = document.getElementById('mobile-menu-close');
-    // const header = document.getElementById('main-header');
+    const closeTopButton = document.getElementById('mobile-menu-close-top');
     
     if (!menuButton || !mobileMenu) return;
 
     let isOpen = false;
 
-    function toggleMenu() {
-      isOpen = !isOpen;
+    function toggleMenu(forceClose?: boolean) {
+      if (forceClose === true) {
+        isOpen = false;
+      } else {
+        isOpen = !isOpen;
+      }
+
       menuButton?.setAttribute('aria-expanded', isOpen.toString());
       
       if (isOpen) {
@@ -137,33 +163,50 @@ const languages: Language[] = [
       }
     }
 
-    menuButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleMenu();
+    menuButton.onclick = (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    };
+
+    closeButton?.addEventListener('click', () => toggleMenu(true));
+    closeTopButton?.addEventListener('click', () => toggleMenu(true));
+    menuBackdrop?.addEventListener('click', () => toggleMenu(true));
+
+    // Close menu on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        toggleMenu(true);
+        menuButton?.focus();
+      }
     });
 
-    closeButton?.addEventListener('click', toggleMenu);
-    menuBackdrop?.addEventListener('click', toggleMenu);
+    // Close menu immediately on link click to prevent scroll lock trapping
+    const links = mobileMenu.querySelectorAll('a');
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        toggleMenu(true);
+      });
+    });
 
     // Scroll effect for header
-    window.addEventListener('scroll', () => {
+    const handleScroll = () => {
       const headerEl = document.getElementById('main-header');
       if (window.scrollY > 50) {
         headerEl?.classList.add('bg-[var(--color-warmPaper)]/80', 'backdrop-blur-md', 'shadow-sm');
       } else {
         headerEl?.classList.remove('bg-[var(--color-warmPaper)]/80', 'backdrop-blur-md', 'shadow-sm');
       }
-    });
-
-    // Close menu on link click
-    const links = mobileMenu.querySelectorAll('a');
-    links.forEach(link => {
-        link.addEventListener('click', () => {
-            if (isOpen) toggleMenu();
-        });
-    });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
   }
 
+  // Release scroll-lock before view transition swap
+  document.addEventListener('astro:before-swap', () => {
+    document.body.style.overflow = '';
+  });
+
   // Initialize on page load and on every transition
+  setupNavigation();
   document.addEventListener('astro:page-load', setupNavigation);
 </script>
