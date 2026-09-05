@@ -12,6 +12,7 @@ import {
 } from '@repo/ui/primitives';
 import { cn } from '@repo/ui/utils/classNames';
 import type React from 'react';
+import { Platform } from 'react-native';
 
 const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => (
   <Text className={cn('text-xl font-bold', className)}>{children}</Text>
@@ -85,11 +86,21 @@ export default function SanctuaryModal({
             backgroundColor: '#FDFAF3',
             borderWidth: 1,
             borderColor: 'rgba(42, 35, 24, 0.18)',
-            boxShadow:
-              '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
+            ...(Platform.OS === 'web'
+              ? {
+                  boxShadow:
+                    '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
+                }
+              : {
+                  elevation: 16,
+                  shadowColor: '#14100B',
+                  shadowOffset: { width: 0, height: 12 },
+                  shadowOpacity: 0.35,
+                  shadowRadius: 24,
+                }),
           } as any
         }
-        accessibilityRole="dialog"
+        accessibilityRole={Platform.OS === 'web' ? ('dialog' as any) : undefined}
         accessibilityLabel={title}
       >
         <ModalHeader

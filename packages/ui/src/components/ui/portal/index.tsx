@@ -1,38 +1,85 @@
-import React, { createContext, useContext, useEffect, useId, useState } from 'react';
+import React, { createContext, useContext, useEffect, useId, useMemo, useSyncExternalStore } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-type PortalContextType = {
+type PortalNode = React.ReactNode;
+
+class PortalStore {
+  private portals = new Map<string, PortalNode>();
+  private version = 0;
+  private listeners = new Set<() => void>();
+
+  register(id: string, portal: PortalNode) {
+    if (this.portals.get(id) === portal) return;
+    this.portals.set(id, portal);
+    this.version++;
+    this.notify();
+  }
+
+  unregister(id: string) {
+    if (!this.portals.has(id)) return;
+    this.portals.delete(id);
+    this.version++;
+    this.notify();
+  }
+
+  getVersion = (): number => {
+    return this.version;
+  };
+
+  getPortals = (): Map<string, PortalNode> => {
+    return this.portals;
+  };
+
+  subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  private notify() {
+    this.listeners.forEach((listener) => listener());
+  }
+}
+
+const portalStore = new PortalStore();
+
+const PortalContext = createContext<{
   register: (id: string, children: React.ReactNode) => void;
   unregister: (id: string) => void;
-};
+}>({
+  register: (id, node) => portalStore.register(id, node),
+  unregister: (id) => portalStore.unregister(id),
+});
 
-const PortalContext = createContext<PortalContextType | null>(null);
+const PortalHost = () => {
+  useSyncExternalStore(portalStore.subscribe, portalStore.getVersion);
+  const portals = portalStore.getPortals();
 
-export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
-  const [portals, setPortals] = useState<Record<string, React.ReactNode>>({});
-
-  const register = (id: string, portal: React.ReactNode) => {
-    setPortals((prev) => ({ ...prev, [id]: portal }));
-  };
-
-  const unregister = (id: string) => {
-    setPortals((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
-  };
+  if (Platform.OS === 'web') return null;
 
   return (
-    <PortalContext.Provider value={{ register, unregister }}>
+    <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+      {Array.from(portals.entries()).map(([id, portal]) => (
+        <React.Fragment key={id}>{portal}</React.Fragment>
+      ))}
+    </View>
+  );
+};
+
+export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
+  const contextValue = useMemo(
+    () => ({
+      register: (id: string, node: React.ReactNode) => portalStore.register(id, node),
+      unregister: (id: string) => portalStore.unregister(id),
+    }),
+    [],
+  );
+
+  return (
+    <PortalContext.Provider value={contextValue}>
       {children}
-      {Platform.OS !== 'web' && (
-        <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-          {Object.entries(portals).map(([id, portal]) => (
-            <React.Fragment key={id}>{portal}</React.Fragment>
-          ))}
-        </View>
-      )}
+      <PortalHost />
     </PortalContext.Provider>
   );
 };
@@ -42,40 +89,31 @@ export const Portal = ({ children }: { children: React.ReactNode }) => {
   const id = useId();
   const isWeb = Platform.OS === 'web';
 
-  // Hooks are called unconditionally on both platforms; the platform branch
-  // below only decides rendering, never hook order.
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (isWeb || !context) {
-      return;
-    }
+    if (isWeb) return;
     context.register(id, children);
+  }, [children, context, id, isWeb]);
+
+  useEffect(() => {
+    if (isWeb) return;
     return () => {
       context.unregister(id);
     };
-  }, [children, context, id, isWeb]);
+  }, [context, id, isWeb]);
 
   if (isWeb) {
-    // Avoid SSR hydration mismatch: only mount portal on client side
     if (!mounted) return null;
-
-    // Direct DOM escape on web
     try {
       const ReactDOM = require('react-dom');
       return ReactDOM.createPortal(children, document.body);
     } catch {
-      // Fallback if react-dom is not available
       return <View>{children}</View>;
     }
-  }
-
-  if (!context) {
-    // Fallback if no provider exists
-    return <View>{children}</View>;
   }
 
   return null;

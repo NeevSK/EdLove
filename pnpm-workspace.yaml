@@ -22,7 +22,6 @@ publicHoistPattern:
   - '@shopify/react-native-skia'
   - '@shopify/flash-list'
   - '@sentry/react-native'
-  - '@react-native-ml-kit/*'
 
 dedupePeerDependents: true
 
@@ -133,8 +132,6 @@ overrides:
 
 patchedDependencies:
   '@noble/hashes@1.8.0': 'patches/@noble__hashes@1.8.0.patch'
-  '@react-native-ml-kit/text-recognition': 'patches/@react-native-ml-kit__text-recognition.patch'
-  '@react-native-ml-kit/barcode-scanning': 'patches/@react-native-ml-kit__barcode-scanning.patch'
   color@4.2.3: patches/color@4.2.3.patch
   eslint-plugin-react-native: patches/eslint-plugin-react-native.patch
   react-native-css-interop@0.1.22: patches/react-native-css-interop@0.1.22.patch

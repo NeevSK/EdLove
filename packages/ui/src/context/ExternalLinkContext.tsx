@@ -16,7 +16,7 @@ import {
   type ExternalOpenMethod,
   registerExternalLinkRuntime,
 } from '@repo/ui/utils/linking';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReality } from './EnvironmentContext';
 
 interface PendingRequest {
@@ -139,6 +139,11 @@ const MethodItem = React.memo(({ method, isSelected, onSelect }: MethodItemProps
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
   const { reality } = useReality();
   const { showToast } = useSanctuaryToast();
+  const realityRef = useRef(reality);
+  realityRef.current = reality;
+  const showToastRef = useRef(showToast);
+  showToastRef.current = showToast;
+
   const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<ExternalOpenMethod>('new_tab');
   const [rememberChoice, setRememberChoice] = useState(true);
@@ -152,12 +157,12 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           setPendingRequest({ ...request, resolve });
         });
       },
-      isOnline: () => reality.networkQuality !== 'offline',
-      notifyOffline: (message) => showToast({ message, type: 'error' }),
+      isOnline: () => realityRef.current.networkQuality !== 'offline',
+      notifyOffline: (message) => showToastRef.current({ message, type: 'error' }),
     });
 
     return () => registerExternalLinkRuntime(null);
-  }, [reality.networkQuality, showToast]);
+  }, []);
 
   const methods = useMemo(
     () => (pendingRequest ? (pendingRequest.platform === 'web' ? webMethods : nativeMethods) : []),

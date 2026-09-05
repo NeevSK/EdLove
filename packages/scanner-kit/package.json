@@ -31,8 +31,6 @@
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-ml-kit/barcode-scanning": "*",
-    "@react-native-ml-kit/text-recognition": "*",
     "buffer": "*",
     "expo-brightness": ">=57.0.0",
     "expo-camera": "~57.0.3",

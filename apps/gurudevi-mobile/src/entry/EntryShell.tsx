@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
-import { Box } from '@repo/ui/primitives';
+import { Box, PortalProvider } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { GlobalProvider } from '@repo/core/logic';
 
@@ -37,11 +37,12 @@ export function EntryShell() {
         <SafeAreaProvider>
           <GlobalProvider>
             <EnvironmentProvider>
-              <ToastProvider>
-                <ExternalLinkProvider>
-                  <Box className="flex-1 bg-background-0">
-                    <SessionRouteGate>
-                      <Stack screenOptions={{ headerShown: false }}>
+              <PortalProvider>
+                <ToastProvider>
+                  <ExternalLinkProvider>
+                    <Box className="flex-1 bg-background-0">
+                      <SessionRouteGate>
+                        <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="index" />
                     <Stack.Screen name="welcome" />
                     <Stack.Screen name="auth" />
@@ -49,11 +50,12 @@ export function EntryShell() {
                     <Stack.Screen name="onboarding" />
                     <Stack.Screen name="public-form/[slug]" />
                     <Stack.Screen name="(tabs)" />
-                      </Stack>
-                    </SessionRouteGate>
-                  </Box>
-                </ExternalLinkProvider>
-              </ToastProvider>
+                        </Stack>
+                      </SessionRouteGate>
+                    </Box>
+                  </ExternalLinkProvider>
+                </ToastProvider>
+              </PortalProvider>
             </EnvironmentProvider>
           </GlobalProvider>
         </SafeAreaProvider>

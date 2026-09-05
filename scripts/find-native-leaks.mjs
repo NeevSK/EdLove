@@ -20,8 +20,6 @@ const KNOWN_NATIVE_PACKAGES = [
   'expo-updates',
   '@sentry/react-native',
   'posthog-react-native',
-  '@react-native-ml-kit/text-recognition',
-  '@react-native-ml-kit/barcode-scanning',
   'react-native-mmkv',
   'react-native-nitro-modules',
   'react-native-worklets',

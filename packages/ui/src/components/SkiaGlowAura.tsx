@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
-  useAnimatedProps,
+  useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
@@ -22,8 +22,6 @@ export interface SkiaGlowAuraProps {
   style?: ViewStyle;
   children?: React.ReactNode;
 }
-
-const AnimatedCanvas = Animated.createAnimatedComponent(Canvas);
 
 /**
  * High-performance, GPU-accelerated glow aura powered by @shopify/react-native-skia & Reanimated 4.
@@ -64,7 +62,7 @@ export function SkiaGlowAura({
     );
   }, [allowSubtleAnimation, duration, effectsEnabled, opacity]);
 
-  const animatedStyle = useAnimatedProps(() => ({
+  const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
@@ -72,14 +70,14 @@ export function SkiaGlowAura({
 
   return (
     <View style={[styles.container, { width: size, height: size }, style]}>
-      <AnimatedCanvas
-        style={[{ width: size, height: size, pointerEvents: 'none' }, animatedStyle as any]}
-      >
-        <Rect x={0} y={0} width={size} height={size}>
-          <RadialGradient c={center} r={size / 2} colors={[color, secondaryColor, 'transparent']} />
-          <Blur blur={blurRadius} />
-        </Rect>
-      </AnimatedCanvas>
+      <Animated.View style={[{ width: size, height: size, pointerEvents: 'none' }, animatedStyle]}>
+        <Canvas style={{ width: size, height: size }}>
+          <Rect x={0} y={0} width={size} height={size}>
+            <RadialGradient c={center} r={size / 2} colors={[color, secondaryColor, 'transparent']} />
+            <Blur blur={blurRadius} />
+          </Rect>
+        </Canvas>
+      </Animated.View>
       {children && <View style={StyleSheet.absoluteFill}>{children}</View>}
     </View>
   );

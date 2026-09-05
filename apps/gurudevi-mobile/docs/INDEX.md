@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-08-13
+updated: 2026-09-05
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -61,6 +61,7 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-09-05** | [Android Build Chronicle & Performance Savings Report](./infra/2026-09-05-android-build-chronicle-and-savings-report.md) | Infrastructure / Build | `active` | Post-mortem of MLKit blocker removal, ccache CMake launcher activation (905 units cached), Gradle build-cache metrics (77.2% reuse), and successful installation of versionCode 24 APK onto Samsung Galaxy physical device. |
 | **2026-09-04** | [Forage Research: Candidate Catalog](./research/2026-09-04-forage-candidate-catalog.md) | Research / Catalog | `draft` | All candidates with rationale, use case, benefit, cost, verdict. Baseline-then-own pattern. |
 | **2026-09-04** | [Spike: cn Parity + withSkills](./research/2026-09-04-spike-cn-parity.md) + [ADR: cn Merge Strategy](./decisions/2026-09-04-cn-merge-strategy.md) | Spike / ADR | `accepted` | 25-case parity: adopted tailwind-merge+clsx behind cn path (zero consumer edits); shadcn engine re-eval later. |
 | **2026-09-04** | [Spike: Native Capabilities](./research/2026-09-04-spike-native-capabilities.md) + [ADR: paste-input](./decisions/2026-09-04-paste-input-adoption.md) + [ADR: Nitro Fetch](./decisions/2026-09-04-nitro-fetch-adoption.md) | Spike / ADR | `accepted` | paste-input dev-build gated, Nitro Fetch profile-gated, plain-text watch. Implementation: ComposerPasteWrapper, fetchFn factory. |

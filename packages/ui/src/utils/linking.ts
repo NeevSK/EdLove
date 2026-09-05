@@ -117,9 +117,16 @@ async function executeExternalOpen(url: string, method: ExternalOpenMethod) {
     return;
   }
 
-  // Note: For in_app_browser on native, we'd traditionally use WebBrowser.
-  // We'll trust the coreRuntime.linking to handle URLs appropriately or extend the LinkingProvider.
-  // For now, satisfy the abstract requirement.
+  if (method === 'in_app_browser') {
+    try {
+      const WebBrowser = await import('expo-web-browser');
+      await WebBrowser.openBrowserAsync(url);
+      return;
+    } catch (error) {
+      console.warn('[linking] failed to open in_app_browser, falling back to Linking:', error);
+    }
+  }
+
   await coreRuntime.linking.openURL(url);
 }
 

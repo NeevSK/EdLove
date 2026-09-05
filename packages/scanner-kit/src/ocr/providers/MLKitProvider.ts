@@ -1,18 +1,28 @@
 /**
- * MLKitProvider \u2014 on-device text recognition via @react-native-ml-kit/text-recognition
+ * MLKitProvider — on-device text recognition stub
  *
- * Free, offline, zero latency.
- * Default provider for all users regardless of Pro status.
- * Supports Sinhala, Tamil, English (Latin + Devanagari scripts recognized by MLKit).
+ * Free, offline, zero latency fallback.
+ * Automatically falls back to Cloud providers when native module is absent.
  */
 
-import TextRecognition from '@react-native-ml-kit/text-recognition';
 import type { OCRBlock, OCRProvider, OCRRawResult } from '@repo/scanner-kit/ocr/types';
 
 export class MLKitProvider implements OCRProvider {
   readonly name = 'mlkit' as const;
 
   async recognize(imageUri: string): Promise<OCRRawResult> {
+    let TextRecognition: any = null;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      TextRecognition = require('@react-native-ml-kit/text-recognition').default ?? require('@react-native-ml-kit/text-recognition');
+    } catch {
+      TextRecognition = null;
+    }
+
+    if (!TextRecognition) {
+      throw new Error('On-device MLKit text recognition is not available in this build.');
+    }
+
     const result = await TextRecognition.recognize(imageUri);
 
     if (!result) {

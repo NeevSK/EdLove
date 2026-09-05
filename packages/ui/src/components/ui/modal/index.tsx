@@ -113,7 +113,6 @@ export const Modal = ({
                 entering={enteringAnimation}
                 exiting={exitingAnimation}
                 className="w-full max-w-[500px]"
-                accessibilityRole="dialog"
                 accessibilityLabel={accessibilityLabel}
                 accessibilityViewIsModal={trapFocus}
                 accessible={true}

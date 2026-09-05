@@ -300,8 +300,6 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
-          "@react-native-ml-kit/text-recognition",
-          "@react-native-ml-kit/barcode-scanning",
           "expo-av",
           "@react-native-vector-icons/lucide",
           "@swmansion/react-native-bottom-sheet",
