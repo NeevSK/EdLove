@@ -4,14 +4,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { Box, PortalProvider } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { GlobalProvider } from '@repo/core/logic';
 
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
+import { queryClient } from '@/lib/queryClient';
 
 /**
  * The deliberately small route host for first paint.
@@ -35,29 +37,34 @@ export function EntryShell() {
     <GestureHandlerRootView style={styles.root}>
       <ErrorBoundary name="EntryShell">
         <SafeAreaProvider>
-          <GlobalProvider>
-            <EnvironmentProvider>
-              <PortalProvider>
-                <ToastProvider>
-                  <ExternalLinkProvider>
-                    <Box className="flex-1 bg-background-0">
-                      <SessionRouteGate>
-                        <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="index" />
-                    <Stack.Screen name="welcome" />
-                    <Stack.Screen name="auth" />
-                    <Stack.Screen name="account-recovery" />
-                    <Stack.Screen name="onboarding" />
-                    <Stack.Screen name="public-form/[slug]" />
-                    <Stack.Screen name="(tabs)" />
-                        </Stack>
-                      </SessionRouteGate>
-                    </Box>
-                  </ExternalLinkProvider>
-                </ToastProvider>
-              </PortalProvider>
-            </EnvironmentProvider>
-          </GlobalProvider>
+          <QueryClientProvider client={queryClient}>
+            <GlobalProvider>
+              <EnvironmentProvider>
+                <CircadianProvider>
+                  <PortalProvider>
+                    <ToastProvider>
+                      <ExternalLinkProvider>
+                        <Box className="flex-1 bg-phase-canvas">
+                          <SessionRouteGate>
+                            <Stack screenOptions={{ headerShown: false }}>
+                              <Stack.Screen name="index" />
+                              <Stack.Screen name="welcome" />
+                              <Stack.Screen name="auth" />
+                              <Stack.Screen name="account-recovery" />
+                              <Stack.Screen name="onboarding" />
+                              <Stack.Screen name="public-form/[slug]" />
+                              <Stack.Screen name="(tabs)" />
+                              <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
+                            </Stack>
+                          </SessionRouteGate>
+                        </Box>
+                      </ExternalLinkProvider>
+                    </ToastProvider>
+                  </PortalProvider>
+                </CircadianProvider>
+              </EnvironmentProvider>
+            </GlobalProvider>
+          </QueryClientProvider>
         </SafeAreaProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>

@@ -86,6 +86,10 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
     };
   }, [accountId, isPowerSyncEnabled]);
 
+  if (!isPowerSyncEnabled || !accountId) {
+    return <>{children}</>;
+  }
+
   if (!db) {
     // Return null or splash screen during fast JSI load sequence (<20ms)
     return null;

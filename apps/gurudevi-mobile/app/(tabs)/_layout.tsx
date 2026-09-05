@@ -62,12 +62,12 @@ function TabsLayoutContent() {
     const first = newAchievements[0];
     if (!first) return;
 
-    const timer = window.setTimeout(() => {
+    const timer = setTimeout(() => {
       setCurrentAchievement(first);
       setShowCelebration(true);
     }, 0);
 
-    return () => window.clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, [newAchievements, showCelebration]);
 
   return (
@@ -200,7 +200,7 @@ function TabsLayoutContent() {
           }}
         />
         <Tabs.Screen
-          name="community/index"
+          name="community"
           options={{
             title: 'Community',
             tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
@@ -218,6 +218,18 @@ function TabsLayoutContent() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+          }}
+        />
+        <Tabs.Screen
+          name="notifications"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            href: null,
           }}
         />
       </Tabs>

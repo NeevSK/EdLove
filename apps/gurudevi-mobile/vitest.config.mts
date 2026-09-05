@@ -43,8 +43,9 @@ export default defineConfig({
     server: {
       forwardConsole: true,
       deps: {
-        inline: [/packages/, /@repo\//, /expo-modules-core/],
+        inline: [/[\\/]x[\\/]packages[\\/]/, /@repo\//, /expo-modules-core/],
         external: [
+          '@intuitui-labs/a11y-gate',
           'react-native-mmkv',
           'expo',
           'expo-constants',

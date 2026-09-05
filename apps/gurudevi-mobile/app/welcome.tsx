@@ -1,8 +1,8 @@
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
-import WelcomeScreen from '@repo/ui/screens/WelcomeScreen';
-import { useRouter } from 'expo-router';
+import { SanctuaryWelcomeScreen, WelcomeScreen } from '@repo/ui/screens';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import { fireflyProductArtwork } from '@/brand/mascotArtwork';
 
@@ -18,6 +18,7 @@ function Fallback() {
 
 export default function WelcomeRoute() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ legacy?: string }>();
 
   const handleLogin = useCallback(() => {
     router.push('/auth');
@@ -30,11 +31,19 @@ export default function WelcomeRoute() {
   return (
     <ErrorBoundary name="WelcomeRoute">
       <Suspense fallback={<Fallback />}>
-        <WelcomeScreen
-          exploreArtwork={fireflyProductArtwork.explore}
-          onLogin={handleLogin}
-          onGuest={handleGuest}
-        />
+        {params.legacy === '1' ? (
+          <WelcomeScreen
+            exploreArtwork={fireflyProductArtwork.explore}
+            onLogin={handleLogin}
+            onGuest={handleGuest}
+          />
+        ) : (
+          <SanctuaryWelcomeScreen
+            exploreArtwork={fireflyProductArtwork.explore}
+            onLogin={handleLogin}
+            onGuest={handleGuest}
+          />
+        )}
       </Suspense>
     </ErrorBoundary>
   );
