@@ -1,11 +1,118 @@
 {
-  "extends": ["../../.oxlintrc.json"],
+  "$schema": "https://oxc.rs/docs/guide/usage/linter/config.html",
+  "env": {
+    "browser": true,
+    "es2025": true,
+    "node": true
+  },
   "globals": {
-    "__DEV__": "readonly",
-    "ErrorUtils": "readonly",
-    "alert": "readonly"
+    "document": "writable",
+    "window": "writable",
+    "globalThis": "writable"
+  },
+  "plugins": [
+    "react",
+    "jsx-a11y",
+    "react-perf",
+    "typescript",
+    "import",
+    "unicorn",
+    "promise",
+    "eslint-comments",
+    "vitest",
+    "jest"
+  ],
+  "settings": {
+    "react": {
+      "version": "19"
+    },
+    "import": {
+      "ignore": ["node_modules"]
+    },
+    "rn-expo": {
+      "appRoots": ["src"]
+    }
   },
   "rules": {
-    "no-console": "warn"
-  }
+    "correctness": "error",
+    "suspicious": "warn",
+    "style": "off",
+    "perf": "warn",
+    "nursery": "off",
+    "restriction": "off",
+    "pedantic": "off",
+    "react/jsx-no-bind": "off",
+    "react/jsx-uses-react": "off",
+    "react/jsx-uses-vars": "off",
+    "react/no-access-state-in-setstate": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-multi-comp": "off",
+    "react/jsx-filename-extension": "off",
+    "react/forbid-component-props": "off",
+    "react/no-async-await": "off",
+    "react/no-optional-chaining": "off",
+    "react/no-await-in-loop": "off",
+    "react/no-constant-condition": "off",
+    "react/prefer-const": "off",
+    "react/no-var": "off",
+    "unicode-bom": "off",
+    "unicorn/prefer-module": "error",
+    "react/no-array-index-key": "warn",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "jsx-a11y/prefer-tag-over-role": "warn",
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off",
+    "react-perf/jsx-no-jsx-as-prop": "off",
+    "no-await-in-loop": "off",
+    "import/no-unassigned-import": "off",
+    "react/style-prop-object": "off",
+    "oxc/no-map-spread": "off",
+    "promise/no-multiple-resolved": "off",
+    "import/no-restricted-paths": "off",
+    "no-restricted-syntax": "off",
+    "local/max-use-state": "off",
+    "polymath/ban-use-store": "off"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    ".expo",
+    ".turbo",
+    "coverage",
+    "*.config.ts",
+    "*.config.js",
+    "*.config.mjs",
+    "*.config.cjs",
+    "*.cjs",
+    "**/*.cjs",
+    "scripts",
+    "**/archive/**",
+    "**/plugins/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.d.ts"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.cjs",
+        "**/*.config.js",
+        "**/*.config.cjs",
+        "scripts/**/*.js",
+        "scripts/**/*.cjs",
+        "**/plugins/**/*.js"
+      ],
+      "rules": {
+        "unicorn/prefer-module": "off",
+        "import/no-commonjs": "off",
+        "typescript/no-require-imports": "off",
+        "import/unambiguous": "off"
+      }
+    }
+  ]
 }
