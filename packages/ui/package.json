@@ -853,6 +853,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate",
     "@react-native-community/slider": "5.2.0",
     "@repo/core": "workspace:*",
     "@tanstack/react-query": "^5.102.8",

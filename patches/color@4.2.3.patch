@@ -1,8 +1,18 @@
 diff --git a/index.js b/index.js
-index ddb0b5df6215e0195ac82868a4d844b9d38b21a5..0f0d5d390f8c27cbca968fbac2e6dd10ebb119c4 100644
+index ddb0b5df6215e0195ac82868a4d844b9d38b21a5..d77ad088be21069529eed05b29a511d3ef1af473 100644
 --- a/index.js
 +++ b/index.js
-@@ -14,7 +14,9 @@ const skippedModels = [
+@@ -1,5 +1,7 @@
+-const colorString = require('color-string');
+-const convert = require('color-convert');
++const _colorString = require('color-string');
++const colorString = (_colorString && _colorString.default && _colorString.default.get) ? _colorString.default : _colorString;
++const _convert = require('color-convert');
++const convert = (_convert && _convert.default && _convert.default.rgb) ? _convert.default : _convert;
+ 
+ const skippedModels = [
+ 	// To be honest, I don't really feel like keyword belongs in color convert, but eh.
+@@ -14,7 +16,9 @@ const skippedModels = [
  
  const hashedModelKeys = {};
  for (const model of Object.keys(convert)) {
@@ -13,3 +23,36 @@ index ddb0b5df6215e0195ac82868a4d844b9d38b21a5..0f0d5d390f8c27cbca968fbac2e6dd10
  }
  
  const limiters = {};
+@@ -50,9 +54,9 @@ function Color(object, model) {
+ 		}
+ 
+ 		this.model = result.model;
+-		channels = convert[this.model].channels;
+-		this.color = result.value.slice(0, channels);
+-		this.valpha = typeof result.value[channels] === 'number' ? result.value[channels] : 1;
++		channels = (convert && convert[this.model] && convert[this.model].channels) || 3;
++		this.color = (result.value || []).slice(0, channels).map(v => (typeof v !== 'number' || isNaN(v)) ? 0 : v);
++		this.valpha = typeof result.value[channels] === 'number' && !isNaN(result.value[channels]) ? result.value[channels] : 1;
+ 	} else if (object.length > 0) {
+ 		this.model = model || 'rgb';
+ 		channels = convert[this.model].channels;
+@@ -123,7 +127,9 @@ Color.prototype = {
+ 	string(places) {
+ 		let self = this.model in colorString.to ? this : this.rgb();
+ 		self = self.round(typeof places === 'number' ? places : 1);
+-		const args = self.valpha === 1 ? self.color : [...self.color, this.valpha];
++		const safeColor = (self.color || []).map(v => (typeof v !== 'number' || isNaN(v)) ? 0 : v);
++		const valpha = (typeof self.valpha !== 'number' || isNaN(self.valpha)) ? 1 : self.valpha;
++		const args = valpha === 1 ? safeColor : [...safeColor, valpha];
+ 		return colorString.to[self.model](args);
+ 	},
+ 
+@@ -485,7 +491,7 @@ function assertArray(value) {
+ 
+ function zeroArray(array, length) {
+ 	for (let i = 0; i < length; i++) {
+-		if (typeof array[i] !== 'number') {
++		if (typeof array[i] !== 'number' || isNaN(array[i])) {
+ 			array[i] = 0;
+ 		}
+ 	}
