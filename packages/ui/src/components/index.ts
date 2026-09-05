@@ -179,5 +179,21 @@ export { VisualCapabilityInspector } from '@repo/ui/components/VisualCapabilityI
 export * from '@repo/ui/components/visualization';
 export { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 export * from '@repo/ui/components/workspace';
+export {
+  default as LanguageSwitcher,
+  type LanguageOption,
+  type LanguageSwitcherProps,
+  DEFAULT_SANCTUARY_LANGUAGES,
+} from '@repo/ui/components/LanguageSwitcher';
+export {
+  default as SanctuaryDoorwayActions,
+  type SanctuaryDoorwayActionsProps,
+} from '@repo/ui/components/SanctuaryDoorwayActions';
+export {
+  default as SanctuaryRealmSelector,
+  type SanctuaryRealmItem,
+  type SanctuaryRealmSelectorProps,
+} from '@repo/ui/components/SanctuaryRealmSelector';
 export type { ActionItem, TabType } from '@repo/ui/context/FABContext';
 export * from '@repo/ui/qr';
+

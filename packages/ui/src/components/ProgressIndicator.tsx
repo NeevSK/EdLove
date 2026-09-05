@@ -32,12 +32,12 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
               key={`dot-${index}`}
               testID={`progress-dot-${index}`}
               className={cn(
-                'h-2 rounded-full',
+                'h-2 rounded-full transition-all',
                 isActive ? 'w-6 bg-phase-accent' : 'w-2',
                 isPast
-                  ? 'bg-phase-text-secondary opacity-60'
+                  ? 'bg-phase-accent/60'
                   : !isActive
-                    ? 'bg-phase-surface opacity-30'
+                    ? 'bg-phase-border border border-phase-border/40'
                     : undefined,
               )}
             />

@@ -18,10 +18,14 @@ interface InputContextType {
 
 const InputContext = createContext<InputContextType | undefined>(undefined);
 
+const defaultInputContext: InputContextType = {
+  isFocused: false,
+  setIsFocused: () => {},
+};
+
 function useInput() {
   const context = useContext(InputContext);
-  if (!context) throw new Error('useInput must be used within an Input component');
-  return context;
+  return context ?? defaultInputContext;
 }
 
 // --- Components ---

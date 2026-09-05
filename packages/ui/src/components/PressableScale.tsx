@@ -1,10 +1,22 @@
 import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { type HapticImpact, hapticImpact } from '../utils/haptics';
-import { duration, easing, scale } from './motion';
+import { duration, easingPoints, scale } from './motion';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const standardEasing = Easing.bezier(
+  easingPoints.standard[0],
+  easingPoints.standard[1],
+  easingPoints.standard[2],
+  easingPoints.standard[3],
+);
 
 export interface PressableScaleProps {
   /** Scale factor on press. Default 0.96. */
@@ -66,12 +78,12 @@ export function PressableScale({
     if (isReduceMotionEnabled) {
       opacityValue.value = withTiming(0.7, {
         duration: pressInDuration,
-        easing: easing.standard as unknown as (v: number) => number,
+        easing: standardEasing,
       });
     } else {
       scaleValue.value = withTiming(activeScale, {
         duration: pressInDuration,
-        easing: easing.standard as unknown as (v: number) => number,
+        easing: standardEasing,
       });
     }
     if (haptic !== false) {
@@ -83,12 +95,12 @@ export function PressableScale({
     if (isReduceMotionEnabled) {
       opacityValue.value = withTiming(1, {
         duration: pressOutDuration,
-        easing: easing.standard as unknown as (v: number) => number,
+        easing: standardEasing,
       });
     } else {
       scaleValue.value = withTiming(scale.rest, {
         duration: pressOutDuration,
-        easing: easing.standard as unknown as (v: number) => number,
+        easing: standardEasing,
       });
     }
   };

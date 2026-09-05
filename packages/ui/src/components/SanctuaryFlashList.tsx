@@ -64,7 +64,7 @@ export function SanctuaryFlashList<T>({
 
     return (
       <EmptyState
-        icon={BookOpen as any}
+        icon={<BookOpen size={48} color={Theme.colors.sanctuarySaffron} />}
         title="Silence in the Sanctuary"
         description="Your first discovery is waiting to be found here."
       />

@@ -1,17 +1,73 @@
-import { getContrastRatio } from '@repo/ui/utils/colorUtils';
-import { APCAcontrast, sRGBtoY } from 'apca-w3';
-import { converter, formatHex, parse } from 'culori';
-
 /**
- * a11yUtils  Modern Accessibility Infrastructure for the Sanctuary.
+ * a11yUtils — Modern Accessibility & Ergonomics Infrastructure
  *
- * Supports:
- * - WCAG 2.1 (Relative Luminance / Contrast Ratio) - Legacy AA/AAA
- * - APCA (Accessible Perceptual Contrast Algorithm) - Future of WCAG 3
- * - Color space conversions for perceptual math (Oklch)
+ * Canonical Engine: @intuitui-labs/a11y-gate (C:\projects\packages\a11y-gate)
+ *
+ * Implements:
+ * - W3C APCA 0.98G (Accessible Perceptual Contrast Algorithm - WCAG 3 Candidate)
+ * - WCAG 2.1 / 2.2 / 2.3 Relative Luminance (ISO 9241-306)
+ * - Brettel/Viénot Color Vision Deficiency (CVD) simulation
+ * - Mobile Ergonomics: Touch Target Geometry (>= 48dp), Safe Areas, 14px Typography Floor
+ * - Spatial Harmony & Fluid Responsive Clamp
  */
 
-interface ContrastResult {
+import {
+  calculateApca,
+  evaluateApca,
+  evaluateTargetSize,
+  evaluateWcag,
+  getApcaFontMatrix,
+  getDeltaE,
+  getWcagContrastRatio,
+  hexToRgb,
+  rgbToHex,
+  simulateCvd,
+  simulateCvdHex,
+  TOUCH_TARGET_STANDARDS,
+  type ApcaEvaluation,
+  type ApcaFontMatrix,
+  type RGB,
+  type WcagRating,
+} from '@intuitui-labs/a11y-gate';
+
+// Re-export canonical primitives from @intuitui-labs/a11y-gate
+export {
+  calculateApca,
+  evaluateApca,
+  evaluateTargetSize,
+  evaluateWcag,
+  getApcaFontMatrix,
+  getDeltaE,
+  getWcagContrastRatio,
+  hexToRgb as a11yHexToRgb,
+  rgbToHex,
+  simulateCvd,
+  simulateCvdHex,
+  TOUCH_TARGET_STANDARDS,
+  type ApcaEvaluation,
+  type ApcaFontMatrix,
+  type RGB,
+  type WcagRating,
+};
+
+// Re-export spatial and motion primitives
+export {
+  generateFluidClamp,
+  isValidSpatialQuantum,
+  SPATIAL_INTERVALS,
+  SPRING_PRESETS,
+  getInterpolatedMotion,
+  prefersReducedMotion,
+  auditReactNativeScreen,
+  runReactNativeScreenAuditSuite,
+  type MotionIntensity,
+  type SpringSpec,
+  type ReactNativeScreenAuditResult,
+  type ReactNativeScreenFinding,
+  type AuditGateStage,
+} from '@intuitui-labs/a11y-gate';
+
+export interface ContrastResult {
   ratio: number;
   apca: number;
   passesAA: boolean;
@@ -20,11 +76,15 @@ interface ContrastResult {
 }
 
 /**
- * Convert any culori-parseable color to hex.
+ * Standardize hex color string.
  */
 export function toHex(color: string): string {
-  const c = parse(color);
-  return c ? formatHex(c) : '#000000';
+  try {
+    const rgb = hexToRgb(color);
+    return rgbToHex(rgb);
+  } catch {
+    return color.startsWith('#') ? color : `#${color}`;
+  }
 }
 
 /**
@@ -32,19 +92,11 @@ export function toHex(color: string): string {
  * Returns a score between -108 and 106.
  */
 export function getAPCAContrast(fg: string, bg: string): number {
-  const f = parse(fg);
-  const b = parse(bg);
-  if (!f || !b) return 0;
-
-  const fgRgb = converter('rgb')(f);
-  const bgRgb = converter('rgb')(b);
-
-  // apca-w3 expects 0-255 or uses sRGBtoY
-  // Native apca-w3 implementation:
-  const fY = sRGBtoY([fgRgb.r * 255, fgRgb.g * 255, fgRgb.b * 255]);
-  const bY = sRGBtoY([bgRgb.r * 255, bgRgb.g * 255, bgRgb.b * 255]);
-
-  return Number(APCAcontrast(fY, bY));
+  try {
+    return calculateApca(fg, bg);
+  } catch {
+    return 0;
+  }
 }
 
 /**
@@ -64,11 +116,18 @@ export function getAPCARating(score: number): string {
 }
 
 /**
- * Unified accessibility check.
+ * Unified accessibility check against WCAG 2.2 and WCAG 3 / APCA.
  */
 export function checkAccessibility(fg: string, bg: string): ContrastResult {
-  const ratio = getContrastRatio(fg, bg);
-  const apca = getAPCAContrast(fg, bg);
+  let ratio = 1;
+  let apca = 0;
+
+  try {
+    ratio = getWcagContrastRatio(fg, bg);
+    apca = calculateApca(fg, bg);
+  } catch (err) {
+    console.warn('[a11yUtils] Error evaluating contrast:', err);
+  }
 
   return {
     ratio,
@@ -98,4 +157,64 @@ export function getBestText(
     }
   }
   return bestColor;
+}
+
+/* ==========================================================================
+   Mobile Accessibility & Ergonomics Sub-Section
+   ========================================================================== */
+
+export const MOBILE_A11Y = {
+  /** Strict Android & Sanctuary touch target floor in density-independent pixels */
+  MIN_TOUCH_TARGET_DP: 48,
+  /** Compact iOS touch target floor in points */
+  MIN_TOUCH_TARGET_COMPACT_PT: 44,
+  /** Recommended minimum reading floor for mobile labels / descriptions */
+  MICRO_TYPOGRAPHY_FLOOR_PX: 14,
+  /** APCA threshold for mobile body / descriptive text */
+  APCA_BODY_MIN: 75,
+  /** APCA threshold for headlines and large interactive buttons */
+  APCA_LARGE_MIN: 60,
+  /** APCA threshold for icons, indicators, and graphics */
+  APCA_GRAPHIC_MIN: 45,
+  /** Maximum supported dynamic font scale before forcing simplified layout */
+  MAX_COMFORTABLE_FONT_SCALE: 2.0,
+} as const;
+
+/**
+ * Validates whether an interactive mobile component meets touch target standards.
+ */
+export function checkMobileTouchTarget(
+  widthDp: number,
+  heightDp: number,
+  standard: 'strict' | 'compact' = 'strict',
+): {
+  passes: boolean;
+  actual: { width: number; height: number };
+  required: number;
+} {
+  const required =
+    standard === 'strict' ? MOBILE_A11Y.MIN_TOUCH_TARGET_DP : MOBILE_A11Y.MIN_TOUCH_TARGET_COMPACT_PT;
+  const passes = widthDp >= required && heightDp >= required;
+
+  return {
+    passes,
+    actual: { width: widthDp, height: heightDp },
+    required,
+  };
+}
+
+/**
+ * Standard hitSlop helper to defend touch targets on compact visual icons.
+ * Example: for a 24dp icon, expands hit area by 12dp on each side to reach 48dp.
+ */
+export function getTouchHitSlop(visualWidthDp: number, visualHeightDp: number) {
+  const padX = Math.max(0, Math.ceil((MOBILE_A11Y.MIN_TOUCH_TARGET_DP - visualWidthDp) / 2));
+  const padY = Math.max(0, Math.ceil((MOBILE_A11Y.MIN_TOUCH_TARGET_DP - visualHeightDp) / 2));
+
+  return {
+    top: padY,
+    bottom: padY,
+    left: padX,
+    right: padX,
+  };
 }

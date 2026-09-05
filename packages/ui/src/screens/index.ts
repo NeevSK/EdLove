@@ -8,5 +8,6 @@ export { default as ErrorMessageDemo } from '@repo/ui/screens/ErrorMessageDemo';
 export { default as NotificationsScreen } from '@repo/ui/screens/NotificationsScreen';
 export { default as OnboardingScreen } from '@repo/ui/screens/OnboardingScreen';
 export { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
+export { default as SanctuaryWelcomeScreen } from '@repo/ui/screens/SanctuaryWelcomeScreen';
 export { default as WelcomeScreen } from '@repo/ui/screens/WelcomeScreen';
 export { default as WorkspaceCanvasDemo } from '@repo/ui/screens/WorkspaceCanvasDemo';

@@ -109,21 +109,39 @@ export function EaseView({
   children,
   ...rest
 }: EaseViewProps) {
-  const values = useMemo(() => {
-    const keys = new Set([...Object.keys(initialAnimate), ...Object.keys(animate)]);
-    const result: Record<string, ReturnType<typeof useSharedValue<number>>> = {};
-    for (const key of keys) {
-      result[key] = useSharedValue(getIdentityValue(key));
-    }
-    return result;
-  }, []);
+  const opacity = useSharedValue(initialAnimate.opacity ?? 1);
+  const translateX = useSharedValue(initialAnimate.translateX ?? 0);
+  const translateY = useSharedValue(initialAnimate.translateY ?? 0);
+  const scale = useSharedValue(initialAnimate.scale ?? 1);
+  const scaleX = useSharedValue(initialAnimate.scaleX ?? 1);
+  const scaleY = useSharedValue(initialAnimate.scaleY ?? 1);
+  const rotate = useSharedValue(initialAnimate.rotate ?? 0);
+  const borderRadius = useSharedValue(initialAnimate.borderRadius ?? 0);
+  const borderWidth = useSharedValue(initialAnimate.borderWidth ?? 0);
+  const elevation = useSharedValue(initialAnimate.elevation ?? 0);
+
+  const values = useMemo(
+    () => ({
+      opacity,
+      translateX,
+      translateY,
+      scale,
+      scaleX,
+      scaleY,
+      rotate,
+      borderRadius,
+      borderWidth,
+      elevation,
+    }),
+    [opacity, translateX, translateY, scale, scaleX, scaleY, rotate, borderRadius, borderWidth, elevation],
+  );
 
   // Set initial values
   useEffect(() => {
     for (const [key, sv] of Object.entries(values)) {
       const initVal = initialAnimate[key as keyof AnimateProps];
-      if (initVal !== undefined) {
-        sv.value = initVal as number;
+      if (typeof initVal === 'number') {
+        sv.value = initVal;
       }
     }
   }, []);
@@ -132,17 +150,17 @@ export function EaseView({
   useEffect(() => {
     for (const [key, sv] of Object.entries(values)) {
       const targetVal = animate[key as keyof AnimateProps];
-      if (targetVal === undefined) continue;
+      if (typeof targetVal !== 'number') continue;
 
       cancelAnimation(sv);
 
       if (transition.type === 'none') {
-        sv.value = targetVal as number;
+        sv.value = targetVal;
         continue;
       }
 
       if (transition.type === 'spring') {
-        sv.value = withSpring(targetVal as number, {
+        sv.value = withSpring(targetVal, {
           damping: transition.damping ?? 15,
           stiffness: transition.stiffness ?? 120,
           mass: transition.mass ?? 1,
@@ -153,16 +171,15 @@ export function EaseView({
       // timing
       const duration = transition.duration ?? 300;
       const easing = mapEasing(transition.easing);
-      const delay = transition.delay ?? 0;
 
       if (transition.loop) {
         sv.value = withRepeat(
-          withTiming(targetVal as number, { duration, easing }, () => {}),
+          withTiming(targetVal, { duration, easing }, () => {}),
           -1,
           transition.loop === 'reverse',
         );
       } else {
-        sv.value = withTiming(targetVal as number, { duration, easing });
+        sv.value = withTiming(targetVal, { duration, easing });
       }
     }
 
@@ -171,34 +188,76 @@ export function EaseView({
         cancelAnimation(sv);
       }
     };
-  }, [JSON.stringify(animate), JSON.stringify(transition)]);
+  }, [
+    animate.opacity,
+    animate.translateX,
+    animate.translateY,
+    animate.scale,
+    animate.scaleX,
+    animate.scaleY,
+    animate.rotate,
+    animate.borderRadius,
+    animate.borderWidth,
+    animate.elevation,
+    transition.type,
+    // @ts-ignore
+    transition.duration,
+    // @ts-ignore
+    transition.loop,
+  ]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const result: Record<string, unknown> = {};
 
-    if (values.opacity) result.opacity = values.opacity.value;
+    if (animate.opacity !== undefined || initialAnimate.opacity !== undefined) {
+      result.opacity = opacity.value;
+    }
 
-    if (
-      values.translateX ||
-      values.translateY ||
-      values.scale ||
-      values.scaleX ||
-      values.scaleY ||
-      values.rotate
-    ) {
+    const hasTransform =
+      animate.translateX !== undefined ||
+      initialAnimate.translateX !== undefined ||
+      animate.translateY !== undefined ||
+      initialAnimate.translateY !== undefined ||
+      animate.scale !== undefined ||
+      initialAnimate.scale !== undefined ||
+      animate.scaleX !== undefined ||
+      initialAnimate.scaleX !== undefined ||
+      animate.scaleY !== undefined ||
+      initialAnimate.scaleY !== undefined ||
+      animate.rotate !== undefined ||
+      initialAnimate.rotate !== undefined;
+
+    if (hasTransform) {
       const transforms: Record<string, number | string>[] = [];
-      if (values.translateX) transforms.push({ translateX: values.translateX.value });
-      if (values.translateY) transforms.push({ translateY: values.translateY.value });
-      if (values.scaleX) transforms.push({ scaleX: values.scaleX.value });
-      else if (values.scale) transforms.push({ scale: values.scale.value });
-      if (values.scaleY) transforms.push({ scaleY: values.scaleY.value });
-      if (values.rotate) transforms.push({ rotate: `${values.rotate.value}deg` });
+      if (animate.translateX !== undefined || initialAnimate.translateX !== undefined) {
+        transforms.push({ translateX: translateX.value });
+      }
+      if (animate.translateY !== undefined || initialAnimate.translateY !== undefined) {
+        transforms.push({ translateY: translateY.value });
+      }
+      if (animate.scaleX !== undefined || initialAnimate.scaleX !== undefined) {
+        transforms.push({ scaleX: scaleX.value });
+      } else if (animate.scale !== undefined || initialAnimate.scale !== undefined) {
+        transforms.push({ scale: scale.value });
+      }
+      if (animate.scaleY !== undefined || initialAnimate.scaleY !== undefined) {
+        transforms.push({ scaleY: scaleY.value });
+      }
+      if (animate.rotate !== undefined || initialAnimate.rotate !== undefined) {
+        transforms.push({ rotate: `${rotate.value}deg` });
+      }
       result.transform = transforms;
     }
 
-    if (values.borderRadius) result.borderRadius = values.borderRadius.value;
-    if (values.borderWidth) result.borderWidth = values.borderWidth.value;
-    if (values.elevation) result.elevation = values.elevation.value;
+    if (animate.borderRadius !== undefined || initialAnimate.borderRadius !== undefined) {
+      result.borderRadius = borderRadius.value;
+    }
+    if (animate.borderWidth !== undefined || initialAnimate.borderWidth !== undefined) {
+      result.borderWidth = borderWidth.value;
+    }
+    if (animate.elevation !== undefined || initialAnimate.elevation !== undefined) {
+      result.elevation = elevation.value;
+    }
 
     return result as ViewStyle;
   });

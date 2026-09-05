@@ -44,6 +44,7 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
@@ -73,39 +74,33 @@ const StepShell = memo(
     artwork?: MascotArtworkSource;
     children: React.ReactNode;
   }) => (
-    <VStack className="flex-1 px-5 pt-5 pb-6">
+    <VStack className="flex-1 px-5 pt-2 pb-6">
       <Box
-        className="rounded-generous border border-phase-border bg-phase-secondary overflow-hidden elevation-4"
+        className="rounded-3xl border border-phase-border/80 bg-phase-surface overflow-hidden elevation-3"
         style={{
-          boxShadow: '0px 14px 24px rgba(107, 100, 128, 0.1)',
+          boxShadow: '0px 12px 24px rgba(107, 100, 128, 0.08)',
         }}
       >
-        <Box className="px-6 py-6 bg-phase-surface border-b border-phase-border">
-          <VStack className="gap-4">
-            <HStack className="gap-2 flex-wrap">
-              {JOURNEY_PILLARS.map((pillar) => (
-                <Box
-                  key={pillar}
-                  className="px-3 py-1 rounded-full bg-phase-canvas border border-phase-border"
-                >
-                  <Text className="text-xs text-phase-text-secondary font-bold">{pillar}</Text>
-                </Box>
-              ))}
-            </HStack>
-            <ProgressIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} />
-            <VStack className="gap-1">
-              <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase">
+        <Box className="px-6 pt-6 pb-2">
+          <VStack className="gap-3 items-center">
+            <ProgressIndicator
+              currentStep={currentStep}
+              totalSteps={TOTAL_STEPS}
+              showStepCount={false}
+            />
+            <VStack className="gap-1 items-center">
+              <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase text-center">
                 {step}
               </Text>
-              <Heading size="2xl" className="text-phase-text-primary">
+              <Heading size="xl" className="text-phase-text-primary text-center">
                 {title}
               </Heading>
-              <Text className="text-phase-text-secondary">{subtitle}</Text>
+              <Text className="text-phase-text-secondary text-sm text-center">{subtitle}</Text>
             </VStack>
-            {artwork ? <FireflyFeedbackScene artwork={artwork} state="loading" /> : null}
+            {artwork ? <FireflyFeedbackScene artwork={artwork} size={112} state="loading" /> : null}
           </VStack>
         </Box>
-        <Box className="px-6 py-8">{children}</Box>
+        <Box className="px-6 pb-6 pt-2">{children}</Box>
       </Box>
     </VStack>
   ),
@@ -133,7 +128,7 @@ const NameStep = memo(
     onBackToWelcome,
     artwork,
   }: {
-    t: (key: string) => string;
+    t: (key: string, options?: any) => string;
     name: string;
     onNameChange: (text: string) => void;
     onNext: () => void;
@@ -145,29 +140,33 @@ const NameStep = memo(
     const inputRef = useRef<any>(null);
 
     useEffect(() => {
-      // Focus name input on mount imperatively to respect static accessibility constraints
+      // Focus name input on mount imperatively
       const timer = setTimeout(() => {
         inputRef.current?.focus();
-      }, 100);
+      }, 150);
       return () => clearTimeout(timer);
     }, []);
+
+    const backLabel = t('onboarding.backToWelcome', { defaultValue: 'Back to Welcome' });
+    const resolvedBackLabel =
+      !backLabel || backLabel === 'onboarding.backToWelcome' ? 'Back to Welcome' : backLabel;
 
     return (
       <StepShell
         currentStep={0}
         step={getOnboardingStepLabel(0)}
-        title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
-        subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
+        title={t('onboarding.nameTitle', { defaultValue: 'Welcome! What should we call you?' })}
+        subtitle={t('onboarding.nameSubtitle', { defaultValue: "Let's start your journey with a name." })}
         artwork={artwork}
       >
-        <VStack className="gap-6">
-          <Input className="rounded-comfortable border-phase-text-tertiary">
+        <VStack className="gap-4">
+          <Input className="rounded-xl border-phase-border bg-phase-secondary/50 px-3 py-1">
             <InputField
               ref={inputRef}
-              placeholder={t('onboarding.namePlaceholder')}
+              placeholder={t('onboarding.namePlaceholder', { defaultValue: 'Your name or nickname' })}
               value={name}
               onChangeText={onNameChange}
-              className="text-phase-text-primary"
+              className="text-phase-text-primary text-base"
               editable={!isLoading}
               autoComplete="name"
               returnKeyType="next"
@@ -176,28 +175,29 @@ const NameStep = memo(
               }}
             />
           </Input>
-          <Text className="text-phase-text-secondary text-sm">
+          <Text className="text-phase-text-secondary text-xs">
             {name.trim().length > 0 && name.trim().length < 2
               ? 'Your name is a bit short. Try adding another character.'
               : name === 'Guest User'
                 ? "Please choose a name other than 'Guest User'."
-                : t('onboarding.nameHint') ||
-                  'Use the display name you want people to see inside the app.'}
+                : t('onboarding.nameHint', {
+                    defaultValue: 'Use the display name you want people to see inside the app.',
+                  })}
           </Text>
           <Button
             size="lg"
             onPress={onNext}
             isDisabled={!canProceed}
             isLoading={isLoading}
-            className="bg-phase-accent mt-2"
+            className="bg-phase-accent mt-2 rounded-xl"
           >
             <ButtonText className="text-phase-text-on-accent font-bold">
-              {t('onboarding.continue')}
+              {t('onboarding.continue', { defaultValue: 'Continue' })}
             </ButtonText>
           </Button>
           <Button variant="ghost" onPress={onBackToWelcome} className="mt-1">
             <ButtonText className="text-phase-text-tertiary">
-              {t('onboarding.backToWelcome') || 'Back to Welcome'}
+              {resolvedBackLabel}
             </ButtonText>
           </Button>
         </VStack>
@@ -217,7 +217,7 @@ const IdentityStep = memo(
     isLoading,
     isAnonymous,
   }: {
-    t: (key: string) => string;
+    t: (key: string, options?: any) => string;
     capacity: Capacity;
     onCapacitySelect: (capacity: Capacity) => void;
     onBack: () => void;
@@ -225,20 +225,20 @@ const IdentityStep = memo(
     isLoading?: boolean;
     isAnonymous?: boolean;
   }) => (
-    <VStack className="gap-6 mt-8 px-6">
-      <ProgressIndicator currentStep={1} totalSteps={TOTAL_STEPS} />
-      <Heading size="2xl" className="text-phase-accent text-center">
-        {t('onboarding.roleTitle')}
-      </Heading>
-      <Text className="text-md text-phase-text-secondary text-center">
-        {t('onboarding.roleSubtitle')}
-      </Text>
-      {isAnonymous && (
-        <Text className="text-xs text-phase-text-tertiary text-center mb-2">
-          (Anonymous Session)
-        </Text>
-      )}
-      <VStack className="gap-4">
+    <StepShell
+      currentStep={1}
+      step={getOnboardingStepLabel(1)}
+      title={t('onboarding.roleTitle', { defaultValue: 'Choose Your Capacity' })}
+      subtitle={t('onboarding.roleSubtitle', {
+        defaultValue: 'Select the role that best describes your presence in the sanctuary.',
+      })}
+    >
+      <VStack className="gap-3">
+        {isAnonymous && (
+          <Text className="text-xs text-phase-text-tertiary text-center mb-1">
+            (Anonymous Guest Session)
+          </Text>
+        )}
         {CAPACITY_OPTIONS.map((r) => {
           const selected = capacity === r.value;
           return (
@@ -249,53 +249,58 @@ const IdentityStep = memo(
               accessibilityState={{ selected }}
               disabled={isLoading}
               className={`
-              border-2 rounded-comfortable p-4 flex-row items-center
-              ${selected ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-secondary'}
+              border rounded-xl p-3.5 flex-row items-center gap-3.5
+              ${selected ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-secondary/50'}
               ${isLoading ? 'opacity-50' : ''}
             `}
             >
               <r.Icon
-                size={30}
+                size={26}
                 className={selected ? 'text-phase-accent' : 'text-phase-text-secondary'}
               />
               <VStack className="flex-1">
                 <Text
-                  className={`text-md font-bold ${selected ? 'text-phase-accent' : 'text-phase-text-primary'}`}
+                  className={`text-sm font-bold ${selected ? 'text-phase-accent' : 'text-phase-text-primary'}`}
                 >
-                  {t(`identity.${r.value}`)}
+                  {t(`identity.${r.value}`, { defaultValue: r.value.toUpperCase() })}
                 </Text>
-                <Text className="text-sm text-phase-text-secondary">{t(r.descKey)}</Text>
+                <Text className="text-xs text-phase-text-secondary">
+                  {t(r.descKey, { defaultValue: '' })}
+                </Text>
               </VStack>
               {selected && (
-                <Box className="w-5.5 h-5.5 rounded-full bg-phase-accent items-center justify-center">
-                  <Text className="text-xs text-phase-text-on-accent">✓</Text>
+                <Box className="w-5 h-5 rounded-full bg-phase-accent items-center justify-center">
+                  <Text className="text-xs text-phase-text-on-accent font-bold">✓</Text>
                 </Box>
               )}
             </Pressable>
           );
         })}
+
+        <HStack className="gap-3 mt-4">
+          <Button
+            variant="outline"
+            onPress={onBack}
+            isDisabled={isLoading}
+            className="flex-1 border-phase-border rounded-xl"
+          >
+            <ButtonText className="text-phase-text-primary">
+              {t('onboarding.back', { defaultValue: 'Back' })}
+            </ButtonText>
+          </Button>
+          <Button
+            onPress={onNext}
+            isLoading={isLoading}
+            isDisabled={isLoading}
+            className="bg-phase-accent flex-[2] rounded-xl"
+          >
+            <ButtonText className="text-phase-text-on-accent font-bold">
+              {t('onboarding.continue', { defaultValue: 'Continue' })}
+            </ButtonText>
+          </Button>
+        </HStack>
       </VStack>
-      <HStack className="gap-4 mt-6">
-        <Button
-          variant="outline"
-          onPress={onBack}
-          isDisabled={isLoading}
-          className="flex-1 border-phase-border"
-        >
-          <ButtonText className="text-phase-text-primary">{t('onboarding.back')}</ButtonText>
-        </Button>
-        <Button
-          onPress={onNext}
-          isLoading={isLoading}
-          isDisabled={isLoading}
-          className="bg-phase-accent flex-[2]"
-        >
-          <ButtonText className="text-phase-text-on-accent font-bold">
-            {t('onboarding.continue')}
-          </ButtonText>
-        </Button>
-      </HStack>
-    </VStack>
+    </StepShell>
   ),
 );
 IdentityStep.displayName = 'IdentityStep';
@@ -982,86 +987,97 @@ const OnboardingScreen = memo(function OnboardingScreen({
         <Box className="absolute -top-12 -right-10 w-44 h-44 rounded-full bg-phase-accent/10" />
         <Box className="absolute -left-5 bottom-24 w-40 h-40 rounded-full bg-gurudeviBlue/10" />
 
-        <VStack className="flex-1">
-          <VStack className="px-6 pt-5 pb-2 gap-2">
-            <HStack className="gap-2 flex-wrap">
-              {JOURNEY_PILLARS.map((pillar) => (
-                <Box
-                  key={pillar}
-                  className="px-3 py-1 rounded-full bg-phase-secondary/80 border border-phase-border"
-                >
-                  <Text className="text-xs text-phase-text-secondary font-bold">{pillar}</Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={{ flex: 1 }}
+        >
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <VStack className="flex-1">
+              {/* Minimalist Sanctuary Header */}
+              <HStack className="px-6 pt-3 pb-1 items-center justify-between">
+                <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase">
+                  SANCTUARY JOURNEY
+                </Text>
+                <Box className="px-2.5 py-0.5 rounded-full bg-phase-secondary/80 border border-phase-border">
+                  <Text className="text-[11px] text-phase-text-secondary font-medium">
+                    {currentPhase === 'arrival'
+                      ? 'Step 1 of 7'
+                      : currentPhase === 'identity'
+                        ? 'Step 2 of 7'
+                        : `Step ${currentStep + 1} of 7`}
+                  </Text>
                 </Box>
-              ))}
-            </HStack>
-            <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase">
-              SANCTUARY JOURNEY
-            </Text>
-          </VStack>
+              </HStack>
 
-          <Box className="px-6">
-            <ErrorBanner error={error} />
-          </Box>
+              <Box className="px-6">
+                <ErrorBanner error={error} />
+              </Box>
 
-          {isProcessing ? (
-            <Center className="flex-1">
-              <Text className="text-phase-text-primary">Finalizing your sanctuary...</Text>
-            </Center>
-          ) : showDevSandbox ? (
-            <DevSandboxConsole
-              onClose={() => dispatch({ type: 'SHOW_DEV_SANDBOX', visible: false })}
-              onSave={(devName, devRole, devPricing, devCitizenship, devSchoolId) => {
-                void handleDevFastTrack(devName, devRole, devPricing, devCitizenship, devSchoolId);
-              }}
-            />
-          ) : (
-            <>
-              {currentPhase === 'arrival' && (
-                <NameStep
-                  t={t}
-                  name={name}
-                  onNameChange={handleNameChange}
-                  onNext={() => {
-                    void handleNext();
+              {isProcessing ? (
+                <Center className="flex-1">
+                  <Text className="text-phase-text-primary">Finalizing your sanctuary...</Text>
+                </Center>
+              ) : showDevSandbox ? (
+                <DevSandboxConsole
+                  onClose={() => dispatch({ type: 'SHOW_DEV_SANDBOX', visible: false })}
+                  onSave={(devName, devRole, devPricing, devCitizenship, devSchoolId) => {
+                    void handleDevFastTrack(devName, devRole, devPricing, devCitizenship, devSchoolId);
                   }}
-                  canProceed={canProceed}
-                  isLoading={isProcessing}
-                  onBackToWelcome={handleBackToWelcome}
-                  artwork={onboardingArtwork}
                 />
+              ) : (
+                <>
+                  {currentPhase === 'arrival' && (
+                    <NameStep
+                      t={t}
+                      name={name}
+                      onNameChange={handleNameChange}
+                      onNext={() => {
+                        void handleNext();
+                      }}
+                      canProceed={canProceed}
+                      isLoading={isProcessing}
+                      onBackToWelcome={handleBackToWelcome}
+                      artwork={onboardingArtwork}
+                    />
+                  )}
+                  {currentPhase === 'identity' && (
+                    <IdentityStep
+                      t={t}
+                      capacity={selectedCapacity}
+                      onCapacitySelect={handleCapacitySelect}
+                      onBack={handleBack}
+                      onNext={() => {
+                        void handleNext();
+                      }}
+                      isLoading={isProcessing}
+                      isAnonymous={isAnonymous}
+                    />
+                  )}
+                  {(currentPhase === 'mandatory' ||
+                    currentPhase === 'optional' ||
+                    currentPhase === 'complete') &&
+                    currentTourScreen && (
+                      <TourStep
+                        t={t}
+                        index={currentStep}
+                        screen={currentTourScreen}
+                        onBack={handleBack}
+                        onNext={() => {
+                          void handleNext();
+                        }}
+                        onSkip={handleSkipTour}
+                        isLoading={isProcessing}
+                      />
+                    )}
+                </>
               )}
-              {currentPhase === 'identity' && (
-                <IdentityStep
-                  t={t}
-                  capacity={selectedCapacity}
-                  onCapacitySelect={handleCapacitySelect}
-                  onBack={handleBack}
-                  onNext={() => {
-                    void handleNext();
-                  }}
-                  isLoading={isProcessing}
-                  isAnonymous={isAnonymous}
-                />
-              )}
-              {(currentPhase === 'mandatory' ||
-                currentPhase === 'optional' ||
-                currentPhase === 'complete') &&
-                currentTourScreen && (
-                  <TourStep
-                    t={t}
-                    index={currentStep}
-                    screen={currentTourScreen}
-                    onBack={handleBack}
-                    onNext={() => {
-                      void handleNext();
-                    }}
-                    onSkip={handleSkipTour}
-                    isLoading={isProcessing}
-                  />
-                )}
-            </>
-          )}
-        </VStack>
+            </VStack>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </Box>
     </ScreenWrapper>
   );

@@ -59,9 +59,15 @@ export function EmptyState({
   const breakpoint = useBreakpoint();
   const size = breakpoint === 'phone' ? 120 : breakpoint === 'tablet' ? 150 : 170;
 
-  const illustration = icon ? (
+  const renderedIcon = React.isValidElement(icon)
+    ? icon
+    : typeof icon === 'function' || (typeof icon === 'object' && icon !== null && '$$typeof' in (icon as any))
+      ? React.createElement(icon as any, { size: Math.min(size, 48), color: color.neutral.warmGray400 })
+      : null;
+
+  const illustration = renderedIcon ? (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      {icon}
+      {renderedIcon}
     </View>
   ) : (
     <Svg width={size} height={size} viewBox="0 0 512 512">
