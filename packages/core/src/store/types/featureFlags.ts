@@ -11,6 +11,8 @@ export interface FeatureFlags {
   isSocialShieldEnabled: boolean;
   isUnderMaintenance: boolean;
   isPowerSyncEnabled: boolean;
+  isComposerPasteEnabled: boolean;
+  isNitroFetchEnabled: boolean;
 }
 
 export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
@@ -26,4 +28,6 @@ export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
   isSocialShieldEnabled: true,
   isUnderMaintenance: false,
   isPowerSyncEnabled: false,
+  isComposerPasteEnabled: false,
+  isNitroFetchEnabled: false,
 };

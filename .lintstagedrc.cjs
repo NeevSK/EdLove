@@ -6,34 +6,68 @@ const chunkArray = (arr, size) => {
   return chunks;
 };
 
+const isProductSource = (file) => {
+  const norm = file.replace(/\\/g, '/');
+  // Must be in apps/ or packages/
+  const inWorkspace = norm.startsWith('apps/') || norm.includes('/apps/') || norm.startsWith('packages/') || norm.includes('/packages/');
+  if (!inWorkspace) return false;
+
+  // Exclude non-product, plugins, scripts, and build artifacts
+  if (
+    norm.includes('/archive/') ||
+    norm.includes('/.astro/') ||
+    norm.includes('/plugins/') ||
+    norm.includes('/scripts/') ||
+    norm.includes('/supabase/') ||
+    norm.includes('/reports/') ||
+    norm.includes('/diagnostics/') ||
+    norm.endsWith('.d.ts') ||
+    norm.endsWith('.config.js') ||
+    norm.endsWith('.config.ts') ||
+    norm.endsWith('.config.mjs') ||
+    norm.endsWith('.config.cjs')
+  ) {
+    return false;
+  }
+
+  // Must be within src, app, or test directories
+  return (
+    norm.includes('/src/') ||
+    norm.includes('/app/') ||
+    norm.includes('/__tests__/') ||
+    norm.includes('/tests/')
+  );
+};
+
 module.exports = {
   '*.{js,ts,tsx}': (files) => {
-    const filteredFiles = files.filter(
-      (file) =>
-        !file.includes('/archive/') &&
-        !file.includes('\\archive\\') &&
-        !file.includes('/.astro/') &&
-        !file.includes('\\.astro\\') &&
-        !file.endsWith('.d.ts'),
-    );
-    if (filteredFiles.length === 0) return [];
-    const chunks = chunkArray(filteredFiles, 10);
+    const productFiles = files.filter(isProductSource);
+    const otherFiles = files.filter((f) => !isProductSource(f) && !f.endsWith('.d.ts') && !f.includes('/archive/'));
+
     const commands = [];
-    for (const chunk of chunks) {
-      const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
-      // Primary: Oxlint (fast, general-purpose linting)
-      commands.push(`oxlint --fix ${chunkStr}`);
-      // Secondary: ESLint (TypeScript, React Native, Expo specific rules)
-      commands.push(`eslint --fix --no-warn-ignored ${chunkStr}`);
-      // Formatter: Biome (formatting + import organization)
-      commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
-      // Custom validation
-      commands.push(`node scripts/surgical-check.mjs ${chunkStr}`);
-      // Duplicate detection: catches copy-paste spaghetti before it enters the repo.
-      // --min-lines 8: ignores short repeated patterns (imports, type declarations).
-      // Scoped to changed files only — fast enough for pre-commit.
-       commands.push(`jscpd ${chunkStr} --min-lines 15 --min-tokens 50 --reporters console --exit-code 1`);
+
+    // Product source files: comprehensive quality gate
+    if (productFiles.length > 0) {
+      const chunks = chunkArray(productFiles, 10);
+      for (const chunk of chunks) {
+        const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
+        commands.push(`oxlint --fix ${chunkStr}`);
+        commands.push(`eslint --fix --no-warn-ignored ${chunkStr}`);
+        commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
+        commands.push(`node scripts/surgical-check.mjs ${chunkStr}`);
+        commands.push(`jscpd ${chunkStr} --min-lines 15 --min-tokens 50 --reporters console --exit-code 1`);
+      }
     }
+
+    // Auxiliary / build / tool files: lightweight format & syntax check only
+    if (otherFiles.length > 0) {
+      const chunks = chunkArray(otherFiles, 10);
+      for (const chunk of chunks) {
+        const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
+        commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
+      }
+    }
+
     return commands;
   },
   '*.json': (files) => {

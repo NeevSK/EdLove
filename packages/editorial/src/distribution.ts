@@ -225,7 +225,7 @@ export async function dispatchArticlePublished({
 interface ChannelPublishInput {
   channel: DistributionChannel;
   event: ArticlePublishedEvent;
-  article: EditorialArticle;
+  article: Pick<DistributionPayload, 'title' | 'text'>;
   now: string;
   processing: DistributionDelivery;
   adapter?: DistributionAdapter;

@@ -33,10 +33,14 @@ export default defineConfig({
             'src/__tests__/architecture/AppPerformance.test.tsx',
             'src/__tests__/architecture/classroom-surface-entrypoints.test.ts',
             'src/__tests__/architecture/founder-stack-boundaries.test.ts',
-            'src/__tests__/architecture/profile-route-capabilities.test.ts',
         ],
-        passWithNoTests: true,
+        tags: [
+            { name: 'a11y', description: 'Accessibility, contrast, font scaling, and semantic audits' },
+            { name: 'theme', description: 'Design tokens and theme boundary audits' },
+            { name: 'fast', description: 'Fast execution suites' },
+        ],
         server: {
+            forwardConsole: true,
             deps: {
                 inline: [/packages/, /@repo\//, /expo-modules-core/],
                 external: [

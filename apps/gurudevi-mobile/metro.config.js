@@ -19,6 +19,19 @@ function resolvePnpmPackageRuntime(packageName, runtimeFile) {
   return path.resolve(pnpmRoot, pkgDir, 'node_modules', packageName, runtimeFile);
 }
 
+function resolvePnpmPackageRoot(packageName) {
+  const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
+  const pkgDir = fs
+    .readdirSync(pnpmRoot)
+    .find((entry) => entry.startsWith(`${packageName.replace('/', '+')}@`));
+
+  if (!pkgDir) {
+    throw new Error(`Unable to locate ${packageName} in pnpm store at ${pnpmRoot}`);
+  }
+
+  return path.resolve(pnpmRoot, pkgDir, 'node_modules', packageName);
+}
+
 // Note: babel.config.js sets `unstable_transformImportMeta: true` in
 // babel-preset-expo.  This is required because zustand@5 (and similar
 // packages) ship pre-compiled code that uses `import.meta.env.MODE` for
@@ -165,6 +178,13 @@ const SINGLETON_OVERRIDES = {
   scheduler: path.resolve(projectRoot, 'node_modules/scheduler'),
   'color-name': path.resolve(projectRoot, 'node_modules/color-name'),
   'react-is': path.resolve(projectRoot, 'node_modules/react-is'),
+  '@sentry/browser': resolvePnpmPackageRoot('@sentry/browser'),
+  '@growthbook/growthbook': resolvePnpmPackageRoot('@growthbook/growthbook'),
+  '@powersync/common': resolvePnpmPackageRoot('@powersync/common'),
+  'fast-json-patch': resolvePnpmPackageRoot('fast-json-patch'),
+  'fast-base64-decode': resolvePnpmPackageRoot('fast-base64-decode'),
+  'abort-controller': resolvePnpmPackageRoot('abort-controller'),
+  'event-target-shim': resolvePnpmPackageRoot('event-target-shim'),
 };
 
 // 5. Resolution is limited to the declared app graph. Scanning the entire
@@ -192,7 +212,46 @@ if (isWeb) {
   delete SINGLETON_OVERRIDES['react-native'];
 }
 
+const workspacePackagesDir = path.resolve(workspaceRoot, 'packages');
+if (fs.existsSync(workspacePackagesDir)) {
+  for (const entry of fs.readdirSync(workspacePackagesDir)) {
+    const pkgJsonPath = path.join(workspacePackagesDir, entry, 'package.json');
+    if (fs.existsSync(pkgJsonPath)) {
+      try {
+        const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+        if (pkgJson.name && !SINGLETON_OVERRIDES[pkgJson.name]) {
+          SINGLETON_OVERRIDES[pkgJson.name] = path.join(workspacePackagesDir, entry);
+        }
+      } catch {}
+    }
+  }
+}
+
+const pnpmStoreFallbackModules = {};
+const pnpmStoreRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
+if (fs.existsSync(pnpmStoreRoot)) {
+  for (const entry of fs.readdirSync(pnpmStoreRoot)) {
+    const pkgNodeModules = path.resolve(pnpmStoreRoot, entry, 'node_modules');
+    if (fs.existsSync(pkgNodeModules)) {
+      for (const item of fs.readdirSync(pkgNodeModules)) {
+        if (item.startsWith('@')) {
+          const scopeDir = path.resolve(pkgNodeModules, item);
+          for (const subItem of fs.readdirSync(scopeDir)) {
+            const pkgName = `${item}/${subItem}`;
+            if (!SINGLETON_OVERRIDES[pkgName] && !fs.existsSync(path.resolve(projectRoot, 'node_modules', pkgName))) {
+              pnpmStoreFallbackModules[pkgName] = path.resolve(scopeDir, subItem);
+            }
+          }
+        } else if (!SINGLETON_OVERRIDES[item] && !fs.existsSync(path.resolve(projectRoot, 'node_modules', item))) {
+          pnpmStoreFallbackModules[item] = path.resolve(pkgNodeModules, item);
+        }
+      }
+    }
+  }
+}
+
 config.resolver.extraNodeModules = {
+  ...pnpmStoreFallbackModules,
   ...SINGLETON_OVERRIDES,
 };
 
@@ -293,6 +352,17 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
+  if (moduleName === '@repo/core/native/webSentryAdapter') {
+    return {
+      filePath: path.resolve(
+        workspaceRoot,
+        'packages/core/src/native',
+        platform === 'web' ? 'webSentryAdapter.web.ts' : 'webSentryAdapter.native.ts',
+      ),
+      type: 'sourceFile',
+    };
+  }
+
   if (moduleName === '@repo/workforce/WorkforceShell') {
     return {
       filePath: path.resolve(workspaceRoot, 'packages/workforce/src/WorkforceShell.tsx'),
@@ -341,7 +411,22 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   }
 
   // Delegate to original/default resolver for everything else
-  return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
+  try {
+    return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
+  } catch (err) {
+    if (!moduleName.startsWith('.') && !moduleName.startsWith('/') && !moduleName.includes(':')) {
+      try {
+        return (defaultResolveRequest || context.resolveRequest)(
+          { ...context, originModulePath: path.resolve(projectRoot, 'index.ts') },
+          moduleName,
+          platform,
+        );
+      } catch {
+        // Fall through to throw original error
+      }
+    }
+    throw err;
+  }
 };
 
 // 7. ESM package exports resolution

@@ -7,12 +7,11 @@ const read = (relativePath: string) => readFileSync(resolve(workspaceRoot, relat
 
 describe('efficiency policy boundaries', () => {
   it('keeps operational entry points behind the shared policy', () => {
-    expect(read('apps/gurudevi-mobile/src/lib/backgroundSync.ts')).toContain(
-      "from '@repo/core/efficiency'",
-    );
-    expect(read('apps/gurudevi-mobile/src/storage/retention-scheduler.ts')).toContain(
-      "from '@repo/core/efficiency'",
-    );
+    const backgroundSync = read('apps/gurudevi-mobile/src/lib/backgroundSync.ts');
+    const retentionScheduler = read('apps/gurudevi-mobile/src/storage/retention-scheduler.ts');
+    // Accept either single or double quotes for the import
+    expect(backgroundSync).toMatch(/from\s+["']@repo\/core\/efficiency["']/);
+    expect(retentionScheduler).toMatch(/from\s+["']@repo\/core\/efficiency["']/);
   });
 
   it('does not retain retired device heuristics or component-level PixelRatio policy', () => {

@@ -62,7 +62,7 @@ export const FeatureFlagMetadataSchema = FeatureLifecycleSchema.extend({
   }
 });
 
-const legacyRelease = (
+export const legacyRelease = (
   owner: string,
   purpose: string,
 ): Omit<FeatureFlagMetadata, 'growthbookKey'> => ({
@@ -194,6 +194,14 @@ export const FEATURE_FLAG_MANIFEST = {
       false,
     ),
     growthbookKey: 'gurudevi.core.power-sync',
+  },
+  isComposerPasteEnabled: {
+    ...legacyBeta('editorial', 'Controlled release of rich paste (images/GIFs/stickers) in composer.'),
+    growthbookKey: 'gurudevi.editorial.composer-paste',
+  },
+  isNitroFetchEnabled: {
+    ...legacyBeta('platform-core', 'Controlled release of Nitro Fetch (Cronet/URLSession) for native network stack.'),
+    growthbookKey: 'gurudevi.core.nitro-fetch',
   },
 } as const satisfies Record<string, FeatureFlagMetadata>;
 

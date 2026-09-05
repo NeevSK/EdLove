@@ -1,1 +1,1 @@
-export { BrowserSentryTelemetryAdapter } from '@repo/core/adapters/web/SentryTelemetryAdapter';
+export { BrowserSentryTelemetryAdapter } from '../adapters/web/SentryTelemetryAdapter';

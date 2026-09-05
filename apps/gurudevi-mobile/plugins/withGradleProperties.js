@@ -28,25 +28,28 @@ const withCustomGradleProperties = (config) => {
     const arch = process.env.GRADLE_ABI || 'arm64-v8a';
 
     const updateProperty = (key, value) => {
-      const prop = cfg.modResults.find((p) => p.type === 'property' && p.key === key);
-      if (prop) {
-        prop.value = value;
+      const props = cfg.modResults.filter((p) => p.type === 'property' && p.key && p.key.trim() === key);
+      if (props.length > 0) {
+        props.forEach((prop) => {
+          prop.value = value;
+        });
       } else {
         cfg.modResults.push({ type: 'property', key, value });
       }
     };
 
-    const gradleHeap = process.env.GRADLE_MAX_HEAP || '3072m';
-    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '384m';
+    const gradleHeap = process.env.GRADLE_MAX_HEAP || '4096m';
+    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '512m';
     const gradleWorkers = process.env.GRADLE_MAX_WORKERS || '1';
     updateProperty(
       'org.gradle.jvmargs',
-      `-Xmx${gradleHeap} -XX:MaxMetaspaceSize=${gradleMetaspace} -XX:+UseG1GC`,
+      `-Xmx${gradleHeap} -XX:MaxMetaspaceSize=${gradleMetaspace} -XX:+UseSerialGC`,
     );
     updateProperty('org.gradle.parallel', 'false');
     updateProperty('org.gradle.workers.max', gradleWorkers);
     updateProperty('org.gradle.daemon', 'false');
-    updateProperty('kotlin.daemon.jvm.options', '-Xmx1024m');
+    updateProperty('org.gradle.caching', 'true');
+    updateProperty('kotlin.compiler.execution.strategy', 'in-process');
     updateProperty('reactNativeArchitectures', arch);
 
     return cfg;
