@@ -96,7 +96,12 @@ export const usePermissions = () => {
       classroomId: activeBond?.entity_type === 'CLASSROOM' ? activeBond.entity_id : null,
     };
 
-    return UserContextSchema.parse(rawContext);
+    const parsed = UserContextSchema.safeParse(rawContext);
+    if (!parsed.success) {
+      console.warn('[usePermissions] Schema parse warning:', parsed.error.issues);
+      return rawContext;
+    }
+    return parsed.data;
   }, [user, schoolType, pricingTier]);
 
   const can = useCallback(

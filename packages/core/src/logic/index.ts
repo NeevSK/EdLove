@@ -2,6 +2,7 @@
 
 export * from '@repo/core/api/history';
 export { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
+export { useSanctuaryVisitor, type SanctuaryVisitorState } from '@repo/core/hooks/useSanctuaryVisitor';
 export {
   type DeviceAccountRecord,
   useDeviceAccounts,

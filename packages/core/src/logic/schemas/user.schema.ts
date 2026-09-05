@@ -58,7 +58,7 @@ const normalizeUserContextInput = (value: unknown) => {
 export const UserContextSchema = z.preprocess(
   normalizeUserContextInput,
   z.object({
-    userId: z.uuid().nullish().default(null),
+    userId: z.string().nullish().default(null),
     email: z.string().email().nullish().default(null),
 
     // Sovereign ReBAC Context

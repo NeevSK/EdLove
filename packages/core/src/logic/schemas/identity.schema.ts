@@ -21,8 +21,8 @@ export const IdentityStateSchema = z.enum(['anonymous', 'onboarded', 'verified']
 
 export const BondSchema = z
   .object({
-    id: z.uuid(),
-    user_id: z.uuid(),
+    id: z.string().min(1),
+    user_id: z.string().min(1),
     entity_id: z.string(),
     entity_type: z.enum([
       'PLATFORM',
