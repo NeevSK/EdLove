@@ -196,11 +196,17 @@ export const FEATURE_FLAG_MANIFEST = {
     growthbookKey: 'gurudevi.core.power-sync',
   },
   isComposerPasteEnabled: {
-    ...legacyBeta('editorial', 'Controlled release of rich paste (images/GIFs/stickers) in composer.'),
+    ...legacyBeta(
+      'editorial',
+      'Controlled release of rich paste (images/GIFs/stickers) in composer.',
+    ),
     growthbookKey: 'gurudevi.editorial.composer-paste',
   },
   isNitroFetchEnabled: {
-    ...legacyBeta('platform-core', 'Controlled release of Nitro Fetch (Cronet/URLSession) for native network stack.'),
+    ...legacyBeta(
+      'platform-core',
+      'Controlled release of Nitro Fetch (Cronet/URLSession) for native network stack.',
+    ),
     growthbookKey: 'gurudevi.core.nitro-fetch',
   },
 } as const satisfies Record<string, FeatureFlagMetadata>;

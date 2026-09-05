@@ -1,5 +1,5 @@
-import { useFeatureStore } from "@repo/core/store/useFeatureStore";
-import { Platform } from "react-native";
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { Platform } from 'react-native';
 
 type FetchFn = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
@@ -19,7 +19,7 @@ async function loadNitroModules() {
   if (nitroModulesLoaded) return;
 
   try {
-    const nitroFetchModule = await import("react-native-nitro-fetch");
+    const nitroFetchModule = await import('react-native-nitro-fetch');
     nitroFetchImpl = nitroFetchModule.fetch;
     nitroPrefetchImpl = nitroFetchModule.prefetch;
     nitroPrefetchOnAppStartImpl = nitroFetchModule.prefetchOnAppStart;
@@ -54,7 +54,7 @@ function getComposerPasteFlag(): boolean {
 }
 
 export async function getFetchFn(): Promise<FetchFn> {
-  if (Platform.OS === "web") {
+  if (Platform.OS === 'web') {
     return globalThis.fetch.bind(globalThis);
   }
 
@@ -70,13 +70,13 @@ export async function getFetchFn(): Promise<FetchFn> {
     const { signal, ...restInit } = init ?? {};
 
     if (signal?.aborted) {
-      return Promise.reject(new DOMException("Aborted", "AbortError"));
+      return Promise.reject(new DOMException('Aborted', 'AbortError'));
     }
 
     const abortPromise = new Promise<never>((_, reject) => {
       if (signal) {
-        signal.addEventListener("abort", () => {
-          reject(new DOMException("Aborted", "AbortError"));
+        signal.addEventListener('abort', () => {
+          reject(new DOMException('Aborted', 'AbortError'));
         });
       }
     });
@@ -91,7 +91,7 @@ export async function getFetchFn(): Promise<FetchFn> {
 }
 
 export async function getPrefetchFn(): Promise<PrefetchFn> {
-  if (Platform.OS === "web") {
+  if (Platform.OS === 'web') {
     return async () => {};
   }
 
@@ -107,7 +107,7 @@ export async function getPrefetchFn(): Promise<PrefetchFn> {
 }
 
 export async function getPrefetchOnAppStartFn(): Promise<PrefetchOnAppStartFn> {
-  if (Platform.OS === "web") {
+  if (Platform.OS === 'web') {
     return async () => {};
   }
 

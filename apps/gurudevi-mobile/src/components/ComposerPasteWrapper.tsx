@@ -1,21 +1,21 @@
-import { useCallback, useEffect, useRef } from "react";
-import { Platform, TextInput, TextInputProps } from "react-native";
-import { isComposerPasteEnabled } from "@/lib/fetchFn";
+import { useCallback, useEffect, useRef } from 'react';
+import { Platform, TextInput, TextInputProps } from 'react-native';
+import { isComposerPasteEnabled } from '@/lib/fetchFn';
 
 type PasteEventPayload =
-  | { type: "text"; value: string }
-  | { type: "images"; uris: string[] }
-  | { type: "unsupported" }
-  | { type: "consent_required"; uris: string[] };
+  | { type: 'text'; value: string }
+  | { type: 'images'; uris: string[] }
+  | { type: 'unsupported' }
+  | { type: 'consent_required'; uris: string[] };
 
 // Extended props to include onPaste from expo-paste-input
-interface ComposerPasteWrapperProps extends Omit<TextInputProps, "onPaste"> {
+interface ComposerPasteWrapperProps extends Omit<TextInputProps, 'onPaste'> {
   onPaste?: (payload: PasteEventPayload) => void;
   children?: never;
   consentGiven?: boolean;
 }
 
-const TEMP_PASTE_DIR = "paste-attachments";
+const TEMP_PASTE_DIR = 'paste-attachments';
 
 export function ComposerPasteWrapper({
   onPaste,
@@ -32,27 +32,27 @@ export function ComposerPasteWrapper({
   // On web, we fall back to clipboard API
   const handlePaste = useCallback(
     (payload: PasteEventPayload) => {
-      if (payload.type === "text") {
+      if (payload.type === 'text') {
         onPaste?.(payload);
         return;
       }
 
-      if (payload.type === "images") {
+      if (payload.type === 'images') {
         // Store temp URIs for attachment flow
         tempUrisRef.current = payload.uris;
 
         if (!consentGiven) {
           // Trigger consent flow - caller should show consent UI
-          onPaste?.({ type: "consent_required", uris: payload.uris });
+          onPaste?.({ type: 'consent_required', uris: payload.uris });
           return;
         }
 
         // Consent already given - proceed with attachment
-        onPaste?.({ type: "images", uris: payload.uris });
+        onPaste?.({ type: 'images', uris: payload.uris });
         return;
       }
 
-      if (payload.type === "consent_required") {
+      if (payload.type === 'consent_required') {
         onPaste?.(payload);
         return;
       }
@@ -67,21 +67,21 @@ export function ComposerPasteWrapper({
     return () => {
       if (!consentGiven && tempUrisRef.current.length > 0) {
         // Best effort cleanup - actual purge happens in attachment flow
-        console.log("[ComposerPasteWrapper] Temp URIs pending cleanup:", tempUrisRef.current);
+        console.log('[ComposerPasteWrapper] Temp URIs pending cleanup:', tempUrisRef.current);
       }
     };
   }, [consentGiven]);
 
   // On web, use clipboard API fallback
   useEffect(() => {
-    if (Platform.OS !== "web") return;
+    if (Platform.OS !== 'web') return;
 
     const handleClipboardPaste = async (e: ClipboardEvent) => {
       const clipboardData = e.clipboardData;
       if (!clipboardData) return;
 
       const items = clipboardData.items;
-      const imageItems = Array.from(items).filter((item) => item.type.startsWith("image/"));
+      const imageItems = Array.from(items).filter((item) => item.type.startsWith('image/'));
 
       if (imageItems.length > 0) {
         e.preventDefault();
@@ -93,12 +93,12 @@ export function ComposerPasteWrapper({
           }),
         );
         const validUris = uris.filter((u): u is string => u !== null);
-        handlePaste({ type: "images", uris: validUris });
+        handlePaste({ type: 'images', uris: validUris });
       }
     };
 
-    document.addEventListener("paste", handleClipboardPaste);
-    return () => document.removeEventListener("paste", handleClipboardPaste);
+    document.addEventListener('paste', handleClipboardPaste);
+    return () => document.removeEventListener('paste', handleClipboardPaste);
   }, [handlePaste]);
 
   // If feature is disabled, render normal TextInput without paste handling
@@ -113,7 +113,7 @@ export function ComposerPasteWrapper({
 export { TEMP_PASTE_DIR };
 
 // Type extension for onPaste payload (expo-paste-input adds this to TextInput)
-declare module "react-native" {
+declare module 'react-native' {
   interface TextInputProps {
     onPaste?: (payload: PasteEventPayload) => void;
   }
