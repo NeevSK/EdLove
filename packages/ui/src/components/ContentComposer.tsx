@@ -1,5 +1,15 @@
-import { Platform } from 'react-native';
-import { BarChart3, Clock, Image as ImageIcon, Lock, Mic, Plus, Trash2, Users, X } from '@repo/ui/icons';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import {
+  BarChart3,
+  Clock,
+  Image as ImageIcon,
+  Lock,
+  Mic,
+  Plus,
+  Trash2,
+  Users,
+  X,
+} from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -18,7 +28,7 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Platform } from 'react-native';
 
 export interface Tag {
   id: string;

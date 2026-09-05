@@ -27,5 +27,9 @@ interface EaseViewProps extends Omit<ViewProps, 'style'> {
 // violates React's hook rules on web. Web motion is supplied by CSS on the
 // gateway routes, so retain the layout contract without mounting Reanimated.
 export function EaseView({ style, children, ...rest }: EaseViewProps) {
-  return <View style={style} {...rest}>{children}</View>;
+  return (
+    <View style={style} {...rest}>
+      {children}
+    </View>
+  );
 }

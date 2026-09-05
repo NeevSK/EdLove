@@ -1,8 +1,8 @@
+import { UniversalModal } from '@repo/ui/components/UniversalModal';
 import { X } from '@repo/ui/icons';
+import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import { Dimensions } from 'react-native';
-import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { UniversalModal } from '@repo/ui/components/UniversalModal';
 
 export interface SanctuaryModalProps {
   isOpen: boolean;

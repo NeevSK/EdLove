@@ -1,7 +1,7 @@
-import { styled } from 'nativewind';
 import { fireEvent, render } from '@testing-library/react-native';
+import { styled } from 'nativewind';
 import type { ComponentType } from 'react';
-import { Pressable, Text, View, type PressableProps } from 'react-native';
+import { Pressable, type PressableProps, Text, View } from 'react-native';
 
 // NativeWind v5 preview currently expands these generics beyond TypeScript's
 // representable union size. Keep the expected error visible in this harness;

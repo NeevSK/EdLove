@@ -1,6 +1,6 @@
+import { styled } from 'nativewind';
 import React from 'react';
 import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
-import { styled } from 'nativewind';
 
 const StyledView = styled(View);
 

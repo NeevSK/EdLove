@@ -1,3 +1,5 @@
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { View } from '@repo/ui/primitives';
 import {
   Canvas,
   ColorMatrix,
@@ -10,8 +12,6 @@ import {
 } from '@shopify/react-native-skia';
 import type React from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { View } from '@repo/ui/primitives';
 
 interface LivingCardProps {
   children: React.ReactNode;

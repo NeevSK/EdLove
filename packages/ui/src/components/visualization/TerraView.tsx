@@ -1,13 +1,13 @@
+// @ts-ignore
+import lkEduData from '@intuitui-labs/lk-edu-geo/data/lk-edu-data.json';
 import type { PerspectiveViewProps } from '@repo/core/types';
-import type React from 'react';
-import { useMemo } from 'react';
+import { UnifiedMapView } from '@repo/ui/components/maps/UnifiedMapView';
+import { UnifiedMarker } from '@repo/ui/components/maps/UnifiedMarker';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Box } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { UnifiedMapView } from '@repo/ui/components/maps/UnifiedMapView';
-import { UnifiedMarker } from '@repo/ui/components/maps/UnifiedMarker';
-// @ts-ignore
-import lkEduData from '@intuitui-labs/lk-edu-geo/data/lk-edu-data.json';
+import type React from 'react';
+import { useMemo } from 'react';
 
 /**
  * TerraView - The Geographical Perspective.
@@ -18,8 +18,17 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({ data, onNodePress })
   // LK Edu Geo districts for powerhouse choropleth (first 5 for demo)
   const districtMarkers = useMemo(() => {
     try {
-      const districts = (lkEduData as unknown as { districts?: { id: string; name: string; lat?: number; lng?: number }[] }).districts ?? [];
-      return districts.slice(0, 5).map((d) => ({ id: `district-${d.id}`, label: d.name, geo: { lat: d.lat ?? 7.9, lng: d.lng ?? 80.7 } }));
+      const districts =
+        (
+          lkEduData as unknown as {
+            districts?: { id: string; name: string; lat?: number; lng?: number }[];
+          }
+        ).districts ?? [];
+      return districts.slice(0, 5).map((d) => ({
+        id: `district-${d.id}`,
+        label: d.name,
+        geo: { lat: d.lat ?? 7.9, lng: d.lng ?? 80.7 },
+      }));
     } catch {
       return [];
     }

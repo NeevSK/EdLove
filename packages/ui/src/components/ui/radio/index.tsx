@@ -1,9 +1,9 @@
-import type React from 'react';
-import { createContext, useContext, useMemo } from 'react';
-import { type ViewProps } from 'react-native';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { type ViewProps } from 'react-native';
 
 /**
  * Radio Component
@@ -171,4 +171,3 @@ Radio.displayName = 'Radio';
 RadioGroup.displayName = 'RadioGroup';
 
 export { Radio as default };
-

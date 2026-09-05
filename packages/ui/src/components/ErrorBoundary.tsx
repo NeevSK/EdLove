@@ -1,12 +1,5 @@
-import { Component, type ErrorInfo, type ReactNode, useState, useCallback } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-} from 'react-native';
+import { Component, type ErrorInfo, type ReactNode, useCallback, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +20,11 @@ interface State {
  */
 async function copyToClipboard(text: string): Promise<boolean> {
   try {
-    if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+    if (
+      typeof navigator !== 'undefined' &&
+      navigator.clipboard &&
+      typeof navigator.clipboard.writeText === 'function'
+    ) {
       await navigator.clipboard.writeText(text);
       return true;
     }
@@ -95,7 +92,8 @@ function ErrorCard({
         {/* Reassuring Header & Copy */}
         <Text style={styles.titleText}>Sanctuary Paused</Text>
         <Text style={styles.subtitleText}>
-          An unexpected disruption occurred in this view. Your session and stored data remain completely safe.
+          An unexpected disruption occurred in this view. Your session and stored data remain
+          completely safe.
         </Text>
 
         {/* Actions Suite */}
@@ -115,7 +113,9 @@ function ErrorCard({
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Copy error details"
-            onPress={handleCopy}
+            onPress={() => {
+              void handleCopy();
+            }}
             activeOpacity={0.7}
             style={[styles.secondaryButton, copied && styles.copiedButton]}
           >
@@ -147,9 +147,7 @@ function ErrorCard({
 
             <ScrollView style={styles.inspectorScroll} nestedScrollEnabled>
               <Text style={styles.inspectorErrorText}>{errorMessage}</Text>
-              {errorStack ? (
-                <Text style={styles.inspectorStackText}>{errorStack}</Text>
-              ) : null}
+              {errorStack ? <Text style={styles.inspectorStackText}>{errorStack}</Text> : null}
               {componentStack ? (
                 <Text style={styles.inspectorComponentStackText}>{componentStack}</Text>
               ) : null}

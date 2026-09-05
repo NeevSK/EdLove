@@ -1,11 +1,10 @@
 import { useTemporalStore } from '@repo/core/logic';
+import { TemporalScrubber } from '@repo/ui/components/TemporalScrubber';
 import { Calendar, PanelsTopLeft as LayoutIcon, Wifi, WifiOff, Zap } from '@repo/ui/icons';
+import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';
-import { Box, HStack, Text } from '@repo/ui/primitives';
-import { Pressable } from '@repo/ui/primitives';
-import { TemporalScrubber } from '@repo/ui/components/TemporalScrubber';
 
 /**
  * TemporalPilot

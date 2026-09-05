@@ -1,6 +1,19 @@
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { UniversalModal } from '@repo/ui/components/UniversalModal';
+import { useFAB } from '@repo/ui/context/FABContext';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { Wind } from '@repo/ui/icons';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
+import {
+  GestureDetector,
+  useExclusiveGestures,
+  usePanGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   type SharedValue,
@@ -11,20 +24,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useFAB } from '@repo/ui/context/FABContext';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
-import { Platform, useWindowDimensions } from 'react-native';
-import {
-  GestureDetector,
-  useExclusiveGestures,
-  usePanGesture,
-  useTapGesture,
-} from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-worklets';
-import { hapticLight } from '@repo/ui/utils/haptics';
-import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
-import { UniversalModal } from '@repo/ui/components/UniversalModal';
 
 // ============================================================================
 // TYPES
@@ -192,7 +192,15 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       const next = clampFabToViewport(preferredX, preferredY);
       positionX.value = next.x;
       positionY.value = next.y;
-    }, [bottomInset, bottomTabPadding, clampFabToViewport, positionX, positionY, viewportHeight, viewportWidth]);
+    }, [
+      bottomInset,
+      bottomTabPadding,
+      clampFabToViewport,
+      positionX,
+      positionY,
+      viewportHeight,
+      viewportWidth,
+    ]);
 
     const handlePress = useCallback(() => {
       if (disabled) return;
@@ -342,31 +350,31 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
             accessibilityState={{ disabled }}
             onAccessibilityTap={handlePress}
           >
-          {/* Breathing Glow */}
-          <Animated.View
-            style={breathingStyle}
-            className={`
+            {/* Breathing Glow */}
+            <Animated.View
+              style={breathingStyle}
+              className={`
                         absolute w-[72px] h-[72px] rounded-full
                         ${hasActiveGaps ? 'bg-phase-error opacity-60' : 'bg-phase-accent opacity-40'}
                     `}
-          />
+            />
 
-          {/* Main FAB Circle */}
-          <Box
-            className={`
+            {/* Main FAB Circle */}
+            <Box
+              className={`
                         w-14 h-14 rounded-full items-center justify-center bg-phase-accent
                         shadow-xl shadow-black/30 border-2 border-white/10
                         ${className || ''}
                     `}
-          >
-            {hasActiveGaps ? (
-              <Text className="text-2xl">❗</Text>
-            ) : icon ? (
-              icon
-            ) : (
-              <Text className="text-2xl">{config.emoji}</Text>
-            )}
-          </Box>
+            >
+              {hasActiveGaps ? (
+                <Text className="text-2xl">❗</Text>
+              ) : icon ? (
+                icon
+              ) : (
+                <Text className="text-2xl">{config.emoji}</Text>
+              )}
+            </Box>
           </Animated.View>
         </GestureDetector>
 

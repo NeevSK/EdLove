@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react-native';
 import { Sheet, SheetContent, SheetItem, SheetItemText } from '@repo/ui/components/ui/sheet';
+import { render, screen } from '@testing-library/react-native';
 
 describe('Sheet', () => {
   it('uses the source-owned actionsheet behavior with the open API', async () => {

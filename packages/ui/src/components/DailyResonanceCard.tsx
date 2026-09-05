@@ -1,6 +1,6 @@
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import type { LucideIcon } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
-import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { cn } from '@repo/ui/utils/classNames';
 
 interface DailyResonanceCardProps {

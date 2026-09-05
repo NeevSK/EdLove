@@ -1,21 +1,29 @@
 import {
+  closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from '@dnd-kit/core';
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
-import { StyleSheet } from 'react-native';
+import {
+  useWorkspaceCanvasData,
+  WorkspaceCanvasEmptyState,
+  WorkspaceCanvasHero,
+} from '@repo/ui/components/workspace/shared';
+import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
+import { WebCanvasZoneColumn } from '@repo/ui/components/workspace/WebCanvasZoneColumn';
 import { ScrollView, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { WebCanvasZoneColumn } from '@repo/ui/components/workspace/WebCanvasZoneColumn';
-import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@repo/ui/components/workspace/shared';
-import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
 export interface WebWorkspaceCanvasProps<
   TSurfaceId extends string = string,
@@ -44,12 +52,15 @@ export function WebWorkspaceCanvas<
       if (!over || active.id === over.id || !props.onReorder) return;
       const activeId = String(active.id);
       const overId = String(over.id);
-      const group = groups.find((candidate) =>
-        candidate.surfaces.some((surface) => String(surface.surfaceId) === activeId) &&
-        candidate.surfaces.some((surface) => String(surface.surfaceId) === overId),
+      const group = groups.find(
+        (candidate) =>
+          candidate.surfaces.some((surface) => String(surface.surfaceId) === activeId) &&
+          candidate.surfaces.some((surface) => String(surface.surfaceId) === overId),
       );
       if (!group) return;
-      const oldIndex = group.surfaces.findIndex((surface) => String(surface.surfaceId) === activeId);
+      const oldIndex = group.surfaces.findIndex(
+        (surface) => String(surface.surfaceId) === activeId,
+      );
       const newIndex = group.surfaces.findIndex((surface) => String(surface.surfaceId) === overId);
       if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
       props.onReorder(activeId as TSurfaceId, newIndex);
@@ -70,12 +81,12 @@ export function WebWorkspaceCanvas<
       {visibleCount === 0 ? (
         <WorkspaceCanvasEmptyState emptyMessage={emptyMessage} />
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.columns}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.columns}
+          >
             {groups.map((group) => (
               <SortableContext
                 key={group.zone}

@@ -1,10 +1,10 @@
 import { createDefaultWorkspaceLayout, setWorkspaceSurfaceHidden } from '@repo/core/logic';
 import type { WorkspaceLayout, WorkspaceSurfaceDefinition } from '@repo/core/types';
-import { useMemo, useState } from 'react';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';
-import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useMemo, useState } from 'react';
 
 type DemoRole = 'teacher' | 'principal' | 'founder';
 /* ... types truncated ... */

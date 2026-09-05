@@ -1,12 +1,13 @@
+import EmptyState from '@repo/ui/components/EmptyState';
 import { BookOpen } from '@repo/ui/icons';
+import { RefreshControl } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 import { FlashList, type FlashListProps } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { RefreshControl } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
-import EmptyState from '@repo/ui/components/EmptyState';
 
-export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl' | 'masonry'> {
+export interface SanctuaryFlashListProps<T>
+  extends Omit<FlashListProps<T>, 'refreshControl' | 'masonry'> {
   /** Estimated size of a single list item (Optional in v2, Auto-calculated) */
   estimatedItemSize?: number;
   /** Whether the list is currently refreshing */

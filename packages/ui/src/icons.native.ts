@@ -45,8 +45,10 @@ export { default as CalendarCheck } from 'lucide-react-native/icons/calendar-che
 export { default as CalendarDays } from 'lucide-react-native/icons/calendar-days';
 export { default as Camera } from 'lucide-react-native/icons/camera';
 export { default as Castle } from 'lucide-react-native/icons/castle';
-export { default as ChartColumn } from 'lucide-react-native/icons/chart-column';
-export { default as BarChart3 } from 'lucide-react-native/icons/chart-column';
+export {
+  default as ChartColumn,
+  default as BarChart3,
+} from 'lucide-react-native/icons/chart-column';
 export { default as ChartLine } from 'lucide-react-native/icons/chart-line';
 export { default as ChartNoAxesColumn } from 'lucide-react-native/icons/chart-no-axes-column';
 export { default as Check } from 'lucide-react-native/icons/check';
@@ -112,7 +114,6 @@ export { default as Hammer } from 'lucide-react-native/icons/hammer';
 export { default as Hash } from 'lucide-react-native/icons/hash';
 export { default as Heart } from 'lucide-react-native/icons/heart';
 export { default as HeartPulse } from 'lucide-react-native/icons/heart-pulse';
-export { default as History } from 'lucide-react-native/icons/rotate-ccw-clock';
 export { default as Image } from 'lucide-react-native/icons/image';
 export { default as Inbox } from 'lucide-react-native/icons/inbox';
 export { default as Info } from 'lucide-react-native/icons/info';
@@ -170,6 +171,7 @@ export { default as RefreshCcw } from 'lucide-react-native/icons/refresh-ccw';
 export { default as RefreshCw } from 'lucide-react-native/icons/refresh-cw';
 export { default as Rocket } from 'lucide-react-native/icons/rocket';
 export { default as RotateCcw } from 'lucide-react-native/icons/rotate-ccw';
+export { default as History } from 'lucide-react-native/icons/rotate-ccw-clock';
 export { default as RotateCw } from 'lucide-react-native/icons/rotate-cw';
 export { default as Route } from 'lucide-react-native/icons/route';
 export { default as Save } from 'lucide-react-native/icons/save';

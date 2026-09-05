@@ -1,18 +1,18 @@
+import { PressableScale } from '@repo/ui/components/PressableScale';
 import { ChevronDown, CircleAlert } from '@repo/ui/icons';
-import { useState } from 'react';
 import {
+  Box,
+  HStack,
   Sheet,
   SheetContent,
   SheetDragIndicator,
   SheetDragIndicatorWrapper,
   SheetItem,
   SheetItemText,
-  Box,
-  HStack,
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { PressableScale } from '@repo/ui/components/PressableScale';
+import { useState } from 'react';
 
 export interface LotusDropdownOption {
   label: string;
@@ -60,7 +60,9 @@ export default function LotusDropdown({
           }
         }}
         disabled={isDisabled}
-        accessibilityLabel={label ? `${label}: ${selectedOption ? selectedOption.label : placeholder}` : placeholder}
+        accessibilityLabel={
+          label ? `${label}: ${selectedOption ? selectedOption.label : placeholder}` : placeholder
+        }
         accessibilityHint="Double tap to open option selection menu"
         accessibilityRole="combobox"
         accessibilityState={{
@@ -126,4 +128,3 @@ export default function LotusDropdown({
     </VStack>
   );
 }
-

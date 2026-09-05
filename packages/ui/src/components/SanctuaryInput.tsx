@@ -1,6 +1,3 @@
-import { CircleAlert } from '@repo/ui/icons';
-import type React from 'react';
-import { Theme } from '@repo/ui/theme/Theme';
 import {
   FormControl,
   FormControlError,
@@ -16,6 +13,9 @@ import {
   Text,
   useFormControlContext,
 } from '@repo/ui/components/ui';
+import { CircleAlert } from '@repo/ui/icons';
+import { Theme } from '@repo/ui/theme/Theme';
+import type React from 'react';
 
 interface SanctuaryInputProps {
   label?: string;

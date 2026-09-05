@@ -1,10 +1,9 @@
-import { StyleSheet } from 'react-native';
-import { Text, View } from '@repo/ui/primitives';
-import { Pressable } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
 import { CanvasSurfaceCard } from '@repo/ui/components/workspace/CanvasSurfaceCard';
-import { WebDraggableCanvasSurface } from '@repo/ui/components/workspace/WebDraggableCanvasSurface';
 import type { CanvasZoneColumnProps } from '@repo/ui/components/workspace/CanvasZoneColumn';
+import { WebDraggableCanvasSurface } from '@repo/ui/components/workspace/WebDraggableCanvasSurface';
+import { Pressable, Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { StyleSheet } from 'react-native';
 
 export function WebCanvasZoneColumn<
   TSurfaceId extends string = string,

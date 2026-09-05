@@ -1,3 +1,4 @@
+import { View } from '@repo/ui/primitives';
 import {
   BlurMask,
   Canvas,
@@ -8,7 +9,6 @@ import {
 } from '@shopify/react-native-skia';
 import type React from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { View } from '@repo/ui/primitives';
 
 interface TemporalGlassProps {
   children: React.ReactNode;

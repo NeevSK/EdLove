@@ -1,7 +1,7 @@
 import type { EntityDefinition, EntityInstance, EntityMode } from '@repo/core/logic';
-import { Box, Text, VStack } from '@repo/ui/primitives';
 import EntityView from '@repo/ui/components/EntityView';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, Text, VStack } from '@repo/ui/primitives';
 
 export interface EntityModalProps {
   isOpen: boolean;

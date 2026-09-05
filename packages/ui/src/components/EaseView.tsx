@@ -7,17 +7,17 @@
  * Supports: timing (with loop: 'repeat' | 'reverse'), spring, none.
  */
 import { useEffect, useMemo } from 'react';
+import { View, type ViewProps, type ViewStyle } from 'react-native';
 import Animated, {
-  useSharedValue,
+  type AnimatedProps,
+  cancelAnimation,
+  Easing,
   useAnimatedStyle,
-  withTiming,
+  useSharedValue,
   withRepeat,
   withSpring,
-  Easing,
-  cancelAnimation,
-  type AnimatedProps,
+  withTiming,
 } from 'react-native-reanimated';
-import { View, type ViewProps, type ViewStyle } from 'react-native';
 
 type EasingType = 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | [number, number, number, number];
 
@@ -68,17 +68,23 @@ function mapEasing(easing?: EasingType) {
   if (!easing) return Easing.inOut(Easing.ease);
   if (Array.isArray(easing)) return Easing.bezier(...easing);
   switch (easing) {
-    case 'linear': return Easing.linear;
-    case 'easeIn': return Easing.in(Easing.ease);
-    case 'easeOut': return Easing.out(Easing.ease);
-    case 'easeInOut': return Easing.inOut(Easing.ease);
-    default: return Easing.inOut(Easing.ease);
+    case 'linear':
+      return Easing.linear;
+    case 'easeIn':
+      return Easing.in(Easing.ease);
+    case 'easeOut':
+      return Easing.out(Easing.ease);
+    case 'easeInOut':
+      return Easing.inOut(Easing.ease);
+    default:
+      return Easing.inOut(Easing.ease);
   }
 }
 
 function getIdentityValue(key: string): number {
   switch (key) {
-    case 'opacity': return 1;
+    case 'opacity':
+      return 1;
     case 'translateX':
     case 'translateY':
     case 'rotate':
@@ -90,7 +96,8 @@ function getIdentityValue(key: string): number {
     case 'scaleX':
     case 'scaleY':
       return 1;
-    default: return 0;
+    default:
+      return 0;
   }
 }
 
@@ -171,7 +178,14 @@ export function EaseView({
 
     if (values.opacity) result.opacity = values.opacity.value;
 
-    if (values.translateX || values.translateY || values.scale || values.scaleX || values.scaleY || values.rotate) {
+    if (
+      values.translateX ||
+      values.translateY ||
+      values.scale ||
+      values.scaleX ||
+      values.scaleY ||
+      values.rotate
+    ) {
       const transforms: Record<string, number | string>[] = [];
       if (values.translateX) transforms.push({ translateX: values.translateX.value });
       if (values.translateY) transforms.push({ translateY: values.translateY.value });

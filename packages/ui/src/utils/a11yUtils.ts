@@ -1,6 +1,6 @@
+import { getContrastRatio } from '@repo/ui/utils/colorUtils';
 import { APCAcontrast, sRGBtoY } from 'apca-w3';
 import { converter, formatHex, parse } from 'culori';
-import { getContrastRatio } from '@repo/ui/utils/colorUtils';
 
 /**
  * a11yUtils  Modern Accessibility Infrastructure for the Sanctuary.

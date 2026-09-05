@@ -17,7 +17,7 @@ export async function startThemeTransition(
   options?: {
     type?: ThemeTransitionType;
     duration?: number;
-  }
+  },
 ): Promise<void> {
   const transitionType = options?.type || 'circularReveal';
 
@@ -28,7 +28,10 @@ export async function startThemeTransition(
       });
       return;
     } catch (error) {
-      console.warn('[ThemeTransition] Native transition failed, falling back to direct update:', error);
+      console.warn(
+        '[ThemeTransition] Native transition failed, falling back to direct update:',
+        error,
+      );
     }
   }
 

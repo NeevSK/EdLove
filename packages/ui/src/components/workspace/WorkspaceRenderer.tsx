@@ -9,18 +9,19 @@ export interface WorkspaceRendererProps {
   children: ReactNode;
 }
 
-export function WorkspaceRenderer({ 
+export function WorkspaceRenderer({
   platform,
   isNative,
   isResizing,
-  children
+  children,
 }: WorkspaceRendererProps) {
   const context = useContext(WorkspaceRendererContext);
-  
+
   // Use context values if provided, otherwise use props (for backwards compatibility)
-  const runtimePlatform = platform || context?.runtimePlatform || (
-    Platform.OS === 'web' ? 'web' : Platform.OS === 'ios' ? 'mobile' : 'mobile'
-  );
+  const runtimePlatform =
+    platform ||
+    context?.runtimePlatform ||
+    (Platform.OS === 'web' ? 'web' : Platform.OS === 'ios' ? 'mobile' : 'mobile');
   const width = context?.width || 0;
   const height = context?.height || 0;
   const isNativeValue = isNative !== undefined ? isNative : context?.isNative !== false;

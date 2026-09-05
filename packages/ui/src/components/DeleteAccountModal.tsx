@@ -1,7 +1,7 @@
-import { TriangleAlert } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { TriangleAlert } from '@repo/ui/icons';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 
 interface DeleteAccountModalProps {
   isOpen: boolean;

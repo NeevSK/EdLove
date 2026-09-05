@@ -1,7 +1,7 @@
-import type React from 'react';
-import { StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { ScrollView, View } from '@repo/ui/primitives';
+import type React from 'react';
+import { StyleSheet } from 'react-native';
 import { usePageFrame } from './layout';
 
 export interface ScreenWrapperProps {
@@ -57,10 +57,14 @@ export default function ScreenWrapper({
       {isScrollable ? (
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.contentContainer, {
-            maxWidth: frame.maxWidth,
-            paddingHorizontal: frame.gutter,
-          }, style]}
+          contentContainerStyle={[
+            styles.contentContainer,
+            {
+              maxWidth: frame.maxWidth,
+              paddingHorizontal: frame.gutter,
+            },
+            style,
+          ]}
           keyboardShouldPersistTaps="handled"
           // High-fidelity fix: show scrollbars on web for better spatial awareness (System 2 resonance)
           showsVerticalScrollIndicator={true}

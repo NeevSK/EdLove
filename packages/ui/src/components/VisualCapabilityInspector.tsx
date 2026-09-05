@@ -25,14 +25,14 @@ export function VisualCapabilityInspector({ visible = false }: { visible?: boole
         {String(capabilities.shouldPrefetchAssets)}
       </Text>
       <Text className="text-white text-xs">
-        levels: motion={capabilities.experience.motion} visual={capabilities.experience.visualEffects}{' '}
-        haptics={capabilities.experience.haptics} sound={capabilities.experience.sound} celebration=
+        levels: motion={capabilities.experience.motion} visual=
+        {capabilities.experience.visualEffects} haptics={capabilities.experience.haptics} sound=
+        {capabilities.experience.sound} celebration=
         {capabilities.experience.celebration}
       </Text>
       <Text className="text-white text-xs">
-        budgets: particles={capabilities.experience.maxParticles} sounds={
-          capabilities.experience.maxConcurrentSounds
-        }
+        budgets: particles={capabilities.experience.maxParticles} sounds=
+        {capabilities.experience.maxConcurrentSounds}
       </Text>
     </View>
   );

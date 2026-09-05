@@ -1,7 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useReality } from './RealityProvider';
-import type { FidelityLevel } from './types';
-import { computeEffectiveFidelity } from './visualPolicy';
 import {
   createContext,
   type ReactNode,
@@ -11,6 +8,9 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { useReality } from './RealityProvider';
+import type { FidelityLevel } from './types';
+import { computeEffectiveFidelity } from './visualPolicy';
 
 interface FidelityContextValue {
   fidelityLevel: FidelityLevel;

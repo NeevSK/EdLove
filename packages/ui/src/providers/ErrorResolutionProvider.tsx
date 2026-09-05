@@ -1,11 +1,11 @@
 import type { ISovereignError } from '@repo/core/lib';
-import type React from 'react';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
 import { Button, ButtonText } from '@repo/ui/components/ui/button';
 import { HStack } from '@repo/ui/components/ui/hstack';
 import { VStack } from '@repo/ui/components/ui/vstack';
+import type React from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 
 interface ErrorResolutionContextType {
   resolveError: (error: ISovereignError) => void;

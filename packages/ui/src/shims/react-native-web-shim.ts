@@ -4,6 +4,8 @@ export * from 'react-native-web';
 export const TurboModuleRegistry = {
   get: () => null,
   getEnforcing: (name: string) => {
-    throw new Error(`TurboModuleRegistry.getEnforcing("${name}") is not available on react-native-web.`);
+    throw new Error(
+      `TurboModuleRegistry.getEnforcing("${name}") is not available on react-native-web.`,
+    );
   },
 };

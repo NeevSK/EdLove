@@ -1,5 +1,6 @@
-import { formatDistanceToNow } from 'date-fns';
-import React from 'react';
+import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { type PollData, PollWidget } from '@repo/ui/components/PollWidget';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   BookOpen,
@@ -31,9 +32,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { LivingGlow } from '@repo/ui/components/LivingGlow';
-import { type PollData, PollWidget } from '@repo/ui/components/PollWidget';
-import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { formatDistanceToNow } from 'date-fns';
+import React from 'react';
 
 export interface Author {
   id: string;

@@ -1,11 +1,5 @@
 import type { ExperienceLevel, ExperienceProfile } from '../context/types';
-import {
-  hapticError,
-  hapticLight,
-  hapticMedium,
-  hapticSelection,
-  hapticSuccess,
-} from './haptics';
+import { hapticError, hapticLight, hapticMedium, hapticSelection, hapticSuccess } from './haptics';
 
 export type FeedbackEvent =
   | 'press'
@@ -17,12 +11,7 @@ export type FeedbackEvent =
   | 'breath-end'
   | 'sync-restored';
 
-export type SoundCue =
-  | 'success'
-  | 'milestone'
-  | 'breath-start'
-  | 'breath-end'
-  | 'sync-restored';
+export type SoundCue = 'success' | 'milestone' | 'breath-start' | 'breath-end' | 'sync-restored';
 
 export interface FeedbackDecision {
   haptic: 'light' | 'medium' | 'selection' | 'success' | 'error' | null;

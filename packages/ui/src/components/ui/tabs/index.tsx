@@ -47,7 +47,14 @@ export interface TabsTriggerProps extends PressableProps {
   children: React.ReactNode;
 }
 
-export function TabsTrigger({ value, className, textClassName, children, onPress, ...props }: TabsTriggerProps) {
+export function TabsTrigger({
+  value,
+  className,
+  textClassName,
+  children,
+  onPress,
+  ...props
+}: TabsTriggerProps) {
   const tabs = useTabs();
   const selected = tabs.value === value;
 
@@ -67,7 +74,13 @@ export function TabsTrigger({ value, className, textClassName, children, onPress
       )}
     >
       {typeof children === 'string' ? (
-        <Text className={cn('text-sm font-semibold', selected ? 'text-phase-text-primary' : 'text-phase-text-secondary', textClassName)}>
+        <Text
+          className={cn(
+            'text-sm font-semibold',
+            selected ? 'text-phase-text-primary' : 'text-phase-text-secondary',
+            textClassName,
+          )}
+        >
           {children}
         </Text>
       ) : (

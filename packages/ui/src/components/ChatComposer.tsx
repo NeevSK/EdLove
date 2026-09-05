@@ -1,9 +1,9 @@
 import { useOptionalChatContext } from '@repo/ui/context/ChatContext';
-import { BrandPulse } from './BrandPulse';
 import { Image as ImageIcon, Send } from '@repo/ui/icons';
 import { Box, HStack, Icon, InputField, Pressable } from '@repo/ui/primitives';
 import React, { useCallback } from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
+import { BrandPulse } from './BrandPulse';
 
 export interface ChatComposerProps {
   /** Current draft text. */

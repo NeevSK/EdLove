@@ -1,6 +1,6 @@
+import { Box } from '@repo/ui/primitives';
 import type React from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
-import { Box } from '@repo/ui/primitives';
 
 interface GlassCardProps {
   children: React.ReactNode;

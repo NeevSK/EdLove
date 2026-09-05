@@ -1,6 +1,6 @@
+import { styled } from 'nativewind';
 import React from 'react';
 import { type ImageBackgroundProps, ImageBackground as RNImageBackground } from 'react-native';
-import { styled } from 'nativewind';
 
 const StyledImageBackground = styled(RNImageBackground as React.ComponentType<any>);
 

@@ -1,9 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
-import { BrandPulse } from './BrandPulse';
-import { Actionsheet } from '@repo/ui/primitives';
 import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '@repo/ui/icons';
 import {
+  Actionsheet,
   Box,
   FlatList,
   HStack,
@@ -16,6 +13,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { formatTimestamp, getInitialsFromName } from '@repo/ui/utils';
+import { useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
+import { BrandPulse } from './BrandPulse';
 
 export interface CommentAuthor {
   id: string;

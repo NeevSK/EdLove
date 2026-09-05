@@ -1,14 +1,14 @@
+import { Box } from '@repo/ui/primitives';
 import type React from 'react';
 import {
-  Pressable,
-  Platform,
   AccessibilityRole,
   AccessibilityState,
+  GestureResponderEvent,
+  Platform,
+  Pressable,
   StyleProp,
   ViewStyle,
-  GestureResponderEvent,
 } from 'react-native';
-import { Box } from '@repo/ui/primitives';
 
 /**
  * AccessibleTouchable
@@ -22,7 +22,21 @@ import { Box } from '@repo/ui/primitives';
  * - `accessibilityActions` for custom actions
  */
 
-export interface AccessibleTouchableProps extends Omit<React.ComponentProps<typeof Pressable>, 'onPress' | 'onLongPress' | 'style' | 'children' | 'accessibilityRole' | 'accessibilityState' | 'accessibilityActions' | 'accessibilityLabel' | 'accessibilityHint' | 'hitSlop' | 'android_importantForAccessibility'> {
+export interface AccessibleTouchableProps
+  extends Omit<
+    React.ComponentProps<typeof Pressable>,
+    | 'onPress'
+    | 'onLongPress'
+    | 'style'
+    | 'children'
+    | 'accessibilityRole'
+    | 'accessibilityState'
+    | 'accessibilityActions'
+    | 'accessibilityLabel'
+    | 'accessibilityHint'
+    | 'hitSlop'
+    | 'android_importantForAccessibility'
+  > {
   /** Minimum touch target size (default: 44) */
   minTouchTarget?: number;
   /** Hit slop for easier tapping (default: 12) */
@@ -89,7 +103,8 @@ export function AccessibleTouchable({
     busy,
   };
 
-  const androidImportantForAccessibility = Platform.OS === 'android' ? importantForAccessibility : undefined;
+  const androidImportantForAccessibility =
+    Platform.OS === 'android' ? importantForAccessibility : undefined;
 
   const handlePress = (event: GestureResponderEvent) => {
     if (disabled || busy) return;
@@ -149,7 +164,8 @@ export function AccessibleTouchable({
  */
 import { LucideIcon } from '@repo/ui/icons';
 
-export interface AccessibleIconButtonProps extends Omit<AccessibleTouchableProps, 'children' | 'accessibilityLabel'> {
+export interface AccessibleIconButtonProps
+  extends Omit<AccessibleTouchableProps, 'children' | 'accessibilityLabel'> {
   icon: LucideIcon;
   size?: number;
   accessibilityLabel: string; // Required for icon buttons
@@ -191,11 +207,7 @@ export function AccessibleTextLink({
   ...props
 }: AccessibleTextLinkProps) {
   return (
-    <AccessibleTouchable
-      accessibilityRole="link"
-      minTouchTarget={44}
-      {...props}
-    >
+    <AccessibleTouchable accessibilityRole="link" minTouchTarget={44} {...props}>
       {children}
     </AccessibleTouchable>
   );

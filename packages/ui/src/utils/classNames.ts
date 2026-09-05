@@ -1,4 +1,9 @@
-/** Compose NativeWind class names while keeping conditional styles readable. */
-export function cn(...classNames: Array<string | false | null | undefined>): string {
-  return classNames.filter(Boolean).join(' ');
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+/** Compose NativeWind class names with deterministic last-wins conflict resolution.
+ *  Uses standard tailwind-merge (v3) which handles Tailwind v4 conflicts correctly.
+ *  Phase tokens are resolved naturally by standard conflict groups. */
+export function cn(...classNames: ClassValue[]): string {
+  return twMerge(clsx(classNames));
 }

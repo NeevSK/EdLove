@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { type ThemeColors, toThemeColors } from '@repo/ui/utils/themeColors';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { type ThemeColors, toThemeColors } from '@repo/ui/utils/themeColors';
+import { useMemo } from 'react';
 
 /**
  * Legacy compatibility hook for components that still expect the older

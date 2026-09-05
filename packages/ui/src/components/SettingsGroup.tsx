@@ -1,5 +1,5 @@
-import { tokens } from '@repo/ui/tokens';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import type { ReactNode } from 'react';
 
 export interface SettingsGroupProps {
@@ -45,7 +45,9 @@ function SettingsGroup({ title, subtitle, children }: SettingsGroupProps) {
             {title}
           </Text>
           {subtitle ? (
-            <Text style={{ color: tokens.colors.textMuted, fontSize: 12, marginTop: 2 }}>{subtitle}</Text>
+            <Text style={{ color: tokens.colors.textMuted, fontSize: 12, marginTop: 2 }}>
+              {subtitle}
+            </Text>
           ) : null}
         </Box>
       ) : null}
@@ -74,7 +76,9 @@ function SettingsRow({
         gap: 12,
       }}
     >
-      {Icon ? <Icon size={18} color={destructive ? tokens.colors.error : tokens.colors.ink} /> : null}
+      {Icon ? (
+        <Icon size={18} color={destructive ? tokens.colors.error : tokens.colors.ink} />
+      ) : null}
       <Text
         style={{
           flex: 1,
@@ -95,11 +99,16 @@ function SettingsRow({
             paddingVertical: 2,
           }}
         >
-          <Text style={{ color: tokens.colors.textInverse, fontSize: 10, fontWeight: '800' }}>{badge}</Text>
+          <Text style={{ color: tokens.colors.textInverse, fontSize: 10, fontWeight: '800' }}>
+            {badge}
+          </Text>
         </Box>
       ) : null}
       {value ? (
-        <Text style={{ color: tokens.colors.textMuted, fontSize: 12, fontWeight: '500' }} numberOfLines={1}>
+        <Text
+          style={{ color: tokens.colors.textMuted, fontSize: 12, fontWeight: '500' }}
+          numberOfLines={1}
+        >
           {value}
         </Text>
       ) : null}
@@ -125,11 +134,20 @@ function SettingsRow({
 }
 
 function SettingsDivider() {
-  return <Box style={{ height: 1, backgroundColor: tokens.colors.border, marginHorizontal: 16, opacity: 0.6 }} />;
+  return (
+    <Box
+      style={{
+        height: 1,
+        backgroundColor: tokens.colors.border,
+        marginHorizontal: 16,
+        opacity: 0.6,
+      }}
+    />
+  );
 }
 
 SettingsGroup.Row = SettingsRow;
 SettingsGroup.Divider = SettingsDivider;
 
 export default SettingsGroup;
-export { SettingsGroup, SettingsRow, SettingsDivider };
+export { SettingsDivider, SettingsGroup, SettingsRow };

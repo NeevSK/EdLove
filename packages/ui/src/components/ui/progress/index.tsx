@@ -1,6 +1,6 @@
+import { styled } from 'nativewind';
 import React, { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
-import { styled } from 'nativewind';
 
 const StyledView = styled(View);
 

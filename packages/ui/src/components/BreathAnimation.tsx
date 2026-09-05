@@ -1,6 +1,6 @@
-import React from 'react';
 import { EaseView } from '@repo/ui/components/EaseView';
 import { View } from '@repo/ui/primitives';
+import React from 'react';
 
 interface BreathAnimationProps {
   children: React.ReactNode;

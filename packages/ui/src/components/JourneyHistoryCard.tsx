@@ -2,7 +2,6 @@ import { useManualSnapshot, useTemporalHeatmap } from '@repo/core/logic';
 import { ResonantHeatmap } from '@repo/ui/components/ResonantHeatmap';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { SanctuaryChip } from '@repo/ui/components/SanctuaryChip';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import {
   Calendar,
   Camera,
@@ -13,7 +12,7 @@ import {
   TrendingUp,
   Zap,
 } from '@repo/ui/icons';
-import { Pressable } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import { useMemo } from 'react';
 

@@ -1,7 +1,7 @@
 import { Search } from '@repo/ui/icons';
 import { fireEvent, render } from '@testing-library/react-native';
-import { Input, InputField, InputIcon, InputSlot } from '../components/ui/input';
 import { FormControl, FormControlLabel, FormControlLabelText } from '../components/ui/form-control';
+import { Input, InputField, InputIcon, InputSlot } from '../components/ui/input';
 
 jest.mock('@repo/ui/hooks/useTheme', () => ({
   useTheme: () => ({ text: { muted: '#8A8175' } }),

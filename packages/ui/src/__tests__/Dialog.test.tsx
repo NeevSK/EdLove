@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react-native';
 import { Dialog, DialogBody, DialogContent } from '@repo/ui/components/ui/dialog';
 import { Text } from '@repo/ui/components/ui/text';
+import { render, screen } from '@testing-library/react-native';
 
 describe('Dialog', () => {
   it('uses the source-owned modal behavior with the open API', async () => {

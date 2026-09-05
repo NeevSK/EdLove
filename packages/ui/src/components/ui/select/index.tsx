@@ -1,13 +1,12 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import { type PressableProps, type ViewProps } from 'react-native';
-import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
 import { cn } from '@repo/ui/utils/classNames';
-
+import React, { createContext, useContext, useMemo, useState } from 'react';
+import { type PressableProps, type ViewProps } from 'react-native';
+import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 // --- Context ---
 interface SelectContextType {
@@ -66,32 +65,30 @@ export const Select = ({
 export const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   PressableProps & { className?: string }
->(
-  ({ children, className, ...props }, ref) => {
-    const { setIsOpen, isDisabled, isOpen } = useSelect();
+>(({ children, className, ...props }, ref) => {
+  const { setIsOpen, isDisabled, isOpen } = useSelect();
 
-    return (
-      <Pressable
-        {...props}
-        ref={ref as any}
-        disabled={isDisabled}
-        onPress={() => !isDisabled && setIsOpen(true)}
-        accessibilityRole="combobox"
-        accessibilityState={{
-          disabled: isDisabled,
-          expanded: isOpen,
-        }}
+  return (
+    <Pressable
+      {...props}
+      ref={ref as any}
+      disabled={isDisabled}
+      onPress={() => !isDisabled && setIsOpen(true)}
+      accessibilityRole="combobox"
+      accessibilityState={{
+        disabled: isDisabled,
+        expanded: isOpen,
+      }}
       className={cn(
         'flex-row items-center justify-between p-4 border rounded-xl bg-phase-canvas border-phase-interactive/10',
         isDisabled ? 'opacity-50' : 'active:opacity-80',
         className,
       )}
-      >
-        {children}
-      </Pressable>
-    );
-  },
-);
+    >
+      {children}
+    </Pressable>
+  );
+});
 
 export const SelectInput = ({ className, placeholder, value: propValue, ...props }: any) => {
   const { value: contextValue } = useSelect();
@@ -99,7 +96,11 @@ export const SelectInput = ({ className, placeholder, value: propValue, ...props
 
   return (
     <Text
-      className={cn('text-phase-text-primary flex-1', !displayValue ? 'opacity-40' : undefined, className)}
+      className={cn(
+        'text-phase-text-primary flex-1',
+        !displayValue ? 'opacity-40' : undefined,
+        className,
+      )}
       {...props}
     >
       {displayValue || placeholder}
@@ -202,4 +203,3 @@ Select.displayName = 'Select';
 SelectTrigger.displayName = 'SelectTrigger';
 SelectInput.displayName = 'SelectInput';
 SelectItem.displayName = 'SelectItem';
-

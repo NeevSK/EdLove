@@ -1,18 +1,17 @@
-import { createContext, useContext, useMemo } from 'react';
 import {
-  groupResolvedWorkspaceSurfacesByZone,
-  resolveWorkspaceSurfaceLayout,
   getMaxPinnedForWorkspace,
+  groupResolvedWorkspaceSurfacesByZone,
   MAX_PINNED_WORKSPACE_SURFACES,
+  resolveWorkspaceSurfaceLayout,
 } from '@repo/core/logic';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
-import { LayoutGrid, Pin } from '@repo/ui/icons';
-import { StyleSheet } from 'react-native';
-import { Text } from '@repo/ui/primitives';
-import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { View } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
 import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { LayoutGrid, Pin } from '@repo/ui/icons';
+import { Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { createContext, useContext, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 
 export interface WorkspaceRendererContextType {
   runtimePlatform: 'mobile' | 'tablet' | 'web';

@@ -70,4 +70,3 @@ export const GatewayScreenShell = memo(
 );
 
 GatewayScreenShell.displayName = 'GatewayScreenShell';
-

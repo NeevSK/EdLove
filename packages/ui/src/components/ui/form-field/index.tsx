@@ -1,5 +1,3 @@
-import React from 'react';
-import type { ReactNode } from 'react';
 import {
   FormControl,
   FormControlError,
@@ -10,6 +8,8 @@ import {
   FormControlLabelText,
 } from '@repo/ui/components/ui/form-control';
 import { cn } from '@repo/ui/utils/classNames';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 export interface FormFieldProps {
   id?: string;

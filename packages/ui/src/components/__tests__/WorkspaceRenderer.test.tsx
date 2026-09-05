@@ -1,8 +1,8 @@
+import { useWorkspaceRendererContext } from '@repo/ui/components/workspace/shared';
+import { WorkspaceRenderer } from '@repo/ui/components/workspace/WorkspaceRenderer';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
-import { WorkspaceRenderer } from '@repo/ui/components/workspace/WorkspaceRenderer';
-import { useWorkspaceRendererContext } from '@repo/ui/components/workspace/shared';
 
 function ContextProbe() {
   const { runtimePlatform } = useWorkspaceRendererContext();

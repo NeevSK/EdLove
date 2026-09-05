@@ -1,9 +1,9 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from '@repo/ui/icons';
+import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 
 /**
  * TemporalNavigator

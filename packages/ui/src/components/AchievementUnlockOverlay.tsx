@@ -1,4 +1,5 @@
 import { Trophy } from '@repo/ui/icons';
+import { Box, Center, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
@@ -8,7 +9,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
-import { Box, Center, Text, VStack } from '@repo/ui/primitives';
 
 const { width } = Dimensions.get('window');
 

@@ -13,8 +13,8 @@ jest.mock('@repo/ui/hooks/useAccessibility', () => ({
   })),
 }));
 
-import { PressableScale } from '../PressableScale';
 import { hapticImpact } from '../../utils/haptics';
+import { PressableScale } from '../PressableScale';
 
 const mockedHapticImpact = hapticImpact as jest.MockedFunction<typeof hapticImpact>;
 

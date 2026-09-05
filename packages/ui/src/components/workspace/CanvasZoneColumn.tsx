@@ -1,15 +1,13 @@
 import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas';
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
-import React from 'react';
-import { Platform } from 'react-native';
-import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
-import { Text } from '@repo/ui/primitives';
-import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { View } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
 import { CanvasSurfaceCard } from '@repo/ui/components/workspace/CanvasSurfaceCard';
 import { DraggableCanvasSurface } from '@repo/ui/components/workspace/DraggableCanvasSurface';
 import { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import React from 'react';
+import { Platform, type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 
 export { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
 

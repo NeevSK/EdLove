@@ -70,7 +70,13 @@ export function resolveExperienceProfile(
   }
 
   const maxParticles =
-    celebration === 'rich' ? 200 : celebration === 'refined' ? 64 : celebration === 'essential' ? 32 : 0;
+    celebration === 'rich'
+      ? 200
+      : celebration === 'refined'
+        ? 64
+        : celebration === 'essential'
+          ? 32
+          : 0;
 
   return {
     motion,
@@ -81,6 +87,8 @@ export function resolveExperienceProfile(
     maxParticles,
     maxConcurrentSounds: sound === 'rich' ? 2 : sound === 'essential' ? 1 : 0,
     allowAssetPrefetch:
-      !reality.isDataSaverMode && reality.networkQuality !== 'poor' && reality.networkQuality !== 'offline',
+      !reality.isDataSaverMode &&
+      reality.networkQuality !== 'poor' &&
+      reality.networkQuality !== 'offline',
   };
 }

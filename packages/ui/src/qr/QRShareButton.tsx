@@ -9,10 +9,10 @@
  * rather than the full gurudevi://qr?... scheme URL.
  */
 
-import { useRef } from 'react';
-import { StyleSheet, TouchableOpacity, type View } from 'react-native';
 import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
 import { View as PrimitiveView, Text } from '@repo/ui/primitives';
+import { useRef } from 'react';
+import { StyleSheet, TouchableOpacity, type View } from 'react-native';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {

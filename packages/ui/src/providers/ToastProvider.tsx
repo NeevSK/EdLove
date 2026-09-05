@@ -1,7 +1,7 @@
+import { HStack } from '@repo/ui/components/ui/hstack';
 import { Text } from '@repo/ui/components/ui/text';
 import { Toast, ToastTitle } from '@repo/ui/components/ui/toast';
 import { VStack } from '@repo/ui/components/ui/vstack';
-import { HStack } from '@repo/ui/components/ui/hstack';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import type React from 'react';
 import {
@@ -14,7 +14,13 @@ import {
   useRef,
 } from 'react';
 import { Platform, Pressable, View } from 'react-native';
-import Animated, { FadeInUp, FadeOutUp, Layout, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeInUp,
+  FadeOutUp,
+  Layout,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 export type ToastType = 'success' | 'error' | 'info' | 'sanctuary' | 'warning';

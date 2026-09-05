@@ -1,10 +1,10 @@
+import { EaseView } from '@repo/ui/components/EaseView';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Check, Clock, Lock } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { EaseView } from '@repo/ui/components/EaseView';
 import { BrandPulse } from './BrandPulse';
 
 export interface PollOption {

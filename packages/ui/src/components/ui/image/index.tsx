@@ -1,6 +1,6 @@
+import { styled } from 'nativewind';
 import React from 'react';
 import { type ImageProps, Image as RNImage } from 'react-native';
-import { styled } from 'nativewind';
 
 const StyledImage = styled(RNImage as React.ComponentType<any>);
 

@@ -1,10 +1,10 @@
-import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from '@repo/ui/icons';
-import type React from 'react';
-import { StyleSheet } from 'react-native';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { View } from '@repo/ui/primitives';
 import { Text } from '@repo/ui/components/ui/text';
 import { Pressable } from '@repo/ui/components/ui/view';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from '@repo/ui/icons';
+import { View } from '@repo/ui/primitives';
+import type React from 'react';
+import { StyleSheet } from 'react-native';
 
 export interface InternalBrowserProps {
   url: string;

@@ -1,5 +1,5 @@
-import { type ReactNode, useState, useRef } from 'react';
-import { Pressable, View, Animated } from 'react-native';
+import { type ReactNode, useRef, useState } from 'react';
+import { Animated, Pressable, View } from 'react-native';
 import { color } from './motion';
 
 export interface FocusRingProps {

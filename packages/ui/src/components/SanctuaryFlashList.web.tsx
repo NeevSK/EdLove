@@ -6,14 +6,14 @@
  * This ensures identical performance behavior and component recycling across all platforms.
  */
 
+import EmptyState from '@repo/ui/components/EmptyState';
+import type { SanctuaryFlashListProps } from '@repo/ui/components/SanctuaryFlashList';
 import { BookOpen } from '@repo/ui/icons';
+import { RefreshControl } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { RefreshControl } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
-import EmptyState from '@repo/ui/components/EmptyState';
-import type { SanctuaryFlashListProps } from '@repo/ui/components/SanctuaryFlashList';
 
 function SanctuaryFlashListWeb<T>({
   data,

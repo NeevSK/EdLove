@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Combobox } from '@repo/ui/components/ui/combobox';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 describe('Combobox', () => {
   it('filters options and reports the selected value', async () => {

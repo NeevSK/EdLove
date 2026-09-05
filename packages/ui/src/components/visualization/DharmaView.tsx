@@ -1,8 +1,8 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
-import { CircleCheck, Circle as CircleIcon, Lock } from '@repo/ui/icons';
-import type React from 'react';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { CircleCheck, Circle as CircleIcon, Lock } from '@repo/ui/icons';
 import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import type React from 'react';
 
 export const DharmaView: React.FC<PerspectiveViewProps> = ({ data }) => {
   const theme = useTheme();

@@ -1,8 +1,7 @@
-import { StyleSheet, type ViewStyle } from 'react-native';
 import { EaseView } from '@repo/ui/components/EaseView';
-import { Box, HStack, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { cn } from '@repo/ui/utils/classNames';
-import { Text } from '@repo/ui/primitives';
+import { StyleSheet, type ViewStyle } from 'react-native';
 
 export interface SanctuaryProgressBarProps {
   percentage: number; // 0–100

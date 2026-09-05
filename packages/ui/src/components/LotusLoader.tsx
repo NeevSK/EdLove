@@ -1,7 +1,7 @@
-import { Flower } from '@repo/ui/icons';
-import { BrandPulse } from './BrandPulse';
 import { EaseView } from '@repo/ui/components/EaseView';
+import { Flower } from '@repo/ui/icons';
 import { Center, Text, VStack } from '@repo/ui/primitives';
+import { BrandPulse } from './BrandPulse';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';

@@ -1,9 +1,9 @@
 import { type ReactNode } from 'react';
 import { View } from 'react-native';
 import Animated, {
-  useSharedValue,
-  useDerivedValue,
   useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';

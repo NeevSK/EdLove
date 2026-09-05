@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import { Text } from '../components/ui/text';
 import { Box } from '../components/ui/box';
 import { Pressable } from '../components/ui/pressable';
+import { Text } from '../components/ui/text';
 
 describe('Tier-1 facade contract harness', () => {
   it('keeps Box explicit style channels and does not leak className to native props', async () => {

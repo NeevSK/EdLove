@@ -1,10 +1,10 @@
-import { useEnvironment } from './EnvironmentContext';
 import { View } from '@repo/ui/primitives';
 import { colors, phaseMatrix } from '@repo/ui/theme/Theme';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { vars } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
+import { useEnvironment } from './EnvironmentContext';
 
 type CircadianContextType = {
   phase: string;

@@ -1,4 +1,7 @@
 import type { GraphLink, GraphNode, PerspectiveViewProps } from '@repo/core/types';
+import { useResponsive } from '@repo/ui/hooks/useResponsive';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { useCallback, useMemo } from 'react';
 import {
   GestureDetector,
@@ -8,9 +11,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Text as SvgText } from 'react-native-svg';
-import { useResponsive } from '@repo/ui/hooks/useResponsive';
-import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { Theme } from '@repo/ui/theme/Theme';
 
 const GraphLinkItem = React.memo(
   ({
@@ -22,7 +22,7 @@ const GraphLinkItem = React.memo(
     link: GraphLink;
     sourcePos: { x: number; y: number };
     targetPos: { x: number; y: number };
-      colors: ReturnType<typeof useThemedColors>;
+    colors: ReturnType<typeof useThemedColors>;
   }) => {
     return (
       <Line

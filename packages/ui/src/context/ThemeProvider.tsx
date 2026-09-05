@@ -44,8 +44,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const isDark = useMemo(
     () =>
       themeMode === 'dark' ||
-        (themeMode === 'system' && systemColorScheme === 'dark') ||
-        (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase)),
+      (themeMode === 'system' && systemColorScheme === 'dark') ||
+      (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase)),
     [themeMode, systemColorScheme, temporalPhase],
   );
 
@@ -77,7 +77,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setThemeMode = useCallback(
-    async (mode: ThemeMode, transitionType?: import('../theme/nitroThemeTransition.types').ThemeTransitionType) => {
+    async (
+      mode: ThemeMode,
+      transitionType?: import('../theme/nitroThemeTransition.types').ThemeTransitionType,
+    ) => {
       const applyChange = () => {
         if (typeof setStoredThemeMode === 'function') {
           setStoredThemeMode(mode);

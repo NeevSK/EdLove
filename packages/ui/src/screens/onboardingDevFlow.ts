@@ -1,9 +1,9 @@
 import type { Capacity } from '@repo/core/types';
 import {
+  type DeveloperOnboardingIntent,
   isDeveloperShortcutEnabled,
   parseDeveloperOnboardingTemplate,
   shouldUseDeveloperSandbox,
-  type DeveloperOnboardingIntent,
 } from '@repo/ui/screens/devOnboardingFastTrack';
 
 export type OnboardingDevResolution =
@@ -25,9 +25,6 @@ export function resolveOnboardingDevIntent(params: {
   return { kind: 'none' };
 }
 
-export function getDevOnboardingTemplateLabel(template: {
-  role: Capacity;
-  name: string;
-}) {
+export function getDevOnboardingTemplateLabel(template: { role: Capacity; name: string }) {
   return `Developer Account (${template.role}) Setup Success!`;
 }

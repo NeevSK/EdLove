@@ -1,11 +1,11 @@
-﻿import { Check } from '@repo/ui/icons';
+﻿import { Pressable } from '@repo/ui/components/ui/pressable';
+import { Text } from '@repo/ui/components/ui/text';
+import { View } from '@repo/ui/components/ui/view';
+import { Check } from '@repo/ui/icons';
 import ExpoCheckbox from 'expo-checkbox';
 import type React from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { Platform, type ViewProps } from 'react-native';
-import { Pressable } from '@repo/ui/components/ui/pressable';
-import { Text } from '@repo/ui/components/ui/text';
-import { View } from '@repo/ui/components/ui/view';
 
 /**
  * Checkbox Component

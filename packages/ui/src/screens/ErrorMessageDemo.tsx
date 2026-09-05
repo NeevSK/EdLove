@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import ErrorMessage from '@repo/ui/components/ErrorMessage';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Heading, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useState } from 'react';
 
 export default function ErrorMessageDemo() {
   const [showGentle, setShowGentle] = useState(true);

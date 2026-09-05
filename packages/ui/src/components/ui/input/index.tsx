@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import { type PressableProps, type TextInputProps, type ViewProps } from 'react-native';
+import { useFormControlContext } from '@repo/ui/components/ui/form-control';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { TextInput } from '@repo/ui/components/ui/text-input';
 import { View } from '@repo/ui/components/ui/view';
-import { useFormControlContext } from '@repo/ui/components/ui/form-control';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { cn } from '@repo/ui/utils/classNames';
+import React, { createContext, useContext, useMemo, useState } from 'react';
+import { type PressableProps, type TextInputProps, type ViewProps } from 'react-native';
 
 // --- Context ---
 interface InputContextType {
@@ -62,7 +62,11 @@ const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
           }}
           className={cn(
             'flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-surface transition-colors duration-200',
-            resolvedInvalid ? 'border-phase-danger' : isFocused ? 'border-phase-accent' : 'border-phase-interactive/30',
+            resolvedInvalid
+              ? 'border-phase-danger'
+              : isFocused
+                ? 'border-phase-accent'
+                : 'border-phase-interactive/30',
             resolvedDisabled ? 'opacity-40' : undefined,
             className,
           )}
@@ -124,7 +128,14 @@ export const InputSlot = ({
 
 export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) => {
   if (!Icon) return null;
-  return <Icon {...props} size={size || 18} color={color} className={cn('text-phase-text-secondary', className)} />;
+  return (
+    <Icon
+      {...props}
+      size={size || 18}
+      color={color}
+      className={cn('text-phase-text-secondary', className)}
+    />
+  );
 };
 
 export { Input };

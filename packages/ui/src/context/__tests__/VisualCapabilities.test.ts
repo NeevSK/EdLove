@@ -1,6 +1,6 @@
+import { resolveExperienceProfile } from '@repo/ui/context/experiencePolicy';
 import type { RealityState } from '@repo/ui/context/types';
 import { classifyDeviceTier, resolveVisualCapabilities } from '@repo/ui/context/visualPolicy';
-import { resolveExperienceProfile } from '@repo/ui/context/experiencePolicy';
 
 const reality = (overrides: Partial<RealityState> = {}): RealityState => ({
   deviceTier: 'high',

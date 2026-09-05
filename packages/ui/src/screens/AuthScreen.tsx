@@ -11,6 +11,8 @@ import { default as GuestDataSyncModal } from '@repo/ui/components/GuestDataSync
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Mail, Shield } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -23,8 +25,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Mail, Shield } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as AuthSession from 'expo-auth-session';

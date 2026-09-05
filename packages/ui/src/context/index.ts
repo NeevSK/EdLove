@@ -1,9 +1,10 @@
 export * from './ChatContext';
 export * from './CircadianProvider';
 export * from './EnvironmentContext';
-export * from './FeedbackProvider';
 export * from './ExternalLinkContext';
+export * from './experiencePolicy';
 export * from './FABContext';
+export * from './FeedbackProvider';
 export * from './FidelityProvider';
 export * from './LanguageProvider';
 export * from './RealityProvider';
@@ -12,4 +13,3 @@ export * from './types';
 export * from './utils';
 export * from './VisualCapabilities';
 export * from './visualSafety';
-export * from './experiencePolicy';

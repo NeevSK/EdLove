@@ -1,12 +1,8 @@
 import { SupabasePushNotificationAdapter } from '@repo/core/adapters/supabasePushNotification.adapter';
-import { BrandPulse } from './BrandPulse';
 import { storage, useStore } from '@repo/core/logic';
 import { getWebPushPermission, registerWebPushSubscription } from '@repo/core/native/webPush';
-import { BellRing, Mail, Moon, Smartphone } from '@repo/ui/icons';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
 import { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
+import { BellRing, Mail, Moon, Smartphone } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -19,6 +15,10 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
+import { BrandPulse } from './BrandPulse';
 
 /**
  * NotificationSettingsPanel

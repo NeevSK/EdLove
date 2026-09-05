@@ -1,10 +1,10 @@
+import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { TextInput } from '@repo/ui/components/ui/text-input';
 import { View } from '@repo/ui/components/ui/view';
 import { cn } from '@repo/ui/utils/classNames';
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import type { PressableProps, TextInputProps, ViewProps } from 'react-native';
-import { Pressable } from '@repo/ui/components/ui/pressable';
 
 interface CommandContextValue {
   query: string;

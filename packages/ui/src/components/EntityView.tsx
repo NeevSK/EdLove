@@ -1,7 +1,7 @@
 import type { EntityDefinition, EntityInstance, EntityMode } from '@repo/core/logic';
-import type React from 'react';
-import { HStack, Text, VStack } from '@repo/ui/primitives';
 import { SkeletonTextLine } from '@repo/ui/components/SkeletonLoader';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import type React from 'react';
 
 export interface EntityViewProps {
   definition: EntityDefinition;

@@ -1,10 +1,10 @@
-import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
-import { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
-import { Pressable } from '@repo/ui/primitives';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
+import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
+import { Pressable } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { useCallback, useEffect } from 'react';
+import { View } from 'react-native';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -81,7 +81,9 @@ export default function SanctuaryToast({
       >
         <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Icon color={iconColor} size={24} />
-          <Text style={{ color: tokens.colors.toastText, flex: 1, fontSize: 14, fontWeight: '500' }}>
+          <Text
+            style={{ color: tokens.colors.toastText, flex: 1, fontSize: 14, fontWeight: '500' }}
+          >
             {message}
           </Text>
           <Pressable

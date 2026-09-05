@@ -1,11 +1,10 @@
-import type React from 'react';
-import { createContext, useMemo } from 'react';
-import { type ViewProps } from 'react-native';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
 import { tokens } from '@repo/ui/tokens';
 import { cn } from '@repo/ui/utils/classNames';
-
+import type React from 'react';
+import { createContext, useMemo } from 'react';
+import { type ViewProps } from 'react-native';
 
 /**
  * Toast Component
@@ -109,4 +108,3 @@ ToastTitle.displayName = 'ToastTitle';
 ToastDescription.displayName = 'ToastDescription';
 
 export { Toast as default };
-

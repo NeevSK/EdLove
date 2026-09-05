@@ -1,9 +1,9 @@
+import { Theme } from '@repo/ui/theme/Theme';
 import React from 'react';
 import { Dimensions } from 'react-native';
 import Animated, { withTiming } from 'react-native-reanimated';
 // @ts-expect-error - Module has no type declarations
 import Carousel from 'react-native-reanimated-carousel';
-import { Theme } from '@repo/ui/theme/Theme';
 
 export interface SanctuaryCarouselProps<T> {
   data: T[];
@@ -41,7 +41,9 @@ export function SanctuaryCarousel<T>({
       data={data}
       renderItem={({ item, index }: { item: T; index: number }) => (
         <React.Fragment key={keyExtractor(item, index)}>
-          <Animated.View style={{ width: itemWidth, marginRight: index < data.length - 1 ? gap : 0 }}>
+          <Animated.View
+            style={{ width: itemWidth, marginRight: index < data.length - 1 ? gap : 0 }}
+          >
             {renderItem(item, index)}
           </Animated.View>
         </React.Fragment>

@@ -85,7 +85,12 @@ export function MascotPod({
                 <Stop offset="100%" stopColor={glowColor} stopOpacity="0" />
               </RadialGradient>
             </Defs>
-            <Circle cx={haloSize / 2} cy={haloSize / 2} fill="url(#glassPodGlow)" r={haloSize / 2} />
+            <Circle
+              cx={haloSize / 2}
+              cy={haloSize / 2}
+              fill="url(#glassPodGlow)"
+              r={haloSize / 2}
+            />
           </Svg>
         ) : null}
         {children}
@@ -112,7 +117,9 @@ export function MascotPod({
           <Circle cx={haloSize / 2} cy={haloSize / 2} fill="url(#haloBg)" r={haloSize / 2} />
         </Svg>
       ) : null}
-      <View style={[styles.contentClip, { borderRadius: Math.round(size * 0.28) }]}>{children}</View>
+      <View style={[styles.contentClip, { borderRadius: Math.round(size * 0.28) }]}>
+        {children}
+      </View>
     </View>
   );
 }

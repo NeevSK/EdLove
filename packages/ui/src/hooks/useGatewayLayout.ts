@@ -1,4 +1,4 @@
-import { canvasBreakpoints, useBreakpoint, type Breakpoint } from '@repo/ui/components/layout';
+import { type Breakpoint, canvasBreakpoints, useBreakpoint } from '@repo/ui/components/layout';
 import { useWindowDimensions } from 'react-native';
 
 export interface GatewayLayoutMetrics {

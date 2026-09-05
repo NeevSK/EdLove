@@ -1,7 +1,7 @@
 import RNSlider, { type SliderProps as RNSliderProps } from '@react-native-community/slider';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import React from 'react';
 import { styled } from 'react-native-css';
-import { useTheme } from '@repo/ui/hooks/useTheme';
 
 const StyledSlider = styled(RNSlider as React.ComponentType<any>);
 

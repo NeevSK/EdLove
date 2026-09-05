@@ -1,11 +1,6 @@
 import { classifyMemoryTier } from '@repo/core/efficiency';
-import type {
-  DeviceTier,
-  FidelityLevel,
-  RealityState,
-  VisualCapabilities,
-} from './types';
 import { resolveExperienceProfile, type SensoryPreferences } from './experiencePolicy';
+import type { DeviceTier, FidelityLevel, RealityState, VisualCapabilities } from './types';
 
 export function classifyDeviceTier(totalMemoryBytes: number | null): DeviceTier {
   return classifyMemoryTier(totalMemoryBytes);
@@ -30,7 +25,10 @@ export function resolveVisualCapabilities(
   const powerAllowsEffects = fidelityLevel === 'high' || !reality.isBatterySaverMode;
   const motionAllowsEffects = !reality.isReducedMotionEnabled;
   const allowRichAnimation =
-    effectiveFidelity === 'high' && powerAllowsEffects && motionAllowsEffects && experience.motion === 'rich';
+    effectiveFidelity === 'high' &&
+    powerAllowsEffects &&
+    motionAllowsEffects &&
+    experience.motion === 'rich';
   const allowSubtleAnimation = motionAllowsEffects && experience.motion !== 'off';
   const useMemoryCache =
     fidelityLevel !== 'low' &&

@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { SensoryPreferences } from './experiencePolicy';
 import { setHapticsEnabled } from '@repo/ui/utils/haptics';
 import {
   createContext,
@@ -10,6 +9,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import type { SensoryPreferences } from './experiencePolicy';
 
 export type SensoryPreferenceKey = keyof Required<SensoryPreferences>;
 

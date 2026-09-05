@@ -1,9 +1,9 @@
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Theme } from '@repo/ui/theme/Theme';
 import { flexRender, type Table } from '@tanstack/react-table';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { Theme } from '@repo/ui/theme/Theme';
-import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 
 export interface SanctuaryTableProps<TData> {
   table: Table<TData>;

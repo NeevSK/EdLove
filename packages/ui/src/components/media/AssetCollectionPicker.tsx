@@ -1,5 +1,4 @@
 import { ChevronRight, Folder, Lock, X } from '@repo/ui/icons';
-import type React from 'react';
 import {
   Box,
   FlatList,
@@ -14,6 +13,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import type React from 'react';
 
 export interface PickerItem {
   id: string;

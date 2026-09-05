@@ -11,12 +11,12 @@
  *   </SmartShelf>
  */
 
-import { ChevronRight } from '@repo/ui/icons';
-import type React from 'react';
-import { StyleSheet } from 'react-native';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { ChevronRight } from '@repo/ui/icons';
 import { Pressable, ScrollView, Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
+import type React from 'react';
+import { StyleSheet } from 'react-native';
 
 // ============================================================================
 // TYPES

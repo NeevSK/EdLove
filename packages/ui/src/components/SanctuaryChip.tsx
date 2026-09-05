@@ -1,6 +1,5 @@
+import { Pressable, Text } from '@repo/ui/primitives';
 import type React from 'react';
-import { Text } from '@repo/ui/primitives';
-import { Pressable } from '@repo/ui/primitives';
 
 export interface SanctuaryChipProps {
   label: string;

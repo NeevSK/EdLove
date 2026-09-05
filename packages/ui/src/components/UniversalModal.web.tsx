@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Pressable, Modal } from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 export interface UniversalModalProps {
   isOpen: boolean;
@@ -24,12 +24,7 @@ export const UniversalModal = ({
   if (!isOpen) return null;
 
   return (
-    <Modal
-      visible={isOpen}
-      transparent
-      onRequestClose={onClose}
-      animationType="fade"
-    >
+    <Modal visible={isOpen} transparent onRequestClose={onClose} animationType="fade">
       <View style={styles.modalRoot}>
         {hasBackdrop && (
           <Pressable
@@ -39,9 +34,7 @@ export const UniversalModal = ({
             onPress={onClose}
           />
         )}
-        <View style={styles.contentContainer}>
-          {children}
-        </View>
+        <View style={styles.contentContainer}>{children}</View>
       </View>
     </Modal>
   );

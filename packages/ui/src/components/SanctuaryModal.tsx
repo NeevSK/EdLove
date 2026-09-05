@@ -1,3 +1,4 @@
+import { X } from '@repo/ui/icons';
 import {
   HStack,
   Modal,
@@ -9,9 +10,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { X } from '@repo/ui/icons';
-import type React from 'react';
 import { cn } from '@repo/ui/utils/classNames';
+import type React from 'react';
 
 const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => (
   <Text className={cn('text-xl font-bold', className)}>{children}</Text>

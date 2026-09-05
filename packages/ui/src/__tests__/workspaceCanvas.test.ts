@@ -1,4 +1,9 @@
-import { clampReorderIndex, resolveDragTranslation, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
+import {
+  clampReorderIndex,
+  resolveDragTranslation,
+  resolveReorderTarget,
+} from '@repo/ui/components/workspace/reorder';
+
 describe('workspace canvas interaction contracts', () => {
   it('keeps phone drag movement on one vertical axis', () => {
     expect(resolveDragTranslation('vertical', { x: 80, y: 120 })).toEqual({ x: 0, y: 120 });

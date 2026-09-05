@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Command, CommandInput, CommandItem, CommandList } from '@repo/ui/components/ui/command';
 import { Text } from '@repo/ui/components/ui/text';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 describe('Command', () => {
   it('filters items and reports selection', async () => {

@@ -1,7 +1,7 @@
+import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { View } from '@repo/ui/primitives';
 import type React from 'react';
 import type { ViewStyle } from 'react-native';
-import { View } from '@repo/ui/primitives';
-import { LivingGlow } from '@repo/ui/components/LivingGlow';
 
 interface FounderGlowProps {
   children: React.ReactNode;

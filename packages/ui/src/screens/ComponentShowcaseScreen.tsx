@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Button,
   ButtonText,
@@ -26,6 +25,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import React, { useState } from 'react';
 
 const roleOptions = [
   { label: 'Student', value: 'student' },

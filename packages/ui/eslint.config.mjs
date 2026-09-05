@@ -1,5 +1,5 @@
-import { config } from '@repo/eslint-config/react-internal';
 import path from 'node:path';
+import { config } from '@repo/eslint-config/react-internal';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
@@ -9,7 +9,7 @@ export default [
     // src/archive/ is unreferenced dead code kept for design reference only.
     ignores: ['jest-setup.ts', 'scripts/**', 'src/archive/**'],
   },
-   ...config,
+  ...config,
   {
     // eslint-plugin-react-hooks v7's recommended preset enables the full
     // React Compiler linter suite (static-components, immutability, refs,
@@ -33,7 +33,7 @@ export default [
       'react-hooks/gating': 'warn',
     },
   },
-   {
+  {
     rules: {
       'no-restricted-imports': [
         'error',
@@ -70,7 +70,7 @@ export default [
       ],
     },
   },
-   {
+  {
     settings: {
       'import/resolver': {
         typescript: {

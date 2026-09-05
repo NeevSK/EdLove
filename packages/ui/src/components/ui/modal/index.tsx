@@ -2,11 +2,11 @@ import { Box } from '@repo/ui/components/ui/box';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
 import { AnimatedView, View } from '@repo/ui/components/ui/view';
+import { cn } from '@repo/ui/utils/classNames';
 import type React from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, type ViewProps } from 'react-native';
 import { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { cn } from '@repo/ui/utils/classNames';
 
 /**
  * Modal Component
@@ -143,7 +143,10 @@ export const ModalContent = ({ children, className, style }: any) => {
 
   return (
     <Box
-      className={cn('bg-phase-modal-card rounded-3xl overflow-hidden shadow-2xl border border-phase-modal-border', className)}
+      className={cn(
+        'bg-phase-modal-card rounded-3xl overflow-hidden shadow-2xl border border-phase-modal-border',
+        className,
+      )}
       style={contentStyle}
     >
       {children}
@@ -153,7 +156,10 @@ export const ModalContent = ({ children, className, style }: any) => {
 
 export const ModalHeader = ({ children, className }: any) => (
   <Box
-    className={cn('px-6 py-5 flex-row items-center justify-between border-b border-phase-interactive/5', className)}
+    className={cn(
+      'px-6 py-5 flex-row items-center justify-between border-b border-phase-interactive/5',
+      className,
+    )}
   >
     {children}
   </Box>
@@ -165,7 +171,10 @@ export const ModalBody = ({ children, className }: any) => (
 
 export const ModalFooter = ({ children, className }: any) => (
   <Box
-    className={cn('px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4', className)}
+    className={cn(
+      'px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4',
+      className,
+    )}
   >
     {children}
   </Box>

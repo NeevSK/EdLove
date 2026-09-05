@@ -138,7 +138,11 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
       </Pressable>
 
       {showControls && (
-        <Animated.View entering={FadeInUp} className="absolute inset-0" style={{ pointerEvents: 'box-none' }}>
+        <Animated.View
+          entering={FadeInUp}
+          className="absolute inset-0"
+          style={{ pointerEvents: 'box-none' }}
+        >
           <Box className="flex-1 bg-black/40 p-4">
             {/* Header */}
             <HStack className="justify-between items-center">

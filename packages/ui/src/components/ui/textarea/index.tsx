@@ -1,7 +1,7 @@
-import React from 'react';
-import { type TextInputProps, type ViewProps } from 'react-native';
 import { TextInput } from '@repo/ui/components/ui/text-input';
 import { View } from '@repo/ui/components/ui/view';
+import React from 'react';
+import { type TextInputProps, type ViewProps } from 'react-native';
 
 export interface ITextareaProps extends ViewProps {
   className?: string;

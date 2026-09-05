@@ -1,3 +1,5 @@
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
   ArrowLeftRight,
   Check,
@@ -6,10 +8,7 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from '@repo/ui/icons';
-import React, { useEffect, useMemo, useState } from 'react';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, HStack, Pressable as GSPressable, Text, VStack } from '@repo/ui/primitives';
+import { Box, Pressable as GSPressable, HStack, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import {
   clearStoredExternalOpenPreference,
@@ -17,6 +16,7 @@ import {
   type ExternalOpenMethod,
   registerExternalLinkRuntime,
 } from '@repo/ui/utils/linking';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useReality } from './EnvironmentContext';
 
 interface PendingRequest {

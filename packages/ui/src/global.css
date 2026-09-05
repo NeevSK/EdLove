@@ -12,12 +12,11 @@
 }
 
 :root {
-  --phase-modal-card: #FDFAF3;
+  --phase-modal-card: #fdfaf3;
   --phase-scrim: rgba(26, 22, 16, 0.82);
   --phase-modal-border: rgba(42, 35, 24, 0.12);
-  --phase-text-primary: #2A2318;
-  --phase-text-secondary: #72695E;
-  --phase-interactive: rgba(232, 226, 207, 0.50);
-  --phase-accent: #D4843A;
+  --phase-text-primary: #2a2318;
+  --phase-text-secondary: #72695e;
+  --phase-interactive: rgba(232, 226, 207, 0.5);
+  --phase-accent: #d4843a;
 }
-

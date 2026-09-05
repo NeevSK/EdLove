@@ -1,8 +1,8 @@
-import { type FC, type ReactNode, useState } from 'react';
-import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 import { EaseView } from '@repo/ui/components/EaseView';
 import { Box, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { cn } from '@repo/ui/utils/classNames';
+import { type FC, type ReactNode, useState } from 'react';
+import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 interface SanctuaryCardProps {
   title?: string;

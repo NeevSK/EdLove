@@ -1,8 +1,8 @@
+import { EaseView } from '@repo/ui/components/EaseView';
+import { Box } from '@repo/ui/primitives';
 import type React from 'react';
 import { useMemo } from 'react';
 import type { ViewProps } from 'react-native';
-import { EaseView } from '@repo/ui/components/EaseView';
-import { Box } from '@repo/ui/primitives';
 
 interface LivingGlowProps extends ViewProps {
   children?: React.ReactNode;

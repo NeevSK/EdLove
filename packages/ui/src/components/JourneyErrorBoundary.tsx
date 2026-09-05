@@ -1,8 +1,12 @@
+import { hapticError } from '@repo/ui/utils/haptics';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Platform, Text as RNText, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { hapticError } from '@repo/ui/utils/haptics';
 
-let Sentry: { setTag?: (k: string, v: string) => void; setExtra?: (k: string, v: unknown) => void; captureException?: (e: Error, o: any) => void } | null = null;
+let Sentry: {
+  setTag?: (k: string, v: string) => void;
+  setExtra?: (k: string, v: unknown) => void;
+  captureException?: (e: Error, o: any) => void;
+} | null = null;
 try {
   Sentry = require('@sentry/react-native');
 } catch {

@@ -1,8 +1,8 @@
 import type { ResourceType } from '@repo/core/types';
-import { File, FileText, Heart, Info, Link, Map, Plus, Video } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { File, FileText, Heart, Info, Link, Map, Plus, Video } from '@repo/ui/icons';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 
 interface ResourceCardProps {
   title: string;

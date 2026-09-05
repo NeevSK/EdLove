@@ -1,6 +1,6 @@
-import type React from 'react';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { cn } from '@repo/ui/utils/classNames';
+import type React from 'react';
 
 interface ProgressIndicatorProps {
   currentStep: number;

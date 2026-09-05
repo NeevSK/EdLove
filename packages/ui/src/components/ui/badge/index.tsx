@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { type TextProps, type ViewProps, View as RNView } from 'react-native';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
+import React, { createContext, useContext, useMemo } from 'react';
+import { View as RNView, type TextProps, type ViewProps } from 'react-native';
 
 export type BadgeVariant = 'solid' | 'outline';
 export type BadgeAction = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'muted';
@@ -73,36 +73,38 @@ export interface IBadgeTextProps extends TextProps {
   className?: string;
 }
 
-const BadgeText = React.forwardRef<any, IBadgeTextProps>(({ className, children, ...props }, ref) => {
-  const { variant, action, size } = useContext(BadgeContext);
+const BadgeText = React.forwardRef<any, IBadgeTextProps>(
+  ({ className, children, ...props }, ref) => {
+    const { variant, action, size } = useContext(BadgeContext);
 
-  const textSizes: Record<BadgeSize, string> = {
-    sm: 'text-xs',
-    md: 'text-xs font-semibold',
-    lg: 'text-sm font-semibold',
-  };
+    const textSizes: Record<BadgeSize, string> = {
+      sm: 'text-xs',
+      md: 'text-xs font-semibold',
+      lg: 'text-sm font-semibold',
+    };
 
-  const textColors: Record<BadgeAction, string> = {
-    primary: 'text-phase-accent',
-    secondary: 'text-phase-text-secondary',
-    success: 'text-phase-reward',
-    warning: 'text-amberGlow',
-    error: 'text-phase-danger',
-    muted: 'text-phase-text-secondary',
-  };
+    const textColors: Record<BadgeAction, string> = {
+      primary: 'text-phase-accent',
+      secondary: 'text-phase-text-secondary',
+      success: 'text-phase-reward',
+      warning: 'text-amberGlow',
+      error: 'text-phase-danger',
+      muted: 'text-phase-text-secondary',
+    };
 
-  return (
-    <Text
-      {...props}
-      ref={ref}
-      className={`tracking-tight uppercase ${textSizes[size]} ${textColors[action]} ${className || ''}`}
-    >
-      {children}
-    </Text>
-  );
-});
+    return (
+      <Text
+        {...props}
+        ref={ref}
+        className={`tracking-tight uppercase ${textSizes[size]} ${textColors[action]} ${className || ''}`}
+      >
+        {children}
+      </Text>
+    );
+  },
+);
 
 Badge.displayName = 'Badge';
 BadgeText.displayName = 'BadgeText';
-export { Badge, BadgeText };
 
+export { Badge, BadgeText };

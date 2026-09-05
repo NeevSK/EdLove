@@ -212,13 +212,25 @@ const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenP
                   >
                     <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
                       <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
-                      <Mascot artwork={exploreArtwork} mode="glowing" podVariant="halo" size={156} state="guiding" />
+                      <Mascot
+                        artwork={exploreArtwork}
+                        mode="glowing"
+                        podVariant="halo"
+                        size={156}
+                        state="guiding"
+                      />
                     </Box>
                   </SkiaGlowAura>
                 ) : (
                   <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
                     <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
-                    <Mascot artwork={exploreArtwork} mode="glowing" podVariant="halo" size={156} state="guiding" />
+                    <Mascot
+                      artwork={exploreArtwork}
+                      mode="glowing"
+                      podVariant="halo"
+                      size={156}
+                      state="guiding"
+                    />
                   </Box>
                 )}
               </Box>

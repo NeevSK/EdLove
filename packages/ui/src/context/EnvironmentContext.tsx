@@ -4,6 +4,7 @@
  */
 
 import { identity, useStore } from '@repo/core/logic';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FidelityProvider, useFidelity } from './FidelityProvider';
 import { LanguageProvider, useLanguage } from './LanguageProvider';
 // Atomic Providers
@@ -12,7 +13,6 @@ import { SensoryProvider } from './SensoryProvider';
 import { ThemeProvider, useThemeContext } from './ThemeProvider';
 import type { EnvironmentContextValue } from './types';
 import { useVisualCapabilities } from './VisualCapabilities';
-import { type ReactNode, useCallback, useMemo } from 'react';
 
 /**
  * Environment Provider Component

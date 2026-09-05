@@ -25,13 +25,7 @@ import { handleAPIError } from '@repo/core/logic';
 import { GatewayScreenShell } from '@repo/ui/components/GatewayScreenShell.web';
 import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
 import { useTheme } from '@repo/ui/hooks/useTheme';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from '@repo/ui/primitives';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
@@ -96,79 +90,75 @@ function welcomeReducer(state: WelcomeState, action: WelcomeAction): WelcomeStat
 // SUB-COMPONENTS
 // ──────────────────────────────────────────────────────────
 
-const LeftPanel = memo(
-  ({ exploreArtwork }: { exploreArtwork?: MascotArtworkSource }) => {
-    const { text, accent, isDark } = useTheme();
-    return (
-      <View style={styles.leftPanelInner}>
-        {/* Logo */}
-        <View style={styles.logoRow}>
-          <View style={styles.logoCircle}>
-            <Text style={styles.logoGlyph}>🪷</Text>
-          </View>
-          <Text style={[styles.logoName, { color: text.primary }]}>Gurudevi</Text>
+const LeftPanel = memo(({ exploreArtwork }: { exploreArtwork?: MascotArtworkSource }) => {
+  const { text, accent, isDark } = useTheme();
+  return (
+    <View style={styles.leftPanelInner}>
+      {/* Logo */}
+      <View style={styles.logoRow}>
+        <View style={styles.logoCircle}>
+          <Text style={styles.logoGlyph}>🪷</Text>
         </View>
-        <View style={styles.mascotWelcome}>
-          <Mascot
-            artwork={exploreArtwork}
-            mode="glowing"
-            podVariant="halo"
-            size={180}
-            state="guiding"
-          />
-        </View>
-        {/* Headline */}
-        <Text style={[styles.headline, { color: text.primary }]}>
-          A Sanctuary{'\n'}for Teachers
-        </Text>
-        {/* Tagline */}
-        <Text
-          style={[styles.tagline, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}
-        >
-          Mending the teaching-learning{'\n'}impedance match — through care, not surveillance.
-        </Text>
-        {/* Stats */}
-        <View style={styles.statsRow}>
-          {STATS.map((s) => (
-            <View key={s.label} style={[styles.statPill, { borderColor: `${accent.action}30` }]}>
-              <Text style={[styles.statValue, { color: accent.action }]}>{s.value}</Text>
-              <Text style={[styles.statLabel, { color: text.secondary }]}>{s.label}</Text>
-            </View>
-          ))}
-        </View>
-        {/* Five Pillars */}
-        <View style={styles.pillarsRow}>
-          {PILLARS.map((p) => (
-            <View
-              key={p.name}
-              style={[
-                styles.pillarChip,
-                { borderColor: `${p.color}30`, backgroundColor: `${p.color}10` },
-              ]}
-            >
-              <Text style={styles.pillarEmoji}>{p.emoji}</Text>
-              <Text style={[styles.pillarName, { color: p.color }]}>{p.name}</Text>
-            </View>
-          ))}
-        </View>
-        {/* Quote */}
-        <View
-          style={[
-            styles.quoteBox,
-            {
-              borderLeftColor: accent.action,
-              backgroundColor: `${accent.action}0A`,
-            },
-          ]}
-        >
-          <Text style={[styles.quoteText, { color: text.secondary }]}>
-            &quot;Education is a living ecology,{'\n'}not a linear process.&quot;
-          </Text>
-        </View>
+        <Text style={[styles.logoName, { color: text.primary }]}>Gurudevi</Text>
       </View>
-    );
-  },
-);
+      <View style={styles.mascotWelcome}>
+        <Mascot
+          artwork={exploreArtwork}
+          mode="glowing"
+          podVariant="halo"
+          size={180}
+          state="guiding"
+        />
+      </View>
+      {/* Headline */}
+      <Text style={[styles.headline, { color: text.primary }]}>A Sanctuary{'\n'}for Teachers</Text>
+      {/* Tagline */}
+      <Text
+        style={[styles.tagline, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}
+      >
+        Mending the teaching-learning{'\n'}impedance match — through care, not surveillance.
+      </Text>
+      {/* Stats */}
+      <View style={styles.statsRow}>
+        {STATS.map((s) => (
+          <View key={s.label} style={[styles.statPill, { borderColor: `${accent.action}30` }]}>
+            <Text style={[styles.statValue, { color: accent.action }]}>{s.value}</Text>
+            <Text style={[styles.statLabel, { color: text.secondary }]}>{s.label}</Text>
+          </View>
+        ))}
+      </View>
+      {/* Five Pillars */}
+      <View style={styles.pillarsRow}>
+        {PILLARS.map((p) => (
+          <View
+            key={p.name}
+            style={[
+              styles.pillarChip,
+              { borderColor: `${p.color}30`, backgroundColor: `${p.color}10` },
+            ]}
+          >
+            <Text style={styles.pillarEmoji}>{p.emoji}</Text>
+            <Text style={[styles.pillarName, { color: p.color }]}>{p.name}</Text>
+          </View>
+        ))}
+      </View>
+      {/* Quote */}
+      <View
+        style={[
+          styles.quoteBox,
+          {
+            borderLeftColor: accent.action,
+            backgroundColor: `${accent.action}0A`,
+          },
+        ]}
+      >
+        <Text style={[styles.quoteText, { color: text.secondary }]}>
+          &quot;Education is a living ecology,{'\n'}not a linear process.&quot;
+        </Text>
+      </View>
+    </View>
+  );
+});
 LeftPanel.displayName = 'LeftPanel';
 
 interface RightPanelProps {
@@ -300,8 +290,8 @@ const RightPanel = memo(
                 }}
               >
                 Privacy Policy
-              </a>
-              {' '}and{' '}
+              </a>{' '}
+              and{' '}
               <a
                 href={EXTERNAL_URLS.terms}
                 target="_blank"

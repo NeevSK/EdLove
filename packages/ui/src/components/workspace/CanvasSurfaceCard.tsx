@@ -1,4 +1,5 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import {
   ChevronDown,
   ChevronUp,
@@ -9,13 +10,11 @@ import {
   Pin,
   Sparkles,
 } from '@repo/ui/icons';
+import { Pressable, Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text } from '@repo/ui/primitives';
-import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { Pressable, View } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
 
 export interface CanvasSurfaceCardProps<
   TSurfaceId extends string = string,

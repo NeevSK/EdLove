@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Text } from '@repo/ui/primitives';
+import React from 'react';
 
 export interface UnifiedMapViewProps {
   style?: any;

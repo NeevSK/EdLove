@@ -1,6 +1,6 @@
+import { styled } from 'nativewind';
 import React from 'react';
 import { ActivityIndicator, type ActivityIndicatorProps } from 'react-native';
-import { styled } from 'nativewind';
 
 const StyledActivityIndicator = styled(ActivityIndicator as React.ComponentType<any>);
 

@@ -1,10 +1,10 @@
 import { useTemporalStore } from '@repo/core/logic';
+import { Box, Text } from '@repo/ui/primitives';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
-import { Box, Text } from '@repo/ui/primitives';
 
 /**
  * TemporalScrubber

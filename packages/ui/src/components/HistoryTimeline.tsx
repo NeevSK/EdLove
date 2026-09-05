@@ -1,9 +1,9 @@
 import { type AuditLogEntry, historyAPI } from '@repo/core/logic';
-import { BrandPulse } from './BrandPulse';
+import { ScrollView, Text, View } from '@repo/ui/primitives';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { ScrollView, Text, View } from '@repo/ui/primitives';
+import { BrandPulse } from './BrandPulse';
 
 interface HistoryTimelineProps {
   tableName: string;

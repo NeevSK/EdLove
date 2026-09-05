@@ -1,15 +1,15 @@
 import { useNotifications } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import type { AppNotification } from '@repo/core/types';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { useResponsiveGrid } from '@repo/ui/components/layout';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { Bell, CircleCheck, Info, Shield, Sparkles } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 
 // Local fallback since WebScreenShimmer doesn't exist
 const StackFallback = memo(({ variant }: { variant?: string }) => (
@@ -189,7 +189,10 @@ export default memo(function NotificationsScreenWeb() {
     <div className="sanctuary-screen">
       <div
         className="sanctuary-container"
-        style={{ maxWidth: typeof maxWidth === 'number' ? maxWidth : '100%', paddingInline: gutter }}
+        style={{
+          maxWidth: typeof maxWidth === 'number' ? maxWidth : '100%',
+          paddingInline: gutter,
+        }}
       >
         {/* GREETING */}
         <WebScreenHeader

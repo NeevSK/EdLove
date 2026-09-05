@@ -1,12 +1,8 @@
 import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
+import { type HapticImpact, hapticImpact } from '../utils/haptics';
 import { duration, easing, scale } from './motion';
-import { hapticImpact, type HapticImpact } from '../utils/haptics';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

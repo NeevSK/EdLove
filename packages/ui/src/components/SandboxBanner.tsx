@@ -1,9 +1,9 @@
 import { useAuthStore } from '@repo/core/store';
 import { X, Zap } from '@repo/ui/icons';
-import type React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SandboxBannerProps {
   onExit?: () => void;

@@ -2,8 +2,6 @@ import NetInfo from '@react-native-community/netinfo';
 import { normalizeNetworkConditions } from '@repo/core/efficiency';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { useStore } from '@repo/core/store/useStore';
-import type { NetworkQuality, RealityState } from './types';
-import { detectDeviceTier, detectNetworkQuality, shouldUseDataSaver } from './utils';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import {
   createContext,
@@ -17,6 +15,8 @@ import {
 } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { collectRealitySignals } from './realitySignals';
+import type { NetworkQuality, RealityState } from './types';
+import { detectDeviceTier, detectNetworkQuality, shouldUseDataSaver } from './utils';
 
 interface RealityContextValue {
   reality: RealityState;

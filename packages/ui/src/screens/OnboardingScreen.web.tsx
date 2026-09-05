@@ -558,7 +558,9 @@ export default memo(function OnboardingScreenWeb({
           // Uninitialized or uncreated user account -> wipe draft cache and start cleanly at Welcome Step 0
           try {
             await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
-          } catch {}
+          } catch {
+            // Ignore failure when clearing progress key
+          }
           dispatch({ type: 'SET_STEP', step: 0 });
           return;
         }

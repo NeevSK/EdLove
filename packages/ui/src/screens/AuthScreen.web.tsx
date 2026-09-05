@@ -131,7 +131,8 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => (
             Why this step matters
           </span>
           <p className="text-phase-primary leading-relaxed text-xs sm:text-sm mt-1">
-            Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
+            Your account keeps lessons, achievements, and invitations synchronized across all
+            devices in a quiet, distraction-free environment.
           </p>
         </div>
 

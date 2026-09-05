@@ -1,12 +1,12 @@
 import { useNotifications, useStore } from '@repo/core/logic';
 import type { AppNotification } from '@repo/core/types';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Bell, Check, CircleAlert, Info, Sparkles } from '@repo/ui/icons';
 import { Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useTheme } from '@repo/ui/hooks/useTheme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
@@ -192,7 +192,11 @@ export default function NotificationsScreen() {
 
           {isLoading && !hasData ? (
             <VStack className="items-center py-16 gap-4">
-              <BrandPulse size={42} tintColor={accent.action} accessibilityLabel="Loading notifications" />
+              <BrandPulse
+                size={42}
+                tintColor={accent.action}
+                accessibilityLabel="Loading notifications"
+              />
               <Text className="text-sm" style={{ color: text.secondary }}>
                 {t('common.loading') || 'Gathering your latest updates…'}
               </Text>

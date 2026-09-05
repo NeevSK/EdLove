@@ -1,10 +1,10 @@
-import { useVisualCapabilities } from './VisualCapabilities';
+import { createContext, type ReactNode, useCallback, useContext, useMemo } from 'react';
 import {
   createFeedbackController,
   type FeedbackEvent,
   type SoundCue,
 } from '../utils/feedbackPolicy';
-import { createContext, type ReactNode, useCallback, useContext, useMemo } from 'react';
+import { useVisualCapabilities } from './VisualCapabilities';
 
 interface FeedbackContextValue {
   emit: (event: FeedbackEvent) => void;

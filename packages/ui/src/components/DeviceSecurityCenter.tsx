@@ -1,7 +1,6 @@
 import { useAuthStore, useDeviceSecurity } from '@repo/core/logic';
 import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import {
   Activity,
   Clock3,
@@ -13,6 +12,7 @@ import {
   Tablet,
   Trash2,
 } from '@repo/ui/icons';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';

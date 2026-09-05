@@ -1,7 +1,11 @@
 import type { BaseResource } from '@repo/core/types';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Bookmark, CirclePlay, FileText, FolderPlus, Info, Share2 } from '@repo/ui/icons';
-import type React from 'react';
 import {
+  Box,
+  HStack,
+  Pressable,
+  ScrollView,
   Sheet,
   SheetBackdrop,
   SheetContent,
@@ -10,14 +14,10 @@ import {
   SheetIcon,
   SheetItem,
   SheetItemText,
-  Box,
-  HStack,
-  Pressable,
-  ScrollView,
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { useTheme } from '@repo/ui/hooks/useTheme';
+import type React from 'react';
 
 export interface ResourceActionSheetProps {
   visible: boolean;

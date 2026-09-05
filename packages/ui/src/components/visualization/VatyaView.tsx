@@ -1,9 +1,9 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
-import type React from 'react';
-import { Circle, Path, Svg } from 'react-native-svg';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Box } from '@repo/ui/primitives';
+import type React from 'react';
+import { Circle, Path, Svg } from 'react-native-svg';
 
 /**
  * VatyaView - The "Flow/Transition" Perspective.

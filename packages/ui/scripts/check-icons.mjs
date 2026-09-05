@@ -35,6 +35,8 @@ if (missingCount > 0) {
   console.error(`\nFound ${missingCount} invalid icon exports in icons.native.ts`);
   process.exit(1);
 } else {
-  console.log(`\n✅ All ${iconSubpaths.length} icon exports successfully resolved against lucide-react-native!`);
+  console.log(
+    `\n✅ All ${iconSubpaths.length} icon exports successfully resolved against lucide-react-native!`,
+  );
   process.exit(0);
 }

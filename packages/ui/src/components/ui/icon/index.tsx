@@ -4,7 +4,10 @@ import { useCssElement } from 'react-native-css';
 
 const iconMapping = { className: 'style' } as const;
 
-const DynamicIcon = ({ component: Component, ...props }: { component: React.ComponentType<any> } & Record<string, any>) =>
+const DynamicIcon = ({
+  component: Component,
+  ...props
+}: { component: React.ComponentType<any> } & Record<string, any>) =>
   useCssElement(Component, props, iconMapping);
 
 export interface IIconProps {

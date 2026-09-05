@@ -1,6 +1,6 @@
+import { openExternalURL } from '@repo/ui/utils/linking';
 import React from 'react';
 import { Platform, Text, TouchableOpacity } from 'react-native';
-import { openExternalURL } from '@repo/ui/utils/linking';
 
 /**
  * Link Component
@@ -78,4 +78,3 @@ export const LinkText = ({ children, className, style }: any) => (
     {children}
   </Text>
 );
-

@@ -1,6 +1,7 @@
 /* eslint-disable */
 /* oxlint-disable */
 'use no memo';
+import { hapticMedium } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import {
@@ -16,7 +17,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
-import { hapticMedium } from '@repo/ui/utils/haptics';
 import { resolveDragTranslation } from './reorder';
 
 interface DraggableCanvasSurfaceProps {
@@ -127,4 +127,3 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
     </GestureDetector>
   );
 };
-

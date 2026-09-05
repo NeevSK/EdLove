@@ -1,18 +1,18 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import {
-  type PressableProps,
-  type StyleProp,
-  Text as RNText,
-  type TextProps,
-  View,
-  type ViewStyle,
-} from 'react-native';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Spinner } from '@repo/ui/components/ui/spinner';
 import { Text } from '@repo/ui/components/ui/text';
 import { View as StyledView } from '@repo/ui/components/ui/view';
 import { cn } from '@repo/ui/utils/classNames';
-import { hapticImpact, type HapticImpact } from '@repo/ui/utils/haptics';
+import { type HapticImpact, hapticImpact } from '@repo/ui/utils/haptics';
+import React, { createContext, useContext, useMemo } from 'react';
+import {
+  type PressableProps,
+  Text as RNText,
+  type StyleProp,
+  type TextProps,
+  View,
+  type ViewStyle,
+} from 'react-native';
 
 interface ButtonContextType {
   variant?: 'solid' | 'outline' | 'ghost';
@@ -69,17 +69,20 @@ const Button = React.forwardRef<View, IButtonProps>(
     const variants = {
       solid: {
         primary: 'bg-phase-accent border border-phase-accent active:opacity-90 shadow-sm',
-        secondary: 'bg-phase-interactive border border-phase-interactive/30 active:opacity-90 shadow-sm',
+        secondary:
+          'bg-phase-interactive border border-phase-interactive/30 active:opacity-90 shadow-sm',
         positive: 'bg-phase-reward border border-phase-reward active:opacity-90 shadow-sm',
         negative: 'bg-phase-danger border border-phase-danger active:opacity-90 shadow-sm',
         default: 'bg-phase-surface border border-phase-interactive/20 active:opacity-90 shadow-sm',
       },
       outline: {
         primary: 'bg-transparent border-2 border-phase-accent active:bg-phase-accent/10',
-        secondary: 'bg-transparent border-2 border-phase-interactive/40 active:bg-phase-interactive/10',
+        secondary:
+          'bg-transparent border-2 border-phase-interactive/40 active:bg-phase-interactive/10',
         positive: 'bg-transparent border-2 border-phase-reward active:bg-phase-reward/10',
         negative: 'bg-transparent border-2 border-phase-danger active:bg-phase-danger/10',
-        default: 'bg-transparent border-2 border-phase-interactive/30 active:bg-phase-interactive/10',
+        default:
+          'bg-transparent border-2 border-phase-interactive/30 active:bg-phase-interactive/10',
       },
       ghost: {
         primary: 'bg-transparent active:bg-phase-accent/10',
@@ -116,7 +119,11 @@ const Button = React.forwardRef<View, IButtonProps>(
           )}
           style={typeof style === 'function' ? (state) => [sx, style(state)] : [sx, style]}
         >
-          {isLoading ? <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} /> : children}
+          {isLoading ? (
+            <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} />
+          ) : (
+            children
+          )}
         </Pressable>
       </ButtonContext.Provider>
     );
@@ -153,7 +160,11 @@ export const ButtonText = React.forwardRef<RNText, TextProps & { className?: str
     };
     const colorStyle = textColors[variant!][action!];
     return (
-      <Text {...props} ref={ref} className={cn('font-bold text-center tracking-tight', colorStyle, className)}>
+      <Text
+        {...props}
+        ref={ref}
+        className={cn('font-bold text-center tracking-tight', colorStyle, className)}
+      >
         {children}
       </Text>
     );
@@ -166,7 +177,11 @@ export const ButtonIcon = ({ as: Icon, className, size, ...props }: any) => {
   const defaultSize = buttonSize === 'sm' ? 16 : buttonSize === 'lg' ? 22 : 18;
   return (
     <StyledView className="mx-1" testID={props.testID}>
-      <Icon {...props} size={size || defaultSize} className={`${variant === 'solid' ? 'text-white' : ''} ${className || ''}`} />
+      <Icon
+        {...props}
+        size={size || defaultSize}
+        className={`${variant === 'solid' ? 'text-white' : ''} ${className || ''}`}
+      />
     </StyledView>
   );
 };
