@@ -413,6 +413,25 @@ if (process.env.SENTRY_DSN) {
 
 app.route('/', healthRoutes);
 
+// Dev Diagnostics Pipeline: Ingests aggregated mobile error reports in development
+app.post('/dev/diagnostics', async (c) => {
+  const body = await c.req.json().catch(() => null);
+  if (body) {
+    loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
+    try {
+      const fs = await import('node:fs/promises');
+      await fs.writeFile(
+        'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
+        JSON.stringify(body, null, 2),
+        'utf-8',
+      );
+    } catch (fsErr) {
+      console.warn('Could not write dev diagnostics scratch file:', fsErr);
+    }
+  }
+  return c.json({ ok: true, received: Boolean(body) });
+});
+
 app.use('/api/*', async (c, next) => {
   // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
   const authHeader = c.req.header('Authorization');
