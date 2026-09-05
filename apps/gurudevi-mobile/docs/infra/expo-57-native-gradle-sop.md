@@ -2,9 +2,9 @@
 title: "Expo 57 Native Gradle SOP"
 status: "active"
 created: 2026-08-03
-updated: 2026-08-22
+updated: 2026-09-05
 author: "Naveen"
-scribe: "opencode"
+scribe: "Antigravity"
 tags: [infra, android, gradle, expo, build]
 ---
 
@@ -207,11 +207,10 @@ The local audits are necessary but insufficient: a successful native validation 
 
 ### Windows versus WSL
 
-Use Windows `adb` for USB device discovery, APK installation, logcat, and
-screenshots. Use WSL for the Linux-native Gradle/NDK toolchain when Windows
-path length or native build tooling causes problems. Keep one WSL checkout and
-one pnpm installation there; repeatedly reinstalling dependencies or switching
-between Windows and WSL node_modules wastes disk and invalidates caches.
+- **Device tooling**: Use Windows `adb` for USB device discovery, APK installation, logcat, and screenshots.
+- **Native compilation**: Exclusively execute native Android Gradle/NDK compilation in **WSL 2 (Ubuntu)** from the active workspace (`/mnt/c/x/apps/gurudevi-mobile/android`). NEVER build on Windows host directly to prevent MAX_PATH (`CMAKE_OBJECT_PATH_MAX`) and Ninja timestamp issues (`manifest 'build.ninja' still dirty after 100 tries`).
+- **Default build target**: Always build **Debug (`:app:assembleDebug`)** for development and connected physical device testing. Standalone Release (`:app:assembleRelease`) is strictly on-demand and only triggered when explicitly requested.
+- **No stale clones**: Do not build in isolated/stale clones like `/home/<user>/polymath-platform-wsl`; run directly from the active project mount to ensure newly edited files and features are compiled.
 
 The fast, stable WSL profile is: arm64-v8a only, Gradle max-workers 2, CMake
 parallelism 2, and a 1.5GB Gradle heap on an 8GB host. The first build remains

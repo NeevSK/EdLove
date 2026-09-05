@@ -13,6 +13,7 @@ export ANDROID_HOME="$ANDROID_SDK_ROOT"
 export ANDROID_NDK_HOME="${ANDROID_NDK_HOME:-$ANDROID_SDK_ROOT/ndk/27.1.12297006}"
 export CMAKE_BUILD_PARALLEL_LEVEL="${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 export GRADLE_OPTS="${GRADLE_OPTS:--Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC}"
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
 
 if command -v ccache >/dev/null 2>&1; then
   export NDK_CCACHE="$(which ccache)"
@@ -24,6 +25,10 @@ if [[ ! -x "$ANDROID_HOME/platform-tools/adb" ]]; then
   echo "Android SDK not found at $ANDROID_HOME. Set ANDROID_SDK_ROOT in WSL." >&2
   exit 1
 fi
+
+# Pre-flight hygiene: clear stale Kotlin daemon run markers and locks that cause loopback socket hangs in WSL2
+rm -rf "$HOME/.local/share/kotlin/daemon/"* "/tmp/kotlin"* 2>/dev/null || true
+rm -f "$HOME/.gradle/caches/modules-2/modules-2.lock" 2>/dev/null || true
 
 cd "$mobile_root/android"
 

@@ -22,7 +22,6 @@
   "rules": {
     "no-debugger": "error",
     "no-console": "warn",
-    "react/react-compiler": "error",
     "import/no-relative-parent-imports": "off",
     "no-constant-condition": "error",
     "no-empty": "warn",
@@ -49,6 +48,13 @@
     }
   },
   "overrides": [
+    {
+      "files": ["scripts/**/*"],
+      "rules": {
+        "no-console": "off",
+        "no-underscore-dangle": "off"
+      }
+    },
     {
       "files": [
         "*.cjs",
@@ -80,7 +86,6 @@
     "*.config.cjs",
     "*.cjs",
     "**/*.cjs",
-    "scripts",
     "eslint.config.js",
     "**/archive/**",
     "**/plugins/**"

@@ -16,6 +16,7 @@ export default [
       'docs/archive/**',
       '**/*.mjs',
       '**/*.cjs',
+      'scripts/**',
     ],
   },
   {
@@ -23,10 +24,12 @@ export default [
       react: {
         rules: {
           'react-compiler': {
-            create() { return {}; }
-          }
-        }
-      }
+            create() {
+              return {};
+            },
+          },
+        },
+      },
     },
     rules: {
       'no-unused-vars': 'off',

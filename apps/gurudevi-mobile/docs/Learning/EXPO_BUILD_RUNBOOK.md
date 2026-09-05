@@ -2,9 +2,9 @@
 title: "Expo CNG Build Runbook"
 status: "active"
 created: 2026-08-03
-updated: 2026-08-22
+updated: 2026-09-05
 author: "Naveen"
-scribe: "opencode"
+scribe: "Antigravity"
 tags: [mobile, build, expo, gradle, android]
 ---
 
@@ -107,16 +107,24 @@ pnpm --filter gurudevi-mobile build:preview
 pnpm --filter gurudevi-mobile build:prod
 ```
 
-### Local standalone release APK (WSL + physical Android device)
+### Local development build (WSL 2 + physical Android device) — PRIMARY WORKFLOW
 
-Use this path when the goal is to test the exact bundled production JavaScript
-and native code on a phone. A development APK is different: it expects Metro
-and opens the Expo development launcher.
+> [!IMPORTANT]
+> **Standard Build Target is Debug (`:app:assembleDebug`)**.
+> Always use the Debug development client APK for daily engineering and physical device testing. Release builds (`assembleRelease`) are strictly on-demand and built **only when explicitly requested**.
+>
+> **Build Environment**: Always build inside **WSL 2 (Ubuntu)** from the active workspace mount (`/mnt/c/x/apps/gurudevi-mobile/android`).
+> Do **NOT** build inside separate static clones (such as `/home/<user>/polymath-platform-wsl`), as that will compile stale code and generate outdated APKs.
+> Do **NOT** build native Android on Windows host directly to avoid MAX_PATH and Ninja manifest loops.
 
-The current reliable environment is Ubuntu in WSL with the repository checked
-out at `/home/<user>/polymath-platform-wsl`, Android SDK under
-`/home/<user>/Android/Sdk`, and only the phone ABI enabled. Run the build from
-the generated Android directory:
+To build the **Development Client APK** (debug build) directly inside WSL 2:
+
+```bash
+# In WSL 2 (Ubuntu) from repo root:
+./scripts/build-wsl-dev-client.sh
+```
+
+Or run directly from the android directory in WSL 2:
 
 ```bash
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
@@ -125,22 +133,52 @@ export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/27.1.12297006"
 export CMAKE_BUILD_PARALLEL_LEVEL=2
 export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
 
-cd apps/gurudevi-mobile/android
-./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+if command -v ccache >/dev/null 2>&1; then
+  export NDK_CCACHE="$(which ccache)"
+fi
+
+cd /mnt/c/x/apps/gurudevi-mobile/android
+./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
   -PreactNativeArchitectures=arm64-v8a --console=plain
 ```
 
-The release bundle must receive the public runtime variables. When Doppler is
-configured on Windows, pass only the required public values into WSL; do not
-print or commit secrets. The repository's Windows wrapper does this before
-calling the command above.
-
-Copy and install the APK from Windows:
+Once built, install the Debug APK directly to your connected device from Windows PowerShell:
 
 ```powershell
-Copy-Item -Force "\\wsl$\Ubuntu\home\<user>\polymath-platform-wsl\apps\gurudevi-mobile\android\app\build\outputs\apk\release\app-release.apk" `
-  "C:\x\output\gurudevi-standalone-release.apk"
-adb install -r C:\x\output\gurudevi-standalone-release.apk
+# 1. Reverse Metro dev server port
+adb reverse tcp:8081 tcp:8081
+
+# 2. Install the newly built Debug APK
+adb install -r apps\gurudevi-mobile\android\app\build\outputs\apk\debug\app-debug.apk
+
+# 3. Start Metro on Windows host (if not already running)
+pnpm --filter gurudevi-mobile start
+```
+
+### Local standalone release APK (WSL 2 + physical Android device) — ON-DEMAND ONLY
+
+> [!WARNING]
+> **Release builds are strictly on-demand**.
+> Only run `assembleRelease` when explicitly requested by the user (e.g. for pre-submission production smoke-testing). Daily testing must always use the Debug development build above.
+
+Run from the generated Android directory in WSL 2:
+
+```bash
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export ANDROID_HOME="$ANDROID_SDK_ROOT"
+export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/27.1.12297006"
+export CMAKE_BUILD_PARALLEL_LEVEL=2
+export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
+
+cd /mnt/c/x/apps/gurudevi-mobile/android
+doppler run --no-fallback -- ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+  -PreactNativeArchitectures=arm64-v8a --console=plain
+```
+
+Install the Release APK from Windows PowerShell:
+
+```powershell
+adb install -r apps\gurudevi-mobile\android\app\build\outputs\apk\release\app-release.apk
 ```
 
 ### Release verification gate

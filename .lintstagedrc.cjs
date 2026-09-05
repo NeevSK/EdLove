@@ -24,7 +24,7 @@ module.exports = {
       // Primary: Oxlint (fast, general-purpose linting)
       commands.push(`oxlint --fix ${chunkStr}`);
       // Secondary: ESLint (TypeScript, React Native, Expo specific rules)
-      commands.push(`eslint --fix ${chunkStr}`);
+      commands.push(`eslint --fix --no-warn-ignored ${chunkStr}`);
       // Formatter: Biome (formatting + import organization)
       commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
       // Custom validation
