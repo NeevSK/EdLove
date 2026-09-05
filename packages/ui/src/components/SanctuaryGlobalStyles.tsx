@@ -693,6 +693,14 @@ const STATIC_CSS = `
       outline-offset: 3px;
     }
 
+    /* Phase-aware input focus ring — used by auth screen email/password inputs.
+       Each input injects --focus-ring-color and --focus-ring-rgb via inline style. */
+    .ob-phase-input:focus {
+      border-color: var(--focus-ring-color, var(--action)) !important;
+      box-shadow: 0 0 0 3px rgba(var(--focus-ring-rgb, var(--action-rgb)), 0.20) !important;
+      outline: none !important;
+    }
+
     /* Phase-aware action button \u2014 adapts to current phase accent */
     .action-button {
       display: inline-flex;
@@ -1045,7 +1053,7 @@ const STATIC_CSS = `
       --gateway-headline-lh: clamp(34px, 4.4vw, 56px);
       --gateway-tagline: clamp(14px, 1.4vw, 17px);
       --gateway-tagline-lh: clamp(20px, 2vw, 26px);
-      --gateway-card-max: min(440px, 100%);
+      --gateway-card-max: min(500px, 100%);
     }
 
     .gateway-scroll-body {
@@ -1073,8 +1081,9 @@ const STATIC_CSS = `
     }
 
     .gateway-panel-left {
-      flex: 1 1 360px;
+      flex: 3 1 420px;
       min-width: min(100%, 300px);
+      max-width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -1083,7 +1092,8 @@ const STATIC_CSS = `
     }
 
     .gateway-panel-right {
-      flex: 1 1 360px;
+      flex: 2 1 380px;
+      min-width: min(100%, 340px);
       max-width: var(--gateway-card-max);
       width: 100%;
       display: flex;

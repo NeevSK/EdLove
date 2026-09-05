@@ -86,70 +86,130 @@ interface HeroPanelProps {
   renderedPillars: React.ReactNode;
 }
 
-const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => (
-  <div className="flex flex-col justify-between p-6 sm:p-8 md:p-10 rounded-[32px] md:rounded-[40px] border border-phase-border/80 bg-phase-surface/40 backdrop-blur-xl shadow-xl relative overflow-hidden w-full">
-    <div className="flex flex-col gap-5 md:gap-7">
-      <div className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full border border-phase-border bg-phase-surface/80 shadow-sm backdrop-blur-md">
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-phase-secondary">
-          Gurudevi Sanctuary · Sovereign Education
-        </span>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <LivingGlow active size={88} className="items-start justify-start p-0">
-          <div className="w-[64px] h-[64px] rounded-[20px] bg-phase-surface/90 flex items-center justify-center shadow-lg border border-phase-border/80 backdrop-blur-md">
-            <span className="text-2xl text-phase-primary">🪷</span>
-          </div>
-        </LivingGlow>
-
-        <div className="flex flex-col gap-2.5">
-          <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
-            {modeCopy.eyebrow}
+const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
+  const { isDark, accent, accentRgb, textOnAccent } = useTheme();
+  return (
+    <div
+      className={`flex flex-col justify-between p-5 sm:p-7 md:p-8 rounded-[32px] md:rounded-[40px] border backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full transition-all duration-300 ${
+        isDark
+          ? 'border-white/12 bg-slate-900/80 text-white'
+          : 'border-slate-900/10 bg-white/80 text-slate-900'
+      }`}
+    >
+      <div className="flex flex-col gap-4 md:gap-5">
+        {/* Sanctuary badge */}
+        <div
+          className={`inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full border shadow-sm backdrop-blur-md ${
+            isDark
+              ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300'
+              : 'border-emerald-600/25 bg-emerald-50 text-emerald-800'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[11px] font-extrabold tracking-[0.08em] uppercase">
+            Gurudevi Sanctuary · Sovereign Education
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-phase-primary leading-[1.08]">
-            {modeCopy.title}
-          </h1>
-          <p className="text-sm sm:text-base text-phase-secondary max-w-lg leading-relaxed mt-0.5 font-normal">
-            {modeCopy.subtitle}
-          </p>
         </div>
+
+        {/* Icon + headline side-by-side */}
+        <div className="flex items-start gap-4 sm:gap-5">
+          <LivingGlow active size={72} className="items-start justify-start p-0 flex-shrink-0">
+            <div
+              className={`w-[56px] h-[56px] rounded-[18px] flex items-center justify-center shadow-lg border backdrop-blur-md flex-shrink-0 ${
+                isDark
+                  ? 'bg-slate-800/90 border-white/16 shadow-black/40'
+                  : 'bg-white/90 border-slate-900/12 shadow-slate-900/5'
+              }`}
+            >
+              <span className="text-2xl">🪷</span>
+            </div>
+          </LivingGlow>
+
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <span
+              className="text-[11px] font-extrabold tracking-[0.14em] uppercase"
+              style={{ color: accent.action }}
+            >
+              {modeCopy.eyebrow}
+            </span>
+            <h1
+              className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-[1.1] ${
+                isDark ? 'text-white drop-shadow-sm' : 'text-slate-900'
+              }`}
+            >
+              {modeCopy.title}
+            </h1>
+            <p
+              className={`text-sm leading-relaxed font-normal ${
+                isDark ? 'text-slate-300' : 'text-slate-600'
+              }`}
+            >
+              {modeCopy.subtitle}
+            </p>
+          </div>
+        </div>
+
+        {/* Pillars / Domains */}
+        <div className="flex flex-wrap gap-2">{renderedPillars}</div>
       </div>
 
-      {/* Pillars / Domains */}
-      <div className="flex flex-wrap gap-2 pt-1">{renderedPillars}</div>
-    </div>
-
-    {/* Educational Highlight Card */}
-    <div className="mt-6 rounded-2xl md:rounded-3xl border border-phase-border/60 bg-phase-surface/70 p-4 sm:p-5 backdrop-blur-md">
-      <div className="flex flex-col gap-3">
-        <div>
-          <span className="text-[10px] font-extrabold tracking-[0.14em] uppercase text-phase-muted">
-            Why this step matters
-          </span>
-          <p className="text-phase-primary leading-relaxed text-xs sm:text-sm mt-1">
-            Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-          <div className="p-3 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-0.5">
-            <span className="text-xs font-bold text-phase-primary">Gentle entry</span>
-            <span className="text-[11px] text-phase-secondary leading-snug">
-              Use Google, Passkey, or email. Switch roles smoothly anytime.
+      {/* Educational Highlight Card */}
+      <div
+        className={`mt-4 rounded-2xl border p-4 sm:p-5 backdrop-blur-md ${
+          isDark
+            ? 'border-white/12 bg-slate-800/70 text-white'
+            : 'border-slate-900/10 bg-white/70 text-slate-900'
+        }`}
+      >
+        <div className="flex flex-col gap-3">
+          <div>
+            <span
+              className={`text-[10px] font-extrabold tracking-[0.14em] uppercase ${
+                isDark ? 'text-slate-400' : 'text-slate-500'
+              }`}
+            >
+              Why this step matters
             </span>
+            <p
+              className={`leading-relaxed text-xs sm:text-sm mt-1 font-medium ${
+                isDark ? 'text-slate-200' : 'text-slate-800'
+              }`}
+            >
+              Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
+            </p>
           </div>
-          <div className="p-3 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-0.5">
-            <span className="text-xs font-bold text-phase-primary">Guest safe</span>
-            <span className="text-[11px] text-phase-secondary leading-snug">
-              Sync progress automatically whenever you decide to sign in.
-            </span>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <div
+              className={`p-3 rounded-xl border flex flex-col gap-0.5 ${
+                isDark ? 'bg-slate-900/60 border-white/10' : 'bg-white/80 border-slate-900/10'
+              }`}
+            >
+              <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                Gentle entry
+              </span>
+              <span className={`text-[11px] leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                Google, Passkey, or email. Switch roles anytime.
+              </span>
+            </div>
+            <div
+              className={`p-3 rounded-xl border flex flex-col gap-0.5 ${
+                isDark ? 'bg-slate-900/60 border-white/10' : 'bg-white/80 border-slate-900/10'
+              }`}
+            >
+              <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                Guest safe
+              </span>
+              <span className={`text-[11px] leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                Sync progress automatically when you sign in.
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-));
+  );
+});
 HeroPanel.displayName = 'HeroPanel';
 
 // ============================================================================
@@ -159,7 +219,7 @@ HeroPanel.displayName = 'HeroPanel';
 export const AuthScreenWeb = memo(
   ({ onContinueAsGuest, onSuccess, onBack, initialMode }: AuthScreenProps) => {
     const { t } = useTranslation();
-    const { accent } = useTheme();
+    const { accent, accentRgb, isDark, textOnAccent } = useTheme();
     const { showToast } = useSanctuaryToast();
     const { profile: myProfile } = useIdentity();
 
@@ -412,12 +472,17 @@ export const AuthScreenWeb = memo(
         ENTRY_PILLARS.map((pillar) => (
           <span
             key={pillar}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-phase-border/70 bg-phase-surface/80 text-phase-secondary backdrop-blur-sm"
+            className="px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide border backdrop-blur-sm transition-colors"
+            style={{
+              borderColor: `rgba(${accentRgb}, 0.35)`,
+              background: `rgba(${accentRgb}, ${isDark ? 0.15 : 0.08})`,
+              color: accent.action,
+            }}
           >
             {pillar}
           </span>
         )),
-      [],
+      [isDark, accent.action, accentRgb],
     );
 
     const backgroundOrbs = (
@@ -425,7 +490,8 @@ export const AuthScreenWeb = memo(
         <SanctuaryBackground />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-3xl opacity-30 bg-amber-500/20"
+          className="pointer-events-none absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-3xl opacity-30"
+          style={{ background: `rgba(${accentRgb}, 0.20)` }}
         />
         <div
           aria-hidden="true"
@@ -443,95 +509,138 @@ export const AuthScreenWeb = memo(
         backgroundElements={backgroundOrbs}
         left={<HeroPanel modeCopy={modeCopy} renderedPillars={renderedPillars} />}
         right={
-          <div className="flex flex-col justify-center p-6 sm:p-8 md:p-10 rounded-[32px] md:rounded-[40px] border border-phase-border/90 bg-phase-surface/85 backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full max-w-md">
+          <div
+            className={`flex flex-col justify-center p-5 sm:p-6 md:p-7 rounded-[32px] md:rounded-[40px] border backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full transition-all duration-300 ${
+              isDark
+                ? 'border-white/14 bg-slate-900/85 text-white'
+                : 'border-slate-900/12 bg-white/90 text-slate-900'
+            }`}
+          >
             <div className="flex flex-col gap-5 w-full">
               {onBack && (
                 <button
                   type="button"
                   onClick={onBack}
-                  className="self-start flex items-center gap-2 text-sm font-medium text-phase-secondary hover:text-phase-primary transition-colors cursor-pointer -ml-1 py-1"
+                  className={`self-start flex items-center gap-2 text-sm font-semibold transition-colors cursor-pointer -ml-1 py-1 ${
+                    isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                  }`}
                 >
                   <span>←</span>
                   <span>Back to Welcome</span>
                 </button>
               )}
 
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
-                    {mode === 'signup' ? 'Create Account' : 'Returning User'}
-                  </span>
+              <div className="flex flex-col gap-3 w-full">
+                {/* Header row: title label + mode toggle */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2
+                      className={`text-xl sm:text-2xl font-extrabold tracking-tight leading-tight ${
+                        isDark ? 'text-white drop-shadow-sm' : 'text-slate-900'
+                      }`}
+                    >
+                      {mode === 'signup' ? 'Join Gurudevi' : 'Welcome back'}
+                    </h2>
+                    <p
+                      className={`text-xs leading-relaxed mt-0.5 ${
+                        isDark ? 'text-slate-400' : 'text-slate-500'
+                      }`}
+                    >
+                      {mode === 'signup'
+                        ? 'Cross-device identity, held quietly.'
+                        : 'Use credentials from your sanctuary profile.'}
+                    </p>
+                  </div>
 
                   {/* Mode Toggle Switch */}
-                  <div className="flex p-1 rounded-full bg-phase-surface/80 border border-phase-border shadow-inner">
+                  <div
+                    className={`flex p-1 rounded-full border shadow-inner flex-shrink-0 ${
+                      isDark ? 'bg-slate-800/80 border-white/10' : 'bg-slate-100 border-slate-900/10'
+                    }`}
+                  >
                     <button
                       type="button"
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                        mode === 'signup'
-                          ? 'bg-phase-primary text-phase-world shadow-sm'
-                          : 'text-phase-secondary hover:text-phase-primary'
-                      }`}
+                      className="px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer font-extrabold"
+                      style={mode === 'signup' ? {
+                        background: accent.action,
+                        color: textOnAccent,
+                        boxShadow: `0 4px 12px rgba(${accentRgb}, 0.35)`,
+                      } : {
+                        color: isDark ? '#94A3B8' : '#57606A',
+                      }}
                       onClick={switchToSignup}
                     >
                       Sign Up
                     </button>
                     <button
                       type="button"
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                        mode === 'login'
-                          ? 'bg-phase-primary text-phase-world shadow-sm'
-                          : 'text-phase-secondary hover:text-phase-primary'
-                      }`}
+                      className="px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer font-extrabold"
+                      style={mode === 'login' ? {
+                        background: accent.action,
+                        color: textOnAccent,
+                        boxShadow: `0 4px 12px rgba(${accentRgb}, 0.35)`,
+                      } : {
+                        color: isDark ? '#94A3B8' : '#57606A',
+                      }}
                       onClick={switchToLogin}
                     >
                       Log In
                     </button>
                   </div>
                 </div>
-
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-phase-primary">
-                    {mode === 'signup' ? 'Choose your path in' : 'Reconnect with'} Gurudevi
-                  </h2>
-                  <p className="text-sm text-phase-secondary leading-relaxed mt-1.5">
-                    {mode === 'signup'
-                      ? 'Create a held, cross-device identity when you are ready.'
-                      : 'Use the credentials that belong to your sanctuary profile.'}
-                  </p>
-                </div>
               </div>
 
-              {/* Primary Action Buttons */}
-              <div className="flex flex-col gap-3.5 w-full pt-1">
-                <button
-                  type="button"
-                  onClick={handleGooglePress}
-                  disabled={loading}
-                  className="w-full h-[54px] px-5 rounded-2xl bg-phase-primary text-phase-world font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px] transition-all cursor-pointer disabled:opacity-50"
-                >
-                  <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <span className="text-[#4285F4] font-black text-sm">G</span>
-                  </div>
-                  <span>{modeCopy.google}</span>
-                </button>
+              {/* Primary Action Buttons — 2-col grid for Google + Passkey */}
+              <div className="flex flex-col gap-2.5 w-full">
+                <div className="grid grid-cols-2 gap-2.5">
+                  {/* Google */}
+                  <button
+                    type="button"
+                    onClick={handleGooglePress}
+                    disabled={loading}
+                    className="h-[46px] px-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:translate-y-[-1px] active:translate-y-[0px] transition-all cursor-pointer disabled:opacity-50 text-sm"
+                    style={{
+                      background: accent.action,
+                      color: textOnAccent,
+                      boxShadow: `0 4px 16px rgba(${accentRgb}, 0.35)`,
+                    }}
+                  >
+                    <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+                      <span className="text-[#4285F4] font-black text-[11px]">G</span>
+                    </div>
+                    <span className="truncate">Continue with Google</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={handlePasskeyPress}
-                  disabled={loading}
-                  className="w-full h-[52px] px-5 rounded-2xl border border-phase-border bg-phase-surface/60 hover:bg-phase-surface text-phase-primary font-bold flex items-center justify-center gap-3 shadow-sm hover:border-phase-border/80 transition-all cursor-pointer disabled:opacity-50"
-                >
-                  <div className="w-7 h-7 rounded-full bg-phase-primary/10 flex items-center justify-center">
-                    <Key size={15} color={accent.action} />
-                  </div>
-                  <span>Use Passkey (Fast & Phishing-resistant)</span>
-                </button>
+                  {/* Passkey */}
+                  <button
+                    type="button"
+                    onClick={handlePasskeyPress}
+                    disabled={loading}
+                    className={`h-[46px] px-3 rounded-2xl border font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50 text-sm ${
+                      isDark
+                        ? 'border-white/16 bg-slate-800/70 hover:bg-slate-800 text-white'
+                        : 'border-slate-900/14 bg-white/80 hover:bg-white text-slate-900'
+                    }`}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: `rgba(${accentRgb}, ${isDark ? 0.20 : 0.10})` }}
+                    >
+                      <Key size={12} color={accent.action} />
+                    </div>
+                    <span className="truncate">Use Passkey</span>
+                  </button>
+                </div>
 
                 {!showEmailForm && (
                   <button
                     type="button"
                     onClick={toggleEmailForm}
-                    className="w-full h-[52px] px-5 rounded-2xl border border-phase-border/80 bg-phase-surface/40 hover:bg-phase-surface/80 text-phase-primary font-medium flex items-center justify-center shadow-sm transition-all cursor-pointer"
+                    className={`w-full h-[44px] px-5 rounded-2xl border font-bold flex items-center justify-center text-sm shadow-sm transition-all cursor-pointer ${
+                      isDark
+                        ? 'border-white/14 bg-slate-800/50 hover:bg-slate-800/80 text-white'
+                        : 'border-slate-900/12 bg-white/60 hover:bg-white text-slate-900'
+                    }`}
                   >
                     <span>{modeCopy.email}</span>
                   </button>
@@ -539,12 +648,22 @@ export const AuthScreenWeb = memo(
 
                 {/* Email & Password Input Section */}
                 {showEmailForm && (
-                  <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-2 p-5 sm:p-6 rounded-3xl bg-phase-surface/70 border border-phase-border flex flex-col gap-4 shadow-sm">
-                    <div className="flex justify-between items-center pb-1 border-b border-phase-border/40">
-                      <span className="font-bold text-sm text-phase-primary">
+                  <div
+                    className={`animate-in fade-in slide-in-from-top-2 duration-200 mt-2 p-5 sm:p-6 rounded-3xl border flex flex-col gap-4 shadow-sm ${
+                      isDark
+                        ? 'bg-slate-950/80 border-white/14 text-white'
+                        : 'bg-white/90 border-slate-900/12 text-slate-900'
+                    }`}
+                  >
+                    <div
+                      className={`flex justify-between items-center pb-2 border-b ${
+                        isDark ? 'border-white/10' : 'border-slate-900/10'
+                      }`}
+                    >
+                      <span className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         Email Authentication
                       </span>
-                      <span className="text-xs text-phase-muted">
+                      <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {mode === 'signup' ? 'New Account' : 'Direct Login'}
                       </span>
                     </div>
@@ -552,7 +671,9 @@ export const AuthScreenWeb = memo(
                     <div className="flex flex-col gap-3.5">
                       <div className="flex flex-col gap-1.5">
                         <label
-                          className="text-xs font-semibold text-phase-secondary ml-1"
+                          className={`text-xs font-bold ml-1 ${
+                            isDark ? 'text-slate-200' : 'text-slate-700'
+                          }`}
                           htmlFor="web-auth-email"
                         >
                           Email Address
@@ -564,7 +685,12 @@ export const AuthScreenWeb = memo(
                           value={email}
                           onChange={(e) => handleEmailChange(e.target.value)}
                           autoComplete="email"
-                          className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
+                          className={`w-full h-[48px] px-4 rounded-xl border text-sm focus:outline-none transition-all ob-phase-input ${
+                            isDark
+                              ? 'border-white/18 bg-slate-900 text-white placeholder:text-slate-500'
+                              : 'border-slate-900/16 bg-white text-slate-900 placeholder:text-slate-400'
+                          }`}
+                          style={{ '--focus-ring-color': accent.action, '--focus-ring-rgb': accentRgb } as React.CSSProperties}
                         />
                         {errors.email && (
                           <span className="text-xs text-rose-500 font-medium ml-1">
@@ -575,7 +701,9 @@ export const AuthScreenWeb = memo(
 
                       <div className="flex flex-col gap-1.5">
                         <label
-                          className="text-xs font-semibold text-phase-secondary ml-1"
+                          className={`text-xs font-bold ml-1 ${
+                            isDark ? 'text-slate-200' : 'text-slate-700'
+                          }`}
                           htmlFor="web-auth-password"
                         >
                           Password
@@ -587,7 +715,12 @@ export const AuthScreenWeb = memo(
                           value={password}
                           onChange={(e) => handlePasswordChange(e.target.value)}
                           autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                          className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
+                          className={`w-full h-[48px] px-4 rounded-xl border text-sm focus:outline-none transition-all ob-phase-input ${
+                            isDark
+                              ? 'border-white/18 bg-slate-900 text-white placeholder:text-slate-500'
+                              : 'border-slate-900/16 bg-white text-slate-900 placeholder:text-slate-400'
+                          }`}
+                          style={{ '--focus-ring-color': accent.action, '--focus-ring-rgb': accentRgb } as React.CSSProperties}
                         />
                         {errors.password && (
                           <span className="text-xs text-rose-500 font-medium ml-1">
@@ -600,7 +733,12 @@ export const AuthScreenWeb = memo(
                         type="button"
                         onClick={handleEmailPress}
                         disabled={loading}
-                        className="w-full h-[50px] mt-2 rounded-xl bg-phase-primary text-phase-world font-bold flex items-center justify-center shadow-md hover:bg-phase-primary/90 transition-all cursor-pointer disabled:opacity-50"
+                        className="w-full h-[50px] mt-2 rounded-xl font-extrabold flex items-center justify-center hover:brightness-105 transition-all cursor-pointer disabled:opacity-50"
+                        style={{
+                          background: accent.action,
+                          color: textOnAccent,
+                          boxShadow: `0 4px 14px rgba(${accentRgb}, 0.35)`,
+                        }}
                       >
                         {loading ? 'Processing...' : modeCopy.primary}
                       </button>
@@ -608,7 +746,9 @@ export const AuthScreenWeb = memo(
                       <button
                         type="button"
                         onClick={backToGoogle}
-                        className="text-xs text-phase-secondary hover:text-phase-primary text-center underline cursor-pointer py-1"
+                        className={`text-xs text-center underline cursor-pointer py-1 font-medium ${
+                          isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                        }`}
                       >
                         Cancel email form & return
                       </button>
@@ -620,7 +760,9 @@ export const AuthScreenWeb = memo(
                   <button
                     type="button"
                     onClick={handleGuestPress}
-                    className="text-sm font-medium text-phase-secondary hover:text-phase-primary text-center py-2 transition-colors cursor-pointer"
+                    className={`text-sm font-semibold text-center py-2 transition-colors cursor-pointer ${
+                      isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                    }`}
                   >
                     Continue as Guest Explorer
                   </button>
