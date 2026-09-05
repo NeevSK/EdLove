@@ -101,6 +101,8 @@ rust-lab/
 native-capabilities/
 
 *.zip
+*.apk
+*.aab
 
 # Local test outputs and reports
 apps/gurudevi-mobile/web-firewall-report.md
@@ -126,13 +128,12 @@ scan-viewer.html
 #   (a) AI-agent "I'll strip types so Node can run it" pollution, or
 #   (b) Expo Router ephemeral build twins.
 # Both must be invisible to git. Use .mjs for Node-runnable ESM scripts.
-apps/gurudevi-mobile/app/**/*.js
-apps/gurudevi-mobile/src/**/*.js
-packages/**/src/**/*.js
-packages/**/*.config.js
-apps/sanctuary-api/src/**/*.js
-apps/edlove-web/src/**/*.js
-apps/gurudevi-marketingWeb/src/**/*.js
+apps/**/*.js
+packages/**/*.js
+docs/**/*.js
+tests/**/*.js
+tooling/**/*.js
+!tooling/**/src/**/*.js
 # scripts/ uses .mjs for Node scripts — plain .js is always phantom
 scripts/*.js
 

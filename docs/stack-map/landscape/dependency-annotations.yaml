@@ -50,11 +50,11 @@ global_tools:
 dependency_entries:
   react:
     category: native
-    purpose: "UI runtime — pinned 19.2.3 via workspace override"
+    purpose: "UI runtime — pinned 19.2.8 via workspace override"
     notes: "Do not bump independently of React Native 0.86."
   react-native:
     category: native
-    purpose: "Mobile platform runtime (~0.86.0, new arch)"
+    purpose: "Mobile platform runtime (~0.86.3, new arch)"
     notes: "Sacred platform — upgrades gated on Expo SDK 57 compatibility."
   expo:
     category: native
@@ -83,7 +83,7 @@ dependency_entries:
   "@shopify/react-native-skia":
     category: graphics
     purpose: "GPU graphics engine for RN (new arch)"
-    sacred: "2.11.1"
+    sacred: "2.11.2"
   typescript:
     category: tooling
     purpose: "Compiler — sacred 7.0.2 (latest stable)"

@@ -2,9 +2,9 @@
 title: "AGENTS.md — Agent Guardrails for Polymath Platform"
 status: "active"
 created: 2026-08-03
-updated: 2026-08-24
+updated: 2026-09-05
 author: "Naveen"
-scribe: "opencode"
+scribe: "Antigravity"
 tags: [AGENTS.md, quality, guardrails]
 ---
 
@@ -55,22 +55,49 @@ All native configuration must go through:
 
 The `expo.install.exclude` and `expo.doctor.reactNativeDirectoryCheck.exclude` arrays contain packages that are intentionally pinned to newer versions. Removing these exclusions causes `expo doctor` to flag them, and agents may try to "fix" them.
 
-### 5. ALWAYS build standalone Release APK with Doppler for Physical Device Testing
+### 5. Build Dev/Debug APK by default; ONLY build Release when explicitly requested; ALWAYS build in WSL 2
 
-Debug builds do not bundle offline standalone JS/Hermes assets (they require an active Metro dev server). To test the real app on a physical device, always run a standalone `assembleRelease` build wrapped with `doppler run --no-fallback --` so that public environment variables (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, etc.) are injected into Metro during asset bundling.
+Native Android builds must adhere to the following rules:
+
+1. **Default Target is Debug (`:app:assembleDebug`)**:
+   For daily development, iteration, and physical device testing, always assemble a **Debug / Development Client APK (`:app:assembleDebug`)** that connects to the active Metro bundler.
+   - Run Metro: `pnpm --filter gurudevi-mobile start`
+   - Reverse device port: `adb reverse tcp:8081 tcp:8081`
+   - Install and launch the Debug APK on the connected device.
+
+2. **Release Builds ONLY when explicitly requested**:
+   Do **NOT** run `assembleRelease` unless the user explicitly asks for a standalone release build. Standalone release builds bundle offline assets and take significantly longer. When explicitly requested, wrap with `doppler run --no-fallback --` so public environment variables (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, etc.) are injected into Metro during asset bundling.
+
+3. **ALWAYS build inside WSL 2 (Ubuntu)**:
+   **NEVER** build native Android on the Windows host directly. Windows paths exceed limits (`CMAKE_OBJECT_PATH_MAX`) and trigger Ninja manifest timestamp loops (`build.ninja dirty after 100 tries`).
+   Always run from the active workspace inside WSL 2 with verified toolchain variables:
 
 ```bash
-# In Ubuntu (WSL) / Linux:
+# In Ubuntu (WSL 2) from the active workspace mount:
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 export ANDROID_HOME="$ANDROID_SDK_ROOT"
 export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/27.1.12297006"
 export CMAKE_BUILD_PARALLEL_LEVEL=2
 export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
 
-cd apps/gurudevi-mobile/android
-doppler run --no-fallback -- ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+# Enable ccache if installed
+if command -v ccache >/dev/null 2>&1; then
+  export NDK_CCACHE="$(which ccache)"
+fi
+
+cd /mnt/c/x/apps/gurudevi-mobile/android
+
+# Standard development build (default):
+./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
   -PreactNativeArchitectures=arm64-v8a --console=plain
+
+# Standalone release build (ONLY if user explicitly requested):
+# doppler run --no-fallback -- ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+#   -PreactNativeArchitectures=arm64-v8a --console=plain
 ```
+
+4. **Never build in detached/stale clones**:
+   Always execute the build against the active workspace (`/mnt/c/x/apps/gurudevi-mobile/android`). Do not build inside isolated stale clones (e.g. `/home/<user>/polymath-platform-wsl`) which causes outdated APKs and misleading logs.
 
 ---
 
@@ -85,7 +112,7 @@ These packages are pinned to specific versions for new-architecture compatibilit
 | `react-native-worklets` | 0.12.1 | Required by reanimated 4 |
 | `react-native-mmkv` | 4.3.2 | Nitro modules v4 |
 | `react-native-nitro-modules` | 0.37.1 | Required by mmkv 4 / Nitro v0.37 |
-| `@shopify/react-native-skia` | 2.11.1 | New arch Skia |
+| `@shopify/react-native-skia` | 2.11.2 | New arch Skia |
 | `typescript` | 7.0.2 | Latest stable |
 
 To update any of these: discuss with the user first, verify compatibility with Expo 57, and test on a physical device.

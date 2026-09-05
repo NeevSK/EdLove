@@ -2,7 +2,7 @@
 title: "Android Local & Cloud Build Guide (Zero-Quota Alternatives & Non-Default Native Deps)"
 status: "active"
 created: 2026-08-15
-updated: 2026-08-15
+updated: 2026-09-05
 author: "Naveen"
 scribe: "Antigravity"
 tags: [android, build, ci-cd, gradle, ndk, expo, windows, cmake]
@@ -42,8 +42,8 @@ When building locally on Windows:
 2. **CMake / Ninja manifest loop**:
    In `react-native-nitro-modules/android/fix-prefab.gradle`, an `afterEvaluate` hook touches `prefab_config.json` timestamps during Gradle configuration. On Windows file systems with CMake/Ninja, modifying timestamps while CMake is evaluating causes `ninja: error: manifest 'build.ninja' still dirty after 100 tries`.
 3. **Targeted Environments**:
-   - **Linux / CI / WSL**: Builds smoothly without path-length truncation or Ninja manifest lockups.
-   - **Windows Local Builds**: Recommended via **WSL 2 (Ubuntu)** or EAS local builds running in Docker/WSL to avoid Windows file system path caps.
+   - **Linux / CI / WSL 2**: Builds smoothly without path-length truncation or Ninja manifest lockups.
+   - **Local Android Compilation Policy**: **ALWAYS build in WSL 2 (Ubuntu)** from the active workspace mount (`/mnt/c/x/apps/gurudevi-mobile/android`). NEVER compile on Windows host directly.
 
 ---
 
@@ -59,30 +59,43 @@ From `apps/gurudevi-mobile`:
 npx eas-cli build --platform android --profile preview --local
 ```
 
-### Method B: Direct Gradle Build (Powershell / WSL)
+### Method B: Direct Gradle Build in WSL 2 (Primary Development Workflow)
 
-```powershell
-# 1. Navigate to mobile app directory
-cd apps/gurudevi-mobile
+> [!IMPORTANT]
+> **Debug (`:app:assembleDebug`) is the default target** for daily engineering and physical device testing with Metro.
+> **Release (`:app:assembleRelease`) is ONLY built when explicitly requested by the user.**
 
-# 2. Generate native android project (Safe prebuild without wiping configs)
-pnpm exec expo prebuild --no-install --platform android
+Run the build inside WSL 2 from the active workspace:
 
-# 3. Configure local Java environment (Android Studio JBR or JDK 17)
-$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+```bash
+# In WSL 2 (Ubuntu):
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export ANDROID_HOME="$ANDROID_SDK_ROOT"
+export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/27.1.12297006"
+export CMAKE_BUILD_PARALLEL_LEVEL=2
+export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
 
-# 4. Compile Release APK with debug signing
-cd android
-./gradlew :app:assembleRelease
+# Enable ccache if available
+if command -v ccache >/dev/null 2>&1; then
+  export NDK_CCACHE="$(which ccache)"
+fi
 
-# 5. Output APK Location:
-# apps/gurudevi-mobile/android/app/build/outputs/apk/release/app-release.apk
+cd /mnt/c/x/apps/gurudevi-mobile/android
+
+# Standard Debug build (DEFAULT):
+./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
+  -PreactNativeArchitectures=arm64-v8a --console=plain
+
+# Standalone Release build (ONLY IF EXPLICITLY REQUESTED):
+# doppler run --no-fallback -- ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+#   -PreactNativeArchitectures=arm64-v8a --console=plain
 ```
 
-To install directly to a connected phone or emulator:
+To install directly to a connected phone from Windows PowerShell:
 ```powershell
-adb install -r app/build/outputs/apk/release/app-release.apk
+# Reverse Metro port and install Debug APK
+adb reverse tcp:8081 tcp:8081
+adb install -r apps\gurudevi-mobile\android\app\build\outputs\apk\debug\app-debug.apk
 ```
 
 ---

@@ -14,18 +14,31 @@ export ANDROID_NDK_HOME="${ANDROID_NDK_HOME:-$ANDROID_SDK_ROOT/ndk/27.1.12297006
 export CMAKE_BUILD_PARALLEL_LEVEL="${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 export GRADLE_OPTS="${GRADLE_OPTS:--Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC}"
 
+if command -v ccache >/dev/null 2>&1; then
+  export NDK_CCACHE="$(which ccache)"
+  export CMAKE_C_COMPILER_LAUNCHER="$(which ccache)"
+  export CMAKE_CXX_COMPILER_LAUNCHER="$(which ccache)"
+fi
+
 if [[ ! -x "$ANDROID_HOME/platform-tools/adb" ]]; then
   echo "Android SDK not found at $ANDROID_HOME. Set ANDROID_SDK_ROOT in WSL." >&2
   exit 1
 fi
 
-if ! command -v doppler >/dev/null; then
-  echo "Doppler must be installed and authenticated in WSL." >&2
-  exit 1
+cd "$mobile_root/android"
+
+if command -v doppler >/dev/null 2>&1 && doppler me >/dev/null 2>&1; then
+  doppler run --no-fallback -- ./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
+    -PreactNativeArchitectures=arm64-v8a --console=plain
+else
+  echo "Doppler unauthenticated in WSL; running Gradle directly."
+  ./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
+    -PreactNativeArchitectures=arm64-v8a --console=plain
 fi
 
-cd "$mobile_root/android"
-doppler run --no-fallback -- ./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
-  -PreactNativeArchitectures=arm64-v8a --console=plain
-
 echo "APK: $PWD/app/build/outputs/apk/debug/app-debug.apk"
+
+if command -v ccache >/dev/null 2>&1; then
+  echo "=== ccache Statistics ==="
+  ccache -s
+fi
