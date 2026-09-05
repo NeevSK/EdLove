@@ -145,11 +145,16 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/doppler-day-to-day-usage-guide.md](infra/doppler-day-to-day-usage-guide.md) | Daily usage reference for Doppler CLI commands, workflows, troubleshooting, and best practices |
 | [infra/android-local-and-cloud-build-guide.md](infra/android-local-and-cloud-build-guide.md) | Android local/cloud build runbook, zero-quota APK generation, and native C++ compilation explanation |
 | [infra/2026-08-15-android-build-log.md](infra/2026-08-15-android-build-log.md) | Execution chronicle and diagnostics log for local and cloud Android builds |
+| [infra/2026-09-05-wsl-android-build-architecture-sop.md](infra/2026-09-05-wsl-android-build-architecture-sop.md) | WSL2 Android Native Build Architecture SOP: first-principles, low-friction Windows-Linux bridge without duplicate SSD storage |
 | [infra/editorial-operations-guide.md](infra/editorial-operations-guide.md) | Editorial lifecycle, rights, translation, social, and correction guidance |
 
 ---
 
 ## Changelog
+
+### 2026-09-05
+
+- **Added**: `infra/2026-09-05-wsl-android-build-architecture-sop.md` — First-principles architecture and SOP for robust, fast local Android builds in WSL2 with ccache and zero duplicate storage.
 
 ### 2026-08-31
 
