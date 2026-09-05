@@ -59,7 +59,7 @@
     "d3-force": "^3.0.0",
     "d3-hierarchy": "^3.1.2",
     "expo-haptics": "~57.0.2",
-    "expo-location": "~57.0.14",
+    "expo-location": "~57.0.16",
     "react-native-gifted-charts": "^1.4.78"
   },
   "devDependencies": {
@@ -78,7 +78,7 @@
   "peerDependencies": {
     "@supabase/supabase-js": "*",
     "@tanstack/react-query": "*",
-    "expo": "~57.0.18",
+    "expo": "~57.0.20",
     "react": "19.2.3",
     "react-native": "~0.86.0",
     "react-native-gesture-handler": ">=3.2.1",
