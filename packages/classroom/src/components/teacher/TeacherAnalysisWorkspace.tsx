@@ -26,6 +26,7 @@ export default function TeacherAnalysisWorkspace({
   const [attendance, setAttendance] = useState<any[]>([]);
   const [observations, setObservations] = useState<any[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [partialError, setPartialError] = useState<string | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<{
     id: string;
     full_name: string;
@@ -34,6 +35,7 @@ export default function TeacherAnalysisWorkspace({
   const loadAnalysis = useCallback(async () => {
     setIsLoading(true);
     setLoadError(null);
+    setPartialError(null);
     try {
       if (!gradeMarkLifecycleContext) {
         throw new Error(
@@ -41,18 +43,18 @@ export default function TeacherAnalysisWorkspace({
         );
       }
       const today = new Date().toISOString().split('T')[0];
-      const [gradebookSnapshot, attendanceSnapshot, observationData] = await Promise.all([
-        api.grading
-          .getGradebookSnapshot(gradeMarkLifecycleContext, today || '')
-          .catch(() => ({ gradeMarks: [] })),
-        api.attendance
-          .getClassroomAttendanceSnapshot(classroomId, today || '')
-          .catch(() => ({ records: [] })),
-        api.studentObservations.getForClassroom(classroomId).catch(() => []),
+      const results = await Promise.allSettled([
+        api.grading.getGradebookSnapshot(gradeMarkLifecycleContext, today || ''),
+        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
+        api.studentObservations.getForClassroom(classroomId),
       ]);
-      setGrades(gradebookSnapshot.gradeMarks || []);
-      setAttendance(attendanceSnapshot.records || []);
-      setObservations(observationData || []);
+      const [gradebookResult, attendanceResult, observationsResult] = results;
+      setGrades(gradebookResult.status === 'fulfilled' ? gradebookResult.value.gradeMarks || [] : []);
+      setAttendance(attendanceResult.status === 'fulfilled' ? attendanceResult.value.records || [] : []);
+      setObservations(observationsResult.status === 'fulfilled' ? observationsResult.value || [] : []);
+      if (results.some((result) => result.status === 'rejected')) {
+        setPartialError('Some analysis signals could not be refreshed. Showing available data.');
+      }
     } catch (error) {
       console.error('Failed to load analysis', error);
       setLoadError(error instanceof Error ? error.message : 'Failed to load analysis');
@@ -160,6 +162,14 @@ export default function TeacherAnalysisWorkspace({
         ) : (
           <Box className="bg-phase-surface rounded-[32px] border border-phase-border/40 p-8 shadow-sm">
             <VStack className="gap-8">
+              {partialError ? (
+                <HStack className="items-center gap-3 rounded-2xl border border-chestnutRed/20 bg-chestnutRed/10 p-4">
+                  <Text className="flex-1 text-sm text-phase-text-secondary" accessibilityRole="alert">{partialError}</Text>
+                  <Pressable onPress={() => void loadAnalysis()} accessibilityRole="button" accessibilityLabel="Retry refreshing analysis">
+                    <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+                  </Pressable>
+                </HStack>
+              ) : null}
               <Heading className="text-xs text-phase-text-tertiary font-black uppercase tracking-[0.25em]">
                 Student analysis queue
               </Heading>

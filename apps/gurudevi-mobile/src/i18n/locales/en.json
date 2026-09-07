@@ -657,6 +657,8 @@
     "title": "Community",
     "subtitle": "Connect & Grow",
     "description": "Connect with the teacher community",
+    "hearthTitle": "The Hearth",
+    "hearthSubtitle": "Where the community pulse beats strongest",
     "announcements": "Announcements",
     "postAnnouncement": "Post Announcement",
     "connecting": "Connecting to Sanctuary Network...",
@@ -1283,6 +1285,16 @@
       "title": "Living Theme",
       "on": "Phase-aware colors shift with the time of day",
       "off": "Classic calm — simple static appearance"
+    },
+    "sensory": {
+      "title": "Sensory feedback",
+      "description": "The app adapts motion and feedback to this device.",
+      "haptics": "Haptic feedback",
+      "haptics_desc": "Gentle tactile confirmation for meaningful actions.",
+      "sound": "Sound feedback",
+      "sound_desc": "Optional short sounds for meaningful moments.",
+      "quiet": "Quiet mode",
+      "quiet_desc": "Silences sound and reduces sensory intensity."
     },
     "explorer": {
       "title": "Explorer Mode",

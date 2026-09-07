@@ -11,6 +11,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import StepIndicator from '@repo/ui/components/StepIndicator';
 import { Check } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,7 @@ export default function SchoolCreationScreen() {
   const user = useStore((s) => s.user);
   const setUser = useStore((s) => s.setUser);
   const setDemoMode = useStore((s) => s.setDemoMode);
+  const { showToast } = useSanctuaryToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{
     schoolId: string;
@@ -115,6 +117,10 @@ export default function SchoolCreationScreen() {
       await resetProgress();
     } catch (error) {
       console.error('Failed to establish school', error);
+      showToast({
+        message: 'We could not establish the school yet. Your form is still here—please try again.',
+        type: 'error',
+      });
     } finally {
       setIsSubmitting(false);
     }

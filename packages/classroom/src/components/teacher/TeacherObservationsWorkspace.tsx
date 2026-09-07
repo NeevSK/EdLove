@@ -20,6 +20,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -104,6 +105,12 @@ export default function TeacherObservationsWorkspace({
   };
 
   const handleDelete = async (id: string) => {
+    const confirmed = await confirmAction(
+      'Delete observation?',
+      'This removes the observation from the classroom record and cannot be undone.',
+    );
+    if (!confirmed) return;
+
     try {
       await api.studentObservations.delete(id);
       setObservations((prev) => prev.filter((observation) => observation.id !== id));
@@ -226,6 +233,9 @@ export default function TeacherObservationsWorkspace({
                   </VStack>
                   {canManage && (
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Delete observation"
+                      accessibilityHint="Permanently deletes this observation"
                       onPress={() => handleDelete(observation.id)}
                       className="w-10 h-10 items-center justify-center bg-phase-surface rounded-full border border-phase-border/40 active:bg-phase-surface-secondary shadow-sm transition-all"
                     >

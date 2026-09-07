@@ -86,8 +86,9 @@ export default function SectionHeadDashboard({
                     <SanctuaryButton
                       onPress={() => handleExecuteRelief(gap.suggestedAction)}
                       size="sm"
+                      isDisabled
                     >
-                      <Text className="text-white font-bold">Assign Relief Teacher</Text>
+                      <Text className="font-bold">Relief assignment unavailable</Text>
                     </SanctuaryButton>
                   </Box>
                 </Box>
@@ -119,8 +120,8 @@ export default function SectionHeadDashboard({
                     Draft generated for your section.
                   </Text>
                 </HStack>
-                <SanctuaryButton onPress={handleReviewDraft} size="sm">
-                  Review Section Draft
+                <SanctuaryButton onPress={handleReviewDraft} size="sm" isDisabled>
+                  Draft review unavailable
                 </SanctuaryButton>
               </VStack>
             ) : (
@@ -165,6 +166,7 @@ export default function SectionHeadDashboard({
             <SanctuaryButton
               onPress={() => handleGenericAction('Section schedule review')}
               variant="outline"
+              isDisabled
             >
               <HStack className="gap-3 items-center">
                 <Icon as={Calendar} size="sm" className="text-phaseText-primary" />
@@ -174,6 +176,7 @@ export default function SectionHeadDashboard({
             <SanctuaryButton
               onPress={() => handleGenericAction('Staff workload balance')}
               variant="outline"
+              isDisabled
             >
               <HStack className="gap-3 items-center">
                 <Icon as={Users} size="sm" className="text-phaseText-primary" />

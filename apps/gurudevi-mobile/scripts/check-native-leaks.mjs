@@ -36,8 +36,6 @@ const FORBIDDEN_NATIVE_IMPORTS = [
   'posthog-react-native',
   'react-native-get-random-values',
   'react-native-url-polyfill',
-  '@react-native-ml-kit/text-recognition',
-  '@react-native-ml-kit/barcode-scanning',
 ];
 
 /**

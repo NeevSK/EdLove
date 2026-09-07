@@ -22,7 +22,7 @@ import {
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 
 interface Observation {
   id: string;
@@ -41,6 +41,7 @@ const OBS_TYPE_OPTIONS = ['walkthrough', 'note', 'concern', 'praise'];
 type State = {
   observations: Observation[];
   isLoading: boolean;
+  loadError: string | null;
   isAddFormVisible: boolean;
   form: {
     content: string;
@@ -52,6 +53,7 @@ type State = {
 type Action =
   | { type: 'SET_OBSERVATIONS'; observations: Observation[] }
   | { type: 'SET_LOADING'; isLoading: boolean }
+  | { type: 'SET_LOAD_ERROR'; message: string | null }
   | { type: 'TOGGLE_FORM' }
   | { type: 'UPDATE_FORM_CONTENT'; content: string }
   | { type: 'SET_OBS_TYPE'; obsType: string }
@@ -64,6 +66,8 @@ const obsReducer = (state: State, action: Action): State => {
       return { ...state, observations: action.observations, isLoading: false };
     case 'SET_LOADING':
       return { ...state, isLoading: action.isLoading };
+    case 'SET_LOAD_ERROR':
+      return { ...state, loadError: action.message };
     case 'TOGGLE_FORM':
       return { ...state, isAddFormVisible: !state.isAddFormVisible };
     case 'UPDATE_FORM_CONTENT':
@@ -91,6 +95,7 @@ export default function PrincipalObservationsSection({
   const [state, dispatch] = useReducer(obsReducer, {
     observations: [],
     isLoading: true,
+    loadError: null,
     isAddFormVisible: false,
     form: {
       content: '',
@@ -117,7 +122,7 @@ export default function PrincipalObservationsSection({
     }
   };
 
-  async function fetchObservations() {
+  const fetchObservations = useCallback(async () => {
     try {
       const { data } = await supabase
         .from('principal_observations')
@@ -129,11 +134,13 @@ export default function PrincipalObservationsSection({
         type: 'SET_OBSERVATIONS',
         observations: (data ?? []) as Observation[],
       });
+      dispatch({ type: 'SET_LOAD_ERROR', message: null });
     } catch (err) {
       console.error('PrincipalObservations: fetch error', err);
       dispatch({ type: 'SET_LOADING', isLoading: false });
+      dispatch({ type: 'SET_LOAD_ERROR', message: 'Observations could not be loaded.' });
     }
-  }
+  }, [principalId]);
 
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', isLoading: true });
@@ -208,13 +215,30 @@ export default function PrincipalObservationsSection({
         </Box>
       )}
 
-      {!state.isLoading && state.observations.length === 0 && !state.isAddFormVisible && (
+      {!state.isLoading && state.loadError ? (
+        <VStack className="items-center py-8 gap-4 bg-phase-danger/10 rounded-[24px] border border-phase-danger/20">
+          <Text className="text-[13px] font-bold text-phase-danger text-center">
+            {state.loadError}
+          </Text>
+          <Pressable
+            onPress={() => {
+              dispatch({ type: 'SET_LOADING', isLoading: true });
+              void fetchObservations();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading observations"
+            className="px-5 py-3 rounded-2xl bg-phase-danger/10"
+          >
+            <Text className="text-phase-danger font-bold">Try again</Text>
+          </Pressable>
+        </VStack>
+      ) : !state.isLoading && state.observations.length === 0 && !state.isAddFormVisible ? (
         <Box className="bg-phase-canvas rounded-[24px] border border-dashed border-phase-border py-12 px-6 items-center">
           <Text className="text-[12px] font-black text-phaseText-muted text-center leading-relaxed uppercase tracking-[2px] opacity-40">
             Institutional memory current.
           </Text>
         </Box>
-      )}
+      ) : null}
 
       {!state.isLoading &&
         state.observations.map((obs, index) => {

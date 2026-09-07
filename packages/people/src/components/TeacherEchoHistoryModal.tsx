@@ -1,6 +1,6 @@
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useEffect, useState } from 'react';
 import { type TeacherSentEcho, teacherFeedbackAPI } from '@repo/people/feedback';
@@ -31,6 +31,7 @@ export default function TeacherEchoHistoryModal({
 }: TeacherEchoHistoryModalProps) {
   const [echoes, setEchoes] = useState<TeacherSentEcho[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible || !teacherId) return;
@@ -38,11 +39,13 @@ export default function TeacherEchoHistoryModal({
     let mounted = true;
     const load = async () => {
       setLoading(true);
+      setLoadError(null);
       try {
         const data = await teacherFeedbackAPI.listSentEchoes(teacherId, 20);
         if (mounted) setEchoes(data);
       } catch (err) {
         console.error('Failed to load feedback history:', err);
+        if (mounted) setLoadError('Echo history could not be loaded. Please try again.');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -74,6 +77,24 @@ export default function TeacherEchoHistoryModal({
               <SkeletonCard />
               <SkeletonCard />
             </VStack>
+          ) : loadError ? (
+            <Box className="px-12 py-20 items-center justify-center mt-10 gap-4">
+              <Text className="text-sm text-phase-error text-center">{loadError}</Text>
+              <Button
+                variant="outline"
+                onPress={() => {
+                  setLoading(true);
+                  setLoadError(null);
+                  void teacherFeedbackAPI
+                    .listSentEchoes(teacherId, 20)
+                    .then(setEchoes)
+                    .catch(() => setLoadError('Echo history could not be loaded. Please try again.'))
+                    .finally(() => setLoading(false));
+                }}
+              >
+                <ButtonText>Try again</ButtonText>
+              </Button>
+            </Box>
           ) : echoes.length === 0 ? (
             <Box className="px-12 py-20 items-center justify-center mt-10">
               <Text className="text-sm text-phase-text-tertiary italic text-center font-medium leading-6">

@@ -19,6 +19,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,12 +39,20 @@ export default function StudentList({
   onAnalyzePotential,
 }: StudentListProps) {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [studentForQr, setStudentForQr] = useState<Student | null>(null);
 
   const handleRemoveStudent = async (studentId: string) => {
+    const student = students.find((candidate) => candidate.id === studentId);
+    const confirmed = await confirmAction(
+      'Remove student?',
+      `${student?.full_name ?? 'This student'} will be removed from the classroom.`,
+    );
+    if (!confirmed) return;
+
     try {
       hapticMedium();
       setIsDeleting(studentId);
@@ -50,6 +60,7 @@ export default function StudentList({
       onRefresh();
     } catch (error) {
       console.error('Failed to remove student:', error);
+      showToast({ message: 'Student could not be removed. Please try again.', type: 'error' });
     } finally {
       setIsDeleting(null);
     }
@@ -67,8 +78,14 @@ export default function StudentList({
   };
 
   const copyToClipboard = async (text: string) => {
-    await Clipboard.setStringAsync(text);
-    hapticLight();
+    try {
+      await Clipboard.setStringAsync(text);
+      hapticLight();
+      showToast({ message: 'Invite code copied', type: 'success' });
+    } catch (error) {
+      console.error('Failed to copy invite code:', error);
+      showToast({ message: 'Invite code could not be copied.', type: 'error' });
+    }
   };
 
   return (
@@ -108,6 +125,9 @@ export default function StudentList({
           setSelectedStudent(null);
           setIsAddModalOpen(true);
         }}
+        accessibilityRole="button"
+        accessibilityLabel="Add student"
+        accessibilityHint="Opens the form to add a student to this classroom"
         className="absolute right-6 bottom-6 bg-sanctuarySaffron w-16 h-16 rounded-full justify-center items-center shadow-xl border-4 border-white/10"
       >
         <Icon as={Plus} className="text-white" size={32} />
@@ -165,6 +185,9 @@ export default function StudentList({
                 </Text>
                 <Pressable
                   onPress={() => copyToClipboard(q?.invite_code || '')}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Copy invite code for ${q?.full_name || 'student'}`}
+                  accessibilityHint="Copies the invite code to the clipboard"
                   className="bg-sanctuary-surface-secondary px-6 py-3 rounded-2xl border border-sanctuary-border"
                 >
                   <Text className="text-sanctuarySaffron font-black text-2xl tracking-tighter">
@@ -242,6 +265,8 @@ const StudentRow = React.memo(
                   onAnalyze(student);
                 }}
                 className="p-2.5 bg-sanctuary-surface/50 rounded-full border border-sanctuary-border/20"
+                accessibilityRole="button"
+                accessibilityLabel={`Analyze ${student.full_name}`}
               >
                 <Icon as={Sparkles} size={18} className="text-sanctuarySaffron" />
               </Pressable>
@@ -250,14 +275,29 @@ const StudentRow = React.memo(
               <Pressable
                 onPress={() => onShowQr(student)}
                 className="p-2.5 bg-sanctuary-surface/50 rounded-full border border-sanctuary-border/20"
+                accessibilityRole="button"
+                accessibilityLabel={`Show invite QR code for ${student.full_name}`}
               >
                 <Icon as={QrCode} size={18} className="text-sanctuarySaffron" />
               </Pressable>
             )}
-            <Pressable onPress={() => onEdit(student)} className="p-2.5">
+            <Pressable
+              onPress={() => onEdit(student)}
+              className="p-2.5"
+              accessibilityRole="button"
+              accessibilityLabel={`Edit ${student.full_name}`}
+            >
               <Icon as={Pen} size={18} className="text-sanctuary-text-tertiary" />
             </Pressable>
-            <Pressable onPress={() => onRemove(student.id)} disabled={isDeleting} className="p-2.5">
+            <Pressable
+              onPress={() => onRemove(student.id)}
+              disabled={isDeleting}
+              className="p-2.5"
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${student.full_name}`}
+              accessibilityHint="Removes this student from the classroom after confirmation"
+              accessibilityState={{ disabled: Boolean(isDeleting) }}
+            >
               {isDeleting ? (
                 <BrandPulse size={20} tintColor="#B42318" />
               ) : (

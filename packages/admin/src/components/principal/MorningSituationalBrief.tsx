@@ -16,7 +16,7 @@ import {
 } from '@repo/core/api/client';
 
 import { ChevronRight, CircleAlert, FileCheck, TrendingDown, TrendingUp } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
@@ -36,6 +36,8 @@ export default function MorningSituationalBrief({
   const [presence, setPresence] = useState<StaffPresenceSummary | null>(null);
   const [pulse, setPulse] = useState<StudentAttendancePulse | null>(null);
   const [pendingLeaves, setPendingLeaves] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   const getPresenceColorClass = (present: number, total: number): string => {
     if (total === 0) return 'bg-phaseText-muted';
@@ -50,6 +52,7 @@ export default function MorningSituationalBrief({
     async function load() {
       setLoading(true);
       try {
+        setError(null);
         const [pres, puls, leaves] = await Promise.all([
           staffManagementAPI.getStaffPresenceSummary(schoolId),
           attendanceAPI.getSchoolAttendancePulse(schoolId),
@@ -59,8 +62,9 @@ export default function MorningSituationalBrief({
         setPresence(pres);
         setPulse(puls);
         setPendingLeaves(leaves.length);
-      } catch (error) {
-        console.error('Error fetching morning brief:', error);
+      } catch (loadError) {
+        console.error('Error fetching morning brief:', loadError);
+        if (mounted) setError('We could not load today’s school pulse.');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -69,7 +73,7 @@ export default function MorningSituationalBrief({
     return () => {
       mounted = false;
     };
-  }, [schoolId]);
+  }, [schoolId, retryKey]);
 
   if (loading) {
     return (
@@ -79,6 +83,22 @@ export default function MorningSituationalBrief({
           <Box className="flex-1 h-28 bg-phase-canvas border border-phase-border rounded-[24px] opacity-30 shadow-sm" />
           <Box className="flex-1 h-28 bg-phase-canvas border border-phase-border rounded-[24px] opacity-20 shadow-sm" />
         </HStack>
+      </VStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <VStack className="gap-3 bg-phase-surface border border-phase-danger/30 rounded-[24px] p-5">
+        <Text className="font-bold text-phaseText-primary">Morning brief unavailable</Text>
+        <Text className="text-sm text-phaseText-secondary">{error}</Text>
+        <Button
+          variant="outline"
+          onPress={() => setRetryKey((key) => key + 1)}
+          accessibilityLabel="Retry loading morning brief"
+        >
+          <ButtonText>Try again</ButtonText>
+        </Button>
       </VStack>
     );
   }
@@ -97,6 +117,9 @@ export default function MorningSituationalBrief({
           hapticLight();
           onViewStaff?.();
         }}
+        accessibilityRole="button"
+        accessibilityLabel={`Staff presence: ${presence?.present ?? 0} of ${presence?.total ?? 0} present`}
+        accessibilityHint="Opens staff attendance"
       >
         <Box className="bg-phase-surface rounded-[24px] px-5 py-4 border border-phase-border shadow-sm active:scale-[0.98] transition-all">
           <HStack className="items-center justify-between">
@@ -180,9 +203,12 @@ export default function MorningSituationalBrief({
         <Pressable
           onPress={() => {
             hapticLight();
-            onViewApprovals?.();
+          onViewApprovals?.();
           }}
           className="flex-1"
+          accessibilityRole="button"
+          accessibilityLabel={`${pendingLeaves} pending leave approvals`}
+          accessibilityHint="Opens leave approvals"
         >
           <Box className="h-full bg-phase-interactive rounded-[24px] p-5 shadow-md active:scale-95 transition-all">
             <VStack className="gap-4">

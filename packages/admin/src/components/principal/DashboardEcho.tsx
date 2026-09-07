@@ -30,6 +30,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -56,45 +57,18 @@ const CATEGORY_ICONS = {
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();
   const user = useStore((s) => s.user);
+  const { showToast } = useSanctuaryToast();
   const [feedback, setFeedback] = useState<FeedbackEcho[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [savingReply, setSavingReply] = useState(false);
 
-  const setMockData = () => {
-    setFeedback([
-      {
-        id: '1',
-        source: 'teacher',
-        category: 'support',
-        content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.',
-        priority: 'high',
-        is_read: false,
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        source: 'student',
-        category: 'morale',
-        content: 'The new common area is great! Everyone is enjoying the study space.',
-        priority: 'low',
-        is_read: true,
-        created_at: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: '3',
-        source: 'teacher',
-        category: 'facility',
-        content: 'Multimedia projector in Room 4 is flickering intermittently.',
-        priority: 'medium',
-        is_read: false,
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ]);
-  };
-
   const fetchFeedback = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from('school_echo_feedback')
@@ -104,12 +78,14 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
         .limit(5);
 
       if (error) {
-        setMockData();
+        console.error('Error fetching dashboard echo:', error);
+        setLoadError('Feedback could not be loaded.');
       } else {
         setFeedback(data || []);
       }
-    } catch {
-      setMockData();
+    } catch (error) {
+      console.error('Error fetching dashboard echo:', error);
+      setLoadError('Feedback could not be loaded.');
     } finally {
       setIsLoading(false);
     }
@@ -117,15 +93,16 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
 
   useEffect(() => {
     fetchFeedback();
-  }, [fetchFeedback]);
+  }, [fetchFeedback, retryKey]);
 
   const handleMarkRead = async (id: string) => {
     try {
       hapticLight();
       await supabase.from('school_echo_feedback').update({ is_read: true }).eq('id', id);
       setFeedback((prev) => prev.map((e) => (e.id === id ? { ...e, is_read: true } : e)));
-    } catch {
-      /**/
+    } catch (error) {
+      console.error('Failed to mark feedback as read:', error);
+      showToast({ message: 'Feedback could not be updated. Please try again.', type: 'error' });
     }
   };
 
@@ -159,8 +136,9 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
       );
       setReplyingTo(null);
       setReplyText('');
-    } catch {
-      /**/
+    } catch (error) {
+      console.error('Failed to send feedback reply:', error);
+      showToast({ message: 'Reply could not be sent. Please try again.', type: 'error' });
     } finally {
       setSavingReply(false);
     }
@@ -171,6 +149,21 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
       <Box className="p-12 items-center justify-center">
         <Spinner className="text-phase-interactive" />
       </Box>
+    );
+
+  if (loadError)
+    return (
+      <VStack className="gap-3 bg-phase-surface rounded-[32px] border border-phase-danger/30 p-6">
+        <Text className="font-bold text-phaseText-primary">Feedback unavailable</Text>
+        <Text className="text-sm text-phaseText-secondary">{loadError}</Text>
+        <Button
+          variant="outline"
+          onPress={() => setRetryKey((key) => key + 1)}
+          accessibilityLabel="Retry loading feedback"
+        >
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </VStack>
     );
 
   return (
@@ -201,7 +194,13 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
             item.priority === 'high' ? 'border-l-phase-danger' : 'border-l-phase-interactive';
 
           return (
-            <Pressable key={item.id} onPress={() => !item.is_read && handleMarkRead(item.id)}>
+            <Pressable
+              key={item.id}
+              onPress={() => !item.is_read && handleMarkRead(item.id)}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.source} feedback: ${item.content}`}
+              accessibilityHint={item.is_read ? undefined : 'Marks this feedback as read'}
+            >
               <Box
                 className={`p-6 rounded-[32px] border-2 border-l-[8px] transition-all ${
                   item.is_read

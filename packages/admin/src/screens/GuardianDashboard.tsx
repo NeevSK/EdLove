@@ -2,11 +2,12 @@ import {
   resolveWorkspaceSwitcherTargets,
   useDomainFeature,
   usePermissions,
+  usePerspectiveSwitch,
   useStore,
 } from '@repo/core/logic';
 import type { WorkspaceSwitcherTarget } from '@repo/core/types';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Text } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Text } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -31,7 +32,8 @@ export default function GuardianDashboard() {
   const { can } = usePermissions();
   const { result: guardianFeature } = useDomainFeature('guardian-workspace');
   const user = useStore((state) => state.user);
-  const { dashboard, isLoading, error } = useGuardianWorkspaceData(user?.id || '');
+  const { availablePerspectives, switchPerspective, activePerspective } = usePerspectiveSwitch();
+  const { dashboard, isLoading, error, refreshData } = useGuardianWorkspaceData(user?.id || '');
 
   const workspaceTargets = React.useMemo(
     () =>
@@ -45,13 +47,19 @@ export default function GuardianDashboard() {
         canManageStudentDashboard: can('manage', 'StudentDashboard'),
         hasPrimaryInstitution: Boolean(user?.school_id),
         hasMountedGuardianWorkspace: true,
+        availablePerspectives,
+        activePerspectiveId: activePerspective.id,
       }),
-    [can, user?.school_id],
+    [can, user?.school_id, availablePerspectives, activePerspective.id],
   );
 
   const handleWorkspaceTarget = React.useCallback(
-    (target: WorkspaceSwitcherTarget) => {
+    async (target: WorkspaceSwitcherTarget) => {
       if (!target.enabled) return;
+
+      if (target.perspectiveId) {
+        await switchPerspective(target.perspectiveId);
+      }
 
       if (target.id === 'founder') {
         router.push('/workspace');
@@ -67,7 +75,7 @@ export default function GuardianDashboard() {
         router.push('/workspace');
       }
     },
-    [router, user?.id, user?.school_id],
+    [router, user?.school_id, switchPerspective],
   );
 
   const handleOpenStudentsRoom = React.useCallback(() => {
@@ -148,7 +156,7 @@ export default function GuardianDashboard() {
         handleWorkspaceTarget(workspaceTargets[0]);
       }
     },
-    [handleOpenStudentsRoom, handleWorkspaceTarget, navigation, workspaceTargets],
+    [handleOpenStudentsRoom, handleWorkspaceTarget, router, workspaceTargets],
   );
 
   if (!user?.id) {
@@ -188,6 +196,14 @@ export default function GuardianDashboard() {
         <Text className="text-phase-danger text-base font-semibold text-center">
           {error || 'Failed to load dashboard'}
         </Text>
+        <Button
+          variant="outline"
+          onPress={() => void refreshData()}
+          className="mt-5 border-phase-danger/30"
+          accessibilityLabel="Retry loading guardian dashboard"
+        >
+          <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+        </Button>
       </Box>
     );
   }

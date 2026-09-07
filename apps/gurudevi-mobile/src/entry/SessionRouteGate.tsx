@@ -1,42 +1,29 @@
-import {
-  getAuthRouteTarget,
-  getSessionIdentityMode,
-  useAuth,
-  useStore,
-} from '@repo/core/logic';
-import { useEffect, type ReactNode } from 'react';
+import { isPublicBootstrapRoute } from '@repo/core/logic';
 import { usePathname, useRouter } from 'expo-router';
+import { type ReactNode, useEffect } from 'react';
 
-import { getSessionRouteReadiness } from '@/boot/sessionRouteReadiness';
+import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 
 export function SessionRouteGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { identityAvailability, isProfileResolving, loading, profileError, session } = useAuth();
-  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
-  const hasActiveCapacity = useStore((state) => Boolean(state.activeBond?.capacity));
-  const readiness = getSessionRouteReadiness({
-    hasCachedCapabilities: false,
-    hasLiveCapacity: hasActiveCapacity,
-    hasProfileError: Boolean(profileError),
-    hasSession: Boolean(session),
-    isProfileResolving,
-    isSessionLoading: loading,
-  });
-  const routeTarget = getAuthRouteTarget({
-    bootstrapReady: readiness.routeGuardReady,
-    hasActiveCapacity: readiness.hasActiveCapacity,
-    hasSession: Boolean(session),
-    identityAvailability,
-    onboardingCompleted,
-    pathname,
-    sessionMode: getSessionIdentityMode(session),
-  });
+  const routeState = useBootstrapRouteState(pathname);
+  const routeTarget = getBootstrapRouteTarget(routeState);
 
   useEffect(() => {
-    if (!readiness.routeGuardReady || !routeTarget.redirectTo) return;
+    if (!routeTarget.redirectTo) return;
     if (pathname !== routeTarget.redirectTo) router.replace(routeTarget.redirectTo);
-  }, [pathname, readiness.routeGuardReady, routeTarget.redirectTo, router]);
+  }, [pathname, routeTarget.redirectTo, router]);
+
+  // The index route only redirects to /welcome; withholding it here would leave
+  // the router with no mounted route while the session restores.
+  if (
+    routeTarget.decision === 'booting' &&
+    pathname !== '/' &&
+    !isPublicBootstrapRoute(pathname)
+  ) {
+    return null;
+  }
 
   return children;
 }

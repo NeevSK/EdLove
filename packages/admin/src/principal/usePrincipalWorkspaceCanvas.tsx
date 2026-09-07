@@ -183,13 +183,13 @@ function ProfileSurface({
     {
       icon: Building2,
       label: 'Institution, profile',
-      hint: schoolName || 'Open, the, official, school, record.',
+      hint: schoolName || 'Open the official school record.',
       onPress: onOpenProfile,
     },
     {
       icon: QrCode,
       label: 'School, QR',
-      hint: 'Share, the, school, sanctuary, entry, point.',
+      hint: 'Share the school sanctuary entry point.',
       onPress: onOpenQr,
     },
     {

@@ -1,22 +1,31 @@
 import { describe, expect, it } from 'vitest';
 import {
   appNavigation,
+  getNavigationItems,
   getNavigationTitle,
   isNavigationRouteActive,
 } from '@/lib/navigation/appNavigation';
 
 describe('app navigation metadata', () => {
   it('owns the five native primary routes and web utility routes', () => {
-    expect(appNavigation.filter((item) => item.surface === 'tab').map((item) => item.id)).toEqual([
-      'self',
-      'workspace',
-      'community',
+    expect(getNavigationItems('tab').map((item) => item.id)).toEqual([
       'library',
+      'workspace',
+      'self',
+      'community',
       'profile',
     ]);
-    expect(
-      appNavigation.filter((item) => item.surface === 'utility').map((item) => item.id),
-    ).toEqual(['editorial', 'agent-lab', 'notifications', 'settings']);
+    expect(getNavigationItems('utility').map((item) => item.id)).toEqual([
+      'editorial',
+      'agent-lab',
+      'notifications',
+      'settings',
+    ]);
+  });
+
+  it('keeps header-only routes out of the primary tab set', () => {
+    expect(getNavigationItems('tab').map((item) => item.href)).not.toContain('/notifications');
+    expect(getNavigationItems('tab').map((item) => item.href)).not.toContain('/settings');
   });
 
   it('prefers the specific editorial route over its workspace parent', () => {

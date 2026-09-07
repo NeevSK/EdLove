@@ -49,6 +49,7 @@ type NoteRow =
 type State = {
   notes: PrincipalNote[];
   isLoading: boolean;
+  loadError: string | null;
   isComposing: boolean;
   draft: string;
   draftType: PrincipalNote['note_type'];
@@ -58,6 +59,7 @@ type State = {
 type Action =
   | { type: 'SET_NOTES'; notes: PrincipalNote[] }
   | { type: 'SET_LOADING'; isLoading: boolean }
+  | { type: 'SET_LOAD_ERROR'; message: string | null }
   | { type: 'START_COMPOSING'; defaultType?: PrincipalNote['note_type'] }
   | { type: 'STOP_COMPOSING' }
   | { type: 'UPDATE_DRAFT'; draft: string }
@@ -74,6 +76,8 @@ const notesReducer = (state: State, action: Action): State => {
       return { ...state, notes: action.notes, isLoading: false };
     case 'SET_LOADING':
       return { ...state, isLoading: action.isLoading };
+    case 'SET_LOAD_ERROR':
+      return { ...state, loadError: action.message };
     case 'START_COMPOSING':
       return {
         ...state,
@@ -308,6 +312,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
   const [state, dispatch] = useReducer(notesReducer, {
     notes: [],
     isLoading: true,
+    loadError: null,
     isComposing: false,
     draft: '',
     draftType: 'todo',
@@ -320,9 +325,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     try {
       const data = await api.principalNotes.getAll(schoolId);
       dispatch({ type: 'SET_NOTES', notes: data ?? [] });
+      dispatch({ type: 'SET_LOAD_ERROR', message: null });
     } catch (err) {
       console.error('PrincipalNotes: fetch error', err);
       dispatch({ type: 'SET_LOADING', isLoading: false });
+      dispatch({ type: 'SET_LOAD_ERROR', message: 'Notes could not be loaded.' });
     }
   }, [schoolId]);
 
@@ -450,6 +457,21 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             <Box className="flex-1 items-center justify-center">
               <ActivityIndicator className="text-phase-interactive" size="large" />
             </Box>
+          ) : state.loadError ? (
+            <VStack className="flex-1 items-center justify-center gap-4 p-8">
+              <Text className="text-phase-danger font-bold text-center">{state.loadError}</Text>
+              <Pressable
+                onPress={() => {
+                  dispatch({ type: 'SET_LOADING', isLoading: true });
+                  void fetchNotes();
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Retry loading notes"
+                className="px-5 py-3 rounded-2xl bg-phase-danger/10"
+              >
+                <Text className="text-phase-danger font-bold">Try again</Text>
+              </Pressable>
+            </VStack>
           ) : rows.length === 0 ? (
             <Box className="px-8 pt-12">
               <PositiveInvitation

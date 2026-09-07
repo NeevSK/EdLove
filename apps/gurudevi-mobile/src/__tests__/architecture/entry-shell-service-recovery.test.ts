@@ -17,4 +17,9 @@ describe('entry shell service recovery', () => {
     expect(entryShell).not.toContain('SanctuaryProvider');
     expect(existsSync(resolve(import.meta.dirname, '../../providers/SanctuaryProvider.tsx'))).toBe(false);
   });
+
+  it('provides and renders the shared FAB contract for registered workspace actions', () => {
+    expect(entryShell).toContain('<FABProvider>');
+    expect(entryShell).toContain('<LotusPetalFAB />');
+  });
 });

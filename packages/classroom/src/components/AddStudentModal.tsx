@@ -77,6 +77,7 @@ export const AddStudentModal = ({
     try {
       if (studentToEdit) {
         await (studentsAPI.update as any)(studentToEdit.id, {
+          full_name: fullName.trim(),
           roll_number: rollNumber.trim(),
           notes: notes.trim(),
         });

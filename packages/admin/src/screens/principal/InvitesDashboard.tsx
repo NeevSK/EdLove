@@ -1,7 +1,8 @@
 import { ArrowLeft, Copy, Plus, UserPlus, X } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 import { formatDistanceToNow } from 'date-fns';
 import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
@@ -24,13 +25,14 @@ type State = {
   inviteCodes: InviteCode[];
   isLoading: boolean;
   isGenerating: boolean;
+  loadError: string | null;
   inviteRole: 'teacher' | 'principal';
 };
 
 type Action =
   | { type: 'LOAD_START' }
   | { type: 'LOAD_SUCCESS'; codes: InviteCode[] }
-  | { type: 'LOAD_FAILURE' }
+  | { type: 'LOAD_FAILURE'; message: string }
   | { type: 'GENERATE_START' }
   | { type: 'GENERATE_SUCCESS'; code: InviteCode }
   | { type: 'GENERATE_FAILURE' }
@@ -40,11 +42,11 @@ type Action =
 const invitesReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'LOAD_START':
-      return { ...state, isLoading: true };
+      return { ...state, isLoading: true, loadError: null };
     case 'LOAD_SUCCESS':
-      return { ...state, isLoading: false, inviteCodes: action.codes };
+      return { ...state, isLoading: false, inviteCodes: action.codes, loadError: null };
     case 'LOAD_FAILURE':
-      return { ...state, isLoading: false };
+      return { ...state, isLoading: false, loadError: action.message };
     case 'GENERATE_START':
       return { ...state, isGenerating: true };
     case 'GENERATE_SUCCESS':
@@ -80,6 +82,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
     inviteCodes: [],
     isLoading: false,
     isGenerating: false,
+    loadError: null,
     inviteRole: 'teacher',
   });
 
@@ -91,7 +94,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
       dispatch({ type: 'LOAD_SUCCESS', codes: codes ?? [] });
     } catch (error) {
       console.error('Failed to load invite codes:', error);
-      dispatch({ type: 'LOAD_FAILURE' });
+      dispatch({ type: 'LOAD_FAILURE', message: 'Invite codes could not be loaded.' });
     }
   }, [schoolId]);
 
@@ -101,6 +104,11 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
 
   const handleRevoke = async (code: string) => {
     if (!schoolId || !userId) return;
+    const confirmed = await confirmAction(
+      'Revoke invite code?',
+      'Anyone who has not used this code will no longer be able to join with it.',
+    );
+    if (!confirmed) return;
     try {
       await invitesAPI.revokeInviteCode(schoolId, code, userId);
       dispatch({ type: 'REVOKE_SUCCESS', code });
@@ -173,6 +181,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
             onBack();
           }}
           className="p-2 bg-phase-canvas border border-phase-border rounded-xl active:scale-95 transition-all"
+          accessibilityRole="button"
           accessibilityLabel="Back"
           accessibilityHint="Returns to the main dashboard"
         >
@@ -213,6 +222,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
                   dispatch({ type: 'SET_ROLE', role });
                 }}
                 className={`flex-1 flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border transition-all ${state.inviteRole === role ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-canvas border-phase-border'}`}
+                accessibilityRole="radio"
                 accessibilityLabel={`Role: ${role}`}
                 accessibilityHint={`Sets the role for the new invite code to ${role}`}
                 accessibilityState={{ selected: state.inviteRole === role }}
@@ -230,6 +240,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
             onPress={handleGenerateCode}
             disabled={state.isGenerating || isPastView}
             className={`bg-phase-interactive rounded-2xl py-4 items-center shadow-md active:scale-95 transition-all ${state.isGenerating || isPastView ? 'opacity-50' : ''}`}
+            accessibilityRole="button"
             accessibilityLabel="Generate Code"
             accessibilityHint="Creates a unique onboarding code for the selected role"
           >
@@ -250,6 +261,20 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
       {state.isLoading ? (
         <Box className="py-20 items-center justify-center bg-phase-canvas rounded-[32px] border border-phase-border opacity-50">
           <Spinner className="text-phase-interactive" />
+        </Box>
+      ) : state.loadError ? (
+        <Box className="py-12 px-6 items-center justify-center bg-phase-danger/10 rounded-[32px] border border-phase-danger/20">
+          <Text className="text-[13px] font-bold text-phase-danger text-center">
+            {state.loadError}
+          </Text>
+          <Button
+            variant="outline"
+            onPress={() => void loadInviteCodes()}
+            className="mt-4 border-phase-danger/30"
+            accessibilityLabel="Retry loading invite codes"
+          >
+            <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+          </Button>
         </Box>
       ) : state.inviteCodes.length === 0 ? (
         <Box className="py-20 items-center justify-center bg-phase-canvas rounded-[32px] border border-dashed border-phase-border opacity-40">
@@ -295,6 +320,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
                   <Pressable
                     onPress={() => copyToClipboard(invite.code)}
                     className="p-2 bg-phase-canvas border border-phase-border rounded-xl active:scale-90 transition-all"
+                    accessibilityRole="button"
                     accessibilityLabel="Copy Code"
                     accessibilityHint="Copies the invite code to your clipboard"
                   >
@@ -304,6 +330,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
                     <Pressable
                       onPress={() => handleRevoke(invite.code)}
                       className="p-2 bg-phase-danger/5 border border-phase-danger/20 rounded-xl active:scale-90 transition-all"
+                      accessibilityRole="button"
                       accessibilityLabel="Revoke Code"
                       accessibilityHint="Deactivates this invite code permanently"
                     >

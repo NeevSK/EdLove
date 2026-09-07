@@ -10,7 +10,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.edlove.gurudevi",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "associatedDomains": ["applinks:platform.gurudevi.edlove.org"]
     },
     "android": {
       "package": "org.edlove.gurudevi",
@@ -24,7 +25,6 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": true,
           "data": [
             {
               "scheme": "gurudevi",
@@ -36,7 +36,6 @@
         },
         {
           "action": "VIEW",
-          "autoVerify": true,
           "data": [
             {
               "scheme": "gurudevi",

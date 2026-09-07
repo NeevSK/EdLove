@@ -110,10 +110,10 @@ export default function CommunityHearth({
         <HStack className="justify-between items-center px-6">
           <VStack className="gap-0.5">
             <Heading className="text-2xl font-bold text-ink">
-              {t('community.hearthTitle') || 'The Hearth'}
+              {t('community.hearthTitle', 'The Hearth')}
             </Heading>
             <Text className="text-xs text-ink/60">
-              {t('community.hearthSubtitle') || 'Where the community pulse beats strongest'}
+              {t('community.hearthSubtitle', 'Where the community pulse beats strongest')}
             </Text>
           </VStack>
           <Box className="bg-phase-interactive/10 px-3.5 py-1.5 rounded-full border border-phase-interactive/20">

@@ -69,10 +69,11 @@ export function useStudentQuestsPulse() {
  * useStudentGrowthPulse: Monitor rewards and progress.
  */
 export function useStudentGrowthPulse() {
-  const { rewards, isLoading } = useRewards();
+  const { rewards, isLoading, error } = useRewards();
 
   return {
     points: rewards?.points ?? 0,
     isLoading,
+    error,
   };
 }

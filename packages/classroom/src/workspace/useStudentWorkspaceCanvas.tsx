@@ -148,6 +148,9 @@ export function StudentWorkspaceCanvas({
             <Pressable
               onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
               className="active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={typedSurface.pinned ? `Unpin ${typedSurface.title}` : `Pin ${typedSurface.title}`}
+              accessibilityHint="Changes whether this surface stays in your pinned workspace"
             >
               <Box className="rounded-full px-4 py-2 bg-phase-primary/5 border border-starlightGray/10">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
@@ -158,6 +161,9 @@ export function StudentWorkspaceCanvas({
             <Pressable
               onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
               className="active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={`Move ${typedSurface.title} to ${nextZone}`}
+              accessibilityHint="Moves this surface to the next workspace zone"
             >
               <Box className="rounded-full px-4 py-2 bg-phase-primary/5 border border-starlightGray/10">
                 <Text className="text-[12px] font-bold text-phaseText-primary">

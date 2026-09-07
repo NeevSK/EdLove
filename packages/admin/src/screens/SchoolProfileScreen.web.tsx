@@ -98,7 +98,13 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
 
                   {isEditable && (
                     <Pressable
-                      onPress={() => hapticLight()}
+                      accessibilityRole="button"
+                      accessibilityLabel="Manage institution"
+                      accessibilityHint="Open the principal institution workspace"
+                      onPress={() => {
+                        hapticLight();
+                        router.push('/workspace/principal');
+                      }}
                       className="bg-phase-interactive self-start px-6 h-12 rounded-2xl items-center justify-center shadow-md active:scale-95 transition-all"
                     >
                       <Text className="text-white text-[12px] font-black uppercase tracking-[2px]">

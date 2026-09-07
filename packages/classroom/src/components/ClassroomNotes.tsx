@@ -50,9 +50,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import type React from 'react';
-import { useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer, useState } from 'react';
 import { Platform } from 'react-native';
 
 interface ClassroomNotesProps {
@@ -213,10 +214,13 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     draftVisibility: 'private',
     saving: false,
   });
+  const [loadError, setLoadError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     let active = true;
     const loadNotes = async () => {
+      setLoadError(false);
       try {
         const data = await api.classroomNotes.getAll(classroomId);
         if (active) {
@@ -224,6 +228,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         }
       } catch (err) {
         console.error('ClassroomNotes: fetch error', err);
+        if (active) setLoadError(true);
       } finally {
         if (active) {
           dispatch({ type: 'SET_LOADING', loading: false });
@@ -234,7 +239,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     return () => {
       active = false;
     };
-  }, [classroomId]);
+  }, [classroomId, retryKey]);
 
   const grouped = useMemo(() => groupNotesByDate(state.notes), [state.notes]);
 
@@ -261,6 +266,12 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
   };
 
   const handleDelete = async (id: string) => {
+    const confirmed = await confirmAction(
+      'Delete note?',
+      'This note will be permanently removed from the classroom logbook.',
+    );
+    if (!confirmed) return;
+
     hapticLight();
     try {
       await api.classroomNotes.delete(id);
@@ -421,6 +432,25 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
       >
         <BrandPulse size={28} tintColor="#F6BF8C" />
       </Box>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <VStack className="flex-1 items-center justify-center gap-4 px-6">
+        <Text className="text-sanctuary-error text-center">
+          Notes could not be loaded. Please try again.
+        </Text>
+        <Pressable
+          onPress={() => setRetryKey((key) => key + 1)}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading classroom notes"
+        >
+          <Box className="rounded-full bg-sanctuarySaffron px-5 py-3">
+            <Text className="font-bold text-sanctuaryInk">Try again</Text>
+          </Box>
+        </Pressable>
+      </VStack>
     );
   }
 

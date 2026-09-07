@@ -91,13 +91,15 @@ process.once('exit', () => {
 // Add support for WASM files (required by expo-sqlite on web)
 config.resolver.assetExts.push('wasm');
 
-// 1. Use Metro's native watcher on Windows. Watchman's subscription startup
+// 1. Use Metro's fallback watcher on Windows. Watchman's subscription startup
 //    can hang on this workspace, leaving Metro's dependency graph incomplete
 //    and causing every device bundle request to fail with HTTP 500.
 config.useWatchman = false;
-// Watch every internal workspace package. The app project root is already a
-// watch root by default; this adds the shared packages dir on top.
-config.watchFolders = [path.resolve(workspaceRoot, 'packages')];
+// Expo SDK 57 resolves external workspace files on demand. Pre-crawling the
+// entire packages directory exceeds Metro's watcher startup window on Windows.
+// Shared-package edits require a Metro restart until a reliable narrow-watch
+// policy is established, but bundle resolution remains available.
+config.watchFolders = [];
 config.resetCache = false;
 config.maxWorkers = 2;
 
@@ -235,31 +237,37 @@ if (fs.existsSync(a11yGateExternalPath)) {
   }
 }
 
-const pnpmStoreFallbackModules = {};
 const pnpmStoreRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
-if (fs.existsSync(pnpmStoreRoot)) {
-  for (const entry of fs.readdirSync(pnpmStoreRoot)) {
-    const pkgNodeModules = path.resolve(pnpmStoreRoot, entry, 'node_modules');
-    if (fs.existsSync(pkgNodeModules)) {
-      for (const item of fs.readdirSync(pkgNodeModules)) {
-        if (item.startsWith('@')) {
-          const scopeDir = path.resolve(pkgNodeModules, item);
-          for (const subItem of fs.readdirSync(scopeDir)) {
-            const pkgName = `${item}/${subItem}`;
-            if (!SINGLETON_OVERRIDES[pkgName] && !fs.existsSync(path.resolve(projectRoot, 'node_modules', pkgName))) {
-              pnpmStoreFallbackModules[pkgName] = path.resolve(scopeDir, subItem);
-            }
-          }
-        } else if (!SINGLETON_OVERRIDES[item] && !fs.existsSync(path.resolve(projectRoot, 'node_modules', item))) {
-          pnpmStoreFallbackModules[item] = path.resolve(pkgNodeModules, item);
-        }
-      }
-    }
+const pnpmFallbackPackageRoots = new Map();
+
+function getPackageName(moduleName) {
+  const segments = moduleName.split('/');
+  return moduleName.startsWith('@') ? segments.slice(0, 2).join('/') : segments[0];
+}
+
+function resolvePnpmFallbackPackageRoot(packageName) {
+  if (pnpmFallbackPackageRoots.has(packageName)) {
+    return pnpmFallbackPackageRoots.get(packageName);
   }
+
+  if (!fs.existsSync(pnpmStoreRoot)) {
+    return null;
+  }
+
+  const packageRoot = fs
+    .readdirSync(pnpmStoreRoot)
+    .map((entry) => path.resolve(pnpmStoreRoot, entry, 'node_modules', packageName))
+    .find((candidate) => fs.existsSync(candidate));
+
+  if (packageRoot && fs.existsSync(packageRoot)) {
+    pnpmFallbackPackageRoots.set(packageName, packageRoot);
+    return packageRoot;
+  }
+
+  return null;
 }
 
 config.resolver.extraNodeModules = {
-  ...pnpmStoreFallbackModules,
   ...SINGLETON_OVERRIDES,
 };
 
@@ -270,14 +278,6 @@ const WEB_SHIMS = {
   'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
   'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
   'react-native-url-polyfill/auto': path.resolve(projectRoot, 'src/shims/url-polyfill-web.js'),
-  '@react-native-ml-kit/text-recognition': path.resolve(
-    projectRoot,
-    'src/shims/ml-kit-text-recognition-web.js',
-  ),
-  '@react-native-ml-kit/barcode-scanning': path.resolve(
-    projectRoot,
-    'src/shims/ml-kit-barcode-scanning-web.js',
-  ),
   'expo-file-system': path.resolve(projectRoot, 'src/shims/expo-file-system-web.js'),
   'expo-sharing': path.resolve(projectRoot, 'src/shims/expo-sharing-web.js'),
   'expo-sqlite': path.resolve(projectRoot, 'src/shims/expo-sqlite-web.js'),
@@ -422,6 +422,26 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   try {
     return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
   } catch (err) {
+    const packageName = getPackageName(moduleName);
+    const fallbackPackageRoot =
+      !moduleName.startsWith('.') && !moduleName.startsWith('/') && !moduleName.includes(':')
+        ? resolvePnpmFallbackPackageRoot(packageName)
+        : null;
+
+    if (fallbackPackageRoot) {
+      return (defaultResolveRequest || context.resolveRequest)(
+        {
+          ...context,
+          extraNodeModules: {
+            ...context.extraNodeModules,
+            [packageName]: fallbackPackageRoot,
+          },
+        },
+        moduleName,
+        platform,
+      );
+    }
+
     if (!moduleName.startsWith('.') && !moduleName.startsWith('/') && !moduleName.includes(':')) {
       try {
         return (defaultResolveRequest || context.resolveRequest)(

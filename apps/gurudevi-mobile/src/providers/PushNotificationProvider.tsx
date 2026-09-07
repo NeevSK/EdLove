@@ -1,9 +1,16 @@
 import * as Notifications from 'expo-notifications';
-import { Linking, Platform } from 'react-native';
-import { Runtime as coreRuntime, storage } from '@repo/core/native';
-import { useAuth } from '@repo/core/logic';
-import { router } from 'expo-router';
+import { Platform } from 'react-native';
+import { deepLink, useAuth } from '@repo/core/logic';
+import { storage } from '@repo/core/native';
+import { type Href, router } from 'expo-router';
 import { useEffect, useCallback } from 'react';
+
+import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
+import {
+  isQRDeepLink,
+  normalizeAcceptedInternalRoute,
+} from '@/lib/deepLinks/urlPolicy';
+import { trackDeepLink } from '@/lib/deepLinks/trackDeepLink';
 
 /**
  * PushNotificationProvider
@@ -39,15 +46,30 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
 
   const handleNotificationResponse = useCallback(
     (response: Notifications.NotificationResponse) => {
-      const data = response.notification.request.content.data as Record<string, any> | undefined;
-      
-      if (data?.deepLink) {
-        // Handle deep link from notification
-        router.push(data.deepLink);
-      } else if (data?.path) {
-        // Handle path-based navigation
-        router.push(data.path);
-      }
+      const data = response.notification.request.content.data as Record<string, unknown> | undefined;
+      const target = typeof data?.deepLink === 'string' ? data.deepLink : data?.path;
+      if (typeof target !== 'string') return;
+
+      void (async () => {
+        if (target.startsWith('/')) {
+          const route = normalizeAcceptedInternalRoute(target);
+          if (route) router.push(route as Href);
+          return;
+        }
+
+        if (isQRDeepLink(target)) {
+          router.push({ pathname: '/qr', params: { payload: target } });
+          return;
+        }
+
+        await dispatchDeepLink(target, {
+          handleURL: deepLink.handleURL.bind(deepLink),
+          navigateToClassroomInvite: (inviteCode) => {
+            router.push({ pathname: '/community', params: { inviteCode } });
+          },
+          track: trackDeepLink,
+        });
+      })().catch(() => undefined);
     },
     [],
   );

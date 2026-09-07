@@ -17,6 +17,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
@@ -32,6 +33,7 @@ type State = {
   sections: SchoolSectionRow[];
   loading: boolean;
   saving: boolean;
+  loadError: string | null;
   newSectionName: string;
   newSectionGrade: string;
 };
@@ -39,6 +41,7 @@ type State = {
 type Action =
   | { type: 'SET_SECTIONS'; payload: SchoolSectionRow[] }
   | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_LOAD_ERROR'; payload: string | null }
   | { type: 'SET_SAVING'; payload: boolean }
   | {
       type: 'UPDATE_FIELD';
@@ -52,6 +55,7 @@ const initialState: State = {
   sections: [],
   loading: true,
   saving: false,
+  loadError: null,
   newSectionName: '',
   newSectionGrade: '',
 };
@@ -62,6 +66,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, sections: action.payload, loading: false };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
+    case 'SET_LOAD_ERROR':
+      return { ...state, loadError: action.payload };
     case 'SET_SAVING':
       return { ...state, saving: action.payload };
     case 'UPDATE_FIELD':
@@ -86,13 +92,18 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
   onBack,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { showToast } = useSanctuaryToast();
 
   const loadSections = useCallback(async () => {
     if (!schoolId) return;
     dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_LOAD_ERROR', payload: null });
     try {
       const data = await sectionsAPI.listSchoolSections(schoolId);
       dispatch({ type: 'SET_SECTIONS', payload: data ?? [] });
+    } catch (err) {
+      console.error('Failed to load sections:', err);
+      dispatch({ type: 'SET_LOAD_ERROR', payload: 'Sections could not be loaded.' });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -123,6 +134,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
       hapticSuccess();
     } catch (err) {
       console.error('Failed to create section:', err);
+      showToast({ message: 'Section could not be created. Please try again.', type: 'error' });
     } finally {
       dispatch({ type: 'SET_SAVING', payload: false });
     }
@@ -137,6 +149,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
             onBack();
           }}
           className="active:scale-95 transition-all"
+          accessibilityRole="button"
           accessibilityLabel="Go back"
           accessibilityHint="Navigates back to the main principal dashboard"
         >
@@ -222,6 +235,18 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
             <SkeletonCard height={90} className="rounded-3xl" />
             <SkeletonCard height={90} className="rounded-3xl" />
           </VStack>
+        ) : state.loadError ? (
+          <Box className="p-10 items-center justify-center bg-phase-danger/10 rounded-3xl border border-phase-danger/20">
+            <Text className="text-phase-danger text-center font-bold">{state.loadError}</Text>
+            <Button
+              variant="outline"
+              onPress={() => void loadSections()}
+              className="mt-4 border-phase-danger/30"
+              accessibilityLabel="Retry loading sections"
+            >
+              <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+            </Button>
+          </Box>
         ) : state.sections.length === 0 ? (
           <Box className="p-12 items-center justify-center bg-phase-canvas rounded-3xl border border-dashed border-phase-border">
             <Text className="text-phaseText-muted italic font-black text-sm uppercase tracking-widest">

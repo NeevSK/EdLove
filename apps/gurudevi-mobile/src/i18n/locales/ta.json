@@ -149,7 +149,7 @@
     "forgotPassword": "கடவுச்சொல் மறந்துவிட்டதா?",
     "createAccount": "கணக்கை உருவாக்கு",
     "alreadyHaveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
-    "newToGurudevi": "குருதேவிக்கு புதியதா?",
+    "newToGurudevi": "குருதெவிக்கு புதியதா?",
     "enterSanctuary": "உங்கள் அமைதியான இடத்துக்கு வாங்க",
     "joinCommunity": "ஆசிரியர் குடும்பத்தில் சேருங்கள்",
     "processing": "செயலாக்குகிறது...",
@@ -172,14 +172,14 @@
     "backToGoogle": "மீண்டும் Google உள்நுழைவுக்கு",
     "continueInApp": "செயலியில் தொடரவும்",
     "betterOnApp": "செயலியில் இன்னும் சிறந்த அனுபவம்",
-    "handoffDesc": "உங்கள் முன்னேற்றத்தை இழக்காமல், இந்த அனுபவத்தை குருதேவி செயலிக்கு மாற்றிக் கொள்ளுங்கள்.",
+    "handoffDesc": "உங்கள் முன்னேற்றத்தை இழக்காமல், இந்த அனுபவத்தை குருதெவி செயலிக்கு மாற்றிக் கொள்ளுங்கள்.",
     "openInAppDesc": "முழு வசதிகளுடன் பயன்படுத்த செயலியைத் திறந்து தொடரவும்.",
     "openAppAndSync": "செயலியைத் திறந்து ஒத்திசைக்கவும்",
     "openApp": "செயலியைத் திறக்கவும்",
     "alreadyLinked": "இந்த கணக்கு ஏற்கனவே இணைக்கப்பட்டுள்ளது",
     "alreadyRegistered": "இந்த மின்னஞ்சல் ஏற்கனவே பதிவுசெய்யப்பட்டுள்ளது",
     "identityAlreadyExists": "இந்த கணக்கு ஏற்கனவே உள்ளது. தயவுசெய்து உள்நுழைக.",
-    "tagline": "உங்கள் கற்றல் பயணத்திற்கு துணை நிற்கும் குருதேவி.",
+    "tagline": "உங்கள் கற்றல் பயணத்திற்கு துணை நிற்கும் குருதெவி.",
     "signInEmail": "உங்கள் மின்னஞ்சலில் உள்நுழைக",
     "acceptTermsRequired": "தொடர, நிபந்தனைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கவும்.",
     "signUpWithEmail": "மின்னஞ்சல் மூலம் பதிவு செய்யவும்",
@@ -581,6 +581,8 @@
   "community": {
     "title": "சமூகம்",
     "description": "ஆசிரியர் சமூகத்துடன் இணைக",
+    "hearthTitle": "சமூக மையம்",
+    "hearthSubtitle": "சமூகத் துடிப்பு வலுவாக இருக்கும் இடம்",
     "announcements": "அறிவிப்புகள்",
     "postAnnouncement": "அறிவிப்பை இடுகையிடு",
     "filters": {
@@ -649,10 +651,10 @@
     "profile": {
       "aspiration": "Aspiration",
       "contributions": "Contributions",
-      "defaultBio": "This user is on a journey of growth and resonance within the Gurudevi ecosystem.",
+      "defaultBio": "இந்த பயனர் குருதெவி சூழல் அமைப்பில் வளர்ச்சி மற்றும் இணக்கப் பயணத்தில் உள்ளார்.",
       "endorsements": "Endorsements",
       "explorer": "Explorer",
-      "memberOfGurudevi": "Member of Gurudevi",
+      "memberOfGurudevi": "குருதெவி உறுப்பினர்",
       "posts": "Posts",
       "privacyNote": "🔐 Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
       "privacyProtected": "Privacy Protected",
@@ -732,7 +734,7 @@
     "deleteCollectionConfirm": "“{{name}}” ஐ நீக்கவா? இதை மீண்டும் பெற முடியாது.",
     "web": {
       "title": "அறிவு நிலையம்",
-      "note": "குருதேவி அறிவு மையம்",
+      "note": "குருதெவி அறிவு மையம்",
       "timeText": "தேர்ந்தெடுத்த ஞானம்"
     },
     "doorway": {
@@ -903,7 +905,7 @@
     "qualifications": "தகுதிகள்",
     "aboutMe": "Your Story",
     "tellUsAboutYourself": "Tell us about yourself...",
-    "unnamedUser": "குருதேவி பயனர்",
+    "unnamedUser": "குருதெவி பயனர்",
     "profileCompletion": "சுயவிவர நிறைவு",
     "publicPreview": "பொது முன்னோட்டம்",
     "guestUpgradeTitle": "சுயவிவரத்தைத் திருத்த கணக்கு உருவாக்கவும்",
@@ -926,7 +928,7 @@
     "contact": {
       "sourceLabel": "சுயவிவரம்",
       "sourceBadge": "பொது தொடர்பு இணைப்பு",
-      "shareTitle": "{{name}} - குருதேவி",
+      "shareTitle": "{{name}} - குருதெவி",
       "shareProfile": "சுயவிவரத்தைப் பகிர்",
       "copyLink": "இணைப்பை நகலெடு",
       "done": "முடிந்தது",
@@ -1097,18 +1099,18 @@
     }
   },
   "onboarding": {
-    "nameTitle": "வரவேற்கிறோம்! Gurudevi-யில் உங்களை எப்படி அழைக்கலாம்?",
+    "nameTitle": "வரவேற்கிறோம்! குருதெவியில் உங்களை எப்படி அழைக்கலாம்?",
     "nameSubtitle": "ஆப்பில் காட்ட வேண்டிய பெயருடன் தொடங்குவோம்.",
     "namePlaceholder": "நாங்கள் பயன்படுத்த வேண்டிய பெயரை உள்ளிடவும்",
-    "nameHint": "குருதேவி சமூகத்தில் நீங்கள் இப்படித்தான் அறியப்படுவீர்கள்",
+    "nameHint": "குருதெவி சமூகத்தில் நீங்கள் இப்படித்தான் அறியப்படுவீர்கள்",
     "capacityTitle": "உங்கள் பொறுப்பு என்ன?",
     "capacitySubtitle": "இது உங்கள் அனுபவத்தைத் தனிப்பயனாக்க உதவும்",
     "selectCapacity": "உங்கள் பொறுப்பைத் தேர்ந்தெடுக்கவும்",
     "capacityHint": "கவலைப்பட வேண்டாம், இதைச் சரிசெய்தலில் பின்னர் மாற்றலாம்",
-    "welcomeTitle": "குருதேவிக்கு வரவேற்கிறோம்",
+    "welcomeTitle": "குருதெவிக்கு வரவேற்கிறோம்",
     "welcomeSubtitle": "அன்பில் பிறந்து, அன்பால் உருவான கல்வி",
     "sectionsTitle": "ஐந்து நிலையான பிரிவுகள்",
-    "sectionsSubtitle": "குருதேவிக்கான உங்கள் வழிகாட்டி",
+    "sectionsSubtitle": "குருதெவிக்கான உங்கள் வழிகாட்டி",
     "ecologyTitle": "கல்விச் சூழலியல்",
     "ecologySubtitle": "ஒரே உண்மை, பல பார்வைகள்",
     "privacyTitle": "உங்கள் தனியுரிமை பாதுகாக்கப்படுகிறது",
@@ -1118,7 +1120,7 @@
     "navigationContent": "விரைவான செயல்களுக்கு கீழே உள்ள தாமரை இதழையும், உங்கள் சரணாலயத்தை உலாவ தாவல்களையும் பயன்படுத்தவும்.",
     "philosophyTitle": "சரணாலய தத்துவம்",
     "philosophySubtitle": "கல்வி என்பது ஒரு வாழும் சூழலியல்.",
-    "philosophyContent": "குருதேவி சனாதன கற்றல் கொள்கைகளின் அடிப்படையில் உருவாக்கப்பட்டது - அங்கு ஞானம் வளர்க்கப்படுகிறது.",
+    "philosophyContent": "குருதெவி சனாதன கற்றல் கொள்கைகளின் அடிப்படையில் உருவாக்கப்பட்டது - அங்கு ஞானம் வளர்க்கப்படுகிறது.",
     "sectionsContent": "சுய பிரதிபலிப்புக்கு, கற்பித்தலுக்கு வகுப்பறை, பகிர்வுக்கு சமூகம் மற்றும் கண்டுபிடிப்பதற்கு நூலகம்.",
     "ecologyContent": "உங்கள் வகுப்பறையின் ஆற்றல் ஆரோக்கியத்தை நிர்வகிக்கவும். உறவுகள், நல்வாழ்வு மற்றும் கற்றலின் நுணுக்கங்களைக் கண்காணிக்கவும்.",
     "privacyContent": "நாங்கள் உங்களைப் பின்தொடருவதில்லை. உங்கள் நுண்ணறிவுகள் மற்றும் மாணவர் பதிவுகள் தனிப்பட்டவை மற்றும் பாதுகாப்பானவை.",
@@ -1136,7 +1138,7 @@
   "settings": {
     "appearance": {
       "title": "தோற்றம்",
-      "description": "குருதேவி எப்படி தோன்றுகிறது என்பதை தனிப்பயனாக்கவும்"
+      "description": "குருதெவி எப்படி தோன்றுகிறது என்பதை தனிப்பயனாக்கவும்"
     },
     "theme": {
       "title": "தீம்",
@@ -1193,7 +1195,7 @@
     },
     "device": {
       "title": "சாதன தகவல்",
-      "description": "குருதேவி உங்கள் சாதனத்திற்கு எவ்வாறு பொருந்துகிறது",
+      "description": "குருதெவி உங்கள் சாதனத்திற்கு எவ்வாறு பொருந்துகிறது",
       "tier": "சாதன நிலை",
       "memory": "கிடைக்கும் நினைவகம்",
       "network": "பிணைய தரம்",
@@ -1201,12 +1203,22 @@
     },
     "tip": {
       "title": "உதவிக்குறிப்பு",
-      "message": "இந்த அமைப்புகள் குருதேவி உங்களுக்கு சிறப்பாக செயல்பட உதவுகின்றன. பெரும்பாலான பயனர்களுக்கு தானியங்கு பயன்முறை பரிந்துரைக்கப்படுகிறது."
+      "message": "இந்த அமைப்புகள் குருதெவி உங்களுக்கு சிறப்பாக செயல்பட உதவுகின்றன. பெரும்பாலான பயனர்களுக்கு தானியங்கு பயன்முறை பரிந்துரைக்கப்படுகிறது."
     },
     "living_theme": {
-      "title": "Living Theme",
-      "on": "Phase-aware colors shift with the time of day",
-      "off": "Classic calm — simple static appearance"
+      "title": "உயிருள்ள தீம் (Living Theme)",
+      "on": "நாளின் நேரத்திற்கு ஏற்ப நிறங்கள் மாறும்",
+      "off": "வழக்கமான அமைதியான தோற்றம்"
+    },
+    "sensory": {
+      "title": "உணர்வுசார் பின்னூட்டம்",
+      "description": "பயன்பாடு இந்த சாதனத்திற்கு ஏற்ப இயக்கங்களையும் பின்னூட்டங்களையும் மாற்றியமைக்கிறது.",
+      "haptics": "தொடு உணர்வு பின்னூட்டம் (Haptics)",
+      "haptics_desc": "முக்கியமான செயல்களுக்கான மென்மையான தொடு உணர்வு உறுதிப்படுத்தல்.",
+      "sound": "ஒலி பின்னூட்டம்",
+      "sound_desc": "முக்கியமான தருணங்களுக்கான விருப்பமான குறுகிய ஒலிகள்.",
+      "quiet": "அமைதியான முறை",
+      "quiet_desc": "ஒலியை முடக்கி உணர்வு தீவிரத்தைக் குறைக்கிறது."
     },
     "explorer": {
       "title": "Explorer Mode",
@@ -1216,7 +1228,7 @@
     },
     "support": {
       "title": "Support & Debug",
-      "description": "Help us improve Gurudevi"
+      "description": "குருதெவியை மேம்படுத்த எங்களுக்கு உதவுங்கள்"
     },
     "debug": {
       "sentry_test": "Sentry Test Event",
@@ -1227,13 +1239,13 @@
     "notifications_enabled": "Push notifications enabled",
     "sanctuary_config": "Sanctuary Configuration",
     "title": "Settings",
-    "description": "Customize your experience within the Gurudevi Ecosystem",
+    "description": "குருதெவி சூழல் அமைப்பில் உங்கள் அனுபவத்தைத் தனிப்பயனாக்குங்கள்",
     "account": {
       "title": "Account Stewardship"
     }
   },
   "accessibility": {
-    "appLogo": "Gurudevi பயன்பாட்டு சின்னம்",
+    "appLogo": "குருதெவி பயன்பாட்டுச் சின்னம்",
     "switchLanguage": "{{lang}} மொழிக்கு மாறுங்கள்",
     "currentLanguage": "தற்போதைய மொழி: {{lang}}",
     "voiceInput": "குரல் குறிப்பை பதிவு செய்யுங்கள்",
@@ -1265,7 +1277,7 @@
     }
   },
   "welcome": {
-    "title": "குருதேவி",
+    "title": "குருதெவி",
     "subtitle": "அன்பில் பிறந்தது, அன்பால் கட்டப்பட்டது.",
     "intro": "கல்வியாளர்களுக்கான டிஜிட்டல் புகலிடம்.",
     "acceptTerms": "நான் ஏற்கிறேன் ",
@@ -1277,7 +1289,7 @@
     "login": "கணக்கு உள்ளது. உள்நுழையுங்கள்",
     "footer": "அன்பில் பிறந்தது, அன்பால் கட்டப்பட்டது.",
     "privacyPactStatement": "இணைவதன் மூலம், நீங்கள் எங்கள் புனிதமான தனியுரிமை உடன்படிக்கைக்கு சம்மதிக்கிறீர்கள்.",
-    "message": "குருதேவிக்கு வரவேற்கிறோம்",
+    "message": "குருதெவிக்கு வரவேற்கிறோம்",
     "description": "உங்கள் AI-இயக்கப்படும் கல்வி துணை.",
     "start": "தொடங்குங்கள்"
   },
@@ -1561,7 +1573,7 @@
   },
   "webNav": {
     "menu": "மெனு",
-    "brandName": "குருதேவி சரணாலயம்",
+    "brandName": "குருதெவி சரணாலயம்",
     "notifications": "அறிவிப்புகள்",
     "settings": "அமைப்புகள்",
     "toggleNavigation": "வழிசெலுத்தலை மாற்றவும்",
@@ -1611,7 +1623,7 @@
     },
     "title": "Scan QR Code",
     "web": {
-      "cameraMessage": "Camera scanning is available in the\nGurudevi mobile app.",
+      "cameraMessage": "கேமரா ஸ்கேனிங் குருதெவி மொபைல் செயலியில் மட்டுமே கிடைக்கிறது.",
       "closeScanner": "Close scanner",
       "desktopHint": "On desktop, paste the QR code value below.",
       "emptyError": "Please paste or type a QR code value.",

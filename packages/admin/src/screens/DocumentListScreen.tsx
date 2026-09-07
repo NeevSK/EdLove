@@ -39,6 +39,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<DocumentStatus | 'all'>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const statusFilters: (DocumentStatus | 'all')[] = [
     'all',
@@ -52,6 +53,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   const loadDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
+      setLoadError(null);
       const userDocuments = await documentWorkflowAPI.getDocuments(
         schoolId,
         undefined,
@@ -65,6 +67,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
       console.error('Failed to load documents:', error);
+      setLoadError('Documents could not be loaded.');
     } finally {
       setIsLoading(false);
     }
@@ -111,6 +114,9 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     <Pressable
       key={document.id}
       onPress={() => onDocumentPress(document)}
+      testID="document-item"
+      accessibilityRole="button"
+      accessibilityLabel={`Open document ${document.title}`}
       className="bg-phase-surface p-5 rounded-3xl border border-phase-border mb-3 active:scale-[0.98]"
     >
       <HStack className="justify-between items-start mb-2">
@@ -126,10 +132,15 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           <Text
             className={`text-[10px] font-black uppercase ${getStatusColor(document.status).split(' ')[1]}`}
           >
-            {document.status}
+            {document.status.toUpperCase()}
           </Text>
         </Box>
       </HStack>
+      {document.status === 'review' && (
+        <Text className="mt-2 text-[11px] font-black uppercase tracking-wider text-phase-interactive">
+          Pending Review
+        </Text>
+      )}
     </Pressable>
   );
 
@@ -142,6 +153,9 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       <Pressable
         key={status}
         onPress={() => setSelectedStatus(status)}
+        accessibilityRole="radio"
+        accessibilityLabel={`${status === 'all' ? 'All' : status} documents${count > 0 ? `, ${count}` : ''}`}
+        accessibilityState={{ selected: isActive }}
         className={`px-4 py-2 rounded-full border mr-2 ${
           isActive
             ? 'bg-phase-interactive border-phase-interactive'
@@ -166,6 +180,22 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     );
   }
 
+  if (loadError) {
+    return (
+      <Box className="flex-1 bg-phase-canvas items-center justify-center p-10">
+        <Text className="text-phase-danger font-bold text-center">{loadError}</Text>
+        <Button
+          variant="outline"
+          onPress={() => void loadDocuments()}
+          className="mt-4 border-phase-danger/30"
+          accessibilityLabel="Retry loading documents"
+        >
+          <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <Box className="flex-1 bg-phase-canvas">
       <VStack className="p-6 gap-6">
@@ -178,6 +208,8 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           </VStack>
           <Button
             onPress={onCreateNew}
+            accessibilityLabel="Create new document"
+            accessibilityHint="Opens the document creation form"
             className="bg-phase-interactive rounded-2xl h-11 px-6 shadow-sm active:scale-95"
           >
             <ButtonText className="font-black text-white">+ New</ButtonText>

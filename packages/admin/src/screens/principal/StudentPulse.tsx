@@ -65,6 +65,9 @@ export const StudentPulse: React.FC<StudentPulseProps> = ({ pulse, atRiskCount, 
             hapticLight();
             onShowAtRisk();
           }}
+          accessibilityRole="button"
+          accessibilityLabel={`${atRiskCount} students at risk`}
+          accessibilityHint="Opens at-risk student details"
           className="flex-1 p-6 rounded-3xl bg-phase-canvas border border-phase-border gap-2.5 shadow-inner active:scale-95 transition-all"
         >
           <HStack className="items-center gap-2">

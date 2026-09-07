@@ -21,7 +21,7 @@ import {
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 
 interface InstitutionalCalendarSectionProps {
   schoolId: string;
@@ -42,6 +42,7 @@ const TYPE_OPTIONS = ['term_start', 'exam', 'holiday', 'event', 'other'];
 type State = {
   events: CalendarEvent[];
   isLoading: boolean;
+  loadError: string | null;
   isAddFormVisible: boolean;
   isSaving: boolean;
   form: {
@@ -55,6 +56,7 @@ type State = {
 type Action =
   | { type: 'SET_EVENTS'; events: CalendarEvent[] }
   | { type: 'SET_LOADING'; isLoading: boolean }
+  | { type: 'SET_LOAD_ERROR'; message: string | null }
   | { type: 'TOGGLE_FORM' }
   | { type: 'UPDATE_FORM'; field: keyof State['form']; value: any }
   | { type: 'RESET_FORM' }
@@ -66,6 +68,8 @@ const calendarReducer = (state: State, action: Action): State => {
       return { ...state, events: action.events, isLoading: false };
     case 'SET_LOADING':
       return { ...state, isLoading: action.isLoading };
+    case 'SET_LOAD_ERROR':
+      return { ...state, loadError: action.message };
     case 'TOGGLE_FORM':
       return { ...state, isAddFormVisible: !state.isAddFormVisible };
     case 'UPDATE_FORM':
@@ -96,6 +100,7 @@ export default function InstitutionalCalendarSection({
   const [state, dispatch] = useReducer(calendarReducer, {
     events: [],
     isLoading: true,
+    loadError: null,
     isAddFormVisible: false,
     isSaving: false,
     form: { title: '', selectedType: 'event', startDate: '', endDate: '' },
@@ -116,15 +121,17 @@ export default function InstitutionalCalendarSection({
     }
   };
 
-  async function fetchEvents() {
+  const fetchEvents = useCallback(async () => {
     try {
       const data = await staffManagementAPI.getUpcomingCalendarEvents(schoolId, 5);
       dispatch({ type: 'SET_EVENTS', events: data ?? [] });
+      dispatch({ type: 'SET_LOAD_ERROR', message: null });
     } catch (err) {
       console.error('InstitutionalCalendar: fetch error', err);
       dispatch({ type: 'SET_LOADING', isLoading: false });
+      dispatch({ type: 'SET_LOAD_ERROR', message: 'Calendar events could not be loaded.' });
     }
-  }
+  }, [schoolId]);
 
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', isLoading: true });
@@ -199,13 +206,30 @@ export default function InstitutionalCalendarSection({
         </VStack>
       )}
 
-      {!state.isLoading && state.events.length === 0 && !state.isAddFormVisible && (
+      {!state.isLoading && state.loadError ? (
+        <VStack className="items-center py-8 gap-4 bg-phase-danger/10 rounded-[24px] border border-phase-danger/20">
+          <Text className="text-[13px] font-bold text-phase-danger text-center">
+            {state.loadError}
+          </Text>
+          <Pressable
+            onPress={() => {
+              dispatch({ type: 'SET_LOADING', isLoading: true });
+              void fetchEvents();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading calendar events"
+            className="px-5 py-3 rounded-2xl bg-phase-danger/10"
+          >
+            <Text className="text-phase-danger font-bold">Try again</Text>
+          </Pressable>
+        </VStack>
+      ) : !state.isLoading && state.events.length === 0 && !state.isAddFormVisible ? (
         <Box className="bg-phase-canvas rounded-[24px] border border-dashed border-phase-border py-10 items-center">
           <Text className="text-[14px] font-bold text-phaseText-muted text-center opacity-60">
             No institutional events scheduled.
           </Text>
         </Box>
-      )}
+      ) : null}
 
       {!state.isLoading &&
         state.events.map((ev, index) => (

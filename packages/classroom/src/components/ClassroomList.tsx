@@ -57,6 +57,7 @@ export default function ClassroomList({
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [fetchMoreError, setFetchMoreError] = useState(false);
   const PAGE_SIZE = 10;
   const toast = useToast();
   const { dismissedSampleIds } = useStore();
@@ -113,29 +114,10 @@ export default function ClassroomList({
             realData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
           }
 
-          // If real data exists, use it and ignore samples
-          if (realData.length > 0) {
-            data = realData;
-            setHasMore(realData.length === PAGE_SIZE);
-          } else {
-            // If no real data, try to show sample if not dismissed
-            let sampleToShow: any = null;
-            if (
-              can('manage', 'TeacherDashboard') ||
-              can('manage', 'StudentDashboard') ||
-              !hasRoleContext
-            ) {
-              sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-c1');
-            } else if (can('manage', 'PrincipalDashboard')) {
-              sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-school-1');
-            }
-
-            if (sampleToShow && !dismissedSampleIds.includes(sampleToShow.id)) {
-              (sampleToShow as any).is_sample = true;
-              data = [sampleToShow];
-            }
-            setHasMore(false);
-          }
+          // Authenticated users must see the authoritative classroom list. An empty
+          // response is a real empty state, not an invitation to enter demo data.
+          data = realData;
+          setHasMore(realData.length === PAGE_SIZE);
 
           setPage(1);
         }
@@ -172,6 +154,7 @@ export default function ClassroomList({
 
     try {
       setIsFetchingMore(true);
+      setFetchMoreError(false);
       const userId = await identityAPI.getMyInternalId();
       if (!userId) return;
 
@@ -193,6 +176,7 @@ export default function ClassroomList({
       setHasMore(newData.length === PAGE_SIZE);
     } catch (err) {
       console.error('[ClassroomList] Error fetching more:', err);
+      setFetchMoreError(true);
     } finally {
       setIsFetchingMore(false);
     }
@@ -342,6 +326,19 @@ export default function ClassroomList({
                 <Box className="items-center py-4">
                   <BrandPulse size={22} accessibilityLabel="Loading more classrooms" />
                 </Box>
+              ) : fetchMoreError ? (
+                <VStack className="items-center gap-2 py-4">
+                  <Text className="text-phaseText-secondary text-xs">
+                    More classrooms could not be loaded.
+                  </Text>
+                  <Pressable
+                    onPress={() => void fetchMore()}
+                    accessibilityRole="button"
+                    accessibilityLabel="Retry loading more classrooms"
+                  >
+                    <Text className="text-templeGold font-bold text-xs">Try again</Text>
+                  </Pressable>
+                </VStack>
               ) : (
                 <Box className="h-20" />
               )

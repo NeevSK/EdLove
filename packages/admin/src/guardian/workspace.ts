@@ -42,18 +42,18 @@ function defineGuardianCapability(
 
 export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, GuardianCapabilityMeta> = {
   workspace_switcher: defineGuardianCapability('workspace_switcher', {
-    title: 'Workspace, Switcher',
+    title: 'Workspace Switcher',
     description:
-      'Some, guardians, also, carry, founder, principal, teacher, or, student, responsibilities, and, need a, clean, handoff, across, workspaces.',
+      'Some guardians also carry founder, principal, teacher, or student responsibilities and need a clean handoff across workspaces.',
     zone: 'institution',
     cadence: 'daily',
     scope: 'school_bridge',
     status: 'live',
   }),
   family_snapshot: defineGuardianCapability('family_snapshot', {
-    title: 'Family, Snapshot',
+    title: 'Family Snapshot',
     description:
-      'A, warm, orientation, layer, that, shows, how, many, children, are, linked, what, needs, attention, today, and, where, the, school-family, bridge, is, active.',
+      'A warm orientation layer that shows how many children are linked, what needs attention today, and where the school-family bridge is active.',
     zone: 'today',
     cadence: 'daily',
     scope: 'family',
@@ -62,61 +62,61 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
   children: defineGuardianCapability('children', {
     title: 'Children',
     description:
-      'Linked, learners, with, just, enough, daily, context, to, move from care, into, action, without, exposing, unnecessary, school, internals.',
+      'Linked learners with enough daily context to move from care into action without exposing unnecessary school internals.',
     zone: 'work',
     cadence: 'daily',
     scope: 'student_linked',
     status: 'live',
   }),
   attendance_watch: defineGuardianCapability('attendance_watch', {
-    title: 'Attendance, Watch',
+    title: 'Attendance Watch',
     description:
-      'A, lightweight, family-facing, read, on, presence, absence, and, lateness, so, school, attendance, becomes a, shared, rhythm.',
+      'A lightweight family-facing view of presence, absence, and lateness, so school attendance becomes a shared rhythm.',
     zone: 'today',
     cadence: 'daily',
     scope: 'student_linked',
     status: 'live',
   }),
   learning_pulse: defineGuardianCapability('learning_pulse', {
-    title: 'Learning, Pulse',
+    title: 'Learning Pulse',
     description:
-      'Recent, grades, and, upcoming, assignments, translated, into a, guardian-friendly, pulse, rather, than a, full, academic, control, room.',
+      'Recent grades and upcoming assignments translated into a guardian-friendly pulse rather than a full academic control room.',
     zone: 'work',
     cadence: 'weekly',
     scope: 'student_linked',
     status: 'live',
   }),
   school_feed: defineGuardianCapability('school_feed', {
-    title: 'School, Feed',
+    title: 'School Feed',
     description:
-      'Announcements, notices, and, family-facing, signals from the, school, held, in, one, place, instead, of, scattered, channels.',
+      'Announcements, notices, and family-facing signals from the school held in one place instead of scattered channels.',
     zone: 'today',
     cadence: 'daily',
     scope: 'school_bridge',
     status: 'live',
   }),
   upcoming_events: defineGuardianCapability('upcoming_events', {
-    title: 'Upcoming, Events',
+    title: 'Upcoming Events',
     description:
-      'School, events, that, families, need, to, plan, around, from meetings and, cultural, moments, to, academic, checkpoints.',
+      'School events that families need to plan around, from meetings and cultural moments to academic checkpoints.',
     zone: 'outlook',
     cadence: 'periodic',
     scope: 'school_bridge',
     status: 'live',
   }),
   communication_bridge: defineGuardianCapability('communication_bridge', {
-    title: 'Communication, Bridge',
+    title: 'Communication Bridge',
     description:
-      'A, guided, bridge, into, community, and, school, channels, so, families, can, stay, connected, without, hunting, through, the, product.',
+      'A guided bridge into community and school channels, so families can stay connected without hunting through the product.',
     zone: 'institution',
     cadence: 'periodic',
     scope: 'school_bridge',
     status: 'live',
   }),
   visibility_boundaries: defineGuardianCapability('visibility_boundaries', {
-    title: 'Visibility, Boundaries',
+    title: 'Visibility Boundaries',
     description:
-      'A, quiet, reminder, that, the, guardian, workspace, is, intentionally, scoped, around, linked, children, and, family-safe, visibility.',
+      'A quiet reminder that the guardian workspace is intentionally scoped around linked children and family-safe visibility.',
     zone: 'private',
     cadence: 'horizon',
     scope: 'family',

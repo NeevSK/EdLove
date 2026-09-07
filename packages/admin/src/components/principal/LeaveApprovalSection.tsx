@@ -10,9 +10,10 @@ import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core/api/client';
 
 import { Check, Clock, FileText, X } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface LeaveApprovalSectionProps {
   schoolId: string;
@@ -23,6 +24,8 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
   const [loading, setLoading] = useState(true);
   const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const { showToast } = useSanctuaryToast();
 
   const getLeaveTypeColorClass = (type: string): string => {
     const t = type.toLowerCase();
@@ -32,16 +35,18 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
     return 'bg-phase-warning';
   };
 
-  async function fetchLeaves() {
+  const fetchLeaves = useCallback(async () => {
     try {
       const data = await staffManagementAPI.getPendingLeaves(schoolId);
       setLeaves(data);
+      setLoadError(null);
     } catch (err) {
       console.error('LeaveApprovalSection: fetch error', err);
+      setLoadError('Leave requests could not be loaded.');
     } finally {
       setLoading(false);
     }
-  }
+  }, [schoolId]);
 
   useEffect(() => {
     setLoading(true);
@@ -56,6 +61,7 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
       await fetchLeaves();
     } catch (err) {
       console.error('LeaveApprovalSection: decision error', err);
+      showToast({ message: 'Leave decision could not be saved. Please try again.', type: 'error' });
     } finally {
       setProcessingId(null);
     }
@@ -85,7 +91,24 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
         </VStack>
       )}
 
-      {!loading && leaves.length === 0 && (
+      {!loading && loadError && (
+        <VStack className="items-center py-8 gap-4 bg-phase-danger/10 rounded-[24px] border border-phase-danger/20">
+          <Text className="text-[13px] font-bold text-phase-danger text-center">{loadError}</Text>
+          <Pressable
+            onPress={() => {
+              setLoading(true);
+              void fetchLeaves();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading leave requests"
+            className="px-5 py-3 rounded-2xl bg-phase-danger/10"
+          >
+            <Text className="text-phase-danger font-bold">Try again</Text>
+          </Pressable>
+        </VStack>
+      )}
+
+      {!loading && !loadError && leaves.length === 0 && (
         <VStack className="items-center py-10 gap-4 bg-phase-canvas rounded-[24px] border border-dashed border-phase-border">
           <Box className="w-14 h-14 rounded-full bg-phase-success/10 items-center justify-center border border-phase-success/20">
             <Icon as={Check} size="sm" className="text-phase-success" />

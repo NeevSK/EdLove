@@ -11,6 +11,8 @@ export interface EssentialStartupDependencies {
   initializeDeviceAccounts: () => Promise<unknown>;
 }
 
+const ESSENTIAL_STARTUP_TIMEOUT_MS = 10_000;
+
 /**
  * Race a promise against a deadline.
  *
@@ -27,9 +29,14 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
     promise,
     new Promise<T>((_, reject) =>
       setTimeout(
-        () => reject(new Error(`[boot] ${label} timed out after ${ms}ms (connected-mode bridge may still be handshaking)`)),
+        () =>
+          reject(
+            new Error(
+              `[boot] ${label} timed out after ${ms}ms (connected-mode bridge may still be handshaking)`,
+            ),
+          ),
         ms,
-      )
+      ),
     ),
   ]);
 }
@@ -41,9 +48,9 @@ export async function completeEssentialStartup({
   initializeDeviceAccounts,
 }: EssentialStartupDependencies): Promise<void> {
   console.log('[boot trace] 1. Calling bootstrapPlatform()...');
-  // 10 s deadline — generous enough for Argent / agent-device connected-mode
-  // bridge handshake, but converts an infinite stall into a retryable failure.
-  await withTimeout(bootstrapPlatform(), 10_000, 'bootstrapPlatform');
+  // The deadline is generous enough for the connected-mode bridge handshake,
+  // but every critical stage must eventually surface the retry UI.
+  await withTimeout(bootstrapPlatform(), ESSENTIAL_STARTUP_TIMEOUT_MS, 'bootstrapPlatform');
   console.log('[boot trace] 2. bootstrapPlatform() done. Checking isRuntimeRegistered()...');
 
   if (!isRuntimeRegistered()) {
@@ -51,10 +58,18 @@ export async function completeEssentialStartup({
   }
 
   console.log('[boot trace] 3. Loading catalog via dynamic import...');
-  const { registerAppCatalog } = await loadCatalog();
+  const { registerAppCatalog } = await withTimeout(
+    loadCatalog(),
+    ESSENTIAL_STARTUP_TIMEOUT_MS,
+    'loadCatalog',
+  );
   console.log('[boot trace] 4. Catalog loaded. Registering catalog...');
   registerAppCatalog();
   console.log('[boot trace] 5. Initializing device account scope...');
-  await initializeDeviceAccounts();
+  await withTimeout(
+    initializeDeviceAccounts(),
+    ESSENTIAL_STARTUP_TIMEOUT_MS,
+    'initializeDeviceAccounts',
+  );
   console.log('[boot trace] 6. Essential startup completed successfully!');
 }

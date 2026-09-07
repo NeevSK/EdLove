@@ -22,6 +22,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +37,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
   const showToast = useStore((state) => state.showToast);
   const user = useStore((state) => state.user);
   // Resilient Data Hook
-  const { resources, isLoading, setResources } = useResources(classroomId);
+  const { resources, isLoading, error: resourceError, refreshData, setResources } = useResources(classroomId);
   const [filterType, setFilterType] = useState<'all' | 'link' | 'pdf' | 'note'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
   // Form State
@@ -78,7 +79,12 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
         setResources((prev) => prev.map((r) => (r.id === id ? { ...r, is_pinned: isPinned } : r)));
         hapticLight();
       },
-      onError: (_error: unknown) => {
+      onError: (_error: unknown, { id, isPinned }) => {
+        setResources((prev) =>
+          prev.map((resource) =>
+            resource.id === id ? { ...resource, is_pinned: !isPinned } : resource,
+          ),
+        );
         showToast('Failed to update pin', 'error');
       },
     },
@@ -88,15 +94,26 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
       return api.resources.delete(id);
     },
     {
-      onMutate: (id) => {
+      onSuccess: (_result, id) => {
         setResources((prev) => prev.filter((r) => r.id !== id));
-        hapticLight();
-      },
-      onSuccess: () => {
+        hapticSuccess();
         showToast('Resource removed', 'success');
       },
     },
   );
+  const handleDeleteResource = async (resource: ClassroomResource) => {
+    const confirmed = await confirmAction(
+      'Delete resource?',
+      `Remove “${resource.title}” from this classroom? This cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteMutation.mutate(resource.id);
+    } catch {
+      showToast('Could not remove resource. Please try again.', 'error');
+    }
+  };
   const handleOpenResource = (resource: ClassroomResource) => {
     if (resource.url) {
       openExternalURL(resource.url, {
@@ -151,6 +168,9 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             <Pressable
               key={ft}
               onPress={() => setFilterType(ft)}
+              accessibilityRole="button"
+              accessibilityLabel={`Show ${ft === 'all' ? 'all resources' : `${ft} resources`}`}
+              accessibilityState={{ selected: filterType === ft }}
               className={`px-6 py-2 rounded-full border items-center justify-center h-10 ${filterType === ft ? 'bg-templeGold border-templeGold' : 'border-phase-canvas bg-phase-surface'}`}
             >
               <Text
@@ -166,6 +186,19 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
       {/* Content List */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <VStack className="px-4 pb-24 gap-4 pt-2">
+          {resourceError ? (
+            <Box className="rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+              <HStack className="items-center gap-3">
+                <Text className="flex-1 text-sm text-phaseText-primary" accessibilityRole="alert">
+                  {resourceError} Showing the last available resources.
+                </Text>
+                <Button variant="outline" size="sm" onPress={() => void refreshData()} accessibilityLabel="Retry loading resources">
+                  <ButtonText>Retry</ButtonText>
+                </Button>
+              </HStack>
+            </Box>
+          ) : null}
+
           {filteredResources.length === 0 && !isLoading && (
             <Box className="items-center py-20 bg-phase-surface/30 rounded-generous border border-dashed border-phase-canvas/50 mx-2">
               <Text className="text-phaseText-secondary font-medium">No resources found.</Text>
@@ -177,6 +210,9 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
               key={resource.id}
               onPress={() => handleOpenResource(resource)}
               onLongPress={() => resource.url && handleOpenResourceOptions(resource)}
+              accessibilityRole="button"
+              accessibilityLabel={`${resource.title}${resource.is_pinned ? ', pinned' : ''}`}
+              accessibilityHint={resource.url ? 'Opens the shared resource. Long press for link options.' : 'Opens the resource details.'}
               className={`p-4 bg-phase-surface rounded-generous border border-phase-canvas shadow-sm overflow-hidden ${resource.is_pinned ? 'border-l-4 border-l-templeGold' : ''}`}
             >
               <HStack className="justify-between items-center">
@@ -236,10 +272,13 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                       />
                     </Pressable>
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`Delete ${resource.title}`}
+                      accessibilityHint="Permanently removes this resource"
                       className="p-3"
                       onPress={(e: any) => {
                         e.stopPropagation();
-                        deleteMutation.mutate(resource.id);
+                        void handleDeleteResource(resource);
                       }}
                     >
                       <Icon as={Trash2} size="sm" className="text-emberRed" />

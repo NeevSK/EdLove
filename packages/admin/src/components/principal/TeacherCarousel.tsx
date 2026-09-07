@@ -9,7 +9,17 @@
  */
 
 import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core/api/client';
-import { Box, HStack, Pressable, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  Button,
+  ButtonText,
+  HStack,
+  Pressable,
+  ScrollView,
+  Spinner,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
 
@@ -60,6 +70,9 @@ function TeacherCard({ item, onTap }: { item: TeacherCarouselItem; onTap?: () =>
         hapticLight();
         onTap?.();
       }}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.fullName}, ${formatRole(item.capacity)}, ${statusLabel}`}
+      accessibilityHint="Opens teacher details"
       className="w-[170px] bg-phase-surface rounded-[32px] border border-phase-border p-6 items-center justify-center gap-5 active:scale-95 transition-all shadow-sm"
     >
       {/* Avatar Container */}
@@ -106,17 +119,21 @@ function TeacherCard({ item, onTap }: { item: TeacherCarouselItem; onTap?: () =>
 export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarouselProps) {
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState<TeacherCarouselItem[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     let mounted = true;
     async function load() {
       try {
         setLoading(true);
+        setLoadError(null);
         const data = await staffManagementAPI.getTeacherCarousel(schoolId);
         if (!mounted) return;
         setTeachers(data);
       } catch (err) {
         console.error('TeacherCarousel: load error', err);
+        if (mounted) setLoadError('Teacher directory could not be loaded.');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -125,7 +142,7 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
     return () => {
       mounted = false;
     };
-  }, [schoolId]);
+  }, [schoolId, retryKey]);
 
   if (loading) {
     return (
@@ -137,6 +154,22 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
           <Spinner className="text-phase-interactive opacity-50" />
         </Box>
       </HStack>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <Box className="mx-5 p-8 bg-phase-surface rounded-[32px] border border-phase-danger/30 items-center justify-center gap-3">
+        <Text className="text-sm font-bold text-phaseText-primary text-center">Directory unavailable</Text>
+        <Text className="text-xs text-phaseText-secondary text-center">{loadError}</Text>
+        <Button
+          variant="outline"
+          onPress={() => setRetryKey((key) => key + 1)}
+          accessibilityLabel="Retry loading teacher directory"
+        >
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </Box>
     );
   }
 

@@ -60,6 +60,7 @@ export default function CreateSchoolModal({
     schoolId: string;
     groupId?: string;
   } | null>(null);
+  const [groupCreationFailed, setGroupCreationFailed] = useState(false);
 
   const isEdit = !!initialData;
 
@@ -69,6 +70,7 @@ export default function CreateSchoolModal({
       setHandle(initialData?.handle ?? '');
       setType(initialData?.type ?? 'mixed');
       setStep('details');
+      setGroupCreationFailed(false);
     }
   }, [isOpen, initialData]);
 
@@ -124,6 +126,7 @@ export default function CreateSchoolModal({
           communityGroupId = group.id;
         } catch (groupErr) {
           console.warn('Failed to create default group:', groupErr);
+          setGroupCreationFailed(true);
         }
 
         hapticSuccess();
@@ -147,6 +150,7 @@ export default function CreateSchoolModal({
     setHandle('');
     setType('mixed');
     setError(null);
+    setGroupCreationFailed(false);
     setStep('details');
     onClose();
   };
@@ -417,10 +421,19 @@ export default function CreateSchoolModal({
                     </HStack>
                     <HStack className="gap-sm items-center">
                       <Icon as={MessageSquare} className="text-sanctuarySaffron" size="sm" />
-                      <Text className="text-sm text-sanctuary-text">Community HQ Created</Text>
+                      <Text className="text-sm text-sanctuary-text">
+                        {groupCreationFailed ? 'Community HQ needs setup' : 'Community HQ Created'}
+                      </Text>
                     </HStack>
                   </VStack>
                 </Box>
+
+                {groupCreationFailed && (
+                  <Text className="text-xs text-sanctuary-error text-center">
+                    The school was created, but its Community HQ could not be set up. You can
+                    continue to the dashboard and try again later.
+                  </Text>
+                )}
 
                 <Text className="text-[13px] text-sanctuary-text-tertiary text-center">
                   You've been assigned as the Principal. You can now invite staff and start building

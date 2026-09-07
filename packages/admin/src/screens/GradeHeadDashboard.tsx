@@ -64,8 +64,9 @@ export default function GradeHeadDashboard({
                         })
                       }
                       size="sm"
+                      isDisabled
                     >
-                      <Text className="text-white font-bold">Assign Relief Teacher</Text>
+                      <Text className="font-bold">Relief assignment unavailable</Text>
                     </SanctuaryButton>
                   </Box>
                 </Box>
@@ -79,13 +80,15 @@ export default function GradeHeadDashboard({
               <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">
                 CLASSES
               </Text>
-              <Text className="font-bold text-xl text-phaseText-primary mt-1">5</Text>
+              <Text className="font-bold text-xl text-phaseText-primary mt-1">—</Text>
+              <Text className="text-xs text-phaseText-secondary mt-1">Roster sync pending</Text>
             </Box>
             <Box className="flex-1 p-4 rounded-xl bg-phase-surface border border-phase-border">
               <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">
                 STUDENTS
               </Text>
-              <Text className="font-bold text-xl text-phaseText-primary mt-1">210</Text>
+              <Text className="font-bold text-xl text-phaseText-primary mt-1">—</Text>
+              <Text className="text-xs text-phaseText-secondary mt-1">Roster sync pending</Text>
             </Box>
           </HStack>
 
@@ -97,6 +100,7 @@ export default function GradeHeadDashboard({
             <SanctuaryButton
               onPress={() => showToast({ message: 'Curriculum pulse is coming soon.', type: 'info' })}
               variant="outline"
+              isDisabled
             >
               <HStack className="gap-2 items-center">
                 <Icon as={BookOpen} size="md" className="text-phaseText-action" />
@@ -106,6 +110,7 @@ export default function GradeHeadDashboard({
             <SanctuaryButton
               onPress={() => showToast({ message: 'Wellbeing reports are coming soon.', type: 'info' })}
               variant="outline"
+              isDisabled
             >
               <HStack className="gap-2 items-center">
                 <Icon as={Users} size="md" className="text-phaseText-action" />

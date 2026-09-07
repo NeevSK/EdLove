@@ -22,7 +22,12 @@ export const LegacyDashboard = ({ schoolId, onBack }: LegacyDashboardProps) => {
       >
         <HStack className="items-center justify-between gap-md">
           <HStack className="items-center gap-md">
-            <Pressable onPress={onBack}>
+            <Pressable
+              onPress={onBack}
+              accessibilityRole="button"
+              accessibilityLabel="Back to principal workspace"
+              accessibilityHint="Returns to the previous admin view"
+            >
               <Box
                 className="p-sm rounded-full border"
                 style={{

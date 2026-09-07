@@ -147,6 +147,10 @@ function WorkspaceSwitcherSurface({
           key={target.id}
           onPress={() => onSelectTarget(target)}
           disabled={!target.enabled}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${target.title}`}
+          accessibilityHint={target.enabled ? 'Switches to this workspace' : target.reason || 'This workspace is unavailable'}
+          accessibilityState={{ disabled: !target.enabled }}
           className="active:opacity-80"
         >
           <Box
@@ -182,7 +186,13 @@ function StudentTile({
   const nextAssignment = student.upcomingAssignments[0];
 
   return (
-    <Pressable onPress={() => onOpenStudent(student)} className="active:opacity-80">
+    <Pressable
+      onPress={() => onOpenStudent(student)}
+      accessibilityRole="button"
+      accessibilityLabel={`Open learner profile for ${student.name}`}
+      accessibilityHint="Shows linked progress, grades, and school rhythm"
+      className="active:opacity-80"
+    >
       <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
         <VStack className="gap-3">
           <VStack className="gap-1">
@@ -199,15 +209,15 @@ function StudentTile({
 
           <Box className="rounded-2xl bg-silk px-4 py-3">
             <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
-              Next, step
+              Next step
             </Text>
             <Text className="mt-1 text-[13px] font-semibold text-phaseText-primary">
-              {nextAssignment ? nextAssignment.title : 'Open, the, learner, room'}
+              {nextAssignment ? nextAssignment.title : 'Open the learner room'}
             </Text>
             <Text className="mt-1 text-[12px] text-phaseText-secondary">
               {nextAssignment
                 ? `${nextAssignment.subject} - due ${formatDateLabel(nextAssignment.dueDate)}`
-                : 'See, linked progress, grades, and, school rhythm from one, place.'}
+                : 'See linked progress, grades, and school rhythm from one place.'}
             </Text>
           </Box>
         </VStack>
@@ -224,7 +234,13 @@ function NotificationTile({
   onOpenNotification: (notification: GuardianNotification) => void;
 }) {
   return (
-    <Pressable onPress={() => onOpenNotification(notification)} className="active:opacity-80">
+    <Pressable
+      onPress={() => onOpenNotification(notification)}
+      accessibilityRole="button"
+      accessibilityLabel={`${notification.isRead ? '' : 'Unread '}notification: ${notification.title}`}
+      accessibilityHint="Opens the school notification"
+      className="active:opacity-80"
+    >
       <Box
         className={`rounded-2xl border px-4 py-3 ${notification.isRead ? 'border-starlightGray/15 bg-silk' : 'border-phase-primary/20 bg-phase-primary/5'}`}
       >
@@ -248,7 +264,13 @@ function EventTile({
   onOpenEvent: (event: SchoolEvent) => void;
 }) {
   return (
-    <Pressable onPress={() => onOpenEvent(event)} className="active:opacity-80">
+    <Pressable
+      onPress={() => onOpenEvent(event)}
+      accessibilityRole="button"
+      accessibilityLabel={`Open event: ${event.title}`}
+      accessibilityHint="Opens event details"
+      className="active:opacity-80"
+    >
       <Box className="rounded-2xl border border-starlightGray/20 bg-sacredWhite px-4 py-3">
         <HStack className="items-center gap-3">
           <Box className="w-14 rounded-2xl bg-phase-warning/10 px-3 py-2">
@@ -288,7 +310,13 @@ function ActionTile({
   onPress: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} className="active:opacity-80">
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={cta}
+      accessibilityHint={`Opens ${title}`}
+      className="active:opacity-80"
+    >
       <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
         <HStack className="items-start gap-3">
           <Box className="rounded-2xl bg-phase-warning/10 p-3">
@@ -354,9 +382,9 @@ export function useGuardianWorkspaceCanvasSurfaces({
         defaultZone: 'today',
         defaultOrder: 10,
         title: 'Family, Snapshot',
-        subtitle: 'What, matters, most for the, household, today',
+        subtitle: 'What matters most for the household today',
         summary:
-          'A, quick, family-facing, orientation, so, the, guardian, sees, who, is, linked, what, the, school, is, saying, and, what, is, coming, next.',
+          'A quick family-facing orientation so the guardian sees who is linked, what the school is saying, and what is coming next.',
         temporalLabel: 'Today',
         temporalTone: 'present',
         metadata: [schoolName || 'School, bridge', `${dashboard.students.length} linked, learners`],
@@ -392,7 +420,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         title: 'Children',
         subtitle: 'Linked, learners, at a, glance',
         summary:
-          'Each, learner, tile, carries, only, the, essentials a, guardian, needs, to, step, into, support, without, becoming a, full, academic, operator.',
+          'Each learner tile carries only the essentials a guardian needs to step into support without becoming a full academic operator.',
         temporalLabel: 'Daily, care',
         temporalTone: 'present',
         metadata: ['Work', `${dashboard.students.length} learners`],
@@ -420,7 +448,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         title: 'Attendance, Watch',
         subtitle: 'Presence, absence, and, lateness',
         summary:
-          'Attendance, becomes a, shared, family-school, rhythm, when, the, guardian, can, see, patterns, early, and, respond, with, care.',
+          'Attendance becomes a shared family-school rhythm when the guardian can see patterns early and respond with care.',
         temporalLabel: 'Daily, signal',
         temporalTone: 'present',
         metadata: ['Today', 'Presence'],
@@ -531,7 +559,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         title: 'School, Feed',
         subtitle: 'Announcements, and, notices',
         summary:
-          'Families, need a, stable, school, voice, they, can, trust, especially, when, the, product, is, bridging, school, and, home, life.',
+          'Families need a stable school voice they can trust, especially when the product is bridging school and home life.',
         temporalLabel: 'Live, feed',
         temporalTone: 'present',
         metadata: ['Today', 'School, signal'],
@@ -559,7 +587,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         title: 'Upcoming, Events',
         subtitle: 'Dates, families, should, not, miss',
         summary:
-          'This, lane, helps, the, family, look a, little, ahead, especially for school, meetings, and, events, that, affect, home, planning.',
+          'This lane helps the family look ahead, especially for school meetings and events that affect home planning.',
         temporalLabel: 'Look, ahead',
         temporalTone: 'future',
         metadata: ['Outlook', 'Calendar, bridge'],
@@ -581,9 +609,9 @@ export function useGuardianWorkspaceCanvasSurfaces({
         defaultZone: 'institution',
         defaultOrder: 70,
         title: 'Communication, Bridge',
-        subtitle: 'Step, into, the, right, family-school, channel',
+        subtitle: 'Step into the right family-school channel',
         summary:
-          'Instead, of, making, guardians, hunt, through, the, app, the, bridge, points, them, into, the, right, school, community, and, resource, spaces.',
+          'Instead of making guardians hunt through the app, the bridge points them into the right school, community, and resource spaces.',
         temporalLabel: 'Bridge',
         temporalTone: 'neutral',
         metadata: ['Institution', 'Family-school, bridge'],
@@ -620,7 +648,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         title: 'Visibility, Boundaries',
         subtitle: 'Why, this, workspace, is, intentionally, scoped',
         summary:
-          'A, family, workspace, should, feel, safe. This, surface, explains, that, the, guardian, view, follows, linked, learners, and, avoids, unnecessary, institutional, detail.',
+          'A family workspace should feel safe. This surface explains that the guardian view follows linked learners and avoids unnecessary institutional detail.',
         temporalLabel: 'Quiet, layer',
         temporalTone: 'neutral',
         metadata: ['Private', 'Hidden, by default'],
@@ -763,6 +791,9 @@ export function GuardianWorkspaceCanvas({
           <HStack className="gap-3 flex-wrap">
             <Pressable
               onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
+              accessibilityRole="button"
+              accessibilityLabel={typedSurface.pinned ? `Unpin ${typedSurface.title}` : `Pin ${typedSurface.title}`}
+              accessibilityState={{ selected: typedSurface.pinned }}
               className="active:opacity-80"
             >
               <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
@@ -773,18 +804,25 @@ export function GuardianWorkspaceCanvas({
             </Pressable>
             <Pressable
               onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
+              accessibilityRole="button"
+              accessibilityLabel={`Move ${typedSurface.title} to ${nextZone}`}
               className="active:opacity-80"
             >
               <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
-                <Text className="text-[12px] font-bold text-phaseText-primary">
-                  Move, to {nextZone}
+              <Text className="text-[12px] font-bold text-phaseText-primary">
+                  Move to {nextZone}
                 </Text>
               </Box>
             </Pressable>
             {canOpenRoom ? (
-              <Pressable onPress={() => onOpenSurface(typedSurface)} className="active:opacity-80">
+              <Pressable
+                onPress={() => onOpenSurface(typedSurface)}
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${typedSurface.title} room`}
+                className="active:opacity-80"
+              >
                 <Box className="rounded-full bg-phase-warning px-4 py-2">
-                  <Text className="text-[12px] font-bold text-phaseText-primary">Open, room</Text>
+                  <Text className="text-[12px] font-bold text-phaseText-primary">Open room</Text>
                 </Box>
               </Pressable>
             ) : null}

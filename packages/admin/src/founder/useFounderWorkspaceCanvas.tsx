@@ -121,7 +121,14 @@ function SurfaceLauncher({
           <Text className="text-[12px] text-phaseText-secondary">{copy}</Text>
         </VStack>
       </HStack>
-      <Pressable disabled={disabled} onPress={onPress} className="self-start active:opacity-80">
+      <Pressable
+        disabled={disabled}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={actionLabel}
+        accessibilityState={{ disabled }}
+        className="self-start active:opacity-80"
+      >
         <Box
           className={`rounded-full border px-4 py-2 ${disabled ? 'border-starlightGray/20 bg-phase-primary/5' : 'border-starlightGray/30 bg-phase-primary'}`}
         >
@@ -266,8 +273,8 @@ function InstitutionRosterSurface({
       {schools.length === 0 ? (
         <Box className="rounded-2xl border border-dashed border-starlightGray/30 bg-silk p-5">
           <Text className="text-[12px] text-phaseText-secondary">
-            No, institutions, are, registered, yet. Use, the, creation, runway, to, begin, the,
-            founder, workspace.
+            No institutions are registered yet. Use the creation runway to begin the founder
+            workspace.
           </Text>
         </Box>
       ) : null}
@@ -328,9 +335,9 @@ function BridgeSurface({
     return (
       <SurfaceLauncher
         icon={Building2}
-        title="No, institution selected, yet"
-        copy="Once, at least, one school, exists, this, bridge becomes, the clean, founder path, into the, deeper operational, rooms."
-        actionLabel="Create, an institution, first"
+        title="No institution selected yet"
+        copy="Once at least one school exists, this bridge becomes the clean founder path into the deeper operational rooms."
+        actionLabel="Create an institution first"
         onPress={() => undefined}
         disabled
       />
@@ -341,14 +348,14 @@ function BridgeSurface({
     <VStack className="gap-3">
       <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
-          Primary, institution
+          Primary institution
         </Text>
         <Text className="mt-1 text-[18px] font-bold text-phaseText-primary">
           {primarySchool.name}
         </Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
-          Enter, the founder, view for cross-institution, stewardship, or, drop into, principal
-          operations, when you, need the, school room, itself.
+          Enter the founder view for cross-institution stewardship, or drop into principal
+          operations when you need the school room itself.
         </Text>
       </Box>
       <HStack className="gap-3">
@@ -519,7 +526,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 10,
         subtitle: 'Scale, and, health',
         summary:
-          'A, founder-facing, read, of, the, living, platform: institutions, people, and, active, movement, this, week.',
+          'A founder-facing view of the living platform: institutions, people, and active movement this week.',
         temporalLabel: 'Today',
         temporalTone: 'present',
         metadata: ['Daily', 'Platform'],
@@ -541,7 +548,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 18,
         subtitle: 'People, and, institution, coverage',
         summary:
-          'A, founder, needs, visibility, into, the, operating, topology, not, just a, list, of, schools.',
+          'A founder needs visibility into the operating topology, not just a list of schools.',
         temporalLabel: 'Weekly, structure',
         temporalTone: 'neutral',
         metadata: ['Work', 'Topology'],
@@ -552,7 +559,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 20,
         subtitle: 'Institution, entry, points',
         summary:
-          'Keep, the, active, institution, list, visible, so, founder, attention, can, move from platform-scale, stewardship, into, specific, schools, without, losing, orientation.',
+          'Keep the active institution list visible so founder attention can move from platform-scale stewardship into specific schools without losing orientation.',
         temporalLabel: `${schools.length} institutions`,
         temporalTone: 'neutral',
         metadata: ['Work', 'Institutional'],
@@ -581,7 +588,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 30,
         subtitle: 'Launch, and, seed',
         summary:
-          'Use, this, runway, when, the, founder, is, creating new institutions, or, seeding, the, next, structural, unit, in, the, ecology.',
+          'Use this runway when the founder is creating new institutions or seeding the next structural unit in the ecology.',
         temporalLabel: canCreateSchool ? 'Launch, ready' : 'Restricted',
         temporalTone: canCreateSchool ? 'future' : 'neutral',
         metadata: ['Periodic', 'Platform, creation'],
@@ -601,7 +608,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 40,
         subtitle: 'Deeper, school, rooms',
         summary:
-          'The, founder, canvas, should, stay, compact. Enter, founder, school, or, principal, operations, only, when, the, work, needs a, deeper, room.',
+          'The founder canvas should stay compact. Enter founder, school, or principal operations only when the work needs a deeper room.',
         temporalLabel: primarySchool ? 'Room, bridge' : 'Awaiting, first, institution',
         temporalTone: primarySchool ? 'neutral' : 'future',
         metadata: ['Work', 'Drill-in, path'],
@@ -618,7 +625,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 50,
         subtitle: 'Posts, echoes, and, movement',
         summary:
-          'Read, the, shared, community, signal, at, founder, scale, without, collapsing, it, into, the, institutional, work, lane.',
+          'Read the shared community signal at founder scale without collapsing it into the institutional work lane.',
         temporalLabel: 'Weekly, read',
         temporalTone: 'future',
         metadata: ['Outlook', 'Commons'],
@@ -629,7 +636,7 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultOrder: 55,
         subtitle: 'Mood, and, ecosystem, tone',
         summary:
-          'Founder-scale, wellbeing, belongs, in, the, workspace as governance, signal, distinct from personal, Self, surfaces.',
+          'Founder-scale wellbeing belongs in the workspace as a governance signal, distinct from personal Self surfaces.',
         temporalLabel: 'Weekly, tone',
         temporalTone: 'future',
         metadata: ['Outlook', 'Wellbeing'],
@@ -644,7 +651,7 @@ export function useFounderWorkspaceCanvasSurfaces({
           defaultOrder: 60,
           subtitle: 'Stocks, and, requests',
           summary:
-            'Expose, global, resource, pressure, only, when, the, inventory, capability, family, is, actually, enabled.',
+            'Expose global resource pressure only when the inventory capability family is actually enabled.',
           temporalLabel: 'Flagged, live',
           temporalTone: 'future',
           metadata: ['Outlook', 'Feature-gated'],
@@ -660,7 +667,7 @@ export function useFounderWorkspaceCanvasSurfaces({
           defaultOrder: 70,
           subtitle: 'Resources, and, verification',
           summary:
-            'Show, the, knowledge, layer, only, when, the, library, management, capability, is, enabled for the, current, environment.',
+            'Show the knowledge layer only when the library management capability is enabled for the current environment.',
           temporalLabel: 'Flagged, live',
           temporalTone: 'future',
           metadata: ['Outlook', 'Feature-gated'],
@@ -778,6 +785,9 @@ export function FounderWorkspaceCanvas({
           <HStack className="flex-wrap gap-3">
             <Pressable
               onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
+              accessibilityRole="button"
+              accessibilityLabel={typedSurface.pinned ? `Unpin ${typedSurface.title}` : `Pin ${typedSurface.title}`}
+              accessibilityHint="Changes this surface's shortcut priority"
               className="active:opacity-80"
             >
               <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
@@ -788,6 +798,9 @@ export function FounderWorkspaceCanvas({
             </Pressable>
             <Pressable
               onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
+              accessibilityRole="button"
+              accessibilityLabel={`Move ${typedSurface.title} to ${nextZone}`}
+              accessibilityHint="Moves this surface to the next workspace zone"
               className="active:opacity-80"
             >
               <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">

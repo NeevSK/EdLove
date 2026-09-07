@@ -3,6 +3,8 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { BookOpen, Clock, Zap } from '@repo/ui/icons';
 import {
   Box,
+  Button,
+  ButtonText,
   Heading,
   HStack,
   Icon,
@@ -13,7 +15,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GradeProgress {
@@ -27,37 +29,11 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();
   const [progress, setProgress] = useState<GradeProgress[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const setMockData = () => {
-    setProgress([
-      {
-        grade: 'Grade 6',
-        coverage: 45,
-        is_reform: true,
-        last_updated: new Date().toISOString(),
-      },
-      {
-        grade: 'Grade 10',
-        coverage: 65,
-        is_reform: false,
-        last_updated: new Date().toISOString(),
-      },
-      {
-        grade: 'Grade 12',
-        coverage: 30,
-        is_reform: false,
-        last_updated: new Date().toISOString(),
-      },
-      {
-        grade: 'Grade 1',
-        coverage: 80,
-        is_reform: true,
-        last_updated: new Date().toISOString(),
-      },
-    ]);
-  };
-
-  const fetchCurriculumProgress = async () => {
+  const fetchCurriculumProgress = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from('curriculum_progress')
@@ -67,16 +43,18 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
 
       if (error) {
         console.error('Error fetching curriculum progress:', error);
-        setMockData();
+        setLoadError('Curriculum progress could not be loaded.');
+        return;
       } else {
         setProgress(data || []);
       }
-    } catch (_err) {
-      setMockData();
+    } catch (err) {
+      console.error('Error fetching curriculum progress:', err);
+      setLoadError('Curriculum progress could not be loaded.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [schoolId]);
 
   useEffect(() => {
     fetchCurriculumProgress();
@@ -87,6 +65,24 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
       <Box className="p-10 items-center justify-center">
         <Spinner className="text-phase-interactive" />
       </Box>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <VStack className="gap-4 bg-phase-surface rounded-[32px] p-6 border border-phase-danger/30">
+        <Heading className="text-[17px] font-black text-phaseText-primary tracking-tight">
+          {t('principal.pulse.title', 'Curriculum Pulse')}
+        </Heading>
+        <Text className="text-sm text-phaseText-secondary">{loadError}</Text>
+        <Button
+          variant="outline"
+          onPress={() => void fetchCurriculumProgress()}
+          accessibilityLabel="Retry loading curriculum progress"
+        >
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </VStack>
     );
   }
 
@@ -112,7 +108,12 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
       </VStack>
 
       <VStack className="gap-6">
-        {progress.map((item) => (
+        {progress.length === 0 ? (
+          <Text className="text-sm text-phaseText-secondary">
+            No curriculum progress has been recorded yet.
+          </Text>
+        ) : (
+          progress.map((item) => (
           <VStack key={item.grade} className="gap-3">
             <HStack className="justify-between items-center">
               <HStack className="gap-2 items-center">
@@ -144,7 +145,8 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
               </Text>
             </HStack>
           </VStack>
-        ))}
+          ))
+        )}
       </VStack>
 
       <Box className="p-5 bg-phase-canvas rounded-[20px] border border-phase-border shadow-inner mt-2">

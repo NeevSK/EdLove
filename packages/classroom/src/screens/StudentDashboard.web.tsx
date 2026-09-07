@@ -28,7 +28,7 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
   const isGuest = useIsGuest();
   const { isPastView } = useTemporalStore();
   const _colors = useThemedColors();
-  const { isDemoExperience, stats } = useStudentWorkspaceData(forceDemo);
+  const { isDemoExperience, stats, hasDataError } = useStudentWorkspaceData(forceDemo);
 
   useRegisterFAB({
     tabType: 'classroom',
@@ -40,6 +40,7 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
     isPastView,
     isDemoExperience,
     stats,
+    hasDataError,
     onOpenLibrary: () => router.push('/library'),
     onOpenCommunity: () => router.push('/community'),
     onOpenRewards: () => {
@@ -126,6 +127,10 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
                 <HStack className="flex-wrap gap-2">
                   <Pressable
                     onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
+                    accessibilityRole="button"
+                    accessibilityLabel={resolved.pinned ? `Unpin ${resolved.title}` : `Pin ${resolved.title}`}
+                    accessibilityHint="Changes whether this surface stays in your pinned workspace"
+                    accessibilityState={{ selected: resolved.pinned }}
                     className="rounded-full border border-phase-border/40 bg-phase-surface-secondary px-4 py-2"
                   >
                     <Text className="text-xs font-semibold text-phase-text-primary">
@@ -140,9 +145,12 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
                           ? 'today'
                           : resolved.zone === 'today'
                             ? 'private'
-                            : 'work',
+                        : 'work',
                       )
                     }
+                    accessibilityRole="button"
+                    accessibilityLabel={`Move ${resolved.title} to another workspace zone`}
+                    accessibilityHint="Cycles this surface through your workspace zones"
                     className="rounded-full border border-phase-border/40 bg-phase-surface-secondary px-4 py-2"
                   >
                     <Text className="text-xs font-semibold text-phase-text-primary">Move zone</Text>

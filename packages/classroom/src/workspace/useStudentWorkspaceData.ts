@@ -43,6 +43,9 @@ export function useStudentWorkspaceData(forceDemo?: boolean) {
     assignments,
     classrooms,
     isDemoExperience,
+    hasDataError: Boolean(
+      registry.stats.error || registry.sanctuaries.error || questsPulse.quests.error || growthPulse.error,
+    ),
     isLoading:
       !isDemoExperience &&
       (registry.isLoading || questsPulse.quests.isLoading || growthPulse.isLoading),

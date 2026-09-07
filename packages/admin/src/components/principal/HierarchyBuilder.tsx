@@ -231,7 +231,12 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         <VStack className="gap-8">
           {/* Header */}
           <VStack className="gap-4">
-            <Pressable onPress={onBack}>
+            <Pressable
+              onPress={onBack}
+              accessibilityRole="button"
+              accessibilityLabel="Back to hierarchy dashboard"
+              accessibilityHint="Returns to the hierarchy dashboard"
+            >
               <HStack className="items-center gap-2 bg-phase-surface self-start px-4 py-2 rounded-full border border-phase-border active:scale-95 transition-all">
                 <Icon as={ArrowLeft} size="xs" className="text-phaseText-primary" />
                 <Text className="text-[12px] font-black text-phaseText-primary uppercase tracking-widest">

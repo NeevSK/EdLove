@@ -389,3 +389,172 @@ compatibility checks or runtime findings as fully trustworthy.
 - Focused mobile tests cover the cache boundary, authenticated sync guard, and
   account-recovery route (6 tests passing). Physical-device switching and
   sign-out remain release validation, not an inferred green result.
+
+### 2026-09-07 — bootstrap route-state authority
+
+- Replaced direct route-input assembly in `SessionRouteGate` with the typed
+  `bootstrapRouteState` adapter. The adapter alone combines auth lifecycle,
+  route path, active capacity, and entitlement snapshot ownership before
+  delegating the decision to the existing core `getAuthRouteTarget` policy.
+- Restored safe offline routing only for a fresh cached entitlement snapshot
+  owned by the restored session; a mismatched account snapshot cannot grant app
+  access. Focused route contracts pass (17 tests).
+
+### 2026-09-07 — auth bootstrap freshness
+
+- Closed the remaining bootstrap race after listener-first ordering: each
+  initial-session read records the auth-event generation under which it began;
+  if an event occurs while it is pending, its result is discarded rather than
+  overwriting the newer session.
+- Added a deterministic hook test that keeps the initial lookup pending,
+  delivers a `TOKEN_REFRESHED` event, then resolves the initial lookup and
+  verifies only the event session was written. Focused tests (8), scoped Biome,
+  and core TypeScript compilation pass. Physical-device sign-in/sign-out
+  remains required release validation.
+
+### 2026-09-07 — deep-link lifecycle boundary
+
+- Made `DeepLinkProvider` the single owner of native cold-start and foreground
+  URL subscription. Pure URL acceptance and generic dispatch now sit outside
+  the React provider; accepted links are dispatched and tracked once.
+- Removed the provider's second listener via `useQRDeepLink`. QR links now use
+  the scanner-kit dispatcher through the same provider listener: authenticated
+  users navigate to `/qr`; signed-out payloads retain the existing pending
+  redemption path.
+- Focused provider/policy tests pass (6), scanner-kit TypeScript compilation
+  passes, and scoped formatting/duplication checks pass. Native callback and QR
+  walkthrough evidence remains required before release.
+
+### 2026-09-07 — web auth callback contract
+
+- Corrected the web magic-link redirect from the bare origin to
+  `/auth/callback`. Added the platform-specific callback route, which delegates
+  to the existing core deep-link manager rather than parsing or exchanging
+  tokens in a screen.
+- Extended the shared bootstrap route contract so the callback can render while
+  unauthenticated, then hands a completed authenticated bootstrap to the
+  existing `/self` route decision. Kernel tests cover the real Supabase OTP
+  request and both callback route states (9 focused core tests passing).
+
+### 2026-09-07 — account-scoped shell admission
+
+- Tightened `/self` admission: an active profile must belong to the restored
+  session, have a non-empty display name, and expose a live capacity after
+  onboarding. Cached entitlements cannot stand in for those identity facts.
+- A detected previous-account profile now produces a protected bootstrap hold;
+  `SessionRouteGate` withholds native tabs and web shell children until the
+  matching identity resolves, while public auth callback content remains
+  available. Focused mobile routing tests pass (19) and focused core policy
+  tests pass (2).
+
+### 2026-09-07 — route, load, and interaction contract reconciliation
+
+- Moved route-input collection behind the typed `useBootstrapRouteState`
+  adapter; `SessionRouteGate` now consumes one snapshot and delegates to the
+  existing pure route policy. Bootstrap route coverage now includes booting,
+  public, onboarding, inactive-account recovery, app entry, and account-owned
+  offline capability states.
+- Repaired several remaining false-empty/false-success dashboard paths:
+  curriculum progress, teacher directory, student pulse, and dashboard echo
+  now distinguish loading, populated, empty, and failed-with-retry states.
+  Dashboard echo no longer substitutes fabricated feedback on a backend error.
+- Added accessibility semantics to the corresponding high-traffic cards and
+  principal actions, including staff, invite, hierarchy, logbook, student-pulse,
+  and teacher controls.
+- Verification completed for the touched packages: mobile route/type checks,
+  admin TypeScript, Self TypeScript/tests, and focused guardian/document
+  behavior tests. Device screen-reader, native dialog, entitlement, and
+  deep-link walkthroughs remain runtime evidence gaps.
+- Reconciled the coverage matrix so code-resolved findings are not still marked
+  confirmed; runtime-dependent proof remains explicitly open.
+
+### 2026-09-07 — profile and classroom action reconciliation
+
+- Replaced profile support rows that only emitted haptics with working FAQ,
+  feedback-email, and public-site destinations, including visible launch
+  failure feedback.
+- Made the profile Data Saver placeholder explicitly disabled instead of
+  presenting a tappable no-op control.
+- Connected the admin institution profile's Manage Institution action to the
+  canonical principal workspace route.
+- Revalidated current student profile/grades and teacher workspace paths;
+  their visible retry and mutation-failure states are now reflected in the
+  coverage matrix rather than remaining marked as confirmed silent failures.
+
+### 2026-09-07 — Self platform parity and honest failure states
+
+- Aligned web and native Fire Journal behavior so failed persistence preserves
+  the entry instead of showing a false release success.
+- Added retryable failure states to web voice journaling, Wind Down Ritual,
+  Tomorrow Prep, and Progress Tree flows.
+- Added native Wind Down persistence so mobile reflections are saved on the
+  same contract as web, with completion gated on a successful write.
+- Disabled the Fire Journal microphone affordance until that surface has a
+  real recording implementation; the dedicated Voice Journal remains the
+  available recording path.
+
+### 2026-09-07 — interaction recovery and onboarding polish
+
+- Added truthful refresh and retry states across Self reflection cards,
+  student goals, energy/sleep/wisdom history, and classroom resources.
+- Prevented false success or misleading empty data in attendance snapshots,
+  teacher analysis partial loads, school search/join requests, and invite flows.
+- Tightened invite-code validation, reset transient invite-modal state on close,
+  added destructive-action confirmation, and confirmed clipboard outcomes.
+- Added accessibility labels and selected/busy/error semantics to high-traffic
+  filters, roster actions, reflection controls, and onboarding controls.
+- Package verification remained green for the touched areas: Self (9 files,
+  28 tests), Classroom (1 file, 2 tests), plus TypeScript and diff checks.
+
+### 2026-09-07 — final interaction semantics sweep
+
+- Added accessible labels and contextual hints to the remaining legacy admin
+  back control and student workspace pin/move actions.
+- Revalidated Admin and Classroom TypeScript compilation and focused diff
+  checks after the sweep.
+- Removed hardcoded Grade Head roster totals and made unfinished quick actions
+  visibly disabled until their backing surfaces are connected.
+- Made unfinished Section Head assignment, draft-review, schedule-review, and
+  workload actions visibly unavailable instead of presenting tap-to-toast dead ends.
+- Applied the same unavailable treatment to Grade Head relief assignment,
+  removing the last active “not connected yet” action in that dashboard cluster.
+- Cleaned malformed comma-heavy Founder workspace empty-state and bridge copy
+  so disabled states read as deliberate product language rather than generated text.
+- Cleaned the most visible Guardian and Principal workspace hints and bridge
+  descriptions, removing generated comma artifacts from navigation copy.
+- Added web accessibility labels, hints, and selected state to Self mode
+  switches, focused-space pinning, and Daily Rhythm day tabs.
+- Added labels, hints, and busy/disabled state to Daily Rhythm deletion and
+  Shadow Agent open/close controls.
+- Matched those Shadow Agent labels and hints on native so the reflection
+  drawer has platform-parity semantics.
+- Re-ran the Self behavior suite after the parity pass: 9 files and 28 tests
+  passed; only the existing Vite native-config warning was emitted.
+- Re-ran the Classroom suite after a transient Vitest cache cleanup race:
+  1 file and 2 tests passed; only the existing Vite native-config warning remained.
+- Added web and native accessibility semantics to Student workspace surface
+  actions, including pin, zone movement, disabled state, and open guidance.
+- Added Guardian labels and hints for learner profiles, notifications, events,
+  action tiles, and workspace pin/move/open controls; cleaned visible comma-heavy
+  copy in those same flows.
+- Added Guardian student-card and room-back semantics, and cleaned the back
+  label so the navigation path is explicit to assistive technology.
+- Rewrote Classroom teacher and student preview summaries into natural,
+  readable product language, removing generated comma artifacts.
+- Rewrote the Principal preview catalog in the same natural voice, removing
+  malformed punctuation from all role-orientation summaries.
+- Cleaned Guardian and Founder capability registry titles and descriptions,
+  removing malformed punctuation from shared workspace metadata.
+- Completed the remaining visible Guardian and Founder workspace guidance copy
+  cleanup, including orientation subtitles and capability explanations.
+- Added state-aware semantics to Guardian workspace switcher targets so enabled
+  and unavailable role destinations explain themselves to assistive technology.
+- Verification checkpoint passed across Admin, Classroom, and Self TypeScript;
+  Self behavior tests passed (9 files/28 tests) and Classroom behavior tests
+  passed (1 file/2 tests). Only the existing Vite native-config warning appeared.
+- Corrected the Guardian student-card announcement to match its current root
+  workspace route rather than implying a student-specific selection.
+- Added explicit semantics to the web Teacher classroom back control so its
+  destination is clear to keyboard and screen-reader users.
+- Re-ran the app integration suite: 6 files and 13 tests passed, including
+  bootstrap, guest traversal, and network-flap recovery scenarios.

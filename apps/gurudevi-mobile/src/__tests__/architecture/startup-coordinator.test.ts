@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import { completeEssentialStartup } from '@/boot/startupCoordinator';
+import {
+  completeEssentialStartup,
+  type EssentialStartupDependencies,
+} from '@/boot/startupCoordinator';
+
+function neverSettles<T>(): Promise<T> {
+  return new Promise<T>(() => {});
+}
 
 describe('essential startup coordinator', () => {
   it('enforces runtime → catalog → device-account ordering without optional services', async () => {
@@ -57,33 +64,49 @@ describe('essential startup coordinator', () => {
 
     expect(registerAppCatalog).toHaveBeenCalledTimes(1);
   });
-  it('rejects when bootstrapPlatform hangs beyond the configured deadline', async () => {
-    // Override bootstrapPlatform with a fast-timeout version of withTimeout
-    // by providing a bootstrap that stalls and injecting a very short deadline (50ms).
-    // We can't test the full 10s deadline without mocking time, but we CAN verify
-    // the mechanism: a never-settling promise causes a timeout error, not a hang.
-    const neverSettles = new Promise<void>(() => {});
+  it.each([
+    [
+      'bootstrapPlatform',
+      {
+        bootstrapPlatform: () => neverSettles<void>(),
+        isRuntimeRegistered: () => true,
+        loadCatalog: async () => ({ registerAppCatalog: vi.fn() }),
+        initializeDeviceAccounts: async () => undefined,
+      },
+    ],
+    [
+      'loadCatalog',
+      {
+        bootstrapPlatform: async () => undefined,
+        isRuntimeRegistered: () => true,
+        loadCatalog: () => neverSettles<{ registerAppCatalog: () => void }>(),
+        initializeDeviceAccounts: async () => undefined,
+      },
+    ],
+    [
+      'initializeDeviceAccounts',
+      {
+        bootstrapPlatform: async () => undefined,
+        isRuntimeRegistered: () => true,
+        loadCatalog: async () => ({ registerAppCatalog: vi.fn() }),
+        initializeDeviceAccounts: () => neverSettles<void>(),
+      },
+    ],
+  ] satisfies readonly [string, EssentialStartupDependencies][])(
+    'turns a stalled %s stage into a named retryable failure',
+    async (label, dependencies) => {
+    vi.useFakeTimers();
+      const startup = completeEssentialStartup(dependencies);
+      const rejection = expect(startup).rejects.toThrow(
+        `[boot] ${label} timed out after 10000ms`,
+      );
 
-    // Simulate completeEssentialStartup with a short deadline injected via bootstrapPlatform
-    // that wraps a stalling task — proves the timeout path produces the right error shape.
-    const timeoutError = await Promise.race([
-      neverSettles.then(() => null as unknown as Error),
-      new Promise<Error>((resolve) =>
-        setTimeout(
-          () => resolve(new Error('[boot] bootstrapPlatform timed out after 10000ms')),
-          50,
-        )
-      ),
-    ]);
+      await vi.advanceTimersByTimeAsync(10_000);
+      await rejection;
 
-    expect(timeoutError).toBeInstanceOf(Error);
-    expect(timeoutError.message).toMatch(/bootstrapPlatform timed out after 10000ms/);
-  });
-
-
-
-
-
+      vi.useRealTimers();
+    },
+  );
 
   it('resolves normally when bootstrapPlatform completes before the deadline', async () => {
     vi.useFakeTimers();
@@ -91,7 +114,9 @@ describe('essential startup coordinator', () => {
     const steps: string[] = [];
 
     const startup = completeEssentialStartup({
-      bootstrapPlatform: async () => { steps.push('runtime'); },
+      bootstrapPlatform: async () => {
+        steps.push('runtime');
+      },
       isRuntimeRegistered: () => true,
       loadCatalog: async () => ({ registerAppCatalog: () => steps.push('catalog') }),
       initializeDeviceAccounts: async () => {

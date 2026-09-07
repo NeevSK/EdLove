@@ -44,6 +44,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<DocumentStatus | 'all'>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'title' | 'status'>('updatedAt');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
@@ -60,6 +61,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   const loadDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
+      setLoadError(null);
       const userDocuments = await documentWorkflowAPI.getDocuments(
         schoolId,
         undefined,
@@ -73,6 +75,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
       console.error('Failed to load documents:', error);
+      setLoadError('Documents could not be loaded.');
     } finally {
       setIsLoading(false);
     }
@@ -152,7 +155,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 <Text
                   className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}
                 >
-                  {document.status}
+                  {document.status.toUpperCase()}
                 </Text>
               </Box>
               <Text className="text-[10px] font-bold text-ink/30">V{document.version}</Text>
@@ -171,6 +174,13 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               <Box className="bg-action/10 p-3 rounded-2xl border border-action/20">
                 <Text className="text-[11px] font-black text-action uppercase tracking-wider text-center">
                   Needs Review
+                </Text>
+              </Box>
+            )}
+            {document.status === 'review' && document.authorId === user.userId && (
+              <Box className="bg-action/10 p-3 rounded-2xl border border-action/20">
+                <Text className="text-[11px] font-black text-action uppercase tracking-wider text-center">
+                  Pending Review
                 </Text>
               </Box>
             )}
@@ -227,6 +237,24 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
     );
   }
 
+  if (loadError) {
+    return (
+      <ScreenWrapper>
+        <Box className="flex-1 items-center justify-center bg-silk p-20">
+          <Text className="text-error font-bold text-center">{loadError}</Text>
+          <Pressable
+            onPress={() => void loadDocuments()}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading documents"
+            className="mt-5 bg-action px-6 py-3 rounded-full"
+          >
+            <Text className="text-white font-black uppercase tracking-widest">Try again</Text>
+          </Pressable>
+        </Box>
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper noTopInset={true}>
       <Box className="flex-1 bg-silk">
@@ -278,6 +306,9 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               <HStack className="bg-silk/50 rounded-2xl p-1 border border-border">
                 <Pressable
                   onPress={() => setViewMode('list')}
+                  accessibilityRole="radio"
+                  accessibilityLabel="List view"
+                  accessibilityState={{ selected: viewMode === 'list' }}
                   className={`p-2 rounded-xl ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
                 >
                   <Icon
@@ -288,6 +319,9 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 </Pressable>
                 <Pressable
                   onPress={() => setViewMode('grid')}
+                  accessibilityRole="radio"
+                  accessibilityLabel="Grid view"
+                  accessibilityState={{ selected: viewMode === 'grid' }}
                   className={`p-2 rounded-xl ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
                 >
                   <Icon
@@ -318,6 +352,9 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             <Pressable
               key={status}
               onPress={() => setSelectedStatus(status)}
+              accessibilityRole="radio"
+              accessibilityLabel={`${status} documents`}
+              accessibilityState={{ selected: selectedStatus === status }}
               className={`px-6 py-2 rounded-full border transition-all ${
                 selectedStatus === status
                   ? 'bg-ink border-ink transform scale-105'

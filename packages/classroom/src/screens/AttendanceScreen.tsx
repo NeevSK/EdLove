@@ -23,6 +23,7 @@ export default function AttendanceScreen() {
 
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
       if (!classroomId) {
         setError('No classroom selected');
@@ -208,8 +209,16 @@ export default function AttendanceScreen() {
 
   if (error) {
     return (
-      <Box className="flex-1 justify-center items-center bg-phase-surface-primary p-6">
+      <Box className="flex-1 justify-center items-center bg-phase-surface-primary p-6 gap-4">
         <Text className="text-emberRed font-black text-center">{error}</Text>
+        <Button
+          variant="outline"
+          onPress={() => void fetchStudents()}
+          accessibilityLabel="Retry loading attendance roster"
+          accessibilityHint="Attempts to load the classroom roster again"
+        >
+          <ButtonText>Try again</ButtonText>
+        </Button>
       </Box>
     );
   }

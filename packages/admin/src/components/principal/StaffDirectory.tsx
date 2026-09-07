@@ -44,6 +44,9 @@ export default function StaffDirectory({ staff, onSelect }: StaffDirectoryProps)
               hapticLight();
               onSelect?.(member);
             }}
+            accessibilityRole="button"
+            accessibilityLabel={`Open ${member.name}, ${member.role}`}
+            accessibilityHint="Opens staff details"
             className="active:scale-[0.98] transition-all"
           >
             <Box className="p-5 bg-phase-surface rounded-[24px] border border-phase-border shadow-sm">

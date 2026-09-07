@@ -1,4 +1,4 @@
-import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { GuardianEvents } from '@repo/admin/components/guardian/GuardianEvents';
@@ -21,7 +21,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
   onNotificationPress,
   onEventPress,
 }) => {
-  const { dashboard, isLoading, error } = useGuardianWorkspaceData(guardianId);
+  const { dashboard, isLoading, error, refreshData } = useGuardianWorkspaceData(guardianId);
 
   if (isLoading) {
     return (
@@ -37,6 +37,14 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
         <Text className="text-phase-danger text-base font-semibold text-center">
           {error || 'Failed to load dashboard'}
         </Text>
+        <Button
+          variant="outline"
+          onPress={() => void refreshData()}
+          className="mt-5 border-phase-danger/30"
+          accessibilityLabel="Retry loading guardian dashboard"
+        >
+          <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+        </Button>
       </Box>
     );
   }

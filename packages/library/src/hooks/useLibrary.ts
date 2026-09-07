@@ -17,11 +17,8 @@ import { fetchResourcePage } from './resourcePageQuery';
 // Keys for React Query
 export const LIBRARY_KEYS = {
   all: ['library'] as const,
-  // Prefix-only keys (no filters appended) — use these for invalidation so React Query
-  // matches ALL queries for that entity regardless of which filters were used.
   resourcesAll: () => [...LIBRARY_KEYS.all, 'resources'] as const,
   collectionsAll: () => [...LIBRARY_KEYS.all, 'collections'] as const,
-  // Full keys with filters — use these as queryKey in useQuery/useInfiniteQuery.
   resources: (filters: ResourceFilters = {}) =>
     [...LIBRARY_KEYS.resourcesAll(), filters] as const,
   collections: (filters: CollectionFilters = {}) =>
@@ -41,64 +38,71 @@ export const useLibraryRealtime = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // 1. Listen for changes in collections (inserts, updates, deletes)
-    const collectionsChannel = supabase
-      .channel('library-collections-realtime-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'collections' },
-        (payload: any) => {
-          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
-          void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+    if (!supabase || typeof supabase.channel !== 'function') return;
 
-          const id = payload.new?.id || payload.old?.id;
-          if (id) {
-            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(id) });
+    try {
+      const collectionsChannel = supabase
+        .channel('library-collections-realtime-changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'collections' },
+          (payload: any) => {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+            void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+
+            const id = payload.new?.id || payload.old?.id;
+            if (id) {
+              void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(id) });
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    // 2. Listen for changes in collection_nodes (resource added/removed from collection)
-    const collectionNodesChannel = supabase
-      .channel('library-collection-nodes-realtime-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'collection_nodes' },
-        (payload: any) => {
-          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+      const collectionNodesChannel = supabase
+        .channel('library-collection-nodes-realtime-changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'collection_nodes' },
+          (payload: any) => {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
 
-          const collectionId = payload.new?.collection_id || payload.old?.collection_id;
-          if (collectionId) {
-            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collectionId) });
+            const collectionId = payload.new?.collection_id || payload.old?.collection_id;
+            if (collectionId) {
+              void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collectionId) });
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    // 3. Listen for changes in nodes (resources created, updated, deleted)
-    const nodesChannel = supabase
-      .channel('library-nodes-realtime-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'nodes' },
-        (payload: any) => {
-          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
-          void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'resources-count'] });
+      const nodesChannel = supabase
+        .channel('library-nodes-realtime-changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'nodes' },
+          (payload: any) => {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
+            void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'resources-count'] });
 
-          const id = payload.new?.id || payload.old?.id;
-          if (id) {
-            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(id) });
+            const id = payload.new?.id || payload.old?.id;
+            if (id) {
+              void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(id) });
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    return () => {
-      void supabase.removeChannel(collectionsChannel);
-      void supabase.removeChannel(collectionNodesChannel);
-      void supabase.removeChannel(nodesChannel);
-    };
+      return () => {
+        try {
+          void supabase.removeChannel(collectionsChannel);
+          void supabase.removeChannel(collectionNodesChannel);
+          void supabase.removeChannel(nodesChannel);
+        } catch (e) {
+          console.warn('[useLibraryRealtime] cleanup error:', e);
+        }
+      };
+    } catch (err) {
+      console.warn('[useLibraryRealtime] Realtime subscription skipped:', err);
+    }
   }, [queryClient]);
 };
 
@@ -107,7 +111,7 @@ export const useLibrary = (
   collectionFilters: CollectionFilters = {},
 ) => {
   const queryClient = useQueryClient();
-  useLibraryRealtime(); // Enable automatic Supabase Realtime synchronization
+  useLibraryRealtime();
 
   const temporalResourceFilters = useMemo(
     () => ({ ...resourceFilters }),

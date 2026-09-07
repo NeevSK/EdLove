@@ -81,7 +81,14 @@ export default function FounderVisionScreen() {
             </Heading>
             <Text className="text-base text-phaseText-secondary">Mapping the App Topology</Text>
           </VStack>
-          <Pressable className="w-11 h-11 rounded-full bg-phase-interactive/10 justify-center items-center active:opacity-70">
+          <Pressable
+            disabled
+            accessibilityRole="button"
+            accessibilityLabel="Share strategic vision"
+            accessibilityHint="Sharing is not available on this screen yet"
+            accessibilityState={{ disabled: true }}
+            className="w-11 h-11 rounded-full bg-phase-interactive/5 justify-center items-center opacity-50"
+          >
             <Icon as={Share2} size="md" className="text-phase-interactive" />
           </Pressable>
         </HStack>

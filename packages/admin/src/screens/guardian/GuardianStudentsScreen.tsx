@@ -35,6 +35,9 @@ export default function GuardianStudentsScreen() {
             <Pressable
               key={student.studentId}
               onPress={() => router.push('/workspace')}
+              accessibilityRole="button"
+              accessibilityLabel={`Open guardian workspace for ${student.name}`}
+              accessibilityHint="Returns to the guardian workspace"
               className="active:opacity-80"
             >
               <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">

@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core/logic';
+import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -12,6 +12,7 @@ export { RouteErrorBoundary as ErrorBoundary };
 
 export default function WorkspaceDispatcher() {
   const { context } = usePermissions();
+  const { activePerspective } = usePerspectiveSwitch();
   const { classroomId: requestedClassroomId, classroomName } = useLocalSearchParams<{
     classroomId?: string;
     classroomName?: string;
@@ -32,6 +33,8 @@ export default function WorkspaceDispatcher() {
     permissionSnapshotLoaded,
     isPermissionLoading: loading,
     permissionError,
+    perspectiveKind: activePerspective.kind,
+    perspectiveId: activePerspective.id,
   });
 
   const retryPermissionResolution = () => {
@@ -96,6 +99,19 @@ export default function WorkspaceDispatcher() {
   }
   if (routeResolution.target.kind === 'guardian') {
     return <Redirect href="/workspace/guardian" />;
+  }
+  if (routeResolution.target.kind === 'personal') {
+    return <Redirect href="/workspace/classroom" />;
+  }
+  if (routeResolution.target.kind === 'commercial') {
+    return (
+      <Redirect
+        href={{
+          pathname: '/workspace/commercial/[batchId]',
+          params: { batchId: routeResolution.target.perspectiveId || 'active' },
+        }}
+      />
+    );
   }
 
   if (routeResolution.target.kind === 'classroom') {

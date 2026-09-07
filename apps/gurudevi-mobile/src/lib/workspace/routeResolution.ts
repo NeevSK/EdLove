@@ -1,9 +1,12 @@
 import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
+import type { PerspectiveKind } from '@repo/core/types/Perspective';
 
 export type WorkspaceRouteTarget =
   | { kind: 'founder' }
   | { kind: 'principal' }
   | { kind: 'guardian' }
+  | { kind: 'personal' }
+  | { kind: 'commercial'; perspectiveId?: string }
   | { kind: 'classroom-list' }
   | {
       kind: 'classroom';
@@ -33,6 +36,8 @@ export type WorkspaceRouteResolutionInput = {
   permissionSnapshotLoaded: boolean;
   isPermissionLoading: boolean;
   permissionError: string | null;
+  perspectiveKind?: PerspectiveKind;
+  perspectiveId?: string;
 };
 
 const permissionResolutionFailure =
@@ -47,6 +52,8 @@ export function resolveWorkspaceRoute({
   permissionSnapshotLoaded,
   isPermissionLoading,
   permissionError,
+  perspectiveKind,
+  perspectiveId,
 }: WorkspaceRouteResolutionInput): WorkspaceRouteResolution {
   if (!userId) {
     return {
@@ -79,6 +86,15 @@ export function resolveWorkspaceRoute({
     isRefreshing: isPermissionLoading,
     refreshError: permissionError,
   };
+
+  // 1. Perspective overrides (Personal Sanctuary Studio or Commercial Batch)
+  if (perspectiveKind === 'personal') {
+    return { kind: 'role-ready', target: { kind: 'personal' }, ...backgroundStatus };
+  }
+
+  if (perspectiveKind === 'commercial') {
+    return { kind: 'role-ready', target: { kind: 'commercial', perspectiveId }, ...backgroundStatus };
+  }
 
   if (resolvedCapacity.data === 'founder') {
     return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };

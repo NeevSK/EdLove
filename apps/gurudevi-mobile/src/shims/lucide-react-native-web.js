@@ -17,26 +17,20 @@ try {
 }
 
 /**
- * Lotus Fallback Icon
- * Instead of a warning '!', we use the brand-aligned Lotus emoji.
+ * Neutral Fallback Icon
+ * Renders a neutral placeholder without injecting unwanted emojis.
  */
-const LotusFallback = (props) => {
+const NeutralFallback = (props) => {
   const { size = 24, ...rest } = props;
   return (
     <span
       style={{
-        fontSize: `${size}px`,
-        lineHeight: 1,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: 'inline-block',
         width: size,
         height: size,
       }}
       {...rest}
-    >
-      🪷
-    </span>
+    />
   );
 };
 
@@ -46,16 +40,12 @@ const LotusFallback = (props) => {
  * If you import { Heart } or { UserIcon } from '@repo/ui/icons',
  * this proxy automatically resolves them.
  */
-const IconProxy = new Proxy(LotusFallback, {
+const IconProxy = new Proxy(NeutralFallback, {
   get: (target, prop) => {
     if (typeof prop === 'symbol') return target[prop];
 
     // 1. Standard Module/React Exports
-    // `lucide-react-native/icons/*` imports a default component. Returning the
-    // entire lucide-react module here produces an invalid React element on
-    // web (`Icon` becomes an object). The shim cannot know the requested
-    // subpath, so return a valid branded fallback for default imports.
-    if (prop === 'default') return LotusFallback;
+    if (prop === 'default') return NeutralFallback;
     if (prop === '__esModule') return true;
     if (prop === '$$typeof') return target[prop];
     if (prop === 'displayName') return 'IconProxy';
@@ -84,7 +74,7 @@ const IconProxy = new Proxy(LotusFallback, {
 
     // 4. Self-Healing Fallback for potential icons
     if (typeof prop === 'string' && /^[A-Z]/.test(prop)) {
-      return LotusFallback;
+      return NeutralFallback;
     }
 
     return target[prop];

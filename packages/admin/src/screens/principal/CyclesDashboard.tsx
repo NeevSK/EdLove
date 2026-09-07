@@ -20,9 +20,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface CyclesDashboardProps {
   schoolId: string;
@@ -41,19 +42,23 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
   const [newStart, setNewStart] = useState('');
   const [newEnd, setNewEnd] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const { showToast } = useSanctuaryToast();
 
-  const loadAcademicCycles = async () => {
+  const loadAcademicCycles = useCallback(async () => {
     if (!schoolId) return;
     setLoading(true);
+    setLoadError(null);
     try {
       const data = await api.academicCycles.getAll(schoolId);
       setAcademicCycles(data || []);
     } catch (err) {
       console.error('Failed to load academic cycles:', err);
+      setLoadError('Academic cycles could not be loaded.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [schoolId]);
 
   useEffect(() => {
     loadAcademicCycles();
@@ -76,6 +81,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
       setNewEnd('');
     } catch (err) {
       console.error('Failed to create academic cycle:', err);
+      showToast({ message: 'Academic cycle could not be created. Please try again.', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -89,6 +95,9 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
             hapticLight();
             onBack();
           }}
+          accessibilityRole="button"
+          accessibilityLabel="Back to dashboard"
+          accessibilityHint="Returns to the principal dashboard"
         >
           <HStack className="items-center gap-2 bg-phase-surface self-start px-4 py-2.5 rounded-2xl border border-phase-border shadow-sm active:scale-95 transition-all">
             <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
@@ -194,6 +203,20 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
             <SkeletonCard height={80} className="rounded-3xl" />
             <SkeletonCard height={80} className="rounded-3xl" />
           </VStack>
+        ) : loadError ? (
+          <Box className="p-10 items-center justify-center bg-phase-danger/10 rounded-[32px] border border-phase-danger/20">
+            <Text className="text-phase-danger text-center text-[13px] font-bold">
+              {loadError}
+            </Text>
+            <Button
+              variant="outline"
+              onPress={() => void loadAcademicCycles()}
+              className="mt-4 border-phase-danger/30"
+              accessibilityLabel="Retry loading academic cycles"
+            >
+              <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+            </Button>
+          </Box>
         ) : academicCycles.length === 0 ? (
           <Box className="p-12 items-center justify-center bg-phase-surface/50 rounded-[32px] border border-dashed border-phase-border">
             <Text className="text-phaseText-muted text-[13px] font-black uppercase tracking-widest">

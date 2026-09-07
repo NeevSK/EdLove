@@ -1,14 +1,22 @@
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { createSupabaseGuardianRepository } from '@repo/core/adapters/supabase/guardianRepository';
+import { createSupabaseSchoolInviteRepository } from '@repo/core/adapters/supabase/schoolInviteRepository';
+import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supabase/tuitionBatchRepository';
 import { useNotifications, useRewards } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { resolveWorkspaceSwitcherTargets, usePermissions, usePerspectiveSwitch, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self/wellbeing';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { LinkWardModal } from '@repo/ui/components/LinkWardModal';
+import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
+import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
 import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { router, Tabs, usePathname } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
@@ -35,7 +43,7 @@ function TabsLayoutContent() {
     () => getNativeShellConfig(width, height, insets.bottom),
     [height, insets.bottom, width],
   );
-  const { context } = usePermissions();
+  const { context, can } = usePermissions();
   const userId = context.userId;
   const { newAchievements } = useRewards();
   const { unreadCount } = useNotifications(userId);
@@ -46,6 +54,69 @@ function TabsLayoutContent() {
   const previousAchievementsRef = useRef<string[]>([]);
   const isBreathingOpen = useStore((state) => state.isBreathingOpen ?? false);
   const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
+
+  // Multi-Perspective State
+  const { availablePerspectives, activePerspective, switchPerspective, addPerspective, hydratePerspectivesFromDatabase } = usePerspectiveSwitch();
+  const [isPerspectiveSwitcherOpen, setPerspectiveSwitcherOpen] = useState(false);
+  const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
+  const [isCommercialModalOpen, setCommercialModalOpen] = useState(false);
+  const [isLinkWardModalOpen, setLinkWardModalOpen] = useState(false);
+
+  // Auto-reconcile perspective entities from Postgres / PowerSync SQLite on boot
+  useEffect(() => {
+    if (!user?.id) return;
+
+    void hydratePerspectivesFromDatabase(user.id, {
+      getCommercialBatches: async () => {
+        try {
+          const repo = createSupabaseTuitionBatchRepository(supabaseClient);
+          return await repo.getMyBatches(user.id);
+        } catch (e) {
+          console.warn('[TabsLayout] getCommercialBatches error:', e);
+          return [];
+        }
+      },
+      getGuardianBonds: async () => {
+        try {
+          const repo = createSupabaseGuardianRepository(supabaseClient);
+          const relationships = await repo.getGuardianRelationships(user.id);
+          return relationships.map((rel: any) => ({
+            id: rel.id || `ward-${rel.student_id}`,
+            kind: 'guardian' as const,
+            displayName: rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
+            wardUserId: rel.student_id,
+            wardName: rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
+            schoolId: rel.school_id,
+          }));
+        } catch (e) {
+          console.warn('[TabsLayout] getGuardianBonds error:', e);
+          return [];
+        }
+      },
+    });
+  }, [hydratePerspectivesFromDatabase, user?.id]);
+
+  const workspaceTargets = useMemo(
+    () =>
+      resolveWorkspaceSwitcherTargets({
+        currentWorkspace: 'teacher',
+        canManageFounderDashboard: can('manage', 'FounderDashboard'),
+        canManageAdminDashboard: can('manage', 'AdminDashboard'),
+        canManagePrincipalDashboard: can('manage', 'PrincipalDashboard'),
+        canManageGuardianDashboard: can('manage', 'GuardianDashboard'),
+        canManageTeacherDashboard: can('manage', 'TeacherDashboard'),
+        canManageStudentDashboard: can('manage', 'StudentDashboard'),
+        hasPrimaryInstitution: Boolean(user?.school_id),
+        hasMountedGuardianWorkspace: true,
+        availablePerspectives,
+        activePerspectiveId: activePerspective.id,
+      }),
+    [can, user?.school_id, availablePerspectives, activePerspective.id],
+  );
+
+  const isWorkspace = pathname.startsWith('/workspace');
+  const perspectiveLabel = activePerspective.displayName || 'Personal Sanctuary';
+  const perspectiveKind = activePerspective.kind;
 
   const title = getNavigationTitle(pathname);
 
@@ -70,9 +141,113 @@ function TabsLayoutContent() {
     return () => clearTimeout(timer);
   }, [newAchievements, showCelebration]);
 
+  const handleSelectWorkspaceTarget = useCallback(
+    (target: any) => {
+      setPerspectiveSwitcherOpen(false);
+      if (target.perspectiveId) {
+        switchPerspective(target.perspectiveId);
+      }
+      if (target.destination?.kind === 'route') {
+        router.push(target.destination.name as any);
+      } else if (target.destination?.kind === 'tab') {
+        router.push(`/(tabs)/${target.destination.name}` as any);
+      }
+    },
+    [switchPerspective],
+  );
+
+  const handleRedeemInviteCode = useCallback(
+    async (payload: {
+      code: string;
+      schoolId: string;
+      schoolName: string;
+      capacity: 'teacher' | 'student' | 'principal' | 'admin';
+      roles: Array<'teacher' | 'student' | 'principal' | 'admin'>;
+    }) => {
+      const newId = `bond_${payload.schoolId}_${Date.now().toString(36)}`;
+      const newPerspective = {
+        id: newId,
+        kind: 'institutional' as const,
+        displayName: `${payload.schoolName} (${payload.capacity.toUpperCase()})`,
+        schoolId: payload.schoolId,
+        schoolName: payload.schoolName,
+        capacity: payload.capacity,
+        roles: payload.roles,
+      };
+
+      addPerspective(newPerspective);
+      setInviteCodeModalOpen(false);
+      switchPerspective(newId);
+
+      // Async DB persistence
+      if (user?.id) {
+        try {
+          const repo = createSupabaseSchoolInviteRepository(supabaseClient);
+          await repo.verifyAndRedeemInviteCode(payload.code, user.id);
+        } catch (err) {
+          console.warn('[handleRedeemInviteCode] DB sync notice:', err);
+        }
+      }
+    },
+    [addPerspective, switchPerspective, user?.id],
+  );
+
+  const handleCreateCommercialBatch = useCallback(
+    async (batch: any) => {
+      addPerspective(batch);
+      setCommercialModalOpen(false);
+      switchPerspective(batch.id);
+      router.push(`/workspace/commercial/${batch.id}` as any);
+
+      // Async DB persistence
+      if (user?.id) {
+        try {
+          const repo = createSupabaseTuitionBatchRepository(supabaseClient);
+          await repo.createBatch(user.id, {
+            instituteId: batch.instituteId === 'independent' ? undefined : batch.instituteId,
+            subjectName: batch.subjectName,
+            gradeLevel: batch.grade,
+            medium: batch.medium,
+            schedule: batch.batchName,
+            customAlias: batch.customAlias,
+            role: batch.role,
+          });
+        } catch (err) {
+          console.warn('[handleCreateCommercialBatch] DB sync notice:', err);
+        }
+      }
+    },
+    [addPerspective, switchPerspective, user?.id],
+  );
+
+  const handleLinkWard = useCallback(
+    async (wardPerspective: any) => {
+      addPerspective(wardPerspective);
+      setLinkWardModalOpen(false);
+      switchPerspective(wardPerspective.id);
+
+      // Async DB persistence
+      if (user?.id) {
+        try {
+          const repo = createSupabaseGuardianRepository(supabaseClient);
+          await repo.linkGuardianToStudent(
+            user.id,
+            wardPerspective.wardUserId,
+            wardPerspective.relationship || 'parent',
+            wardPerspective.schoolId,
+          );
+        } catch (err) {
+          console.warn('[handleLinkWard] DB sync notice:', err);
+        }
+      }
+    },
+    [addPerspective, switchPerspective, user?.id],
+  );
+
   return (
     <>
       <Tabs
+        initialRouteName="self"
         screenOptions={{
           headerShown: true,
           tabBarHideOnKeyboard: true,
@@ -90,8 +265,17 @@ function TabsLayoutContent() {
           },
           header: () => (
             <GlobalHeader
-              title={title}
-              subtitle={shell.header.subtitleVisible ? displayName : undefined}
+              title={isWorkspace ? undefined : title}
+              subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
+              perspectivePill={
+                isWorkspace
+                  ? {
+                      label: perspectiveLabel,
+                      kind: perspectiveKind,
+                      onPress: () => setPerspectiveSwitcherOpen(true),
+                    }
+                  : undefined
+              }
               rightAction={
                 <Box
                   style={{
@@ -186,10 +370,10 @@ function TabsLayoutContent() {
         }}
       >
         <Tabs.Screen
-          name="self"
+          name="library"
           options={{
-            title: 'Self',
-            tabBarIcon: ({ color, size }) => <Heart color={color} size={size} />,
+            title: 'Library',
+            tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
           }}
         />
         <Tabs.Screen
@@ -200,17 +384,37 @@ function TabsLayoutContent() {
           }}
         />
         <Tabs.Screen
+          name="self"
+          options={{
+            title: 'Self',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Box
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: size + 16,
+                  height: size + 16,
+                  borderRadius: tokens.radii.full,
+                  backgroundColor: focused
+                    ? tokens.semantic.surface.interactive
+                    : 'transparent',
+                }}
+              >
+                <Heart
+                  color={focused ? tokens.colors.primary : color}
+                  size={size + 2}
+                  strokeWidth={focused ? 2.4 : 2}
+                  fill={focused ? tokens.colors.primary : 'transparent'}
+                />
+              </Box>
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="community"
           options={{
             title: 'Community',
             tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="library"
-          options={{
-            title: 'Library',
-            tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
           }}
         />
         <Tabs.Screen
@@ -238,6 +442,47 @@ function TabsLayoutContent() {
         title={currentAchievement}
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
+      />
+
+      <PerspectiveSwitcherSheet
+        isOpen={isPerspectiveSwitcherOpen}
+        onClose={() => setPerspectiveSwitcherOpen(false)}
+        targets={workspaceTargets}
+        onSelectTarget={handleSelectWorkspaceTarget}
+        onAddCommercialBatch={() => {
+          setPerspectiveSwitcherOpen(false);
+          setCommercialModalOpen(true);
+        }}
+        onLinkSchoolBond={() => {
+          setPerspectiveSwitcherOpen(false);
+          setInviteCodeModalOpen(true);
+        }}
+        onLinkWard={() => {
+          setPerspectiveSwitcherOpen(false);
+          setLinkWardModalOpen(true);
+        }}
+        onManagePerspectives={() => {
+          setPerspectiveSwitcherOpen(false);
+          router.push('/settings');
+        }}
+      />
+
+      <SchoolInviteCodeModal
+        isOpen={isInviteCodeModalOpen}
+        onClose={() => setInviteCodeModalOpen(false)}
+        onRedeemCode={handleRedeemInviteCode}
+      />
+
+      <CommercialBatchModal
+        isOpen={isCommercialModalOpen}
+        onClose={() => setCommercialModalOpen(false)}
+        onCreateBatch={handleCreateCommercialBatch}
+      />
+
+      <LinkWardModal
+        isOpen={isLinkWardModalOpen}
+        onClose={() => setLinkWardModalOpen(false)}
+        onLinkWard={handleLinkWard}
       />
 
       <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>

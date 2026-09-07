@@ -55,7 +55,9 @@ import {
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Linking } from 'react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResources } from '@repo/classroom/hooks';
@@ -72,6 +74,15 @@ export default function ContentLibrary() {
 
   // Resilient Data Hook
   const { resources, isLoading, setResources } = useResources(classroomId);
+
+  const openResourceLink = async (url: string) => {
+    hapticLight();
+    try {
+      await Linking.openURL(url);
+    } catch {
+      showToast({ message: 'Could not open this resource link.', type: 'error' });
+    }
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -134,15 +145,21 @@ export default function ContentLibrary() {
       onMutate: ({ id, is_pinned }) => {
         setResources((prev) => prev.map((r) => (r.id === id ? { ...r, is_pinned } : r)));
       },
+      onError: (_error, { id, is_pinned }) => {
+        setResources((prev) =>
+          prev.map((resource) =>
+            resource.id === id ? { ...resource, is_pinned: !is_pinned } : resource,
+          ),
+        );
+        showToast({ message: 'Could not update the pin. Please try again.', type: 'error' });
+      },
       onSuccess: () => hapticSuccess(),
     },
   );
 
   const deleteMutation = useSafeMutation((id: string) => api.resources.delete(id), {
-    onMutate: (id) => {
+    onSuccess: (_result, id) => {
       setResources((prev) => prev.filter((r) => r.id !== id));
-    },
-    onSuccess: () => {
       hapticSuccess();
       showToast({ message: 'Resource deleted', type: 'success' });
     },
@@ -223,8 +240,18 @@ export default function ContentLibrary() {
     }
   };
 
-  const deleteResource = (resourceId: string) => {
-    deleteMutation.mutate(resourceId);
+  const deleteResource = async (resourceId: string) => {
+    const confirmed = await confirmAction(
+      'Delete resource?',
+      'This removes the resource from the classroom and cannot be undone.',
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteMutation.mutate(resourceId);
+    } catch {
+      showToast({ message: 'Could not delete the resource. Please try again.', type: 'error' });
+    }
   };
 
   const addResource = () => {
@@ -356,7 +383,9 @@ export default function ContentLibrary() {
                 accessibilityRole="link"
                 accessibilityLabel={t('library.openLink') || 'Open Link'}
                 accessibilityHint="Opens the resource link in a new window"
-                onPress={() => hapticLight()}
+                onPress={() => {
+                  if (resource.url) void openResourceLink(resource.url);
+                }}
               >
                 <Box className="p-sm rounded-comfortable bg-phase-elevated border border-phase-border">
                   <Icon as={ExternalLink} className="text-phaseText-secondary" size={18} />

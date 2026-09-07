@@ -17,6 +17,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import { formatDistanceToNow } from 'date-fns';
 
@@ -44,15 +45,19 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({
   const [observations, setObservations] = useState<PrincipalObservation[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const { showToast } = useSanctuaryToast();
 
   const loadObservations = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
+    setLoadError(null);
     try {
       const data = await observationsAPI.listByDate(userId, viewDate, 10);
       setObservations(data || []);
     } catch (err) {
       console.error('Failed to load observations:', err);
+      setLoadError('Observations could not be loaded.');
     } finally {
       setLoading(false);
     }
@@ -77,6 +82,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({
       hapticSuccess();
     } catch (err) {
       console.error('Failed to save observation:', err);
+      showToast({ message: 'Entry could not be saved. Please try again.', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -139,6 +145,9 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({
             hapticLight();
             onBack();
           }}
+          accessibilityRole="button"
+          accessibilityLabel="Back to dashboard"
+          accessibilityHint="Returns to the principal dashboard"
         >
           <HStack className="items-center gap-2 bg-phase-surface self-start px-4 py-2.5 rounded-2xl border border-phase-border shadow-sm active:scale-95 transition-all">
             <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
@@ -216,6 +225,20 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({
         <VStack className="gap-4">
           {loading ? (
             <SkeletonCard height={120} className="rounded-3xl" />
+          ) : loadError ? (
+            <Box className="p-10 items-center justify-center bg-phase-danger/10 rounded-[40px] border border-phase-danger/20">
+              <Text className="text-phase-danger text-center text-[13px] font-bold">
+                {loadError}
+              </Text>
+              <Button
+                variant="outline"
+                onPress={() => void loadObservations()}
+                className="mt-4 border-phase-danger/30"
+                accessibilityLabel="Retry loading observations"
+              >
+                <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+              </Button>
+            </Box>
           ) : observations.length === 0 ? (
             <Box className="p-16 items-center justify-center bg-phase-surface/50 rounded-[40px] border border-dashed border-phase-border">
               <Text className="text-phaseText-muted text-[13px] font-black uppercase tracking-widest">

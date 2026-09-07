@@ -455,7 +455,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
             {filtered.length === 0 && (
               <Box className="items-center py-8 gap-2">
-                <Text className="text-3xl opacity-50">🪷</Text>
+                <Text className="text-3xl opacity-50">🔍</Text>
                 <Text className="text-sm italic" style={{ color: sectionColor }}>
                   No results for "{query}"
                 </Text>

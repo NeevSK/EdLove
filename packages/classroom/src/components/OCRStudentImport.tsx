@@ -82,26 +82,41 @@ export default function OCRStudentImport({
     }
 
     setPhase('importing');
-    try {
-      await Promise.all(
-        selected.map((s) =>
-          studentsAPI.create({
-            full_name: s.name,
-            roll_number: s.index_number,
-            notes: s.notes,
-            class_id: classroomId,
-          } as any),
-        ),
-      );
-      onImported(selected.length);
-    } catch (err) {
-      console.error('OCRStudentImport: bulk create failed', err);
-      showToast({
-        message: 'Failed to import students. Please try again.',
-        type: 'error',
-      });
-      setPhase('review');
+    const results = await Promise.allSettled(
+      selected.map((s) =>
+        studentsAPI.create({
+          full_name: s.name,
+          roll_number: s.index_number,
+          notes: s.notes,
+          classroom_id: classroomId,
+        }),
+      ),
+    );
+    const importedCount = results.filter((result) => result.status === 'fulfilled').length;
+    const failedCount = results.length - importedCount;
+
+    if (failedCount === 0) {
+      onImported(importedCount);
+      return;
     }
+
+    setStudents((prev) => {
+      let selectedIndex = 0;
+      return prev.map((student) => {
+        if (!student.selected) return student;
+        const result = results[selectedIndex];
+        selectedIndex += 1;
+        return result?.status === 'fulfilled' ? { ...student, selected: false } : student;
+      });
+    });
+    showToast({
+      message:
+        importedCount > 0
+          ? `${importedCount} student${importedCount === 1 ? '' : 's'} imported. ${failedCount} still need${failedCount === 1 ? 's' : ''} attention.`
+          : 'No students were imported. Please try again.',
+      type: 'error',
+    });
+    setPhase('review');
   };
 
   // ── Render ────────────────────────────────────────────────────────────

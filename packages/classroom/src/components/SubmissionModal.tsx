@@ -26,6 +26,8 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -46,6 +48,7 @@ export default function SubmissionModal({
   onSubmit,
 }: SubmissionModalProps) {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const [content, setContent] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,8 +61,12 @@ export default function SubmissionModal({
       ? await ImagePicker.requestCameraPermissionsAsync()
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted' && !isWeb) {
-      // Fallback for native without Alert - ideally use a Toast or custom Modal
-      console.warn('Permission not granted');
+      showToast({
+        message: useCamera
+          ? 'Camera access is needed to attach a photo.'
+          : 'Photo library access is needed to attach an image.',
+        type: 'error',
+      });
     }
     return status === 'granted';
   };
@@ -85,22 +92,18 @@ export default function SubmissionModal({
       }
     } catch (error) {
       handleAPIError(error);
+      showToast({ message: 'The image could not be attached. Please try again.', type: 'error' });
     }
   };
 
   const handleSubmit = async () => {
     if (!content.trim() && !photoUri) {
-      if (isWeb) {
-        window.alert(
-          (t('submission.emptyWarning') || 'Empty Submission') +
-            '\n\n' +
-            (t('submission.emptyWarningDesc') ||
-              'Please add some content or attach a photo before submitting.'),
-        );
-      } else {
-        // Ideally replace with a Toast component
-        console.warn('Empty submission');
-      }
+      showToast({
+        message:
+          t('submission.emptyWarningDesc') ||
+          'Please add some content or attach a photo before submitting.',
+        type: 'error',
+      });
       return;
     }
 
@@ -117,6 +120,7 @@ export default function SubmissionModal({
       }, 2000);
     } catch (error: unknown) {
       handleAPIError(error);
+      showToast({ message: 'Your work could not be submitted. Please try again.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -136,11 +140,16 @@ export default function SubmissionModal({
         }
         return;
       }
-      // For native, we could show another modal, but for now we'll just close or assume user knows
-      // To be safe, we'll just close or use a simple confirm if available via coreRuntime
-      setContent('');
-      setPhotoUri(null);
-      onClose();
+      void confirmAction(
+        'Discard submission?',
+        t('submission.cancelWarningDesc') || 'Your work will be lost. Are you sure?',
+      ).then((confirmed) => {
+        if (confirmed) {
+          setContent('');
+          setPhotoUri(null);
+          onClose();
+        }
+      });
     } else {
       onClose();
     }

@@ -12,6 +12,7 @@
 import { handleAPIError } from '@repo/core/logic';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { useLotusToast } from '@repo/ui/hooks';
 import { CircleCheck, Send, X } from '@repo/ui/icons';
 import {
   Box,
@@ -41,6 +42,7 @@ export default function SubmissionModal({
   onSubmit,
 }: SubmissionModalProps) {
   const { t } = useTranslation();
+  const { showToast } = useLotusToast();
   const [content, setContent] = useState('');
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
   const [photoFileName, setPhotoFileName] = useState<string | null>(null);
@@ -61,9 +63,12 @@ export default function SubmissionModal({
 
   const handleSubmit = async () => {
     if (!content.trim() && !photoDataUrl) {
-      window.alert(
-        `${t('submission.emptyWarning') || 'Empty Submission'}\n\n${t('submission.emptyWarningDesc') || 'Please add some content or attach a photo before submitting.'}`,
-      );
+      showToast({
+        message:
+          t('submission.emptyWarningDesc') ||
+          'Please add some content or attach a photo before submitting.',
+        type: 'error',
+      });
       return;
     }
     setIsSubmitting(true);
@@ -80,6 +85,7 @@ export default function SubmissionModal({
       }, 2000);
     } catch (error: any) {
       handleAPIError(error);
+      showToast({ message: 'Your work could not be submitted. Please try again.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -176,6 +182,7 @@ export default function SubmissionModal({
             placeholder={t('submission.answerPlaceholder') || 'Type your answer here...'}
             className="w-full min-h-[160px] rounded-[12px] border border-phase-border bg-phase-surface text-phaseText-primary text-[14px] p-[12px_16px] resize-y outline-none leading-[1.6]"
             style={{ fontFamily: 'var(--font-body)' }}
+            aria-label={t('submission.answerLabel') || 'Your answer'}
           />
         </VStack>
 

@@ -25,7 +25,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 
@@ -185,21 +185,22 @@ export default function CreateClassroomModal({
   const isGuest = false; // Placeholder for actual guest check
   const canCreateClassroom = true; // Placeholder for permissions
 
-  // Fetch school sections if schoolId exists
-  useEffect(() => {
-    if (isOpen && schoolId) {
-      fetchSections();
-    }
-  }, [isOpen, schoolId, fetchSections]);
-
-  async function fetchSections() {
+  const fetchSections = useCallback(async () => {
     try {
       const fetchedSections = await api.school.getSections(schoolId!);
       setSections(fetchedSections);
     } catch (err) {
       console.error('Error fetching sections:', err);
+      setError('Sections could not be loaded. Please try again.');
     }
-  }
+  }, [schoolId]);
+
+  // Fetch school sections if schoolId exists
+  useEffect(() => {
+    if (isOpen && schoolId) {
+      void fetchSections();
+    }
+  }, [isOpen, schoolId, fetchSections]);
 
   const updateDetails = (updates: Partial<typeof state.details>) => {
     setState((prev) => ({ ...prev, details: { ...prev.details, ...updates } }));
@@ -235,6 +236,7 @@ export default function CreateClassroomModal({
   };
 
   const handleSectionChange = async (sectionId: string) => {
+    setError(null);
     updateAcademic({ sectionId, gradeId: '', subject: '' });
     setGrades([]);
     setAvailableClassrooms([]);
@@ -244,10 +246,12 @@ export default function CreateClassroomModal({
       setGrades(fetchedGrades);
     } catch (err) {
       console.error('Error fetching grades:', err);
+      setError('Grades could not be loaded for this section. Please try again.');
     }
   };
 
   const handleGradeChange = async (gradeId: string) => {
+    setError(null);
     const grade = grades.find((g) => g.id === gradeId);
     updateAcademic({ gradeId, subject: '' });
     setAvailableClassrooms([]);
@@ -270,6 +274,7 @@ export default function CreateClassroomModal({
       setAvailableClassrooms(classrooms);
     } catch (err) {
       console.error('Error fetching available classrooms:', err);
+      setError('Available classrooms could not be loaded. Please try again.');
     }
   };
 

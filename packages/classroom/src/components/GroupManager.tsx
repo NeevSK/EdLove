@@ -8,6 +8,7 @@
  */
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { api, classroomGroupsAPI } from '@repo/core/api/client';
 import { Check as CheckIcon, Pen, Plus, Trash2, Users } from '@repo/ui/icons';
 import {
   Box,
@@ -27,6 +28,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
+import { useLotusToast } from '@repo/ui/hooks';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,49 +72,52 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
   const [groupDescription, setGroupDescription] = useState('');
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const { t } = useTranslation();
+  const { showToast } = useLotusToast();
 
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(false);
     try {
-      // TODO: Replace with actual API call
-      // Mock data for now
-      const mockStudents: Student[] = [
-        { id: 's1', full_name: 'Anura Kumara', roll_number: 1 },
-        { id: 's2', full_name: 'Sithum Silva', roll_number: 2 },
-        { id: 's3', full_name: 'Nimal Perera', roll_number: 3 },
-        { id: 's4', full_name: 'Kasun Fernando', roll_number: 4 },
-        { id: 's5', full_name: 'Dilani Jayasinghe', roll_number: 5 },
-        { id: 's6', full_name: 'Sanduni Wijeratne', roll_number: 6 },
-      ];
-
-      setStudents(mockStudents);
+      const roster = await api.classroomStudents.getAll(classroomId);
+      setStudents(
+        roster.map((student: { id: string; full_name?: string | null; roll_number?: string | number | null }) => ({
+          id: student.id,
+          full_name: student.full_name || 'Unknown Student',
+          roll_number: student.roll_number ? Number(student.roll_number) : undefined,
+        })),
+      );
     } catch (error) {
       console.error('Failed to fetch students:', error);
+      setLoadError(true);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [classroomId]);
 
-  const loadGroups = useCallback(() => {
-    // TODO: Load from API or AsyncStorage
-    // For now, using local state
-    const mockGroups: StudentGroup[] = [
-      {
-        id: 'g1',
-        name: 'Lab Group A',
-        description: 'First lab rotation',
-        studentIds: ['s1', 's2', 's3'],
-        createdAt: new Date().toISOString(),
-        color: GROUP_COLORS[0] ?? '#CCCCCC',
-      },
-    ];
-    setGroups(mockGroups);
-  }, []);
+  const loadGroups = useCallback(async () => {
+    try {
+      const records = await classroomGroupsAPI.getAll(classroomId);
+      setGroups(
+        records.map((group) => ({
+          id: group.id,
+          name: group.name,
+          description: group.description ?? undefined,
+          studentIds: group.student_ids ?? [],
+          createdAt: group.created_at ?? new Date().toISOString(),
+          color: group.color ?? GROUP_COLORS[0] ?? '#CCCCCC',
+        })),
+      );
+    } catch (error) {
+      console.error('Failed to load classroom groups:', error);
+      showToast({ message: 'Groups could not be loaded. Please try again.', type: 'error' });
+    }
+  }, [classroomId, showToast]);
 
   useEffect(() => {
-    fetchStudents();
-    loadGroups();
+    void fetchStudents();
+    void loadGroups();
   }, [loadGroups, fetchStudents]);
 
   const toggleStudentSelection = (studentId: string) => {
@@ -139,55 +145,57 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     setShowCreateModal(true);
   };
 
-  const saveGroup = () => {
+  const saveGroup = async () => {
     hapticLight();
 
     if (!groupName.trim() || selectedStudentIds.length === 0) {
       return;
     }
 
-    const generateId = () => {
-      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-        return crypto.randomUUID();
+    try {
+      if (editingGroup) {
+        await classroomGroupsAPI.update(editingGroup.id, {
+          name: groupName.trim(),
+          description: groupDescription.trim() || null,
+          student_ids: selectedStudentIds,
+        });
+      } else {
+        await classroomGroupsAPI.create(classroomId, {
+          name: groupName.trim(),
+          description: groupDescription.trim() || null,
+          student_ids: selectedStudentIds,
+          color: GROUP_COLORS[groups.length % GROUP_COLORS.length] ?? '#CCCCCC',
+        });
       }
-      return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-    };
-
-    if (editingGroup) {
-      setGroups((prev) =>
-        prev.map((g) =>
-          g.id === editingGroup.id
-            ? {
-                ...g,
-                name: groupName,
-                description: groupDescription || undefined,
-                studentIds: selectedStudentIds,
-              }
-            : g,
-        ),
-      );
-    } else {
-      const newGroup: StudentGroup = {
-        id: generateId(),
-        name: groupName,
-        description: groupDescription || undefined,
-        studentIds: selectedStudentIds,
-        createdAt: new Date().toISOString(),
-        color: GROUP_COLORS[groups.length % GROUP_COLORS.length] ?? '#CCCCCC',
-      };
-      setGroups((prev) => [...prev, newGroup]);
+      await loadGroups();
+      setShowCreateModal(false);
+      setEditingGroup(null);
+      setGroupName('');
+      setGroupDescription('');
+      setSelectedStudentIds([]);
+      showToast({ message: 'Classroom group saved.', type: 'success' });
+    } catch (error) {
+      console.error('Failed to save classroom group:', error);
+      showToast({ message: 'Group could not be saved. Please try again.', type: 'error' });
     }
-
-    setShowCreateModal(false);
-    setEditingGroup(null);
-    setGroupName('');
-    setGroupDescription('');
-    setSelectedStudentIds([]);
   };
 
-  const deleteGroup = (groupId: string) => {
+  const deleteGroup = async (group: StudentGroup) => {
+    const confirmed = await confirmAction(
+      'Delete group?',
+      `${group.name} will be removed from this device.`,
+    );
+    if (!confirmed) return;
+
     hapticLight();
-    setGroups((prev) => prev.filter((g) => g.id !== groupId));
+    try {
+      await classroomGroupsAPI.delete(group.id);
+      await loadGroups();
+      showToast({ message: 'Group deleted.', type: 'info' });
+    } catch (error) {
+      console.error('Failed to delete classroom group:', error);
+      showToast({ message: 'Group could not be deleted. Please try again.', type: 'error' });
+    }
   };
 
   const getStudentsByIds = (studentIds: string[]): Student[] => {
@@ -227,12 +235,21 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
             </HStack>
 
             <HStack className="gap-2">
-              <Pressable onPress={() => openEditModal(group)}>
+              <Pressable
+                onPress={() => openEditModal(group)}
+                accessibilityRole="button"
+                accessibilityLabel={`Edit ${group.name}`}
+              >
                 <Box className="p-2 rounded-xl bg-phase-surface border border-phase-border">
                   <Icon as={Pen} className="text-phase-text-tertiary" size="xs" />
                 </Box>
               </Pressable>
-              <Pressable onPress={() => deleteGroup(group.id)}>
+              <Pressable
+                onPress={() => void deleteGroup(group)}
+                accessibilityRole="button"
+                accessibilityLabel={`Delete ${group.name}`}
+                accessibilityHint="Permanently removes this group after confirmation"
+              >
                 <Box className="p-2 rounded-xl bg-phase-surface border border-phase-border">
                   <Icon as={Trash2} className="text-sanctuary-error" size="xs" />
                 </Box>
@@ -282,6 +299,15 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
           <Box className="p-8 items-center">
             <Text className="text-phase-text-tertiary">Loading groups...</Text>
           </Box>
+        ) : loadError ? (
+          <Box className="p-12 items-center gap-4 bg-phase-surface-secondary rounded-[32px] border border-phase-border">
+            <Text className="text-sanctuary-error text-center">
+              Students could not be loaded. Please try again.
+            </Text>
+            <Button variant="outline" onPress={() => void fetchStudents()}>
+              <ButtonText>Try again</ButtonText>
+            </Button>
+          </Box>
         ) : groups.length === 0 ? (
           <Box className="p-12 items-center bg-phase-surface-secondary rounded-[32px] border border-phase-border">
             <Icon as={Users} className="text-phase-text-tertiary" size="xl" />
@@ -298,6 +324,9 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
       <Pressable
         onPress={openCreateModal}
         className="absolute bottom-10 right-8 w-16 h-16 rounded-full bg-sanctuarySaffron justify-center items-center shadow-lg shadow-sanctuarySaffron/40 active:opacity-90"
+        accessibilityRole="button"
+        accessibilityLabel="Create student group"
+        accessibilityHint="Opens the group creation form"
       >
         <Icon as={Plus} color="white" size="md" />
       </Pressable>
@@ -320,7 +349,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
               <ButtonText className="text-phase-text-secondary font-bold">Cancel</ButtonText>
             </Button>
             <Button
-              onPress={saveGroup}
+              onPress={() => void saveGroup()}
               className={`flex-1 h-14 rounded-[24px] shadow-lg active:opacity-90 ${!groupName.trim() || selectedStudentIds.length === 0 ? 'bg-phase-surface-tertiary opacity-50' : 'bg-sanctuarySaffron shadow-sanctuarySaffron/20'}`}
               isDisabled={!groupName.trim() || selectedStudentIds.length === 0}
             >
@@ -376,13 +405,15 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                         key={student.id}
                         onPress={() => toggleStudentSelection(student.id)}
                         className={`flex-row items-center gap-3 p-3 rounded-[16px] ${isChecked ? 'bg-sanctuarySaffron/10' : 'bg-transparent active:bg-phase-border/10'}`}
+                        accessibilityRole="checkbox"
+                        accessibilityLabel={`Select ${student.full_name}`}
+                        accessibilityState={{ checked: isChecked }}
                       >
-                        <Checkbox
-                          value={student.id}
-                          isChecked={isChecked}
-                          onChange={() => toggleStudentSelection(student.id)}
-                          aria-label="Select student"
-                        >
+                          <Checkbox
+                            value={student.id}
+                            isChecked={isChecked}
+                            aria-label={`Select ${student.full_name}`}
+                          >
                           <CheckboxIndicator
                             className={
                               isChecked

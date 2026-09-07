@@ -72,6 +72,7 @@ type Args = {
     pendingAssignments: number;
     growthPoints: number;
   };
+  hasDataError: boolean;
   onOpenLibrary: () => void;
   onOpenCommunity: () => void;
   onOpenRewards: () => void;
@@ -100,6 +101,10 @@ function QuickAction({
       <Pressable
         onPress={disabled ? undefined : onPress}
         disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityState={{ disabled }}
+        accessibilityHint={disabled ? 'This workspace surface is unavailable right now' : `Open ${label}`}
         style={({ pressed }) => [
           pressed && !disabled ? { transform: [{ scale: 0.95 }] } : null,
         ]}
@@ -148,6 +153,7 @@ export function useStudentDashboardSurfaces({
   isPastView,
   isDemoExperience,
   stats,
+  hasDataError,
   onOpenLibrary,
   onOpenCommunity,
   onOpenRewards,
@@ -256,25 +262,29 @@ export function useStudentDashboardSurfaces({
         webSupport: true,
         title: 'Learning pulse',
         subtitle: 'Current study state',
-        summary: 'Classes, pending assignments, and growth progress at a glance.',
-        temporalLabel: stats.pendingAssignments > 0 ? 'Due soon' : 'On track',
-        metadata: [
-          `Classes ${stats.enrolledClasses}`,
-          `Pending ${stats.pendingAssignments}`,
-          `Growth ${stats.growthPoints}`,
-        ],
+        summary: hasDataError
+          ? 'Some learning metrics are temporarily unavailable. Retry when your connection is restored.'
+          : 'Classes, pending assignments, and growth progress at a glance.',
+        temporalLabel: hasDataError ? 'Sync needed' : stats.pendingAssignments > 0 ? 'Due soon' : 'On track',
+        metadata: hasDataError
+          ? ['Live data unavailable', 'Retry sync']
+          : [
+              `Classes ${stats.enrolledClasses}`,
+              `Pending ${stats.pendingAssignments}`,
+              `Growth ${stats.growthPoints}`,
+            ],
         content: (
           <HStack className="gap-4">
             <StatWidget
               icon={ClipboardCheck}
               label="My Classes"
-              value={stats.enrolledClasses}
+              value={hasDataError ? '—' : stats.enrolledClasses}
               iconColorClass="text-phase-interactive"
             />
             <StatWidget
               icon={Zap}
               label="Assignments"
-              value={stats.pendingAssignments}
+              value={hasDataError ? '—' : stats.pendingAssignments}
               iconColorClass="text-phase-accent"
             />
           </HStack>
@@ -295,8 +305,10 @@ export function useStudentDashboardSurfaces({
         title: 'Your sanctuaries',
         subtitle: 'Classroom registry',
         summary: 'Enter the classrooms where your learning is actively happening.',
-        temporalLabel: stats.enrolledClasses > 0 ? 'Live' : 'Join first',
-        metadata: [`Classes ${stats.enrolledClasses}`, 'Registry', 'Learning flow'],
+        temporalLabel: hasDataError ? 'Sync needed' : stats.enrolledClasses > 0 ? 'Live' : 'Join first',
+        metadata: hasDataError
+          ? ['Live data unavailable', 'Retry sync']
+          : [`Classes ${stats.enrolledClasses}`, 'Registry', 'Learning flow'],
         content: (
           <VStack className="gap-4">
             <ClassroomList
@@ -423,6 +435,7 @@ export function useStudentDashboardSurfaces({
       stats.enrolledClasses,
       stats.pendingAssignments,
       stats.growthPoints,
+      hasDataError,
       onOpenLibrary,
       onOpenCommunity,
       onOpenRewards,

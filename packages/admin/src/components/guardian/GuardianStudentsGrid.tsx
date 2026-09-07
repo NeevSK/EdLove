@@ -24,6 +24,10 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
         <Pressable
           key={student.studentId}
           onPress={() => onStudentPress(student)}
+          testID="student-card"
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${student.name}`}
+          accessibilityHint="Opens this student's learning overview"
           className="active:opacity-85 w-full md:w-[48%]"
         >
           <Box className="p-4 rounded-xl mb-4 bg-white/60 border border-border">

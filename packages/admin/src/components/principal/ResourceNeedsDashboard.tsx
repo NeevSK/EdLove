@@ -4,6 +4,8 @@ import { BookOpen, CircleAlert, Lightbulb, Package, Users, Wifi } from '@repo/ui
 import {
   ActivityIndicator,
   Box,
+  Button,
+  ButtonText,
   Heading,
   HStack,
   Text,
@@ -40,6 +42,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
   const { t } = useTranslation();
   const [needs, setNeeds] = useState<ResourceNeed[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const getPriorityClasses = (priority: string) => {
     switch (priority) {
@@ -73,10 +76,12 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
   const fetchResourceNeeds = useCallback(async () => {
     try {
       setIsLoading(true);
+      setLoadError(null);
       const data = await api.inventory.getSchoolResourceNeeds(schoolId);
       setNeeds(data || []);
     } catch (error) {
       console.error('Failed to fetch resource needs:', error);
+      setLoadError('Resource needs could not be loaded.');
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +102,21 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
   }
 
   if (needs.length === 0) {
+    if (loadError) {
+      return (
+        <Box className="p-10 bg-phase-danger/10 rounded-3xl items-center border border-phase-danger/20">
+          <Text className="text-phase-danger font-bold text-center">{loadError}</Text>
+          <Button
+            variant="outline"
+            onPress={() => void fetchResourceNeeds()}
+            className="mt-4 border-phase-danger/30"
+            accessibilityLabel="Retry loading resource needs"
+          >
+            <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+          </Button>
+        </Box>
+      );
+    }
     return (
       <Box className="p-10 bg-phase-canvas rounded-3xl items-center border border-dashed border-phase-border">
         <Heading className="text-xl font-black text-phase-success text-center">

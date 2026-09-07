@@ -21,6 +21,7 @@ interface AttendanceState {
   saving: boolean;
   saved: boolean;
   error: string;
+  saveError: string;
 }
 
 type AttendanceAction =
@@ -39,6 +40,7 @@ const initialState: AttendanceState = {
   saving: false,
   saved: false,
   error: '',
+  saveError: '',
 };
 
 function attendanceReducer(state: AttendanceState, action: AttendanceAction): AttendanceState {
@@ -68,11 +70,11 @@ function attendanceReducer(state: AttendanceState, action: AttendanceAction): At
         students: state.students.map((s) => ({ ...s, status: action.payload })),
       };
     case 'SAVE_START':
-      return { ...state, saving: true, error: '' };
+      return { ...state, saving: true, saveError: '' };
     case 'SAVE_SUCCESS':
       return { ...state, saving: false, saved: true };
     case 'SAVE_ERROR':
-      return { ...state, saving: false, error: action.payload };
+      return { ...state, saving: false, saveError: action.payload };
     default:
       return state;
   }
@@ -118,48 +120,51 @@ export default function AttendanceScreenWeb() {
 
   const [state, dispatch] = useReducer(attendanceReducer, initialState);
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (!classroomId) {
       dispatch({ type: 'FETCH_ERROR', payload: 'No classroom selected' });
       return;
     }
-    async function loadData() {
-      dispatch({ type: 'FETCH_START' });
-      try {
-        const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
-        const [data, snapshot] = await Promise.all([
-          api.classroomStudents.getAll(classroomId),
-          api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate),
-        ]);
-        const savedStatus = new Map<string, string>(
-          snapshot.records.map(
-            (record: AttendanceRecord) => [record.student_id, record.status] as [string, string],
-          ),
-        );
-        const mappedStudents = data.map(
-          (student: {
-            id: string;
-            student_id?: string | null;
-            full_name: string;
-            roll_number?: string | null;
-          }) => ({
-            id: student.id,
-            student_id: student.student_id || student.id,
-            full_name: student.full_name,
-            roll_number: student.roll_number,
-            status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
-          }),
-        );
-        dispatch({ type: 'FETCH_SUCCESS', payload: mappedStudents });
-      } catch (err: any) {
-        dispatch({
-          type: 'FETCH_ERROR',
-          payload: err?.message || 'Failed to load students',
-        });
-      }
+    dispatch({ type: 'FETCH_START' });
+    try {
+      const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
+      const [data, snapshot] = await Promise.all([
+        api.classroomStudents.getAll(classroomId),
+        api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate),
+      ]);
+      const savedStatus = new Map<string, string>(
+        snapshot.records.map(
+          (record: AttendanceRecord) => [record.student_id, record.status] as [string, string],
+        ),
+      );
+      const mappedStudents = data.map(
+        (student: {
+          id: string;
+          student_id?: string | null;
+          full_name: string;
+          roll_number?: string | null;
+        }) => ({
+          id: student.id,
+          student_id: student.student_id || student.id,
+          full_name: student.full_name,
+          roll_number: student.roll_number,
+          status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
+        }),
+      );
+      dispatch({ type: 'FETCH_SUCCESS', payload: mappedStudents });
+    } catch (err: any) {
+      dispatch({
+        type: 'FETCH_ERROR',
+        payload: err?.message || 'Failed to load students',
+      });
     }
-    loadData();
   }, [classroomId]);
+
+  useEffect(() => {
+    void loadData();
+    /* loadData is stable for the selected classroom. */
+  }, [loadData]);
+
 
   const toggle = useCallback((id: string) => {
     dispatch({ type: 'TOGGLE_STUDENT', payload: id });
@@ -230,7 +235,7 @@ export default function AttendanceScreenWeb() {
     [attendanceDate],
   );
 
-  const { students, loading, saving, saved, error } = state;
+  const { students, loading, saving, saved, error, saveError } = state;
   const statusLabels: Record<Status, string> = {
     present: t('attendance.status.present') || STATUS_CONFIG.present.label,
     late: t('attendance.status.late') || STATUS_CONFIG.late.label,
@@ -310,6 +315,23 @@ export default function AttendanceScreenWeb() {
             }}
           >
             {error}
+            <button
+              type="button"
+              onClick={() => void loadData()}
+              style={{
+                display: 'block',
+                margin: '12px auto 0',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: '1px solid currentColor',
+                background: 'transparent',
+                color: 'inherit',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Try again
+            </button>
           </div>
         )}
 
@@ -494,6 +516,22 @@ export default function AttendanceScreenWeb() {
                 })
               )}
             </div>
+
+            {saveError && (
+              <div
+                role="alert"
+                style={{
+                  marginBottom: '12px',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: 'rgba(239,68,68,0.08)',
+                  color: 'var(--ember)',
+                  fontSize: '13px',
+                }}
+              >
+                {saveError}
+              </div>
+            )}
 
             {saved ? (
               <div

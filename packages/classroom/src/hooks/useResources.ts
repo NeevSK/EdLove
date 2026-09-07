@@ -16,6 +16,7 @@ export function useResources(classroomId: string) {
   const isOnline = useStore((state) => state.isOnline);
   const [resources, setResources] = useState<ClassroomResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     const loadCache = async () => {
@@ -35,6 +36,7 @@ export function useResources(classroomId: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!isOnline) return;
+    setError(null);
     try {
       const fetched = await api.resources.getAll(classroomId);
       setResources(fetched);
@@ -45,6 +47,7 @@ export function useResources(classroomId: string) {
       );
     } catch (e) {
       console.error('Failed to refresh resources', e);
+      setError('Resources are temporarily unavailable.');
     }
   }, [classroomId, isOnline]);
   // Fetch on mount/online change
@@ -54,6 +57,7 @@ export function useResources(classroomId: string) {
   return {
     resources,
     isLoading,
+    error,
     refreshData,
     setResources,
   };

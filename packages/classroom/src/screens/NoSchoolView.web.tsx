@@ -328,6 +328,7 @@ type TeacherJoinSchoolState = {
   searching: boolean;
   requesting: string | null;
   reqSent: boolean;
+  actionError: string | null;
 };
 
 type TeacherJoinSchoolAction =
@@ -339,6 +340,7 @@ type TeacherJoinSchoolAction =
   | { type: 'SET_QUERY'; query: string }
   | { type: 'SEARCH_START' }
   | { type: 'SEARCH_SUCCESS'; results: School[] }
+  | { type: 'ACTION_ERROR'; error: string }
   | { type: 'REQUEST_START'; schoolId: string }
   | { type: 'REQUEST_SUCCESS' }
   | { type: 'RESET_REQ' };
@@ -349,7 +351,7 @@ const joinSchoolReducer = (
 ): TeacherJoinSchoolState => {
   switch (action.type) {
     case 'SET_METHOD':
-      return { ...state, method: action.method };
+      return { ...state, method: action.method, actionError: null };
     case 'SET_CODE':
       return { ...state, code: action.code, codeErr: null };
     case 'CODE_START':
@@ -359,15 +361,17 @@ const joinSchoolReducer = (
     case 'CODE_FAILURE':
       return { ...state, codeLoading: false, codeErr: action.error };
     case 'SET_QUERY':
-      return { ...state, query: action.query };
+      return { ...state, query: action.query, actionError: null };
     case 'SEARCH_START':
       return { ...state, searching: true };
     case 'SEARCH_SUCCESS':
-      return { ...state, searching: false, results: action.results };
+      return { ...state, searching: false, results: action.results, actionError: null };
     case 'REQUEST_START':
       return { ...state, requesting: action.schoolId };
     case 'REQUEST_SUCCESS':
       return { ...state, requesting: null, reqSent: true };
+    case 'ACTION_ERROR':
+      return { ...state, searching: false, requesting: null, actionError: action.error };
     case 'RESET_REQ':
       return { ...state, reqSent: false };
     default:
@@ -388,6 +392,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     searching: false,
     requesting: null,
     reqSent: false,
+    actionError: null,
   });
 
   const fmtCode = (v: string) => {
@@ -401,7 +406,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
   };
 
   const handleCode = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id || state.code.replace(/-/g, '').length < 16) return;
     dispatch({ type: 'CODE_START' });
     try {
       const res = await validateInviteCode(state.code.trim());
@@ -447,14 +452,17 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     }
   }, [user, state.code, context, onJoined]);
 
+  const normalizedCodeLength = state.code.replace(/-/g, '').length;
+
   const handleSearch = useCallback(async () => {
     if (state.query.length < 3) return;
     dispatch({ type: 'SEARCH_START' });
     try {
       const results = await schoolAPI.searchSchools(state.query);
       dispatch({ type: 'SEARCH_SUCCESS', results });
-    } catch {
-      dispatch({ type: 'SEARCH_SUCCESS', results: [] });
+    } catch (error) {
+      console.error('Failed to search schools:', error);
+      dispatch({ type: 'ACTION_ERROR', error: 'Schools could not be searched. Please try again.' });
     }
   }, [state.query]);
 
@@ -465,8 +473,9 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
       try {
         await onboardingAPI.requestSchoolJoin(user.id, schoolId, 'teacher');
         dispatch({ type: 'REQUEST_SUCCESS' });
-      } catch {
-        dispatch({ type: 'REQUEST_SUCCESS' }); // Assume success or handle error
+      } catch (error) {
+        console.error('Failed to request school join:', error);
+        dispatch({ type: 'ACTION_ERROR', error: 'Your join request could not be sent. Please try again.' });
       }
     },
     [user],
@@ -548,7 +557,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
           </VStack>
           <SanctuaryButton
             onPress={handleCode}
-            isDisabled={state.code.length < 15 || state.codeLoading}
+            isDisabled={normalizedCodeLength < 16 || state.codeLoading}
             className="bg-phase-interactive"
             accessibilityLabel="Join with invite code"
             accessibilityHint="Attempts to join the school using the provided code"
@@ -599,6 +608,9 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
             </SanctuaryButton>
           </HStack>
           <VStack className="gap-2 max-h-[220px]">
+            {state.actionError ? (
+              <Text className="text-xs text-phase-error" accessibilityRole="alert">{state.actionError}</Text>
+            ) : null}
             <ScrollView showsVerticalScrollIndicator={false}>
               {state.results.map((s: School) => (
                 <Box

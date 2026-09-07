@@ -41,7 +41,7 @@ export default function GuardianCommunicationBridgeScreen() {
     <GuardianRoomShell
       eyebrow="School-home, bridge"
       title="Communication, bridge"
-      description="This, room, helps, the, guardian, move from awareness, into, the, right, school, community, and, resource, spaces, without, losing, context."
+      description="This room helps the guardian move from awareness into the right school, community, and resource spaces without losing context."
       onBack={() => safeBack('/workspace')}
     >
       <VStack className="gap-3">

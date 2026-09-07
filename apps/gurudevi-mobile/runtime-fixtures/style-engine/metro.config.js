@@ -29,16 +29,18 @@ for (const storeEntry of fs.readdirSync(pnpmRoot)) {
   for (const packageEntry of fs.readdirSync(storeNodeModules)) {
     if (packageEntry.startsWith('@')) {
       const scopeRoot = path.join(storeNodeModules, packageEntry);
-      if (!fs.statSync(scopeRoot).isDirectory()) continue;
+      if (!fs.existsSync(scopeRoot) || !fs.statSync(scopeRoot).isDirectory()) continue;
       for (const scopedPackage of fs.readdirSync(scopeRoot)) {
         const packagePath = path.join(scopeRoot, scopedPackage);
-        if (fs.statSync(packagePath).isDirectory()) {
+        if (fs.existsSync(packagePath) && fs.statSync(packagePath).isDirectory()) {
           pnpmFallbacks[`${packageEntry}/${scopedPackage}`] = packagePath;
         }
       }
     } else {
       const packagePath = path.join(storeNodeModules, packageEntry);
-      if (fs.statSync(packagePath).isDirectory()) pnpmFallbacks[packageEntry] = packagePath;
+      if (fs.existsSync(packagePath) && fs.statSync(packagePath).isDirectory()) {
+        pnpmFallbacks[packageEntry] = packagePath;
+      }
     }
   }
 }
@@ -56,6 +58,14 @@ config.resolver.extraNodeModules = {
   react: path.join(appRoot, 'node_modules', 'react'),
   'react-native': path.join(appRoot, 'node_modules', 'react-native'),
   'react-native-web': path.join(appRoot, 'node_modules', 'react-native-web'),
+  styleq: path.join(
+    workspaceRoot,
+    'node_modules',
+    '.pnpm',
+    'styleq@0.1.3',
+    'node_modules',
+    'styleq',
+  ),
   'tailwindcss-safe-area': path.join(
     workspaceRoot,
     'node_modules',
@@ -93,14 +103,15 @@ config.resolver.extraNodeModules = {
 
 const defaultResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName.startsWith('@repo/')) {
-    const separator = moduleName.indexOf('/', '@repo/'.length);
-    const packageName = separator === -1 ? moduleName : moduleName.slice(0, separator);
-    const relativePath = separator === -1 ? '' : moduleName.slice(separator + 1);
-    const packageRoot = internalPackages[packageName];
-    const sourceRoot = packageRoot && path.join(packageRoot, 'src');
-    const basePath = sourceRoot && path.join(sourceRoot, relativePath);
-    if (!basePath) return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
+  const moduleParts = moduleName.split('/');
+  const packageName = moduleName.startsWith('@')
+    ? moduleParts.slice(0, 2).join('/')
+    : moduleParts[0];
+  const relativePath = moduleParts.slice(moduleName.startsWith('@') ? 2 : 1).join('/');
+  const packageRoot = internalPackages[packageName];
+  const sourceRoot = packageRoot && path.join(packageRoot, 'src');
+  const basePath = sourceRoot && relativePath && path.join(sourceRoot, relativePath);
+  if (basePath) {
     const candidates = [
       basePath,
       `${basePath}.ts`,

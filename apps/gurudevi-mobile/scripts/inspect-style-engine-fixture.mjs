@@ -19,6 +19,11 @@ const expected = {
     marginTop: '16px',
     backgroundColor: 'rgb(31, 41, 55)',
   },
+  scenario: {
+    selector: '#form-scenario',
+    padding: '16px',
+    backgroundColor: 'rgb(31, 41, 55)',
+  },
 };
 
 const browser = await chromium.launch({ headless: true });
@@ -26,6 +31,7 @@ const page = await browser.newPage();
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
 await page.goto(url, { waitUntil: 'networkidle' });
+await page.locator('#runtime-fixture').waitFor({ state: 'attached' });
 
 const actual = {};
 for (const [name, assertion] of Object.entries(expected)) {
@@ -49,5 +55,32 @@ for (const [name, assertion] of Object.entries(expected)) {
 }
 
 if (errors.length > 0) throw new Error(`Fixture page errors: ${errors.join('; ')}`);
+
+const input = page.getByPlaceholder('Your name');
+const saveButton = page.getByRole('button', { name: 'Save profile' });
+if ((await input.count()) !== 1 || (await saveButton.count()) !== 1) {
+  throw new Error('Missing Button/Input/FormField scenario controls');
+}
+
+if ((await input.getAttribute('aria-describedby')) !== 'display-name-helper') {
+  throw new Error('Input does not describe its helper text');
+}
+
+await saveButton.click();
+await page.getByText('Name is required.').waitFor();
+if ((await input.getAttribute('aria-describedby')) !== 'display-name-error') {
+  throw new Error('Invalid input does not describe its error text');
+}
+
+await input.fill('Naveen');
+await page.getByRole('button', { name: 'Save profile' }).click();
+await page.getByText('Saving profile…').waitFor();
+await page.getByText('Could not save your profile. Try again.').waitFor();
+await page.getByRole('button', { name: 'Try again' }).click();
+await page.getByText('Profile saved.').waitFor();
+
+const buttonHeight = await page.getByRole('button', { name: 'Saved' }).evaluate((node) => getComputedStyle(node).height);
+if (buttonHeight !== '48px') throw new Error(`Button height: expected 48px, received ${buttonHeight}`);
+
 console.log(JSON.stringify({ url, actual, pageErrors: errors }, null, 2));
 await browser.close();

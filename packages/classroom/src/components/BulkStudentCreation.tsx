@@ -20,6 +20,7 @@ import {
 import { useToast } from '@repo/ui/providers';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -142,7 +143,14 @@ export default function BulkStudentCreation({
     setStep('entry');
   };
 
-  const removeStudent = (index: number) => {
+  const removeStudent = async (index: number) => {
+    const student = students[index];
+    const confirmed = await confirmAction(
+      'Remove student from draft?',
+      `${student?.name || `Student ${index + 1}`} will be removed from this draft.`,
+    );
+    if (!confirmed) return;
+
     hapticLight();
     setStudents((prev) => {
       const next = prev.filter((_, i) => i !== index);
@@ -155,6 +163,18 @@ export default function BulkStudentCreation({
       }
       return next;
     });
+  };
+
+  const handleCancel = async () => {
+    if (students.length > 0) {
+      const confirmed = await confirmAction(
+        'Discard student draft?',
+        'Your entered student details are saved locally and will be discarded.',
+      );
+      if (!confirmed) return;
+      storage.delete(StorageKeys.DRAFT_STUDENTS);
+    }
+    onCancel();
   };
 
   const confirmImport = () => {
@@ -182,7 +202,13 @@ export default function BulkStudentCreation({
             {t('bulk_creation.subtitle') || 'Create students in one guided flow'}
           </Text>
         </VStack>
-        <Pressable onPress={onCancel} className="rounded-full bg-phase-surface-secondary p-3">
+        <Pressable
+          onPress={() => void handleCancel()}
+          className="rounded-full bg-phase-surface-secondary p-3"
+          accessibilityRole="button"
+          accessibilityLabel="Close bulk student creation"
+          accessibilityHint="Closes this flow and asks before discarding the draft"
+        >
           <Icon as={X} size={20} color="#1F2937" />
         </Pressable>
       </HStack>
@@ -380,12 +406,19 @@ export default function BulkStudentCreation({
                             setCurrentIndex(index);
                             setStep('entry');
                           }}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Edit ${student.name || `student ${index + 1}`}`}
                         >
                           <Text className="text-sm font-bold text-sanctuarySaffron">
                             {t('common.edit') || 'Edit'}
                           </Text>
                         </Pressable>
-                        <Pressable onPress={() => removeStudent(index)}>
+                        <Pressable
+                          onPress={() => void removeStudent(index)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Remove ${student.name || `student ${index + 1}`}`}
+                          accessibilityHint="Removes this student from the draft"
+                        >
                           <Icon as={Trash2} size={18} color={Theme.colors.emberRed} />
                         </Pressable>
                       </HStack>

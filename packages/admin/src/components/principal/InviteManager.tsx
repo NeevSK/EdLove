@@ -225,9 +225,19 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
           {/* Error Handle */}
           {error && (
             <Box className="p-5 bg-phase-danger/5 rounded-[24px] border border-phase-danger/20">
-              <Text className="text-phase-danger font-black text-[13px] tracking-tight">
-                {error}
-              </Text>
+              <HStack className="items-center gap-3">
+                <Text className="flex-1 text-phase-danger font-black text-[13px] tracking-tight" accessibilityRole="alert">
+                  {error}
+                </Text>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={() => void loadInviteCodes()}
+                  accessibilityLabel="Retry loading invite codes"
+                >
+                  <ButtonText>Retry</ButtonText>
+                </Button>
+              </HStack>
             </Box>
           )}
 

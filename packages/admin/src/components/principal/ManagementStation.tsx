@@ -17,6 +17,9 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
         hapticLight();
         onAction(target);
       }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={`Opens ${description}`}
       className="flex-1 bg-phase-surface p-5 rounded-[24px] border border-phase-border active:scale-[0.98] transition-all shadow-sm"
     >
       <HStack className="justify-between items-center">

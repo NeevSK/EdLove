@@ -190,6 +190,7 @@ describe('DocumentListScreen', () => {
 
       await waitFor(() => {
         expect(mockedDocumentAPI.getDocuments).toHaveBeenCalled();
+        expect(screen.getByLabelText('Retry loading documents')).toBeTruthy();
       });
     });
   });

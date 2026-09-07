@@ -19,9 +19,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import { formatDistanceToNow } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Echo {
@@ -45,8 +46,10 @@ interface Props {
 export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) {
   const { t } = useTranslation();
   const { user } = useStore();
+  const { showToast } = useSanctuaryToast();
   const [echoes, setEchoes] = useState<Echo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Student side state
   const [newEcho, setNewEcho] = useState('');
@@ -57,6 +60,19 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
+
+  const fetchEchoes = useCallback(async () => {
+    setLoadError(null);
+    try {
+      const data = await echoAPI.getEchoesByClassroom(classroomId);
+      setEchoes(data || []);
+    } catch (error) {
+      console.error('Error fetching echoes:', error);
+      setLoadError('Echoes could not be loaded. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [classroomId]);
 
   useEffect(() => {
     fetchEchoes();
@@ -83,18 +99,8 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     };
   }, [classroomId, fetchEchoes]);
 
-  async function fetchEchoes() {
-    try {
-      const data = await echoAPI.getEchoesByClassroom(classroomId);
-      setEchoes(data || []);
-    } catch (error) {
-      console.error('Error fetching echoes:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   const handleSendEcho = async () => {
+
     if (!newEcho.trim() || isSending) return;
     setIsSending(true);
     hapticLight();
@@ -105,9 +111,11 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
         is_anonymous: isAnonymous,
       });
       setNewEcho('');
-      // Success haptic or toast could go here
+      showToast({ message: 'Your echo was sent.', type: 'success' });
+      void fetchEchoes();
     } catch (error) {
       console.error('Error sending echo:', error);
+      showToast({ message: 'Your echo could not be sent. Please try again.', type: 'error' });
     } finally {
       setIsSending(false);
     }
@@ -123,6 +131,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
       fetchEchoes();
     } catch (error) {
       console.error('Error replying to echo:', error);
+      showToast({ message: 'Your reply could not be sent. Please try again.', type: 'error' });
     } finally {
       setIsReplying(false);
     }
@@ -134,6 +143,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
       setEchoes((prev) => prev.map((e) => (e.id === echoId ? { ...e, is_read: true } : e)));
     } catch (error) {
       console.error('Error marking echo as read:', error);
+      showToast({ message: 'That echo could not be marked as read.', type: 'error' });
     }
   };
 
@@ -156,12 +166,20 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                 multiline
                 numberOfLines={4}
                 className="text-phase-text-primary"
+                accessibilityLabel="Classroom echo"
+                accessibilityHint="Share feedback with your teacher"
               />
             </Input>
           </Box>
 
           <HStack className="justify-between items-center">
-            <Pressable onPress={() => setIsAnonymous(!isAnonymous)}>
+            <Pressable
+              onPress={() => setIsAnonymous(!isAnonymous)}
+              accessibilityRole="switch"
+              accessibilityLabel="Anonymous mode"
+              accessibilityHint="Choose whether your echo is shared anonymously"
+              accessibilityState={{ checked: isAnonymous }}
+            >
               <HStack className="gap-xs items-center">
                 {isAnonymous ? (
                   <Icon as={EyeOff} size="sm" className="text-sanctuarySaffron" />
@@ -183,6 +201,8 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
               size="sm"
               onPress={handleSendEcho}
               isDisabled={!newEcho.trim() || isSending}
+              accessibilityLabel={isSending ? 'Sending echo' : 'Send echo'}
+              accessibilityState={{ busy: isSending, disabled: !newEcho.trim() || isSending }}
               className="rounded-full"
             >
               {isSending ? (
@@ -234,6 +254,26 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     </VStack>
   );
 
+  if (isLoading) {
+    return (
+      <Box className="p-xl items-center">
+        <BrandPulse size={28} tintColor="#F6BF8C" accessibilityLabel="Loading classroom echoes" />
+        <Text className="mt-sm text-phase-text-tertiary">Loading echoes...</Text>
+      </Box>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <Box className="p-xl items-center gap-md">
+        <Text className="text-emberRed text-center">{loadError}</Text>
+        <Button variant="outline" onPress={() => void fetchEchoes()}>
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </Box>
+    );
+  }
+
   const renderTeacherView = () => (
     <VStack className="gap-md p-md">
       <HStack className="justify-between items-center">
@@ -261,7 +301,13 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
         echoes.map((echo) => {
           const isReplyingThis = replyingTo === echo.id;
           return (
-            <Pressable key={echo.id} onPress={() => !echo.is_read && handleMarkRead(echo.id)}>
+            <Pressable
+              key={echo.id}
+              onPress={() => !echo.is_read && handleMarkRead(echo.id)}
+              accessibilityRole="button"
+              accessibilityLabel={`${echo.is_anonymous ? 'Anonymous' : echo.student_name || 'Student'} echo${echo.is_read ? '' : ', unread'}`}
+              accessibilityHint={echo.is_read ? undefined : 'Marks this echo as read'}
+            >
               <Box
                 className={`p-md rounded-comfortable border-l-4 shadow-sm ${
                   echo.is_read
@@ -296,7 +342,11 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                   )}
 
                   {!isReplyingThis ? (
-                    <Pressable onPress={() => setReplyingTo(echo.id)}>
+                    <Pressable
+                      onPress={() => setReplyingTo(echo.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={echo.teacher_response ? 'Edit response' : 'Reply to echo'}
+                    >
                       <Text className="text-xs font-bold text-sanctuarySaffron">
                         {echo.teacher_response ? 'Edit Response' : 'Reply'}
                       </Text>
@@ -312,6 +362,8 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                             multiline
                             className="text-phase-text-primary text-sm"
                             autoFocus
+                            accessibilityLabel="Teacher response"
+                            accessibilityHint="Write a response to this student echo"
                           />
                         </Input>
                       </Box>
@@ -329,6 +381,8 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                           action="primary"
                           onPress={() => handleReply(echo.id)}
                           isDisabled={!replyText.trim() || isReplying}
+                          accessibilityLabel={isReplying ? 'Sending response' : 'Send response'}
+                          accessibilityState={{ busy: isReplying, disabled: !replyText.trim() || isReplying }}
                         >
                           {isReplying ? (
                             <Spinner size="small" className="text-white" />

@@ -12,6 +12,8 @@ import {
   HStack,
   Icon,
   Pressable,
+  Button,
+  ButtonText,
   ScrollView,
   Text,
   VStack,
@@ -37,10 +39,12 @@ export default function AttendanceReportScreen({
   const [cycles, setCycles] = useState<AcademicCycle[]>([]);
   const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(
     async (cycleId?: string) => {
       setLoading(true);
+      setError(null);
       try {
         const allCycles = await api.academicCycles.getAll(schoolId);
         setCycles(allCycles);
@@ -61,6 +65,7 @@ export default function AttendanceReportScreen({
         }
       } catch (error) {
         console.error('Failed to fetch attendance report:', error);
+        setError('Attendance report is temporarily unavailable. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -90,6 +95,30 @@ export default function AttendanceReportScreen({
     );
   }
 
+  if (error && !report) {
+    return (
+      <Box className="flex-1 bg-phase-canvas">
+        <GlobalHeader
+          title={classroomId ? 'Class Attendance' : 'Institutional Attendance'}
+          onBack={onBack}
+        />
+        <VStack className="flex-1 items-center justify-center gap-4 p-6">
+          <Icon as={TriangleAlert} size="lg" className="text-emberRed" />
+          <Heading className="text-lg font-black text-phaseText-primary text-center">
+            Attendance report unavailable
+          </Heading>
+          <Text className="text-phaseText-secondary text-center">{error}</Text>
+          <Button
+            onPress={() => void fetchData(selectedCycleId ?? undefined)}
+            accessibilityLabel="Retry loading attendance report"
+          >
+            <ButtonText>Try again</ButtonText>
+          </Button>
+        </VStack>
+      </Box>
+    );
+  }
+
   return (
     <Box className="flex-1 bg-phase-canvas">
       <GlobalHeader
@@ -103,6 +132,22 @@ export default function AttendanceReportScreen({
 
       <ScrollView contentContainerClassName="p-6">
         <VStack className="gap-8">
+          {error && report ? (
+            <Box className="rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+              <HStack className="items-center justify-between gap-3">
+                <Text className="flex-1 text-sm text-phaseText-primary">{error} Showing the last available report.</Text>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={() => void fetchData(selectedCycleId ?? undefined)}
+                  accessibilityLabel="Retry refreshing attendance report"
+                >
+                  <ButtonText>Retry</ButtonText>
+                </Button>
+              </HStack>
+            </Box>
+          ) : null}
+
           {/* Cycle Selector */}
           <Box>
             <Text className="text-[10px] font-black text-phaseText-secondary mb-3 uppercase tracking-widest">

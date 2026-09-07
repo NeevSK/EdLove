@@ -27,7 +27,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
   const isGuest = useIsGuest();
   const { isPastView } = useTemporalStore();
   const _colors = useThemedColors();
-  const { isDemoExperience, stats } = useStudentWorkspaceData(forceDemo);
+  const { isDemoExperience, stats, hasDataError } = useStudentWorkspaceData(forceDemo);
 
   useRegisterFAB({
     tabType: 'classroom',
@@ -39,6 +39,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     isPastView,
     isDemoExperience,
     stats,
+    hasDataError,
     onOpenLibrary: () => router.push('/library'),
     onOpenCommunity: () => router.push('/community'),
     onOpenRewards: () => {

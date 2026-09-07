@@ -1,7 +1,6 @@
-import { api } from '@repo/core/api/client';
-
 import { useCallback, useEffect, useState } from 'react';
 import type { GuardianDashboardData } from '@repo/admin/guardian/types';
+import { guardianAPI } from '@repo/admin/guardian/api';
 
 export function useGuardianWorkspaceData(guardianId: string) {
   const [dashboard, setDashboard] = useState<GuardianDashboardData | null>(null);
@@ -11,7 +10,7 @@ export function useGuardianWorkspaceData(guardianId: string) {
   const loadDashboard = useCallback(async () => {
     try {
       setIsLoading(true);
-      const dashboardData = await api.guardian.getDashboard(guardianId);
+      const dashboardData = await guardianAPI.getGuardianDashboard(guardianId);
       setDashboard({
         ...dashboardData,
         guardianId: dashboardData.guardianId || guardianId,

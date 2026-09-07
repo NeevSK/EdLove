@@ -13,12 +13,23 @@ import { useTranslation } from 'react-i18next';
 export const RedirectToApp = () => {
   const { t } = useTranslation();
   const [session, setSession] = useState<{ user: { id: string } } | null>(null);
+  const [handoffMessage, setHandoffMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    identityAPI.getMyInternalId().then((id: string | null) => {
-      setSession(id ? { user: { id } } : null);
-    });
+    let isMounted = true;
+
+    void identityAPI
+      .getMyInternalId()
+      .then((id: string | null) => {
+        if (isMounted) setSession(id ? { user: { id } } : null);
+      })
+      .catch(() => {
+        if (isMounted) setSession(null);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Very basic check for mobile browser
@@ -30,6 +41,7 @@ export const RedirectToApp = () => {
 
   const handleOpenApp = () => {
     hapticLight();
+    setHandoffMessage(null);
 
     let url = 'gurudevi://';
 
@@ -47,11 +59,16 @@ export const RedirectToApp = () => {
     window.location.href = url;
 
     // Fallback if app not installed (basic version)
-    setTimeout(() => {
+    const fallbackTimer = window.setTimeout(() => {
       if (!document.hidden) {
-        alert('Ensure the Gurudevi app is installed on your device.');
+        setHandoffMessage(
+          t('auth.appNotInstalled') ||
+            'The app did not open. Install Gurudevi, then try again from this page.',
+        );
       }
     }, 2500);
+
+    window.addEventListener('pagehide', () => window.clearTimeout(fallbackTimer), { once: true });
   };
 
   return (
@@ -80,6 +97,11 @@ export const RedirectToApp = () => {
               : t('auth.openApp') || 'Open App'}
           </ButtonText>
         </Button>
+        {handoffMessage ? (
+          <Text className="text-warning-700 text-sm font-semibold" accessibilityRole="alert">
+            {handoffMessage}
+          </Text>
+        ) : null}
       </VStack>
     </Box>
   );

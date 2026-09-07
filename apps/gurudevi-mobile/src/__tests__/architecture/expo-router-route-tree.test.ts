@@ -1,8 +1,11 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { appNavigation, getNavigationItems } from '@/lib/navigation/appNavigation';
 
 const APP_ROOT = path.resolve(__dirname, '../../../app');
+const NATIVE_TABS_LAYOUT = path.join(APP_ROOT, '(tabs)', '_layout.tsx');
+const WEB_TABS_LAYOUT = path.join(APP_ROOT, '(tabs)', '_layout.web.tsx');
 const ROUTE_FILE = /(?:\.(?<platform>web|ios|android|native))?\.(?<extension>ts|tsx|js|jsx)$/;
 
 function getRouteFiles(directory = APP_ROOT): string[] {
@@ -37,6 +40,15 @@ function routeDefinition(filePath: string) {
   };
 }
 
+function getNativeTabConfiguration(source: string) {
+  return [...source.matchAll(/<Tabs\.Screen\s+name="(?<name>[^"]+)"[\s\S]*?\n\s*\/>/g)].map(
+    (match) => ({
+      name: match.groups?.name,
+      hidden: /href:\s*null/.test(match[0]),
+    }),
+  );
+}
+
 describe('Expo Router route tree', () => {
   it('keeps helper modules out of app and retains only UI route module extensions', () => {
     const routeFiles = getRouteFiles();
@@ -56,5 +68,38 @@ describe('Expo Router route tree', () => {
     );
 
     expect(duplicateDefinitions).toEqual([]);
+  });
+
+  it('resolves every shared navigation destination to a live default route', () => {
+    const defaultRoutes = new Set(
+      getRouteFiles()
+        .map(routeDefinition)
+        .filter(
+          (definition): definition is NonNullable<typeof definition> =>
+            definition !== null && definition.platform === 'default',
+        )
+        .map((definition) => definition.route),
+    );
+
+    const missingDestinations = appNavigation
+      .filter((item) => !defaultRoutes.has(item.href))
+      .map((item) => ({ id: item.id, href: item.href }));
+
+    expect(missingDestinations).toEqual([]);
+  });
+
+  it('keeps native chrome and the web shell on the shared navigation contract', () => {
+    const nativeLayout = readFileSync(NATIVE_TABS_LAYOUT, 'utf8');
+    const webLayout = readFileSync(WEB_TABS_LAYOUT, 'utf8');
+    const nativeTabs = getNativeTabConfiguration(nativeLayout);
+    const visibleNativeTabs = nativeTabs.filter((tab) => !tab.hidden).map((tab) => tab.name);
+    const hiddenNativeRoutes = nativeTabs.filter((tab) => tab.hidden).map((tab) => tab.name);
+
+    expect(visibleNativeTabs).toEqual(getNavigationItems('tab').map((item) => item.id));
+    expect(hiddenNativeRoutes).toEqual(['notifications', 'settings']);
+    expect(nativeLayout).toContain('tabBarHideOnKeyboard: true');
+    expect(nativeLayout).toContain("router.push('/notifications')");
+    expect(nativeLayout).toContain("router.push('/settings')");
+    expect(webLayout).toContain('appNavigation.map');
   });
 });

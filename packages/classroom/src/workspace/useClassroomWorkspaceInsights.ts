@@ -47,9 +47,8 @@ export function useClassroomWorkspaceInsights({
       } catch (error) {
         console.warn('Failed to load teacher workspace insights', error);
         if (isMounted) {
-          setTeacherStats({
-            activeClasses: 0,
-          });
+          // A failed request is not evidence that the teacher has zero classes.
+          setTeacherStats(null);
         }
       }
     };
@@ -77,16 +76,23 @@ export function useClassroomWorkspaceInsights({
 
     if (can('manage', 'StudentDashboard')) {
       insights.student = {
-        summary:
-          studentWorkspace.stats.enrolledClasses > 0
+        summary: studentWorkspace.hasDataError
+          ? 'Some learning metrics are temporarily unavailable. Retry when your connection is restored.'
+          : studentWorkspace.stats.enrolledClasses > 0
             ? `Learning is live across ${studentWorkspace.stats.enrolledClasses} class${studentWorkspace.stats.enrolledClasses === 1 ? '' : 'es'} with ${studentWorkspace.stats.pendingAssignments} pending assignment${studentWorkspace.stats.pendingAssignments === 1 ? '' : 's'}.`
             : 'No enrolled class is active yet, so the next step is joining the first learning sanctuary.',
-        temporalLabel: studentWorkspace.stats.pendingAssignments > 0 ? 'Due soon' : 'On track',
-        metadata: [
-          `Classes ${studentWorkspace.stats.enrolledClasses}`,
-          `Pending ${studentWorkspace.stats.pendingAssignments}`,
-          `Growth ${studentWorkspace.stats.growthPoints}`,
-        ],
+        temporalLabel: studentWorkspace.hasDataError
+          ? 'Sync needed'
+          : studentWorkspace.stats.pendingAssignments > 0
+            ? 'Due soon'
+            : 'On track',
+        metadata: studentWorkspace.hasDataError
+          ? ['Live data unavailable', 'Retry sync']
+          : [
+              `Classes ${studentWorkspace.stats.enrolledClasses}`,
+              `Pending ${studentWorkspace.stats.pendingAssignments}`,
+              `Growth ${studentWorkspace.stats.growthPoints}`,
+            ],
       };
     }
 
@@ -105,5 +111,5 @@ export function useClassroomWorkspaceInsights({
     }
 
     return insights;
-  }, [teacherStats, can, studentWorkspace.stats, schoolStats, school?.name]);
+  }, [teacherStats, can, studentWorkspace.hasDataError, studentWorkspace.stats, schoolStats, school?.name]);
 }

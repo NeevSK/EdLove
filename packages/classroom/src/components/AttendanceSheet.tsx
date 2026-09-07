@@ -114,8 +114,9 @@ export default function AttendanceSheet({
           onLongPress={() => handleUpdateStatus(item.id, 'late')}
           delayLongPress={500}
           accessibilityRole="button"
-          accessibilityLabel={`Mark ${item.full_name} late`}
+          accessibilityLabel={`${item.full_name}, currently ${studentStatus}`}
           accessibilityHint="Swipe right for present, swipe left for absent, or hold to mark late."
+          accessibilityState={{ selected: studentStatus !== 'present' }}
         >
           <Box
             className={`bg-phase-surface rounded-comfortable p-4 my-1.5 border-l-4 ${config.borderClass} border border-phase-canvas/30`}
@@ -196,6 +197,8 @@ export default function AttendanceSheet({
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 className="flex-1 text-phaseText-primary text-base"
+                accessibilityLabel="Search students"
+                accessibilityHint="Filters the attendance roster by student name"
               />
             </Input>
           </Box>

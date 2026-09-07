@@ -1,7 +1,8 @@
 import { useStaffPresence } from '@repo/people/hooks/useStaffPresence';
-import { Calendar, CircleCheck, Clock, LogIn, LogOut } from '@repo/ui/icons';
+import { Clock, LogIn, LogOut } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { format } from 'date-fns';
 import type React from 'react';
 import { useState } from 'react';
@@ -18,19 +19,25 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
     userId,
     schoolId,
   );
+  const { showToast } = useSanctuaryToast();
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleToggleAttendance = async () => {
     hapticLight();
     setActionLoading(true);
     try {
-      if (isCheckedIn) {
-        await checkOut();
-      } else {
-        await checkIn();
+      const result = isCheckedIn ? await checkOut() : await checkIn();
+      if (!result.success) {
+        showToast({
+          message: isCheckedIn
+            ? 'Your check-out could not be recorded. Please try again.'
+            : 'Your check-in could not be recorded. Please try again.',
+          type: 'error',
+        });
       }
     } catch (err) {
       console.error('Attendance toggle failed:', err);
+      showToast({ message: 'Attendance could not be updated. Please try again.', type: 'error' });
     } finally {
       setActionLoading(false);
     }
@@ -142,24 +149,6 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
         </VStack>
       </Box>
 
-      <HStack className="gap-4">
-        <Pressable accessibilityRole="button" className="flex-1 active:scale-95 transition-all">
-          <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
-            <Icon as={Calendar} size="sm" className="text-phase-interactive" />
-            <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
-              {t('staffPresence.requestLeave') || 'Leave Gateway'}
-            </Text>
-          </Box>
-        </Pressable>
-        <Pressable accessibilityRole="button" className="flex-1 active:scale-95 transition-all">
-          <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
-            <Icon as={CircleCheck} size="sm" className="text-phase-interactive" />
-            <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
-              {t('staffPresence.viewHistory') || 'Registry View'}
-            </Text>
-          </Box>
-        </Pressable>
-      </HStack>
     </VStack>
   );
 };

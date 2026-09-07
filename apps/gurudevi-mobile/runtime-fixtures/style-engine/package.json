@@ -1,5 +1,8 @@
 {
   "name": "gurudevi-style-engine-runtime-fixture",
   "private": true,
-  "main": "index.tsx"
+  "main": "index.tsx",
+  "dependencies": {
+    "expo": "~57.0.20"
+  }
 }

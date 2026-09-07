@@ -31,6 +31,7 @@ interface AcademicCycleManagerProps {
 type State = {
   cycles: AcademicCycle[];
   isLoading: boolean;
+  loadError: string | null;
   isAddFormVisible: boolean;
   isSaving: boolean;
   form: {
@@ -44,6 +45,7 @@ type State = {
 type Action =
   | { type: 'SET_CYCLES'; cycles: AcademicCycle[] }
   | { type: 'SET_LOADING'; isLoading: boolean }
+  | { type: 'SET_LOAD_ERROR'; message: string | null }
   | { type: 'TOGGLE_FORM' }
   | { type: 'UPDATE_FORM'; field: keyof State['form']; value: string | boolean }
   | { type: 'RESET_FORM' }
@@ -55,6 +57,8 @@ const academicCyclesReducer = (state: State, action: Action): State => {
       return { ...state, cycles: action.cycles, isLoading: false };
     case 'SET_LOADING':
       return { ...state, isLoading: action.isLoading };
+    case 'SET_LOAD_ERROR':
+      return { ...state, loadError: action.message };
     case 'TOGGLE_FORM':
       return { ...state, isAddFormVisible: !state.isAddFormVisible };
     case 'UPDATE_FORM':
@@ -82,6 +86,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
   const [state, dispatch] = useReducer(academicCyclesReducer, {
     cycles: [],
     isLoading: true,
+    loadError: null,
     isAddFormVisible: false,
     isSaving: false,
     form: { name: '', startDate: '', endDate: '', isCurrent: false },
@@ -91,9 +96,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
     try {
       const data = await api.academicCycles.getAll(schoolId);
       dispatch({ type: 'SET_CYCLES', cycles: data ?? [] });
+      dispatch({ type: 'SET_LOAD_ERROR', message: null });
     } catch (error) {
       console.error('Failed to fetch cycles:', error);
       dispatch({ type: 'SET_LOADING', isLoading: false });
+      dispatch({ type: 'SET_LOAD_ERROR', message: 'Academic cycles could not be loaded.' });
     }
   }, [schoolId]);
 
@@ -111,13 +118,30 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
       return;
     }
 
+    const parsedStart = new Date(`${startDate}T00:00:00`);
+    const parsedEnd = new Date(`${endDate}T00:00:00`);
+    const isIsoDate = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
+    if (
+      !isIsoDate(startDate) ||
+      !isIsoDate(endDate) ||
+      Number.isNaN(parsedStart.getTime()) ||
+      Number.isNaN(parsedEnd.getTime()) ||
+      parsedStart > parsedEnd
+    ) {
+      toast.showToast({
+        message: 'Please enter valid dates in YYYY-MM-DD order.',
+        type: 'error',
+      });
+      return;
+    }
+
     dispatch({ type: 'SET_SAVING', isSaving: true });
     try {
       await api.academicCycles.create({
         school_id: schoolId,
         name,
-        start_date: new Date(startDate),
-        end_date: new Date(endDate),
+        start_date: parsedStart,
+        end_date: parsedEnd,
         is_current: isCurrent,
       });
       hapticSuccess();
@@ -189,6 +213,27 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
           <SkeletonCard height={100} />
           <SkeletonCard height={100} />
           <SkeletonCard height={100} />
+        </VStack>
+      </Box>
+    );
+  }
+
+  if (state.loadError) {
+    return (
+      <Box className="flex-1 bg-phase-canvas">
+        <GlobalHeader title="Academic Cycles" onBack={onBack} />
+        <VStack className="flex-1 items-center justify-center p-8 gap-4">
+          <Text className="text-phase-danger font-bold text-center">{state.loadError}</Text>
+          <Button
+            variant="outline"
+            onPress={() => {
+              dispatch({ type: 'SET_LOADING', isLoading: true });
+              void fetchCycles();
+            }}
+            accessibilityLabel="Retry loading academic cycles"
+          >
+            <ButtonText className="text-phase-danger font-bold">Try again</ButtonText>
+          </Button>
         </VStack>
       </Box>
     );

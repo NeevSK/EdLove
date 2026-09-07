@@ -600,6 +600,8 @@
   "community": {
     "title": "ප්‍රජාව",
     "description": "ගුරු ප්‍රජාව සමඟ සම්බන්ධ වන්න",
+    "hearthTitle": "සමූහ හදවත",
+    "hearthSubtitle": "ප්‍රජා හදගැස්ම වඩාත්ම ප්‍රබලව දැනෙන තැන",
     "announcements": "නිවේදන",
     "postAnnouncement": "නිවේදනයක් පළ කරන්න",
     "filters": {
@@ -668,10 +670,10 @@
     "profile": {
       "aspiration": "Aspiration",
       "contributions": "Contributions",
-      "defaultBio": "This user is on a journey of growth and resonance within the Gurudevi ecosystem.",
+      "defaultBio": "මෙම පරිශීලකයා ගුරුදෙවි පරිසර පද්ධතිය තුළ වර්ධනය හා අනුනාදය කරා යන ගමනක යෙදී සිටී.",
       "endorsements": "Endorsements",
       "explorer": "Explorer",
-      "memberOfGurudevi": "Member of Gurudevi",
+      "memberOfGurudevi": "ගුරුදෙවි සාමාජික",
       "posts": "Posts",
       "privacyNote": "🔐 Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
       "privacyProtected": "Privacy Protected",
@@ -751,7 +753,7 @@
     "deleteCollectionConfirm": "“{{name}}” මකන්නද? මෙය ආපසු හැරවිය නොහැක.",
     "web": {
       "title": "දැනුම් සරණිය",
-      "note": "ගුරුදේවි දැනුම් මධ්‍යස්ථානය",
+      "note": "ගුරුදෙවි දැනුම් මධ්‍යස්ථානය",
       "timeText": "තෝරාගත් ප්‍රඥාව"
     },
     "doorway": {
@@ -922,7 +924,7 @@
     "qualifications": "සුදුසුකම්",
     "aboutMe": "Your Story",
     "tellUsAboutYourself": "Tell us about yourself...",
-    "unnamedUser": "ගුරුදේවි පරිශීලක",
+    "unnamedUser": "ගුරුදෙවි පරිශීලක",
     "profileCompletion": "පැතිකඩ සම්පූර්ණ කිරීම",
     "publicPreview": "පොදු පෙරදසුන",
     "guestUpgradeTitle": "පැතිකඩ සංස්කරණයට ගිණුමක් සාදන්න",
@@ -945,7 +947,7 @@
     "contact": {
       "sourceLabel": "පැතිකඩ",
       "sourceBadge": "පොදු සම්බන්ධතා සබැඳිය",
-      "shareTitle": "{{name}} - ගුරුදේවි",
+      "shareTitle": "{{name}} - ගුරුදෙවි",
       "shareProfile": "පැතිකඩ බෙදාගන්න",
       "copyLink": "සබැඳිය පිටපත් කරන්න",
       "done": "අවසන්",
@@ -1083,7 +1085,7 @@
     }
   },
   "onboarding": {
-    "nameTitle": "සාදරයෙන් පිළිගනිමු! Gurudevi තුළ ඔබට කුමක් කියමුද?",
+    "nameTitle": "සාදරයෙන් පිළිගනිමු! ගුරුදෙවි තුළ ඔබව අමතන්නේ කෙසේද?",
     "nameSubtitle": "ඇප් එක තුළ දෘශ්‍යමාන විය යුතු නමෙන් ආරම්භ කරමු.",
     "namePlaceholder": "අපි භාවිතා කරන නම ඇතුළත් කරන්න",
     "nameHint": "ගුරුදෙවි ප්‍රජාව තුළ ඔබව හඳුන්වනු ලබන්නේ මෙලෙසිනි",
@@ -1130,7 +1132,7 @@
   "settings": {
     "appearance": {
       "title": "පෙනුම",
-      "description": "ගුරුදේවී පෙනෙන ආකාරය පුද්ගලීකරණය කරන්න"
+      "description": "ගුරුදෙවි පෙනෙන ආකාරය පුද්ගලීකරණය කරන්න"
     },
     "theme": {
       "title": "තේමාව",
@@ -1187,7 +1189,7 @@
     },
     "device": {
       "title": "උපාංග තොරතුරු",
-      "description": "ගුරුදේවී ඔබේ උපාංගයට අනුවර්තනය වන ආකාරය",
+      "description": "ගුරුදෙවි ඔබේ උපාංගයට අනුවර්තනය වන ආකාරය",
       "tier": "උපාංග මට්ටම",
       "memory": "ඇති මතකය",
       "network": "ජාල ගුණාත්මකභාවය",
@@ -1195,12 +1197,22 @@
     },
     "tip": {
       "title": "ඉඟිය",
-      "message": "මෙම සැකසුම් ගුරුදේවී ඔබ සඳහා වඩාත් හොඳින් ක්‍රියා කිරීමට උපකාර කරයි. බොහෝ පරිශීලකයින් සඳහා ස්වයංක්‍රීය ප්‍රකාරය නිර්දේශ කෙරේ."
+      "message": "මෙම සැකසුම් ගුරුදෙවි ඔබ සඳහා වඩාත් හොඳින් ක්‍රියා කිරීමට උපකාර කරයි. බොහෝ පරිශීලකයින් සඳහා ස්වයංක්‍රීය ප්‍රකාරය නිර්දේශ කෙරේ."
     },
     "living_theme": {
-      "title": "Living Theme",
-      "on": "Phase-aware colors shift with the time of day",
-      "off": "Classic calm — simple static appearance"
+      "title": "ජීවමාන තේමාව (Living Theme)",
+      "on": "දවසේ වේලාව අනුව වර්ණ ස්වයංක්‍රීයව වෙනස් වේ",
+      "off": "සාම්ප්‍රදායික නිශ්චල පෙනුම"
+    },
+    "sensory": {
+      "title": "සංවේදන ප්‍රතිචාර",
+      "description": "මෙම උපාංගයට ගැළපෙන පරිදි චලන සහ ප්‍රතිචාර සකස් වේ.",
+      "haptics": "ස්පර්ශන ප්‍රතිචාර (Haptics)",
+      "haptics_desc": "වැදගත් ක්‍රියාවන් සඳහා මෘදු ස්පර්ශන තහවුරු කිරීම.",
+      "sound": "ශබ්ද ප්‍රතිචාර",
+      "sound_desc": "වැදගත් අවස්ථා සඳහා කෙටි ශබ්ද සංඥා.",
+      "quiet": "නිහඬ ප්‍රකාරය",
+      "quiet_desc": "ශබ්ද නිහඬ කර සංවේදන තීව්‍රතාව අඩු කරයි."
     },
     "explorer": {
       "title": "Explorer Mode",
@@ -1210,7 +1222,7 @@
     },
     "support": {
       "title": "Support & Debug",
-      "description": "Help us improve Gurudevi"
+      "description": "ගුරුදෙවි වැඩිදියුණු කිරීමට අපට සහාය වන්න"
     },
     "debug": {
       "sentry_test": "Sentry Test Event",
@@ -1221,7 +1233,7 @@
     "notifications_enabled": "Push notifications enabled",
     "sanctuary_config": "Sanctuary Configuration",
     "title": "Settings",
-    "description": "Customize your experience within the Gurudevi Ecosystem",
+    "description": "ගුරුදෙවි පරිසර පද්ධතිය තුළ ඔබේ අත්දැකීම සකසා ගන්න",
     "account": {
       "title": "Account Stewardship"
     }
@@ -1260,7 +1272,7 @@
     }
   },
   "accessibility": {
-    "appLogo": "Gurudevi යෙදුම් ලාංඡනය",
+    "appLogo": "ගුරුදෙවි යෙදුම් ලාංඡනය",
     "switchLanguage": "{{lang}} භාෂාවට මාරු වන්න",
     "currentLanguage": "වත්මන් භාෂාව: {{lang}}",
     "voiceInput": "හඬ සටහනක් පටිගත කරන්න",
@@ -1292,7 +1304,7 @@
     }
   },
   "welcome": {
-    "title": "ගුරුදේවී",
+    "title": "ගුරුදෙවි",
     "subtitle": "ආදරයෙන් ඉපිදුණු, ආදරෙන් ගොඩනගන ලද.",
     "intro": "ගුරුවරුන් සඳහා ඩිජිටල් අභයාරාමය.",
     "acceptTerms": "මම එකඟ වෙමි ",
@@ -1304,7 +1316,7 @@
     "login": "ගිණුමක් ඇත. ලොග් ඉන් වන්න",
     "footer": "ආදරයෙන් ඉපිදුණු, ආදරෙන් ගොඩනගන ලද.",
     "privacyPactStatement": "ඇතුළු වීමෙන් ඔබ අපේ රහස්‍යතා ගිවිසුමට එකඟ වෙනවා.",
-    "message": "ගුරුදේවී වෙත සාදරයෙන් පිළිගනිමු",
+    "message": "ගුරුදෙවි වෙත සාදරයෙන් පිළිගනිමු",
     "description": "ඔබේ AI-ශක්තිමත් අධ්‍යාපන සහකාරයා.",
     "start": "ආරම්භ කරන්න"
   },
@@ -1638,12 +1650,12 @@
     }
   },
   "webNav": {
-    "alerts": "Alerts",
-    "brandName": "Gurudevi Sanctuary",
-    "menu": "Menu",
-    "notifications": "Notifications",
-    "settings": "Settings",
-    "tabNavigation": "Tab navigation",
-    "toggleNavigation": "Toggle navigation"
+    "alerts": "දැනුම්දීම්",
+    "brandName": "ගුරුදෙවි අභයාරාමය",
+    "menu": "මෙනුව",
+    "notifications": "දැනුම්දීම්",
+    "settings": "සැකසුම්",
+    "tabNavigation": "ටැබ් සංචලනය",
+    "toggleNavigation": "සංචලනය ටොගල් කරන්න"
   }
 }

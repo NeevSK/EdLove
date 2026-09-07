@@ -1,5 +1,15 @@
 import { CircleAlert, ClipboardCheck, TrendingUp, UserPlus, Users } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  Button,
+  ButtonText,
+  HStack,
+  Icon,
+  Pressable,
+  Spinner,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
@@ -22,6 +32,8 @@ export default function StudentPulseSection({
 }: StudentPulseSectionProps) {
   const [loading, setLoading] = useState(true);
   const [pulse, setPulse] = useState<StudentPrincipalPulse | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   const getAttendanceStatusInfo = (rate: number) => {
     if (rate >= 90)
@@ -47,12 +59,14 @@ export default function StudentPulseSection({
     let mounted = true;
     async function load() {
       setLoading(true);
+      setLoadError(null);
       try {
         const pulseData = await staffOperationsAPI.getStudentPrincipalPulse(schoolId, classroomId);
         if (!mounted) return;
         setPulse(pulseData);
       } catch (error) {
         console.error('Error fetching student pulse:', error);
+        if (mounted) setLoadError('Student attendance data could not be loaded.');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -61,13 +75,29 @@ export default function StudentPulseSection({
     return () => {
       mounted = false;
     };
-  }, [schoolId, classroomId]);
+  }, [schoolId, classroomId, retryKey]);
 
   if (loading) {
     return (
       <Box className="h-[200px] items-center justify-center bg-phase-canvas rounded-[32px] border border-dashed border-phase-border">
         <Spinner className="text-phase-interactive" />
       </Box>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <VStack className="gap-4 bg-phase-surface rounded-[28px] p-6 border border-phase-danger/30">
+        <Text className="font-bold text-phaseText-primary">Student pulse unavailable</Text>
+        <Text className="text-sm text-phaseText-secondary">{loadError}</Text>
+        <Button
+          variant="outline"
+          onPress={() => setRetryKey((key) => key + 1)}
+          accessibilityLabel="Retry loading student pulse"
+        >
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </VStack>
     );
   }
 
@@ -149,6 +179,9 @@ export default function StudentPulseSection({
           }}
           className="flex-1 active:scale-[0.98] transition-all"
           disabled={!onViewAtRisk}
+          accessibilityRole="button"
+          accessibilityLabel={`${pulse?.atRiskCount ?? 0} students at risk`}
+          accessibilityHint="Opens at-risk student review"
         >
           <Box
             className={`p-5 rounded-[24px] border ${
@@ -186,6 +219,9 @@ export default function StudentPulseSection({
             }}
             className="flex-1 active:scale-[0.98] transition-all"
             disabled={!onViewEnrollments}
+            accessibilityRole="button"
+            accessibilityLabel={`${pulse?.pendingEnrollments ?? 0} pending enrollments`}
+            accessibilityHint="Opens enrollment review"
           >
             <Box
               className={`p-5 rounded-[24px] border ${
@@ -224,6 +260,8 @@ export default function StudentPulseSection({
             onViewFullReport();
           }}
           className="mt-2"
+          accessibilityRole="button"
+          accessibilityLabel="Open full student analytics report"
         >
           <Box className="h-14 rounded-[20px] bg-phase-canvas border border-phase-border items-center justify-center flex-row gap-3 active:scale-95 transition-all">
             <Text className="text-[11px] font-black text-phase-interactive uppercase tracking-[3px]">

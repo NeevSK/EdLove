@@ -14,6 +14,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useLotusToast } from '@repo/ui/hooks';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +24,7 @@ interface GradebookViewProps {
 
 export default function GradebookView({ classroomId }: GradebookViewProps) {
   const { t } = useTranslation();
+  const { showToast } = useLotusToast();
   const {
     grades,
     studentNames,
@@ -44,6 +46,10 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
       setShowSettings(false);
     } catch (err: any) {
       console.error('Failed to save settings in UI:', err);
+      showToast({
+        message: err?.message || 'Settings could not be saved. Please try again.',
+        type: 'error',
+      });
     }
   };
 

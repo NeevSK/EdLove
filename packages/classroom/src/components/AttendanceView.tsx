@@ -2,7 +2,7 @@ import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 import { api } from '@repo/core/api/client';
 import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { Box, Text } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Text } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';
 
 interface AttendanceViewProps {
@@ -19,18 +19,18 @@ type RosterStudent = {
 export default function AttendanceView({ classroomId }: AttendanceViewProps) {
   const [students, setStudents] = useState<StudentAttendance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       const today = new Date().toISOString().split('T')[0];
 
       // Load student roster and any already-saved attendance for today in parallel
       const [roster, snapshot] = await Promise.all([
         api.classroomStudents.getAll(classroomId),
-        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || '').catch(() => ({
-          records: [] as { student_id: string; status: AttendanceStatus }[],
-        })),
+        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
       ]);
 
       // Build a lookup map: student_id → saved status
@@ -55,6 +55,7 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
       setStudents(attendanceData);
     } catch (_error) {
       console.error('Failed to load student list');
+      setLoadError('The class list could not be loaded. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +79,20 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
   }
 
   if (students.length === 0 && !isLoading) {
+    if (loadError) {
+      return (
+        <Box className="flex-1 p-8 items-center gap-4">
+          <Text className="text-emberRed text-center">{loadError}</Text>
+          <Button
+            variant="outline"
+            onPress={() => void fetchStudents()}
+            accessibilityLabel="Retry loading attendance roster"
+          >
+            <ButtonText>Try again</ButtonText>
+          </Button>
+        </Box>
+      );
+    }
     return (
       <Box className="flex-1 p-8 items-center">
         <Text className="text-typography-500">No students found in this classroom.</Text>

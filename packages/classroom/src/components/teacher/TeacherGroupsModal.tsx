@@ -16,6 +16,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import { useCallback, useEffect, useState } from 'react';
 
@@ -122,6 +123,13 @@ export default function TeacherGroupsModal({
   };
 
   const handleDelete = async (groupId: string) => {
+    const group = groups.find((candidate) => candidate.id === groupId);
+    const confirmed = await confirmAction(
+      'Delete group?',
+      `${group?.name ?? 'This group'} will be permanently removed.`,
+    );
+    if (!confirmed) return;
+
     hapticLight();
     try {
       await classroomGroupsAPI.delete(groupId);
@@ -246,12 +254,17 @@ export default function TeacherGroupsModal({
                             <Pressable
                               onPress={() => startEditing(group)}
                               className="w-10 h-10 items-center justify-center rounded-full bg-phase-surface border border-phase-border/40 shadow-sm active:bg-phase-surface-secondary transition-all"
+                              accessibilityRole="button"
+                              accessibilityLabel={`Edit ${group.name}`}
                             >
                               <Icon as={SquarePen} size="xs" className="text-phase-text-tertiary" />
                             </Pressable>
                             <Pressable
                               onPress={() => handleDelete(group.id)}
                               className="w-10 h-10 items-center justify-center rounded-full bg-phase-surface border border-phase-border/40 shadow-sm active:bg-phase-surface-secondary transition-all"
+                              accessibilityRole="button"
+                              accessibilityLabel={`Delete ${group.name}`}
+                              accessibilityHint="Permanently removes this group after confirmation"
                             >
                               <Icon as={Trash2} size="xs" className="text-chestnutRed" />
                             </Pressable>
@@ -328,6 +341,9 @@ export default function TeacherGroupsModal({
                             ? 'bg-sanctuarySaffron border-sanctuarySaffron'
                             : 'bg-phase-surface-secondary border-phase-border/40'
                         }`}
+                        accessibilityRole="checkbox"
+                        accessibilityLabel={`Select ${student.full_name}`}
+                        accessibilityState={{ checked: isActive }}
                       >
                         <HStack className="items-center justify-between">
                           <HStack className="items-center gap-5">

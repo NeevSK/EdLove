@@ -471,7 +471,12 @@ export default function TeacherClassroomDashboardWeb() {
           >
             <VStack className="gap-lg">
               <HStack className="items-center justify-between gap-md">
-                <Pressable onPress={() => safeBack('/workspace')}>
+                <Pressable
+                  onPress={() => safeBack('/workspace')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Back to teacher workspace"
+                  accessibilityHint="Returns to the teacher workspace"
+                >
                   <HStack
                     className="items-center gap-xs px-md py-sm rounded-full border"
                     style={{

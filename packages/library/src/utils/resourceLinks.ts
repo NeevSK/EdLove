@@ -2,7 +2,7 @@ import type { LibraryResource } from '@repo/library/types';
 
 import { GURUDEVI_APP } from '@repo/ui/utils';
 
-const LIBRARY_SHARE_BASE_URL = `${GURUDEVI_APP}/p/library/resource`;
+const LIBRARY_SHARE_BASE_URL = `${GURUDEVI_APP}/library/resource`;
 
 /**
  * Query payload shared by every Library resource-opening surface.

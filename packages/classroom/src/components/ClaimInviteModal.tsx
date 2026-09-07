@@ -38,7 +38,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     if (!inviteCode.trim()) return;
     try {
       setLoading(true);
-      const result = await api.classroomStudents.claimStudent(inviteCode.trim());
+      const result = await api.classroomStudents.claimStudent(inviteCode.trim().toUpperCase());
 
       setSuccessData(result);
       hapticSuccess();
@@ -59,10 +59,18 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     setSuccessData(null);
   };
 
+  const handleClose = () => {
+    if (!loading) {
+      setInviteCode('');
+      setSuccessData(null);
+    }
+    onClose();
+  };
+
   return (
     <SanctuaryModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={successData ? 'Invite claimed' : 'Claim Invite'}
     >
       {successData ? (
@@ -112,16 +120,17 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                 placeholder="e.g. a1b2c3d4"
                 className="text-phaseText-primary text-3xl text-center font-black tracking-[8px]"
                 value={inviteCode}
-                onChangeText={setInviteCode}
+                onChangeText={(value) => setInviteCode(value.replace(/\s/g, '').slice(0, 8))}
                 autoCapitalize="none"
+                maxLength={8}
               />
             </Input>
           </FormControl>
 
           <Button
             onPress={handleClaim}
-            disabled={loading || inviteCode.length < 6}
-            className={`w-full h-16 ${loading || inviteCode.length < 6 ? 'bg-phase-surface opacity-50' : 'bg-templeGold shadow-lg shadow-templeGold/20'} rounded-[24px] flex-row items-center justify-center gap-3`}
+            disabled={loading || inviteCode.length < 8}
+            className={`w-full h-16 ${loading || inviteCode.length < 8 ? 'bg-phase-surface opacity-50' : 'bg-templeGold shadow-lg shadow-templeGold/20'} rounded-[24px] flex-row items-center justify-center gap-3`}
           >
             {loading ? (
               <BrandPulse size={20} tintColor="#FFFFFF" accessibilityLabel="Claiming invitation" />

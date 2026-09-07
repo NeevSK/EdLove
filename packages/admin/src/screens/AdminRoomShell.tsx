@@ -25,7 +25,13 @@ export function AdminRoomShell({
     <ScreenWrapper scroll={false} noTopInset>
       <Box className="flex-1 bg-phase-canvas px-4 py-4">
         <VStack className="flex-1 gap-4">
-          <Pressable onPress={onBack} className="active:opacity-80 self-start">
+          <Pressable
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Back to admin workspace"
+            accessibilityHint="Returns to the previous admin workspace"
+            className="active:opacity-80 self-start"
+          >
             <HStack className="items-center gap-2 rounded-full border border-starlightGray/20 bg-sacredWhite px-4 py-2">
               <Icon as={ArrowLeft} size={14} color="#2A2318" />
               <Text className="text-[12px] font-bold text-phaseText-primary">
