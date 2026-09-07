@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-09-05
+updated: 2026-09-07
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -61,6 +61,7 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-09-07** | [URL and URI Boundary Audit](./architecture/2026-09-07-url-uri-deep-link-audit.md) + [Implementation Plan](./current_progress/2026-09-07-url-uri-deep-link-implementation-plan.md) | Architecture / Security / Current Progress | `active` | Audits auth callbacks, deep-link policy, notification routing, public share URLs, local file URIs, external URI opening, and Android/iOS verified-link configuration; prioritizes credential redaction and a unified dispatcher. |
 | **2026-09-05** | [Android Build Chronicle & Performance Savings Report](./infra/2026-09-05-android-build-chronicle-and-savings-report.md) | Infrastructure / Build | `active` | Post-mortem of MLKit blocker removal, ccache CMake launcher activation (905 units cached), Gradle build-cache metrics (77.2% reuse), and successful installation of versionCode 24 APK onto Samsung Galaxy physical device. |
 | **2026-09-04** | [Forage Research: Candidate Catalog](./research/2026-09-04-forage-candidate-catalog.md) | Research / Catalog | `draft` | All candidates with rationale, use case, benefit, cost, verdict. Baseline-then-own pattern. |
 | **2026-09-04** | [Spike: cn Parity + withSkills](./research/2026-09-04-spike-cn-parity.md) + [ADR: cn Merge Strategy](./decisions/2026-09-04-cn-merge-strategy.md) | Spike / ADR | `accepted` | 25-case parity: adopted tailwind-merge+clsx behind cn path (zero consumer edits); shadcn engine re-eval later. |

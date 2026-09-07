@@ -273,12 +273,6 @@ dependency_entries:
   "@expo-google-fonts/poppins":
     category: media
     purpose: "Poppins font package"
-  "@react-native-ml-kit/text-recognition":
-    category: scanning
-    purpose: "OCR text recognition"
-  "@react-native-ml-kit/barcode-scanning":
-    category: scanning
-    purpose: "Barcode/QR scanning"
   qrcode:
     category: scanning
     purpose: "QR code generation"

@@ -99,6 +99,27 @@ Implement in this order:
      a feature spec and targeted contract tests, obtain human approval, then
      implement in small PRs. Do not refactor `app/_layout.tsx` into another
      lifecycle owner.
+   - **Current implementation status (2026-09-07):** `deviceAccounts` is now
+     the live user-initiated authority for account switching and current-device
+     sign-out. Account recovery, profile logout, and `useIdentity` delegate to
+     it; the unused duplicate `globalLogoutAndPurge` path has been removed.
+     `AuthQueryCacheBoundary` clears React Query data only when the authenticated
+     subject changes, including sign-out, and never during initial restoration.
+   - **Remaining lifecycle proof:** add a deterministic listener-during-bootstrap
+     auth race test; exercise account A → B switching, sign-out, recovery
+     sign-out, post-sign-out sign-in, offline behavior, and failed device-security
+     revocation on a physical device. Define audit events as attempted, locally
+     completed, or server-confirmed; do not infer remote completion from local
+     session removal.
+   - **Route-authority completion:** replace `SessionRouteGate`'s direct mixture
+     of auth Context and persisted Zustand reads with one typed route-state
+     adapter. That adapter may collect state but must pass a single snapshot to
+     `getAuthRouteTarget`; no route screen may independently reinterpret session,
+     identity, onboarding, capacity, or recovery state.
+   - **Cache invariant:** account-scoped React Query data must be absent before
+     data for a different authenticated subject can render. Preserve the cache on
+     first boot only; clear once on A → B, A → signed-out, and signed-out → A
+     transitions as appropriate to the mounted client lifecycle.
 2. **Entitlement and route safety** — GD-031, GD-011.
    - Make the premium-gated AI route canonical for both tab and deep-link entry.
    - Replace implicit Settings navigation props with a typed route adapter or
@@ -111,11 +132,51 @@ Implement in this order:
    - Use the canonical clipboard adapter before success feedback.
    - Remove or visibly gate the fabricated streak until it is derived from data.
 
-**Exit evidence:** lifecycle/route tests cover cold bootstrap, account recovery,
-account switching, and every sign-out caller; tests cover rejection, offline,
-and soft-failure paths; no success toast/modal close/reset occurs on a failed
-action; a physical-device smoke validates Settings, AI entitlement, clipboard,
-and delete confirmation.
+**Exit evidence:** lifecycle/route tests cover cold bootstrap, listener-during-
+bootstrap events, account recovery, account switching, every sign-out caller,
+and cache isolation; tests cover rejection, offline, soft-failure, and account
+transition paths; no success toast/modal close/reset occurs on a failed action;
+a physical-device smoke validates account switching/sign-out/re-sign-in,
+Settings, AI entitlement, clipboard, and delete confirmation.
+
+## Phase 1A — Navigation shell and deep-link contract
+
+**Objective:** make route authority, deep-link delivery, tab navigation, and
+shared chrome coherent around the recovered user/account lifecycle.
+
+| Work | Owner/boundary | Required outcome | Exit evidence |
+| --- | --- | --- | --- |
+| Bootstrap-route adapter | `SessionRouteGate` + core route contract | One typed route snapshot consumed only by `getAuthRouteTarget` | Contract tests for public, loading, active, inactive/recovery, onboarding, and no-capacity states |
+| Deep-link decomposition | `DeepLinkProvider` | Split pure URL validation/normalization and dispatch policy from the thin mounted listener | Unit tests for allowed/rejected URLs and dispatch; native cold-start and foreground magic-link evidence |
+| Tab authority | native and web `(tabs)` layouts | Verify each visible tab, hidden tab, entitlement, and account-transition destination | Route matrix and native/web smoke evidence |
+| Header contract | `GlobalHeader` and tab layout | Back, menu, profile, search, notifications, and safe-area behavior have explicit route ownership | Interaction/a11y tests plus device walkthrough |
+| Footer/tab bar contract | native tab bar and web sidebar/profile footer | Deliberate platform-specific behavior; keyboard, insets, role labels, and account switch do not leave stale chrome | Keyboard/inset/device test and account A → B shell smoke |
+
+### Design boundary
+
+`EntryShell` remains a deliberately thin composition boundary. It may mount
+providers and headless services which require both app providers and navigation:
+`SessionRouteGate`, `DeepLinkProvider`, `AuthQueryCacheBoundary`, and
+`AuthenticatedSyncService`. It must not gain domain decisions, tab policy,
+screen-specific redirects, or feature-owned side effects.
+
+### Current implementation status
+
+- `EntryShell` has one mounted deep-link listener boundary, one authenticated
+  sync service, and the account query-cache boundary beneath existing providers.
+- Native tabs already use Expo Router `Tabs`, responsive shell tokens, and the
+  shared `GlobalHeader`; web has a distinct tab/sidebar layout and profile footer.
+- The current deep-link provider still combines validation, analytics, deferred
+  retry, cold-start, foreground, and QR logic. It is integrated but must be
+  decomposed before being treated as a stable long-term boundary.
+- Tab/header/footer behavior has not yet received the focused route and
+  accessibility audit required by this phase.
+
+**Exit evidence:** the route matrix passes for both platforms; native-device
+evidence covers cold-start and foreground deep links, magic-link callback,
+authenticated and public destinations, tab persistence, keyboard/safe-area
+behavior, account switching, and post-sign-out chrome removal. Screen-reader
+navigation covers tab labels, header actions, profile footer, and back behavior.
 
 ## Phase 2 — Shared feedback and state contracts
 
@@ -171,6 +232,10 @@ focused native device walkthrough.
 5. GD-020: add visible stale/error state to analytics polling.
 6. GD-021: rebuild the current startup graph from live source, then act only on
    measured bottlenecks.
+7. Re-run the Phase 1A navigation matrix after lifecycle changes: route-state
+   adapter behavior, deep-link listener lifecycle, tab persistence, header
+   actions, and cache isolation must be verified together rather than as
+   unrelated screen checks.
 
 **Exit evidence:** deterministic tests for auth and queue boundaries; a
 multi-account logout/device test; deep-link device evidence; observability
@@ -227,6 +292,9 @@ Self, Workspace, Library, Community, and growth work to compound safely.
   checks and `pnpm run check:anti-slop`.
 - Uses device validation for native behavior, accessibility, deep links, or
   destructive actions.
+- For lifecycle work, distinguishes `implemented-code`, deterministic test
+  evidence, and physical-device evidence. A component rendering test alone does
+  not prove device-account switching, native deep linking, or durable cleanup.
 - Updates the granular cross-list status, coverage matrix, worklog, and this
   plan when a phase milestone changes.
 
