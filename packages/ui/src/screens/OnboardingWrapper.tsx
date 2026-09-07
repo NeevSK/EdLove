@@ -1,9 +1,10 @@
+import { suggestDisplayName } from '@repo/core/logic';
 import { useAuth } from '@repo/core/providers';
 import { useStore } from '@repo/core/store';
 import { CelebrationOverlay } from '@repo/ui/components/CelebrationOverlay';
 import type { MascotArtworkSource } from '@repo/ui/components/Mascot';
 import OnboardingScreen from '@repo/ui/screens/OnboardingScreen';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export function OnboardingWrapper({
   onboardingArtwork,
@@ -14,6 +15,10 @@ export function OnboardingWrapper({
   const storeUser = useStore((state) => state.user);
   const showToast = useStore((state) => state.showToast);
   const [celebrate, setCelebrate] = useState(false);
+
+  const suggestedName = useMemo(() => {
+    return suggestDisplayName(session?.user ?? (storeUser as any));
+  }, [session?.user, storeUser]);
 
   const handleComplete = useCallback(
     (_name: string, _capacity: any) => {
@@ -45,6 +50,7 @@ export function OnboardingWrapper({
     <>
       <OnboardingScreen
         userId={session?.user?.id}
+        suggestedName={suggestedName}
         isAnonymous={storeUser?.is_anonymous === true || session?.user?.is_anonymous === true}
         onComplete={handleComplete}
         onboardingArtwork={onboardingArtwork}

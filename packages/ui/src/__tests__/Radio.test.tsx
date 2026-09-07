@@ -13,7 +13,7 @@ describe('Radio Component (Robustness)', () => {
   });
 
   it('works within a RadioGroup', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { getByText } = await render(
       <RadioGroup value="opt1" onChange={onChange}>
         <Radio value="opt1">
@@ -30,7 +30,7 @@ describe('Radio Component (Robustness)', () => {
   });
 
   it('handles disabled state', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { getByRole } = await render(
       <RadioGroup onChange={onChange}>
         <Radio value="test" isDisabled={true}>

@@ -31,8 +31,8 @@ describe('Collapse', () => {
   });
 
   it('accepts callback props', async () => {
-    const onExpandEnd = jest.fn();
-    const onCollapseEnd = jest.fn();
+    const onExpandEnd = vi.fn();
+    const onCollapseEnd = vi.fn();
     const { getByText } = await render(
       <Collapse expanded onExpandEnd={onExpandEnd} onCollapseEnd={onCollapseEnd}>
         <Text>Content</Text>

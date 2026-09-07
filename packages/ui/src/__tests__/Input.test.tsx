@@ -3,7 +3,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { FormControl, FormControlLabel, FormControlLabelText } from '../components/ui/form-control';
 import { Input, InputField, InputIcon, InputSlot } from '../components/ui/input';
 
-jest.mock('@repo/ui/hooks/useTheme', () => ({
+vi.mock('@repo/ui/hooks/useTheme', () => ({
   useTheme: () => ({ text: { muted: '#8A8175' } }),
 }));
 
@@ -18,7 +18,7 @@ describe('Input Component (Robustness)', () => {
   });
 
   it('handles text input correctly', async () => {
-    const onChangeText = jest.fn();
+    const onChangeText = vi.fn();
     const { getByPlaceholderText } = await render(
       <Input>
         <InputField placeholder="Enter name" onChangeText={onChangeText} />

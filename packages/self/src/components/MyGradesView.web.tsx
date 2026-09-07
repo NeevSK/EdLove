@@ -1,6 +1,6 @@
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Award, BookOpen, Clock } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
@@ -44,7 +44,7 @@ function getGradeStyles(grade: number): {
 
 export default function MyGradesView({ userId }: MyGradesViewProps) {
   const { t } = useTranslation();
-  const { grades, isLoading } = useStudentGrades(userId);
+  const { grades, isLoading, error, refreshData } = useStudentGrades(userId);
 
   if (isLoading) {
     return (
@@ -53,6 +53,17 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
         <SkeletonCard height={80} />
         <SkeletonCard height={80} />
       </VStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box className="p-12 bg-obsidian rounded-comfortable items-center border border-emberRed/30 gap-4">
+        <Text className="text-sm text-emberRed text-center">{error}</Text>
+        <Button variant="outline" onPress={() => void refreshData()}>
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </Box>
     );
   }
 

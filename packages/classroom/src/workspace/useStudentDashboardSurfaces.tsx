@@ -100,7 +100,9 @@ function QuickAction({
       <Pressable
         onPress={disabled ? undefined : onPress}
         disabled={disabled}
-        className="active:scale-95 transition-transform"
+        style={({ pressed }) => [
+          pressed && !disabled ? { transform: [{ scale: 0.95 }] } : null,
+        ]}
       >
         <Box className="w-[52px] h-[52px] rounded-[16px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm">
           <Icon as={LucideIcon} className={iconColorClass} size="md" />

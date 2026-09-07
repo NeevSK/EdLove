@@ -29,5 +29,4 @@ export {
 } from '@repo/core/native/runtimeAdapter';
 export { StorageKeys, storage } from '@repo/core/native/storage';
 export { supabaseAuthStorage } from '@repo/core/native/supabaseAuthStorage';
-export { useAuthLifecycle } from '@repo/core/native/useAuthLifecycle';
 export { useWorkspaceLayoutSync } from '@repo/core/native/useWorkspaceLayoutSync';

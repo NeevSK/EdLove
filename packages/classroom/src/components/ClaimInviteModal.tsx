@@ -9,6 +9,7 @@ import {
   FormControl,
   FormControlLabel,
   FormControlLabelText,
+  Heading,
   HStack,
   Icon,
   Input,
@@ -17,6 +18,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import { useState } from 'react';
 
@@ -27,6 +29,7 @@ interface ClaimInviteModalProps {
 }
 
 export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModalProps) {
+  const { showToast } = useSanctuaryToast();
   const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState<any>(null);
@@ -41,8 +44,10 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
       hapticSuccess();
     } catch (error: any) {
       console.error('Failed to claim record:', error);
-      // On mobile we might want a nicer toast, but keeping alert for now as per original if not defined
-      alert(error.message || 'Invalid invite code or record already claimed.');
+      showToast({
+        message: error.message || 'Invalid invite code or record already claimed.',
+        type: 'error',
+      });
     } finally {
       setLoading(false);
     }
@@ -55,7 +60,11 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
   };
 
   return (
-    <SanctuaryModal isOpen={isOpen} onClose={onClose} title={successData ? '' : 'Claim Invite'}>
+    <SanctuaryModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={successData ? 'Invite claimed' : 'Claim Invite'}
+    >
       {successData ? (
         <VStack className="items-center justify-center p-8 gap-6">
           <Box className="w-24 h-24 bg-phase-reward/10 rounded-full items-center justify-center border border-phase-reward/20">
@@ -99,6 +108,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
             </FormControlLabel>
             <Input className="border-phase-border bg-phase-surface h-20 rounded-[20px] focus:border-templeGold">
               <InputField
+                accessibilityLabel="Invite code"
                 placeholder="e.g. a1b2c3d4"
                 className="text-phaseText-primary text-3xl text-center font-black tracking-[8px]"
                 value={inviteCode}
@@ -126,8 +136,3 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     </SanctuaryModal>
   );
 }
-
-// Add a standard Heading wrapper if missing in local scope but SanctuaryModal title uses it internally
-const Heading = ({ children, className }: any) => (
-  <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>
-);

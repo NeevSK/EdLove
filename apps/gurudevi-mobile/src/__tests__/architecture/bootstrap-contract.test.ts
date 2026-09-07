@@ -29,7 +29,7 @@ describe('bootstrap contract', () => {
         onboardingCompleted: false,
         hasSession: true,
       }),
-    ).toBe('onboarding-needed');
+    ).toBe('public');
 
     expect(
       getBootstrapSessionState({
@@ -64,7 +64,7 @@ describe('bootstrap contract', () => {
     expect(onboarding.policy.state).toBe('onboarding-needed');
     expect(onboarding.redirectTo).toBe('/onboarding');
 
-    const guestOnboarding = getAuthRouteTarget({
+    const guestIncomplete = getAuthRouteTarget({
       pathname: '/self',
       bootstrapReady: true,
       sessionMode: 'anonymous',
@@ -72,8 +72,8 @@ describe('bootstrap contract', () => {
       hasSession: true,
     });
 
-    expect(guestOnboarding.policy.state).toBe('onboarding-needed');
-    expect(guestOnboarding.redirectTo).toBe('/onboarding');
+    expect(guestIncomplete.policy.state).toBe('public');
+    expect(guestIncomplete.redirectTo).toBe('/welcome');
 
     const logout = getAuthRouteTarget({
       pathname: '/self',

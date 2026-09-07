@@ -105,3 +105,11 @@ The next successful browser run mounted the route shell but exposed React error 
 Final browser evidence after the isolated fix: HTTP 200, non-empty root, no React errors. Remaining diagnostics are expected capability warnings for push notifications, Google One-Tap, and the Playwright-blocked service worker. The native PDPA icon remains on native, while web uses a verified inline SVG because the shared native icon barrel is not browser-safe for this export.
 
 The subsequent screenshot review found the dialog content anchored at the upper-left despite healthy DOM diagnostics. The web modal’s inner wrapper was missing `display: flex`; adding it restored centered composition at desktop width while retaining the blurred backdrop. The latest screenshot shows the centered consent dialog and no React runtime errors.
+
+## Live device run — 2026-09-07
+
+- Workspace: `C:\x`; device: Samsung SM-A525F, Android 14, serial `R58T33Y0E3M`.
+- `adb devices` passed. Metro started with `pnpm --filter gurudevi-mobile start` and instantiated on port 8081.
+- The installed development build launched into Expo Dev Launcher, but failed to connect to `127.0.0.1:8081`; `adb reverse --list` was empty after the reverse command. The app therefore did not reach the Gurudevi route tree during this run.
+- Metro runtime logs recorded a reproducible `useInput must be used within an Input component` exception from `packages/ui/src/components/ChatComposer.tsx:95`, plus repeated `rgb(NaN, NaN, NaN)` warnings and a feature-usage API failure.
+- Fixed the confirmed composer crash by wrapping `InputField` in the shared `Input` primitive. The remaining color warnings and device routing issue require a follow-up run after the device connection path is restored.

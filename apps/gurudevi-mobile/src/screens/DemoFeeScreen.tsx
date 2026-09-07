@@ -2,9 +2,11 @@ import { Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/prim
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 export function DemoFeeScreen() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +27,7 @@ export function DemoFeeScreen() {
 
       // Record in accounting
       // await recordFeeTransaction(userId, 1000);
-      alert('Demo payment successful!');
+      showToast({ message: 'Demo payment completed successfully.', type: 'success' });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Payment failed');
     } finally {

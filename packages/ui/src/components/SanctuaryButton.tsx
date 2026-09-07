@@ -4,14 +4,21 @@ import type { HapticImpact } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
+type SanctuaryIcon = React.ComponentType<{
+  size?: number;
+  className?: string;
+  testID?: string;
+  accessibilityLabel?: string;
+}>;
+
 interface SanctuaryButtonProps {
   onPress?: () => void;
   children: React.ReactNode;
   variant?: 'solid' | 'outline' | 'ghost' | 'link';
   isLoading?: boolean;
   isDisabled?: boolean;
-  leftIcon?: React.ElementType;
-  rightIcon?: React.ElementType;
+  leftIcon?: SanctuaryIcon;
+  rightIcon?: SanctuaryIcon;
   size?: 'xs' | 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   action?: 'primary' | 'secondary' | 'negative' | 'positive';

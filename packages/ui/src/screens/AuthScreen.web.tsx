@@ -342,15 +342,22 @@ export const AuthScreenWeb = memo(
             ? apiError
             : (apiError as any).message || 'An authentication error occurred';
 
-        const guidedMsg =
-          mode === 'signup'
+        const existingAccountError =
+          mode === 'signup' && /already registered|already exists|user already|duplicate/i.test(baseMsg);
+        const guidedMsg = existingAccountError
+          ? 'You already have an account. Switching to login…'
+          : mode === 'signup'
             ? `${baseMsg}. If you already have an account, try logging in instead.`
             : `${baseMsg}. Please check your credentials and connection.`;
+
+        if (existingAccountError) {
+          dispatch({ type: 'SET_MODE', mode: 'login' });
+        }
 
         showToast({
           message: guidedMsg,
           type: 'error',
-          duration: 5000,
+          duration: existingAccountError ? 3500 : 5000,
         });
       } finally {
         dispatch({ type: 'SET_LOADING', loading: false });
@@ -601,6 +608,11 @@ export const AuthScreenWeb = memo(
                         {errors.password && (
                           <span className="text-xs text-rose-500 font-medium ml-1">
                             {errors.password}
+                          </span>
+                        )}
+                        {mode === 'signup' && !errors.password && (
+                          <span className="text-xs text-phase-secondary ml-1">
+                            Use at least 8 characters.
                           </span>
                         )}
                       </div>

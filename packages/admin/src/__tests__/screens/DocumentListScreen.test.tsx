@@ -1,20 +1,20 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { documentWorkflowAPI } from '../../document-workflow/api';
 import type { DocumentWorkflow } from '../../document-workflow/types';
 import DocumentListScreen from '../../screens/DocumentListScreen';
 
 // Mock the API
-jest.mock('../../document-workflow/api');
-const mockedDocumentAPI = documentWorkflowAPI as jest.Mocked<typeof documentWorkflowAPI>;
+vi.mock('../../document-workflow/api');
+const mockedDocumentAPI = vi.mocked(documentWorkflowAPI);
 
 describe('DocumentListScreen', () => {
   const mockProps = {
     schoolId: 'test-school-1',
     userId: 'test-user-1',
     userRole: 'teacher',
-    onDocumentPress: jest.fn(),
-    onCreateNew: jest.fn(),
+    onDocumentPress: vi.fn(),
+    onCreateNew: vi.fn(),
   };
 
   const mockDocuments: DocumentWorkflow[] = [
@@ -51,13 +51,13 @@ describe('DocumentListScreen', () => {
   ];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockedDocumentAPI.getDocuments.mockResolvedValue(mockDocuments);
     mockedDocumentAPI.getDocumentsForReview.mockResolvedValue([]);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Rendering', () => {

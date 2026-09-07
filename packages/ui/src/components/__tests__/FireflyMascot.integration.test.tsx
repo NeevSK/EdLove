@@ -3,16 +3,16 @@ import { Platform } from 'react-native';
 import { FireflyMascot } from '../FireflyMascot';
 import type { MascotArtworkSource } from '../Mascot';
 
-const mockUseVisualCapabilities = jest.fn();
+const mockUseVisualCapabilities = vi.fn();
 
-jest.mock('@repo/core/monitoring', () => ({
+vi.mock('@repo/core/monitoring', () => ({
   __esModule: true,
-  trackEvent: jest.fn(),
+  trackEvent: vi.fn(),
 }));
-jest.mock('@repo/ui/context/VisualCapabilities', () => ({
+vi.mock('@repo/ui/context/VisualCapabilities', () => ({
   useVisualCapabilities: () => mockUseVisualCapabilities(),
 }));
-jest.mock('expo-image', () => {
+vi.mock('expo-image', () => {
   const React = require('react');
   return {
     Image: React.forwardRef((props: Record<string, unknown>, ref: unknown) =>
@@ -20,13 +20,16 @@ jest.mock('expo-image', () => {
     ),
   };
 });
-jest.mock('react-native-svg', () => {
+vi.mock('react-native-svg', () => {
   const React = require('react');
   const Svg = (props: Record<string, unknown>) => React.createElement('Svg', props);
   const Shape = (props: Record<string, unknown>) => React.createElement('Shape', props);
+  const Image = (props: Record<string, unknown>) =>
+    React.createElement('Image', { ...props, testID: props.testID ?? 'expo-image' });
   return {
     __esModule: true,
     default: Svg,
+    Image,
     Circle: Shape,
     Defs: Shape,
     Ellipse: Shape,
@@ -56,7 +59,7 @@ const artwork: MascotArtworkSource = {
   accessibilityLabel: 'Firefly guide welcoming the learner',
 };
 
-const mockTrackEvent = jest.requireMock('@repo/core/monitoring').trackEvent as jest.Mock;
+const mockTrackEvent = vi.mocked((await import('@repo/core/monitoring')).trackEvent);
 
 describe('FireflyMascot integration boundary', () => {
   beforeEach(() => {

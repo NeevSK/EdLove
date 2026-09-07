@@ -23,7 +23,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
 import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
@@ -34,16 +34,10 @@ interface StudentGoalsProps {
 
 export default function StudentGoals({ userId }: StudentGoalsProps) {
   const { t } = useTranslation();
-  const { goals, refreshData, isLoading, addGoal, updateGoal } = useStudentGoals(userId);
+  const { goals, refreshData, isLoading, loadError, addGoal, updateGoal } = useStudentGoals(userId);
 
   const [newGoalText, setNewGoalText] = useState('');
-  const [streak, setStreak] = useState(0);
   const [showAddGoal, setShowAddGoal] = useState(false);
-
-  useEffect(() => {
-    // Mock streak for now
-    setStreak(5);
-  }, []);
 
   const { mutate: saveGoal, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {
@@ -82,16 +76,25 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
     updateGoalProgress({ id: goalId, progress: clampedProgress });
   };
 
-  const getStreakMessage = (days: number): string => {
-    if (days === 0) return t('studentGoals.streakStart') || 'Start your streak!';
-    return t('studentGoals.streakDays', { days }) || `${days} Day Streak`;
-  };
-
   if (isLoading && userId) {
     return (
       <VStack className="gap-lg p-lg">
         <SkeletonCard height={120} />
         <SkeletonCard height={200} />
+      </VStack>
+    );
+  }
+
+  if (loadError && goals.length === 0) {
+    return (
+      <VStack className="gap-md p-lg items-center">
+        <Text className="text-sacredWhite text-center font-bold">We couldn’t load your goals.</Text>
+        <Text className="text-mistGray text-center text-sm">
+          Check your connection and try again.
+        </Text>
+        <Button onPress={refreshData} className="bg-sanctuarySaffron rounded-full px-6">
+          <ButtonText className="text-obsidian font-bold">Try again</ButtonText>
+        </Button>
       </VStack>
     );
   }
@@ -110,16 +113,17 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                 </Text>
               </HStack>
               <Box className="bg-sanctuarySaffron/10 px-2 py-1 rounded-full">
-                <Text className="text-sanctuarySaffron text-[10px] font-bold">Active</Text>
+                <Text className="text-sanctuarySaffron text-[10px] font-bold">Your pace</Text>
               </Box>
             </HStack>
 
             <VStack className="items-center py-2">
               <Text className="text-sanctuarySaffron text-4xl font-black tracking-tight text-center">
-                {getStreakMessage(streak)}
+                {t('studentGoals.momentumTitle') || 'Build your momentum'}
               </Text>
               <Text className="text-mistGray text-xs text-center mt-2 opacity-60 italic">
-                {t('studentGoals.streakDesc') || 'Keep completing tasks to fuel the fire.'}
+                {t('studentGoals.momentumDesc') ||
+                  'Complete goals at a sustainable pace; streaks will appear when they are measured from your activity.'}
               </Text>
             </VStack>
           </VStack>
@@ -225,6 +229,8 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                       {goal.progress < 100 ? (
                         <HStack className="gap-4">
                           <Button
+                            accessibilityLabel={`Decrease progress for ${goal.text}`}
+                            accessibilityHint="Moves this goal back by 10 percent"
                             onPress={() => {
                               hapticLight();
                               handleUpdateProgress(goal.id, goal.progress - 10);
@@ -235,6 +241,8 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                           </Button>
 
                           <Button
+                            accessibilityLabel={`Increase progress for ${goal.text}`}
+                            accessibilityHint="Moves this goal forward by 10 percent"
                             onPress={() => {
                               hapticLight();
                               handleUpdateProgress(goal.id, goal.progress + 10);

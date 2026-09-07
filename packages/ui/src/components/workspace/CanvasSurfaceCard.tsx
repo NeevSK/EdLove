@@ -97,7 +97,7 @@ export function CanvasSurfaceCard<
 
   return (
     <Pressable
-      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityRole={onPress || surface.isLocked ? 'button' : undefined}
       disabled={!onPress && !surface.isLocked}
       onPress={handlePress}
       style={({ pressed }) => [
@@ -181,11 +181,15 @@ export function CanvasSurfaceCard<
           ))
         )}
       </View>
-      {actions && !surface.isLocked ? <View style={cardStyles.actionsRow}>{actions}</View> : null}
+      {actions && !surface.isLocked ? (
+        <View onStartShouldSetResponder={() => true} style={cardStyles.actionsRow}>
+          {actions}
+        </View>
+      ) : null}
 
       <View style={cardStyles.footer}>
         <View style={cardStyles.footerSpacer} />
-        <View style={cardStyles.footerActions}>
+        <View onStartShouldSetResponder={() => true} style={cardStyles.footerActions}>
           {reorderEnabled && dragEnabled ? (
             <View
               accessibilityRole="image"

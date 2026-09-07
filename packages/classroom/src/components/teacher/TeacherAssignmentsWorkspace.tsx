@@ -2,6 +2,7 @@ import { assignmentsAPI } from '@repo/core/api/client';
 
 import { BrandPulse } from '@repo/ui';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { CalendarDays, ClipboardList, Clock3, Plus, Sparkles } from '@repo/ui/icons';
 import {
   Box,
@@ -36,14 +37,18 @@ export default function TeacherAssignmentsWorkspace({
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const { showToast } = useSanctuaryToast();
 
   const loadAssignments = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       const data = await assignmentsAPI.getAll(classroomId);
       setAssignments(data || []);
     } catch (error) {
       console.error('Failed to load assignments', error);
+      setLoadError('Assignments could not be loaded. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +76,7 @@ export default function TeacherAssignmentsWorkspace({
       await loadAssignments();
     } catch (error) {
       console.error('Failed to create assignment', error);
+      showToast({ message: 'Assignment could not be created. Please try again.', type: 'error' });
     } finally {
       setIsSaving(false);
     }
@@ -139,6 +145,18 @@ export default function TeacherAssignmentsWorkspace({
         {isLoading ? (
           <Box className="py-20 items-center" accessibilityRole="progressbar" accessibilityLabel="Loading assignments">
             <BrandPulse size={28} tintColor="#D4843A" />
+          </Box>
+        ) : loadError ? (
+          <Box className="py-16 items-center gap-4">
+            <Text className="text-phase-text-secondary text-center">{loadError}</Text>
+            <Pressable
+              onPress={() => void loadAssignments()}
+              className="px-6 py-3 rounded-full border border-phase-border/40"
+            >
+              <Text className="text-xs font-black text-phase-text-primary uppercase tracking-wider">
+                Try again
+              </Text>
+            </Pressable>
           </Box>
         ) : assignments.length === 0 ? (
           <Box className="bg-phase-surface-secondary/40 rounded-[32px] border border-phase-border/40 p-12 items-center gap-6">

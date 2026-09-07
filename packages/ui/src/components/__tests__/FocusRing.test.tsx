@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-jest.mock('react-native-external-keyboard', () => ({
+vi.mock('react-native-external-keyboard', () => ({
   K: {
     Pressable: (props: any) => {
       const React = require('react');
@@ -9,10 +9,10 @@ jest.mock('react-native-external-keyboard', () => ({
     },
   },
   Keyboard: {
-    addListener: jest.fn(() => ({ remove: jest.fn() })),
-    removeListener: jest.fn(),
+    addListener: vi.fn(() => ({ remove: vi.fn() })),
+    removeListener: vi.fn(),
   },
-  useKeyboardHandler: jest.fn(() => {}),
+  useKeyboardHandler: vi.fn(() => {}),
 }));
 
 import { FocusRing } from '../FocusRing';

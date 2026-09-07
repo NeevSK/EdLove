@@ -23,6 +23,7 @@ import { Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 interface GradebookScreenProps {
   classroomId: string;
@@ -33,6 +34,7 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
   const params = useLocalSearchParams<{ classroomId?: string }>();
   const activeClassroomId = classroomId || params.classroomId || 'demo-class';
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const {
     grades,
     studentNames,
@@ -95,6 +97,10 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
       setShowSettings(false);
     } catch (err: any) {
       console.error('Failed to save settings in UI:', err);
+      showToast({
+        message: err?.message || 'Settings could not be saved. Please try again.',
+        type: 'error',
+      });
     }
   };
 
@@ -104,9 +110,13 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
       await submitGrade(gradingStudentId, marks, feedback || undefined);
     } catch (err: any) {
       console.error('[GradebookScreen] submitGrade failed:', err);
-    } finally {
-      setGradingStudentId(null);
+      showToast({
+        message: err?.message || 'Grade could not be saved. Please try again.',
+        type: 'error',
+      });
+      return;
     }
+    setGradingStudentId(null);
   };
 
   if (showSettings && gradingSettings) {

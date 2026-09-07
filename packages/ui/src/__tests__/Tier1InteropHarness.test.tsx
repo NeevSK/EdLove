@@ -35,7 +35,7 @@ describe('Tier-1 facade contract harness', () => {
   });
 
   it('keeps Pressable interaction and state props while styling consumes className', async () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     const { getByTestId } = await render(
       <Pressable
         testID="tier1-pressable"

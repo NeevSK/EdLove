@@ -8,6 +8,7 @@ export interface EssentialStartupDependencies {
   bootstrapPlatform: () => Promise<void>;
   isRuntimeRegistered: () => boolean;
   loadCatalog: () => Promise<{ registerAppCatalog: () => void }>;
+  initializeDeviceAccounts: () => Promise<unknown>;
 }
 
 /**
@@ -37,6 +38,7 @@ export async function completeEssentialStartup({
   bootstrapPlatform,
   isRuntimeRegistered,
   loadCatalog,
+  initializeDeviceAccounts,
 }: EssentialStartupDependencies): Promise<void> {
   console.log('[boot trace] 1. Calling bootstrapPlatform()...');
   // 10 s deadline — generous enough for Argent / agent-device connected-mode
@@ -52,5 +54,7 @@ export async function completeEssentialStartup({
   const { registerAppCatalog } = await loadCatalog();
   console.log('[boot trace] 4. Catalog loaded. Registering catalog...');
   registerAppCatalog();
-  console.log('[boot trace] 5. Essential startup completed successfully!');
+  console.log('[boot trace] 5. Initializing device account scope...');
+  await initializeDeviceAccounts();
+  console.log('[boot trace] 6. Essential startup completed successfully!');
 }

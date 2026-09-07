@@ -1,14 +1,15 @@
 import { LogIn } from '@repo/ui/icons';
 import { fireEvent, render } from '@testing-library/react-native';
+import { vi } from 'vitest';
 import { Button, ButtonIcon, ButtonText } from '../components/ui/button';
 
-jest.mock('@repo/ui/utils/haptics', () => ({
-  hapticImpact: jest.fn(),
+vi.mock('@repo/ui/utils/haptics', () => ({
+  hapticImpact: vi.fn(),
 }));
 
 import { hapticImpact } from '@repo/ui/utils/haptics';
 
-const mockedHapticImpact = hapticImpact as jest.MockedFunction<typeof hapticImpact>;
+const mockedHapticImpact = vi.mocked(hapticImpact);
 
 beforeEach(() => {
   mockedHapticImpact.mockClear();
@@ -27,7 +28,7 @@ describe('Button Component (Robustness)', () => {
   });
 
   it('handles press events', async () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     const { getByRole } = await render(
       <Button onPress={onPress}>
         <ButtonText>Click Me</ButtonText>
@@ -39,7 +40,7 @@ describe('Button Component (Robustness)', () => {
   });
 
   it('handles disabled state behaviorally', async () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     const { getByRole } = await render(
       <Button isDisabled={true} onPress={onPress}>
         <ButtonText>Click Me</ButtonText>

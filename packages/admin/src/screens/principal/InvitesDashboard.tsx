@@ -7,6 +7,7 @@ import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
 import { Platform } from 'react-native';
 import { type InviteCode, invitesAPI } from '@repo/admin/invites';
+import { coreRuntime } from '@repo/core/logic';
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES
@@ -138,28 +139,28 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
     }
   };
 
-  const copyToClipboard = (code: string) => {
+  const copyToClipboard = async (code: string) => {
     if (Platform.OS === 'web') {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard
-          .writeText(code)
-          .then(() => {
-            hapticLight();
-            toast.showToast({
-              message: 'Copied: Code copied to clipboard',
-              type: 'success',
-            });
-          })
-          .catch((err) => {
-            console.error('Failed to copy to clipboard:', err);
-          });
+        try {
+          await navigator.clipboard.writeText(code);
+          hapticLight();
+          toast.showToast({ message: 'Copied: Code copied to clipboard', type: 'success' });
+        } catch (err) {
+          console.error('Failed to copy to clipboard:', err);
+          toast.showToast({ message: 'Copy failed: Please copy the code manually.', type: 'error' });
+        }
       }
     } else {
-      // In a real native environment we'd use a clipboard module, but for now we'll just toast
-      toast.showToast({
-        message: 'Copied: Code copied to clipboard',
-        type: 'success',
-      });
+      try {
+        const copied = await coreRuntime.clipboard.setStringAsync(code);
+        if (!copied) throw new Error('Clipboard provider unavailable');
+        hapticLight();
+        toast.showToast({ message: 'Copied: Code copied to clipboard', type: 'success' });
+      } catch (err) {
+        console.error('Failed to copy to clipboard:', err);
+        toast.showToast({ message: 'Copy failed: Please copy the code manually.', type: 'error' });
+      }
     }
   };
 

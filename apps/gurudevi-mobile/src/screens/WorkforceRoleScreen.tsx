@@ -1,10 +1,12 @@
 import { Button, ButtonText, Heading, Input, InputField, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WorkforceJobFamily } from '@repo/workforce';
 
 export function WorkforceRoleScreen() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const [selectedFamily, setSelectedFamily] = useState<WorkforceJobFamily>('academic');
   const [employeeName, setEmployeeName] = useState('');
   const [loading] = useState(false);
@@ -13,8 +15,8 @@ export function WorkforceRoleScreen() {
     if (!employeeName.trim()) return;
     // In real implementation, this would call workforce API
     // For now, just show success
-    alert(`${employeeName} assigned to ${selectedFamily} family`);
-  }, [employeeName, selectedFamily]);
+    showToast({ message: `${employeeName} assigned to ${selectedFamily} family`, type: 'success' });
+  }, [employeeName, selectedFamily, showToast]);
 
   return (
     <VStack className="p-lg gap-lg items-center bg-phase-surface">
@@ -29,6 +31,7 @@ export function WorkforceRoleScreen() {
           <Input className="bg-ink border-obsidian">
             <InputField
               value={employeeName}
+              accessibilityLabel="Employee name"
               onChangeText={setEmployeeName}
               placeholder="e.g., Jane Doe"
               className="text-ink"
@@ -41,6 +44,7 @@ export function WorkforceRoleScreen() {
           <Input className="bg-ink border-obsidian">
             <InputField
               value={selectedFamily}
+              accessibilityLabel="Job family"
               onChangeText={(text) => setSelectedFamily(text as WorkforceJobFamily)}
               placeholder="Select job family"
               className="text-ink"

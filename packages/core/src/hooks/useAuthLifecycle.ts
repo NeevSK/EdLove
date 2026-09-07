@@ -1,15 +1,19 @@
-import { type DeviceAccountProfile, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
+import {
+  captureAuthenticatedDeviceAccount,
+  getVerifiedDeviceAccountProfile,
+} from '@repo/core/accounts/authenticatedAccountCapture';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
-import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
+import { identityAPI } from '@repo/core/api/identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import {
   getSessionIdentityMode,
   type IdentityAvailability,
 } from '@repo/core/logic/auth/identityState';
+import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
 import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
-import { clearSentryUser, identifyUser, initSentry, setSentryUser } from '@repo/core/monitoring';
+import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
 import { useStore } from '@repo/core/store/useStore';
 import type { User } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
@@ -17,34 +21,7 @@ import type { Bond } from '@repo/core/types/Identity';
 import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-/**
- * A device account is only durable after the authenticated Supabase session
- * and the resolved Gurudevi identity agree on the same principal. This keeps
- * anonymous, sandbox, stale, and partially-resolved sessions out of the
- * shared-device registry.
- */
-export function getVerifiedDeviceAccountProfile(
-  session: Session | null,
-  identity: ActiveCitizen | null,
-): DeviceAccountProfile | null {
-  if (
-    !session?.user ||
-    getSessionIdentityMode(session) !== 'authenticated' ||
-    !identity ||
-    identity.id !== session.user.id
-  ) {
-    return null;
-  }
-
-  return {
-    id: identity.id,
-    email: identity.email,
-    display_name: identity.display_name,
-    avatar_url: null,
-    capacity: identity.activeBond?.capacity ?? null,
-    school_id: identity.schoolId ?? null,
-  };
-}
+export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture';
 
 /**
  * useAuthLifecycle
@@ -75,6 +52,24 @@ export function useAuthLifecycle() {
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
   const setDemoMode = useStore((state) => state.setDemoMode);
 
+  const clearDerivedIdentityState = useCallback(() => {
+    setUser(null);
+    setPerspective(null);
+    setAvailableBonds([]);
+    setSchoolType(null);
+    setOnboardingCompleted(false);
+    setIdentityAvailability('unknown');
+    setAccountLifecycleStatus(null);
+  }, [
+    setAccountLifecycleStatus,
+    setAvailableBonds,
+    setIdentityAvailability,
+    setOnboardingCompleted,
+    setPerspective,
+    setSchoolType,
+    setUser,
+  ]);
+
   const fetchAndSetUserProfile = useCallback(
     async (sessionToCapture?: Session | null) => {
       // Only block the UI with a loading spinner on the very first boot fetch.
@@ -86,105 +81,56 @@ export function useAuthLifecycle() {
         setIsProfileLoading(true);
       }
       try {
-        assertHighway('identity_bootstrap', 'direct-api');
-        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-        // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
-        const identity = await identityAPI.identifyActiveCitizen();
-
-        if (identity) {
-          setIdentityAvailability('active');
-          setAccountLifecycleStatus(null);
-          // 2. Update Store with ReBAC data
-          // Cast simplified bonds to full Bond type - the store layer fills in additional fields
-          setUser(identity as unknown as User);
-          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
-
-          // Re-calculate perspective from bonds
-          setPerspective({
-            activeBond: identity.activeBond as unknown as Bond | undefined,
-            availableBonds: identity.availableBonds as unknown as Bond[],
-          });
-
-          const deviceAccountProfile = getVerifiedDeviceAccountProfile(
-            sessionToCapture ?? null,
-            identity,
-          );
-          const captureKey = sessionToCapture
-            ? `${sessionToCapture.user.id}:${sessionToCapture.access_token}`
-            : null;
-          if (
-            deviceAccountProfile &&
-            captureKey &&
-            !capturedSessionKeysRef.current.has(captureKey) &&
-            !capturingSessionKeysRef.current.has(captureKey)
-          ) {
-            capturingSessionKeysRef.current.add(captureKey);
-            try {
-              await deviceAccounts.captureCurrentAccount(
-                sessionToCapture ?? null,
-                deviceAccountProfile,
-              );
-              capturedSessionKeysRef.current.add(captureKey);
-            } catch (error) {
-              // A registry failure must not invalidate an otherwise verified
-              // session. Leaving the key uncaptured permits a later auth refresh
-              // to retry without duplicating successful captures.
-              console.warn('[auth] Device account capture deferred:', error);
-            } finally {
-              capturingSessionKeysRef.current.delete(captureKey);
-            }
-          }
-
-          // 3. Handle Onboarding & School Logic
-          const isEffectivelyOnboarded = !!identity.onboarding_completed;
-          if (isEffectivelyOnboarded) {
-            setOnboardingCompleted(true);
-          }
-
-          const schoolId = identity.schoolId || null;
-          if (schoolId) {
+        const resolution = await resolveAuthProfile(sessionToCapture ?? null, {
+          identifyActiveCitizen: async () => {
+            assertHighway('identity_bootstrap', 'direct-api');
+            return identityAPI.identifyActiveCitizen();
+          },
+          getAccountLifecycleStatus: () => authAPI.getAccountLifecycleStatus(),
+          getSchoolType: async (schoolId) => {
             const { data: schoolData } = await supabaseClient
               .from('schools')
               .select('type')
               .eq('id', schoolId)
               .single();
+            return (schoolData?.type as SchoolType | undefined) ?? null;
+          },
+        });
 
-            if (schoolData) {
-              setSchoolType(schoolData.type as SchoolType | null);
-            }
-          } else {
-            setSchoolType(null);
-          }
-
-          // 4. Monitoring identification (Relationship-aware)
-          setSentryUser({
-            id: identity.id,
-            email: identity.email,
-            username: identity.display_name,
+        if (resolution.kind === 'active') {
+          const { identity, schoolType } = resolution;
+          setIdentityAvailability('active');
+          setAccountLifecycleStatus(null);
+          setUser(identity as unknown as User);
+          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
+          setPerspective({
+            activeBond: identity.activeBond as unknown as Bond | undefined,
+            availableBonds: identity.availableBonds as unknown as Bond[],
           });
 
-          identifyUser(identity.id);
+          await captureAuthenticatedDeviceAccount({
+            capturedSessionKeys: capturedSessionKeysRef.current,
+            capturingSessionKeys: capturingSessionKeysRef.current,
+            identity,
+            session: sessionToCapture ?? null,
+          });
+
+          setOnboardingCompleted(Boolean(identity.onboarding_completed));
+          setSchoolType(schoolType);
+
+          identifyAuthSubject({
+            id: identity.id,
+            email: identity.email,
+            displayName: identity.display_name,
+          });
+        } else if (resolution.kind === 'inactive') {
+          clearDerivedIdentityState();
+          setAccountLifecycleStatus(resolution.accountLifecycleStatus);
+          setIdentityAvailability('inactive');
         } else {
-          // A soft-deactivated profile is intentionally not an active identity.
-          // Clear derived state so stale local data cannot keep rendering the app
-          // shell while the auth session is still present.
-          setUser(null);
-          setPerspective(null);
-          setAvailableBonds([]);
-          setSchoolType(null);
-          setOnboardingCompleted(false);
-          setAccountLifecycleStatus(null);
-          if (getSessionIdentityMode(sessionToCapture) === 'authenticated') {
-            const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
-            setAccountLifecycleStatus(lifecycleStatus);
-            if (lifecycleStatus.status === 'deactivated') {
-              setIdentityAvailability('inactive');
-            } else {
-              setIdentityAvailability('unknown');
-              setProfileError('Unable to restore your account profile.');
-            }
-          } else {
-            setIdentityAvailability('unknown');
+          clearDerivedIdentityState();
+          if (resolution.profileError) {
+            setProfileError(resolution.profileError);
           }
         }
       } catch (error) {
@@ -200,7 +146,14 @@ export function useAuthLifecycle() {
         hasBootstrappedRef.current = true;
       }
     },
-    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
+    [
+      clearDerivedIdentityState,
+      setUser,
+      setPerspective,
+      setAvailableBonds,
+      setSchoolType,
+      setOnboardingCompleted,
+    ],
   );
 
   const refreshProfile = useCallback(async () => {
@@ -224,13 +177,7 @@ export function useAuthLifecycle() {
         if (sessionMode === 'authenticated' || sessionMode === 'anonymous') {
           await fetchAndSetUserProfile(initialSession);
         } else if (initialSession?.user) {
-          setUser(null);
-          setPerspective(null);
-          setAvailableBonds([]);
-          setSchoolType(null);
-          setOnboardingCompleted(false);
-          setIdentityAvailability('unknown');
-          setAccountLifecycleStatus(null);
+          clearDerivedIdentityState();
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -249,11 +196,9 @@ export function useAuthLifecycle() {
       }
     };
 
-    checkSession().catch((e) => {
-      console.error('Auth: Critical session check failed', e);
-    });
-
-    // 3. Auth State Change Listener
+    // 3. Register before reading the initial session. The session request crosses
+    // an asynchronous boundary, so subscribing first prevents a sign-in/out event
+    // from being lost while the initial request is in flight.
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange(async (event, currentSession) => {
@@ -273,31 +218,23 @@ export function useAuthLifecycle() {
         setIdentityAvailability('unknown');
         setAccountLifecycleStatus(null);
       } else if (event === 'SIGNED_OUT') {
-        clearSentryUser();
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-        setIdentityAvailability('unknown');
-        setAccountLifecycleStatus(null);
+        clearAuthSubject();
+        clearDerivedIdentityState();
         setDemoMode(false);
       } else if (currentSession) {
         setDemoMode(false);
       }
     });
 
+    checkSession().catch((e) => {
+      console.error('Auth: Critical session check failed', e);
+    });
+
     return () => subscription.unsubscribe();
   }, [
     setAuthSession,
     setAuthSessionResolved,
-    setUser,
-    setPerspective,
-    setAvailableBonds,
-    setSchoolType,
-    setOnboardingCompleted,
-    setIdentityAvailability,
-    setAccountLifecycleStatus,
+    clearDerivedIdentityState,
     fetchAndSetUserProfile,
     setDemoMode,
   ]);

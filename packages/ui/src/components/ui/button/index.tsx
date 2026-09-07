@@ -171,7 +171,20 @@ export const ButtonText = React.forwardRef<RNText, TextProps & { className?: str
   },
 );
 
-export const ButtonIcon = ({ as: Icon, className, size, ...props }: any) => {
+interface ButtonIconProps {
+  as?: React.ComponentType<{
+    size?: number;
+    className?: string;
+    testID?: string;
+    accessibilityLabel?: string;
+  }>;
+  className?: string;
+  size?: number;
+  testID?: string;
+  accessibilityLabel?: string;
+}
+
+export const ButtonIcon = ({ as: Icon, className, size, ...props }: ButtonIconProps) => {
   const { variant, size: buttonSize } = useButton();
   if (!Icon) return null;
   const defaultSize = buttonSize === 'sm' ? 16 : buttonSize === 'lg' ? 22 : 18;
@@ -180,13 +193,18 @@ export const ButtonIcon = ({ as: Icon, className, size, ...props }: any) => {
       <Icon
         {...props}
         size={size || defaultSize}
-        className={`${variant === 'solid' ? 'text-white' : ''} ${className || ''}`}
+        className={cn(variant === 'solid' ? 'text-phase-text-on-accent' : undefined, className)}
       />
     </StyledView>
   );
 };
 
-export const ButtonSpinner = ({ className, color }: any) => {
+export interface ButtonSpinnerProps {
+  className?: string;
+  color?: string;
+}
+
+export const ButtonSpinner = ({ className, color }: ButtonSpinnerProps) => {
   const { action } = useButton();
   const defaultColor = action === 'primary' ? '#FFFFFF' : '#8B8599';
   return <Spinner color={color || defaultColor} className={className} />;

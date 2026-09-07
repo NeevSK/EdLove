@@ -36,6 +36,7 @@ This index structures all interface guides, accessibility (a11y) governance, sta
 | [architecture/media-consumption-architecture.md](media-consumption-architecture.md) | Specifications for audio/video rendering and consumption layouts |
 | [architecture/ui-inventory.md](ui-inventory.md) | Registry of all active UI components, screens, and design tokens |
 | [architecture/a11y-governance.md](a11y-governance.md) | Core rules for keeping layouts accessible to screen readers |
+| [../../docs/architecture/ui-runtime-testing-standard.md](../../../docs/architecture/ui-runtime-testing-standard.md) | Canonical runtime-testing hierarchy and evidence rules for `@repo/ui` |
 | [architecture/source-owned-nativewind-ui.md](architecture/source-owned-nativewind-ui.md) | Source-owned NativeWind/shadcn-style component architecture |
 | [architecture/semantic-tokens.md](architecture/semantic-tokens.md) | Semantic token roles and NativeWind usage rules |
 

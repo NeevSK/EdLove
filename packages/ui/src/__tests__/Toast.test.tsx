@@ -13,11 +13,11 @@ const TestComponent = ({ message = 'Hello', type = 'info' as any, duration = 300
 
 describe('Toast System Logic (2026 Standard)', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('triggers and shows a toast message via hook', async () => {
@@ -30,7 +30,7 @@ describe('Toast System Logic (2026 Standard)', () => {
     await fireEvent.press(getByText('Trigger Toast'));
 
     await act(async () => {
-      jest.advanceTimersByTime(0);
+      vi.advanceTimersByTime(0);
     });
 
     expect(getByText(/Test Success/)).toBeTruthy();
@@ -46,19 +46,19 @@ describe('Toast System Logic (2026 Standard)', () => {
     await fireEvent.press(getByText('Trigger Toast'));
 
     await act(async () => {
-      jest.advanceTimersByTime(0);
+      vi.advanceTimersByTime(0);
     });
 
     expect(getByText(/Timed Toast/)).toBeTruthy();
 
     await act(async () => {
-      jest.advanceTimersByTime(2499);
+      vi.advanceTimersByTime(2499);
     });
 
     expect(queryByText(/Timed Toast/)).toBeTruthy();
 
     await act(async () => {
-      jest.advanceTimersByTime(1);
+      vi.advanceTimersByTime(1);
     });
 
     expect(queryByText(/Timed Toast/)).toBeNull();

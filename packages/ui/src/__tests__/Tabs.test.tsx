@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 describe('Tabs', () => {
   it('selects a trigger and renders matching content', async () => {
-    const onValueChange = jest.fn();
+    const onValueChange = vi.fn();
     await render(
       <Tabs value="one" onValueChange={onValueChange}>
         <TabsList>

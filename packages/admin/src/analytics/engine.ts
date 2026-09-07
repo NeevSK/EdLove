@@ -31,6 +31,14 @@ export class MultiTenantAnalyticsEngine {
     tenantIds: string[],
     timeRange: DateRange,
   ): Promise<TenantMetrics[]> {
+    if (tenantIds.length === 0 || tenantIds.some((tenantId) => tenantId.trim().length === 0)) {
+      throw new Error('At least one non-empty tenant ID is required.');
+    }
+
+    if (Number.isNaN(Date.parse(timeRange.startDate)) || Number.isNaN(Date.parse(timeRange.endDate))) {
+      throw new Error('A valid analytics time range is required.');
+    }
+
     const metrics: TenantMetrics[] = [];
     for (const tenantId of tenantIds) {
       const tenantMetrics = await this.calculateTenantMetrics(tenantId, timeRange);
@@ -435,11 +443,14 @@ export class MultiTenantAnalyticsEngine {
   }
   // Placeholder methods for specific metric calculations
   private async getTenantInfo(tenantId: string) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('tenants')
       .select('name, kind')
       .eq('id', tenantId)
       .single();
+    if (error) {
+      throw new Error(`Unable to load tenant ${tenantId}: ${error.message}`);
+    }
     return data || { name: 'Unknown', kind: 'customer' };
   }
   private async calculateAttendanceRate(_tenantId: string, _timeRange: DateRange): Promise<number> {

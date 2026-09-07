@@ -1,15 +1,17 @@
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Heading, Text, VStack } from '@repo/ui/primitives';
 
 export type ClassroomAccessStateKind = 'missing' | 'unavailable';
 
 export function ClassroomAccessState({
   kind,
   onBack,
+  onRetry,
 }: {
   kind: ClassroomAccessStateKind;
   onBack: () => void;
+  onRetry?: () => void;
 }) {
   const missing = kind === 'missing';
 
@@ -30,6 +32,15 @@ export function ClassroomAccessState({
               ? 'Return to your workspace and choose a classroom to continue.'
               : 'It may no longer exist, or your current access does not include it. Return to the workspace to choose an available classroom.'}
           </Text>
+          {onRetry ? (
+            <Button
+              accessibilityLabel="Retry opening classroom"
+              onPress={onRetry}
+              className="mt-2 rounded-full bg-phase-accent px-5"
+            >
+              <ButtonText className="text-sacredWhite font-bold">Try again</ButtonText>
+            </Button>
+          ) : null}
         </VStack>
       </Box>
     </ScreenWrapper>

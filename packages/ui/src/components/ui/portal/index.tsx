@@ -45,9 +45,11 @@ class PortalStore {
 const portalStore = new PortalStore();
 
 const PortalContext = createContext<{
+  isProvided: boolean;
   register: (id: string, children: React.ReactNode) => void;
   unregister: (id: string) => void;
 }>({
+  isProvided: false,
   register: (id, node) => portalStore.register(id, node),
   unregister: (id) => portalStore.unregister(id),
 });
@@ -70,6 +72,7 @@ const PortalHost = () => {
 export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
   const contextValue = useMemo(
     () => ({
+      isProvided: true,
       register: (id: string, node: React.ReactNode) => portalStore.register(id, node),
       unregister: (id: string) => portalStore.unregister(id),
     }),
@@ -115,6 +118,8 @@ export const Portal = ({ children }: { children: React.ReactNode }) => {
       return <View>{children}</View>;
     }
   }
+
+  if (!context.isProvided) return children;
 
   return null;
 };

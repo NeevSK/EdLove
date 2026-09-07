@@ -70,7 +70,7 @@ describe('Select Component (Robustness)', () => {
   });
 
   it('selects an option, updates accessibility state, and triggers callback', async () => {
-    const onValueChange = jest.fn();
+    const onValueChange = vi.fn();
     const { getByRole, getByText } = await render(<SelectTest onValueChange={onValueChange} />);
 
     fireEvent.press(getByRole('combobox'));

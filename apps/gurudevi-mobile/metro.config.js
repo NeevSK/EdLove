@@ -91,13 +91,10 @@ process.once('exit', () => {
 // Add support for WASM files (required by expo-sqlite on web)
 config.resolver.assetExts.push('wasm');
 
-// 1. Watchman + workspace watchFolders so edits to internal packages
-//    (@repo/ui, @repo/core, ...) trigger Metro's incremental fast refresh
-//    instead of forcing a full rebuild. Watchman is healthy on this machine
-//    (see `watchman watch-list`); Metro fell back to Node's fs.watch() here,
-//    which is unreliable on Windows + Node 22 and silently dropped package
-//    file changes — that is why containers had to be rebuilt from scratch.
-config.useWatchman = true;
+// 1. Use Metro's native watcher on Windows. Watchman's subscription startup
+//    can hang on this workspace, leaving Metro's dependency graph incomplete
+//    and causing every device bundle request to fail with HTTP 500.
+config.useWatchman = false;
 // Watch every internal workspace package. The app project root is already a
 // watch root by default; this adds the shared packages dir on top.
 config.watchFolders = [path.resolve(workspaceRoot, 'packages')];
@@ -141,6 +138,9 @@ config.resolver.blockList = [
 const SINGLETON_OVERRIDES = {
   react: path.resolve(projectRoot, 'node_modules/react'),
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
+  nativewind: path.resolve(projectRoot, 'node_modules/nativewind'),
+  'react-native-css': path.resolve(projectRoot, 'node_modules/react-native-css'),
+  'react-native-css-interop': path.resolve(projectRoot, 'node_modules/react-native-css-interop'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
   // These packages are a coordinated runtime. Pin their Metro resolution to
@@ -160,7 +160,7 @@ const SINGLETON_OVERRIDES = {
   ),
   effect: path.resolve(projectRoot, 'node_modules/effect'),
   '@effect/platform': path.resolve(projectRoot, 'node_modules/@effect/platform'),
-  styleq: path.resolve(projectRoot, 'node_modules/styleq'),
+  styleq: resolvePnpmPackageRoot('styleq'),
   '@react-native-community/slider': path.resolve(
     projectRoot,
     'node_modules/@react-native-community/slider',

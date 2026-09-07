@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 describe('Combobox', () => {
   it('filters options and reports the selected value', async () => {
-    const onValueChange = jest.fn();
+    const onValueChange = vi.fn();
     await render(
       <Combobox
         value=""

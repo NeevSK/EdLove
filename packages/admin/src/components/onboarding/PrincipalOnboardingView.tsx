@@ -60,7 +60,10 @@ export default function PrincipalOnboardingView({
               hapticLight();
               onCreateSchool();
             }}
-            className="w-full bg-phase-surface p-6 rounded-generous border border-phase-canvas shadow-sm active:scale-[0.98] transition-transform"
+            className="w-full bg-phase-surface p-6 rounded-generous border border-phase-canvas shadow-sm"
+            style={({ pressed }) => [
+              pressed ? { transform: [{ scale: 0.98 }] } : null,
+            ]}
           >
             <HStack className="gap-5 items-center">
               <Box className="w-16 h-16 rounded-comfortable bg-templeGold items-center justify-center shadow-lg">
@@ -93,7 +96,10 @@ export default function PrincipalOnboardingView({
               hapticLight();
               onJoinSchool();
             }}
-            className="w-full bg-phase-canvas/50 p-6 rounded-generous border border-phase-canvas active:scale-[0.98] transition-transform"
+            className="w-full bg-phase-canvas/50 p-6 rounded-generous border border-phase-canvas"
+            style={({ pressed }) => [
+              pressed ? { transform: [{ scale: 0.98 }] } : null,
+            ]}
           >
             <HStack className="gap-5 items-center">
               <Box className="w-16 h-16 rounded-comfortable bg-phase-canvas items-center justify-center">
@@ -133,7 +139,10 @@ export default function PrincipalOnboardingView({
                   hapticLight();
                   onTryDemo();
                 }}
-                className="bg-templeGold px-8 h-[54px] rounded-full items-center justify-center shadow-lg active:scale-95 transition-transform"
+                className="bg-templeGold px-8 h-[54px] rounded-full items-center justify-center shadow-lg"
+                style={({ pressed }) => [
+                  pressed ? { transform: [{ scale: 0.95 }] } : null,
+                ]}
               >
                 <HStack className="items-center gap-2">
                   <Text className="text-white font-black text-base uppercase tracking-widest">

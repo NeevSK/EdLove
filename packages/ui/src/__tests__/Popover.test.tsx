@@ -4,7 +4,7 @@ import { Text } from '../components/ui/text';
 
 describe('Popover', () => {
   it('toggles content and closes through its close control', async () => {
-    const onOpenChange = jest.fn();
+    const onOpenChange = vi.fn();
     const { getByText, queryByText, rerender } = await render(
       <Popover open={false} onOpenChange={onOpenChange}>
         <PopoverTrigger>

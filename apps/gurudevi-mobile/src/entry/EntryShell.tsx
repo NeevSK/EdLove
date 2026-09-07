@@ -13,7 +13,10 @@ import { ToastProvider } from '@repo/ui/providers';
 import { GlobalProvider } from '@repo/core/logic';
 
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
+import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
+import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
 import { queryClient } from '@/lib/queryClient';
+import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 
 /**
  * The deliberately small route host for first paint.
@@ -44,20 +47,24 @@ export function EntryShell() {
                   <PortalProvider>
                     <ToastProvider>
                       <ExternalLinkProvider>
-                        <Box className="flex-1 bg-phase-canvas">
-                          <SessionRouteGate>
-                            <Stack screenOptions={{ headerShown: false }}>
-                              <Stack.Screen name="index" />
-                              <Stack.Screen name="welcome" />
-                              <Stack.Screen name="auth" />
-                              <Stack.Screen name="account-recovery" />
-                              <Stack.Screen name="onboarding" />
-                              <Stack.Screen name="public-form/[slug]" />
-                              <Stack.Screen name="(tabs)" />
-                              <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
-                            </Stack>
-                          </SessionRouteGate>
-                        </Box>
+                        <DeepLinkProvider>
+                          <AuthQueryCacheBoundary />
+                          <Box className="flex-1 bg-phase-canvas">
+                            <SessionRouteGate>
+                              <Stack screenOptions={{ headerShown: false }}>
+                                <Stack.Screen name="index" />
+                                <Stack.Screen name="welcome" />
+                                <Stack.Screen name="auth" />
+                                <Stack.Screen name="account-recovery" />
+                                <Stack.Screen name="onboarding" />
+                                <Stack.Screen name="public-form/[slug]" />
+                                <Stack.Screen name="(tabs)" />
+                                <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
+                              </Stack>
+                            </SessionRouteGate>
+                          </Box>
+                          <AuthenticatedSyncService />
+                        </DeepLinkProvider>
                       </ExternalLinkProvider>
                     </ToastProvider>
                   </PortalProvider>

@@ -109,7 +109,6 @@ export {
 } from '@repo/core/offline/resilience';
 export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
-export { AuthorityLifecycleProvider } from '@repo/core/providers/AuthorityLifecycleProvider';
 // 3. Auth & Context
 export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';

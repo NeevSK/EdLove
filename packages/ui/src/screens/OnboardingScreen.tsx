@@ -121,6 +121,7 @@ const NameStep = memo(
   ({
     t,
     name,
+    suggestedName,
     onNameChange,
     onNext,
     canProceed,
@@ -130,6 +131,7 @@ const NameStep = memo(
   }: {
     t: (key: string, options?: any) => string;
     name: string;
+    suggestedName?: string;
     onNameChange: (text: string) => void;
     onNext: () => void;
     canProceed: boolean;
@@ -151,19 +153,21 @@ const NameStep = memo(
     const resolvedBackLabel =
       !backLabel || backLabel === 'onboarding.backToWelcome' ? 'Back to Welcome' : backLabel;
 
+    const isSuggested = suggestedName && name.trim() === suggestedName.trim();
+
     return (
       <StepShell
         currentStep={0}
         step={getOnboardingStepLabel(0)}
-        title={t('onboarding.nameTitle', { defaultValue: 'Welcome! What should we call you?' })}
-        subtitle={t('onboarding.nameSubtitle', { defaultValue: "Let's start your journey with a name." })}
+        title={t('onboarding.nameTitle', { defaultValue: 'What should we call you?' })}
+        subtitle={t('onboarding.nameSubtitle', { defaultValue: 'Enter your preferred name or friendly nickname for the sanctuary.' })}
         artwork={artwork}
       >
         <VStack className="gap-4">
           <Input className="rounded-xl border-phase-border bg-phase-secondary/50 px-3 py-1">
             <InputField
               ref={inputRef}
-              placeholder={t('onboarding.namePlaceholder', { defaultValue: 'Your name or nickname' })}
+              placeholder={t('onboarding.namePlaceholder', { defaultValue: 'e.g. Maya, Alex, Coach David' })}
               value={name}
               onChangeText={onNameChange}
               className="text-phase-text-primary text-base"
@@ -175,15 +179,25 @@ const NameStep = memo(
               }}
             />
           </Input>
-          <Text className="text-phase-text-secondary text-xs">
-            {name.trim().length > 0 && name.trim().length < 2
-              ? 'Your name is a bit short. Try adding another character.'
-              : name === 'Guest User'
-                ? "Please choose a name other than 'Guest User'."
-                : t('onboarding.nameHint', {
-                    defaultValue: 'Use the display name you want people to see inside the app.',
-                  })}
-          </Text>
+
+          {isSuggested ? (
+            <HStack className="items-center gap-1.5 px-1">
+              <Text className="text-phase-accent text-xs font-medium">
+                ✨ Suggested from your account — feel free to customize.
+              </Text>
+            </HStack>
+          ) : (
+            <Text className="text-phase-text-secondary text-xs">
+              {name.trim().length > 0 && name.trim().length < 2
+                ? 'Your name is a bit short. Try adding another character.'
+                : name === 'Guest User'
+                  ? "Please choose a friendly name other than 'Guest User'."
+                  : t('onboarding.nameHint', {
+                      defaultValue: 'This is the friendly name other members and teachers will see.',
+                    })}
+            </Text>
+          )}
+
           <Button
             size="lg"
             onPress={onNext}
@@ -551,6 +565,7 @@ interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   isAnonymous?: boolean;
   userId?: string | null;
+  suggestedName?: string;
   onboardingArtwork?: MascotArtworkSource;
 }
 
@@ -558,6 +573,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   onComplete,
   isAnonymous = false,
   userId = null,
+  suggestedName,
   onboardingArtwork,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
@@ -601,7 +617,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
             dispatch({
               type: 'RESTORE_PROGRESS',
               progress: {
-                name: progress.name,
+                name: progress.name || suggestedName || '',
                 selectedCapacity: progress.selectedCapacity,
                 currentStep: progress.step,
                 schoolId: progress.schoolId,
@@ -643,6 +659,9 @@ const OnboardingScreen = memo(function OnboardingScreen({
             await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
           } catch {
             // Ignore failure when clearing progress key
+          }
+          if (suggestedName) {
+            dispatch({ type: 'SET_NAME', name: suggestedName });
           }
           dispatch({ type: 'SET_STEP', step: 0 });
           return;
@@ -1034,6 +1053,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
                     <NameStep
                       t={t}
                       name={name}
+                      suggestedName={suggestedName}
                       onNameChange={handleNameChange}
                       onNext={() => {
                         void handleNext();

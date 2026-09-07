@@ -787,11 +787,6 @@
       "svelte": "./src/svelte/*.svelte",
       "default": "./src/svelte/*.svelte"
     },
-    "./theme": {
-      "types": "./src/theme/Theme.ts",
-      "import": "./src/theme/Theme.ts",
-      "default": "./src/theme/Theme.ts"
-    },
     "./utils": {
       "types": "./src/utils/index.ts",
       "import": "./src/utils/index.ts",
@@ -844,9 +839,13 @@
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_ui-check-cycles\"",
     "validate-icons": "node scripts/check-icons.mjs",
     "validate-mascot-assets": "node ../../scripts/validate-mascot-assets.mjs",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"jest\" --name \"packages_ui-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"jest --watch\" --name \"packages_ui-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"jest --watch\" --name \"packages_ui-test_ui\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_ui-test\"",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_ui-test_watch\"",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_ui-test_ui\"",
+    "test:a11y": "vitest run --tagsFilter \"a11y\"",
+    "test:leaks": "vitest run --detectAsyncLeaks",
+    "test:shuffle": "vitest run --sequence.shuffle",
+    "test:native": "vitest run --config vitest.native.config.mts",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_ui-clean\""
   },
   "dependencies": {
@@ -931,7 +930,8 @@
     "tailwindcss": "4.3.0",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "vitest-native": "^0.13.0"
   },
   "_originalScripts": {
     "build": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc",

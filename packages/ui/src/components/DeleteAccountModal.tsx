@@ -23,12 +23,23 @@ export default function DeleteAccountModal({
   const footer = (
     <HStack className="w-full gap-3">
       <Box className="flex-1">
-        <SanctuaryButton action="secondary" onPress={onClose} isDisabled={isLoading}>
+        <SanctuaryButton
+          action="secondary"
+          onPress={onClose}
+          isDisabled={isLoading}
+          accessibilityHint="Return without submitting an account deletion request"
+        >
           Cancel
         </SanctuaryButton>
       </Box>
       <Box className="flex-[1.5]">
-        <SanctuaryButton action="negative" onPress={onDelete} isLoading={isLoading}>
+        <SanctuaryButton
+          action="negative"
+          onPress={onDelete}
+          isLoading={isLoading}
+          accessibilityLabel={isLoading ? 'Submitting account deletion request' : 'Request account deletion'}
+          accessibilityHint="Submits a protected request that may permanently remove your account"
+        >
           {isLoading ? 'Submitting...' : 'Request account deletion'}
         </SanctuaryButton>
       </Box>

@@ -5,6 +5,7 @@
  */
 
 export * from './breadcrumbs';
+export * from './authIdentity';
 export * from './posthog';
 export * from './safeData';
 export * from './sentry';

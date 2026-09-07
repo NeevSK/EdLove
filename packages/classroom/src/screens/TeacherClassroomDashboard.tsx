@@ -8,6 +8,7 @@ import type {
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
+  LessonMaterial,
 } from '@repo/core/types';
 import { StudentAnalysisModal } from '@repo/library';
 import ClassroomLegacyTimeline from '@repo/self/components/ClassroomLegacyTimeline';
@@ -20,6 +21,7 @@ import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ResponsiveWorkspaceCanvas } from '@repo/ui/components/workspace/ResponsiveWorkspaceCanvas';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useThemedColors } from '@repo/ui/hooks';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import {
   BookOpen,
   ClipboardCheck,
@@ -51,6 +53,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { openExternalURL } from '@repo/ui/utils/linking';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
@@ -170,11 +173,31 @@ export default function TeacherClassroomDashboard() {
     classroomName?: string;
   }>();
   const { can, context } = usePermissions();
+  const { showToast } = useSanctuaryToast();
   const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
   const [showGroupsModal, setShowGroupsModal] = useState(false);
   const _colors = useThemedColors();
   const _bottomPadding = useBottomTabPadding();
   const activeTone = FEATURE_TONES[activeFeature];
+
+  const openMaterial = async (material: LessonMaterial) => {
+    try {
+      if (material.url) {
+        await openExternalURL(material.url, {
+          sourceLabel: material.title,
+          trustLevel: 'external',
+        });
+        return;
+      }
+      showToast({
+        message: material.content || 'This material does not have a readable preview yet.',
+        type: 'info',
+      });
+    } catch (error) {
+      console.error('Failed to open learning material:', error);
+      showToast({ message: 'This material could not be opened. Please try again.', type: 'error' });
+    }
+  };
 
   // Lessons/Content Management State
   const [showAddMonthModal, setShowAddMonthModal] = useState(false);
@@ -293,6 +316,7 @@ export default function TeacherClassroomDashboard() {
       await workspace.refreshWorkspace();
     } catch (error) {
       console.error('Failed to add month:', error);
+      showToast({ message: 'The learning month could not be added. Please try again.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -341,6 +365,7 @@ export default function TeacherClassroomDashboard() {
       await workspace.refreshWorkspace();
     } catch (error) {
       console.error('Failed to add content:', error);
+      showToast({ message: 'The learning content could not be added. Please try again.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -430,8 +455,9 @@ export default function TeacherClassroomDashboard() {
             classroomId={classroomId}
             isTeacher={can('update', 'Lesson') || can('manage', 'Classroom')}
             refreshTrigger={refreshTrigger}
-            onOpenLesson={(id: string) => console.log('Open Lesson', id)}
-            onOpenAssignment={(id: string) => console.log('Open Assignment', id)}
+            onOpenMaterial={(material) => {
+              void openMaterial(material);
+            }}
             onAddMaterial={(lessonId) => {
               setActiveLessonId(lessonId);
               setContentType('material');
@@ -500,7 +526,13 @@ export default function TeacherClassroomDashboard() {
   }
 
   if (!classroom || workspace.error || workspace.workspaceError) {
-    return <ClassroomAccessState kind="unavailable" onBack={() => safeBack('/workspace')} />;
+    return (
+      <ClassroomAccessState
+        kind="unavailable"
+        onBack={() => safeBack('/workspace')}
+        onRetry={workspace.error || workspace.workspaceError ? () => void workspace.refreshWorkspace() : undefined}
+      />
+    );
   }
 
   const schoolId = classroom?.school_id || '';
@@ -686,6 +718,9 @@ export default function TeacherClassroomDashboard() {
                 return (
                   <Pressable
                     key={f.id}
+                    accessibilityRole="tab"
+                    accessibilityLabel={f.label}
+                    accessibilityState={{ selected: isActive }}
                     onPress={() => {
                       hapticLight();
                       setActiveFeature(f.id);

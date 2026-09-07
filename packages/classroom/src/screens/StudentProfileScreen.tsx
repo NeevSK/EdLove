@@ -8,6 +8,8 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { ArrowLeft, Calendar, Clock3, Lock, ShieldCheck, Trophy } from '@repo/ui/icons';
 import {
   Box,
+  Button,
+  ButtonText,
   Center,
   Heading,
   HStack,
@@ -22,7 +24,7 @@ import { Theme } from '@repo/ui/theme';
 import { hapticMedium } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function StudentProfileScreen() {
@@ -44,6 +46,7 @@ export default function StudentProfileScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     'overview' | 'academics' | 'observations' | 'timeline'
   >('overview');
@@ -55,9 +58,10 @@ export default function StudentProfileScreen() {
   const [timeline, setTimeline] = useState<StudentLongitudinalEvent[]>([]);
   const [snapshotRecords, setSnapshotRecords] = useState<StudentLongitudinalEvent[]>([]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
+      setLoadError(null);
       const [attData, gradeData, obsData, timelineData, snapshotData] = await Promise.all([
         api.attendance.getStudentAttendanceTimeline(studentId, {
           classroomId,
@@ -88,11 +92,12 @@ export default function StudentProfileScreen() {
       setSnapshotRecords(snapshotData?.records || []);
     } catch (error) {
       console.error('Failed to fetch student data:', error);
+      setLoadError('Student data could not be loaded. Please try again.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [classroomId, classroomStudentId, studentId, viewDate]);
 
   useEffect(() => {
     fetchData();
@@ -375,7 +380,13 @@ export default function StudentProfileScreen() {
     <VStack className="flex-1 bg-phase-canvas">
       <Box className="p-md pt-xl border-b border-phase-border bg-phase-surface">
         <HStack className="items-center gap-md mb-lg">
-          <Pressable onPress={() => safeBack('/workspace')} onPressIn={() => hapticMedium()}>
+          <Pressable
+            onPress={() => safeBack('/workspace')}
+            onPressIn={() => hapticMedium()}
+            accessibilityRole="button"
+            accessibilityLabel="Back to classroom"
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
             <Icon as={ArrowLeft} size="xl" className="text-phase-text-primary" />
           </Pressable>
           <VStack>
@@ -397,6 +408,9 @@ export default function StudentProfileScreen() {
                 setActiveTab(tab);
               }}
               className="pb-sm"
+              accessibilityRole="tab"
+              accessibilityLabel={t(`common.${tab}`) || tab}
+              accessibilityState={{ selected: activeTab === tab }}
               style={{
                 borderBottomWidth: activeTab === tab ? 2 : 0,
                 borderBottomColor: Theme.colors.sanctuarySaffron,
@@ -419,6 +433,13 @@ export default function StudentProfileScreen() {
         {isLoading ? (
           <Center className="p-10">
             <BrandPulse size={32} tintColor={Theme.colors.sanctuarySaffron} />
+          </Center>
+        ) : loadError ? (
+          <Center className="p-10 gap-4">
+            <Text className="text-center text-phase-text-secondary">{loadError}</Text>
+            <Button variant="outline" onPress={() => void fetchData()}>
+              <ButtonText>Try again</ButtonText>
+            </Button>
           </Center>
         ) : (
           <>

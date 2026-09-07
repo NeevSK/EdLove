@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-jest.mock('../../utils/haptics', () => ({
-  hapticError: jest.fn(),
+vi.mock('../../utils/haptics', () => ({
+  hapticError: vi.fn(),
 }));
 
 import { JourneyErrorBoundary } from '../JourneyErrorBoundary';
@@ -19,10 +19,10 @@ function GoodChild() {
 describe('JourneyErrorBoundary', () => {
   // Suppress console.error from React's error boundary logging
   beforeAll(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
   afterAll(() => {
-    (console.error as jest.Mock).mockRestore();
+    vi.restoreAllMocks();
   });
 
   it('renders children when no error', async () => {

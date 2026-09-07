@@ -59,7 +59,7 @@ import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics'
 import type { TFunction } from 'i18next';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
+import { RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -260,13 +260,7 @@ const AppExperienceSection = ({ t, cardWidth, onOpenNegentropyHub }: AppExperien
           label={t('profile.loveApp')}
           onPress={() => {
             hapticSuccess();
-            if (Platform.OS === 'web') {
-              showToast(t('profile.loveTitle'), 'success');
-            } else {
-              Alert.alert(t('profile.loveTitle'), t('profile.loveMessage'), [
-                { text: t('common.ok'), style: 'default' },
-              ]);
-            }
+            showToast(t('profile.loveMessage'), 'success');
           }}
         />
         <ProfileListItem
@@ -274,13 +268,7 @@ const AppExperienceSection = ({ t, cardWidth, onOpenNegentropyHub }: AppExperien
           label={t('profile.helpSupportApp')}
           onPress={() => {
             hapticSuccess();
-            if (Platform.OS === 'web') {
-              showToast(t('profile.thankYouTitle'), 'success');
-            } else {
-              Alert.alert(t('profile.thankYouTitle'), t('profile.thankYouMessage'), [
-                { text: t('common.ok'), style: 'default' },
-              ]);
-            }
+            showToast(t('profile.thankYouMessage'), 'success');
           }}
         />
       </VStack>
@@ -452,13 +440,7 @@ export const ProfileScreen = () => {
     } catch (error) {
       console.error('[ProfileScreen] account deletion failed', error);
       hapticError();
-      if (Platform.OS === 'web') {
-        showToast(t('profile.deleteFailedTitle'), 'error');
-      } else {
-        Alert.alert(t('profile.deleteFailedTitle'), t('profile.deleteFailedMessage'), [
-          { text: t('common.ok') },
-        ]);
-      }
+      showToast(t('profile.deleteFailedMessage'), 'error');
     }
   };
 

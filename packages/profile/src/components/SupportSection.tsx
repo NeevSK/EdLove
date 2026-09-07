@@ -1,6 +1,7 @@
 import { ChevronRight, Info, LifeBuoy, MessageCircle, Star, TriangleAlert } from '@repo/ui/icons';
 import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { GURUDEVI_SUPPORT_EMAIL, openExternalURL } from '@repo/ui/utils';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -10,6 +11,7 @@ import { useTranslation } from 'react-i18next';
  */
 export default function SupportSection() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
 
   const handleSupport = () => {
     openExternalURL(`mailto:${GURUDEVI_SUPPORT_EMAIL}`, {
@@ -73,7 +75,7 @@ export default function SupportSection() {
         icon={LifeBuoy}
         title={t('support.faqs', 'Knowledge Core')}
         subtitle={t('support.faqsDesc', 'Find immediate answers to common paths')}
-        onPress={() => {}}
+        onPress={() => showToast({ message: 'The knowledge core is coming soon.', type: 'info' })}
       />
       <SupportItem
         icon={TriangleAlert}
@@ -85,13 +87,13 @@ export default function SupportSection() {
         icon={Info}
         title={t('support.about', 'Sanctuary Vision')}
         subtitle={t('support.aboutDesc', 'Discover the heart of our digital topology')}
-        onPress={() => {}}
+        onPress={() => showToast({ message: 'The sanctuary vision page is coming soon.', type: 'info' })}
       />
       <SupportItem
         icon={Star}
         title={t('support.rateUs', 'Path Resonance')}
         subtitle={t('support.rateUsDesc', 'Share your reflection of this experience')}
-        onPress={() => {}}
+        onPress={() => showToast({ message: 'App rating will be available soon.', type: 'info' })}
       />
     </VStack>
   );

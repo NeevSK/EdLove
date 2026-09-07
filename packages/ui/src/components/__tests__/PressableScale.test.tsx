@@ -1,22 +1,22 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-jest.mock('../../utils/haptics', () => ({
-  hapticImpact: jest.fn(),
+vi.mock('../../utils/haptics', () => ({
+  hapticImpact: vi.fn(),
 }));
 
-jest.mock('@repo/ui/hooks/useAccessibility', () => ({
-  useAccessibility: jest.fn(() => ({
+vi.mock('@repo/ui/hooks/useAccessibility', () => ({
+  useAccessibility: vi.fn(() => ({
     isScreenReaderEnabled: false,
     isReduceMotionEnabled: false,
-    announce: jest.fn(),
+    announce: vi.fn(),
   })),
 }));
 
 import { hapticImpact } from '../../utils/haptics';
 import { PressableScale } from '../PressableScale';
 
-const mockedHapticImpact = hapticImpact as jest.MockedFunction<typeof hapticImpact>;
+const mockedHapticImpact = vi.mocked(hapticImpact);
 
 beforeEach(() => {
   mockedHapticImpact.mockClear();
@@ -33,7 +33,7 @@ describe('PressableScale', () => {
   });
 
   it('calls onPress when pressed', async () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     const { getByText } = await render(
       <PressableScale accessibilityLabel="Test button" onPress={onPress}>
         <Text>Press me</Text>
@@ -53,7 +53,7 @@ describe('PressableScale', () => {
   });
 
   it('applies disabled state', async () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     const { getByText } = await render(
       <PressableScale accessibilityLabel="Test button" onPress={onPress} disabled>
         <Text>Press me</Text>

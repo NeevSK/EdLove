@@ -1,19 +1,19 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { guardianAPI } from '../../guardian/api';
 import type { GuardianDashboardData as GuardianDashboard } from '../../guardian/types';
 import { GuardianDashboardScreen } from '../../screens/GuardianDashboardScreen';
 
 // Mock the API
-jest.mock('../../guardian/api');
-const mockedGuardianAPI = guardianAPI as jest.Mocked<typeof guardianAPI>;
+vi.mock('../../guardian/api');
+const mockedGuardianAPI = vi.mocked(guardianAPI);
 
 describe('GuardianDashboardScreen', () => {
   const mockProps = {
     guardianId: 'test-guardian-1',
-    onStudentPress: jest.fn(),
-    onNotificationPress: jest.fn(),
-    onEventPress: jest.fn(),
+    onStudentPress: vi.fn(),
+    onNotificationPress: vi.fn(),
+    onEventPress: vi.fn(),
   };
 
   const mockDashboard: GuardianDashboard = {
@@ -118,12 +118,12 @@ describe('GuardianDashboardScreen', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockedGuardianAPI.getGuardianDashboard.mockResolvedValue(mockDashboard);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Rendering', () => {
@@ -286,8 +286,8 @@ describe('GuardianDashboardScreen', () => {
   describe('Responsive Design', () => {
     it('should adapt layout for mobile screens', async () => {
       // Mock mobile dimensions
-      jest.spyOn(require('react-native'), 'Dimensions').mockImplementation(() => ({
-        get: jest.fn().mockReturnValue({ width: 768, height: 1024 }),
+      vi.spyOn(require('react-native'), 'Dimensions').mockImplementation(() => ({
+        get: vi.fn().mockReturnValue({ width: 768, height: 1024 }),
       }));
 
       render(<GuardianDashboardScreen {...mockProps} />);
@@ -300,8 +300,8 @@ describe('GuardianDashboardScreen', () => {
 
     it('should adapt layout for desktop screens', async () => {
       // Mock desktop dimensions
-      jest.spyOn(require('react-native'), 'Dimensions').mockImplementation(() => ({
-        get: jest.fn().mockReturnValue({ width: 1200, height: 800 }),
+      vi.spyOn(require('react-native'), 'Dimensions').mockImplementation(() => ({
+        get: vi.fn().mockReturnValue({ width: 1200, height: 800 }),
       }));
 
       render(<GuardianDashboardScreen {...mockProps} />);

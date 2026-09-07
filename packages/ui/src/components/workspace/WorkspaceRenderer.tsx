@@ -24,7 +24,8 @@ export function WorkspaceRenderer({
     (Platform.OS === 'web' ? 'web' : Platform.OS === 'ios' ? 'mobile' : 'mobile');
   const width = context?.width || 0;
   const height = context?.height || 0;
-  const isNativeValue = isNative !== undefined ? isNative : context?.isNative !== false;
+  const isNativeValue =
+    isNative !== undefined ? isNative : (context?.isNative ?? Platform.OS !== 'web');
   const isResizingValue = isResizing !== undefined ? isResizing : context?.isResizing;
 
   const contextValue = {

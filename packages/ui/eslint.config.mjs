@@ -4,10 +4,10 @@ import { config } from '@repo/eslint-config/react-internal';
 /** @type {import("eslint").Linter.Config[]} */
 export default [
   {
-    // jest-setup.ts and scripts/ are tooling outside the typed app project
+    // Vitest setup and scripts are tooling outside the typed app project
     // (tsconfig include covers src/**), so typed linting cannot parse them.
     // src/archive/ is unreferenced dead code kept for design reference only.
-    ignores: ['jest-setup.ts', 'scripts/**', 'src/archive/**'],
+    ignores: ['vitest-setup.ts', 'vitest-*.ts', 'scripts/**', 'src/archive/**'],
   },
   ...config,
   {

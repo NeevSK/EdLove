@@ -30,7 +30,7 @@ describe('Actionsheet Component (Robustness)', () => {
   });
 
   it('calls onClose when backdrop/overlay is pressed', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     const { getByLabelText } = await render(
       <Actionsheet isOpen={true} onClose={onClose}>
         <ActionsheetContent>
@@ -44,7 +44,7 @@ describe('Actionsheet Component (Robustness)', () => {
   });
 
   it('handles item selection and closing', async () => {
-    const onItemPress = jest.fn();
+    const onItemPress = vi.fn();
     const { getByText } = await render(
       <Actionsheet isOpen={true} onClose={() => {}}>
         <ActionsheetContent>

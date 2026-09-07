@@ -455,14 +455,22 @@ const AuthScreen = memo(
             ? apiError
             : (apiError as any).message || 'An authentication error occurred';
 
-        const guidedMsg = isSignUp
-          ? `${baseMsg}. If you already have an account, try logging in instead.`
-          : `${baseMsg}. Please check your credentials and connection.`;
+        const existingAccountError =
+          isSignUp && /already registered|already exists|user already|duplicate/i.test(baseMsg);
+        const guidedMsg = existingAccountError
+          ? 'You already have an account. Switching to login…'
+          : isSignUp
+            ? `${baseMsg}. If you already have an account, try logging in instead.`
+            : `${baseMsg}. Please check your credentials and connection.`;
+
+        if (existingAccountError) {
+          dispatch({ type: 'SET_MODE', isSignUp: false, showEmailAuth: true });
+        }
 
         showToast({
           message: guidedMsg,
           type: 'error',
-          duration: 5000,
+          duration: existingAccountError ? 3500 : 5000,
         });
       } finally {
         dispatch({ type: 'SET_LOADING', loading: false });
@@ -772,6 +780,9 @@ const AuthScreen = memo(
                   <Button
                     variant="ghost"
                     className="px-6 py-2 rounded-full h-auto"
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: isSignUp }}
+                    accessibilityLabel="Sign up"
                     style={{
                       backgroundColor: isSignUp ? accent.action : 'transparent',
                     }}
@@ -787,6 +798,9 @@ const AuthScreen = memo(
                   <Button
                     variant="ghost"
                     className="px-6 py-2 rounded-full h-auto"
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: !isSignUp }}
+                    accessibilityLabel="Log in"
                     style={{
                       backgroundColor: !isSignUp ? accent.action : 'transparent',
                     }}
@@ -804,7 +818,7 @@ const AuthScreen = memo(
                 {!showEmailAuth && (
                   <BreathAnimation delay={400}>
                     <VStack className="gap-5">
-                      <VStack className="gap-1">
+                          <VStack className="gap-1">
                         <Text className="text-[10px] text-phase-muted font-bold tracking-widest uppercase">
                           CHOOSE YOUR PATH
                         </Text>
@@ -882,6 +896,7 @@ const AuthScreen = memo(
                         <VStack className="gap-4">
                           <Input className="rounded-xl border-phase-border bg-phase-surface">
                             <InputField
+                              accessibilityLabel={t('auth.email') || 'Email address'}
                               placeholder={t('auth.email')}
                               value={email}
                               onChangeText={handleEmailChange}
@@ -896,6 +911,7 @@ const AuthScreen = memo(
                           </Input>
                           <Input className="rounded-xl border-phase-border bg-phase-surface">
                             <InputField
+                              accessibilityLabel={t('auth.password') || 'Password'}
                               ref={passwordRef}
                               placeholder={t('auth.password')}
                               value={password}
@@ -910,6 +926,14 @@ const AuthScreen = memo(
                               }}
                             />
                           </Input>
+                          {isSignUp ? (
+                            <Text
+                              accessibilityRole="text"
+                              className="text-xs text-phase-muted -mt-2"
+                            >
+                              Use at least 8 characters.
+                            </Text>
+                          ) : null}
 
                           <Button
                             size="lg"

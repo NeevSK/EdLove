@@ -16,6 +16,10 @@ export const Link = ({
   className,
   isExternal = true,
   style,
+  hitSlop: _hitSlop,
+  accessibilityRole: _accessibilityRole,
+  accessibilityLabel: _accessibilityLabel,
+  activeOpacity: _activeOpacity,
   ...props
 }: any) => {
   const handlePress = (e: any) => {
@@ -35,6 +39,7 @@ export const Link = ({
         href={href}
         target={isExternal ? '_blank' : undefined}
         rel={isExternal ? 'noopener noreferrer' : undefined}
+        aria-label={_accessibilityLabel}
         onClick={(e) => {
           if (onPress) {
             e.preventDefault();

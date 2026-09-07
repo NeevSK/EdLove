@@ -49,7 +49,7 @@ From the repository root:
 
 ```bash
 node node_modules/typescript/bin/tsc --build packages/ui/tsconfig.json --noEmit --pretty false
-pnpm --filter @repo/ui exec jest --runInBand --watchman=false
+pnpm --filter @repo/ui test
 pnpm --filter @repo/ui run lint:biome
 ```
 

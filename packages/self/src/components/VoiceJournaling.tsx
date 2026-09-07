@@ -34,6 +34,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
 import { Observe } from 'expo-observe';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 interface VoiceJournalingProps {
   userId?: string;
@@ -42,6 +43,7 @@ interface VoiceJournalingProps {
 
 export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFinished }) => {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'finished'>('idle');
   const [duration, setDuration] = useState(0);
   const [recordedUri, setRecordedUri] = useState<string | null>(null);
@@ -197,7 +199,6 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
   };
 
   const handleConfirm = async () => {
-    hapticSuccess();
     if (isSaving) return;
     setIsSaving(true);
     try {
@@ -224,13 +225,18 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
           } as unknown as never);
         } catch {}
       }
+      hapticSuccess();
+      onFinished?.(recordedUri ?? 'mock-uri');
+      handleReset();
     } catch (e) {
       console.warn('[voice] save failed', e);
+      showToast({
+        message: 'Your voice journal could not be saved. Your recording is still here.',
+        type: 'error',
+      });
     } finally {
       setIsSaving(false);
     }
-    onFinished?.(recordedUri ?? 'mock-uri');
-    handleReset();
   };
 
   const pulseAnimatedStyle = useAnimatedStyle(() => ({

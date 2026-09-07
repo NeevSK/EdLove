@@ -13,6 +13,7 @@ export function useStudentGoals(userId?: string) {
   const isOnline = useStore((state) => state.isOnline);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<Error | null>(null);
   const { viewDate, isPastView } = useTemporalStore();
   useEffect(() => {
     if (!userId) return;
@@ -38,12 +39,14 @@ export function useStudentGoals(userId?: string) {
         isPastView,
       });
       setGoals(data);
+      setLoadError(null);
       await SafeZustandStorage.setItem(
         `${GOALS_CACHE_KEY}-${userId}-${viewDate}`,
         JSON.stringify(data),
       );
     } catch (error) {
       console.error('Failed to refresh goals', error);
+      setLoadError(error instanceof Error ? error : new Error('Unable to load goals'));
     }
   }, [isOnline, isPastView, userId, viewDate]);
   useEffect(() => {
@@ -80,6 +83,7 @@ export function useStudentGoals(userId?: string) {
   return {
     goals,
     isLoading,
+    loadError,
     refreshData,
     addGoal,
     updateGoal,

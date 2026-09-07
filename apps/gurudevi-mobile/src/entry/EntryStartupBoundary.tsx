@@ -1,10 +1,9 @@
-import { coreRuntime } from '@repo/core/logic';
+import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse } from '@repo/ui';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { registerAppCatalog } from '@/boot/registerAppCatalog';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
@@ -71,7 +70,11 @@ export function EntryStartupBoundary() {
     void completeEssentialStartup({
       bootstrapPlatform,
       isRuntimeRegistered: () => coreRuntime.isRegistered(),
-      loadCatalog: async () => ({ registerAppCatalog }),
+      loadCatalog: async () => {
+        const { registerAppCatalog } = await import('@/boot/registerAppCatalog');
+        return { registerAppCatalog };
+      },
+      initializeDeviceAccounts: () => deviceAccounts.initialize(),
     })
       .then(() => {
         if (cancelled) return;

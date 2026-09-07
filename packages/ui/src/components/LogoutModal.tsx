@@ -28,12 +28,20 @@ export default function LogoutModal({
           action="secondary"
           onPress={onClose}
           isDisabled={isLoading}
+          accessibilityLabel="Stay signed in"
+          accessibilityHint="Closes this confirmation without signing out"
         >
           Stay
         </SanctuaryButton>
       </Box>
       <Box className="flex-[1.5]">
-        <SanctuaryButton action="primary" onPress={onLogout} isLoading={isLoading}>
+        <SanctuaryButton
+          action="primary"
+          onPress={onLogout}
+          isLoading={isLoading}
+          accessibilityLabel="Sign out"
+          accessibilityHint="Signs out of this device"
+        >
           {isLoading ? 'Signing out...' : 'Sign Out'}
         </SanctuaryButton>
       </Box>

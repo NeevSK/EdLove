@@ -31,12 +31,15 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection, TeacherPulse } from '@repo/self/views/sections';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 export default function TeacherSelfView() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const { context } = usePermissions();
   const userId = context.userId;
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
+  const [isSavingMood, setIsSavingMood] = useState(false);
   const { viewDate } = useTemporalStore();
   const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
   const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
@@ -76,10 +79,22 @@ export default function TeacherSelfView() {
         isOpen={isMoodPickerOpen}
         onToggle={() => setIsMoodPickerOpen((open) => !open)}
         onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
-          await addMoodLog(mood, note || undefined);
+          if (isSavingMood) return;
+          setIsSavingMood(true);
+          try {
+            await addMoodLog(mood, note || undefined);
+            setIsMoodPickerOpen(false);
+          } catch {
+            showToast({
+              message: 'Your mood could not be saved. Please try again.',
+              type: 'error',
+            });
+          } finally {
+            setIsSavingMood(false);
+          }
         }}
-        isSaving={false}
-        isDisabled={false}
+        isSaving={isSavingMood}
+        isDisabled={isSavingMood}
         latestMood={moodLogs[0]}
         isLoading={moodLoading}
         accent="dark"

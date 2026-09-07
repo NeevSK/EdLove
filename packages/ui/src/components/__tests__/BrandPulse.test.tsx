@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-jest.mock('../../hooks/useAccessibility', () => ({
+vi.mock('../../hooks/useAccessibility', () => ({
   useAccessibility: () => ({ isReduceMotionEnabled: true }),
 }));
 

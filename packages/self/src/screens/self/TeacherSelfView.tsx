@@ -38,9 +38,11 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection, TeacherPulse } from '@repo/self/views/sections';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 export default function TeacherSelfView() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   // State & Kernel Hooks
   const { context } = usePermissions();
   const userId = context.userId;
@@ -95,6 +97,11 @@ export default function TeacherSelfView() {
     try {
       await addMoodLog(mood, note);
       setIsMoodPickerOpen(false);
+    } catch {
+      showToast({
+        message: 'Your mood could not be saved. Please try again.',
+        type: 'error',
+      });
     } finally {
       setIsSavingMood(false);
     }

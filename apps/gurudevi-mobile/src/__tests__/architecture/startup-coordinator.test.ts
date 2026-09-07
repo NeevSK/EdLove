@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 
 describe('essential startup coordinator', () => {
-  it('enforces runtime → catalog ordering without optional services', async () => {
+  it('enforces runtime → catalog → device-account ordering without optional services', async () => {
     const steps: string[] = [];
 
     await completeEssentialStartup({
@@ -13,9 +13,12 @@ describe('essential startup coordinator', () => {
       loadCatalog: async () => ({
         registerAppCatalog: () => steps.push('catalog'),
       }),
+      initializeDeviceAccounts: async () => {
+        steps.push('accounts');
+      },
     });
 
-    expect(steps).toEqual(['runtime', 'catalog']);
+    expect(steps).toEqual(['runtime', 'catalog', 'accounts']);
   });
 
   it('does not mount catalog-dependent work when runtime registration fails', async () => {
@@ -26,6 +29,7 @@ describe('essential startup coordinator', () => {
         bootstrapPlatform: async () => undefined,
         isRuntimeRegistered: () => false,
         loadCatalog,
+        initializeDeviceAccounts: vi.fn(),
       }),
     ).rejects.toThrow('Core runtime registration did not complete.');
 
@@ -43,6 +47,7 @@ describe('essential startup coordinator', () => {
       bootstrapPlatform,
       isRuntimeRegistered: () => true,
       loadCatalog: async () => ({ registerAppCatalog }),
+      initializeDeviceAccounts: async () => undefined,
     };
 
     await expect(completeEssentialStartup(dependencies)).rejects.toThrow(
@@ -89,13 +94,16 @@ describe('essential startup coordinator', () => {
       bootstrapPlatform: async () => { steps.push('runtime'); },
       isRuntimeRegistered: () => true,
       loadCatalog: async () => ({ registerAppCatalog: () => steps.push('catalog') }),
+      initializeDeviceAccounts: async () => {
+        steps.push('accounts');
+      },
     });
 
     // Let the fast bootstrap complete without hitting the deadline
     await vi.runAllTimersAsync();
     await startup;
 
-    expect(steps).toEqual(['runtime', 'catalog']);
+    expect(steps).toEqual(['runtime', 'catalog', 'accounts']);
 
     vi.useRealTimers();
   });

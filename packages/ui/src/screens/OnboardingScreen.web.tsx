@@ -136,11 +136,13 @@ const NameStep = memo(
   ({
     t,
     name,
+    suggestedName,
     onNameChange,
     onNext,
   }: {
     t: (key: string) => string;
     name: string;
+    suggestedName?: string;
     onNameChange: (val: string) => void;
     onNext: () => void;
   }) => {
@@ -158,6 +160,8 @@ const NameStep = memo(
       [name, onNext],
     );
 
+    const isSuggested = suggestedName && name.trim() === suggestedName.trim();
+
     return (
       <div className="ob-step">
         <div className="ob-step-shell">
@@ -167,23 +171,31 @@ const NameStep = memo(
           </div>
         </div>
         <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
-        <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
+        <p className="ob-step-subtitle">
+          {t('onboarding.nameSubtitle') || 'Enter your preferred name or friendly nickname for the sanctuary.'}
+        </p>
         <input
           className="ob-input"
           type="text"
-          placeholder={t('onboarding.namePlaceholder')}
+          placeholder={t('onboarding.namePlaceholder') || 'e.g. Maya, Alex, Coach David'}
           value={name}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           autoComplete="name"
         />
-        <p className="ob-input-hint">
-          {name.trim().length > 0 && name.trim().length < 2
-            ? 'Your name is a bit short. Try adding another character.'
-            : name === 'Guest User'
-              ? "Please choose a name other than 'Guest User'."
-              : 'Use the display name you want people to see inside the app.'}
-        </p>
+        {isSuggested ? (
+          <p className="ob-input-hint" style={{ color: 'var(--color-phase-accent, #6366f1)' }}>
+            ✨ Suggested from your account — feel free to customize.
+          </p>
+        ) : (
+          <p className="ob-input-hint">
+            {name.trim().length > 0 && name.trim().length < 2
+              ? 'Your name is a bit short. Try adding another character.'
+              : name === 'Guest User'
+                ? "Please choose a friendly name other than 'Guest User'."
+                : 'This is the friendly name other members and teachers will see.'}
+          </p>
+        )}
         <div className="ob-actions">
           <button
             type="button"
@@ -472,12 +484,14 @@ interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   isAnonymous?: boolean;
   userId?: string | null;
+  suggestedName?: string;
 }
 
 export default memo(function OnboardingScreenWeb({
   onComplete,
   isAnonymous = false,
   userId = null,
+  suggestedName,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
   const { isSplit } = useGatewayLayout();
@@ -519,7 +533,7 @@ export default memo(function OnboardingScreenWeb({
               dispatch({
                 type: 'RESTORE_PROGRESS',
                 progress: {
-                  name: progress.name,
+                  name: progress.name || suggestedName || '',
                   selectedCapacity: progress.selectedCapacity,
                   currentStep: progress.step,
                   schoolId: progress.schoolId,
@@ -560,6 +574,9 @@ export default memo(function OnboardingScreenWeb({
             await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
           } catch {
             // Ignore failure when clearing progress key
+          }
+          if (suggestedName) {
+            dispatch({ type: 'SET_NAME', name: suggestedName });
           }
           dispatch({ type: 'SET_STEP', step: 0 });
           return;
@@ -897,7 +914,13 @@ export default memo(function OnboardingScreenWeb({
     }
     if (currentStep === 0) {
       return (
-        <NameStep t={t} name={name} onNameChange={handleNameChange} onNext={handleNextPress} />
+        <NameStep
+          t={t}
+          name={name}
+          suggestedName={suggestedName}
+          onNameChange={handleNameChange}
+          onNext={handleNextPress}
+        />
       );
     }
     if (currentStep === 1) {

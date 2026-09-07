@@ -20,6 +20,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useEffect, useReducer } from 'react';
 
@@ -86,6 +87,7 @@ export default function PrincipalObservationsSection({
   schoolId,
   principalId,
 }: PrincipalObservationsSectionProps) {
+  const toast = useToast();
   const [state, dispatch] = useReducer(obsReducer, {
     observations: [],
     isLoading: true,
@@ -149,13 +151,18 @@ export default function PrincipalObservationsSection({
         type: obsType,
         content: content.trim(),
       });
-      if (!error) {
-        hapticLight();
-        dispatch({ type: 'RESET_FORM' });
-        await fetchObservations();
-      }
+      if (error) throw error;
+
+      hapticLight();
+      dispatch({ type: 'RESET_FORM' });
+      await fetchObservations();
     } catch (err) {
       console.error('PrincipalObservations: save error', err);
+      toast.showToast({
+        message: 'Could not save the observation. Please try again.',
+        type: 'error',
+      });
+    } finally {
       dispatch({ type: 'SET_SAVING', isSaving: false });
     }
   }

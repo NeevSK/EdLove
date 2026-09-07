@@ -1,8 +1,8 @@
-jest.mock('@repo/core/monitoring', () => ({
+vi.mock('@repo/core/monitoring', () => ({
   __esModule: true,
-  trackEvent: jest.fn(),
+  trackEvent: vi.fn(),
 }));
-jest.mock('@repo/ui/context/VisualCapabilities', () => ({
+vi.mock('@repo/ui/context/VisualCapabilities', () => ({
   useVisualCapabilities: () => ({
     deviceTier: 'medium',
     effectiveFidelity: 'high',
@@ -17,11 +17,11 @@ jest.mock('@repo/ui/context/VisualCapabilities', () => ({
     maxCelebrationParticles: 200,
   }),
 }));
-jest.mock('expo-image', () => {
+vi.mock('expo-image', () => {
   const React = require('react');
   return { Image: (props: Record<string, unknown>) => React.createElement('Image', props) };
 });
-jest.mock('react-native-svg', () => {
+vi.mock('react-native-svg', () => {
   const React = require('react');
   const Shape = (props: Record<string, unknown>) => React.createElement('Shape', props);
   return {

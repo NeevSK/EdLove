@@ -5,6 +5,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { BookOpen, CircleAlert, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 export default function GradeHeadDashboard({
   schoolId,
@@ -14,6 +15,7 @@ export default function GradeHeadDashboard({
   userId?: string;
 }) {
   const { activeGaps, refreshStatus } = useAIAgent();
+  const { showToast } = useSanctuaryToast();
   const _userRole = useStore((state: any) => state.userRole);
 
   // Register FAB globally
@@ -55,7 +57,12 @@ export default function GradeHeadDashboard({
                   </HStack>
                   <Box className="mt-3">
                     <SanctuaryButton
-                      onPress={() => console.log('Executing relief:', gap.suggestedAction)}
+                      onPress={() =>
+                        showToast({
+                          message: 'Relief assignment is not connected yet. The suggested action has been noted.',
+                          type: 'info',
+                        })
+                      }
                       size="sm"
                     >
                       <Text className="text-white font-bold">Assign Relief Teacher</Text>
@@ -87,13 +94,19 @@ export default function GradeHeadDashboard({
             <Text className="font-semibold text-sm text-phaseText-secondary uppercase">
               GRADE MANAGEMENT
             </Text>
-            <SanctuaryButton onPress={() => {}} variant="outline">
+            <SanctuaryButton
+              onPress={() => showToast({ message: 'Curriculum pulse is coming soon.', type: 'info' })}
+              variant="outline"
+            >
               <HStack className="gap-2 items-center">
                 <Icon as={BookOpen} size="md" className="text-phaseText-action" />
                 <Text className="text-phaseText-action">Curriculum Alignment Pulse</Text>
               </HStack>
             </SanctuaryButton>
-            <SanctuaryButton onPress={() => {}} variant="outline">
+            <SanctuaryButton
+              onPress={() => showToast({ message: 'Wellbeing reports are coming soon.', type: 'info' })}
+              variant="outline"
+            >
               <HStack className="gap-2 items-center">
                 <Icon as={Users} size="md" className="text-phaseText-action" />
                 <Text className="text-phaseText-action">Student Wellbeing Reports</Text>

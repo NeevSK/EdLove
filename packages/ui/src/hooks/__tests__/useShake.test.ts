@@ -1,17 +1,17 @@
 import { renderHook } from '@testing-library/react-native';
 import { useShake } from '../useShake';
 
-jest.mock('@repo/ui/hooks/useAccessibility', () => ({
-  useAccessibility: jest.fn(() => ({
+vi.mock('@repo/ui/hooks/useAccessibility', () => ({
+  useAccessibility: vi.fn(() => ({
     isScreenReaderEnabled: false,
     isReduceMotionEnabled: false,
-    announce: jest.fn(),
+    announce: vi.fn(),
   })),
 }));
 
 describe('useShake', () => {
   it('renders without crashing', () => {
-    // useShake uses Reanimated shared values which are mocked in jest-setup.
+    // useShake uses Reanimated shared values which are mocked in vitest-setup.
     // The mock returns plain objects, so we just verify the hook doesn't throw.
     expect(() => renderHook(() => useShake())).not.toThrow();
   });

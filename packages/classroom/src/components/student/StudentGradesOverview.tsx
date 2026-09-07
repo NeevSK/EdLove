@@ -1,7 +1,7 @@
 import { assignmentsAPI } from '@repo/core/api/client';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Award, BookMarked } from '@repo/ui/icons';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 import { useEffect, useMemo, useState } from 'react';
 
@@ -53,16 +53,20 @@ function resolveGradeBgClass(grade: number) {
 export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesOverviewProps) {
   const [grades, setGrades] = useState<GradeRow[]>(isDemo ? DEMO_GRADES : []);
   const [isLoading, setIsLoading] = useState(!isDemo);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     if (isDemo) {
       setGrades(DEMO_GRADES);
+      setLoadError(false);
       setIsLoading(false);
       return;
     }
 
     if (!userId) {
       setGrades([]);
+      setLoadError(false);
       setIsLoading(false);
       return;
     }
@@ -71,6 +75,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
 
     const loadGrades = async () => {
       setIsLoading(true);
+      setLoadError(false);
 
       try {
         const data = await assignmentsAPI.getRecentGradesOverviewForStudent(userId, 4);
@@ -82,7 +87,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
         );
       } catch {
         if (!isActive) return;
-        setGrades([]);
+        setLoadError(true);
       } finally {
         if (isActive) setIsLoading(false);
       }
@@ -93,7 +98,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     return () => {
       isActive = false;
     };
-  }, [isDemo, userId]);
+  }, [isDemo, reloadToken, userId]);
 
   const summary = useMemo(() => {
     if (grades.length === 0) {
@@ -118,6 +123,21 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
 
   return (
     <VStack className="gap-4">
+      {loadError ? (
+        <Box className="rounded-[24px] border border-sanctuary-error/30 bg-sanctuary-error/10 p-4">
+          <Text className="text-sanctuary-text text-sm font-bold">Grades are temporarily unavailable.</Text>
+          <Text className="mt-1 text-sanctuary-text-secondary text-xs">
+            Your existing grades are still shown below. Try again when you’re ready.
+          </Text>
+          <Button
+            accessibilityLabel="Retry loading grades"
+            onPress={() => setReloadToken((value) => value + 1)}
+            className="mt-3 self-start rounded-full bg-sanctuarySaffron px-4"
+          >
+            <ButtonText className="text-sanctuary-ink font-bold">Try again</ButtonText>
+          </Button>
+        </Box>
+      ) : null}
       <HStack className="gap-4">
         <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
           <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">

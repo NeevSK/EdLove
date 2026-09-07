@@ -66,3 +66,42 @@ export function isActiveIdentityProfile(
 ): boolean {
   return value !== null && value !== undefined && value.deleted_at == null;
 }
+
+/**
+ * Derives a recommended friendly display name from auth user metadata or email.
+ * Replaces cumbersome manual typing for OAuth or verified email logins.
+ */
+export function suggestDisplayName(user?: {
+  email?: string | null;
+  user_metadata?: Record<string, unknown> | null;
+} | null): string {
+  if (!user) return '';
+
+  const metadata = user.user_metadata ?? {};
+  const metaName =
+    (metadata.full_name as string | undefined) ||
+    (metadata.name as string | undefined) ||
+    (metadata.display_name as string | undefined);
+
+  if (metaName && typeof metaName === 'string') {
+    const trimmed = metaName.trim();
+    if (trimmed.length >= 2 && trimmed.toLowerCase() !== 'guest user') {
+      return trimmed;
+    }
+  }
+
+  if (user.email && typeof user.email === 'string') {
+    const [localPart] = user.email.split('@');
+    if (localPart) {
+      const formatted = localPart
+        .replace(/[._+\-]+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+      if (formatted.length >= 2 && !/^\d+$/.test(formatted)) {
+        return formatted;
+      }
+    }
+  }
+
+  return '';
+}

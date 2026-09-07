@@ -19,6 +19,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useEffect, useReducer } from 'react';
 
@@ -91,6 +92,7 @@ export default function InstitutionalCalendarSection({
   principalId,
   onAddEvent,
 }: InstitutionalCalendarSectionProps) {
+  const toast = useToast();
   const [state, dispatch] = useReducer(calendarReducer, {
     events: [],
     isLoading: true,
@@ -140,13 +142,18 @@ export default function InstitutionalCalendarSection({
         start_date: startDate.trim(),
         end_date: endDate.trim() || undefined,
       });
-      if (ok) {
-        hapticLight();
-        dispatch({ type: 'RESET_FORM' });
-        await fetchEvents();
-      }
+      if (!ok) throw new Error('Calendar event was not saved.');
+
+      hapticLight();
+      dispatch({ type: 'RESET_FORM' });
+      await fetchEvents();
     } catch (err) {
       console.error('InstitutionalCalendar: save error', err);
+      toast.showToast({
+        message: 'Could not save the calendar event. Please try again.',
+        type: 'error',
+      });
+    } finally {
       dispatch({ type: 'SET_SAVING', isSaving: false });
     }
   }

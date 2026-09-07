@@ -42,7 +42,7 @@ describe('Modal Component (Robustness)', () => {
   });
 
   it('calls onClose when backdrop is pressed', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     const { getByLabelText } = await render(
       <Modal isOpen={true} onClose={onClose}>
         <ModalBody>

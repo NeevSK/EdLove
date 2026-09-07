@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react-native';
 
 describe('Dialog', () => {
   it('uses the source-owned modal behavior with the open API', async () => {
-    const onOpenChange = jest.fn();
+    const onOpenChange = vi.fn();
 
     await render(
       <Dialog open onOpenChange={onOpenChange} accessibilityLabel="Example dialog">

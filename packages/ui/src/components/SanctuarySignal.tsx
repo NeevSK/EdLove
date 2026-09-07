@@ -59,7 +59,7 @@ export const SanctuarySignal = () => {
               <Icon
                 as={ArrowRight}
                 size={14}
-                className="text-phase-accent group-hover:translate-x-1 transition-transform duration-300"
+                className="text-phase-accent"
               />
             </HStack>
           </HStack>

@@ -1,11 +1,18 @@
 import { Box } from '@repo/ui/components/ui/box';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
+import { Pressable } from '@repo/ui/components/ui/pressable';
 import { AnimatedView, View } from '@repo/ui/components/ui/view';
 import { cn } from '@repo/ui/utils/classNames';
 import type React from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { Platform, type ViewProps } from 'react-native';
+import {
+  Platform,
+  type AccessibilityRole,
+  type StyleProp,
+  type ViewProps,
+  type ViewStyle,
+} from 'react-native';
 import { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 /**
@@ -113,6 +120,7 @@ export const Modal = ({
                 entering={enteringAnimation}
                 exiting={exitingAnimation}
                 className="w-full max-w-[500px]"
+                accessibilityRole="dialog"
                 accessibilityLabel={accessibilityLabel}
                 accessibilityViewIsModal={trapFocus}
                 accessible={true}
@@ -129,7 +137,21 @@ export const Modal = ({
 
 export const ModalBackdrop = Overlay;
 
-export const ModalContent = ({ children, className, style }: any) => {
+export interface ModalSectionProps {
+  children?: React.ReactNode;
+  className?: string;
+  style?: StyleProp<ViewStyle>;
+  accessibilityRole?: AccessibilityRole;
+  accessibilityLabel?: string;
+}
+
+export const ModalContent = ({
+  children,
+  className,
+  style,
+  accessibilityRole,
+  accessibilityLabel,
+}: ModalSectionProps) => {
   const contentStyle = [
     Platform.OS === 'web' &&
       ({
@@ -147,13 +169,15 @@ export const ModalContent = ({ children, className, style }: any) => {
         className,
       )}
       style={contentStyle}
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel}
     >
       {children}
     </Box>
   );
 };
 
-export const ModalHeader = ({ children, className }: any) => (
+export const ModalHeader = ({ children, className }: ModalSectionProps) => (
   <Box
     className={cn(
       'px-6 py-5 flex-row items-center justify-between border-b border-phase-interactive/5',
@@ -164,11 +188,11 @@ export const ModalHeader = ({ children, className }: any) => (
   </Box>
 );
 
-export const ModalBody = ({ children, className }: any) => (
+export const ModalBody = ({ children, className }: ModalSectionProps) => (
   <Box className={cn('px-6 py-5', className)}>{children}</Box>
 );
 
-export const ModalFooter = ({ children, className }: any) => (
+export const ModalFooter = ({ children, className }: ModalSectionProps) => (
   <Box
     className={cn(
       'px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4',
@@ -179,18 +203,25 @@ export const ModalFooter = ({ children, className }: any) => (
   </Box>
 );
 
-export const ModalCloseButton = ({ children, onPress, ...props }: any) => {
+export interface ModalCloseButtonProps extends Omit<React.ComponentProps<typeof Pressable>, 'onPress'> {
+  children?: React.ReactNode;
+  onPress?: () => void;
+}
+
+export const ModalCloseButton = ({ children, onPress, ...props }: ModalCloseButtonProps) => {
   const { onClose } = useModal();
   return (
-    <Box
+    <Pressable
       {...props}
+      accessibilityRole="button"
+      accessibilityLabel={props.accessibilityLabel ?? 'Close'}
       onPress={() => {
         onClose();
         onPress?.();
       }}
     >
       {children}
-    </Box>
+    </Pressable>
   );
 };
 

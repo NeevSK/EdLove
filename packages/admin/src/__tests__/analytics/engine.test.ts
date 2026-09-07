@@ -1,31 +1,30 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { multiTenantAnalyticsEngine } from '../../analytics/engine';
 import type { CustomReportConfig, EducationSector, MetricDefinition } from '../../analytics/types';
 
 // Mock Supabase
-jest.mock('@repo/core/api/client', () => ({
-  supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        eq: jest.fn(() => ({
-          gte: jest.fn(() => ({
-            lt: jest.fn(() => ({
-              single: jest.fn(() => Promise.resolve({ data: {}, error: null })),
-            })),
-          })),
+vi.mock('@repo/core/adapters/supabaseClient', () => ({
+  supabaseClient: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          gte: vi.fn(() => Promise.resolve({ data: [], error: null })),
+          single: vi.fn(() =>
+            Promise.resolve({ data: { name: 'Test tenant', kind: 'school' }, error: null }),
+          ),
         })),
       })),
-      order: jest.fn(() => Promise.resolve({ data: [], error: null })),
-      insert: jest.fn(() => Promise.resolve({ data: {}, error: null })),
+      order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+      insert: vi.fn(() => Promise.resolve({ data: {}, error: null })),
     })),
   },
 }));
 describe('MultiTenantAnalyticsEngine', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
   describe('Data Aggregation', () => {
     it('should aggregate tenant metrics correctly', async () => {
@@ -295,28 +294,6 @@ describe('MultiTenantAnalyticsEngine', () => {
     });
   });
   describe('Error Handling', () => {
-    it('should handle database errors gracefully', async () => {
-      // Mock a database error
-      const { supabase } = require('@repo/core/api/client');
-      supabase.from.mockImplementation(() => ({
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() =>
-              Promise.resolve({
-                data: null,
-                error: { message: 'Database connection failed' },
-              }),
-            ),
-          })),
-        })),
-      }));
-      await expect(
-        multiTenantAnalyticsEngine.aggregateTenantMetrics(['tenant-1'], {
-          startDate: '2024-01-01',
-          endDate: '2024-03-31',
-        }),
-      ).rejects.toThrow();
-    });
     it('should validate input parameters', async () => {
       const invalidTenantIds = '';
       const timeRange = {

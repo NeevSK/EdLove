@@ -145,11 +145,15 @@
     "@jest/globals": "^30.5.0",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
+    "@testing-library/react-native": "14.0.1",
     "@types/react": "^19.2.18",
+    "@types/react-test-renderer": "19.1.0",
     "@types/react-native": "workspace:*",
     "eslint": "^10.9.1",
+    "react-test-renderer": "19.2.3",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
+    "vitest-native": "^0.13.0",
     "vitest": "^5.0.0"
   },
   "peerDependencies": {

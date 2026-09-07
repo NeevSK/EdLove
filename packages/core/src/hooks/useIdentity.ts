@@ -1,4 +1,4 @@
-import { authAPI } from '@repo/core/api/auth';
+import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
 import { useQuery } from '@tanstack/react-query';
@@ -30,7 +30,7 @@ export function useIdentity() {
     await refetch();
   }, [refetch]);
 
-  const signOut = useCallback(() => authAPI.signOut(), []);
+  const signOut = useCallback(() => deviceAccounts.signOutCurrentAccount(), []);
 
   return useMemo(
     () => ({

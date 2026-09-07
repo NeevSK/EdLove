@@ -104,7 +104,10 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                 onAdd();
               }}
               accessibilityRole="button"
-              className="w-10 h-10 rounded-xl bg-phase-interactive items-center justify-center active:scale-90 transition-transform shadow-sm"
+              className="w-10 h-10 rounded-xl bg-phase-interactive items-center justify-center shadow-sm"
+              style={({ pressed }) => [
+                pressed ? { transform: [{ scale: 0.9 }] } : null,
+              ]}
             >
               <Icon as={Plus} size="sm" className="text-white" />
             </Pressable>

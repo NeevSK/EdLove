@@ -18,6 +18,7 @@ export function useStudentGrades(studentId?: string) {
   const isOnline = useStore((state) => state.isOnline);
   const [grades, setGrades] = useState<GradeRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load from local cache on mount
   useEffect(() => {
@@ -43,6 +44,7 @@ export function useStudentGrades(studentId?: string) {
   // Fetch / Sync function
   const refreshData = useCallback(async () => {
     if (!studentId || !isOnline) return;
+    setError(null);
     try {
       const data = await assignmentsAPI.getRecentGradesOverviewForStudent(studentId, 20);
       if (data) {
@@ -58,6 +60,7 @@ export function useStudentGrades(studentId?: string) {
       }
     } catch (e) {
       console.error('Failed to sync student grades', e);
+      setError('Grades could not be loaded. Please try again.');
     }
   }, [studentId, isOnline]);
 
@@ -68,6 +71,7 @@ export function useStudentGrades(studentId?: string) {
   return {
     grades,
     isLoading,
+    error,
     refreshData,
   };
 }

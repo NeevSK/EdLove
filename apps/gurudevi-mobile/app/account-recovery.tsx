@@ -1,6 +1,7 @@
-import { authAPI } from '@repo/core/api/auth';
+import { deviceAccounts } from '@repo/core';
 import { useAuth } from '@repo/core/logic';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { AccountRecoveryScreen } from '@/screens/AccountRecoveryScreen';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -10,6 +11,7 @@ export { RouteErrorBoundary as ErrorBoundary };
 export default function AccountRecoveryRoute() {
   const router = useRouter();
   const { accountLifecycleStatus, refreshProfile } = useAuth();
+  const { showToast } = useSanctuaryToast();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleRetry = useCallback(() => {
@@ -20,16 +22,20 @@ export default function AccountRecoveryRoute() {
     if (isSigningOut) return;
 
     setIsSigningOut(true);
-    void authAPI
-      .signOut()
+    void deviceAccounts
+      .signOutCurrentAccount()
       .then(() => {
         router.replace('/welcome');
       })
       .catch((error: unknown) => {
         console.warn('[account recovery] local sign-out failed', error);
+        showToast({
+          message: error instanceof Error ? error.message : 'Could not sign out on this device. Please try again.',
+          type: 'error',
+        });
         setIsSigningOut(false);
       });
-  }, [isSigningOut, router]);
+  }, [isSigningOut, router, showToast]);
 
   return (
     <ErrorBoundary name="AccountRecoveryRoute">

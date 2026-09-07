@@ -1,11 +1,11 @@
 import type { ExperienceProfile } from '@repo/ui/context/types';
 
-jest.mock('../haptics', () => ({
-  hapticError: jest.fn(),
-  hapticLight: jest.fn(),
-  hapticMedium: jest.fn(),
-  hapticSelection: jest.fn(),
-  hapticSuccess: jest.fn(),
+vi.mock('../haptics', () => ({
+  hapticError: vi.fn(),
+  hapticLight: vi.fn(),
+  hapticMedium: vi.fn(),
+  hapticSelection: vi.fn(),
+  hapticSuccess: vi.fn(),
 }));
 
 import { createFeedbackController, resolveFeedbackDecision } from '../feedbackPolicy';
@@ -40,7 +40,7 @@ describe('feedback policy', () => {
   });
 
   it('allows an injected audio adapter without coupling policy to audio runtime', () => {
-    const playSound = jest.fn();
+    const playSound = vi.fn();
     createFeedbackController({ ...profile, sound: 'rich' }, playSound).emit('milestone');
 
     expect(playSound).toHaveBeenCalledWith('milestone');

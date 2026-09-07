@@ -5,6 +5,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Calendar, CalendarCheck, CircleAlert, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import React from 'react';
 
@@ -17,21 +18,30 @@ export default function SectionHeadDashboard({
 }) {
   const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } =
     useAIAgent();
+  const { showToast } = useSanctuaryToast();
   const _userRole = useStore((state: any) => state.userRole);
 
   const handleExecuteRelief = React.useCallback((action: string) => {
-    console.log('Executing relief:', action);
-  }, []);
+    showToast({
+      message: `Relief suggestion ready: ${action}. Assignment workflow is coming soon.`,
+      type: 'info',
+    });
+  }, [showToast]);
 
   const handleReviewDraft = React.useCallback(() => {
-    console.log('Reviewing draft');
-  }, []);
+    showToast({ message: 'Draft review is coming soon.', type: 'info' });
+  }, [showToast]);
 
   const _handleCreateDraft = React.useCallback(() => {
     generateTimetable('current-school');
   }, [generateTimetable]);
 
-  const handleGenericAction = React.useCallback(() => {}, []);
+  const handleGenericAction = React.useCallback(
+    (label: string) => {
+      showToast({ message: `${label} is coming soon.`, type: 'info' });
+    },
+    [showToast],
+  );
 
   // Register FAB globally
   useRegisterFAB({
@@ -135,13 +145,15 @@ export default function SectionHeadDashboard({
               <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-widest">
                 CLASSES
               </Text>
-              <Text className="font-black text-2xl text-phaseText-primary mt-1">12</Text>
+              <Text className="font-black text-2xl text-phaseText-primary mt-1">—</Text>
+              <Text className="text-xs text-phaseText-secondary mt-1">Roster sync pending</Text>
             </Box>
             <Box className="flex-1 p-4 rounded-2xl border bg-phase-surface border-phase-border">
               <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-widest">
                 TEACHERS
               </Text>
-              <Text className="font-black text-2xl text-phaseText-primary mt-1">8</Text>
+              <Text className="font-black text-2xl text-phaseText-primary mt-1">—</Text>
+              <Text className="text-xs text-phaseText-secondary mt-1">Roster sync pending</Text>
             </Box>
           </HStack>
 
@@ -150,13 +162,19 @@ export default function SectionHeadDashboard({
             <Text className="font-bold text-xs text-phaseText-muted uppercase tracking-widest px-1">
               QUICK COORDINATION
             </Text>
-            <SanctuaryButton onPress={handleGenericAction} variant="outline">
+            <SanctuaryButton
+              onPress={() => handleGenericAction('Section schedule review')}
+              variant="outline"
+            >
               <HStack className="gap-3 items-center">
                 <Icon as={Calendar} size="sm" className="text-phaseText-primary" />
                 <Text className="font-bold text-phaseText-primary">Review Section Schedule</Text>
               </HStack>
             </SanctuaryButton>
-            <SanctuaryButton onPress={handleGenericAction} variant="outline">
+            <SanctuaryButton
+              onPress={() => handleGenericAction('Staff workload balance')}
+              variant="outline"
+            >
               <HStack className="gap-3 items-center">
                 <Icon as={Users} size="sm" className="text-phaseText-primary" />
                 <Text className="font-bold text-phaseText-primary">Staff Workload Balance</Text>

@@ -41,6 +41,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { openExternalURL } from '@repo/ui/utils/linking';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useReducer } from 'react';
 import {
@@ -178,6 +180,26 @@ export default function TeacherClassroomDashboardWeb() {
   }>();
   const colors = useThemedColors();
   const { can, context } = usePermissions();
+  const { showToast } = useSanctuaryToast();
+
+  const openMaterial = async (material: import('@repo/core/types').LessonMaterial) => {
+    try {
+      if (material.url) {
+        await openExternalURL(material.url, {
+          sourceLabel: material.title,
+          trustLevel: 'external',
+        });
+        return;
+      }
+      showToast({
+        message: material.content || 'This material does not have a readable preview yet.',
+        type: 'info',
+      });
+    } catch (error) {
+      console.error('Failed to open learning material:', error);
+      showToast({ message: 'This material could not be opened. Please try again.', type: 'error' });
+    }
+  };
 
   const workspace = useTeacherClassroomWorkspaceData(classroomId);
   const classroom = workspace.classroom;
@@ -370,8 +392,9 @@ export default function TeacherClassroomDashboardWeb() {
             classroomId={classroomId}
             isTeacher={can('update', 'Lesson') || can('manage', 'Classroom')}
             refreshTrigger={state.refreshTrigger}
-            onOpenLesson={(id: string) => console.log('Open Lesson', id)}
-            onOpenAssignment={(id: string) => console.log('Open Assignment', id)}
+            onOpenMaterial={(material) => {
+              void openMaterial(material);
+            }}
             onAddMaterial={(lessonId) => {
               dispatch({ type: 'SET_ACTIVE_LESSON_ID', payload: lessonId });
               dispatch({ type: 'SET_CONTENT_TYPE', payload: 'material' });
@@ -572,6 +595,9 @@ export default function TeacherClassroomDashboardWeb() {
                     return (
                       <Pressable
                         key={feature.id}
+                        accessibilityRole="tab"
+                        accessibilityLabel={feature.label}
+                        accessibilityState={{ selected: isActive }}
                         onPress={() =>
                           dispatch({ type: 'SET_ACTIVE_FEATURE', payload: feature.id })
                         }

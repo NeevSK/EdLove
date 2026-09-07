@@ -22,6 +22,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -49,6 +50,7 @@ export default function CollectionDetailScreen() {
   const colors = useThemedColors();
   const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
+  const { showToast } = useSanctuaryToast();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const { collection, isLoading, error, refetch } = useCollection(id, user?.id);
@@ -94,11 +96,11 @@ export default function CollectionDetailScreen() {
       queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
       setEditModalOpen(false);
     } catch {
-      Alert.alert('Error', 'Failed to update collection.');
+      showToast({ message: 'Failed to update collection. Please try again.', type: 'error' });
     } finally {
       setIsUpdating(false);
     }
-  }, [collection, editName, editDesc, queryClient]);
+  }, [collection, editName, editDesc, queryClient, showToast]);
 
   // ── Visibility ────────────────────────────────────────────────────────────
   const handleChangeVisibility = useCallback(
@@ -111,12 +113,12 @@ export default function CollectionDetailScreen() {
         queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
         queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
       } catch {
-        Alert.alert('Error', 'Failed to update visibility.');
+        showToast({ message: 'Failed to update visibility. Please try again.', type: 'error' });
       } finally {
         setIsUpdating(false);
       }
     },
-    [collection, queryClient],
+    [collection, queryClient, showToast],
   );
 
   // ── Delete ────────────────────────────────────────────────────────────────
@@ -135,13 +137,13 @@ export default function CollectionDetailScreen() {
             queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
             safeBack('/library');
           } catch {
-            Alert.alert('Error', 'Failed to delete collection.');
+            showToast({ message: 'Failed to delete collection. Please try again.', type: 'error' });
             setIsDeleting(false);
           }
         },
       },
     ]);
-  }, [collection, queryClient]);
+  }, [collection, queryClient, showToast]);
 
   // ── Remove resource ───────────────────────────────────────────────────────
   const handleRemoveResource = useCallback(
@@ -158,7 +160,7 @@ export default function CollectionDetailScreen() {
               await libraryAPI.removeFromCollection(collection.id, resourceId);
               queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
             } catch {
-              Alert.alert('Error', 'Failed to remove resource.');
+              showToast({ message: 'Failed to remove resource. Please try again.', type: 'error' });
             } finally {
               setRemovingId(null);
             }
@@ -166,7 +168,7 @@ export default function CollectionDetailScreen() {
         },
       ]);
     },
-    [collection, queryClient],
+    [collection, queryClient, showToast],
   );
 
   const getYoutubeThumbnail = (url?: string) => {

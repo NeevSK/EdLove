@@ -12,7 +12,7 @@ import LessonFeed from '@repo/classroom/screens/LessonFeed';
 import { useStudentClassroomWorkspaceData } from '@repo/classroom/workspace/useStudentClassroomWorkspaceData';
 import { api } from '@repo/core/api/client';
 import { usePermissions } from '@repo/core/logic';
-import type { Assignment } from '@repo/core/types';
+import type { Assignment, LessonMaterial } from '@repo/core/types';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
@@ -36,6 +36,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { openExternalURL } from '@repo/ui/utils/linking';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -72,6 +74,7 @@ export default function StudentClassroomDashboard() {
   const workspace = useStudentClassroomWorkspaceData(classroomId);
   const classroom = workspace.classroom;
   const { context } = usePermissions();
+  const { showToast } = useSanctuaryToast();
   const { t } = useTranslation();
 
   const openLearningReflection = () => {
@@ -80,6 +83,26 @@ export default function StudentClassroomDashboard() {
       pathname: '/workspace/classroom/reflect',
       params: { classroomId, classroomName },
     });
+  };
+
+  const openMaterial = async (material: LessonMaterial) => {
+    try {
+      if (material.url) {
+        await openExternalURL(material.url, {
+          sourceLabel: material.title,
+          trustLevel: 'external',
+        });
+        return;
+      }
+
+      showToast({
+        message: material.content || 'This material does not have a readable preview yet.',
+        type: 'info',
+      });
+    } catch (error) {
+      console.error('Failed to open learning material:', error);
+      showToast({ message: 'This material could not be opened. Please try again.', type: 'error' });
+    }
   };
 
   const renderFeatureContent = () => {
@@ -112,8 +135,9 @@ export default function StudentClassroomDashboard() {
           <LessonFeed
             classroomId={classroomId}
             isTeacher={false}
-            onOpenLesson={(id: string) => console.log('Open Lesson', id)}
-            onOpenAssignment={(id: string) => console.log('Open Assignment', id)}
+            onOpenMaterial={(material) => {
+              void openMaterial(material);
+            }}
             onOpenAssignmentRecord={(assignment: Assignment) => setSubmissionModal(assignment)}
             onOpenReflect={openLearningReflection}
             submittedAssignmentIds={workspace.submittedAssignmentIds}
@@ -149,7 +173,13 @@ export default function StudentClassroomDashboard() {
   }
 
   if (!classroom || workspace.error) {
-    return <ClassroomAccessState kind="unavailable" onBack={() => safeBack('/workspace')} />;
+    return (
+      <ClassroomAccessState
+        kind="unavailable"
+        onBack={() => safeBack('/workspace')}
+        onRetry={workspace.error ? () => void workspace.refresh() : undefined}
+      />
+    );
   }
 
   const summaryCards = [
@@ -241,6 +271,9 @@ export default function StudentClassroomDashboard() {
                 return (
                   <Pressable
                     key={f.id}
+                    accessibilityRole="tab"
+                    accessibilityLabel={f.label}
+                    accessibilityState={{ selected: isActive }}
                     onPress={() => {
                       hapticLight();
                       setActiveFeature(f.id);

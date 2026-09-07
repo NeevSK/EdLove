@@ -1,4 +1,4 @@
-jest.mock('../FireflyFeedbackScene', () => ({
+vi.mock('../FireflyFeedbackScene', () => ({
   FireflyFeedbackScene: ({ state }: { state: string }) => {
     const React = require('react');
     return React.createElement('FireflyFeedbackScene', { testID: `scene-${state}` });
@@ -12,8 +12,8 @@ describe('FireflyProductMoment', () => {
   it.each(['coming-soon', 'pro', 'onboarding', 'explore'] as const)(
     'keeps %s as a meaningful, actionable product state',
     async (kind) => {
-      const onAction = jest.fn();
-      const onSecondaryAction = jest.fn();
+      const onAction = vi.fn();
+      const onSecondaryAction = vi.fn();
       const { getByLabelText, getByText } = await render(
         <FireflyProductMoment
           actionLabel="Continue"

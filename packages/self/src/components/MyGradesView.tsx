@@ -1,6 +1,6 @@
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen, MessageSquare } from '@repo/ui/icons';
-import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
@@ -26,7 +26,7 @@ const getGradeBgClass = (grade: number): string => {
 
 export default function MyGradesView({ userId }: MyGradesViewProps) {
   const { t } = useTranslation();
-  const { grades, isLoading } = useStudentGrades(userId);
+  const { grades, isLoading, error, refreshData } = useStudentGrades(userId);
 
   if (isLoading) {
     return (
@@ -35,6 +35,17 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
         <SkeletonCard className="h-24 bg-white/5" />
         <SkeletonCard className="h-24 bg-white/5" />
       </VStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box className="p-10 bg-white/3 rounded-3xl items-center border border-dashed border-emberRed/30 gap-4">
+        <Text className="text-emberRed text-sm font-bold text-center">{error}</Text>
+        <Button variant="outline" onPress={() => void refreshData()}>
+          <ButtonText>Try again</ButtonText>
+        </Button>
+      </Box>
     );
   }
 

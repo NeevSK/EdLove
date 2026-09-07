@@ -4,7 +4,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface AnalyticsDashboardScreenProps {
   tenantId: string;
@@ -23,12 +23,13 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 }) => {
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
+  const [liveMetricsError, setLiveMetricsError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeRange, _setSelectedTimeRange] = useState<
     'week' | 'month' | 'quarter' | 'year'
   >('month');
 
-  const loadDashboard = async () => {
+  const loadDashboard = useCallback(async () => {
     try {
       setIsLoading(true);
       const timeRange = getTimeRange(selectedTimeRange);
@@ -42,20 +43,25 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedTimeRange, tenantId]);
 
-  const loadLiveMetrics = async () => {
+  const loadLiveMetrics = useCallback(async () => {
     try {
       const live = await multiTenantAnalyticsAPI.getLiveMetrics(tenantId);
       setLiveMetrics(live);
+      setLiveMetricsError(null);
     } catch (error) {
       console.error('Failed to load live metrics:', error);
+      setLiveMetricsError(
+        'Live metrics are temporarily unavailable. Showing the last successful update.',
+      );
     }
-  };
+  }, [tenantId]);
 
   useEffect(() => {
-    loadDashboard();
-    const interval = setInterval(loadLiveMetrics, 30000); // Update every 30 seconds
+    void loadDashboard();
+    void loadLiveMetrics();
+    const interval = setInterval(() => void loadLiveMetrics(), 30000);
     return () => clearInterval(interval);
   }, [loadLiveMetrics, loadDashboard]);
 
@@ -246,9 +252,19 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
           {liveMetrics && (
             <VStack className="gap-4">
-              <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
-                Live System Health
-              </Heading>
+              <HStack className="items-center justify-between gap-3">
+                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+                  Live System Health
+                </Heading>
+                {liveMetricsError ? (
+                  <Text
+                    accessibilityRole="alert"
+                    className="flex-1 text-right text-[10px] font-bold text-phase-warning"
+                  >
+                    Last update may be stale
+                  </Text>
+                ) : null}
+              </HStack>
               <HStack className="flex-wrap gap-4">
                 {renderLiveMetricCard(
                   'Active Users',
@@ -277,6 +293,15 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               </HStack>
             </VStack>
           )}
+
+          {liveMetricsError && !liveMetrics ? (
+            <Box
+              accessibilityRole="alert"
+              className="rounded-2xl border border-phase-warning/30 bg-phase-warning/10 p-4"
+            >
+              <Text className="text-sm font-bold text-phaseText-primary">{liveMetricsError}</Text>
+            </Box>
+          ) : null}
         </VStack>
       </ScrollView>
     </ScreenWrapper>

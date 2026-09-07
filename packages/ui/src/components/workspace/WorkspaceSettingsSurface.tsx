@@ -38,7 +38,9 @@ export function WorkspaceSettingsSurface({
                 </Text>
                 <Pressable
                   onPress={() => onToggleHidden(item.id, !isHidden)}
-                  accessibilityRole="button"
+                  accessibilityRole="switch"
+                  accessibilityState={{ checked: !isHidden }}
+                  accessibilityLabel={`${item.label} visibility`}
                   className={`px-3 py-1.5 rounded-full border ${isHidden ? 'bg-amber-100 border-amber-300' : 'bg-white border-border'}`}
                 >
                   <Text className="text-xs font-bold text-ink">
@@ -46,12 +48,17 @@ export function WorkspaceSettingsSurface({
                   </Text>
                 </Pressable>
               </Box>
-              <Box className="flex-row gap-1 flex-wrap">
+              <Box
+                accessibilityRole="radiogroup"
+                accessibilityLabel={`${item.label} zone`}
+                className="flex-row gap-1 flex-wrap"
+              >
                 {zones.map((zone) => (
                   <Pressable
                     key={zone}
-                    accessibilityRole="button"
+                    accessibilityRole="radio"
                     accessibilityLabel={`Set zone to ${zone}`}
+                    accessibilityState={{ selected: item.zone === zone }}
                     onPress={() => onChangeZone(item.id, zone)}
                     className={`px-3 py-1 rounded-full border ${item.zone === zone ? 'bg-ink border-ink' : 'bg-white border-border'}`}
                   >

@@ -35,6 +35,11 @@ import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, TextInput, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+
+interface SettingsNavigation {
+  navigate: (route: string, params?: Record<string, unknown>) => void;
+}
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -193,8 +198,13 @@ function SectionHeader({ title, description }: { title: string; description?: st
 
 SectionHeader.displayName = 'SectionHeader';
 
-const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
+const AppSettingsScreen = memo(function AppSettingsScreen({
+  navigation,
+}: {
+  navigation?: SettingsNavigation;
+}) {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const { accent, scene, text: themeText } = useTheme();
   const { gutter, maxWidth } = useResponsiveGrid();
 
@@ -555,17 +565,24 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
 
   const handlePreviewProfile = useCallback(() => {
     hapticLight();
-    navigation.navigate('Community', {
-      screen: 'UserProfile',
-      params: {
-        userId: user?.id,
-        userName: user?.display_name,
-      },
-    });
-  }, [navigation, user]);
+    if (navigation) {
+      navigation.navigate('Community', {
+        screen: 'UserProfile',
+        params: { userId: user?.id, userName: user?.display_name },
+      });
+      return;
+    }
+    router.push('/community');
+  }, [navigation, router, user]);
 
-  const handleTrubeLab = useCallback(() => navigation.navigate('TrubeLab'), [navigation]);
-  const handleIconLab = useCallback(() => navigation.navigate('icon-lab'), [navigation]);
+  const handleTrubeLab = useCallback(() => {
+    if (navigation) navigation.navigate('TrubeLab');
+    else router.push('/trube-lab');
+  }, [navigation, router]);
+  const handleIconLab = useCallback(() => {
+    if (navigation) navigation.navigate('icon-lab');
+    else router.push('/icon-lab');
+  }, [navigation, router]);
 
   const handleContactSupport = useCallback(async () => {
     hapticLight();

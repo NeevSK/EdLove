@@ -10,15 +10,18 @@ edlove.org — public face of the EdLove ecosystem.
 | :--- | :--- | :--- |
 | [@repo/editorial](../stack-map.md#repoeditorial) | domain | Provider-neutral editorial publishing contracts and distribution ledger |
 
-## External deps (10 direct)
+## External deps (13 direct)
 
 ```text
 @astrojs/check
 @astrojs/sitemap
+@astrojs/starlight
 @astrojs/svelte
+@intuitui-labs/a11y-gate
 @tailwindcss/vite
 @types/three
 astro
+pagefind
 svelte
 tailwindcss
 three

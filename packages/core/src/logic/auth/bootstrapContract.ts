@@ -51,9 +51,14 @@ export function getBootstrapSessionState(params: {
 
   if (!bootstrapReady) return 'booting';
   if (!hasSession || sessionMode === 'unauthenticated') return 'public';
+  if (sessionMode === 'anonymous' && (!onboardingCompleted || !hasActiveCapacity)) {
+    return 'public';
+  }
+
   if (sessionMode === 'authenticated' && identityAvailability === 'inactive') {
     return 'inactive-account';
   }
+
   if (!onboardingCompleted || !hasActiveCapacity) return 'onboarding-needed';
   return 'ready';
 }

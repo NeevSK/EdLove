@@ -203,7 +203,7 @@ export default function UserPublicProfileScreen() {
                   isDisabled={initiatingDM}
                   className="h-[52px] rounded-[26px]"
                 >
-                  <ButtonIcon as={Send} size={18} color="white" />
+                  <ButtonIcon as={Send} size={18} />
                   <ButtonText className="text-white font-extrabold ml-2">
                     {t('community.profile.sendMessage')}
                   </ButtonText>
@@ -218,7 +218,7 @@ export default function UserPublicProfileScreen() {
                       onPress={() => setShowThuthimal(true)}
                       className="h-[52px] rounded-[26px]"
                     >
-                      <ButtonIcon as={Gift} size={18} color="var(--phase-interactive)" />
+                      <ButtonIcon as={Gift} size={18} className="text-phase-interactive" />
                       <ButtonText className="font-extrabold ml-2">Send Thuthimal {'=O'}</ButtonText>
                     </Button>
                   )}

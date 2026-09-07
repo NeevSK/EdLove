@@ -18,7 +18,7 @@ describe('Checkbox Component (Robustness)', () => {
   });
 
   it('toggles state on press', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { getByText } = await render(
       <Checkbox value="test" onChange={onChange}>
         <CheckboxIndicator />
@@ -31,7 +31,7 @@ describe('Checkbox Component (Robustness)', () => {
   });
 
   it('works within a CheckboxGroup', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { getByText } = await render(
       <CheckboxGroup value={['opt1']} onChange={onChange}>
         <Checkbox value="opt1">
@@ -48,7 +48,7 @@ describe('Checkbox Component (Robustness)', () => {
   });
 
   it('handles disabled state', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { getByRole } = await render(
       <Checkbox value="test" isDisabled={true} onChange={onChange}>
         <CheckboxLabel>Disabled Checkbox</CheckboxLabel>

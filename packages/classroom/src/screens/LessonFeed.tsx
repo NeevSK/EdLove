@@ -32,8 +32,6 @@ import { FadeInDown } from 'react-native-reanimated';
 interface LessonFeedProps {
   classroomId: string;
   isTeacher?: boolean;
-  onOpenLesson?: (lessonId: string) => void;
-  onOpenAssignment?: (assignmentId: string) => void;
   onOpenAssignmentRecord?: (assignment: Assignment) => void;
   onOpenReflect?: (assignment: Assignment) => void;
   onOpenMaterial?: (material: LessonMaterial) => void;
@@ -56,7 +54,6 @@ interface MonthlyGroup {
 export default function LessonFeed({
   classroomId,
   isTeacher = false,
-  onOpenAssignment,
   onOpenAssignmentRecord,
   onOpenReflect,
   onOpenMaterial,
@@ -197,7 +194,12 @@ export default function LessonFeed({
       className="p-md bg-phase-surface rounded-comfortable mb-sm border-l-4 border-l-phase-accent"
     >
       <HStack className="items-center justify-between gap-4">
-        <Pressable onPress={() => onOpenMaterial?.(material)} className="flex-1">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Open material ${material.title}`}
+          onPress={() => onOpenMaterial?.(material)}
+          className="flex-1"
+        >
           <HStack className="items-center gap-2">
             {material.type === 'pdf' ? (
               <Icon as={FileText} size="md" className="text-phase-accent" />
@@ -217,10 +219,20 @@ export default function LessonFeed({
 
         {isTeacher && (
           <HStack className="gap-4">
-            <Pressable onPress={() => onEditItem?.(material, 'material')}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Edit material ${material.title}`}
+              hitSlop={12}
+              onPress={() => onEditItem?.(material, 'material')}
+            >
               <Icon as={Pen} size="sm" className="text-phaseText-secondary" />
             </Pressable>
-            <Pressable onPress={() => onDeleteItem?.(material.id, 'material')}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Delete material ${material.title}`}
+              hitSlop={12}
+              onPress={() => onDeleteItem?.(material.id, 'material')}
+            >
               <Icon as={Trash2} size="sm" className="text-phase-danger" />
             </Pressable>
           </HStack>
@@ -239,9 +251,10 @@ export default function LessonFeed({
       >
         <HStack className="items-center justify-between gap-4">
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Open assignment ${assignment.title}`}
             onPress={() => {
               onOpenAssignmentRecord?.(assignment);
-              onOpenAssignment?.(assignment.id);
             }}
             className="flex-1"
           >
@@ -272,10 +285,20 @@ export default function LessonFeed({
 
           {isTeacher && (
             <HStack className="gap-4">
-              <Pressable onPress={() => onEditItem?.(assignment, 'assignment')}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Edit assignment ${assignment.title}`}
+                hitSlop={12}
+                onPress={() => onEditItem?.(assignment, 'assignment')}
+              >
                 <Icon as={Pen} size="sm" className="text-phaseText-secondary" />
               </Pressable>
-              <Pressable onPress={() => onDeleteItem?.(assignment.id, 'assignment')}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Delete assignment ${assignment.title}`}
+                hitSlop={12}
+                onPress={() => onDeleteItem?.(assignment.id, 'assignment')}
+              >
                 <Icon as={Trash2} size="sm" className="text-phase-danger" />
               </Pressable>
             </HStack>
@@ -319,6 +342,13 @@ export default function LessonFeed({
           {error && (
             <Box className="p-md bg-phase-danger/10 rounded-comfortable mb-md border border-phase-danger">
               <Text className="text-sm text-center text-phase-danger font-medium">{error}</Text>
+              <Button
+                accessibilityLabel="Retry loading learning path"
+                onPress={() => void loadFeed()}
+                className="mt-3 self-center rounded-full bg-phase-accent px-4"
+              >
+                <ButtonText className="text-sacredWhite font-bold">Try again</ButtonText>
+              </Button>
             </Box>
           )}
 
@@ -332,7 +362,12 @@ export default function LessonFeed({
 
           {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
             <Box key={monthTitle} className="mb-sm">
-              <Pressable onPress={() => toggleLesson(monthTitle)}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${expandedLessons[monthTitle] ? 'Collapse' : 'Expand'} ${monthTitle}`}
+                accessibilityState={{ expanded: !!expandedLessons[monthTitle] }}
+                onPress={() => toggleLesson(monthTitle)}
+              >
                 <Box
                   className={`p-md bg-phase-surface rounded-comfortable ${expandedLessons[monthTitle] ? 'rounded-b-none' : ''} ${isCurrentMonth(monthTitle) ? 'border border-phase-accent' : ''}`}
                 >

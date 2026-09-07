@@ -1,6 +1,6 @@
 import { useOptionalChatContext } from '@repo/ui/context/ChatContext';
 import { Image as ImageIcon, Send } from '@repo/ui/icons';
-import { Box, HStack, Icon, InputField, Pressable } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Input, InputField, Pressable } from '@repo/ui/primitives';
 import React, { useCallback } from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { BrandPulse } from './BrandPulse';
@@ -91,7 +91,7 @@ export function ChatComposer({
             </Pressable>
           ) : null)}
 
-        <Box className="flex-1 bg-phase-canvas border border-border rounded-[20px] px-1 py-1">
+        <Input className="flex-1 bg-phase-canvas border-border rounded-[20px] px-1 py-1">
           <InputField
             accessibilityLabel={accessibilityLabel}
             accessibilityHint={placeholder ?? 'Type your message'}
@@ -104,7 +104,7 @@ export function ChatComposer({
             className="px-4 py-2.5 text-base text-ink font-medium"
             returnKeyType="default"
           />
-        </Box>
+        </Input>
 
         <Pressable
           accessibilityRole="button"

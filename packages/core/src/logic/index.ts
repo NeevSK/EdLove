@@ -43,6 +43,7 @@ export {
   isAnonymousSession,
   isDemoSession,
   isSandboxSession,
+  suggestDisplayName,
 } from '@repo/core/logic/auth/identityState';
 export * from '@repo/core/logic/domains';
 export * from '@repo/core/logic/entities';

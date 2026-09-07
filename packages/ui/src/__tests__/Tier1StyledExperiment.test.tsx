@@ -42,7 +42,7 @@ describe('Tier-1 NativeWind v5 styled() experiment', () => {
   });
 
   it('keeps Pressable interaction through styled()', async () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     const { getByTestId } = await render(
       <StyledPressable testID="styled-pressable" className="rounded-lg" onPress={onPress} />,
     );

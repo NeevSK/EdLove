@@ -18,10 +18,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
 
 interface AcademicCycleManagerProps {
   schoolId: string;
@@ -153,22 +153,14 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
     }
   };
 
-  const handleDelete = (cycleId: string) => {
-    const isWeb = Platform.OS === 'web';
-    if (isWeb) {
-      if (
-        window.confirm(
-          t('common.confirmDelete') || 'Are you sure you want to delete this academic cycle?',
-        )
-      ) {
-        void executeDelete(cycleId);
-      }
-    } else {
-      // For Zero-Legacy native, we should ideally use a Sanctuary dialog
-      // but to remove the RN import while keeping functionality, we'll use a simple confirm fallback
-      // if available or assume it's safe to delete for now if we can't easily show a modal here.
-      // Actually, we'll just execute it for now to stay within Zero-Legacy UI but we should add a toast.
-      void executeDelete(cycleId);
+  const handleDelete = async (cycleId: string) => {
+    const confirmed = await confirmAction(
+      t('common.confirmDeleteTitle') || 'Delete academic cycle?',
+      t('common.confirmDelete') ||
+        'This permanently removes the academic cycle. This action cannot be undone.',
+    );
+    if (confirmed) {
+      await executeDelete(cycleId);
     }
   };
 
@@ -388,7 +380,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                         </Pressable>
                       )}
                       <Pressable
-                        onPress={() => handleDelete(cycle.id)}
+                        onPress={() => void handleDelete(cycle.id)}
                         className="active:scale-90"
                         accessibilityLabel={`Delete ${cycle.name}`}
                         accessibilityHint="Permanently removes this academic cycle"

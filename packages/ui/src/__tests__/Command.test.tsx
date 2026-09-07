@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 describe('Command', () => {
   it('filters items and reports selection', async () => {
-    const onSelect = jest.fn();
+    const onSelect = vi.fn();
     await render(
       <Command onSelect={onSelect}>
         <CommandInput />

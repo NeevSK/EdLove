@@ -1,11 +1,13 @@
 import { OCRScannerBridge } from '@/features/scanner/OCRScannerBridge';
 import { BrandPulse } from '@repo/ui';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function DocumentScannerScreen() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
   const [scannedStudents, setScannedStudents] = useState<{
     name: string;
     index_number: string;
@@ -21,10 +23,12 @@ export function DocumentScannerScreen() {
 
   const handleConfirm = useCallback(async () => {
     if (scannedStudents.length === 0) return;
-    // TODO: Save to library / sync
-    alert(`Saved ${scannedStudents.length} students from register`);
-    setScannedStudents([]);
-  }, [scannedStudents]);
+    showToast({
+      message: `${scannedStudents.length} students scanned and ready for review. Saving will be available when register sync is connected.`,
+      type: 'info',
+      duration: 5000,
+    });
+  }, [scannedStudents.length, showToast]);
 
   return (
     <VStack className="p-lg gap-lg items-center bg-phase-surface">
@@ -74,7 +78,14 @@ export function DocumentScannerScreen() {
       <Button
         variant="outline"
         className="border-mistGray"
-        onPress={() => console.log('Navigate to manual entry')}
+        onPress={() =>
+          showToast({
+            message: 'Manual entry is coming soon. You can review the scanned list above for now.',
+            type: 'info',
+          })
+        }
+        accessibilityLabel="Manual entry"
+        accessibilityHint="Manual entry is not available yet"
       >
         <ButtonText className="text-mistGray">
           {t('common.manualEntry') || 'Manual Entry Instead'}

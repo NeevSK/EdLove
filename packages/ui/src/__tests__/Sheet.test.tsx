@@ -4,9 +4,9 @@ import { render, screen } from '@testing-library/react-native';
 describe('Sheet', () => {
   it('uses the source-owned actionsheet behavior with the open API', async () => {
     await render(
-      <Sheet open onOpenChange={jest.fn()}>
+      <Sheet open onOpenChange={vi.fn()}>
         <SheetContent>
-          <SheetItem onPress={jest.fn()}>
+          <SheetItem onPress={vi.fn()}>
             <SheetItemText>Choose an option</SheetItemText>
           </SheetItem>
         </SheetContent>
