@@ -180,6 +180,11 @@ export { useGroupCreation } from '@repo/core/hooks/useGroupCreation';
 export { useIdentity } from '@repo/core/hooks/useIdentity';
 export { useIsGuest } from '@repo/core/hooks/useIsGuest';
 export { useJourneyHistory } from '@repo/core/hooks/useJourneyHistory';
+export {
+  type LocalFirstQueryOptions,
+  type LocalFirstQueryResult,
+  useLocalFirstQuery,
+} from '@repo/core/hooks/useLocalFirstQuery';
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMediaDownloader';
 export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';

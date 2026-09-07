@@ -10,23 +10,35 @@ import {
   type UserContext,
   UserContextSchema,
 } from '@repo/core/logic/schemas/user.schema';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
 import type { Action, Subject } from '@repo/core/types/authorization';
 import { useCallback, useMemo } from 'react';
 
+/** Baseline sanctuary read subjects that are open to any user/guest in personal perspective. */
+const PERSONAL_SANCTUARY_READ_SUBJECTS = new Set<string>([
+  'SelfJourney',
+  'InnerPulse',
+  'SelfCare',
+  'SelfReflection',
+  'StudentDashboard',
+  'LibraryResource',
+  'CommunityPost',
+  'Classroom',
+]);
+
 /**
- * @deprecated Use useSanctuaryFeature() for permission checks and
- * useAuthStore / useFeatureStore / useCedarDecisionStore directly for reads.
- * This facade is kept for backward compatibility — it delegates to the
- * new store internally.
+ * usePermissions - Sovereign hook for permission checks and user context.
  */
 export const usePermissions = () => {
   const user = useAuthStore((state) => state.user);
   const activeBondState = useAuthStore((state) => state.activeBond);
+  const activePerspective = usePerspectiveStore((state) => state.activePerspective);
   const schoolType = useTenantStore((state) => state.schoolType);
   const flags = useFeatureStore((state) => state.flags);
   const cedarSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
@@ -35,11 +47,42 @@ export const usePermissions = () => {
     useEntitlementStore();
 
   const context: UserContext = useMemo(() => {
-    const activePerspective = useAuthStore.getState().activePerspective;
     const availableBonds = useAuthStore.getState().availableBonds || [];
-    const activeBond = activePerspective?.activeBond ?? null;
+    let activeBond = activeBondState;
+
+    if (activePerspective.kind === 'institutional') {
+      activeBond = {
+        id: activePerspective.id,
+        school_id: activePerspective.schoolId,
+        capacity: activePerspective.capacity,
+        entity_type: 'SCHOOL',
+        entity_id: activePerspective.schoolId,
+      } as any;
+    } else if (activePerspective.kind === 'commercial') {
+      activeBond = {
+        id: activePerspective.id,
+        school_id: activePerspective.instituteId,
+        capacity: activePerspective.role === 'founder' ? 'founder' : 'teacher',
+        entity_type: 'COMMERCIAL_BATCH',
+        entity_id: activePerspective.batchId,
+      } as any;
+    } else if (activePerspective.kind === 'guardian') {
+      activeBond = {
+        id: activePerspective.id,
+        school_id: activePerspective.schoolId ?? null,
+        capacity: 'guardian',
+        entity_type: 'GUARDIAN_BOND',
+        entity_id: activePerspective.wardUserId,
+      } as any;
+    } else if (!activeBond && user?.capacity) {
+      activeBond = { id: 'personal', capacity: user.capacity, is_personal: true } as any;
+    }
+
     const bondScope = resolveBondScope(activeBond);
-    const isPersonal = bondScope.isPersonal || schoolType === 'personal_workspace';
+    const isPersonal =
+      bondScope.isPersonal ||
+      schoolType === 'personal_workspace' ||
+      activePerspective.kind === 'personal';
     const entitlementScope = isPersonal ? 'individual' : 'active_bond';
     const effectiveEntitlement = resolveScopedEntitlement(
       {
@@ -51,6 +94,8 @@ export const usePermissions = () => {
       entitlementScope,
     );
 
+    const effectiveCapacity = (activeBond?.capacity || user?.capacity || 'student') as Capacity;
+
     const rawContext: UserContext = {
       userId: user?.id || null,
       email:
@@ -59,10 +104,10 @@ export const usePermissions = () => {
           : null,
 
       bonds: availableBonds as UserContext['bonds'],
-      primaryCapacity: availableBonds[0]?.capacity || null,
+      primaryCapacity: availableBonds[0]?.capacity || effectiveCapacity,
       activeBond: activeBond as UserContext['activeBond'],
-      capacity: activeBond?.capacity || null,
-      traits: activeBond?.capacity ? [`capacity:${activeBond.capacity}`] : [],
+      capacity: effectiveCapacity as UserContext['capacity'],
+      traits: effectiveCapacity ? [`capacity:${effectiveCapacity}`] : ['capacity:student'],
       tier: user?.tier || 'free',
       citizenship:
         user?.citizenship === 'SECOND_CLASS' || user?.citizenship === 'FIRST_CLASS'
@@ -102,7 +147,7 @@ export const usePermissions = () => {
       return rawContext;
     }
     return parsed.data;
-  }, [user, schoolType, pricingTier]);
+  }, [user, activeBondState, activePerspective, schoolType, pricingTier, activeEntitlements, grants]);
 
   const can = useCallback(
     (action: Action, subject: Subject) => {
@@ -114,9 +159,20 @@ export const usePermissions = () => {
             ? CITIZENSHIP.SECOND_CLASS
             : CITIZENSHIP.FIRST_CLASS;
 
-      const cedarDecision = user?.id
-        ? getDecision(subject as string, action as string)
-        : 'no_decision';
+      let cedarDecision: 'allow' | 'deny' | 'no_decision' = 'no_decision';
+      if (user?.id) {
+        const rawDecision = getDecision(subject as string, action as string);
+        if (rawDecision === 'allow' || rawDecision === 'deny') {
+          cedarDecision = rawDecision;
+        } else if (action === 'read' && PERSONAL_SANCTUARY_READ_SUBJECTS.has(subject as string)) {
+          cedarDecision = 'allow';
+        }
+      } else {
+        // Guest exploration permitted for baseline sanctuary reads
+        if (action === 'read' && PERSONAL_SANCTUARY_READ_SUBJECTS.has(subject as string)) {
+          cedarDecision = 'allow';
+        }
+      }
 
       const flagKey = `${subject as string}.${action as string}`;
       const flagActive = resolveFeatureFlagValue(flags, flagKey);
@@ -178,3 +234,4 @@ export const usePermissions = () => {
     [context, flags, can, cannot],
   );
 };
+

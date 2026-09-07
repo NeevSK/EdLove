@@ -3,15 +3,27 @@ import type { UserRewards, UserRewardsHistory } from '@repo/core/api/rewards.orp
 
 export const rewardsAPI = {
   async getRewards(userId: string): Promise<UserRewards | null> {
-    return orpcClient.rewards.getRewards({ query: { userId } });
+    try {
+      return await orpcClient.rewards.getRewards({ query: { userId } });
+    } catch {
+      return null;
+    }
   },
 
   async getRewardsAsOf(userId: string, asOf: string): Promise<UserRewards | null> {
-    return orpcClient.rewards.getRewardsAsOf({ query: { userId, asOf } });
+    try {
+      return await orpcClient.rewards.getRewardsAsOf({ query: { userId, asOf } });
+    } catch {
+      return null;
+    }
   },
 
   async getRewardsHistory(userId: string, limit = 50): Promise<UserRewardsHistory[]> {
-    return orpcClient.rewards.getRewardsHistory({ query: { userId, limit } });
+    try {
+      return await orpcClient.rewards.getRewardsHistory({ query: { userId, limit } });
+    } catch {
+      return [];
+    }
   },
 
   async getRewardsRangeHistory(
@@ -19,27 +31,47 @@ export const rewardsAPI = {
     viewDate: string,
     viewScale: 'day' | 'week' | 'month' | 'year' | 'custom' = 'day',
   ): Promise<UserRewardsHistory[]> {
-    return orpcClient.rewards.getRewardsRangeHistory({
-      query: { userId, viewDate, viewScale },
-    });
+    try {
+      return await orpcClient.rewards.getRewardsRangeHistory({
+        query: { userId, viewDate, viewScale },
+      });
+    } catch {
+      return [];
+    }
   },
 
-  async initializeRewards(userId: string): Promise<UserRewards> {
-    return orpcClient.rewards.initializeRewards({ body: { userId } });
+  async initializeRewards(userId: string): Promise<UserRewards | null> {
+    try {
+      return await orpcClient.rewards.initializeRewards({ body: { userId } });
+    } catch {
+      return null;
+    }
   },
 
-  async addPoints(userId: string, points: number): Promise<UserRewards> {
-    return orpcClient.rewards.addPoints({ body: { userId, points } });
+  async addPoints(userId: string, points: number): Promise<UserRewards | null> {
+    try {
+      return await orpcClient.rewards.addPoints({ body: { userId, points } });
+    } catch {
+      return null;
+    }
   },
 
-  async awardBadge(userId: string, badge: string): Promise<UserRewards> {
-    return orpcClient.rewards.awardBadge({ body: { userId, badge } });
+  async awardBadge(userId: string, badge: string): Promise<UserRewards | null> {
+    try {
+      return await orpcClient.rewards.awardBadge({ body: { userId, badge } });
+    } catch {
+      return null;
+    }
   },
 
   async checkAndAwardAchievements(userId: string): Promise<{
-    updatedRewards: UserRewards;
+    updatedRewards: UserRewards | null;
     newAchievements: string[];
   }> {
-    return orpcClient.rewards.checkAndAwardAchievements({ body: { userId } });
+    try {
+      return await orpcClient.rewards.checkAndAwardAchievements({ body: { userId } });
+    } catch {
+      return { updatedRewards: null, newAchievements: [] };
+    }
   },
 };

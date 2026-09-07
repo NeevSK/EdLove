@@ -9,17 +9,34 @@ export const trackingAPI = {
     _userId: string,
     featureName: string,
     interactionType = 'exploration',
-  ): Promise<FeatureUsage> {
-    const response = await (client.api as any).tracking.features.$post({
-      json: { featureName, interactionType },
-    });
-    if (!response.ok) throw new Error('Error logging feature usage.');
-    return (await response.json()) as FeatureUsage;
+  ): Promise<FeatureUsage | null> {
+    try {
+      const response = await (client.api as any).tracking.features.$post({
+        json: { featureName, interactionType },
+      });
+      if (!response.ok) {
+        console.warn(`[trackingAPI] Failed to log feature usage for ${featureName} (${response.status})`);
+        return null;
+      }
+      return (await response.json()) as FeatureUsage;
+    } catch (error) {
+      console.warn(`[trackingAPI] Offline or unreachable when logging feature usage for ${featureName}:`, error);
+      return null;
+    }
   },
 
   async getExploredFeatures(_userId: string): Promise<string[]> {
-    const response = await (client.api as any).tracking.features.$get();
-    if (!response.ok) throw new Error('Error fetching explored features.');
-    return (await response.json()) as string[];
+    try {
+      const response = await (client.api as any).tracking.features.$get();
+      if (!response.ok) {
+        console.warn(`[trackingAPI] Failed to fetch explored features (${response.status})`);
+        return [];
+      }
+      return (await response.json()) as string[];
+    } catch (error) {
+      console.warn('[trackingAPI] Offline or unreachable when fetching explored features:', error);
+      return [];
+    }
   },
 };
+

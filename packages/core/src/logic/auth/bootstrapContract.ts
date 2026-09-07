@@ -36,6 +36,8 @@ export function getBootstrapSessionState(params: {
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
   identityAvailability?: IdentityAvailability;
+  hasProfileForSession?: boolean;
+  hasProfileName?: boolean;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasSession?: boolean;
@@ -44,6 +46,8 @@ export function getBootstrapSessionState(params: {
     bootstrapReady,
     sessionMode,
     identityAvailability = 'unknown',
+    hasProfileForSession = true,
+    hasProfileName = true,
     onboardingCompleted,
     hasActiveCapacity = true,
     hasSession,
@@ -59,6 +63,12 @@ export function getBootstrapSessionState(params: {
     return 'inactive-account';
   }
 
-  if (!onboardingCompleted || !hasActiveCapacity) return 'onboarding-needed';
+  if (sessionMode === 'authenticated' && !hasProfileForSession) {
+    return 'booting';
+  }
+
+  if (!onboardingCompleted || !hasActiveCapacity || !hasProfileName) {
+    return 'onboarding-needed';
+  }
   return 'ready';
 }

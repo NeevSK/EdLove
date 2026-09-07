@@ -4,7 +4,8 @@ export type AccountLifecycleCommand =
   | { kind: 'sign-out-all-local-accounts' }
   | { kind: 'revoke-remote-session'; sessionId: string }
   | { kind: 'request-deactivation'; accountId: string }
-  | { kind: 'request-deletion'; accountId: string };
+  | { kind: 'request-deletion'; accountId: string }
+  | { kind: 'cancel-deletion-request'; accountId: string };
 
 export type AccountLifecyclePhase = 'pending' | 'completed' | 'failed' | 'unsupported';
 export type AccountLifecyclePlatform = 'native' | 'web';
@@ -15,7 +16,8 @@ export type AccountLifecycleEffect =
   | { kind: 'clear-all-remembered-accounts' }
   | { kind: 'revoke-remote-session'; sessionId: string }
   | { kind: 'request-deactivation'; accountId: string }
-  | { kind: 'request-deletion'; accountId: string };
+  | { kind: 'request-deletion'; accountId: string }
+  | { kind: 'cancel-deletion-request'; accountId: string };
 
 export type AccountLifecycleAvailableCapability<C extends AccountLifecycleCommand> = {
   command: C['kind'];
@@ -89,6 +91,10 @@ function isEffectAllowedForCommand(
       return effect.kind === 'request-deactivation' && effect.accountId === command.accountId;
     case 'request-deletion':
       return effect.kind === 'request-deletion' && effect.accountId === command.accountId;
+    case 'cancel-deletion-request':
+      return (
+        effect.kind === 'cancel-deletion-request' && effect.accountId === command.accountId
+      );
   }
 }
 
@@ -108,7 +114,7 @@ export function getAccountLifecycleCapability<C extends AccountLifecycleCommand>
   }
 
   const remotelyManagedOnNative = command.kind === 'revoke-remote-session';
-  if (command.kind === 'request-deletion') {
+  if (command.kind === 'request-deletion' || command.kind === 'cancel-deletion-request') {
     return { command: command.kind, availability: 'supported' };
   }
   const isUnavailable =

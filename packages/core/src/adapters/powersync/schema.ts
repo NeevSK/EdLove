@@ -150,8 +150,9 @@ export const attendance = sqliteTable(
     academicCycleId: text('academic_cycle_id'),
   },
   (table) => [
-    // Compound index on classroom and date for lightning-fast attendance sheets
+    // Compound index on classroom, date, and status for lightning-fast attendance sheets
     index('attendance_classroom_date_idx').on(table.classroomId, table.date),
+    index('attendance_classroom_date_status_idx').on(table.classroomId, table.date, table.status),
     index('attendance_student_idx').on(table.studentId),
   ],
 );
@@ -193,6 +194,7 @@ export const classrooms = sqliteTable(
   },
   (table) => [
     index('classrooms_school_idx').on(table.schoolId),
+    index('classrooms_school_academic_year_idx').on(table.schoolId, table.academicYear),
     index('classrooms_teacher_idx').on(table.teacherId),
   ],
 );
@@ -340,6 +342,63 @@ export const formResponses = sqliteTable(
   (table) => [index('form_responses_template_idx').on(table.templateId)],
 );
 
+export const tuitionInstitutes = sqliteTable(
+  'tuition_institutes',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    address: text('address'),
+    city: text('city'),
+    isIndependent: integer('is_independent', { mode: 'boolean' }).notNull().default(false),
+    createdBy: text('created_by'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [index('tuition_institutes_created_by_idx').on(table.createdBy)],
+);
+
+export const tuitionBatches = sqliteTable(
+  'tuition_batches',
+  {
+    id: text('id').primaryKey(),
+    instituteId: text('institute_id'),
+    tutorUserId: text('tutor_user_id').notNull(),
+    subjectName: text('subject_name').notNull(),
+    gradeLevel: text('grade_level').notNull(),
+    medium: text('medium').notNull(), // 'sinhala' | 'english' | 'tamil'
+    format: text('format').notNull().default('physical'),
+    schedule: text('schedule').notNull(),
+    monthlyFee: text('monthly_fee'),
+    customAlias: text('custom_alias'),
+    role: text('role').notNull().default('lead_tutor'),
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('tuition_batches_tutor_idx').on(table.tutorUserId),
+    index('tuition_batches_institute_idx').on(table.instituteId),
+    index('tuition_batches_active_idx').on(table.tutorUserId, table.isActive),
+  ],
+);
+
+export const guardianBonds = sqliteTable(
+  'guardian_bonds',
+  {
+    id: text('id').primaryKey(),
+    guardianUserId: text('guardian_user_id').notNull(),
+    wardStudentId: text('ward_student_id').notNull(),
+    relationship: text('relationship').notNull().default('parent'),
+    status: text('status').notNull().default('verified'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('guardian_bonds_guardian_idx').on(table.guardianUserId),
+    index('guardian_bonds_ward_idx').on(table.wardStudentId),
+  ],
+);
+
 export const AppSchema = {
   bonds,
   classroomStudents,
@@ -349,6 +408,7 @@ export const AppSchema = {
   classrooms,
   moodLogs,
   thoughtRecords,
+  learningReflections,
   schools,
   cedarPolicies,
   permissionSnapshots,
@@ -358,6 +418,9 @@ export const AppSchema = {
   pricingManifest,
   userEntitlementGrants,
   userPreferences,
+  tuitionInstitutes,
+  tuitionBatches,
+  guardianBonds,
 };
 
 // Tables that are NOT in the PowerSync publication scope (20260812000000_powersync_publication.sql).
@@ -372,12 +435,16 @@ export const LOCAL_ONLY_TABLES = new Set([
   'students',
   'moodLogs',
   'thoughtRecords',
+  'learningReflections',
   'schools',
   'cedarPolicies',
   'permissionSnapshots',
   'policyVersion',
   'formTemplates',
   'formResponses',
+  'tuitionInstitutes',
+  'tuitionBatches',
+  'guardianBonds',
 ]);
 
 /** Returns true if the given table name is outside the PowerSync publication scope. */
@@ -435,3 +502,13 @@ export type InsertUserPreference = typeof userPreferences.$inferInsert;
 
 export type PolicyVersion = typeof policyVersion.$inferSelect;
 export type InsertPolicyVersion = typeof policyVersion.$inferInsert;
+
+export type TuitionInstitute = typeof tuitionInstitutes.$inferSelect;
+export type InsertTuitionInstitute = typeof tuitionInstitutes.$inferInsert;
+
+export type TuitionBatch = typeof tuitionBatches.$inferSelect;
+export type InsertTuitionBatch = typeof tuitionBatches.$inferInsert;
+
+export type GuardianBond = typeof guardianBonds.$inferSelect;
+export type InsertGuardianBond = typeof guardianBonds.$inferInsert;
+

@@ -38,10 +38,12 @@ export {
 } from '@repo/core/logic/auth/bootstrapRoutes';
 export {
   getSessionIdentityMode,
+  type IdentityAvailability,
   isActiveIdentityProfile,
   isAnonymousIdentity,
   isAnonymousSession,
   isDemoSession,
+  isResolvedAuthSubjectCurrent,
   isSandboxSession,
   suggestDisplayName,
 } from '@repo/core/logic/auth/identityState';
@@ -128,8 +130,11 @@ export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export { useAuthStore } from '@repo/core/store/useAuthStore';
 export { useConsentStore } from '@repo/core/store/useConsentStore';
 export { useFeatureStore } from '@repo/core/store/useFeatureStore';
+export { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
+
 // Types (Agnostic / logic-layer)
 export type { Bond } from '@repo/core/types';
 export type { APIError } from '@repo/core/types/API';

@@ -203,3 +203,4 @@ export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
 export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
+export * from './Perspective';

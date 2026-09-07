@@ -16,7 +16,13 @@ export interface QueuedMutation {
   backoffUntil?: number; // Epoch ms - skip until this time
   lastError?: string; // Store the last error for the DLQ/Audit log
   userId?: string; // Attribution for conflict resolution
+  perspectiveId?: string; // Sanctuary perspective ID (e.g. 'personal' or 'bond:school_123:teacher')
+  tenantId?: string; // Institutional school/tenant ID if applicable
+  schemaVersion?: number; // Version of the payload schema for outbox migrations
+  logicalClock?: number; // Monotonically incrementing vector/logical sequence for clock-skew immunity
+  lockLeaseExpiresAt?: number; // Epoch ms lease lock to recover from abrupt OS process suspension
 }
+
 
 export type QueuedMutationDispatchResult = false | 'dispatched';
 

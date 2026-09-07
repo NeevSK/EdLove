@@ -18,11 +18,20 @@ describe('account lifecycle contracts', () => {
       { kind: 'revoke-remote-session', sessionId: 'session-1' },
       { kind: 'request-deactivation', accountId: 'account-1' },
       { kind: 'request-deletion', accountId: 'account-1' },
+      { kind: 'cancel-deletion-request', accountId: 'account-1' },
     ];
 
     expect(
       commands.map((command) => getAccountLifecycleCapability(command, 'web').availability),
-    ).toEqual(['supported', 'supported', 'supported', 'unavailable', 'unavailable', 'supported']);
+    ).toEqual([
+      'supported',
+      'supported',
+      'supported',
+      'unavailable',
+      'unavailable',
+      'supported',
+      'supported',
+    ]);
   });
 
   it('keeps local lifecycle capability parity between web and native', () => {

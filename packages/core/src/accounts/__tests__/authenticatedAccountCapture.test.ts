@@ -67,6 +67,23 @@ describe('captureAuthenticatedDeviceAccount', () => {
     );
   });
 
+  it('captures a mapped account whose account ID differs from the auth subject', async () => {
+    const capturedSessionKeys = new Set<string>();
+    const capturingSessionKeys = new Set<string>();
+
+    await captureAuthenticatedDeviceAccount({
+      capturedSessionKeys,
+      capturingSessionKeys,
+      identity: { ...identity, id: 'public-account-1' },
+      session: session(),
+    });
+
+    expect(captureCurrentAccount).toHaveBeenCalledWith(
+      expect.objectContaining({ access_token: 'access-token' }),
+      expect.objectContaining({ id: 'public-account-1' }),
+    );
+  });
+
   it('leaves a failed capture eligible for a later session refresh retry', async () => {
     const capturedSessionKeys = new Set<string>();
     const capturingSessionKeys = new Set<string>();

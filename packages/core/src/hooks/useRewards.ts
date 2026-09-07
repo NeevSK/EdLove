@@ -1,9 +1,13 @@
 import { identityAPI } from '@repo/core/api/identity';
 import { rewardsAPI } from '@repo/core/api/rewards';
 import type { UserRewards } from '@repo/core/api/rewards.orpc.contract';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+const REWARDS_CACHE_PREFIX = 'gurudevi-rewards-cache';
 
 /**
  * Hook for managing user rewards, points, and milestones.
@@ -14,20 +18,32 @@ export function useRewards(
 ) {
   const queryClient = useQueryClient();
   const [userId, setUserId] = useState<string | null>(null);
+  const user = useAuthStore((state) => state.user);
+  const isAnonymous = !user || user.is_anonymous;
   const viewDate = useTemporalStore((state) => state.viewDate);
   const viewScale = useTemporalStore((state) => state.viewScale);
   const phase = useTemporalStore((state) => state.phase);
 
   useEffect(() => {
+    let active = true;
     const getUserId = async () => {
-      const identity = await identityAPI.identifyActiveCitizen();
-      const internalId = options.userId || identity?.id;
-      if (internalId) setUserId(internalId);
+      try {
+        if (isAnonymous && !options.userId) {
+          if (active) setUserId(null);
+          return;
+        }
+        const identity = await identityAPI.identifyActiveCitizen();
+        const internalId = options.userId || identity?.id;
+        if (active && internalId) setUserId(internalId);
+      } catch (e) {
+        console.warn('[useRewards] Failed to resolve identity:', e);
+      }
     };
-    getUserId().catch((e) => {
-      console.error('Rewards: Failed to resolve identity', e);
-    });
-  }, [options.userId]);
+    void getUserId();
+    return () => {
+      active = false;
+    };
+  }, [isAnonymous, options.userId]);
 
   // Fetch rewards data
   const {
@@ -37,31 +53,61 @@ export function useRewards(
   } = useQuery({
     queryKey: ['rewards', userId, phase, viewDate, viewScale],
     queryFn: async () => {
-      if (!userId) return null;
-      const data =
-        phase === 'past'
-          ? await rewardsAPI.getRewardsAsOf(userId, viewDate)
-          : await rewardsAPI.getRewards(userId);
+      if (!userId || isAnonymous) return null;
+      const cacheKey = `${REWARDS_CACHE_PREFIX}-${userId}-${phase}-${viewDate}`;
+      try {
+        const data =
+          phase === 'past'
+            ? await rewardsAPI.getRewardsAsOf(userId, viewDate)
+            : await rewardsAPI.getRewards(userId);
 
-      if (!data && !options.userId && phase === 'present') {
-        return await rewardsAPI.initializeRewards(userId);
+        if (!data && !options.userId && phase === 'present') {
+          const initData = await rewardsAPI.initializeRewards(userId);
+          if (initData) {
+            void SafeZustandStorage.setItem(cacheKey, JSON.stringify(initData));
+          }
+          return initData;
+        }
+
+        if (data) {
+          void SafeZustandStorage.setItem(cacheKey, JSON.stringify(data));
+        }
+        return data;
+      } catch (e) {
+        console.warn('[useRewards] Offline or unreachable, loading from cache:', e);
+        try {
+          const cached = await SafeZustandStorage.getItem(cacheKey);
+          if (cached) return JSON.parse(cached);
+        } catch {
+          // Ignore
+        }
+        return null;
       }
-      return data;
     },
-    enabled: !!userId,
+    enabled: !!userId && !isAnonymous,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
   const { data: history = [] } = useQuery({
     queryKey: ['rewards_history', userId, viewDate, viewScale, options.historyLimit],
     queryFn: async () => {
-      if (!userId) return [];
-      if (phase === 'past') {
-        return rewardsAPI.getRewardsRangeHistory(userId, viewDate, viewScale);
+      if (!userId || isAnonymous) return [];
+      try {
+        if (phase === 'past') {
+          return await rewardsAPI.getRewardsRangeHistory(userId, viewDate, viewScale);
+        }
+        return await rewardsAPI.getRewardsHistory(userId, options.historyLimit ?? 50);
+      } catch (e) {
+        console.warn('[useRewards] Failed to fetch rewards history:', e);
+        return [];
       }
-      return rewardsAPI.getRewardsHistory(userId, options.historyLimit ?? 50);
     },
-    enabled: !!userId && !!options.includeHistory,
+    enabled: !!userId && !isAnonymous && !!options.includeHistory,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
+
 
   // Mutation to add points
   const addPointsMutation = useMutation({

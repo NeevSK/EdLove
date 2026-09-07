@@ -88,10 +88,16 @@ export const studentsAPI = {
     };
   },
 
-  async update(id: string, updates: { roll_number?: string; notes?: string }): Promise<any> {
+  async update(
+    id: string,
+    updates: { full_name?: string; roll_number?: string; notes?: string },
+  ): Promise<any> {
     const res = await (client.api as any).educational['classroom-students'][':id'].$patch({
       param: { id },
-      json: { rollNumber: updates.roll_number ? Number(updates.roll_number) : undefined },
+      json: {
+        fullName: updates.full_name?.trim() || undefined,
+        rollNumber: updates.roll_number ? Number(updates.roll_number) : undefined,
+      },
     });
     if (!res.ok) throw new APIError('Failed to update classroom student', res.status.toString());
     const data = await res.json();

@@ -869,7 +869,7 @@
   "settings": {
     "appearance": {
       "title": "පෙනුම",
-      "description": "ගුරුදේවී පෙනෙන ආකාරය පුද්ගලීකරණය කරන්න"
+      "description": "ගුරුදෙවි පෙනෙන ආකාරය පුද්ගලීකරණය කරන්න"
     },
     "theme": {
       "title": "තේමාව",
@@ -926,7 +926,7 @@
     },
     "device": {
       "title": "උපාංග තොරතුරු",
-      "description": "ගුරුදේවී ඔබේ උපාංගයට අනුවර්තනය වන ආකාරය",
+      "description": "ගුරුදෙවි ඔබේ උපාංගයට අනුවර්තනය වන ආකාරය",
       "tier": "උපාංග මට්ටම",
       "memory": "ඇති මතකය",
       "network": "ජාල ගුණාත්මකභාවය",
@@ -934,7 +934,7 @@
     },
     "tip": {
       "title": "ඉඟිය",
-      "message": "මෙම සැකසුම් ගුරුදේවී ඔබ සඳහා වඩාත් හොඳින් ක්‍රියා කිරීමට උපකාර කරයි. බොහෝ පරිශීලකයින් සඳහා ස්වයංක්‍රීය ප්‍රකාරය නිර්දේශ කෙරේ."
+      "message": "මෙම සැකසුම් ගුරුදෙවි ඔබ සඳහා වඩාත් හොඳින් ක්‍රියා කිරීමට උපකාර කරයි. බොහෝ පරිශීලකයින් සඳහා ස්වයංක්‍රීය ප්‍රකාරය නිර්දේශ කෙරේ."
     },
     "living_theme": {
       "title": "Living Theme",
@@ -949,7 +949,7 @@
     },
     "support": {
       "title": "Support & Debug",
-      "description": "Help us improve Gurudevi"
+      "description": "ගුරුදෙවි වැඩිදියුණු කිරීමට අපට සහාය වන්න"
     },
     "debug": {
       "sentry_test": "Sentry Test Event",
@@ -960,7 +960,7 @@
     "notifications_enabled": "Push notifications enabled",
     "sanctuary_config": "Sanctuary Configuration",
     "title": "Settings",
-    "description": "Customize your experience within the Gurudevi Ecosystem",
+    "description": "ගුරුදෙවි පරිසර පද්ධතිය තුළ ඔබේ අත්දැකීම සකසා ගන්න",
     "account": {
       "title": "Account Stewardship"
     }
@@ -999,7 +999,7 @@
     }
   },
   "accessibility": {
-    "appLogo": "Gurudevi යෙදුම් ලාංඡනය",
+    "appLogo": "ගුරුදෙවි යෙදුම් ලාංඡනය",
     "switchLanguage": "{{lang}} භාෂාවට මාරු වන්න",
     "currentLanguage": "වත්මන් භාෂාව: {{lang}}",
     "voiceInput": "හඬ සටහනක් පටිගත කරන්න",
@@ -1031,7 +1031,7 @@
     }
   },
   "welcome": {
-    "title": "ගුරුදේවී",
+    "title": "ගුරුදෙවි",
     "subtitle": "ආදරයෙන් ඉපිදුණු, ආදරෙන් ගොඩනගන ලද.",
     "intro": "ගුරුවරුන් සඳහා ඩිජිටල් අභයාරාමය.",
     "acceptTerms": "මම එකඟ වෙමි ",
@@ -1043,7 +1043,7 @@
     "login": "ගිණුමක් ඇත. ලොග් ඉන් වන්න",
     "footer": "ආදරයෙන් ඉපිදුණු, ආදරෙන් ගොඩනගන ලද.",
     "privacyPactStatement": "ඇතුළු වීමෙන් ඔබ අපේ රහස්‍යතා ගිවිසුමට එකඟ වෙනවා.",
-    "message": "ගුරුදේවී වෙත සාදරයෙන් පිළිගනිමු",
+    "message": "ගුරුදෙවි වෙත සාදරයෙන් පිළිගනිමු",
     "description": "ඔබේ AI-ශක්තිමත් අධ්‍යාපන සහකාරයා.",
     "start": "ආරම්භ කරන්න"
   },

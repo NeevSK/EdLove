@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 const deletionCommand = { kind: 'request-deletion', accountId: 'current-account' } as const;
+const cancelCommand = { kind: 'cancel-deletion-request', accountId: 'current-account' } as const;
 
 export function getAccountDeletionUnavailableReason(): string | null {
   const platform = Platform.OS === 'web' ? 'web' : 'native';
@@ -44,7 +45,7 @@ export function useAccountDeletion() {
   }, []);
 
   const execute = useCallback(async (command: AccountLifecycleCommand) => {
-    if (command.kind !== 'request-deletion') {
+    if (command.kind !== 'request-deletion' && command.kind !== 'cancel-deletion-request') {
       throw new Error(`Account deletion cannot execute lifecycle command "${command.kind}".`);
     }
     const platform = Platform.OS === 'web' ? 'web' : 'native';
@@ -53,11 +54,14 @@ export function useAccountDeletion() {
     if (capability.availability !== 'supported') {
       throw new Error(capability.reason);
     }
-    const accountDeletionRequest = await authAPI.requestAccountDeletion();
+    const accountDeletionRequest =
+      command.kind === 'request-deletion'
+        ? await authAPI.requestAccountDeletion()
+        : await authAPI.cancelAccountDeletionRequest();
     latestRequest.current = accountDeletionRequest;
     setRequest(accountDeletionRequest);
     return completeAccountLifecycleCommand(capability, command, [
-      { kind: 'request-deletion', accountId: command.accountId },
+      { kind: command.kind, accountId: command.accountId },
     ]);
   }, []);
   const lifecycle = useAccountLifecycle(execute);
@@ -76,8 +80,23 @@ export function useAccountDeletion() {
     return latestRequest.current;
   }, [lifecycle]);
 
+  const cancelDeletion = useCallback(async (): Promise<AccountDeletionRequest> => {
+    const result = await lifecycle.run(cancelCommand);
+    if (!result) {
+      throw new Error('Another account lifecycle action is already in progress.');
+    }
+    if (result.phase === 'failed') {
+      throw new Error(result.error);
+    }
+    if (result.phase !== 'completed' || !latestRequest.current) {
+      throw new Error('Cancel account deletion request did not reach a valid terminal state.');
+    }
+    return latestRequest.current;
+  }, [lifecycle]);
+
   return {
     deleteAccount,
+    cancelDeletion,
     unavailableReason,
     request,
     isDeleting: lifecycle.isPending,

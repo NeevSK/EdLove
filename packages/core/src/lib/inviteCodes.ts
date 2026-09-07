@@ -185,3 +185,20 @@ export function getCapacityFromCode(code: string): 'teacher' | 'student' | null 
   if (code.endsWith('-STUDY')) return 'student';
   return null;
 }
+
+/**
+ * Resolves a stored invite code (e.g. from storage 'pending_invite' or query param).
+ * Validates with database and returns structured invite data.
+ */
+export async function resolveStoredInvite(rawCode?: string | null): Promise<{
+  valid: boolean;
+  data?: InviteCodeData;
+  error?: string;
+}> {
+  if (!rawCode) return { valid: false };
+  const cleaned = rawCode.trim().toUpperCase();
+  if (!validateInviteCodeFormat(cleaned)) {
+    return { valid: false, error: 'Invalid invite code format' };
+  }
+  return validateInviteCode(cleaned);
+}

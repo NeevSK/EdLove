@@ -3,6 +3,7 @@ import { assertHighway } from '@repo/core/api/highways';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
+import type { Session } from '@supabase/supabase-js';
 
 /**
  * Simplified bond structure returned by the identity API
@@ -31,7 +32,12 @@ export interface ActiveCitizen {
   schoolId?: string;
 }
 
-let inFlightIdentityRequest: Promise<ActiveCitizen | null> | null = null;
+const inFlightIdentityRequests = new Map<string, Promise<ActiveCitizen | null>>();
+
+export function getIdentityRequestKey(session: Session | null): string | null {
+  if (!session?.user) return null;
+  return `${session.user.id}:${session.access_token}`;
+}
 
 export const identityAPI = {
   /**
@@ -40,21 +46,24 @@ export const identityAPI = {
   async identifyActiveCitizen(): Promise<ActiveCitizen | null> {
     assertHighway('identity_bootstrap', 'direct-api');
     const { data: sessionData } = await supabaseClient.auth.getSession();
-    if (sessionData.session?.user?.is_anonymous) {
-      setGuestScope(sessionData.session.user.id);
-      const local = await getLocalGuestIdentity(sessionData.session.user.id);
+    const session = sessionData.session;
+    if (session?.user?.is_anonymous) {
+      setGuestScope(session.user.id);
+      const local = await getLocalGuestIdentity(session.user.id);
       return local;
     }
     setGuestScope(null);
-    if (!inFlightIdentityRequest) {
-      inFlightIdentityRequest = (async () => {
-        return await orpcClient.identity.identifyActiveCitizen({});
-      })().finally(() => {
-        inFlightIdentityRequest = null;
-      });
-    }
+    const requestKey = getIdentityRequestKey(session);
+    if (!requestKey) return null;
 
-    return await inFlightIdentityRequest;
+    const inFlight = inFlightIdentityRequests.get(requestKey);
+    if (inFlight) return inFlight;
+
+    const request = orpcClient.identity.identifyActiveCitizen({}).finally(() => {
+      inFlightIdentityRequests.delete(requestKey);
+    });
+    inFlightIdentityRequests.set(requestKey, request);
+    return request;
   },
 
   /**

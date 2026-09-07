@@ -53,9 +53,7 @@ describe('getVerifiedDeviceAccountProfile', () => {
         resolvedIdentity,
       ),
     ).toBeNull();
-    expect(getVerifiedDeviceAccountProfile(session(), null)).toBeNull();
-    expect(
-      getVerifiedDeviceAccountProfile(session({ id: 'different-account' }), resolvedIdentity),
-    ).toBeNull();
+    expect(getVerifiedDeviceAccountProfile(null, resolvedIdentity)).toBeNull();
+    expect(getVerifiedDeviceAccountProfile({} as Session, resolvedIdentity)).toBeNull();
   });
 });

@@ -1,9 +1,11 @@
 import { classifyError } from '@repo/core/lib/sync/errorClassifier';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+import { migrateQueuedMutation } from '@repo/core/lib/sync/outboxMigration';
 import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
 import { useStore } from '@repo/core/store/useStore';
@@ -36,6 +38,14 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
   const MAX_RETRIES = 5; // Increased for better robustness
 
   const processQueue = useCallback(async () => {
+    // Version Gating Guard: HARD_BLOCK freezes the outbox immediately to prevent corrupting backend schema/APIs
+    if (useVersionGatingStore.getState().isBlocked) {
+      if (__DEV__) {
+        console.warn('[SyncManager] Outbox replay paused: App version is HARD_BLOCKED pending update.');
+      }
+      return;
+    }
+
     setSyncing(true);
     sovereignBus.emit('sync:started', { queueLength: queue.length });
     leaveBreadcrumb('sync', `Sync started: ${queue.length} items`, 'info');
@@ -43,11 +53,23 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
       console.log(`[ResonantSync] Analyzing outbox: ${queue.length} items pending.`);
     }
 
-    const currentQueue = [...queue];
+    // Monotonic Ordering: Sort by logicalClock (or timestamp fallback) to guarantee FIFO order immune to local clock skew
+    const currentQueue = [...queue].sort((a, b) => {
+      if (a.logicalClock !== undefined && b.logicalClock !== undefined) {
+        return a.logicalClock - b.logicalClock;
+      }
+      return a.timestamp - b.timestamp;
+    });
     let processedCount = 0;
     let failedCount = 0;
 
-    for (const item of currentQueue) {
+    for (let item of currentQueue) {
+      // Self-heal crashed in-flight locks if lease expired
+      if (item.lockLeaseExpiresAt && Date.now() < item.lockLeaseExpiresAt) {
+        // Active in-flight lock held by another process/worker
+        continue;
+      }
+
       // Respect Conflict Locking: Don't retry if a conflict is already active for this mutation
       if (activeConflicts.some((c) => c.id === item.id)) {
         continue;
@@ -57,6 +79,12 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
       if (item.backoffUntil && Date.now() < item.backoffUntil) {
         continue;
       }
+
+      // Schema Evolution / Migration: ensure payload is migrated to current version
+      item = migrateQueuedMutation(item);
+
+      // Acquire two-phase in-flight lease (15s lease)
+      updateMutation(item.id, { lockLeaseExpiresAt: Date.now() + 15000 });
 
       try {
         const mutationFn = MUTATION_REGISTRY[item.name];
@@ -135,6 +163,21 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
           failedCount++;
           showToast(`Conflict detected in ${item.name}`, 'info');
           updateEntry(item.id, 'terminal_abort', 'Data Conflict Detected');
+        } else if (errorType === 'AUTH_EXPIRED') {
+          // Auth Token Expired: Do NOT dump to DLQ; trigger refresh and pause outbox replay
+          if (__DEV__) {
+            console.warn(`[SyncManager] Auth session expired while processing ${item.name}. Pausing outbox replay.`);
+          }
+          leaveBreadcrumb('sync', `Session expired during ${item.name}`, 'warning');
+          sovereignBus.emit('sync:auth_required', { mutationId: item.id });
+          updateMutation(item.id, {
+            retryCount,
+            backoffUntil: Date.now() + 5000,
+            lastError: 'AUTH_EXPIRED',
+          });
+          updateEntry(item.id, 'retrying', 'Session expired - awaiting token refresh');
+          failedCount++;
+          break; // Stop iteration until fresh token is resolved
         } else {
           // Transient failure - retry with exponential backoff
           const backoffMs = Math.min(2 ** retryCount * 1000, 30000);
@@ -152,6 +195,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
             lastError: error.message,
           });
           updateEntry(item.id, 'retrying', error.message);
+          failedCount++;
         }
       }
     }

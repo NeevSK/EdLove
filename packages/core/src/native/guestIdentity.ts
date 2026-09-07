@@ -60,3 +60,30 @@ export async function updateLocalGuestIdentity(
 export async function clearLocalGuestIdentity(userId: string): Promise<void> {
   await SafeZustandStorage.removeItem(key(userId));
 }
+
+/**
+ * migrateGuestDataToAuthenticatedUser
+ *
+ * Automatically migrates offline guest data, custom preferences, and local bonds
+ * to a newly authenticated citizen account upon sign-in.
+ */
+export async function migrateGuestDataToAuthenticatedUser(
+  authenticatedUserId: string,
+  guestUserId = 'guest',
+): Promise<LocalGuestIdentity> {
+  const guestData = await getLocalGuestIdentity(guestUserId);
+  const targetData = await getLocalGuestIdentity(authenticatedUserId);
+
+  const merged = await updateLocalGuestIdentity(authenticatedUserId, {
+    display_name: targetData.display_name || guestData.display_name,
+    onboarding_completed: targetData.onboarding_completed || guestData.onboarding_completed,
+    availableBonds: [
+      ...targetData.availableBonds,
+      ...guestData.availableBonds.map((b) => ({ ...b, user_id: authenticatedUserId })),
+    ],
+  });
+
+  await clearLocalGuestIdentity(guestUserId);
+  return merged;
+}
+

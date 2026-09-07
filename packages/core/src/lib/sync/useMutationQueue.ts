@@ -1,5 +1,6 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
 import type { MutationQueueState, QueuedMutation } from '@repo/core/lib/sync/types';
 import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
@@ -28,12 +29,17 @@ export const useMutationQueue = create<MutationQueueState>()(
           return;
         }
 
+        const queue = get().queue;
+        const highestLogicalClock = queue.reduce((max, item) => Math.max(max, item.logicalClock ?? 0), 0);
+
         const newMutation: QueuedMutation = {
           ...mutation,
           id: uuidv7(),
           idempotencyKey,
           timestamp: Date.now(),
           retryCount: 0,
+          schemaVersion: CURRENT_OUTBOX_SCHEMA_VERSION,
+          logicalClock: highestLogicalClock + 1,
         };
 
         set((state) => ({

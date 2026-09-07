@@ -37,12 +37,14 @@ const link = new RPCLink<ClientContext>({
   plugins: [
     new ClientRetryPlugin({
       default: {
-        retry: 3,
+        retry: typeof __DEV__ !== 'undefined' && __DEV__ ? 0 : 2,
         retryDelay: (options) =>
-          options.lastEventRetry ?? Math.min(1000 * 2 ** options.attemptIndex, 30000),
+          options.lastEventRetry ?? Math.min(250 * 2 ** options.attemptIndex, 5000),
         shouldRetry: (options) => {
           if (!options.error) return false;
           const status = (options.error as any)?.status;
+          // Do not retry synthetic offline 503s or non-server errors
+          if (status === 503) return false;
           return status >= 500 || status === 429 || status === 408;
         },
       },

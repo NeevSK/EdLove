@@ -24,6 +24,17 @@ export interface SovereignEventMap {
   'sync:failed': { error: string; mutationId: string };
   'sync:item_succeeded': { mutationId: string; name: string; scope: string };
   'sync:item_moved_to_dlq': { mutationId: string; name: string; reason: string };
+  'sync:auth_required': { mutationId?: string; reason?: string };
+
+  // Fleet & Version Gating Lifecycle
+  'app:version_gated': {
+    status: 'HARD_BLOCK' | 'SOFT_NUDGE' | 'UP_TO_DATE';
+    currentVersion: string;
+    minSupportedVersion: string;
+    latestVersion: string;
+    updateUrl?: string;
+    releaseNotes?: string;
+  };
 
   // Conflict lifecycle
   'conflict:detected': { mutationId: string; scope: string; name: string };

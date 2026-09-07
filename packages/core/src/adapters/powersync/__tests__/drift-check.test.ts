@@ -27,15 +27,19 @@ describe('Storage Contract: AppSchema ↔ Postgres Alignment', () => {
     'students',
     'moodLogs',
     'thoughtRecords',
+    'learningReflections',
     'schools',
     'cedarPolicies',
     'permissionSnapshots',
     'policyVersion',
     'formTemplates',
     'formResponses',
+    'tuitionInstitutes',
+    'tuitionBatches',
+    'guardianBonds',
   ] as const;
 
-  it('LOCAL_ONLY_TABLES contains exactly 13 tables', () => {
+  it('LOCAL_ONLY_TABLES contains exactly 17 tables', () => {
     expect(LOCAL_ONLY_TABLES.size).toBe(LOCAL_ONLY_TABLES_LIST.length);
   });
 
@@ -51,9 +55,9 @@ describe('Storage Contract: AppSchema ↔ Postgres Alignment', () => {
     }
   });
 
-  it('AppSchema exports exactly 17 tables (4 synced + 13 local-only)', () => {
+  it('AppSchema exports exactly 21 tables (4 synced + 17 local-only)', () => {
     const schemaKeys = Object.keys(AppSchema);
-    expect(schemaKeys).toHaveLength(17);
+    expect(schemaKeys).toHaveLength(21);
 
     for (const table of SYNCED_TABLES) {
       const camelCased = camelCase(table);

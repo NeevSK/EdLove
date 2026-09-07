@@ -75,5 +75,18 @@ describe('resolveAuthProfile', () => {
       kind: 'unavailable',
       profileError: 'Unable to restore your account profile.',
     });
+
+    await expect(
+      resolveAuthProfile(session(), {
+        getAccountLifecycleStatus: async () => {
+          throw new Error('RPC function missing');
+        },
+        getSchoolType: vi.fn(),
+        identifyActiveCitizen: async () => null,
+      }),
+    ).resolves.toEqual({
+      kind: 'unavailable',
+      profileError: 'RPC function missing',
+    });
   });
 });

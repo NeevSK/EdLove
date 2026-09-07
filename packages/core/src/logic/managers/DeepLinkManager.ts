@@ -38,19 +38,27 @@ export class DeepLinkManager {
    */
   async handleURL(url: string): Promise<DeepLinkResult> {
     try {
-      // Use standard URL parsing (robust against complex formats)
-      // Note: React Native provides this via react-native-url-polyfill
-      const parsedUrl = new URL(url.replace('#', '?')); // Normalize hash-based OAuth redirects
-      const params = Object.fromEntries(parsedUrl.searchParams.entries());
+      // Note: React Native provides URL via react-native-url-polyfill.
+      const parsedUrl = new URL(url);
+      const params = {
+        ...Object.fromEntries(parsedUrl.searchParams.entries()),
+        ...Object.fromEntries(new URLSearchParams(parsedUrl.hash.slice(1)).entries()),
+      };
 
       // 1. Auth Callback Check
-      if (url.includes('auth/callback') || params.access_token) {
+      if (
+        (parsedUrl.hostname === 'auth' && parsedUrl.pathname === '/callback') ||
+        parsedUrl.pathname === '/auth/callback' ||
+        params.access_token ||
+        params.code
+      ) {
         return this.handleAuthCallback(params);
       }
 
       // 2. Classroom Invite Check
-      if (url.includes('invite/classroom/')) {
-        const inviteCode = url.split('invite/classroom/')[1]?.split(/[?#]/)[0];
+      const inviteMatch = parsedUrl.pathname.match(/^\/(?:invite\/)?classroom\/([^/]+)$/);
+      if (inviteMatch) {
+        const inviteCode = inviteMatch[1];
         return {
           type: DeepLinkType.CLASSROOM_INVITE,
           params: inviteCode ? { inviteCode, ...params } : params,

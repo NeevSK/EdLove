@@ -13,32 +13,35 @@ export type RouteTarget = {
   policy: BootstrapRoutePolicy;
 };
 
-export function getAuthRouteDecision(params: {
+export type AuthRouteInput = {
   pathname: string;
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
   identityAvailability?: IdentityAvailability;
+  hasProfileForSession?: boolean;
+  hasProfileName?: boolean;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasSession?: boolean;
-}): RouteDecision {
+};
+
+export function getAuthRouteDecision(params: AuthRouteInput): RouteDecision {
   return getAuthRouteTarget(params).decision;
 }
 
-export function getAuthRouteTarget(params: {
-  pathname: string;
-  bootstrapReady: boolean;
-  sessionMode: IdentityMode | null;
-  identityAvailability?: IdentityAvailability;
-  onboardingCompleted: boolean;
-  hasActiveCapacity?: boolean;
-  hasSession?: boolean;
-}): RouteTarget {
+export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
   const { pathname } = params;
   const state = getBootstrapSessionState(params);
   const isPublicPath =
-    pathname === '/welcome' || pathname === '/auth' || pathname.startsWith('/public-form');
-  const isAppEntryPath = pathname === '/' || pathname === '/welcome' || pathname === '/auth';
+    pathname === '/welcome' ||
+    pathname === '/auth' ||
+    pathname === '/auth/callback' ||
+    pathname.startsWith('/public-form');
+  const isAppEntryPath =
+    pathname === '/' ||
+    pathname === '/welcome' ||
+    pathname === '/auth' ||
+    pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';
   const isAccountRecoveryPath = pathname === '/account-recovery';
 
@@ -116,5 +119,10 @@ export function getAuthRouteTarget(params: {
 }
 
 export function isPublicBootstrapRoute(pathname: string): boolean {
-  return pathname === '/welcome' || pathname === '/auth' || pathname.startsWith('/public-form');
+  return (
+    pathname === '/welcome' ||
+    pathname === '/auth' ||
+    pathname === '/auth/callback' ||
+    pathname.startsWith('/public-form')
+  );
 }

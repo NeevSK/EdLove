@@ -37,4 +37,12 @@ export { useTaskActions } from '@repo/core/hooks/useTaskActions';
 export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { useTenantContext } from '@repo/core/hooks/useTenantContext';
+export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export { useTracking } from '@repo/core/hooks/useTracking';
+
+export {
+  type LocalFirstQueryResult,
+  type UseLocalFirstQueryOptions,
+  useLocalFirstQuery,
+} from '@repo/core/hooks/useLocalFirstQuery';
+

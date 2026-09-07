@@ -5,7 +5,9 @@ import type { Session } from '@supabase/supabase-js';
 
 /**
  * A device account becomes durable only when the authenticated Supabase
- * session and resolved Gurudevi identity name the same principal.
+ * session and resolved Gurudevi identity were produced by the same scoped
+ * auth-resolution operation. Their IDs are intentionally not compared: a
+ * mapped account ID can differ from its Supabase auth subject.
  */
 export function getVerifiedDeviceAccountProfile(
   session: Session | null,
@@ -14,8 +16,7 @@ export function getVerifiedDeviceAccountProfile(
   if (
     !session?.user ||
     getSessionIdentityMode(session) !== 'authenticated' ||
-    !identity ||
-    identity.id !== session.user.id
+    !identity
   ) {
     return null;
   }

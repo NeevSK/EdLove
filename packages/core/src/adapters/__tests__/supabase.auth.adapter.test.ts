@@ -4,6 +4,7 @@ const mockAuth = vi.hoisted(() => ({
   getSession: vi.fn(),
   getUser: vi.fn(),
   signInWithPassword: vi.fn(),
+  signInWithOtp: vi.fn(),
   signInWithOAuth: vi.fn(),
   linkIdentity: vi.fn(),
   setSession: vi.fn(),
@@ -159,5 +160,17 @@ describe('SupabaseAuthAdapter', () => {
       options: { data: { role: 'guest' } },
     });
     expect(resultWithOptions.user?.id).toBe('anon-1');
+  });
+
+  it('uses the web auth callback for magic links', async () => {
+    vi.stubGlobal('window', { location: { origin: 'https://platform.gurudevi.edlove.org' } });
+    mockAuth.signInWithOtp.mockResolvedValue({ data: { user: null, session: null }, error: null });
+
+    await adapter.signInWithMagicLink('member@example.com');
+
+    expect(mockAuth.signInWithOtp).toHaveBeenCalledWith({
+      email: 'member@example.com',
+      options: { emailRedirectTo: 'https://platform.gurudevi.edlove.org/auth/callback' },
+    });
   });
 });

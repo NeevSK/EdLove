@@ -96,7 +96,7 @@ export class SupabaseAuthAdapter implements IAuthPort {
 
   private magicLinkRedirectUri(): string {
     if (typeof window !== 'undefined' && window.location?.origin) {
-      return window.location.origin;
+      return `${window.location.origin}/auth/callback`;
     }
     return 'gurudevi://auth/callback';
   }

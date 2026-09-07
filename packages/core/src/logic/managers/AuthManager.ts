@@ -408,6 +408,18 @@ export class AuthManager {
     return response;
   }
 
+  async cancelAccountDeletionRequest(): Promise<AccountDeletionRequest> {
+    const response = getAccountDeletionRequestResponse(
+      await this.authPort.executeRpc('cancel_account_deletion_request'),
+    );
+
+    if (!isAccountDeletionRequest(response)) {
+      throw new APIError('Cancel account deletion request returned an invalid response.');
+    }
+
+    return response;
+  }
+
   async getAccountLifecycleStatus(): Promise<AccountLifecycleStatus> {
     const response = getAccountLifecycleStatusResponse(
       await this.authPort.executeRpc('get_account_lifecycle_status'),

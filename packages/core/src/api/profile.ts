@@ -8,16 +8,22 @@ const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const profileAPI = {
   async getUserProfile(id: string) {
-    const res = await (client.api as any).profile.users[':id'].$get({
-      param: { id },
-    });
+    try {
+      const res = await (client.api as any).profile.users[':id'].$get({
+        param: { id },
+      });
 
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      throw new APIError('Failed to fetch user profile', res.status.toString());
+      if (!res.ok) {
+        if (res.status === 404) return null;
+        console.warn(`[profileAPI] Failed to fetch user profile for ${id} (${res.status})`);
+        return null;
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.warn(`[profileAPI] Offline or unreachable when fetching user profile for ${id}:`, error);
+      return null;
     }
-
-    return await res.json();
   },
 
   async updateProfile(id: string, updates: Record<string, any>) {
@@ -26,16 +32,22 @@ export const profileAPI = {
       throw SovereignError.unauthorized('update', 'User');
     }
 
-    const res = await (client.api as any).profile.users[':id'].$patch({
-      param: { id },
-      json: updates,
-    });
+    try {
+      const res = await (client.api as any).profile.users[':id'].$patch({
+        param: { id },
+        json: updates,
+      });
 
-    if (!res.ok) {
-      throw new APIError('Failed to update profile', res.status.toString());
+      if (!res.ok) {
+        throw new APIError('Failed to update profile', res.status.toString());
+      }
+
+      return await res.json();
+    } catch (error) {
+      if (error instanceof APIError || error instanceof SovereignError) throw error;
+      console.warn(`[profileAPI] Offline or unreachable when updating profile for ${id}:`, error);
+      throw error;
     }
-
-    return await res.json();
   },
 
   async getJourneySnapshot(
@@ -46,20 +58,26 @@ export const profileAPI = {
       view_scale?: any;
     },
   ) {
-    const res = await (client.api as any).profile.users[':id'].journey.$get({
-      param: { id },
-      query: {
-        at: params?.at,
-        view_date: params?.view_date,
-        view_scale: params?.view_scale,
-      },
-    });
+    try {
+      const res = await (client.api as any).profile.users[':id'].journey.$get({
+        param: { id },
+        query: {
+          at: params?.at,
+          view_date: params?.view_date,
+          view_scale: params?.view_scale,
+        },
+      });
 
-    if (!res.ok) {
-      throw new APIError('Failed to fetch journey snapshot', res.status.toString());
+      if (!res.ok) {
+        console.warn(`[profileAPI] Failed to fetch journey snapshot for ${id} (${res.status})`);
+        return null;
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.warn(`[profileAPI] Offline or unreachable when fetching journey snapshot for ${id}:`, error);
+      return null;
     }
-
-    return await res.json();
   },
 
   async getSchoolPulse(
@@ -69,20 +87,27 @@ export const profileAPI = {
       view_scale?: any;
     },
   ) {
-    const res = await (client.api as any).profile.schools[':id'].pulse.$get({
-      param: { id },
-      query: {
-        view_date: params.view_date,
-        view_scale: params.view_scale,
-      },
-    });
+    try {
+      const res = await (client.api as any).profile.schools[':id'].pulse.$get({
+        param: { id },
+        query: {
+          view_date: params.view_date,
+          view_scale: params.view_scale,
+        },
+      });
 
-    if (!res.ok) {
-      throw new APIError('Failed to fetch school pulse', res.status.toString());
+      if (!res.ok) {
+        console.warn(`[profileAPI] Failed to fetch school pulse for ${id} (${res.status})`);
+        return null;
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.warn(`[profileAPI] Offline or unreachable when fetching school pulse for ${id}:`, error);
+      return null;
     }
-
-    return await res.json();
   },
+
 
   // --- Sovereign Domain Manager Delegation ---
 

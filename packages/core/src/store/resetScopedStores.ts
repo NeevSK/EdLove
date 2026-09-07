@@ -4,8 +4,10 @@ import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { useUIStore } from '@repo/core/store/useUIStore';
+
 
 const authScopedDefaults = {
   userName: 'Gurudevi',
@@ -47,6 +49,7 @@ const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
 export const resetScopedStores = () => {
   useAuthStore.setState(authScopedDefaults);
   useTenantStore.setState(tenantScopedDefaults);
+  usePerspectiveStore.getState().resetToPersonalPerspective();
   useUIStore.setState(uiScopedDefaults);
   useGrowthStore.getState().resetGrowthState();
   useFeatureStore.setState((state) => ({
@@ -60,6 +63,7 @@ export const resetScopedStores = () => {
     isSyncing: false,
   });
 };
+
 
 export const rehydrateScopedStores = async () => {
   await Promise.all([

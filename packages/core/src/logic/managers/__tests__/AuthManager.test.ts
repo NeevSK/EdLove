@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockLogAuditEvent = vi.hoisted(() => vi.fn());
 
@@ -204,6 +204,25 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
       scheduled_for: '2026-10-01T00:00:00.000Z',
       reason: '',
     });
+  });
+
+  it('cancels an active pending deletion request through the server rpc', async () => {
+    authPort.executeRpc.mockResolvedValue([
+      {
+        status: 'cancelled',
+        request_id: 'request-1',
+        requested_at: '2026-09-01T00:00:00.000Z',
+        reason: 'cancelled_by_user',
+      },
+    ]);
+
+    await expect(manager.cancelAccountDeletionRequest()).resolves.toEqual({
+      status: 'cancelled',
+      request_id: 'request-1',
+      requested_at: '2026-09-01T00:00:00.000Z',
+      reason: 'cancelled_by_user',
+    });
+    expect(authPort.executeRpc).toHaveBeenCalledWith('cancel_account_deletion_request');
   });
 
   it('reads the server-owned account lifecycle status without mutating state', async () => {

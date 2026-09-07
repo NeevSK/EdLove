@@ -41,8 +41,36 @@ export async function authenticatedSovereignFetch(
     }
   }
 
-  return fetch(input, { ...requestInit, headers });
+  try {
+    return await fetch(input, { ...requestInit, headers });
+  } catch (error) {
+    const isNetworkFailure =
+      error instanceof TypeError ||
+      (error instanceof DOMException && error.name === 'AbortError') ||
+      (error instanceof Error &&
+        (error.name === 'AbortError' ||
+          error.message.includes('abort') ||
+          error.message.includes('fetch') ||
+          error.message.includes('Network request failed') ||
+          error.message.includes('ECONNREFUSED') ||
+          error.message.includes('Failed to fetch')));
+
+    if (isNetworkFailure) {
+      console.warn(`[Sovereign Client] Network offline or endpoint unreachable: ${String(input)}`);
+      return new Response(JSON.stringify({ error: 'Network unavailable', offline: true }), {
+        status: 503,
+        statusText: 'Service Unavailable (Offline)',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Sovereign-Offline': 'true',
+        },
+      });
+    }
+
+    throw error;
+  }
 }
+
 
 export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(
   baseUrl: string,

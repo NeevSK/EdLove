@@ -19,7 +19,10 @@ export const useTenantStore = create<TenantSlice>()(
         schoolName: state.schoolName,
         schoolType: state.schoolType,
         realClassCount: state.realClassCount,
+        activePerspective: state.activePerspective,
+        availablePerspectives: state.availablePerspectives,
       }),
     },
   ),
 );
+

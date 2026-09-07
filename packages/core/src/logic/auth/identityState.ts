@@ -6,6 +6,33 @@ export type IdentityMode = 'unauthenticated' | 'anonymous' | 'authenticated' | '
  */
 export type IdentityAvailability = 'unknown' | 'active' | 'inactive';
 
+/**
+ * An auth-state event observed after a bootstrap lookup begins is newer than
+ * that lookup's eventual result and must remain authoritative.
+ */
+export function isCurrentAuthBootstrapGeneration(
+  bootstrapGeneration: number,
+  currentGeneration: number,
+): boolean {
+  return bootstrapGeneration === currentGeneration;
+}
+
+/** A later profile resolution owns the identity store; earlier results are stale. */
+export function isCurrentIdentityResolutionGeneration(
+  resolutionGeneration: number,
+  currentGeneration: number,
+): boolean {
+  return resolutionGeneration === currentGeneration;
+}
+
+/** Auth-subject matching is separate from a public account/profile identifier. */
+export function isResolvedAuthSubjectCurrent(
+  resolvedAuthSubjectId: string | null,
+  sessionAuthSubjectId: string | undefined,
+): boolean {
+  return Boolean(resolvedAuthSubjectId && resolvedAuthSubjectId === sessionAuthSubjectId);
+}
+
 type SessionLike =
   | {
       user?: {

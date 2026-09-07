@@ -12,6 +12,7 @@ interface AuthContextType {
   isProfileResolving: boolean;
   profileError: string | null;
   identityAvailability: IdentityAvailability;
+  resolvedAuthSubjectId: string | null;
   accountLifecycleStatus: AccountLifecycleStatus | null;
   refreshProfile: () => Promise<void>;
 }

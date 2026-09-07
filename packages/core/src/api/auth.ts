@@ -96,6 +96,10 @@ export const authAPI = {
     return auth.requestAccountDeletion();
   },
 
+  async cancelAccountDeletionRequest() {
+    return auth.cancelAccountDeletionRequest();
+  },
+
   async getAccountDeletionRequestStatus() {
     return auth.getAccountDeletionRequestStatus();
   },

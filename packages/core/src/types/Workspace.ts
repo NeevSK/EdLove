@@ -6,7 +6,9 @@ export type WorkspaceSwitcherTargetId =
   | 'principal'
   | 'teacher'
   | 'student'
-  | 'guardian';
+  | 'guardian'
+  | 'personal'
+  | 'commercial';
 
 export type WorkspaceSwitcherDestination =
   | {
@@ -26,6 +28,9 @@ export interface WorkspaceSwitcherTarget {
   enabled: boolean;
   status: 'current' | 'available' | 'bridge' | 'coming_soon';
   reason?: string;
+  perspectiveId?: string;
+  category?: 'personal' | 'commercial' | 'institutional' | 'guardian';
+  badge?: string;
 }
 
 export type WorkspaceRendererPlatform = 'mobile' | 'tablet' | 'web';

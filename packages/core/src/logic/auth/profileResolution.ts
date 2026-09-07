@@ -38,9 +38,17 @@ export async function resolveAuthProfile(
     return { kind: 'unavailable', profileError: null };
   }
 
-  const accountLifecycleStatus = await getAccountLifecycleStatus();
-  if (accountLifecycleStatus.status === 'deactivated') {
-    return { kind: 'inactive', accountLifecycleStatus };
+  try {
+    const accountLifecycleStatus = await getAccountLifecycleStatus();
+    if (accountLifecycleStatus.status === 'deactivated') {
+      return { kind: 'inactive', accountLifecycleStatus };
+    }
+  } catch (error) {
+    return {
+      kind: 'unavailable',
+      profileError:
+        error instanceof Error ? error.message : 'Unable to restore your account profile.',
+    };
   }
 
   return { kind: 'unavailable', profileError: 'Unable to restore your account profile.' };
