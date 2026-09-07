@@ -77,17 +77,14 @@ export const useFAB = () => {
  */
 export const useRegisterFAB = (config: Partial<FABState>) => {
   const { registerFAB, unregisterFAB } = useFAB();
+  const configRef = React.useRef(config);
 
   React.useEffect(() => {
-    registerFAB(config);
+    configRef.current = config;
+  });
+
+  React.useEffect(() => {
+    registerFAB(configRef.current);
     return () => unregisterFAB();
-  }, [
-    registerFAB,
-    config.tabType,
-    config.visible,
-    config.onPress,
-    config.onBreathingReset,
-    config.hasActiveGaps,
-    config,
-  ]);
+  }, [registerFAB, unregisterFAB, config.tabType, config.visible]);
 };

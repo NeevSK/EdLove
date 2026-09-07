@@ -126,6 +126,12 @@ model User {
   energy_balance UserEnergyBalance?
   ad_reward_transactions AdRewardTransaction[]
 
+  // Commercial Tuition & Perspectives
+  created_tuition_institutes TuitionInstitute[] @relation("TuitionInstituteCreator")
+  tuition_batches TuitionBatch[] @relation("TutorBatches")
+  guardian_bonds_as_guardian GuardianBond[] @relation("GuardianBondsAsGuardian")
+  guardian_bonds_as_ward GuardianBond[] @relation("GuardianBondsAsWard")
+
   // Anonymous Supabase users are valid onboarding principals. They use the
   // same authenticated subject policy surface; no guest-only policy exists.
   // Only the user themselves or a platform admin can update profile details in the cloud
@@ -740,6 +746,8 @@ model School {
   // HR & Staff
   staff_leaves StaffLeave[]
   calendar_events CalendarEvent[]
+  school_invite_codes SchoolInviteCode[] @relation("SchoolInviteCodes")
+  web_evidence_caches WebEvidenceCache[] @relation("WebEvidenceCaches")
 
   // Permissions: Everyone authenticated can read basic info; users can manage their own creations
   @@allow('read', auth() != null)
@@ -1875,6 +1883,121 @@ model GuardianAssessmentReadAuditEvent {
 
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_assessment_read_audit_events")
+}
+
+// ============================================================================
+// COMMERCIAL TUITION & TRIPARTITE PERSPECTIVES DOMAIN
+// ============================================================================
+
+model TuitionInstitute {
+  id             String         @id @default(uuid())
+  name           String
+  address        String?
+  city           String?
+  is_independent Boolean        @default(false)
+  created_by     String?
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  batches        TuitionBatch[]
+
+  creator        User?          @relation("TuitionInstituteCreator", fields: [created_by], references: [id])
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth() != null && (created_by == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("tuition_institutes")
+}
+
+model TuitionBatch {
+  id            String            @id @default(uuid())
+  institute_id  String?
+  tutor_user_id String
+  subject_name  String
+  grade_level   String
+  medium        String            // sinhala, english, tamil
+  format        String            @default("physical") // physical, online, hybrid, paper_class
+  schedule      String
+  monthly_fee   Float?
+  custom_alias  String?
+  role          String            @default("lead_tutor") // founder, lead_tutor, assistant_tutor, paper_marker
+  is_active     Boolean           @default(true)
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
+
+  institute     TuitionInstitute? @relation(fields: [institute_id], references: [id], onDelete: Cascade)
+  tutor         User              @relation("TutorBatches", fields: [tutor_user_id], references: [id], onDelete: Cascade)
+
+  @@index([tutor_user_id])
+  @@index([institute_id])
+  @@index([tutor_user_id, is_active])
+  @@allow('all', auth() != null && (tutor_user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('read', auth() != null)
+  @@map("tuition_batches")
+}
+
+model GuardianBond {
+  id               String   @id @default(uuid())
+  guardian_user_id String
+  ward_student_id  String
+  relationship     String   @default("parent") // parent, mother, father, guardian, relative
+  status           String   @default("verified") // pending, verified, revoked
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  guardian         User     @relation("GuardianBondsAsGuardian", fields: [guardian_user_id], references: [id], onDelete: Cascade)
+  ward             User     @relation("GuardianBondsAsWard", fields: [ward_student_id], references: [id], onDelete: Cascade)
+
+  @@unique([guardian_user_id, ward_student_id])
+  @@index([guardian_user_id])
+  @@index([ward_student_id])
+  @@allow('all', auth() != null && (guardian_user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("guardian_bonds")
+}
+
+model SchoolInviteCode {
+  id         String    @id @default(uuid())
+  school_id  String
+  code       String    @unique
+  capacity   String    // teacher, student, principal, admin
+  roles      Json      @default("[]")
+  max_uses   Int?      @default(100)
+  used_count Int       @default(0)
+  is_active  Boolean   @default(true)
+  expires_at DateTime?
+  created_at DateTime  @default(now())
+
+  school     School    @relation("SchoolInviteCodes", fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([code])
+  @@allow('read', is_active == true)
+  @@allow('all', auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_invite_codes")
+}
+
+// ============================================================================
+// SOVEREIGN AI & PROXY CACHING DOMAIN
+// ============================================================================
+
+model WebEvidenceCache {
+  query_hash       String   @id
+  query_norm       String
+  freshness_window String   // day, week, any
+  response         Json
+  fetched_md       Json
+  school_id        String
+  privacy_mode     String   // saved, temporary, incognito
+  created_at       DateTime @default(now())
+  expires_at       DateTime
+  last_accessed_at DateTime @default(now())
+  access_count     Int      @default(1)
+
+  school           School   @relation("WebEvidenceCaches", fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([expires_at])
+  @@index([school_id])
+  @@index([freshness_window])
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("web_evidence_cache")
 }
 
 // ============================================================================

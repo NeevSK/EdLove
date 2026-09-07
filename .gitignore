@@ -79,6 +79,7 @@ audit-results.json
 report_final.json
 report-*.json
 eslint-report.json
+apps/gurudevi-mobile/temp
 
 # Database drift snapshots and reports
 **/reports/db-drift/

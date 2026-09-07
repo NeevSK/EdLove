@@ -17,9 +17,9 @@ CREATE INDEX IF NOT EXISTS classroom_students_classroom_status_roll_idx
 CREATE INDEX IF NOT EXISTS attendance_classroom_date_status_idx 
   ON public.attendance (classroom_id, date, status);
 
--- Compound index for school-wide student registry
-CREATE INDEX IF NOT EXISTS students_school_active_grade_idx 
-  ON public.students (school_id, is_active, grade_id);
+-- Compound index for school-wide student enrollment registry
+CREATE INDEX IF NOT EXISTS student_grade_class_enrollments_school_status_idx 
+  ON public.student_grade_class_enrollments (school_id, status);
 
 -- ============================================================
 -- 2. SCHOOL DAILY ATTENDANCE SUMMARY (O(1) Rollup Projection)
@@ -83,10 +83,17 @@ DECLARE
   v_late INT := 0;
   v_excused INT := 0;
 BEGIN
-  -- Count total active students in school
-  SELECT COUNT(s.id) INTO v_enrolled
-  FROM public.students s
-  WHERE s.school_id = target_school_id AND s.is_active = true;
+  -- Count total active enrolled students in school
+  SELECT COUNT(DISTINCT cs.student_id) INTO v_enrolled
+  FROM public.classroom_students cs
+  JOIN public.classrooms c ON cs.classroom_id = c.id
+  WHERE c.school_id = target_school_id AND cs.status = 'active';
+
+  IF v_enrolled = 0 THEN
+    SELECT COUNT(DISTINCT se.student_id) INTO v_enrolled
+    FROM public.student_grade_class_enrollments se
+    WHERE se.school_id = target_school_id AND se.status = 'enrolled';
+  END IF;
 
   -- Count attendance statuses for the date across classrooms belonging to this school
   SELECT
