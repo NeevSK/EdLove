@@ -133,6 +133,9 @@ export default function DailyRhythm() {
           <Pressable
             key={d.id}
             onPress={() => setActiveDay(d.id)}
+            accessibilityRole="tab"
+            accessibilityLabel={`Day ${d.label}`}
+            accessibilityState={{ selected: activeDay === d.id }}
             className={`flex-1 py-3 rounded-xl items-center justify-center transition-all ${
               activeDay === d.id ? 'bg-sanctuarySaffron' : 'hover:bg-white/5'
             }`}
@@ -312,6 +315,10 @@ export default function DailyRhythm() {
               <Pressable
                 onPress={() => handleDelete(p.id)}
                 disabled={deleting === p.id}
+                accessibilityRole="button"
+                accessibilityLabel={`Delete ${p.subject || p.activity || 'this rhythm entry'}`}
+                accessibilityHint="Removes this entry from your daily rhythm"
+                accessibilityState={{ disabled: deleting === p.id, busy: deleting === p.id }}
                 className={`w-10 h-10 items-center justify-center rounded-xl bg-white/3 hover:bg-emberRed/10 group/btn transition-all ${deleting === p.id ? 'opacity-40' : 'opacity-100'}`}
               >
                 <Icon

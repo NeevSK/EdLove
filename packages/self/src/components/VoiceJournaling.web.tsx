@@ -48,6 +48,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -185,6 +186,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
       onComplete?.();
       return;
     }
+    setSaveError(null);
     try {
       const response = await fetch(audioUrl);
       const blob = await response.blob();
@@ -196,7 +198,8 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
       });
       hapticSuccess();
     } catch {
-      // fail silently as transcripting is primary
+      setSaveError('Your recording could not be saved. It is still here—please try again.');
+      return;
     }
     discardRecording();
     onComplete?.();
@@ -253,6 +256,13 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
         <Pressable
           onPress={recordingState === 'recording' ? stopRecording : startRecording}
+          accessibilityRole="button"
+          accessibilityLabel={recordingState === 'recording' ? 'Stop recording' : 'Start recording'}
+          accessibilityHint={
+            recordingState === 'recording'
+              ? 'Stops the current voice reflection'
+              : 'Starts a new voice reflection'
+          }
           className={`w-24 h-24 rounded-full items-center justify-center transition-all duration-300 shadow-lg ${
             recordingState === 'recording'
               ? 'bg-emberRed scale-110 shadow-emberRed/30'
@@ -284,9 +294,17 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
       {/* Actions */}
       {(recordingState === 'recorded' || recordingState === 'playing') && (
         <AnimatedView entering={FadeInUp}>
+          {saveError ? (
+            <Text className="text-sm text-emberRed font-semibold mb-3" accessibilityRole="alert">
+              {saveError}
+            </Text>
+          ) : null}
           <HStack className="gap-6 mt-4">
             <Pressable
               onPress={discardRecording}
+              accessibilityRole="button"
+              accessibilityLabel="Discard recording"
+              accessibilityHint="Deletes this voice reflection"
               className="w-14 h-14 rounded-full border border-white/10 bg-white/5 items-center justify-center hover:bg-white/10 transition-colors"
             >
               <Icon as={Trash2} size={24} className="text-mistGray" />
@@ -294,6 +312,11 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
             <Pressable
               onPress={recordingState === 'playing' ? undefined : playRecording}
+              disabled={recordingState === 'playing'}
+              accessibilityRole="button"
+              accessibilityLabel="Play recording"
+              accessibilityHint="Replays this voice reflection"
+              accessibilityState={{ disabled: recordingState === 'playing' }}
               className={`w-14 h-14 rounded-full border border-sanctuarySaffron/30 items-center justify-center bg-sanctuarySaffron/10 transition-all ${
                 recordingState === 'playing'
                   ? 'opacity-50 scale-95'
@@ -305,6 +328,9 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
             <Pressable
               onPress={saveRecording}
+              accessibilityRole="button"
+              accessibilityLabel="Save recording"
+              accessibilityHint="Saves this voice reflection"
               className="w-14 h-14 rounded-full bg-emeraldGreen items-center justify-center shadow-lg shadow-emeraldGreen/30 hover:scale-105 transition-transform"
             >
               <Icon as={Check} size={24} className="text-white" />

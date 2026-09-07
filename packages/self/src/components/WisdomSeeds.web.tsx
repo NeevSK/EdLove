@@ -14,7 +14,7 @@ interface WisdomSeedsProps {
 }
 
 export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
-  const { notes, isLoading, addWisdomNote } = useWisdom(userId);
+  const { notes, isLoading, addWisdomNote, error: historyError, refreshData } = useWisdom(userId);
   const [showForm, setShowForm] = useState(false);
   const [insight, setInsight] = useState('');
   const [saving, setSaving] = useState(false);
@@ -122,6 +122,12 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
       )}
 
       {/* Seeds list */}
+      {historyError && (
+        <div role="alert" style={{ display: 'flex', gap: '12px', padding: '12px 14px', border: '1px solid #EF4444', borderRadius: '10px' }}>
+          <span style={{ flex: 1 }}>{historyError} Showing the last available notes.</span>
+          <button type="button" onClick={() => void refreshData()}>Retry</button>
+        </div>
+      )}
       {isLoading ? (
         <div
           style={{

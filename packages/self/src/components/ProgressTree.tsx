@@ -87,7 +87,7 @@ const GROWTH_STAGES = [
 
 export default function ProgressTree({ userId }: ProgressTreeProps) {
   const router = useRouter();
-  const { interactionCount, isLoading } = useProgressTree(userId);
+  const { interactionCount, isLoading, error, refreshData } = useProgressTree(userId);
   const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]!);
   const [showBloom, setShowBloom] = useState(false);
   const { t } = useTranslation();
@@ -175,6 +175,24 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
           <ButtonText className="text-obsidian font-black uppercase tracking-widest text-xs">
             Establish Presence
           </ButtonText>
+        </Button>
+      </VStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <VStack className="gap-4 p-8 bg-shroud rounded-[40px] border border-emberRed/30 items-center">
+        <Heading className="text-sacredWhite text-center" size="md">
+          Progress is temporarily unavailable
+        </Heading>
+        <Text className="text-mistGray text-center text-sm">{error}</Text>
+        <Button
+          variant="outline"
+          onPress={() => void refreshData()}
+          accessibilityLabel="Retry refreshing progress tree"
+        >
+          <ButtonText>Try again</ButtonText>
         </Button>
       </VStack>
     );

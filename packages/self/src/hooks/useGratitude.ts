@@ -16,6 +16,7 @@ export function useGratitude(userId?: string) {
   const isOnline = useStore((state) => state.isOnline);
   const [entries, setEntries] = useState<GratitudeEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     if (!userId) return;
@@ -36,6 +37,7 @@ export function useGratitude(userId?: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const data = await fetchGratitudeEntries(userId);
       if (data) {
@@ -45,6 +47,7 @@ export function useGratitude(userId?: string) {
       }
     } catch (e) {
       console.error('Failed to refresh gratitude history', e);
+      setError('Gratitude history is temporarily unavailable.');
     }
   }, [userId, isOnline]);
   // Fetch on mount/online change
@@ -54,6 +57,7 @@ export function useGratitude(userId?: string) {
   return {
     entries,
     isLoading,
+    error,
     refreshData,
     setEntries,
     addGratitudeEntry: async (input: Pick<GratitudeEntry, 'content' | 'category'>) => {

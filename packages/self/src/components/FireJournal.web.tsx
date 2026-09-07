@@ -32,6 +32,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
   const [burning, setBurning] = useState(false);
   const [burned, setBurned] = useState(false);
   const [charCount, setCharCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (val: string) => {
     setContent(val);
@@ -41,6 +42,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
   const handleBurn = async () => {
     if (!content.trim() || burning) return;
     setBurning(true);
+    setErrorMessage(null);
 
     // Dramatic pause – let the user "see" it burning
     await new Promise((r) => setTimeout(r, 1200));
@@ -51,7 +53,9 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
       }
       onBurned?.();
     } catch {
-      /* non-fatal – the release is in the writing, not the save */
+      setErrorMessage('Your entry could not be saved. It is still here—please try again.');
+      setBurning(false);
+      return;
     }
 
     setContent('');
@@ -89,6 +93,13 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         </Box>
       ) : (
         <VStack className="gap-4">
+          {errorMessage ? (
+            <Box className="p-3 rounded-2xl bg-emberRed/10 border border-emberRed/20">
+              <Text className="text-sm text-emberRed font-semibold" accessibilityRole="alert">
+                {errorMessage}
+              </Text>
+            </Box>
+          ) : null}
           <Box className="relative">
             <Input
               className={`rounded-comfortable min-h-[160px] transition-all duration-300 border-2 ${

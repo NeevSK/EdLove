@@ -63,7 +63,7 @@ const LEVEL_LABELS: Record<
 };
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
-  const { forecasts, refreshData, isLoading, saveForecast } = useEnergyForecast(userId);
+  const { forecasts, refreshData, isLoading, saveForecast, error: historyError } = useEnergyForecast(userId);
   const { isPastView, viewDate } = useTemporalStore();
 
   const currentForecast = forecasts.find((f) => f.forecast_date === viewDate) ?? null;
@@ -105,6 +105,14 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
 
   return (
     <VStack className="gap-4">
+      {historyError ? (
+        <Text className="text-sm text-emberRed" accessibilityRole="alert">
+          {historyError}{' '}
+          <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading energy history">
+            <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+          </Pressable>
+        </Text>
+      ) : null}
       {/* Header */}
       <HStack className="items-center justify-between">
         <HStack className="items-center gap-2">

@@ -107,7 +107,12 @@ export default function ShadowAgentDrawer() {
     <>
       {/* Glowing Orb Trigger */}
       <Box className="absolute bottom-24 right-6 z-50">
-        <Pressable onPress={handleOpenDrawer}>
+        <Pressable
+          onPress={handleOpenDrawer}
+          accessibilityRole="button"
+          accessibilityLabel="Open Shadow Agent"
+          accessibilityHint="Opens a quiet reflection prompt"
+        >
           <Animated.View style={orbStyle}>
             <Box className="w-14 h-14 rounded-full bg-sanctuarySaffron items-center justify-center shadow-xl shadow-sanctuarySaffron/40">
               <Icon as={Sparkles} size={24} className="text-obsidian" />
@@ -127,6 +132,9 @@ export default function ShadowAgentDrawer() {
               {/* Close Button */}
               <Pressable
                 onPress={handleCloseDrawer}
+                accessibilityRole="button"
+                accessibilityLabel="Close Shadow Agent"
+                accessibilityHint="Closes the reflection drawer"
                 className="absolute top-8 right-8 z-10 p-2 bg-white/5 rounded-full border border-white/5 active:scale-90 transition-all"
               >
                 <Icon as={X} className="text-mistGray" size={18} />

@@ -20,6 +20,7 @@ export function useEnergyForecast(userId?: string) {
   const { viewDate, isPastView } = useTemporalStore();
   const [forecasts, setForecasts] = useState<EnergyForecast[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     if (!userId) return;
@@ -42,6 +43,7 @@ export function useEnergyForecast(userId?: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const data = await fetchEnergyForecastsForView(userId, {
         viewDate,
@@ -57,6 +59,7 @@ export function useEnergyForecast(userId?: string) {
       }
     } catch (e) {
       console.error('Failed to refresh energy forecasts', e);
+      setError('Energy history is temporarily unavailable.');
     }
   }, [userId, isOnline, viewDate, isPastView]);
   // Fetch on mount/online change
@@ -66,6 +69,7 @@ export function useEnergyForecast(userId?: string) {
   return {
     forecasts,
     isLoading,
+    error,
     refreshData,
     setForecasts,
     saveForecast: async (payload: {

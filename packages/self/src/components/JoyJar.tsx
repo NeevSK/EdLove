@@ -41,7 +41,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
 
-  const { joyMoments, refreshData, isLoading, addJoyMoment } = useJoyJar(activeUserId ?? undefined);
+  const { joyMoments, refreshData, isLoading, addJoyMoment, error } = useJoyJar(activeUserId ?? undefined);
   const [showForm, setShowForm] = useState(false);
 
   // Form state
@@ -74,11 +74,15 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
   const handleSaveMoment = async () => {
     if (!activeUserId || !momentDescription.trim() || isSaving) return;
     hapticLight();
-    await mutate({
-      studentName: studentName.trim() || null,
-      description: momentDescription.trim(),
-      category,
-    });
+    try {
+      await mutate({
+        studentName: studentName.trim() || null,
+        description: momentDescription.trim(),
+        category,
+      });
+    } catch {
+      // useSafeMutation owns the visible error feedback; keep the draft open for retry.
+    }
   };
 
   const categories = [
@@ -144,6 +148,16 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
 
       {!showForm ? (
         <VStack className="gap-md">
+          {error ? (
+            <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+              <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+                {error} Showing the last available moments.
+              </Text>
+              <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading Joy Jar history">
+                <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+              </Pressable>
+            </HStack>
+          ) : null}
           <Button
             onPress={() => {
               hapticLight();
@@ -221,6 +235,8 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                   placeholder={t('self.exampleStudent') || 'e.g. Rahul, Class 10B'}
                   value={studentName}
                   onChangeText={setStudentName}
+                  accessibilityLabel="Student name"
+                  accessibilityHint="Optional name or class connected to this spark"
                   className="text-sacredWhite h-12 px-4"
                   placeholderTextColor="rgba(255,255,255,0.2)"
                 />
@@ -240,6 +256,9 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                       hapticLight();
                       setCategory(cat.id as any);
                     }}
+                    accessibilityRole="radio"
+                    accessibilityLabel={cat.label}
+                    accessibilityState={{ selected: category === cat.id }}
                     className={`flex-row items-center gap-2 px-4 py-3 rounded-full border-2 transition-all ${
                       category === cat.id
                         ? 'bg-sanctuarySaffron border-sanctuarySaffron shadow-md'
@@ -267,8 +286,10 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
               <Box className="bg-obsidian rounded-xl border border-white/10 p-4 min-h-[140px]">
                 <InputField
                   placeholder={t('self.momentDescriptionPlaceholder') || 'What made you smile?'}
-                  value={momentDescription}
-                  onChangeText={setMomentDescription}
+                value={momentDescription}
+                onChangeText={setMomentDescription}
+                accessibilityLabel="Joy moment description"
+                accessibilityHint="Describe the teaching spark you want to remember"
                   multiline
                   className="text-sacredWhite text-base text-start align-top"
                   placeholderTextColor="rgba(255,255,255,0.2)"

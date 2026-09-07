@@ -42,7 +42,7 @@ interface SleepTrackerProps {
 export default function SleepTracker({ userId, disabled: componentDisabled }: SleepTrackerProps) {
   const { context } = usePermissions();
   const activeUserId = userId || context.userId || undefined;
-  const { sleepLogs, refreshData, isLoading, addSleepLog } = useSleepTracker(activeUserId);
+  const { sleepLogs, refreshData, isLoading, addSleepLog, error: historyError } = useSleepTracker(activeUserId);
   const { t } = useTranslation();
 
   const [sleepQuality, setSleepQuality] = useState(3);
@@ -152,7 +152,11 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
   const handleSaveSleepLog = async () => {
     if (!activeUserId || componentDisabled) return;
     hapticLight();
-    await saveLog(sleepQuality);
+    try {
+      await saveLog(sleepQuality);
+    } catch {
+      // useSafeMutation owns visible feedback; retain the selected quality for retry.
+    }
   };
 
   const animatedMoonStyle = useAnimatedStyle(() => ({
@@ -188,6 +192,16 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
 
   return (
     <VStack className="p-lg gap-lg">
+      {historyError ? (
+        <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+          <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+            {historyError} Showing the last available log.
+          </Text>
+          <Button variant="outline" size="sm" onPress={() => void refreshData()} accessibilityLabel="Retry loading sleep history">
+            <ButtonText>Retry</ButtonText>
+          </Button>
+        </HStack>
+      ) : null}
       {/* Header */}
       <VStack className="gap-1">
         <Heading className="text-sacredWhite" size="lg">
@@ -234,6 +248,9 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
               maxValue={5}
               step={1}
               className="h-10 w-full"
+              accessibilityLabel="Sleep quality"
+              accessibilityHint="Choose from restless to excellent"
+              accessibilityValue={{ min: 1, max: 5, now: sleepQuality, text: currentQuality.label }}
             />
 
             <HStack className="justify-between mt-4">
@@ -250,6 +267,8 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
             size="lg"
             onPress={handleSaveSleepLog}
             isDisabled={isSaving || componentDisabled}
+            accessibilityLabel={isSaving ? 'Saving sleep quality' : 'Log sleep quality'}
+            accessibilityState={{ busy: isSaving, disabled: Boolean(componentDisabled) }}
             className={`rounded-full h-14 ${currentQuality.bg}`}
           >
             <ButtonText className="text-white font-bold">

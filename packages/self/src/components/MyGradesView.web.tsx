@@ -60,7 +60,12 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
     return (
       <Box className="p-12 bg-obsidian rounded-comfortable items-center border border-emberRed/30 gap-4">
         <Text className="text-sm text-emberRed text-center">{error}</Text>
-        <Button variant="outline" onPress={() => void refreshData()}>
+        <Button
+          variant="outline"
+          onPress={() => void refreshData()}
+          accessibilityLabel="Retry loading grades"
+          accessibilityHint="Attempts to load your latest grades again"
+        >
           <ButtonText>Try again</ButtonText>
         </Button>
       </Box>
@@ -120,6 +125,8 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
             <HStack
               key={item.id}
               className="p-4 bg-obsidian rounded-comfortable items-center gap-4 border border-white/5 hover:border-white/10 transition-colors"
+              accessible
+              accessibilityLabel={`${item.assignments?.title ?? 'Assignment'}, grade ${item.grade}`}
             >
               {/* Grade circle */}
               <Box

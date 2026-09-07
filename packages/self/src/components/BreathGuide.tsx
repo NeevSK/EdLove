@@ -187,6 +187,8 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
           <Button
             size="lg"
             onPress={startSession}
+            accessibilityLabel="Start breathing guide"
+            accessibilityHint="Begins the guided breathing session"
             className="rounded-full bg-gurudeviViolet px-xl flex-row items-center justify-center"
           >
             <Icon as={Wind} className="text-white mr-2" size={20} />
@@ -195,7 +197,12 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             </ButtonText>
           </Button>
         ) : (
-          <Pressable accessibilityRole="button" onPress={stopSession}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Stop breathing guide"
+            accessibilityHint="Ends the guided breathing session"
+            onPress={stopSession}
+          >
             <Text className="text-mistGray text-sm underline">{t('self.stop') || 'Stop'}</Text>
           </Pressable>
         )}

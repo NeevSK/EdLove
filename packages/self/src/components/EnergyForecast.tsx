@@ -35,9 +35,11 @@ export default function EnergyForecast({
     forecasts,
     refreshData,
     isLoading: dataLoading,
+    error: historyError,
     saveForecast,
   } = useEnergyForecast(activeUserId ?? undefined);
   const [selectedLevel, setSelectedLevel] = useState<1 | 2 | 3 | 4 | 5 | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
   const currentForecast = useMemo(
@@ -66,8 +68,16 @@ export default function EnergyForecast({
   const handleSelectEnergy = async (level: 1 | 2 | 3 | 4 | 5) => {
     if (!activeUserId || componentDisabled) return;
     hapticLight();
+    const previousLevel = displayLevel;
     setSelectedLevel(level); // optimistic update
-    await saveEnergy(level);
+    setSaveError(null);
+    try {
+      await saveEnergy(level);
+    } catch (error) {
+      console.error('Failed to save energy forecast:', error);
+      setSelectedLevel(previousLevel);
+      setSaveError('Your energy check-in could not be saved. Please try again.');
+    }
   };
 
   const energyLevels = [
@@ -135,6 +145,17 @@ export default function EnergyForecast({
     return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
   }
 
+  if (historyError) {
+    return (
+      <VStack className="gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+        <Text className="text-sm text-mistGray" accessibilityRole="alert">{historyError}</Text>
+        <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading energy history">
+          <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+        </Pressable>
+      </VStack>
+    );
+  }
+
   const currentEnergy = displayLevel ? energyLevels[displayLevel - 1] : null;
 
   return (
@@ -155,6 +176,8 @@ export default function EnergyForecast({
           {t('self.energyForecastDesc') || 'Visualise your internal batteries and capacity.'}
         </Text>
       </VStack>
+
+      {saveError ? <Text className="text-sm text-emberRed" accessibilityRole="alert">{saveError}</Text> : null}
 
       {/* Picker Area */}
       <Box className="bg-obsidian p-lg rounded-comfortable border border-white/5 shadow-sm">

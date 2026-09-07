@@ -48,6 +48,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
   const [duration, setDuration] = useState(0);
   const [recordedUri, setRecordedUri] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [recordingError, setRecordingError] = useState<string | null>(null);
   const recorderRef = useRef<InstanceType<typeof AudioModule.AudioRecorder> | null>(null);
   const audioPlayer = useAudioPlayer(recordedUri);
   const audioStatus = useAudioPlayerStatus(audioPlayer);
@@ -122,14 +123,20 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
 
   const handleStart = async () => {
     hapticLight();
+    setRecordingError(null);
     if (Platform.OS === 'web') {
-      setRecordingState('recording');
-      setDuration(0);
+      showToast({
+        message: 'Voice recording is available in the mobile app.',
+        type: 'info',
+      });
       return;
     }
     try {
       const { status } = await AudioModule.requestRecordingPermissionsAsync();
-      if (status !== 'granted') return;
+      if (status !== 'granted') {
+        setRecordingError('Microphone access is needed to record a voice journal.');
+        return;
+      }
       const rec: InstanceType<typeof AudioModule.AudioRecorder> = new (AudioModule.AudioRecorder as unknown as { new (opts?: unknown): InstanceType<typeof AudioModule.AudioRecorder> })({
         extension: '.m4a',
         sampleRate: 44100,
@@ -143,6 +150,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       setDuration(0);
     } catch (e) {
       console.warn('[voice] start failed', e);
+      setRecordingError('Recording could not start. Please try again.');
       setRecordingState('idle');
     }
   };
@@ -175,7 +183,8 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
     } catch (e) {
       console.warn('[voice] stop failed', e);
       recorderRef.current = null;
-      setRecordingState('finished');
+      setRecordingError('Recording could not be completed. Please try again.');
+      setRecordingState('idle');
     }
   };
 
@@ -185,6 +194,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
     setRecordingState('idle');
     setDuration(0);
     setRecordedUri(null);
+    setRecordingError(null);
     recorderRef.current = null;
   };
 
@@ -195,6 +205,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       audioPlayer.play();
     } catch (error) {
       console.warn('[voice] playback failed', error);
+      showToast({ message: 'This recording could not be played.', type: 'error' });
     }
   };
 
@@ -257,6 +268,12 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
         </Text>
       </VStack>
 
+      {recordingError ? (
+        <Text className="text-emberRed text-sm text-center" accessibilityRole="alert">
+          {recordingError}
+        </Text>
+      ) : null}
+
       {/* Recording Visual */}
       <Box className="w-40 h-40 items-center justify-center relative my-4">
         {recordingState === 'recording' && (
@@ -268,6 +285,15 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
 
         <Button
           onPress={recordingState === 'recording' ? handleStop : handleStart}
+          disabled={Platform.OS === 'web'}
+          accessibilityLabel={recordingState === 'recording' ? 'Stop recording' : 'Start recording'}
+          accessibilityHint={
+            Platform.OS === 'web'
+              ? 'Voice recording is available in the mobile app'
+              : recordingState === 'recording'
+              ? 'Stops the current voice reflection'
+              : 'Starts a new voice reflection'
+          }
           className={`w-24 h-24 rounded-full items-center justify-center transition-all duration-300 shadow-lg ${
             recordingState === 'recording'
               ? 'bg-emberRed scale-110 shadow-emberRed/30'
@@ -317,6 +343,8 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
           <HStack className="justify-center gap-6 mt-2">
             <Button
               onPress={handleReset}
+              accessibilityLabel="Discard recording"
+              accessibilityHint="Deletes this voice reflection"
               variant="outline"
               className="w-14 h-14 rounded-full border-white/10 bg-white/5 p-0 items-center justify-center"
             >
@@ -335,6 +363,10 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
 
             <Button
               onPress={handleConfirm}
+              accessibilityLabel={isSaving ? 'Saving recording' : 'Save recording'}
+              accessibilityHint="Saves this voice reflection"
+              accessibilityState={{ busy: isSaving, disabled: isSaving }}
+              disabled={isSaving}
               className="w-14 h-14 rounded-full bg-emeraldGreen p-0 items-center justify-center shadow-lg shadow-emeraldGreen/30"
             >
               <Icon as={Check} size={24} className="text-white" />

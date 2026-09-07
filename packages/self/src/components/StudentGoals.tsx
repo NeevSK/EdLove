@@ -101,6 +101,24 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
 
   return (
     <VStack className="gap-lg p-lg">
+      {loadError ? (
+        <Box className="rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+          <HStack className="items-center gap-3">
+            <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+              Goals could not be refreshed. Showing the last available goals.
+            </Text>
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={() => void refreshData()}
+              accessibilityLabel="Retry refreshing goals"
+            >
+              <ButtonText>Retry</ButtonText>
+            </Button>
+          </HStack>
+        </Box>
+      ) : null}
+
       {/* Momentum Card */}
       <AnimatedView entering={FadeInUp.duration(600)}>
         <Box className="p-lg bg-obsidian rounded-comfortable border-l-4 border-l-sanctuarySaffron border-y border-r border-white/5 shadow-2xl">

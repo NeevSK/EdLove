@@ -43,7 +43,7 @@ export default function GratitudeGlimmers({
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
 
-  const { entries, refreshData, isLoading, addGratitudeEntry } = useGratitude(
+  const { entries, refreshData, isLoading, addGratitudeEntry, error } = useGratitude(
     activeUserId ?? undefined,
   );
 
@@ -73,10 +73,14 @@ export default function GratitudeGlimmers({
   const handleSave = async () => {
     if (!activeUserId || !content.trim() || isSaving) return;
     hapticLight();
-    await mutate({
-      content: content.trim(),
-      category,
-    });
+    try {
+      await mutate({
+        content: content.trim(),
+        category,
+      });
+    } catch {
+      // useSafeMutation owns the visible error feedback; keep the draft open for retry.
+    }
   };
 
   const categories = [
@@ -140,6 +144,16 @@ export default function GratitudeGlimmers({
 
       {!showForm ? (
         <VStack className="gap-md">
+          {error ? (
+            <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+              <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+                {error} Showing the last available entries.
+              </Text>
+              <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading gratitude history">
+                <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+              </Pressable>
+            </HStack>
+          ) : null}
           <Button
             onPress={() => {
               hapticLight();
@@ -218,6 +232,9 @@ export default function GratitudeGlimmers({
                       hapticLight();
                       setCategory(cat.id as any);
                     }}
+                    accessibilityRole="radio"
+                    accessibilityLabel={cat.label}
+                    accessibilityState={{ selected: category === cat.id }}
                     className={`flex-row items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
                       category === cat.id
                         ? 'bg-sanctuarySaffron border-sanctuarySaffron shadow-md'
@@ -245,9 +262,11 @@ export default function GratitudeGlimmers({
               <Box className="bg-white/5 rounded-xl border border-white/10 p-4 min-h-[140px]">
                 <InputField
                   placeholder={t('self.gratitudePlaceholder') || 'What warmed your heart?'}
-                  value={content}
-                  onChangeText={setContent}
-                  multiline
+                value={content}
+                onChangeText={setContent}
+                multiline
+                accessibilityLabel="Gratitude reflection"
+                accessibilityHint="Write what warmed your heart"
                   className="text-sacredWhite text-base text-start align-top"
                   placeholderTextColor="rgba(255,255,255,0.2)"
                 />

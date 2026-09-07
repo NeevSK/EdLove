@@ -2,6 +2,7 @@ import { usePermissions, useStore } from '@repo/core/logic';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,7 @@ import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment'
 
 export default function AdminSelfView() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
 
   // State & Kernel Hooks
   const { context } = usePermissions();
@@ -51,6 +53,8 @@ export default function AdminSelfView() {
     try {
       await addMoodLog(mood, note);
       setIsMoodPickerOpen(false);
+    } catch {
+      showToast({ message: 'Your mood could not be saved. Please try again.', type: 'error' });
     } finally {
       setIsSavingMood(false);
     }

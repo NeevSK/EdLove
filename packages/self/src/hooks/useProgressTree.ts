@@ -10,6 +10,7 @@ export function useProgressTree(userId?: string) {
   const { viewDate, isPastView } = useTemporalStore();
   const [interactionCount, setInteractionCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load from local cache on mount
   useEffect(() => {
@@ -37,6 +38,7 @@ export function useProgressTree(userId?: string) {
   // Sync / Refresh function
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const count = await fetchInteractionCountForView(userId, {
         viewDate,
@@ -50,6 +52,7 @@ export function useProgressTree(userId?: string) {
       );
     } catch (e) {
       console.error('Failed to sync progress tree interactions', e);
+      setError('Progress could not be refreshed.');
     }
   }, [userId, isOnline, viewDate, isPastView]);
 
@@ -60,6 +63,7 @@ export function useProgressTree(userId?: string) {
   return {
     interactionCount,
     isLoading,
+    error,
     refreshData,
   };
 }

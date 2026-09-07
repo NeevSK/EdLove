@@ -16,6 +16,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
+import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +48,8 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Wind-down steps state
   const [wentWell, setWentWell] = useState('');
@@ -91,13 +94,28 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const currentStepData = steps[currentStep] || steps[0]!;
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     hapticLight();
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      hapticSuccess();
-      setCompleted(true);
+      setSaving(true);
+      setSaveError(null);
+      try {
+        if (userId) {
+          await saveWindDownRitual(userId, {
+            went_well: wentWell,
+            to_release: toRelease,
+            tomorrow_intent: tomorrowIntent,
+          });
+        }
+        hapticSuccess();
+        setCompleted(true);
+      } catch {
+        setSaveError('Your ritual could not be saved. Your reflections are still here—please try again.');
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
@@ -238,6 +256,8 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   value={currentStepData.value}
                   onChangeText={(text: string) => currentStepData.setValue?.(text)}
                   multiline
+                  accessibilityLabel={currentStepData.title}
+                  accessibilityHint="Write a short reflection to continue"
                   className="text-sacredWhite text-sm p-4"
                   placeholderTextColor="#6A6358"
                 />
@@ -261,10 +281,16 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
       {/* Navigation Controls */}
       <HStack className="justify-between mt-auto pb-4 gap-4">
+        {saveError ? (
+          <Text className="absolute bottom-20 left-0 right-0 text-emberRed text-xs text-center" accessibilityRole="alert">
+            {saveError}
+          </Text>
+        ) : null}
         <Button
           variant="outline"
           onPress={handleBack}
           isDisabled={currentStep === 0}
+          accessibilityLabel="Previous ritual step"
           className="border-white/10 rounded-comfortable flex-1 h-12"
         >
           <ButtonText className="text-mistGray font-bold">{t('common.back') || 'Back'}</ButtonText>
@@ -272,13 +298,15 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         <Button
           onPress={handleNext}
           isDisabled={
+            saving ||
             !!currentStepData.input &&
             (!currentStepData.value || currentStepData.value.trim() === '')
           }
+          accessibilityLabel={currentStep === steps.length - 1 ? 'Complete wind-down ritual' : 'Next ritual step'}
           className="bg-sanctuarySaffron rounded-comfortable flex-1 h-12"
         >
           <ButtonText className="text-black font-bold">
-            {currentStep === steps.length - 1
+            {saving ? 'Saving...' : currentStep === steps.length - 1
               ? t('common.complete') || 'Complete'
               : t('common.next') || 'Next'}
           </ButtonText>

@@ -18,6 +18,7 @@ export function useWisdom(userId?: string) {
   const { viewDate, isPastView } = useTemporalStore();
   const [notes, setNotes] = useState<WisdomNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     if (!userId) return;
@@ -40,6 +41,7 @@ export function useWisdom(userId?: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const data = await fetchWisdomNotes(userId, { viewDate, isPastView });
       if (data) {
@@ -52,6 +54,7 @@ export function useWisdom(userId?: string) {
       }
     } catch (e) {
       console.error('Failed to refresh wisdom history', e);
+      setError('Wisdom notes are temporarily unavailable.');
     }
   }, [userId, isOnline, viewDate, isPastView]);
   // Fetch on mount/online change
@@ -61,6 +64,7 @@ export function useWisdom(userId?: string) {
   return {
     notes,
     isLoading,
+    error,
     refreshData,
     setNotes,
     addWisdomNote: async (insight: string) => {

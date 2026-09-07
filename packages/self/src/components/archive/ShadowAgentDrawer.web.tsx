@@ -29,6 +29,9 @@ export default function ShadowAgentDrawer() {
       <Box className="fixed bottom-20 right-6 z-[100]">
         <Pressable
           onPress={() => setIsOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Open Shadow Agent"
+          accessibilityHint="Opens a quiet reflection prompt"
           className="w-14 h-14 rounded-full bg-sanctuarySaffron items-center justify-center cursor-pointer shadow-xl shadow-sanctuarySaffron/40 hover:scale-110 active:scale-90 transition-all duration-300"
           style={{ animation: 'orb-pulse 4s ease-in-out infinite' } as any}
         >
@@ -52,6 +55,9 @@ export default function ShadowAgentDrawer() {
             {/* Close Button */}
             <Pressable
               onPress={() => setIsOpen(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Close Shadow Agent"
+              accessibilityHint="Closes the reflection drawer"
               className="absolute top-10 right-10 p-2 bg-white/5 rounded-full border border-white/5 hover:bg-white/10 transition-colors"
             >
               <Icon as={X} size={20} className="text-mistGray/50" />

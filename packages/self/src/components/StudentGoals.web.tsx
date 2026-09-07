@@ -15,19 +15,24 @@ interface StudentGoalsProps {
 }
 
 export default function StudentGoals({ userId }: StudentGoalsProps) {
-  const { goals, isLoading, addGoal, updateGoal } = useStudentGoals(userId);
+  const { goals, isLoading, loadError, refreshData, addGoal, updateGoal } = useStudentGoals(userId);
   const [showForm, setShowForm] = useState(false);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const handleAdd = async () => {
     if (!text.trim()) return;
     setSaving(true);
+    setActionError(null);
     try {
       await addGoal(text.trim());
       setText('');
       setShowForm(false);
+    } catch (error) {
+      console.error('Failed to add student goal:', error);
+      setActionError('This goal could not be saved. Your draft is still here to retry.');
     } finally {
       setSaving(false);
     }
@@ -35,16 +40,29 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
 
   const handleToggle = async (goal: Goal) => {
     setUpdating(goal.id);
-    const newVal = !goal.is_completed;
-    await updateGoal(goal.id, {
-      is_completed: newVal,
-      progress: newVal ? 100 : goal.progress,
-    });
-    setUpdating(null);
+    setActionError(null);
+    try {
+      const newVal = !goal.is_completed;
+      await updateGoal(goal.id, {
+        is_completed: newVal,
+        progress: newVal ? 100 : goal.progress,
+      });
+    } catch (error) {
+      console.error('Failed to update student goal:', error);
+      setActionError('This goal could not be updated. Please try again.');
+    } finally {
+      setUpdating(null);
+    }
   };
 
   const handleProgress = async (goal: Goal, progress: number) => {
-    await updateGoal(goal.id, { progress });
+    setActionError(null);
+    try {
+      await updateGoal(goal.id, { progress });
+    } catch (error) {
+      console.error('Failed to update student goal progress:', error);
+      setActionError('Goal progress could not be updated. Please try again.');
+    }
   };
 
   return (
@@ -90,6 +108,13 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
           {showForm ? 'Cancel' : '+ Goal'}
         </button>
       </div>
+
+      {(loadError || actionError) && (
+        <div role="alert" style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', border: '1px solid #EF4444', borderRadius: '10px' }}>
+          <span style={{ flex: 1, fontSize: '12px' }}>{actionError ?? 'Goals could not be refreshed. Showing the last available goals.'}</span>
+          {loadError && <button type="button" onClick={() => void refreshData()}>Retry</button>}
+        </div>
+      )}
 
       {showForm && (
         <div style={{ display: 'flex', gap: '8px' }}>

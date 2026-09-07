@@ -42,6 +42,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
     notes = [],
     refreshData,
     isLoading,
+    error: historyError,
     addWisdomNote,
   } = useWisdom(activeUserId ?? undefined);
 
@@ -146,7 +147,16 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
         className="flex-1"
       >
         <VStack className="gap-3">
-          {notes.length === 0 && !isLoading ? (
+          {historyError ? (
+            <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+              <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+                {historyError} Showing the last available notes.
+              </Text>
+              <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading wisdom notes">
+                <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+              </Pressable>
+            </HStack>
+          ) : notes.length === 0 && !isLoading ? (
             <Box className="py-20 items-center gap-4 opacity-20">
               <Icon as={Sprout} size={48} className="text-mistGray" />
               <Text className="text-mistGray text-xs font-bold text-center italic max-w-[200px]">

@@ -18,6 +18,7 @@ export function useFireJournal(userId?: string) {
   const isPastView = useTemporalStore((state) => state.isPastView);
   const [journalHistory, setJournalHistory] = useState<FireJournalEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     if (!userId) return;
@@ -40,6 +41,7 @@ export function useFireJournal(userId?: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const data = await fetchFireJournalHistoryForView(userId, {
         viewDate,
@@ -55,6 +57,7 @@ export function useFireJournal(userId?: string) {
       }
     } catch (e) {
       console.error('Failed to refresh journal history', e);
+      setError('Journal history is temporarily unavailable.');
     }
   }, [userId, isOnline, viewDate, isPastView]);
   // Fetch on mount/online change
@@ -78,6 +81,7 @@ export function useFireJournal(userId?: string) {
   return {
     journalHistory,
     isLoading,
+    error,
     refreshData,
     burnEntry,
     setJournalHistory,

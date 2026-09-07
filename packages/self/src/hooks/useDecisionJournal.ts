@@ -18,6 +18,7 @@ export function useDecisionJournal(userId?: string) {
   const { viewDate, isPastView } = useTemporalStore();
   const [decisions, setDecisions] = useState<DecisionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     if (!userId) return;
@@ -40,6 +41,7 @@ export function useDecisionJournal(userId?: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const data = await fetchDecisionLogs(userId, { viewDate, isPastView });
       if (data) {
@@ -52,6 +54,7 @@ export function useDecisionJournal(userId?: string) {
       }
     } catch (e) {
       console.error('Failed to refresh decision history', e);
+      setError('Decision history is temporarily unavailable.');
     }
   }, [userId, isOnline, viewDate, isPastView]);
   // Fetch on mount/online change
@@ -61,6 +64,7 @@ export function useDecisionJournal(userId?: string) {
   return {
     decisions,
     isLoading,
+    error,
     refreshData,
     setDecisions,
     addDecision: async (text: string) => {

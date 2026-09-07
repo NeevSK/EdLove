@@ -42,7 +42,12 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
     return (
       <Box className="p-10 bg-white/3 rounded-3xl items-center border border-dashed border-emberRed/30 gap-4">
         <Text className="text-emberRed text-sm font-bold text-center">{error}</Text>
-        <Button variant="outline" onPress={() => void refreshData()}>
+        <Button
+          variant="outline"
+          onPress={() => void refreshData()}
+          accessibilityLabel="Retry loading grades"
+          accessibilityHint="Attempts to load your latest grades again"
+        >
           <ButtonText>Try again</ButtonText>
         </Button>
       </Box>
@@ -67,6 +72,8 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
           <Animated.View key={item.id} entering={FadeInDown.delay(i * 50)}>
             <Box
               className={`p-5 rounded-3xl border border-white/5 bg-white/3 overflow-hidden shadow-sm`}
+              accessible
+              accessibilityLabel={`${item.assignments?.title ?? t('student.unknownAssignment')}, grade ${item.grade}`}
             >
               <HStack className="justify-between items-start gap-4">
                 <VStack className="flex-1 gap-2">

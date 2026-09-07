@@ -19,6 +19,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +40,7 @@ const getTomorrowDate = (): string => {
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
 
   // Resilient Data Hook
   const {
@@ -72,7 +75,10 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         hapticSuccess();
         setItemText('');
         setShowForm(false);
-        refreshData();
+        void refreshData();
+      },
+      onError: () => {
+        showToast({ message: 'This prep item could not be saved. Please try again.', type: 'error' });
       },
     },
   );
@@ -80,19 +86,39 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const handleSave = async () => {
     if (!userId || !itemText.trim() || items.length >= 3) return;
     hapticLight();
-    await saveItem(itemText.trim());
+    try {
+      await saveItem(itemText.trim());
+    } catch (error) {
+      console.error('Failed to save tomorrow prep item:', error);
+    }
   };
 
   const handleToggle = async (item: DailyPrepItem) => {
     hapticLight();
-    await updatePrepItem(item.id, { is_completed: !item.is_completed });
-    refreshData();
+    try {
+      await updatePrepItem(item.id, { is_completed: !item.is_completed });
+      void refreshData();
+    } catch (error) {
+      console.error('Failed to update tomorrow prep item:', error);
+      showToast({ message: 'This prep item could not be updated.', type: 'error' });
+    }
   };
 
   const handleDelete = async (id: string) => {
+    const confirmed = await confirmAction(
+      'Remove prep item?',
+      'This will permanently remove it from tomorrow\'s plan.',
+    );
+    if (!confirmed) return;
+
     hapticLight();
-    await removePrepItem(id);
-    refreshData();
+    try {
+      await removePrepItem(id);
+      void refreshData();
+    } catch (error) {
+      console.error('Failed to remove tomorrow prep item:', error);
+      showToast({ message: 'This prep item could not be removed.', type: 'error' });
+    }
   };
 
   if (isLoading && userId) {
@@ -213,6 +239,9 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               <Pressable
                 onPress={() => handleDelete(item.id)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Remove ${item.item_text}`}
+                accessibilityHint="Permanently removes this prep item"
               >
                 <Icon as={Trash2} className="text-dimGray" size={18} />
               </Pressable>

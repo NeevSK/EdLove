@@ -16,6 +16,7 @@ export function useJoyJar(userId?: string) {
   const isOnline = useStore((state) => state.isOnline);
   const [joyMoments, setJoyMoments] = useState<JoyMoment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Initial load from cache
   useEffect(() => {
     if (!userId) return;
@@ -36,6 +37,7 @@ export function useJoyJar(userId?: string) {
   // Refresh from API
   const refreshData = useCallback(async () => {
     if (!userId || !isOnline) return;
+    setError(null);
     try {
       const data = await fetchJoyMoments(userId);
       if (data) {
@@ -45,6 +47,7 @@ export function useJoyJar(userId?: string) {
       }
     } catch (e) {
       console.error('Failed to refresh joy history', e);
+      setError('Joy Jar history is temporarily unavailable.');
     }
   }, [userId, isOnline]);
   // Fetch on mount/online change
@@ -54,6 +57,7 @@ export function useJoyJar(userId?: string) {
   return {
     joyMoments,
     isLoading,
+    error,
     refreshData,
     setJoyMoments,
     addJoyMoment: async (

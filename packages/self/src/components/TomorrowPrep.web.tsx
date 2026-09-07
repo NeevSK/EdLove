@@ -25,6 +25,7 @@ import {
 } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
+import { confirmAction } from '@repo/ui/utils/dialogs';
 
 interface TomorrowPrepProps {
   userId?: string;
@@ -45,6 +46,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Recomputes at midnight so date stays correct if the app stays open overnight
   const [tomorrow, setTomorrow] = useState<string>(getTomorrow);
@@ -63,10 +65,13 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const handleAdd = async () => {
     if (!itemText.trim() || !userId) return;
     setSaving(true);
+    setActionError(null);
     try {
       await addPrepItem(itemText.trim(), tomorrow);
       setItemText('');
       setShowForm(false);
+    } catch {
+      setActionError('Your intention could not be saved. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -75,19 +80,29 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const handleToggle = async (item: DailyPrepItem) => {
     setToggling(item.id);
     const newVal = !item.is_completed;
+    setActionError(null);
     try {
       await updatePrepItem(item.id, { is_completed: newVal });
     } catch {
-      // no-op; hook state remains source of truth
+      setActionError('That intention could not be updated. Please try again.');
     } finally {
       setToggling(null);
     }
   };
 
   const handleDelete = async (id: string) => {
+    const confirmed = await confirmAction(
+      'Delete intention?',
+      'This removes the intention from tomorrow’s plan and cannot be undone.',
+    );
+    if (!confirmed) return;
+
     setDeleting(id);
+    setActionError(null);
     try {
       await removePrepItem(id);
+    } catch {
+      setActionError('That intention could not be removed. Please try again.');
     } finally {
       setDeleting(null);
     }
@@ -153,6 +168,12 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
           </VStack>
         )}
       </VStack>
+
+      {actionError ? (
+        <Text className="text-sm text-emberRed font-semibold" accessibilityRole="alert">
+          {actionError}
+        </Text>
+      ) : null}
 
       {/* Quick Draft Form */}
       {showForm && (

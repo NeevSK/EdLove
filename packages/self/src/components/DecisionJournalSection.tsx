@@ -34,7 +34,7 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
   const [decisionText, setDecisionText] = useState('');
-  const { decisions, refreshData, addDecision } = useDecisionJournal(activeUserId ?? undefined);
+  const { decisions, refreshData, addDecision, error } = useDecisionJournal(activeUserId ?? undefined);
 
   const { mutate, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {
@@ -83,6 +83,9 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
                 onPress={handleSave}
                 disabled={!decisionText.trim() || isSaving}
                 accessibilityRole="button"
+                accessibilityLabel={isSaving ? 'Saving decision' : 'Seal decision'}
+                accessibilityHint="Saves this reflection to your decision journal"
+                accessibilityState={{ disabled: !decisionText.trim() || isSaving, busy: isSaving }}
                 className={`flex-row items-center gap-2 px-6 py-3 rounded-full border transition-all active:scale-95 ${
                   decisionText.trim()
                     ? 'bg-sanctuarySaffron border-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20'
@@ -106,6 +109,23 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
           </VStack>
         </Box>
       </Animated.View>
+
+      {error ? (
+        <Box className="rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+          <HStack className="items-center justify-between gap-3">
+            <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+              {error} Showing the last available entries.
+            </Text>
+            <Pressable
+              onPress={() => void refreshData()}
+              accessibilityRole="button"
+              accessibilityLabel="Retry loading decision history"
+            >
+              <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+            </Pressable>
+          </HStack>
+        </Box>
+      ) : null}
 
       <VStack className="gap-lg px-2">
         <HStack className="items-center gap-2">

@@ -60,6 +60,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const current = STEPS[step] ?? STEPS[0] ?? DEFAULT_STEP;
   const nextStep = STEPS[step + 1];
@@ -69,6 +70,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const handleNext = async () => {
     if (isLast) {
       setSaving(true);
+      setSaveError(null);
       try {
         if (userId) {
           await saveWindDownRitual(userId, {
@@ -78,11 +80,13 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           });
         }
       } catch {
-        // Non-fatal; completing the ritual matters more than the save succeeding.
+        setSaveError('Your ritual could not be saved. Your reflections are still here—please try again.');
+        setSaving(false);
+        return;
       } finally {
         setSaving(false);
-        setCompleted(true);
       }
+      setCompleted(true);
       return;
     }
 
@@ -172,6 +176,12 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
             }}
           />
         )}
+
+        {saveError ? (
+          <p role="alert" style={{ color: 'var(--ember)', fontSize: '13px', margin: '0 0 16px' }}>
+            {saveError}
+          </p>
+        ) : null}
 
         <button
           onClick={handleNext}

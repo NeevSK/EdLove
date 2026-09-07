@@ -95,6 +95,10 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) 
           </VStack>
           <Pressable
             onPress={() => setShowBreath(!showBreath)}
+            accessibilityRole="button"
+            accessibilityLabel="Breath guide"
+            accessibilityHint={showBreath ? 'Closes the breathing guide' : 'Opens a breathing guide'}
+            accessibilityState={{ expanded: showBreath }}
             className={`px-3 py-1.5 rounded-full border transition-all ${showBreath ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron' : 'bg-white/5 border-white/10'}`}
           >
             <HStack className="items-center gap-2">
@@ -138,6 +142,10 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) 
                     <Pressable
                       onPress={() => handleMoodSelect(option.level)}
                       disabled={disabled}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Mood: ${option.label}`}
+                      accessibilityHint="Records this mood check-in"
+                      accessibilityState={{ selected: isSelected, disabled }}
                       className={`w-10 h-10 rounded-full items-center justify-center border-2 transition-all ${
                         isSelected
                           ? `${option.bgClass} border-sanctuarySaffron shadow-lg`

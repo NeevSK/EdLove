@@ -192,6 +192,8 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                   updateFocusedId(null);
                 }}
                 accessibilityRole="button"
+                accessibilityLabel="Show current self spaces"
+                accessibilityHint="Switches from history to the current view"
                 accessibilityState={{ selected: !isHistoryMode }}
                   style={{
                     paddingHorizontal: tokens.spacing.lg,
@@ -210,6 +212,8 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
               <Pressable
                 onPress={() => setViewMode('timeline')}
                 accessibilityRole="button"
+                accessibilityLabel="Show self history"
+                accessibilityHint="Switches to the timeline view"
                 accessibilityState={{ selected: isHistoryMode }}
                   style={{
                     paddingHorizontal: tokens.spacing.lg,
@@ -291,6 +295,8 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                   <Pressable
                     onPress={() => togglePin(focusedFeature?.id || '')}
                     accessibilityRole="button"
+                    accessibilityLabel={pinned.includes(focusedFeature?.id || '') ? 'Unpin focused space' : 'Pin focused space'}
+                    accessibilityState={{ selected: pinned.includes(focusedFeature?.id || '') }}
                     className="p-2 bg-black/5 rounded-full"
                   >
                     <Box

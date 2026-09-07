@@ -17,10 +17,11 @@ import {
   Icon,
   Input,
   InputField,
+  Pressable,
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import { hapticMedium } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +54,7 @@ export default function FireJournal({
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
   const isPastView = useTemporalStore((state) => state.isPastView);
-  const { journalHistory, burnEntry, isLoading } = useFireJournal(activeUserId ?? undefined);
+  const { journalHistory, burnEntry, isLoading, error: historyError, refreshData } = useFireJournal(activeUserId ?? undefined);
   const [showSuccess, setShowSuccess] = useState(false);
   const [burnError, setBurnError] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -196,13 +197,13 @@ export default function FireJournal({
     setBurnError(null);
     setIsBurning(true);
 
-    performBurnAnimation();
-
     try {
       await burnEntry(content);
+      performBurnAnimation();
     } catch (error) {
       console.error('Failed to burn journal entry:', error);
       setBurnError(t('fireJournal.errorSaving') || 'We could not save this release safely.');
+      setIsBurning(false);
     }
   };
 
@@ -235,6 +236,17 @@ export default function FireJournal({
             : t('fireJournal.subtitle') || 'Release what no longer serves you.'}
         </Text>
       </VStack>
+
+      {historyError ? (
+        <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+          <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
+            {historyError} Showing the last available entries.
+          </Text>
+          <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading journal history">
+            <Text className="font-bold text-sanctuarySaffron">Retry</Text>
+          </Pressable>
+        </HStack>
+      ) : null}
 
       {showSuccess && (
         <AnimatedView entering={FadeIn}>
@@ -296,6 +308,8 @@ export default function FireJournal({
                 className="text-sacredWhite text-lg leading-relaxed min-h-[160px]"
                 placeholderTextColor="#6A6358"
                 textAlignVertical="top"
+                accessibilityLabel="Fire journal entry"
+                accessibilityHint="Write a thought to release"
               />
             </Input>
           </Box>
@@ -305,9 +319,11 @@ export default function FireJournal({
       <HStack className="justify-end gap-md">
         <Button
           size="md"
-          onPress={hapticLight}
-          isDisabled={isBurning}
-          className="rounded-full w-12 h-12 bg-obsidian border border-white/5 items-center justify-center"
+          isDisabled
+          accessibilityLabel="Record fire journal entry by voice"
+          accessibilityHint="Voice capture is not available in Fire Journal yet"
+          accessibilityState={{ disabled: true }}
+          className="rounded-full w-12 h-12 bg-obsidian border border-white/5 items-center justify-center opacity-50"
         >
           <Icon as={Mic} className="text-sanctuarySaffron" size={20} />
         </Button>
@@ -316,6 +332,8 @@ export default function FireJournal({
           size="md"
           onPress={handleBurn}
           isDisabled={!content.trim() || isBurning || isPastView}
+          accessibilityLabel={isBurning ? 'Burning and releasing entry' : 'Burn and release entry'}
+          accessibilityState={{ busy: isBurning, disabled: !content.trim() || isPastView }}
           className={`rounded-full px-lg h-12 flex-row items-center ${isBurning ? 'bg-emberRed' : 'bg-sanctuarySaffron'}`}
         >
           <Icon as={Flame} className="text-white mr-2" size={20} />

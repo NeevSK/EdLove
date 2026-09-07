@@ -26,6 +26,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import { confirmAction } from '@repo/ui/utils/dialogs';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -113,9 +115,11 @@ if (Platform.OS !== 'web') {
 export default function RemindersManager({ userId }: RemindersManagerProps) {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
 
   // Form state
   const [title, setTitle] = useState('');
@@ -141,6 +145,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     try {
       if (!userId) return;
       const data = await fetchReminderRecords(userId);
+      setLoadError(false);
       setReminders(data || []);
       for (const r of data || []) if (r.is_active) void scheduleReminderNotification(r);
 
@@ -149,7 +154,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       }
     } catch (error) {
       console.error('Error fetching reminders:', error);
-      await createDefaultReminder();
+      setLoadError(true);
     } finally {
       setIsLoading(false);
     }
@@ -214,6 +219,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       }
     } catch (error) {
       console.error('Error saving reminder:', error);
+      showToast({ message: 'Reminder could not be saved. Please try again.', type: 'error' });
     }
   };
 
@@ -230,10 +236,17 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       else void cancelReminderNotification(reminder.id);
     } catch (error) {
       console.error('Error toggling reminder:', error);
+      showToast({ message: 'Reminder status could not be updated.', type: 'error' });
     }
   };
 
   const deleteReminder = async (reminderId: string) => {
+    const confirmed = await confirmAction(
+      'Delete reminder?',
+      'This will permanently remove the reminder.',
+    );
+    if (!confirmed) return;
+
     hapticMedium();
 
     try {
@@ -242,11 +255,23 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       void cancelReminderNotification(reminderId);
     } catch (error) {
       console.error('Error deleting reminder:', error);
+      showToast({ message: 'Reminder could not be deleted. Please try again.', type: 'error' });
     }
   };
 
   if (isLoading) {
     return null;
+  }
+
+  if (loadError) {
+    return (
+      <VStack className="p-lg gap-md items-center">
+        <Text className="text-sacredWhite text-center">Reminders could not be loaded.</Text>
+        <Button onPress={() => void fetchReminders()} className="bg-sanctuarySaffron">
+          <ButtonText className="text-sacredWhite">Try again</ButtonText>
+        </Button>
+      </VStack>
+    );
   }
 
   return (
@@ -297,6 +322,10 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     onPress={() => {
                       void toggleReminder(reminder);
                     }}
+                    accessibilityRole="switch"
+                    accessibilityLabel={`${reminder.title} reminder`}
+                    accessibilityHint="Toggles this reminder on or off"
+                    accessibilityState={{ checked: reminder.is_active }}
                   >
                     <Box className="w-10 h-10 rounded-full bg-obsidian items-center justify-center">
                       <Icon
@@ -322,7 +351,11 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                   <HStack className="gap-2">
                     {!reminder.is_default && (
                       <>
-                        <Pressable onPress={() => openEditModal(reminder)}>
+                        <Pressable
+                          onPress={() => openEditModal(reminder)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Edit ${reminder.title}`}
+                        >
                           <Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
                             <Icon as={SquarePen} className="text-mistGray" size={16} />
                           </Box>
@@ -331,6 +364,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                           onPress={() => {
                             void deleteReminder(reminder.id);
                           }}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Delete ${reminder.title}`}
+                          accessibilityHint="Permanently removes this reminder"
                         >
                           <Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
                             <Icon as={Trash2} className="text-emberRed" size={16} />
@@ -375,6 +411,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     placeholder="e.g., Take a break"
                     className="text-sacredWhite"
                     placeholderTextColor="#6A6358"
+                    accessibilityLabel="Reminder title"
                   />
                 </Input>
               </VStack>
@@ -390,6 +427,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     className="text-sacredWhite"
                     placeholderTextColor="#6A6358"
                     multiline
+                    accessibilityLabel="Reminder description"
                   />
                 </Input>
               </VStack>
@@ -408,6 +446,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                           setIconType(type);
                           hapticLight();
                         }}
+                        accessibilityRole="radio"
+                        accessibilityLabel={`${type} reminder icon`}
+                        accessibilityState={{ selected: isSelected }}
                       >
                         <Box
                           className={`w-12 h-12 rounded-full items-center justify-center ${

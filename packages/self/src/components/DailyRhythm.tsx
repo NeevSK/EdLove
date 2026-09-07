@@ -136,6 +136,16 @@ function DailyRhythmContent() {
       });
     } catch (err) {
       console.error('[DailyRhythm] Save error:', err);
+      toast.show({
+        placement: 'top',
+        render: ({ id }: { id: string }) => (
+          <Toast nativeID={id} className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl">
+            <ToastTitle className="text-sacredWhite text-sm font-bold">
+              {t('self.timetableSaveFailed') || 'Timetable could not be saved. Please try again.'}
+            </ToastTitle>
+          </Toast>
+        ),
+      });
     }
   };
 
@@ -168,6 +178,9 @@ function DailyRhythmContent() {
             <Pressable
               key={day.id}
               onPress={() => setActiveDay(day.id)}
+              accessibilityRole="tab"
+              accessibilityLabel={`Day ${day.label}`}
+              accessibilityState={{ selected: activeDay === day.id }}
               className={`flex-1 h-10 rounded-full items-center justify-center transition-all ${
                 activeDay === day.id
                   ? 'bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20'
@@ -195,6 +208,8 @@ function DailyRhythmContent() {
               setShowEditor(true);
             }}
             className="w-10 h-10 items-center justify-center rounded-full bg-sanctuarySaffron/10 border border-sanctuarySaffron/20"
+            accessibilityRole="button"
+            accessibilityLabel="Add timetable period"
           >
             <Icon as={Plus} size={18} className="text-sanctuarySaffron" />
           </Pressable>
@@ -239,6 +254,9 @@ function DailyRhythmContent() {
                       setEditingPeriod(period);
                       setShowEditor(true);
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Edit ${period.subject || period.activity || 'timetable period'}`}
+                    accessibilityHint="Long press to edit this timetable period"
                     className={`p-5 rounded-3xl border transition-all active:scale-[0.98] ${
                       active
                         ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron shadow-xl shadow-sanctuarySaffron/5'
@@ -426,10 +444,27 @@ function DailyRhythmContent() {
                 {editingPeriod?.id && (
                   <Pressable
                     className="h-16 flex-1 rounded-2xl border border-emberRed/30 bg-emberRed/5 items-center justify-center flex-row gap-2 active:bg-emberRed/10"
-                    onPress={() => {
+                    accessibilityRole="button"
+                    accessibilityLabel="Delete timetable period"
+                    accessibilityHint="Removes this period from the timetable"
+                    onPress={async () => {
                       if (editingPeriod.id) {
-                        deletePeriod(editingPeriod.id);
-                        setShowEditor(false);
+                        try {
+                          await deletePeriod(editingPeriod.id);
+                          setShowEditor(false);
+                        } catch (err) {
+                          console.error('[DailyRhythm] Delete error:', err);
+                          toast.show({
+                            placement: 'top',
+                            render: ({ id }: { id: string }) => (
+                              <Toast nativeID={id} className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl">
+                                <ToastTitle className="text-sacredWhite text-sm font-bold">
+                                  {t('self.timetableDeleteFailed') || 'Timetable period could not be deleted.'}
+                                </ToastTitle>
+                              </Toast>
+                            ),
+                          });
+                        }
                       }
                     }}
                   >

@@ -63,6 +63,7 @@ const GROWTH_STAGES = [
 export default function ProgressTree({ userId }: ProgressTreeProps) {
   const [interactionCount, setInteractionCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const { viewDate, isPastView } = useTemporalStore();
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     }
 
     const fetch = async () => {
+      setLoadError(null);
       try {
         const count = await fetchInteractionCountForView(userId, {
           viewDate,
@@ -79,7 +81,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
         });
         setInteractionCount(count);
       } catch {
-        // Non-fatal; the card can still render a neutral state.
+        setLoadError('Growth data could not be loaded.');
       } finally {
         setIsLoading(false);
       }
@@ -109,6 +111,45 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
           borderRadius: '14px',
         }}
       />
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div
+        role="alert"
+        style={{
+          padding: '20px 24px',
+          background: 'var(--background-alt)',
+          borderRadius: '16px',
+          color: 'var(--ink-ghost)',
+        }}
+      >
+        <div style={{ marginBottom: '12px' }}>{loadError}</div>
+        <button
+          type="button"
+          onClick={() => {
+            if (!userId) return;
+            setIsLoading(true);
+            setLoadError(null);
+            void fetchInteractionCountForView(userId, { viewDate, isPastView })
+              .then(setInteractionCount)
+              .catch(() => setLoadError('Growth data could not be loaded.'))
+              .finally(() => setIsLoading(false));
+          }}
+          style={{
+            padding: '8px 14px',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'transparent',
+            color: 'inherit',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          Try again
+        </button>
+      </div>
     );
   }
 

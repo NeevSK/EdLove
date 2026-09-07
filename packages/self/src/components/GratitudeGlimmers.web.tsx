@@ -46,15 +46,17 @@ const CATEGORIES: Array<{
 ];
 
 export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
-  const { entries, isLoading, setEntries, addGratitudeEntry } = useGratitude(userId);
+  const { entries, isLoading, setEntries, addGratitudeEntry, error, refreshData } = useGratitude(userId);
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<Category>('student-said');
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const handleSave = async () => {
     if (!content.trim() || !userId) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const data = await addGratitudeEntry({
         content: content.trim(),
@@ -65,6 +67,9 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
         setContent('');
         setShowForm(false);
       }
+    } catch (error) {
+      console.error('Failed to save gratitude entry:', error);
+      setSaveError('This glimmer could not be saved. Your draft is still here to retry.');
     } finally {
       setSaving(false);
     }
@@ -135,6 +140,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
             borderRadius: '12px',
           }}
         >
+          {saveError && <div role="alert" style={{ color: '#B42318', fontSize: '12px' }}>{saveError}</div>}
           {/* Category selector */}
           <div style={{ display: 'flex', gap: '8px' }}>
             {CATEGORIES.map((cat) => (
@@ -207,6 +213,14 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
       )}
 
       {/* Entries */}
+      {error && (
+        <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', background: 'var(--background-alt)', border: '1px solid #EF4444', borderRadius: '10px' }}>
+          <span style={{ flex: 1, fontSize: '12px', color: 'var(--ink-soft)' }}>{error} Showing the last available entries.</span>
+          <button type="button" onClick={() => void refreshData()} style={{ border: 0, background: 'transparent', color: '#D4843A', fontWeight: 700, cursor: 'pointer' }}>
+            Retry
+          </button>
+        </div>
+      )}
       {isLoading ? (
         <div
           style={{
