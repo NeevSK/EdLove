@@ -21,6 +21,7 @@ export const KeyboardAvoidingView = 'KeyboardAvoidingView';
 export const Image = 'Image';
 export const TextInput = 'TextInput';
 export const ActivityIndicator = 'ActivityIndicator';
+export const Switch = 'Switch';
 
 export const Dimensions = {
   get: () => ({ width: 390, height: 844, scale: 1, fontScale: 1 }),
@@ -48,6 +49,7 @@ export default {
   Image,
   TextInput,
   ActivityIndicator,
+  Switch,
   Dimensions,
   Keyboard,
 };

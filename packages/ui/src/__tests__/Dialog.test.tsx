@@ -1,8 +1,10 @@
-import { Dialog, DialogBody, DialogContent } from '@repo/ui/components/ui/dialog';
+import { Dialog, DialogBody, DialogClose, DialogContent } from '@repo/ui/components/ui/dialog';
 import { Text } from '@repo/ui/components/ui/text';
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
-describe('Dialog', () => {
+describe('Dialog (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('uses the source-owned modal behavior with the open API', async () => {
     const onOpenChange = vi.fn();
 
@@ -18,5 +20,25 @@ describe('Dialog', () => {
 
     expect(screen.getByText('Dialog content')).toBeTruthy();
     expect(screen.getByRole('dialog')).toBeTruthy();
+  });
+
+  it('reports close-button dismissal through the controlled API', async () => {
+    const onOpenChange = vi.fn();
+
+    await render(
+      <Dialog open onOpenChange={onOpenChange} accessibilityLabel="Example dialog">
+        <DialogContent>
+          <DialogBody>
+            <DialogClose accessibilityLabel="Close dialog">
+              <Text>Close</Text>
+            </DialogClose>
+          </DialogBody>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    fireEvent.press(screen.getByRole('button', { name: 'Close dialog' }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

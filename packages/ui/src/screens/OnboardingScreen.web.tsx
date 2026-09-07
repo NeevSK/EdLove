@@ -4,12 +4,15 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { identityAPI, onboardingAPI } from '@repo/core/api/client';
+import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
+import { storage } from '@repo/core/lib/storage';
 import { isAnonymousIdentity } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
 import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
 import { useGatewayLayout } from '@repo/ui/hooks/useGatewayLayout';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   getDevOnboardingTemplateLabel,
   resolveOnboardingDevIntent,
@@ -24,7 +27,6 @@ import {
   onboardingJourneyReducer,
 } from '@repo/ui/screens/onboardingJourney';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { useTheme } from '@repo/ui/hooks/useTheme';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -260,6 +262,8 @@ const IdentityStep = memo(
               data-capacity={r.value}
               className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
               onClick={handleCapacityClick}
+              aria-pressed={capacity === r.value}
+              aria-label={t(`identity.${r.value}`)}
             >
               <span className="ob-role-emoji">
                 <WebGlyph glyph={r.glyph} size={34} />
@@ -404,6 +408,7 @@ const DevSandboxConsoleInner = memo(
                 key={r}
                 onClick={() => setRole(r)}
                 className={`ob-pill-btn ${role === r ? 'active' : ''}`}
+                aria-pressed={role === r}
               >
                 {r.toUpperCase()}
               </button>
@@ -420,6 +425,7 @@ const DevSandboxConsoleInner = memo(
                 key={p}
                 onClick={() => setPricing(p)}
                 className={`ob-pill-btn ${pricing === p ? 'active' : ''}`}
+                aria-pressed={pricing === p}
               >
                 {p}
               </button>
@@ -436,6 +442,7 @@ const DevSandboxConsoleInner = memo(
                 key={c}
                 onClick={() => setCitizenship(c)}
                 className={`ob-pill-btn ${citizenship === c ? 'active' : ''}`}
+                aria-pressed={citizenship === c}
               >
                 {c.replace('_', ' ')}
               </button>
@@ -509,7 +516,7 @@ export default memo(function OnboardingScreenWeb({
     ReturnType<typeof identityAPI.identifyActiveCitizen>
   > | null>(null);
 
-  // ── Restore saved progress or pre-fill from existing auth ────────────────────
+  // ── Restore saved progress or pre-fill from existing auth & invites ──────────
   useEffect(() => {
     const initOnboarding = async () => {
       if (!userId) {
@@ -524,6 +531,23 @@ export default memo(function OnboardingScreenWeb({
         resolvedCitizenRef.current = citizen;
       } catch (err) {
         console.warn('[Onboarding] Failed to pre-identify active citizen:', err);
+      }
+
+      // Check for pending invite code (e.g. from QR scan or invite link)
+      try {
+        const pendingInvite = await storage.getStringAsync('pending_invite');
+        if (pendingInvite) {
+          const res = await resolveStoredInvite(pendingInvite);
+          if (res.valid && res.data) {
+            console.log('🎟️ [Onboarding.web] Resolved stored invite:', res.data.code, res.data.school_name);
+            dispatch({ type: 'SET_SCHOOL_ID', schoolId: res.data.school_id });
+            dispatch({ type: 'SET_CAPACITY', capacity: res.data.capacity });
+            dispatch({ type: 'SET_PRICING', pricing: 'INSTITUTIONAL' });
+            dispatch({ type: 'SET_CITIZENSHIP', citizenship: 'INSTITUTIONAL' });
+          }
+        }
+      } catch (err) {
+        console.warn('[Onboarding] Failed to resolve stored invite:', err);
       }
 
       try {
@@ -977,7 +1001,14 @@ export default memo(function OnboardingScreenWeb({
 
       {isNarrow ? (
         <div className="ob-narrow">
-          <div className="ob-progress-track" role="progressbar">
+          <div
+            className="ob-progress-track"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={TOTAL_STEPS - 1}
+            aria-valuenow={currentStep}
+            aria-label="Onboarding progress"
+          >
             <div
               className="ob-progress-fill"
               style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }}
@@ -1017,7 +1048,14 @@ export default memo(function OnboardingScreenWeb({
           </div>
           <div className="ob-right">
             <div className="ob-right-inner">
-              <div className="ob-dots" role="progressbar">
+              <div
+                className="ob-dots"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={TOTAL_STEPS - 1}
+                aria-valuenow={currentStep}
+                aria-label="Onboarding progress"
+              >
                 {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                   <div
                     // biome-ignore lint/suspicious/noArrayIndexKey: stable progress dots

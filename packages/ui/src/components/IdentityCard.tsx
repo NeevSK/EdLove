@@ -15,9 +15,9 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - 48; // Standardized spacing
-const CARD_HEIGHT = 220;
+// Standardized responsive layout tokens
+const CARD_MAX_WIDTH = 380;
+const CARD_HEIGHT = 200;
 
 /**
  * IdentityData — Generic interface for person/entity display in the IdentityCard.
@@ -44,6 +44,8 @@ interface IdentityCardProps {
   allowFlip?: boolean;
   /** Optional permissions override. */
   canOverride?: (action: string, subject: string) => boolean;
+  /** Preview mode for onboarding/auth (forces front-only without QR flip). */
+  previewMode?: boolean;
 }
 
 /**
@@ -58,22 +60,21 @@ export default function IdentityCard({
   renderBackSide,
   allowFlip = true,
   canOverride,
+  previewMode = false,
 }: IdentityCardProps) {
   const { t } = useTranslation();
+  const effectiveAllowFlip = allowFlip && !previewMode;
   const isFlipped = useSharedValue(0);
   const [flipState, setFlipState] = useState(false);
 
   const handleFlip = () => {
-    if (!allowFlip) return;
+    if (!effectiveAllowFlip) return;
     hapticLight();
     setFlipState(!flipState);
     isFlipped.value = withSpring(flipState ? 0 : 1, {
       damping: 15,
       stiffness: 90,
     });
-
-    if (onEdit) onEdit();
-    if (onViewFullProfile) onViewFullProfile();
   };
 
   const frontStyle = useAnimatedStyle(() => {
@@ -98,9 +99,43 @@ export default function IdentityCard({
   const can = canOverride || internalCan;
 
   const roleContext = useMemo(() => {
+    const rawCapacity = (data.capacity || '').toLowerCase();
+    if (previewMode) {
+      if (rawCapacity === 'principal' || rawCapacity === 'admin') {
+        return {
+          label: t('roles.principal', { defaultValue: 'Principal 🏛️' }),
+          icon: Crown,
+          colorClass: 'text-phase-accent',
+          emoji: '🏛️',
+        };
+      }
+      if (rawCapacity === 'teacher' || rawCapacity === 'educator' || rawCapacity === 'staff') {
+        return {
+          label: t('roles.teacher', { defaultValue: 'Teacher 🌱' }),
+          icon: Briefcase,
+          colorClass: 'text-phase-accent',
+          emoji: '🌱',
+        };
+      }
+      if (rawCapacity === 'student' || rawCapacity === 'learner') {
+        return {
+          label: t('roles.student', { defaultValue: 'Student 📚' }),
+          icon: GraduationCap,
+          colorClass: 'text-phase-accent',
+          emoji: '📚',
+        };
+      }
+      return {
+        label: t('roles.member', { defaultValue: 'Explorer 🌿' }),
+        icon: User,
+        colorClass: 'text-phase-text-secondary',
+        emoji: '🌿',
+      };
+    }
+
     if (can('manage', 'PrincipalDashboard')) {
       return {
-        label: t('roles.principal') || 'Principal 🏛️',
+        label: t('roles.principal', { defaultValue: 'Principal 🏛️' }),
         icon: Crown,
         colorClass: 'text-phase-accent',
         emoji: '🏛️',
@@ -108,7 +143,7 @@ export default function IdentityCard({
     }
     if (can('manage', 'TeacherDashboard')) {
       return {
-        label: t('roles.teacher') || 'Teacher 🌱',
+        label: t('roles.teacher', { defaultValue: 'Teacher 🌱' }),
         icon: Briefcase,
         colorClass: 'text-phase-accent',
         emoji: '🌱',
@@ -116,7 +151,7 @@ export default function IdentityCard({
     }
     if (can('manage', 'StudentDashboard')) {
       return {
-        label: t('roles.student') || 'Student 📚',
+        label: t('roles.student', { defaultValue: 'Student 📚' }),
         icon: GraduationCap,
         colorClass: 'text-phase-accent',
         emoji: '📚',
@@ -131,12 +166,12 @@ export default function IdentityCard({
       };
     }
     return {
-      label: 'Explorer 🌿',
+      label: t('roles.member', { defaultValue: 'Explorer 🌿' }),
       icon: User,
       colorClass: 'text-phase-text-secondary',
       emoji: '🌿',
     };
-  }, [can, t]);
+  }, [can, t, data.capacity, previewMode]);
 
   const defaultBackSide = () => (
     <Center className="h-full">
@@ -160,14 +195,15 @@ export default function IdentityCard({
   return (
     <Pressable
       onPress={handleFlip}
-      disabled={!allowFlip}
+      disabled={!effectiveAllowFlip}
       accessibilityRole="button"
       className="shadow-xl"
     >
       <Box
         style={[
           {
-            width: CARD_WIDTH,
+            width: '100%',
+            maxWidth: CARD_MAX_WIDTH,
             height: CARD_HEIGHT,
           },
           style,
@@ -226,7 +262,7 @@ export default function IdentityCard({
           />
         </Animated.View>
         {/* BACK SIDE - CUSTOM OR QR CODE */}
-        {allowFlip && (
+        {effectiveAllowFlip && (
           <Animated.View
             style={backStyle}
             className="absolute inset-0 overflow-hidden bg-phase-canvas border border-phase-surface rounded-[32px] backface-hidden"

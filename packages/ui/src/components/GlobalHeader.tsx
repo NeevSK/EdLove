@@ -1,7 +1,8 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
+import { BondBadge } from '@repo/ui/components/BondBadge';
+import { Bell, ChevronDown, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -29,6 +30,12 @@ export interface GlobalHeaderProps {
   };
   isSelfView?: boolean;
   avatarUrl?: string;
+  perspectivePill?: {
+    label: string;
+    badge?: string;
+    kind?: 'personal' | 'commercial' | 'institutional' | 'guardian';
+    onPress?: () => void;
+  };
 }
 
 interface HeaderState {
@@ -85,6 +92,7 @@ export default function GlobalHeader({
   searchProps,
   isSelfView = false,
   avatarUrl,
+  perspectivePill,
 }: GlobalHeaderProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
@@ -214,7 +222,7 @@ export default function GlobalHeader({
         }}
       >
         <HStack className="items-center justify-between gap-2">
-          <HStack className="items-center gap-2">
+          <HStack className="items-center gap-2 flex-1">
             {showBack ? (
               <Pressable
                 accessibilityRole="button"
@@ -259,7 +267,7 @@ export default function GlobalHeader({
               </Pressable>
             )}
 
-            <VStack className="gap-0.5">
+            <VStack className="gap-0.5 flex-1">
               {!isCompactLandscape && (subtitle || (!title && greetingDetails.text)) && (
                 <HStack className="items-center gap-1">
                   <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
@@ -267,21 +275,77 @@ export default function GlobalHeader({
                   </Text>
                 </HStack>
               )}
-              <Text
-                className={`${isCompactLandscape ? 'text-base' : 'text-lg'} font-bold text-phase-text-primary`}
-              >
-                {title
-                  ? title
-                  : isSelfView
-                    ? showFullNameAsPrimary
-                      ? userFullName
-                      : roleLabel
-                    : displayName}
-              </Text>
+
+              {perspectivePill ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Current perspective: ${perspectivePill.label}. Tap to switch perspective.`}
+                  onPress={perspectivePill.onPress}
+                  style={{
+                    alignSelf: 'flex-start',
+                    marginTop: 2,
+                  }}
+                >
+                  <HStack
+                    style={{
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <BondBadge
+                      label={perspectivePill.label}
+                      kind={perspectivePill.kind || 'personal'}
+                      size="sm"
+                    />
+                    {perspectivePill.onPress ? (
+                      <ChevronDown size={14} color={tokens.colors.inkSubtle} />
+                    ) : null}
+                  </HStack>
+                </Pressable>
+              ) : (
+                <Text
+                  className={`${isCompactLandscape ? 'text-base' : 'text-lg'} font-bold text-phase-text-primary`}
+                  numberOfLines={1}
+                >
+                  {title
+                    ? title
+                    : isSelfView
+                      ? showFullNameAsPrimary
+                        ? userFullName
+                        : roleLabel
+                      : displayName}
+                </Text>
+              )}
             </VStack>
           </HStack>
 
           <HStack className="items-center gap-2">
+            {!rightAction && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('notifications.title', 'Notifications')}
+                accessibilityHint={
+                  unreadCount > 0
+                    ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
+                    : 'Open your notifications'
+                }
+                onPress={handleOpenNotifications}
+              >
+                <Box className="relative p-2 rounded-full" style={{ backgroundColor: tokens.colors.surfaceInteractive }}>
+                  <Bell size={22} className="text-phase-text-primary" />
+                  {unreadCount > 0 && !error && (
+                    <Box
+                      className="absolute -right-0.5 -top-0.5 min-w-4 h-4 px-0.5 rounded-full items-center justify-center"
+                      style={{ backgroundColor: tokens.colors.error }}
+                    >
+                      <Text className="text-[9px] font-bold text-white">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+              </Pressable>
+            )}
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={
@@ -343,37 +407,7 @@ export default function GlobalHeader({
               </Pressable>
             )}
 
-            {!rightAction ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('notifications.title', 'Notifications')}
-                onPress={handleOpenNotifications}
-              >
-                <Box
-                  className="relative rounded-2xl p-2"
-                  style={{ backgroundColor: tokens.colors.surfaceSubtle }}
-                >
-                  <HStack className="items-center gap-2">
-                    <Bell size={20} className="text-phase-text-primary" />
-                    <Text className="text-sm text-phase-text-primary">Notifications</Text>
-                    {(error || isLoading || (unreadCount > 0 && !error)) && (
-                      <Box
-                        className="ml-auto w-2.5 h-2.5 rounded-full"
-                        style={{
-                          backgroundColor: error
-                            ? tokens.colors.error
-                            : isLoading
-                              ? tokens.colors.warning
-                              : tokens.colors.success,
-                        }}
-                      />
-                    )}
-                  </HStack>
-                </Box>
-              </Pressable>
-            ) : (
-              rightAction
-            )}
+            {rightAction}
           </VStack>
         </Animated.View>
 

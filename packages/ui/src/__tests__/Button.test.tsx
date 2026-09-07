@@ -15,15 +15,17 @@ beforeEach(() => {
   mockedHapticImpact.mockClear();
 });
 
-describe('Button Component (Robustness)', () => {
-  it('renders correctly with text and accessibility role', async () => {
+describe(
+  'Button Component (scenario contract)',
+  { tags: ['interaction', 'a11y', 'scenario', 'boundary'] },
+  () => {
+  it('exposes an accessible name and button role', async () => {
     const { getByRole } = await render(
       <Button>
         <ButtonText>Click Me</ButtonText>
       </Button>,
     );
-    const button = getByRole('button');
-    expect(button).toBeTruthy();
+    const button = getByRole('button', { name: 'Click Me' });
     expect(button.props.accessibilityRole).toBe('button');
   });
 
@@ -52,6 +54,39 @@ describe('Button Component (Robustness)', () => {
 
     fireEvent.press(button);
     expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it('keeps the action blocked while loading and recovers to pressable content', async () => {
+    const onPress = vi.fn();
+    const { getByRole, queryByText, rerender } = await render(
+      <Button isLoading onPress={onPress}>
+        <ButtonText>Save changes</ButtonText>
+      </Button>,
+    );
+
+    const loadingButton = getByRole('button');
+    expect(loadingButton.props.accessibilityState).toMatchObject({
+      busy: true,
+      disabled: true,
+    });
+    expect(queryByText('Save changes')).toBeNull();
+
+    fireEvent.press(loadingButton);
+    expect(onPress).not.toHaveBeenCalled();
+
+    await rerender(
+      <Button isLoading={false} onPress={onPress}>
+        <ButtonText>Save changes</ButtonText>
+      </Button>,
+    );
+
+    expect(getByRole('button', { name: 'Save changes' })).toBeTruthy();
+    expect(getByRole('button').props.accessibilityState).toMatchObject({
+      busy: false,
+      disabled: false,
+    });
+    fireEvent.press(getByRole('button', { name: 'Save changes' }));
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it('supports icons', async () => {
@@ -97,4 +132,5 @@ describe('Button Component (Robustness)', () => {
 
     expect(mockedHapticImpact).not.toHaveBeenCalled();
   });
-});
+  },
+);

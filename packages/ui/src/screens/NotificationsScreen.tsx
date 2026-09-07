@@ -9,7 +9,7 @@ import { Bell, Check, CircleAlert, Info, Sparkles } from '@repo/ui/icons';
 import { Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
+import { Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 
 function NotificationIcon({ type, color }: { type: string; color: string }) {
   switch (type) {
@@ -122,7 +122,7 @@ export default function NotificationsScreen() {
   const isStale = hasData && (isOffline || Boolean(error) || !isRealtimeConnected);
 
   return (
-    <ScreenWrapper scroll={false}>
+    <ScreenWrapper scroll={false} fullWidth noTopInset>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
@@ -135,28 +135,36 @@ export default function NotificationsScreen() {
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => void refresh()} />}
       >
         <VStack space="lg">
-          <HStack className="items-start justify-between gap-4">
-            <VStack className="flex-1 gap-1">
-              <Text className="text-xs uppercase tracking-[2px]" style={{ color: accent.action }}>
-                {t('notifications.stream') || 'Your stream'}
+          {Platform.OS !== 'web' ? (
+            <HStack className="items-start justify-between gap-4 mb-2">
+              <VStack className="flex-1 gap-1">
+                <Text className="text-xs uppercase tracking-[2px]" style={{ color: accent.action }}>
+                  {t('notifications.stream', 'Echoes of the Sanctuary')}
+                </Text>
+                <Text className="text-2xl font-bold" style={{ color: text.primary }}>
+                  {t('notifications.title', 'Notifications')}
+                </Text>
+                <Text className="text-sm" style={{ color: text.secondary }}>
+                  {unreadCount > 0
+                    ? t('notifications.unread', { count: unreadCount })
+                    : t('notifications.empty', 'Your sanctuary is quiet.')}
+                </Text>
+              </VStack>
+              <Bell size={26} color={accent.action} />
+            </HStack>
+          ) : (
+            unreadCount > 0 && (
+              <Text className="text-sm font-medium mb-1" style={{ color: text.secondary }}>
+                {t('notifications.unread', { count: unreadCount })}
               </Text>
-              <Text className="text-2xl font-bold" style={{ color: text.primary }}>
-                {t('notifications.title') || 'Notifications'}
-              </Text>
-              <Text className="text-sm" style={{ color: text.secondary }}>
-                {unreadCount > 0
-                  ? t('notifications.unread', { count: unreadCount })
-                  : t('notifications.empty') || 'Your sanctuary is quiet.'}
-              </Text>
-            </VStack>
-            <Bell size={26} color={accent.action} />
-          </HStack>
+            )
+          )}
 
           {isOffline ? (
             <HStack className="items-center gap-2 rounded-xl bg-phase-surface px-3 py-2">
               <CircleAlert size={15} color={accent.action} />
               <Text className="flex-1 text-xs" style={{ color: text.secondary }}>
-                Showing the latest saved notifications while you are offline.
+                {t('notifications.offline_notice', 'Showing the latest saved notifications while you are offline.')}
               </Text>
             </HStack>
           ) : isStale ? (

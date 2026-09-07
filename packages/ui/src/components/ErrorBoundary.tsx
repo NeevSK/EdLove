@@ -1,3 +1,5 @@
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { tokens } from '@repo/ui/tokens';
 import { Component, type ErrorInfo, type ReactNode, useCallback, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -52,7 +54,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
 }
 
 /**
- * ErrorCard - Standalone presentation component for the Sanctuary Error Boundary
+ * ErrorCard - Presentation component for the Sanctuary Error Boundary
  */
 function ErrorCard({
   name,
@@ -67,6 +69,7 @@ function ErrorCard({
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { isDark, scene, text, accent, textOnAccent } = useTheme();
 
   const errorMessage = error?.message || error?.toString() || 'Unknown runtime disruption.';
   const componentStack = errorInfo?.componentStack || '';
@@ -83,15 +86,43 @@ function ErrorCard({
 
   return (
     <View style={styles.outerContainer}>
-      <View style={styles.cardContainer}>
-        {/* Breathing Lotus Emblem */}
-        <View style={styles.iconCircle}>
-          <Text style={styles.emblemIcon}>🪷</Text>
+      <View
+        style={[
+          styles.cardContainer,
+          {
+            backgroundColor: isDark ? scene.surface.bg : tokens.semantic.surface.canvas,
+            borderColor: isDark ? scene.surface.border : tokens.semantic.border.subtle,
+          },
+        ]}
+      >
+        {/* Resting Flower Emblem */}
+        <View
+          style={[
+            styles.iconCircle,
+            {
+              backgroundColor: isDark ? 'rgba(212, 132, 58, 0.12)' : 'rgba(212, 132, 58, 0.10)',
+              borderColor: isDark ? 'rgba(212, 132, 58, 0.3)' : 'rgba(212, 132, 58, 0.25)',
+            },
+          ]}
+        >
+          <Text style={styles.emblemIcon}>🥀</Text>
         </View>
 
         {/* Reassuring Header & Copy */}
-        <Text style={styles.titleText}>Sanctuary Paused</Text>
-        <Text style={styles.subtitleText}>
+        <Text
+          style={[
+            styles.titleText,
+            { color: isDark ? text.primary : tokens.semantic.text.primary },
+          ]}
+        >
+          Sanctuary Paused
+        </Text>
+        <Text
+          style={[
+            styles.subtitleText,
+            { color: isDark ? text.secondary : tokens.semantic.text.secondary },
+          ]}
+        >
           An unexpected disruption occurred in this view. Your session and stored data remain
           completely safe.
         </Text>
@@ -104,9 +135,11 @@ function ErrorCard({
               accessibilityLabel="Restore view"
               onPress={onReset}
               activeOpacity={0.8}
-              style={styles.primaryButton}
+              style={[styles.primaryButton, { backgroundColor: accent.action }]}
             >
-              <Text style={styles.primaryButtonText}>Restore Sanctuary</Text>
+              <Text style={[styles.primaryButtonText, { color: textOnAccent }]}>
+                Restore Sanctuary
+              </Text>
             </TouchableOpacity>
           )}
 
@@ -117,9 +150,26 @@ function ErrorCard({
               void handleCopy();
             }}
             activeOpacity={0.7}
-            style={[styles.secondaryButton, copied && styles.copiedButton]}
+            style={[
+              styles.secondaryButton,
+              {
+                backgroundColor: isDark
+                  ? 'rgba(255, 255, 255, 0.05)'
+                  : 'rgba(42, 35, 24, 0.04)',
+                borderColor: isDark
+                  ? 'rgba(212, 132, 58, 0.2)'
+                  : tokens.semantic.border.subtle,
+              },
+              copied && styles.copiedButton,
+            ]}
           >
-            <Text style={[styles.secondaryButtonText, copied && styles.copiedButtonText]}>
+            <Text
+              style={[
+                styles.secondaryButtonText,
+                { color: isDark ? text.secondary : tokens.semantic.text.secondary },
+                copied && styles.copiedButtonText,
+              ]}
+            >
               {copied ? 'Copied to Clipboard ✓' : 'Copy Error Details'}
             </Text>
           </TouchableOpacity>
@@ -133,23 +183,65 @@ function ErrorCard({
           activeOpacity={0.6}
           style={styles.detailsToggle}
         >
-          <Text style={styles.detailsToggleText}>
+          <Text style={[styles.detailsToggleText, { color: accent.action }]}>
             {showDetails ? '▴ Hide Technical Diagnostics' : '▾ View Technical Diagnostics'}
           </Text>
         </TouchableOpacity>
 
         {showDetails && (
-          <View style={styles.inspectorBox}>
-            <View style={styles.inspectorHeader}>
-              <Text style={styles.inspectorBoundaryBadge}>Boundary: {name}</Text>
-              <Text style={styles.inspectorTimestamp}>{new Date().toLocaleTimeString()}</Text>
+          <View
+            style={[
+              styles.inspectorBox,
+              {
+                backgroundColor: isDark ? scene.canvas.bg : tokens.semantic.surface.quiet,
+                borderColor: isDark ? scene.border.subtle : tokens.semantic.border.subtle,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.inspectorHeader,
+                {
+                  borderBottomColor: isDark
+                    ? 'rgba(255, 255, 255, 0.06)'
+                    : tokens.semantic.border.subtle,
+                },
+              ]}
+            >
+              <Text style={[styles.inspectorBoundaryBadge, { color: accent.action }]}>
+                Boundary: {name}
+              </Text>
+              <Text
+                style={[
+                  styles.inspectorTimestamp,
+                  { color: isDark ? text.muted : tokens.semantic.text.muted },
+                ]}
+              >
+                {new Date().toLocaleTimeString()}
+              </Text>
             </View>
 
             <ScrollView style={styles.inspectorScroll} nestedScrollEnabled>
               <Text style={styles.inspectorErrorText}>{errorMessage}</Text>
-              {errorStack ? <Text style={styles.inspectorStackText}>{errorStack}</Text> : null}
+              {errorStack ? (
+                <Text
+                  style={[
+                    styles.inspectorStackText,
+                    { color: isDark ? text.muted : tokens.semantic.text.muted },
+                  ]}
+                >
+                  {errorStack}
+                </Text>
+              ) : null}
               {componentStack ? (
-                <Text style={styles.inspectorComponentStackText}>{componentStack}</Text>
+                <Text
+                  style={[
+                    styles.inspectorComponentStackText,
+                    { color: isDark ? text.muted : tokens.semantic.text.muted },
+                  ]}
+                >
+                  {componentStack}
+                </Text>
               ) : null}
             </ScrollView>
           </View>
@@ -229,23 +321,21 @@ export function RouteErrorBoundary({
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#0D0907', // Sanctuary obsidian-warm ink
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: tokens.spacing.md,
   },
   cardContainer: {
-    backgroundColor: '#18110D', // Dark amber card surface
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(212, 132, 58, 0.25)', // Golden amber border
-    padding: 28,
+    padding: tokens.spacing.lg,
     alignItems: 'center',
     maxWidth: 480,
     width: '100%',
-    shadowColor: '#000',
+    shadowColor: tokens.colors.shadowColor,
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.15,
     shadowRadius: 24,
     elevation: 8,
   },
@@ -253,12 +343,10 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(212, 132, 58, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(212, 132, 58, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: tokens.spacing.md,
   },
   emblemIcon: {
     fontSize: 32,
@@ -267,97 +355,84 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFF5EB',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: tokens.spacing.xs,
     letterSpacing: -0.3,
   },
   subtitleText: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#C4B5A5',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: tokens.spacing.lg,
   },
   actionsRow: {
     flexDirection: 'column',
     width: '100%',
-    gap: 10,
+    gap: tokens.spacing.sm,
   },
   primaryButton: {
-    backgroundColor: '#D4843A', // Brand Golden Amber
     paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingHorizontal: tokens.spacing.lg,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
   primaryButtonText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: -0.2,
   },
   secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(212, 132, 58, 0.2)',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: tokens.spacing.md,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
   secondaryButtonText: {
-    color: '#E0D2C3',
     fontSize: 14,
     fontWeight: '600',
   },
   copiedButton: {
-    backgroundColor: 'rgba(52, 211, 153, 0.15)',
-    borderColor: 'rgba(52, 211, 153, 0.4)',
+    backgroundColor: 'rgba(91, 140, 79, 0.15)',
+    borderColor: tokens.colors.success,
   },
   copiedButtonText: {
-    color: '#34D399',
+    color: tokens.colors.success,
   },
   detailsToggle: {
-    marginTop: 18,
+    marginTop: tokens.spacing.md,
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
   detailsToggleText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#D4843A',
   },
   inspectorBox: {
-    marginTop: 12,
+    marginTop: tokens.spacing.sm,
     width: '100%',
-    backgroundColor: '#090604',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    padding: 14,
+    padding: tokens.spacing.sm,
   },
   inspectorHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: tokens.spacing.xs,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
     paddingBottom: 6,
   },
   inspectorBoundaryBadge: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#F6BF8C',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   inspectorTimestamp: {
     fontSize: 11,
-    color: '#7C6F64',
   },
   inspectorScroll: {
     maxHeight: 180,
@@ -365,21 +440,20 @@ const styles = StyleSheet.create({
   inspectorErrorText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#F87171',
+    color: tokens.colors.error,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    marginBottom: 8,
+    marginBottom: tokens.spacing.xs,
   },
   inspectorStackText: {
     fontSize: 11,
     lineHeight: 16,
-    color: '#9CA3AF',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
   inspectorComponentStackText: {
     fontSize: 11,
     lineHeight: 16,
-    color: '#6B7280',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     marginTop: 6,
   },
 });
+

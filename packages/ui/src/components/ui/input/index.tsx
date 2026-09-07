@@ -2,7 +2,7 @@ import { useFormControlContext } from '@repo/ui/components/ui/form-control';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { TextInput } from '@repo/ui/components/ui/text-input';
 import { View } from '@repo/ui/components/ui/view';
-import { useTheme } from '@repo/ui/hooks/useTheme';
+import { CLASSIC_TOKENS } from '@repo/ui/theme/Theme';
 import { cn } from '@repo/ui/utils/classNames';
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { type PressableProps, type TextInputProps, type ViewProps } from 'react-native';
@@ -10,6 +10,7 @@ import { type PressableProps, type TextInputProps, type ViewProps } from 'react-
 // --- Context ---
 interface InputContextType {
   id?: string;
+  describedBy?: string;
   isDisabled?: boolean;
   isInvalid?: boolean;
   isFocused: boolean;
@@ -41,18 +42,20 @@ const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
     const [isFocused, setIsFocused] = useState(false);
     const formControl = useFormControlContext();
     const resolvedId = props.nativeID ?? formControl.id;
+    const describedBy = formControl.isInvalid ? formControl.errorId : formControl.helperId;
     const resolvedDisabled = isDisabled ?? formControl.isDisabled;
     const resolvedInvalid = isInvalid ?? formControl.isInvalid;
 
     const contextValue = useMemo(
       () => ({
         id: resolvedId,
+        describedBy,
         isDisabled: resolvedDisabled,
         isInvalid: resolvedInvalid,
         isFocused,
         setIsFocused,
       }),
-      [resolvedDisabled, resolvedInvalid, resolvedId, isFocused],
+      [describedBy, resolvedDisabled, resolvedInvalid, resolvedId, isFocused],
     );
 
     return (
@@ -88,9 +91,7 @@ export const InputField = React.forwardRef<
   React.ElementRef<typeof TextInput>,
   TextInputProps & { className?: string; type?: 'text' | 'password' | 'number' }
 >(({ className, type, onFocus, onBlur, ...props }, ref) => {
-  const { id, isDisabled, isInvalid, setIsFocused } = useInput();
-  const theme = useTheme();
-
+  const { id, describedBy, isDisabled, isInvalid, setIsFocused } = useInput();
   return (
     <TextInput
       {...props}
@@ -98,10 +99,11 @@ export const InputField = React.forwardRef<
       editable={!isDisabled}
       accessibilityState={{ disabled: isDisabled }}
       aria-invalid={isInvalid || undefined}
+      aria-describedby={describedBy}
       accessibilityLabelledBy={id ? `${id}-label` : undefined}
       secureTextEntry={type === 'password'}
       keyboardType={type === 'number' ? 'numeric' : props.keyboardType}
-      placeholderTextColor={theme.text.muted}
+      placeholderTextColor={props.placeholderTextColor ?? CLASSIC_TOKENS.text.muted}
       onFocus={(e) => {
         setIsFocused(true);
         onFocus?.(e);
@@ -130,7 +132,22 @@ export const InputSlot = ({
   </Pressable>
 );
 
-export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) => {
+interface InputIconProps {
+  as?: React.ComponentType<{
+    size?: number;
+    color?: string;
+    className?: string;
+    testID?: string;
+    accessibilityLabel?: string;
+  }>;
+  className?: string;
+  color?: string;
+  size?: number;
+  testID?: string;
+  accessibilityLabel?: string;
+}
+
+export const InputIcon = ({ as: Icon, className, color, size, ...props }: InputIconProps) => {
   if (!Icon) return null;
   return (
     <Icon

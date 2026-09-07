@@ -1,5 +1,5 @@
 import { authAPI } from '@repo/core/auth';
-import { LanguageUtils, useSanctuaryVisitor } from '@repo/core/logic';
+import { LanguageUtils } from '@repo/core/logic';
 import {
   LanguageSwitcher,
   SanctuaryDoorwayActions,
@@ -37,9 +37,8 @@ export interface SanctuaryWelcomeScreenProps {
 export const SanctuaryWelcomeScreen = memo(
   ({ onLogin, onGuest, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
     const { t, i18n } = useTranslation();
-    const { accent, animationsEnabled, blurEnabled } = useTheme();
+    const { accent, animationsEnabled, blurEnabled, scene } = useTheme();
     const { isReduceMotionEnabled } = useAccessibility();
-    const visitor = useSanctuaryVisitor();
     const { showToast } = useSanctuaryToast();
 
     const [isConnecting, setIsConnecting] = useState(false);
@@ -59,7 +58,6 @@ export const SanctuaryWelcomeScreen = memo(
 
       try {
         await authAPI.signInAnonymously();
-        visitor.markVisited();
         if (onGuest) onGuest();
       } catch (error) {
         console.error('[SanctuaryWelcomeScreen] Guest login failed:', error);
@@ -75,13 +73,12 @@ export const SanctuaryWelcomeScreen = memo(
         guestEntryInFlightRef.current = false;
         setIsConnecting(false);
       }
-    }, [isConnecting, onGuest, showToast, t, visitor]);
+    }, [isConnecting, onGuest, showToast, t]);
 
     const handleLoginPress = useCallback(() => {
       hapticLight();
-      visitor.markVisited();
       if (onLogin) onLogin();
-    }, [onLogin, visitor]);
+    }, [onLogin]);
 
     const realms = useMemo<readonly SanctuaryRealmItem[]>(
       () => [
@@ -113,19 +110,19 @@ export const SanctuaryWelcomeScreen = memo(
     const shouldAnimate = animationsEnabled && blurEnabled && !isReduceMotionEnabled;
 
     return (
-      <ScreenWrapper scroll>
-        <Box className="flex-1 bg-phase-surface px-6 pt-6 pb-12 overflow-hidden justify-between">
-          {/* Ambient organic background lighting */}
+      <ScreenWrapper fullWidth scroll backgroundColor={scene.surface.bg}>
+        <Box className="flex-1 min-h-full w-full bg-phase-surface relative overflow-hidden justify-between items-center px-6 pt-6 pb-12">
+          {/* Full-bleed ambient organic background lighting */}
           <Box
-            className="absolute -top-20 -left-16 w-[340px] h-[340px] rounded-full pointer-events-none opacity-20"
+            className="absolute -top-24 -left-20 w-[420px] h-[420px] rounded-full pointer-events-none opacity-20"
             style={{ backgroundColor: accent.action }}
           />
           <Box
-            className="absolute top-72 -right-24 w-[280px] h-[280px] rounded-full pointer-events-none opacity-15"
+            className="absolute top-80 -right-24 w-[360px] h-[360px] rounded-full pointer-events-none opacity-15"
             style={{ backgroundColor: Theme.colors.gurudeviBlue }}
           />
 
-          <VStack className="gap-8 w-full max-w-[480px] self-center">
+          <VStack className="gap-8 w-full max-w-[480px] self-center z-10">
             {/* Header: Brand pill + Modular accessible LanguageSwitcher */}
             <HStack className="justify-between items-center w-full pt-2">
               <Box className="px-3.5 py-1.5 rounded-full bg-phase-accent/10 border border-phase-accent/25">
@@ -172,15 +169,10 @@ export const SanctuaryWelcomeScreen = memo(
 
               <VStack className="gap-2.5 items-center">
                 <Heading className="text-phase-text-primary text-3xl text-center font-bold tracking-[-0.5px]">
-                  {visitor.hasPreviousSession
-                    ? 'Welcome Back'
-                    : t('welcome.message') || 'Welcome to Gurudevi'}
+                  {t('welcome.message') || 'Welcome to Gurudevi'}
                 </Heading>
-                <Text className="text-phase-text-secondary text-sm text-center max-w-[320px] leading-relaxed">
-                  {visitor.hasPreviousSession
-                    ? 'Your path and workspace are ready whenever you wish to resume.'
-                    : t('welcome.subtitle') ||
-                      'Education born from love, built with love.'}
+                <Text className="text-phase-text-secondary text-sm text-center max-w-[340px] leading-relaxed">
+                  {t('welcome.subtitle') || 'Education born from love, built with love.'}
                 </Text>
               </VStack>
             </VStack>
@@ -195,7 +187,6 @@ export const SanctuaryWelcomeScreen = memo(
             {/* Modular Doorway Action Buttons (1-Tap Guest Entry & Returning Account Doorway) */}
             <SanctuaryDoorwayActions
               isConnecting={isConnecting}
-              hasPreviousSession={visitor.hasPreviousSession}
               onExploreGuest={handleStartExploring}
               onSignIn={handleLoginPress}
             />

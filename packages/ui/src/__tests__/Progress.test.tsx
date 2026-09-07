@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import { Progress, ProgressFilledTrack } from '../components/ui/progress';
 
-describe('Progress Component (Robustness)', () => {
+describe('Progress Component (scenario contract)', { tags: ['a11y', 'scenario', 'boundary'] }, () => {
   it('renders correctly with value', async () => {
     const { getByTestId } = await render(
       <Progress value={50} testID="progress-bar">

@@ -162,8 +162,8 @@ const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenP
   );
 
   return (
-    <ScreenWrapper scroll>
-      <Box className="flex-1 bg-phase-surface px-6 pt-10 pb-12 overflow-hidden">
+    <ScreenWrapper fullWidth scroll>
+      <Box className="flex-1 min-h-full w-full bg-phase-surface px-6 pt-10 pb-12 overflow-hidden items-center justify-between">
         {/* Background decorative blobs */}
         <Box
           className="absolute -top-14 -left-9 w-[220px] h-[220px] rounded-full"

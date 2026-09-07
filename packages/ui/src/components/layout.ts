@@ -30,6 +30,7 @@ export const responsiveBreakpoints = {
   tabletMinWidth: 768,
   tabletLandscapeMinHeight: 600,
   desktopMinWidth: 1024,
+  wideMinWidth: 1280,
 } as const;
 
 /** Shared geometry for adaptive two-column surfaces. */
@@ -64,7 +65,9 @@ export type Breakpoint = 'phone' | 'tablet' | 'desktop';
 
 /** How many grid columns list/grid content should use at each band. */
 export const columns: Record<Breakpoint, number> = {
-  ...tokens.layout.grid,
+  phone: tokens.layout.grid.phone,
+  tablet: tokens.layout.grid.tablet,
+  desktop: tokens.layout.grid.desktop,
 };
 
 /**
@@ -92,13 +95,25 @@ export function isMobileLayout(width: number): boolean {
  * states share the same reading width.
  */
 export const maxContentWidth: Record<Breakpoint, number | '100%'> = {
-  ...tokens.layout.pageFrame.maxWidth,
+  phone: tokens.layout.pageFrame.maxWidth.phone,
+  tablet: tokens.layout.pageFrame.maxWidth.tablet,
+  desktop: tokens.layout.pageFrame.maxWidth.desktop,
 };
 
 /** Horizontal breathing room for the shared page frame. */
 export const pageGutters: Record<Breakpoint, number> = {
-  ...tokens.layout.pageFrame.gutter,
+  phone: tokens.layout.pageFrame.gutter.phone,
+  tablet: tokens.layout.pageFrame.gutter.tablet,
+  desktop: tokens.layout.pageFrame.gutter.desktop,
 };
+
+export type LayoutContainerVariant =
+  | 'doorway'
+  | 'reading'
+  | 'compact'
+  | 'dashboard'
+  | 'wide'
+  | 'fullBleed';
 
 export type PageFrame = {
   breakpoint: Breakpoint;
@@ -145,13 +160,38 @@ export function useResponsiveGrid() {
 }
 
 /** Shared frame metrics for screens, lists, and loading states. */
-export function usePageFrame(): PageFrame {
+export function usePageFrame(variant?: LayoutContainerVariant): PageFrame {
   const breakpoint = useBreakpoint();
+
+  let resolvedMaxWidth: number | '100%' = maxContentWidth[breakpoint];
+  if (variant) {
+    switch (variant) {
+      case 'doorway':
+        resolvedMaxWidth = tokens.layout.containers.doorway;
+        break;
+      case 'reading':
+        resolvedMaxWidth = tokens.layout.containers.reading;
+        break;
+      case 'compact':
+        resolvedMaxWidth = tokens.layout.containers.compact;
+        break;
+      case 'dashboard':
+        resolvedMaxWidth = tokens.layout.containers.dashboard;
+        break;
+      case 'wide':
+        resolvedMaxWidth = tokens.layout.containers.wide;
+        break;
+      case 'fullBleed':
+        resolvedMaxWidth = tokens.layout.containers.full;
+        break;
+    }
+  }
+
   return {
     breakpoint,
     columns: columns[breakpoint],
     gutter: pageGutters[breakpoint],
-    maxWidth: maxContentWidth[breakpoint],
+    maxWidth: resolvedMaxWidth,
     readingMaxWidth: tokens.layout.pageFrame.readingMaxWidth,
   };
 }

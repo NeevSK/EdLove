@@ -31,7 +31,7 @@ interface FABContextType {
 const defaultState: FABState = {
   actions: [],
   tabType: 'self',
-  visible: true,
+  visible: false,
 };
 
 const FABContext = createContext<FABContextType | undefined>(undefined);
@@ -48,7 +48,7 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const unregisterFAB = useCallback(() => {
-    setState((prev) => ({ ...prev, actions: [], visible: true }));
+    setState((prev) => ({ ...prev, actions: [], visible: false }));
   }, []);
 
   const setVisibility = useCallback((visible: boolean) => {
@@ -80,13 +80,12 @@ export const useRegisterFAB = (config: Partial<FABState>) => {
 
   React.useEffect(() => {
     registerFAB(config);
-    // return () => unregisterFAB();
+    return () => unregisterFAB();
   }, [
     registerFAB,
     config.tabType,
     config.visible,
     config.onPress,
-    // config.icon, // REMOVED: This causes infinite loops if the icon is a new JSX element
     config.onBreathingReset,
     config.hasActiveGaps,
     config,

@@ -9,6 +9,14 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
+vi.mock('expo-haptics', () => ({
+  ImpactFeedbackStyle: { Light: 0, Medium: 1, Heavy: 2 },
+  NotificationFeedbackType: { Success: 0, Warning: 1, Error: 2 },
+  impactAsync: vi.fn(async () => undefined),
+  notificationAsync: vi.fn(async () => undefined),
+  selectionAsync: vi.fn(async () => undefined),
+}));
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({

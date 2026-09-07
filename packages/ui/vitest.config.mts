@@ -90,6 +90,18 @@ export default defineConfig({
       shuffle: false,
     },
     passWithNoTests: false,
+    tags: [
+      { name: 'a11y' },
+      { name: 'boundary' },
+      { name: 'interaction' },
+      { name: 'leaks' },
+      { name: 'native' },
+      { name: 'runtime' },
+      { name: 'scenario' },
+      { name: 'unit' },
+      { name: 'visual' },
+      { name: 'web' },
+    ],
     reporters: ['default'],
   },
 });

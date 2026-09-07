@@ -3,7 +3,8 @@
  * Consistent haptic patterns across the app
  */
 
-import { coreRuntime } from '@repo/core/logic';
+import * as Haptics from 'expo-haptics';
+import { Platform } from 'react-native';
 
 export type HapticImpact = 'light' | 'medium' | 'heavy';
 
@@ -14,11 +15,13 @@ export function setHapticsEnabled(enabled: boolean) {
   hapticsEnabled = enabled;
 }
 
-function runHaptic(label: string, callback: () => void) {
-  if (!hapticsEnabled) return;
+function runHaptic(label: string, callback: () => void | Promise<void>) {
+  if (!hapticsEnabled || Platform.OS === 'web') return;
 
   try {
-    callback();
+    void Promise.resolve(callback()).catch((error: unknown) => {
+      console.warn(`[Haptics] ${label} failed`, error);
+    });
   } catch (error) {
     console.warn(`[Haptics] ${label} failed`, error);
   }
@@ -38,14 +41,11 @@ export function hapticImpact(kind: HapticImpact) {
   runHaptic(`impact.${kind}`, () => {
     switch (kind) {
       case 'light':
-        coreRuntime.haptics.impactLight();
-        break;
+        return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       case 'medium':
-        coreRuntime.haptics.impactMedium();
-        break;
+        return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       case 'heavy':
-        coreRuntime.haptics.impactHeavy();
-        break;
+        return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
   });
 }
@@ -80,7 +80,7 @@ export function hapticHeavy() {
  */
 export function hapticSuccess() {
   runHaptic('notification.success', () => {
-    coreRuntime.haptics.notificationSuccess();
+    return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   });
 }
 
@@ -90,7 +90,7 @@ export function hapticSuccess() {
  */
 export function hapticWarning() {
   runHaptic('notification.warning', () => {
-    coreRuntime.haptics.notificationWarning();
+    return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   });
 }
 
@@ -100,7 +100,7 @@ export function hapticWarning() {
  */
 export function hapticError() {
   runHaptic('notification.error', () => {
-    coreRuntime.haptics.notificationError();
+    return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
   });
 }
 
@@ -110,7 +110,7 @@ export function hapticError() {
  */
 export function hapticSelection() {
   runHaptic('selection', () => {
-    coreRuntime.haptics.selection();
+    return Haptics.selectionAsync();
   });
 }
 

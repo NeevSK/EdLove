@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { Radio, RadioGroup, RadioIndicator, RadioLabel } from '../components/ui/radio';
 
-describe('Radio Component (Robustness)', () => {
+describe('Radio Component (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
   it('renders correctly', async () => {
     const { getByText } = await render(
       <Radio value="opt1">

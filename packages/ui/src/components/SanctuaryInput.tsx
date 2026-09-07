@@ -25,8 +25,20 @@ interface SanctuaryInputProps {
   error?: string;
   isInvalid?: boolean;
   type?: 'text' | 'password';
-  leftIcon?: React.ElementType;
-  rightIcon?: React.ElementType;
+  leftIcon?: React.ComponentType<{
+    size?: number;
+    color?: string;
+    className?: string;
+    testID?: string;
+    accessibilityLabel?: string;
+  }>;
+  rightIcon?: React.ComponentType<{
+    size?: number;
+    color?: string;
+    className?: string;
+    testID?: string;
+    accessibilityLabel?: string;
+  }>;
   onRightIconPress?: () => void;
   helperText?: string;
   isDisabled?: boolean;

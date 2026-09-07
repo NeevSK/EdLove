@@ -42,8 +42,12 @@ export default function ComponentShowcaseScreen() {
   const [role, setRole] = useState('student');
 
   return (
-    <ScrollView className="flex-1 bg-phase-background">
-      <VStack className="mx-auto w-full max-w-2xl gap-8 p-6">
+    <ScrollView
+      className="flex-1 bg-phase-background"
+      contentContainerStyle={{ flexGrow: 1, width: '100%', alignItems: 'center' }}
+      contentContainerClassName="flex-grow w-full items-center"
+    >
+      <VStack className="w-full max-w-2xl gap-8 p-6">
         <VStack className="gap-2">
           <Text className="text-xs font-semibold uppercase tracking-[3px] text-phase-accent">
             UI reference surface

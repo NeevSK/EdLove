@@ -1,8 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { identityAPI, onboardingAPI } from '@repo/core/api/client';
+import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
+import { storage } from '@repo/core/lib/storage';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
 import { FireflyFeedbackScene } from '@repo/ui/components/FireflyFeedbackScene';
+import IdentityCard from '@repo/ui/components/IdentityCard';
 import type { MascotArtworkSource } from '@repo/ui/components/Mascot';
 import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -42,7 +45,7 @@ import {
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 
@@ -128,6 +131,9 @@ const NameStep = memo(
     isLoading,
     onBackToWelcome,
     artwork,
+    userId,
+    capacity,
+    schoolName,
   }: {
     t: (key: string, options?: any) => string;
     name: string;
@@ -138,6 +144,9 @@ const NameStep = memo(
     isLoading?: boolean;
     onBackToWelcome: () => void;
     artwork?: MascotArtworkSource;
+    userId?: string | null;
+    capacity: Capacity;
+    schoolName?: string;
   }) => {
     const inputRef = useRef<any>(null);
 
@@ -164,6 +173,18 @@ const NameStep = memo(
         artwork={artwork}
       >
         <VStack className="gap-4">
+          <Center className="my-1">
+            <IdentityCard
+              data={{
+                id: userId || 'preview',
+                display_name: name.trim() || 'Your Sanctuary Persona',
+                capacity,
+                school_name: schoolName,
+              }}
+              previewMode
+            />
+          </Center>
+
           <Input className="rounded-xl border-phase-border bg-phase-secondary/50 px-3 py-1">
             <InputField
               ref={inputRef}
@@ -225,6 +246,9 @@ const IdentityStep = memo(
   ({
     t,
     capacity,
+    name,
+    userId,
+    schoolName,
     onCapacitySelect,
     onBack,
     onNext,
@@ -233,6 +257,9 @@ const IdentityStep = memo(
   }: {
     t: (key: string, options?: any) => string;
     capacity: Capacity;
+    name: string;
+    userId?: string | null;
+    schoolName?: string;
     onCapacitySelect: (capacity: Capacity) => void;
     onBack: () => void;
     onNext: () => void;
@@ -248,6 +275,17 @@ const IdentityStep = memo(
       })}
     >
       <VStack className="gap-3">
+        <Center className="mb-2">
+          <IdentityCard
+            data={{
+              id: userId || 'preview',
+              display_name: name.trim() || 'Your Sanctuary Persona',
+              capacity,
+              school_name: schoolName,
+            }}
+            previewMode
+          />
+        </Center>
         {isAnonymous && (
           <Text className="text-xs text-phase-text-tertiary text-center mb-1">
             (Anonymous Guest Session)
@@ -579,6 +617,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const { t } = useTranslation();
 
   const [state, dispatch] = useReducer(onboardingJourneyReducer, initialOnboardingJourneyState);
+  const [resolvedSchoolName, setResolvedSchoolName] = useState<string | undefined>(undefined);
 
   const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
   const currentPhase = getOnboardingPhase(currentStep);
@@ -590,7 +629,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   > | null>(null);
   const anonymousBootstrapRequestedRef = useRef(false);
 
-  // ── Restore saved progress or pre-fill from existing auth ──────────
+  // ── Restore saved progress or pre-fill from existing auth & invites ──
   useEffect(() => {
     const initOnboarding = async () => {
       if (!userId) {
@@ -605,6 +644,26 @@ const OnboardingScreen = memo(function OnboardingScreen({
         resolvedCitizenRef.current = citizen;
       } catch (err) {
         console.warn('[Onboarding] Failed to pre-identify active citizen:', err);
+      }
+
+      // Check for pending invite code (e.g. from QR scan or invite link)
+      try {
+        const pendingInvite = await storage.getStringAsync('pending_invite');
+        if (pendingInvite) {
+          const res = await resolveStoredInvite(pendingInvite);
+          if (res.valid && res.data) {
+            console.log('🎟️ [Onboarding] Resolved stored invite:', res.data.code, res.data.school_name);
+            dispatch({ type: 'SET_SCHOOL_ID', schoolId: res.data.school_id });
+            dispatch({ type: 'SET_CAPACITY', capacity: res.data.capacity });
+            dispatch({ type: 'SET_PRICING', pricing: 'INSTITUTIONAL' });
+            dispatch({ type: 'SET_CITIZENSHIP', citizenship: 'INSTITUTIONAL' });
+            if (res.data.school_name) {
+              setResolvedSchoolName(res.data.school_name);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[Onboarding] Failed to resolve stored invite:', err);
       }
 
       try {
@@ -1062,12 +1121,18 @@ const OnboardingScreen = memo(function OnboardingScreen({
                       isLoading={isProcessing}
                       onBackToWelcome={handleBackToWelcome}
                       artwork={onboardingArtwork}
+                      userId={userId}
+                      capacity={selectedCapacity}
+                      schoolName={resolvedSchoolName}
                     />
                   )}
                   {currentPhase === 'identity' && (
                     <IdentityStep
                       t={t}
                       capacity={selectedCapacity}
+                      name={name}
+                      userId={userId}
+                      schoolName={resolvedSchoolName}
                       onCapacitySelect={handleCapacitySelect}
                       onBack={handleBack}
                       onNext={() => {

@@ -1,4 +1,4 @@
-import { useTheme } from '@repo/ui/hooks/useTheme';
+import { CLASSIC_TOKENS } from '@repo/ui/theme/Theme';
 import { Platform, Switch as RNSwitch, type SwitchProps } from 'react-native';
 
 /**
@@ -21,10 +21,7 @@ export const Switch = ({
   trackColor: trackColorProp,
   ...props
 }: ISwitchProps) => {
-  const { accent } = useTheme();
-
-  // Resolution logic for theme-aware action colors
-  const activeColor = accent?.action || '#D4843A';
+  const activeColor = CLASSIC_TOKENS.accent.action;
   const inactiveTrackColor = Platform.OS === 'ios' ? '#E9E9EA' : '#ccc';
 
   const defaultTrackColor = {
@@ -32,11 +29,13 @@ export const Switch = ({
     true: activeColor,
   };
 
+  const handleValueChange = isDisabled ? undefined : onValueChange;
+
   return (
     <RNSwitch
       {...props}
       value={value}
-      onValueChange={onValueChange}
+      onValueChange={handleValueChange}
       disabled={isDisabled}
       trackColor={trackColorProp || defaultTrackColor}
       thumbColor={Platform.OS === 'ios' ? '#FFFFFF' : value ? '#FFFFFF' : '#f4f3f4'}

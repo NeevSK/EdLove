@@ -11,7 +11,7 @@ const TestComponent = ({ message = 'Hello', type = 'info' as any, duration = 300
   );
 };
 
-describe('Toast System Logic (2026 Standard)', () => {
+describe('Toast System Logic (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary', 'leaks'] }, () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

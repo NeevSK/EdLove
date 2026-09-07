@@ -82,6 +82,7 @@ interface HeroPanelProps {
     eyebrow: string;
     title: string;
     subtitle: string;
+    emoji: string;
   };
   renderedPillars: React.ReactNode;
 }
@@ -121,7 +122,7 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
                   : 'bg-white/90 border-slate-900/12 shadow-slate-900/5'
               }`}
             >
-              <span className="text-2xl">🪷</span>
+              <span className="text-2xl">{modeCopy.emoji}</span>
             </div>
           </LivingGlow>
 
@@ -273,6 +274,7 @@ export const AuthScreenWeb = memo(
               primary: 'Create Account',
               google: 'Continue with Google',
               email: 'Continue with Email',
+              emoji: '🌱',
             }
           : {
               eyebrow: 'Return to your sanctuary',
@@ -282,6 +284,7 @@ export const AuthScreenWeb = memo(
               primary: 'Log In',
               google: 'Sign in with Google',
               email: 'Sign in with Email',
+              emoji: '🗝️',
             },
       [mode],
     );

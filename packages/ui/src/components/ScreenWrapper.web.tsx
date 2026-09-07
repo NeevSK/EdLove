@@ -2,7 +2,7 @@ import { useTheme } from '@repo/ui/hooks/useTheme';
 import { ScrollView, View } from '@repo/ui/primitives';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { usePageFrame } from './layout';
+import { type LayoutContainerVariant, usePageFrame } from './layout';
 
 export interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -16,6 +16,8 @@ export interface ScreenWrapperProps {
   hasBottomTab?: boolean;
   noTopInset?: boolean;
   className?: string;
+  fullWidth?: boolean;
+  variant?: LayoutContainerVariant;
 }
 
 export function useBottomTabPadding() {
@@ -30,6 +32,7 @@ export function useBottomTabPadding() {
  * 1. Restores native browser scrollbars (showsVerticalScrollIndicator={true}).
  * 2. Removes KeyboardAvoidingView overhead which is unnecessary on desktop.
  * 3. Optimizes scroll behavior for mouse/touchpad interaction.
+ * 4. Supports semantic container variants (doorway, reading, dashboard, wide, fullBleed).
  */
 export default function ScreenWrapper({
   children,
@@ -40,9 +43,12 @@ export default function ScreenWrapper({
   style,
   refreshControl,
   className,
+  fullWidth = false,
+  variant,
 }: ScreenWrapperProps) {
   const { scene } = useTheme();
-  const frame = usePageFrame();
+  const frame = usePageFrame(variant);
+  const isFullBleed = fullWidth || variant === 'fullBleed';
 
   const isScrollable = scroll ?? scrollable;
   const resolvedBackground = backgroundColor || scene.canvas.bg;
@@ -59,14 +65,15 @@ export default function ScreenWrapper({
           style={styles.scrollView}
           contentContainerStyle={[
             styles.contentContainer,
-            {
-              maxWidth: frame.maxWidth,
-              paddingHorizontal: frame.gutter,
-            },
+            isFullBleed
+              ? { width: '100%' }
+              : {
+                  maxWidth: frame.maxWidth,
+                  paddingHorizontal: frame.gutter,
+                },
             style,
           ]}
           keyboardShouldPersistTaps="handled"
-          // High-fidelity fix: show scrollbars on web for better spatial awareness (System 2 resonance)
           showsVerticalScrollIndicator={true}
           refreshControl={refreshControl}
           scrollEventThrottle={16}
@@ -78,7 +85,9 @@ export default function ScreenWrapper({
           style={[
             styles.contentContainer,
             styles.flex1,
-            { maxWidth: frame.maxWidth, paddingHorizontal: frame.gutter },
+            isFullBleed
+              ? { width: '100%' }
+              : { maxWidth: frame.maxWidth, paddingHorizontal: frame.gutter },
             style,
           ]}
         >
@@ -92,6 +101,7 @@ export default function ScreenWrapper({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    minHeight: '100%',
   },
   scrollView: {
     flex: 1,

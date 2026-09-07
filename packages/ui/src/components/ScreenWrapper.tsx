@@ -3,7 +3,7 @@ import { useTheme } from '@repo/ui/hooks/useTheme';
 import type React from 'react';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePageFrame } from './layout';
+import { type LayoutContainerVariant, usePageFrame } from './layout';
 
 export interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -17,6 +17,8 @@ export interface ScreenWrapperProps {
   className?: string;
   hasBottomTab?: boolean;
   noTopInset?: boolean;
+  fullWidth?: boolean;
+  variant?: LayoutContainerVariant;
 }
 
 export function useBottomTabPadding() {
@@ -38,10 +40,13 @@ export default function ScreenWrapper({
   className,
   hasBottomTab = false,
   noTopInset = false,
+  fullWidth = false,
+  variant,
 }: ScreenWrapperProps) {
   const insets = useSafeAreaInsets();
   const { isDark, scene } = useTheme();
-  const frame = usePageFrame();
+  const frame = usePageFrame(variant);
+  const isFullBleed = fullWidth || variant === 'fullBleed';
 
   const safeAreaStyle = {
     paddingTop: noTopInset ? 0 : insets.top,
@@ -70,7 +75,9 @@ export default function ScreenWrapper({
             style={{ flex: 1 }}
             contentContainerStyle={[
               styles.contentContainer,
-              { width: '100%', maxWidth: frame.maxWidth, alignSelf: 'center' },
+              isFullBleed
+                ? { width: '100%' }
+                : { width: '100%', maxWidth: frame.maxWidth, alignSelf: 'center' },
               hasBottomTab && { paddingBottom: 80 + insets.bottom },
               style,
             ]}
@@ -83,7 +90,9 @@ export default function ScreenWrapper({
           <View
             style={[
               styles.contentContainer,
-              { flex: 1, width: '100%', maxWidth: frame.maxWidth, alignSelf: 'center' },
+              isFullBleed
+                ? { flex: 1, width: '100%' }
+                : { flex: 1, width: '100%', maxWidth: frame.maxWidth, alignSelf: 'center' },
               style,
             ]}
           >

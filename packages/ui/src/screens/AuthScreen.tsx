@@ -196,7 +196,7 @@ const AuthScreen = memo(
       // Mobile always uses deep link scheme
       return AuthSession.makeRedirectUri({
         scheme: 'gurudevi',
-        path: 'auth-callback',
+        path: 'auth/callback',
       });
     }, []);
 
@@ -686,7 +686,7 @@ const AuthScreen = memo(
     }, []);
 
     return (
-      <ScreenWrapper scroll>
+      <ScreenWrapper fullWidth scroll>
         <Box className="flex-1 px-6 py-8">
           <SanctuaryBackground />
           <VStack className="w-full max-w-[460px] self-center gap-6">

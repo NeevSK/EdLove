@@ -11,6 +11,16 @@ export {
 export { default as AccountPinModal } from '@repo/ui/components/AccountPinModal';
 export { default as AchievementUnlockOverlay } from '@repo/ui/components/AchievementUnlockOverlay';
 export { AdaptiveLayout } from '@repo/ui/components/AdaptiveLayout';
+export type { BondBadgeProps, BondBadgeKind } from '@repo/ui/components/BondBadge';
+export { BondBadge, default as BondBadgeComponent } from '@repo/ui/components/BondBadge';
+export type { PerspectiveSwitcherSheetProps } from '@repo/ui/components/PerspectiveSwitcherSheet';
+export { PerspectiveSwitcherSheet, default as PerspectiveSwitcherSheetComponent } from '@repo/ui/components/PerspectiveSwitcherSheet';
+export type { SchoolInviteCodeModalProps } from '@repo/ui/components/SchoolInviteCodeModal';
+export { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
+export type { CommercialBatchModalProps } from '@repo/ui/components/CommercialBatchModal';
+export { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
+export type { LinkWardModalProps } from '@repo/ui/components/LinkWardModal';
+export { LinkWardModal } from '@repo/ui/components/LinkWardModal';
 export type { BrandedEmptyStateProps } from '@repo/ui/components/BrandedEmptyState';
 export { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 export type { BrandPulseProps } from '@repo/ui/components/BrandPulse';

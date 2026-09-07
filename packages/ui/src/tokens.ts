@@ -130,14 +130,25 @@ export const tokens = {
   layout: {
     breakpoints: {
       phone: 0,
-      tablet: 600,
+      tablet: 768,
       desktop: 1024,
+      wide: 1280,
+      ultraWide: 1536,
+    },
+    containers: {
+      doorway: 440,
+      reading: 720,
+      compact: 960,
+      dashboard: 1280,
+      wide: 1440,
+      full: '100%',
     },
     pageFrame: {
       gutter: {
         phone: 20,
         tablet: 32,
         desktop: 40,
+        wide: 48,
       },
       maxWidth: {
         phone: '100%',
@@ -151,6 +162,7 @@ export const tokens = {
       phone: 1,
       tablet: 2,
       desktop: 3,
+      wide: 4,
     },
   },
 

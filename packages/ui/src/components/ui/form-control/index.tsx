@@ -9,6 +9,8 @@ const FormControlContext = React.createContext<{
   id?: string;
   isInvalid?: boolean;
   isDisabled?: boolean;
+  helperId?: string;
+  errorId?: string;
 }>({});
 
 interface FormControlProps {
@@ -41,7 +43,15 @@ export const FormControl = ({
   const id = idProp || generatedId;
 
   return (
-    <FormControlContext.Provider value={{ id, isInvalid, isDisabled }}>
+    <FormControlContext.Provider
+      value={{
+        id,
+        isInvalid,
+        isDisabled,
+        helperId: `${id}-helper`,
+        errorId: `${id}-error`,
+      }}
+    >
       <VStack space="xs" className={cn(className)}>
         {children}
       </VStack>
@@ -81,9 +91,9 @@ export const FormControlErrorIcon = ({
 };
 
 export const FormControlErrorText = ({ children, className }: FormControlSlotProps) => {
-  const { id } = React.useContext(FormControlContext);
+  const { errorId } = React.useContext(FormControlContext);
   return (
-    <Text nativeID={`${id}-error`} className={cn('text-xs text-phase-danger ml-1', className)}>
+    <Text nativeID={errorId} className={cn('text-xs text-phase-danger ml-1', className)}>
       {children}
     </Text>
   );
@@ -93,6 +103,11 @@ export const FormControlHelper = ({ children, className }: FormControlSlotProps)
   <View className={cn('mt-1', className)}>{children}</View>
 );
 
-export const FormControlHelperText = ({ children, className }: FormControlSlotProps) => (
-  <Text className={cn('text-xs text-phase-text-secondary', className)}>{children}</Text>
-);
+export const FormControlHelperText = ({ children, className }: FormControlSlotProps) => {
+  const { helperId } = React.useContext(FormControlContext);
+  return (
+    <Text nativeID={helperId} className={cn('text-xs text-phase-text-secondary', className)}>
+      {children}
+    </Text>
+  );
+};

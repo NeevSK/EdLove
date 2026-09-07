@@ -261,6 +261,29 @@ export default function GlobalHeader({
           </HStack>
 
           <HStack className="items-center gap-2">
+            {!rightAction && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Notifications"
+                accessibilityHint={
+                  unreadCount > 0
+                    ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
+                    : 'Open your notifications'
+                }
+                onPress={handleOpenNotifications}
+              >
+                <Box className="relative p-2 rounded-full bg-white/8">
+                  <Bell size={22} className="text-phase-text-primary" />
+                  {unreadCount > 0 && !error && (
+                    <Box className="absolute -right-0.5 -top-0.5 min-w-4 h-4 px-0.5 rounded-full items-center justify-center bg-red-500">
+                      <Text className="text-[9px] font-bold text-white">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+              </Pressable>
+            )}
             <Pressable accessibilityRole="button" onPress={toggleSecondaryActions}>
               <Box className="p-2 rounded-full bg-white/8">
                 <MoreHorizontal size={22} className="text-phase-text-primary" />
@@ -296,36 +319,7 @@ export default function GlobalHeader({
               </Pressable>
             )}
 
-            {rightAction ? (
-              rightAction
-            ) : (
-              <Pressable accessibilityRole="button" onPress={handleOpenNotifications}>
-                <Box className="relative px-3 py-2 rounded-full bg-white/8">
-                  <HStack className="items-center gap-2">
-                    <Bell
-                      size={18}
-                      className={
-                        error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
-                      }
-                    />
-                    <Text className="text-sm text-phase-text-primary">Notifications</Text>
-                    {(error || notifLoading || (unreadCount > 0 && !error)) && (
-                      <Box
-                        className="ml-auto w-2.5 h-2.5 rounded-full"
-                        style={{
-                          backgroundColor: error
-                            ? tokens.colors.error
-                            : notifLoading
-                              ? tokens.colors.warning
-                              : tokens.colors.success,
-                          boxShadow: `0 0 10px ${error ? tokens.colors.error : notifLoading ? tokens.colors.warning : tokens.colors.success}`,
-                        }}
-                      />
-                    )}
-                  </HStack>
-                </Box>
-              </Pressable>
-            )}
+            {rightAction}
           </HStack>
         </Animated.View>
 

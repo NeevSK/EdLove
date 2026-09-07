@@ -1,5 +1,5 @@
 import { Box, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PressableScale } from './PressableScale';
 
@@ -15,7 +15,6 @@ export interface SanctuaryDoorwayActionsProps {
 export const SanctuaryDoorwayActions = memo(
   ({
     isConnecting = false,
-    hasPreviousSession = false,
     onExploreGuest,
     onSignIn,
     guestLabel,
@@ -24,14 +23,10 @@ export const SanctuaryDoorwayActions = memo(
     const { t } = useTranslation();
 
     const resolvedGuestLabel =
-      guestLabel ??
-      (hasPreviousSession
-        ? t('welcome.resumeJourney', { defaultValue: 'Resume Journey' })
-        : t('welcome.exploreAsGuest', { defaultValue: 'Explore as Guest' }));
+      guestLabel ?? t('welcome.exploreAsGuest', { defaultValue: 'Explore as Guest' });
 
     const resolvedSignInLabel =
-      signInLabel ??
-      t('welcome.login', { defaultValue: 'Sign In to Existing Account' });
+      signInLabel ?? t('welcome.login', { defaultValue: 'I have an account. Log In' });
 
     return (
       <VStack className="gap-3 pt-2 w-full">
