@@ -5,7 +5,11 @@ export { default as IdentityCard } from '@repo/ui/components/IdentityCard';
 export type { QRCodeGeneratorProps } from '@repo/ui/components/QRCodeGenerator';
 export { default as QRCodeGenerator } from '@repo/ui/components/QRCodeGenerator';
 // UI & Hooks relocated to @repo/ui
-export { redeemPendingQRAction, useQRDeepLink } from '@repo/scanner-kit/hooks/useQRDeepLink';
+export {
+  dispatchQRDeepLink,
+  redeemPendingQRAction,
+  useQRDeepLink,
+} from '@repo/scanner-kit/hooks/useQRDeepLink';
 export { default as OCRScanner } from '@repo/scanner-kit/OCRScanner';
 // OCR adapter pipeline  providers, parsers, pipeline
 export * from '@repo/scanner-kit/ocr';

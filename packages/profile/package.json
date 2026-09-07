@@ -113,7 +113,6 @@
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.18",
-    "@types/react-native": "workspace:*",
     "@vitest/ui": "^5.0.0",
     "eslint": "^10.9.1",
     "i18next": "^26.4.0",

@@ -5,7 +5,9 @@ import {
   useStore,
   useTemporalStore,
 } from '@repo/core/logic';
+import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useReducer } from 'react';
+
 
 type CommunityState = {
   community: CommunityProfile | null;
@@ -32,8 +34,11 @@ function communityReducer(state: CommunityState, action: CommunityAction): Commu
 
 type EditableCommunityField = 'name' | 'description';
 
+const COMMUNITY_CACHE_PREFIX = 'gurudevi-community-profile-cache';
+
 export function useCommunityProfile(communityId: string) {
   const userId = useStore((state) => state.user?.id);
+  const isOnline = useStore((state) => state.isOnline);
   const viewDate = useTemporalStore((state) => state.viewDate);
   const phase = useTemporalStore((state) => state.phase);
   const [state, dispatch] = useReducer(communityReducer, {
@@ -49,22 +54,44 @@ export function useCommunityProfile(communityId: string) {
       return;
     }
 
+    const cacheKey = `${COMMUNITY_CACHE_PREFIX}-${communityId}-${viewDate}`;
+
+    // Load from cache first
+    try {
+      const raw = await SafeZustandStorage.getItem(cacheKey);
+      if (raw) {
+        dispatch({ type: 'FETCH_SUCCESS', payload: JSON.parse(raw) });
+      }
+    } catch {
+      // Ignore
+    }
+
+    if (!isOnline) {
+      return;
+    }
+
     dispatch({ type: 'FETCH_START' });
     try {
       const data =
         phase === 'past'
           ? await profileAPI.getCommunityProfileAsOf(communityId, viewDate)
           : await profileAPI.getCommunityProfile(communityId);
-      dispatch({ type: 'FETCH_SUCCESS', payload: data ?? null });
+      if (data) {
+        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        void SafeZustandStorage.setItem(cacheKey, JSON.stringify(data));
+      } else {
+        dispatch({ type: 'FETCH_SUCCESS', payload: null });
+      }
     } catch (error) {
-      handleAPIError(error);
+      console.warn('[useCommunityProfile] Failed to fetch community profile:', error);
       dispatch({ type: 'FETCH_FAILURE' });
     }
-  }, [communityId, phase, viewDate]);
+  }, [communityId, isOnline, phase, viewDate]);
 
   useEffect(() => {
-    loadCommunity().catch(handleAPIError);
+    void loadCommunity();
   }, [loadCommunity]);
+
 
   const updateField = useCallback(
     async (field: EditableCommunityField, value: string) => {

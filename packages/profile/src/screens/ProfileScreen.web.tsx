@@ -164,9 +164,9 @@ export default function ProfileScreenWeb({
   };
 
   const profilePublicUrl = profile?.username
-    ? `${GURUDEVI_APP}/p/${profile.username}`
+    ? `${GURUDEVI_APP}/profile/public/${encodeURIComponent(profile.username)}`
     : profile?.id
-      ? `${GURUDEVI_APP}/p/${profile.id}`
+      ? `${GURUDEVI_APP}/profile/public/${encodeURIComponent(profile.id)}`
       : '';
 
   const profileDisplayName =

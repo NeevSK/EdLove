@@ -56,10 +56,11 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { EXTERNAL_URLS, GURUDEVI_SUPPORT_EMAIL, GURUDEVI_WEB } from '@repo/ui/utils/urls';
 import type { TFunction } from 'i18next';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
+import { Linking, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -185,6 +186,16 @@ interface SupportSectionProps {
 
 const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
   const { scene } = useTheme();
+  const showToast = useStore((state) => state.showToast);
+
+  const openSupportDestination = async (url: string) => {
+    hapticLight();
+    try {
+      await Linking.openURL(url);
+    } catch {
+      showToast(t('profile.supportOpenFailed', 'Could not open that support destination.'), 'error');
+    }
+  };
 
   return (
     <Center>
@@ -205,17 +216,17 @@ const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
         <ProfileListItem
           icon={CircleQuestionMark}
           label={t('profile.faqTitle')}
-          onPress={() => hapticLight()}
+          onPress={() => void openSupportDestination(EXTERNAL_URLS.guidelines)}
         />
         <ProfileListItem
           icon={MessageSquare}
           label={t('profile.feedbackTitle')}
-          onPress={() => hapticLight()}
+          onPress={() => void openSupportDestination(`mailto:${GURUDEVI_SUPPORT_EMAIL}`)}
         />
         <ProfileListItem
           icon={Info}
           label={t('profile.aboutTitle')}
-          onPress={() => hapticLight()}
+          onPress={() => void openSupportDestination(GURUDEVI_WEB)}
         />
       </VStack>
     </Center>

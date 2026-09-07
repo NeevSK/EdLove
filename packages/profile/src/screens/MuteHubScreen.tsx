@@ -5,7 +5,7 @@ import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState'
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { Shield, Trash2 } from '@repo/ui/icons';
+import { Shield, UserCheck } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -21,6 +21,7 @@ import {
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView } from 'react-native';
@@ -34,6 +35,7 @@ interface MutedUser {
 
 export default function MuteHubScreen() {
   const { t } = useTranslation();
+  const { showToast } = useSanctuaryToast();
 
   const [mutedUsers, setMutedUsers] = useState<MutedUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,13 +76,13 @@ export default function MuteHubScreen() {
               setError(null);
               setMutedUsers((prev) => prev.filter((u) => u.id !== userId));
             } catch (error) {
-              Alert.alert(
-                t('profile.safety.unmuteFailedTitle') || 'Could not unmute connection',
-                error instanceof Error
-                  ? error.message
-                  : t('profile.safety.unmuteFailedMessage') || 'Please try again.',
-                [{ text: t('common.ok') || 'OK' }],
-              );
+              showToast({
+                message:
+                  error instanceof Error
+                    ? error.message
+                    : t('profile.safety.unmuteFailedMessage') || 'Please try again.',
+                type: 'error',
+              });
             }
           },
         },
@@ -194,9 +196,10 @@ export default function MuteHubScreen() {
                         name: user.display_name,
                       })}
                       accessibilityHint={t('profile.safety.unmuteHint')}
+                      hitSlop={12}
                       className="p-3 rounded-xl bg-phase-error/10"
                     >
-                      <Icon as={Trash2} size={20} color={tokens.colors.error} />
+                      <Icon as={UserCheck} size={20} color={tokens.colors.primary} />
                     </Pressable>
                   </HStack>
                 </Box>

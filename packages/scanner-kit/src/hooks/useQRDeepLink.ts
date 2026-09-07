@@ -9,6 +9,23 @@ export const PENDING_QR_KEY = 'pending_qr_action';
 
 export type QRDeepLinkHandler = (payload: QRPayload) => void;
 
+export async function dispatchQRDeepLink(
+  url: string,
+  onQRAction?: QRDeepLinkHandler,
+): Promise<boolean> {
+  if (!url || typeof url !== 'string' || !url.startsWith('gurudevi://qr')) return false;
+
+  const result = resolveQR(url);
+  if (!result.ok) return false;
+
+  if (onQRAction) {
+    onQRAction(result.payload);
+  } else {
+    await AsyncStorage.setItem(PENDING_QR_KEY, JSON.stringify(result.payload));
+  }
+  return true;
+}
+
 /**
  * Listen for QR deep links and dispatch them to the provided handler.
  * Safe to call before handler is ready — pending payloads are stored in AsyncStorage.
@@ -17,21 +34,10 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
   const handlerRef = useRef<QRDeepLinkHandler | undefined>(onQRAction);
   handlerRef.current = onQRAction;
 
-  const dispatchOrStore = useCallback(async (url: string) => {
-    if (!url || typeof url !== 'string') return;
-    if (!url.startsWith('gurudevi://qr')) return;
-
-    const result = resolveQR(url);
-    if (!result.ok) return;
-
-    const handler = handlerRef.current;
-    if (handler) {
-      handler(result.payload);
-    } else {
-      // No handler yet (user not authenticated) — store for later
-      await AsyncStorage.setItem(PENDING_QR_KEY, JSON.stringify(result.payload));
-    }
-  }, []);
+  const dispatchOrStore = useCallback(
+    (url: string) => dispatchQRDeepLink(url, handlerRef.current),
+    [],
+  );
 
   useEffect(() => {
     // Handle cold-start URL (app opened from outside via QR link).

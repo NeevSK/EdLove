@@ -1,11 +1,17 @@
-import { deviceAccounts } from '@repo/core';
+import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { authAPI, identityAPI, profileAPI } from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
-import { handleAPIError, useMutationQueue, useTemporalStore } from '@repo/core/logic';
+import { handleAPIError, useMutationQueue, useStore, useTemporalStore } from '@repo/core/logic';
+import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
+import { SafeZustandStorage } from '@repo/core/storage-wrapper';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+
 import type { ProfileFieldUpdateResult } from '@repo/profile/hooks/profileFieldUpdateResult';
 import { ProfileValidator } from '@repo/profile/lib/validator';
 import type { UserProfile } from '@repo/profile/types';
 import { useCallback, useEffect, useReducer } from 'react';
+
+const PROFILE_CACHE_PREFIX = 'gurudevi-profile-cache';
 
 type ProfileState = {
   profile: UserProfile | null;
@@ -55,53 +61,100 @@ export function useProfile(userId?: string) {
   const [state, dispatch] = useReducer(profileReducer, initialProfileState);
   const { profile, loading, refreshing, error } = state;
 
+  const authUser = useAuthStore((s) => s.user);
+  const isAnonymous = !authUser || authUser.is_anonymous;
+  const isOnline = useStore((s) => s.isOnline);
+
   const { rewards, isLoading: isRewardsLoading } = useRewards({ userId });
-  const addToQueue = useMutationQueue((state) => state.addToQueue);
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const phase = useTemporalStore((state) => state.phase);
+  const addToQueue = useMutationQueue((s) => s.addToQueue);
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const phase = useTemporalStore((s) => s.phase);
 
-  const fetchProfile = useCallback(async () => {
-    try {
-      dispatch({ type: 'FETCH_START', refreshing });
+  const fetchProfile = useCallback(
+    async (isRefresh = false) => {
+      try {
+        dispatch({ type: 'FETCH_START', refreshing: isRefresh });
 
-      const targetId = userId || (await identityAPI.getMyInternalId());
-      if (!targetId) {
-        dispatch({ type: 'FETCH_SUCCESS', payload: null });
-        return;
-      }
+        // 1. Guest Mode isolation: read from local guest storage directly, never call cloud API
+        if (isAnonymous && !userId) {
+          const guestId = authUser?.id || 'guest';
+          const local = await getLocalGuestIdentity(guestId);
+          const guestProfile = {
+            id: local.id,
+            email: local.email,
+            display_name: local.display_name,
+            avatar_url: null,
+            capacity: 'guest',
+            school_id: null,
+            school_name: null,
+            organization_name: null,
+            is_anonymous: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as unknown as UserProfile;
 
-      const data =
-        phase === 'past'
-          ? await profileAPI.getUserProfileAsOf(targetId, viewDate)
-          : await profileAPI.getUserProfile(targetId);
 
-      if (data) {
-        dispatch({
-          type: 'FETCH_SUCCESS',
-          payload: {
+          dispatch({ type: 'FETCH_SUCCESS', payload: guestProfile });
+          return;
+        }
+
+        const targetId = userId || (await identityAPI.getMyInternalId());
+        if (!targetId) {
+          dispatch({ type: 'FETCH_SUCCESS', payload: null });
+          return;
+        }
+
+        const cacheKey = `${PROFILE_CACHE_PREFIX}-${targetId}-${viewDate}`;
+
+        // 2. Load from local-first cache
+        try {
+          const raw = await SafeZustandStorage.getItem(cacheKey);
+          if (raw) {
+            const cached = JSON.parse(raw);
+            dispatch({ type: 'FETCH_SUCCESS', payload: cached });
+          }
+        } catch {
+          // Ignore cache parse error
+        }
+
+        // 3. Sync from remote if online
+        if (!isOnline) {
+          return;
+        }
+
+        const data =
+          phase === 'past'
+            ? await profileAPI.getUserProfileAsOf(targetId, viewDate)
+            : await profileAPI.getUserProfile(targetId);
+
+        if (data) {
+          const resolved: UserProfile = {
             ...data,
             school_name: data.school_name ?? data.organization_name ?? null,
-          },
+          };
+          dispatch({
+            type: 'FETCH_SUCCESS',
+            payload: resolved,
+          });
+          void SafeZustandStorage.setItem(cacheKey, JSON.stringify(resolved));
+        }
+      } catch (err) {
+        console.warn('[useProfile] Failed to fetch profile:', err);
+        dispatch({
+          type: 'FETCH_FAILURE',
+          payload: err instanceof Error ? err.message : 'Failed to fetch profile',
         });
-      } else {
-        dispatch({ type: 'FETCH_SUCCESS', payload: null });
       }
-    } catch (error) {
-      handleAPIError(error);
-      dispatch({
-        type: 'FETCH_FAILURE',
-        payload: error instanceof Error ? error.message : 'Failed to fetch profile',
-      });
-    }
-  }, [phase, userId, viewDate, refreshing]);
+    },
+    [authUser?.id, isAnonymous, isOnline, phase, userId, viewDate],
+  );
 
   useEffect(() => {
-    fetchProfile().catch(handleAPIError);
+    void fetchProfile(false);
   }, [fetchProfile]);
 
   const refresh = useCallback(() => {
-    dispatch({ type: 'FETCH_START', refreshing: true });
-    return fetchProfile();
+    return fetchProfile(true);
   }, [fetchProfile]);
 
   const updateField = async (
@@ -118,6 +171,24 @@ export function useProfile(userId?: string) {
     // Optimistic Update
     dispatch({ type: 'UPDATE_FIELD', field, value });
 
+    // Handle guest updates locally
+    if (isAnonymous || profile.is_anonymous) {
+      try {
+        if (field === 'display_name') {
+          await updateLocalGuestIdentity(profile.id, { display_name: String(value ?? '') });
+        }
+        return { status: 'confirmed' };
+      } catch {
+        return { status: 'failed', error: 'Failed to update guest profile' };
+      }
+    }
+
+    const cacheKey = `${PROFILE_CACHE_PREFIX}-${profile.id}-${viewDate}`;
+    void SafeZustandStorage.setItem(
+      cacheKey,
+      JSON.stringify({ ...profile, [field]: value }),
+    );
+
     addToQueue({
       type: 'UPDATE',
       scope: 'profile',
@@ -128,9 +199,9 @@ export function useProfile(userId?: string) {
     try {
       await profileAPI.updateProfile(profile.id, { [field]: value });
       return { status: 'confirmed' };
-    } catch (error) {
+    } catch (err) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Profile update is waiting to sync';
+        err instanceof Error ? err.message : 'Profile update is waiting to sync';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { status: 'queued', error: errorMessage };
     }
@@ -145,21 +216,34 @@ export function useProfile(userId?: string) {
       const targetId = profile?.id;
       if (!targetId) return { success: false };
 
+      if (isAnonymous || profile?.is_anonymous) {
+        // Guest mode avatar local update
+        dispatch({
+          type: 'UPDATE_FIELD',
+          field: 'avatar_url',
+          value: localUri,
+        });
+        return { success: true, data: { ...profile, avatar_url: localUri } };
+      }
+
       try {
         const updatedProfile = await profileAPI.uploadAvatar(targetId, localUri);
         if (profile) {
+          const merged = { ...profile, ...updatedProfile } as UserProfile;
           dispatch({
             type: 'FETCH_SUCCESS',
-            payload: { ...profile, ...updatedProfile } as UserProfile,
+            payload: merged,
           });
+          const cacheKey = `${PROFILE_CACHE_PREFIX}-${targetId}-${viewDate}`;
+          void SafeZustandStorage.setItem(cacheKey, JSON.stringify(merged));
         }
         return { success: true, data: updatedProfile };
-      } catch (error) {
-        handleAPIError(error);
-        return { success: false, error };
+      } catch (err) {
+        handleAPIError(err);
+        return { success: false, error: err };
       }
     },
-    [profile],
+    [isAnonymous, profile, viewDate],
   );
 
   return {
@@ -174,3 +258,4 @@ export function useProfile(userId?: string) {
     updateField,
   };
 }
+

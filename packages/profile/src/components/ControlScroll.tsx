@@ -186,7 +186,14 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
           <Divider className="bg-phase-surface ml-14" />
 
           {/* Data Saver (Placeholder) */}
-          <Pressable onPress={hapticLight}>
+          <Pressable
+            disabled
+            accessibilityRole="button"
+            accessibilityLabel="Data Saver"
+            accessibilityHint="Data Saver is not available yet"
+            accessibilityState={{ disabled: true }}
+            className="opacity-60"
+          >
             <HStack className="p-4 justify-between items-center">
               <HStack space="md" className="items-center">
                 <Box className="w-9 h-9 rounded-xl bg-green-500/10 items-center justify-center">

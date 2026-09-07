@@ -1,7 +1,11 @@
 import { profileAPI } from '@repo/core/api/client';
-import { handleAPIError } from '@repo/core/logic';
+import { handleAPIError, useStore } from '@repo/core/logic';
+import { SafeZustandStorage } from '@repo/core/storage-wrapper';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { SocialLink } from '@repo/core/types';
 import { useCallback, useEffect, useReducer } from 'react';
+
+const SOCIAL_LINKS_CACHE_PREFIX = 'gurudevi-social-links-cache';
 
 type SocialState = {
   links: SocialLink[];
@@ -41,23 +45,51 @@ export function useSocialLinks(userId?: string) {
     loading: true,
   });
 
+  const authUser = useAuthStore((s) => s.user);
+  const isAnonymous = !authUser || authUser.is_anonymous;
+  const isOnline = useStore((s) => s.isOnline);
+
   const { links, loading } = state;
 
   const fetchLinks = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || isAnonymous) {
+      dispatch({ type: 'FETCH_SUCCESS', payload: [] });
+      return;
+    }
+
+    const cacheKey = `${SOCIAL_LINKS_CACHE_PREFIX}-${userId}`;
+
+    // Load from cache first
+    try {
+      const raw = await SafeZustandStorage.getItem(cacheKey);
+      if (raw) {
+        dispatch({ type: 'FETCH_SUCCESS', payload: JSON.parse(raw) });
+      }
+    } catch {
+      // Ignore
+    }
+
+    if (!isOnline) {
+      return;
+    }
+
     dispatch({ type: 'FETCH_START' });
     try {
       const data = await profileAPI.getSocialLinks(userId);
-      dispatch({ type: 'FETCH_SUCCESS', payload: data });
+      if (data) {
+        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        void SafeZustandStorage.setItem(cacheKey, JSON.stringify(data));
+      }
     } catch (error) {
-      handleAPIError(error);
+      console.warn('[useSocialLinks] Failed to fetch social links:', error);
       dispatch({ type: 'FETCH_FAILURE' });
     }
-  }, [userId]);
+  }, [isAnonymous, isOnline, userId]);
 
   useEffect(() => {
-    fetchLinks().catch(handleAPIError);
+    void fetchLinks();
   }, [fetchLinks]);
+
 
   const addLink = async (link: Omit<SocialLink, 'id' | 'created_at' | 'updated_at'>) => {
     try {
