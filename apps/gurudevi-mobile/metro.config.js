@@ -311,6 +311,7 @@ const UNIVERSAL_SHIMS = {
     projectRoot,
     'src/shims/srilanka-geographics-web.js',
   ),
+  '@zip.js/zip.js': path.resolve(projectRoot, 'src/shims/zip-js-shim.js'),
   events: path.resolve(projectRoot, 'src/shims/events-web.js'),
   net: path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
   tls: path.resolve(projectRoot, 'src/shims/node-net-shim.js'),

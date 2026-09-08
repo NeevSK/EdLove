@@ -88,8 +88,32 @@ const withBridgelessEnabled = (config) => {
   });
 };
 
+const withReleaseAppIdSuffix = (config) => {
+  return withAppBuildGradle(config, (cfg) => {
+    if (cfg.modResults.language === 'groovy') {
+      cfg.modResults.contents = ensureAndroidBlockSnippets(cfg.modResults.contents, [
+        {
+          breadcrumb: 'applicationIdSuffix ".release"',
+          code: [
+            '    buildTypes {',
+            '        release {',
+            '            // TEMPORARY: Separate release package from debug on test devices',
+            '            applicationIdSuffix ".release"',
+            '            resValue "string", "app_name", "Gurudevi (Release)"',
+            '        }',
+            '    }',
+          ].join('\n'),
+        },
+      ]);
+    }
+    return cfg;
+  });
+};
+
 const withCombinedGradleFixes = (config) => {
-  return withBridgelessEnabled(withLintOptionsDisabled(withCustomGradleProperties(config)));
+  return withReleaseAppIdSuffix(
+    withBridgelessEnabled(withLintOptionsDisabled(withCustomGradleProperties(config)))
+  );
 };
 
 module.exports = createRunOncePlugin(

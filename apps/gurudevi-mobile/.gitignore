@@ -62,6 +62,7 @@ assets/*
 .cursor/
 
 .env.local
+.env.release
 
 # PowerSync web assets
 public/@powersync/
