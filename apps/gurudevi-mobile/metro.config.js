@@ -229,8 +229,13 @@ if (fs.existsSync(workspacePackagesDir)) {
   }
 }
 
-const a11yGateExternalPath = path.resolve('C:/projects/packages/a11y-gate');
-if (fs.existsSync(a11yGateExternalPath)) {
+const candidateA11yPaths = [
+  path.resolve('/home/nsk/projects/packages/a11y-gate'),
+  path.resolve('C:/projects/packages/a11y-gate'),
+  path.resolve(workspaceRoot, '../packages/a11y-gate'),
+];
+const a11yGateExternalPath = candidateA11yPaths.find((p) => fs.existsSync(p));
+if (a11yGateExternalPath) {
   SINGLETON_OVERRIDES['@intuitui-labs/a11y-gate'] = a11yGateExternalPath;
   if (!config.watchFolders.includes(a11yGateExternalPath)) {
     config.watchFolders.push(a11yGateExternalPath);
@@ -312,6 +317,16 @@ const UNIVERSAL_SHIMS = {
     'src/shims/srilanka-geographics-web.js',
   ),
   '@zip.js/zip.js': path.resolve(projectRoot, 'src/shims/zip-js-shim.js'),
+  '@zip.js/zip.js/lib/zip.js': path.resolve(projectRoot, 'src/shims/zip-js-shim.js'),
+  '@zip.js/zip.js/index.js': path.resolve(projectRoot, 'src/shims/zip-js-shim.js'),
+  'zip.js': path.resolve(projectRoot, 'src/shims/zip-js-shim.js'),
+  'pdfjs-dist': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
+  'pdfjs-dist/build/pdf.js': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
+  'pdfjs-dist/build/pdf.min.js': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
+  'pdfjs-dist/build/pdf.worker.mjs': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
+  'pdfjs-dist/build/pdf.worker.js': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
+  'pdf-parse': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
+  '@huggingface/transformers': path.resolve(projectRoot, 'src/shims/pdfjs-dist-shim.js'),
   events: path.resolve(projectRoot, 'src/shims/events-web.js'),
   net: path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
   tls: path.resolve(projectRoot, 'src/shims/node-net-shim.js'),

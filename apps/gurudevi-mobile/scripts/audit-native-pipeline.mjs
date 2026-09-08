@@ -87,10 +87,10 @@ for (const { name, linuxVariant } of BUILD_TIME_NATIVE_PACKAGES) {
 
 check('Tailwind v4 Oxide native Rust parser loads in WSL 2', () => {
   try {
-    execSync(
-      'wsl bash -c "cd /mnt/c/x/apps/gurudevi-mobile && node -e \\"const p = require(\'@tailwindcss/postcss\'); process.exit(typeof p === \'function\' ? 0 : 1)\\""',
-      { stdio: ['pipe', 'pipe', 'pipe'] },
-    );
+    const cmd = process.platform === 'win32'
+      ? 'wsl bash -c "cd /mnt/c/x/apps/gurudevi-mobile && node -e \\"const p = require(\'@tailwindcss/postcss\'); process.exit(typeof p === \'function\' ? 0 : 1)\\""'
+      : 'node -e "const p = require(\'@tailwindcss/postcss\'); process.exit(typeof p === \'function\' ? 0 : 1)"';
+    execSync(cmd, { stdio: ['pipe', 'pipe', 'pipe'] });
     return true;
   } catch {
     return false;
@@ -130,6 +130,7 @@ for (const pkg of workspacePackages) {
       'index.js',
       'base.json',
       'base.js',
+      'package.json',
     ].filter(Boolean);
 
     return possibleEntries.some((entry) => fs.existsSync(path.join(packagesDir, pkg.dir, entry)));
@@ -237,7 +238,10 @@ check('android/local.properties specifies valid sdk.dir', () => {
 
 check('WSL 2 NDK toolchain matches pinned version 27.1.12297006', () => {
   try {
-    execSync('wsl bash -c "test -f /home/nsk/Android/Sdk/ndk/27.1.12297006/source.properties"', { stdio: 'pipe' });
+    const cmd = process.platform === 'win32'
+      ? 'wsl bash -c "test -f /home/nsk/Android/Sdk/ndk/27.1.12297006/source.properties"'
+      : 'test -f /home/nsk/Android/Sdk/ndk/27.1.12297006/source.properties';
+    execSync(cmd, { stdio: 'pipe' });
     return true;
   } catch {
     return false;
@@ -246,7 +250,10 @@ check('WSL 2 NDK toolchain matches pinned version 27.1.12297006', () => {
 
 check('WSL 2 ccache compiler wrapper is functional and reporting statistics', () => {
   try {
-    const stats = execSync('wsl bash -c "ccache -s"', { encoding: 'utf8', stdio: 'pipe' });
+    const cmd = process.platform === 'win32'
+      ? 'wsl bash -c "ccache -s"'
+      : 'ccache -s';
+    const stats = execSync(cmd, { encoding: 'utf8', stdio: 'pipe' });
     return stats.includes('Cacheable calls');
   } catch {
     return false;
