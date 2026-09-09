@@ -19,13 +19,21 @@ export function WebDraggableCanvasSurface({
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
-    opacity: isDragging ? 0.6 : 1,
-    zIndex: isDragging ? 10 : 0,
+    transition: transition ?? 'transform 200ms ease, opacity 200ms ease, box-shadow 200ms ease',
+    opacity: isDragging ? 0.75 : 1,
+    zIndex: isDragging ? 20 : 0,
+    cursor: disabled ? 'default' : isDragging ? 'grabbing' : 'grab',
+    touchAction: disabled ? 'auto' : 'none',
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={isDragging ? 'dragging-canvas-surface' : undefined}
+      {...attributes}
+      {...listeners}
+    >
       {children}
     </div>
   );

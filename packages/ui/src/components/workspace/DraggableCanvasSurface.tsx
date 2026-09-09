@@ -61,14 +61,14 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   const shadowRadius = useSharedValue(0);
 
   const longPressGesture = useLongPressGesture({
-    minDuration: 300,
+    minDuration: 260,
     onActivate: () => {
       'worklet';
       isDragging.value = true;
-      scale.value = withSpring(1.05);
+      scale.value = withSpring(1.025, { damping: 14, stiffness: 180 });
       zIndex.value = 100;
-      shadowOpacity.value = withTiming(0.3);
-      shadowRadius.value = withTiming(20);
+      shadowOpacity.value = withTiming(0.25, { duration: 150 });
+      shadowRadius.value = withTiming(16, { duration: 150 });
       runOnJS(hapticMedium)();
       if (onDragStart) runOnJS(onDragStart)();
     },
@@ -95,12 +95,12 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
 
       // Snap back animation
       isDragging.value = false;
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
-      scale.value = withSpring(1);
-      zIndex.value = withTiming(1);
-      shadowOpacity.value = withTiming(0);
-      shadowRadius.value = withTiming(0);
+      translateX.value = withSpring(0, { damping: 18, stiffness: 220 });
+      translateY.value = withSpring(0, { damping: 18, stiffness: 220 });
+      scale.value = withSpring(1, { damping: 18, stiffness: 220 });
+      zIndex.value = withTiming(1, { duration: 150 });
+      shadowOpacity.value = withTiming(0, { duration: 150 });
+      shadowRadius.value = withTiming(0, { duration: 150 });
     },
   });
 
@@ -116,7 +116,7 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
     zIndex: zIndex.value,
     shadowOpacity: shadowOpacity.value,
     shadowRadius: shadowRadius.value,
-    elevation: isDragging.value ? 10 : 0,
+    elevation: isDragging.value ? 8 : 0,
   }));
 
   if (!enabled) return children;

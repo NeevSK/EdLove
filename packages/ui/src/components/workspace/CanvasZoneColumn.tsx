@@ -2,14 +2,24 @@ import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 import { CanvasSurfaceCard } from '@repo/ui/components/workspace/CanvasSurfaceCard';
 import { DraggableCanvasSurface } from '@repo/ui/components/workspace/DraggableCanvasSurface';
-import { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
+import {
+  clampReorderIndex,
+  DEPTH_PRESETS,
+  resolveReorderTarget,
+} from '@repo/ui/components/workspace/shared';
+import type {
+  CanvasDepthPresetId,
+  SpatialArrangement,
+  SurfaceCardLayoutMode,
+} from '@repo/ui/components/workspace/types';
+import { WebDraggableCanvasSurface } from '@repo/ui/components/workspace/WebDraggableCanvasSurface';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { Text, View } from '@repo/ui/primitives';
+import { ScrollView, Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import React from 'react';
 import { Platform, type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 
-export { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
+export { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/shared';
 
 export interface CanvasZoneColumnProps<
   TSurfaceId extends string = string,
@@ -18,6 +28,8 @@ export interface CanvasZoneColumnProps<
   group: WorkspaceZoneLayoutGroup<TSurfaceId, TCapabilityKey>;
   title?: string;
   description?: string;
+  depthPreset?: CanvasDepthPresetId;
+  spatialArrangement?: SpatialArrangement;
   renderSurfaceContent?: (
     surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
   ) => React.ReactNode;
@@ -37,6 +49,15 @@ export interface CanvasZoneColumnProps<
   getSurfaceTemporalTone?: (
     surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
   ) => 'present' | 'past' | 'future' | 'neutral' | undefined;
+  getSurfaceEmoji?: (
+    surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
+  ) => string | undefined;
+  getSurfaceCategory?: (
+    surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
+  ) => string | undefined;
+  getSurfaceEnergyVibe?: (
+    surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
+  ) => [string, string] | undefined;
   getSurfaceMetadata?: (
     surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
   ) => string[] | undefined;
@@ -46,6 +67,7 @@ export interface CanvasZoneColumnProps<
   onSurfacePress?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onPressSurfaceInfo?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onToggleHidden?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
+  onTogglePin?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onReorder?: (surfaceId: TSurfaceId, newIndex: number) => void;
   dragAxis?: 'vertical' | 'both';
   dragEnabled?: boolean;
@@ -62,14 +84,7 @@ const ZONE_TITLES: Record<string, string> = {
   institution: 'Institution Arc',
   outlook: 'Outlook Deck',
   private: 'Private Studio',
-};
-
-const ZONE_DESCRIPTIONS: Record<string, string> = {
-  today: 'Immediate focus and fast-moving signals.',
-  work: 'Hands-on tasks and package-owned daily work.',
-  institution: 'School-wide leadership and governance surfaces.',
-  outlook: 'Forecasts, planning horizons, and watchpoints.',
-  private: 'Personal reflections and user-specific overlays.',
+  shared: 'Shared Growth',
 };
 
 export function CanvasZoneColumn<
@@ -79,6 +94,8 @@ export function CanvasZoneColumn<
   group,
   title,
   description,
+  depthPreset = 'sanctuary-calm',
+  spatialArrangement = 'stream',
   renderSurfaceContent,
   getSurfaceTitle,
   getSurfaceSubtitle,
@@ -86,15 +103,19 @@ export function CanvasZoneColumn<
   getSurfaceSnapshot,
   getSurfaceTemporalLabel,
   getSurfaceTemporalTone,
+  getSurfaceEmoji,
+  getSurfaceCategory,
+  getSurfaceEnergyVibe,
   getSurfaceMetadata,
   renderSurfaceActions,
   onSurfacePress,
   onPressSurfaceInfo,
   onToggleHidden,
+  onTogglePin,
   onReorder,
   dragAxis = 'both',
   dragEnabled = Boolean(onReorder),
-  reorderHint,
+  reorderHint = 'Hold and drag to reorder',
   emptyMessage = 'No visible surfaces in this zone yet.',
   compact = false,
   style,
@@ -104,31 +125,121 @@ export function CanvasZoneColumn<
   const styles = createStyles(colors);
   const canReorder = Boolean(onReorder);
   const cardHeightsRef = React.useRef<Record<string, number>>({});
+  const isWeb = Platform.OS === 'web';
 
-  return (
-    <View
-      style={[styles.column, compact ? styles.columnCompact : null, style]}
-      onLayout={(e) => {
-        if (onMeasureZone) {
-          const { y, height } = e.nativeEvent.layout;
-          onMeasureZone(group.zone, y, height);
-        }
-      }}
-    >
-      <View accessibilityRole="header" style={styles.header}>
-        <View style={styles.headerRow}>
-          <Text style={styles.title}>{title ?? ZONE_TITLES[group.zone] ?? group.zone}</Text>
-          <View style={styles.countPill}>
-            <Text style={styles.countText}>{group.surfaces.length}</Text>
-          </View>
+  const layoutMode: SurfaceCardLayoutMode =
+    spatialArrangement === 'catalog-grid'
+      ? 'tile'
+      : spatialArrangement === 'carousel'
+        ? 'hero'
+        : 'card';
+
+  const renderCard = (
+    surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>,
+    index: number,
+  ) => (
+    <CanvasSurfaceCard
+      surface={surface}
+      title={getSurfaceTitle?.(surface)}
+      subtitle={getSurfaceSubtitle?.(surface)}
+      summary={getSurfaceSummary?.(surface)}
+      snapshot={getSurfaceSnapshot?.(surface)}
+      temporalLabel={getSurfaceTemporalLabel?.(surface)}
+      temporalTone={getSurfaceTemporalTone?.(surface)}
+      depthPreset={depthPreset}
+      layoutMode={layoutMode}
+      emoji={getSurfaceEmoji?.(surface)}
+      category={getSurfaceCategory?.(surface)}
+      energyVibe={getSurfaceEnergyVibe?.(surface)}
+      metadata={getSurfaceMetadata?.(surface)}
+      content={renderSurfaceContent?.(surface)}
+      actions={renderSurfaceActions?.(surface)}
+      onPress={onSurfacePress}
+      onPressInfo={onPressSurfaceInfo}
+      onToggleHidden={onToggleHidden}
+      onTogglePin={onTogglePin}
+      reorderEnabled={canReorder && spatialArrangement === 'stream'}
+      dragEnabled={dragEnabled && !isWeb && spatialArrangement === 'stream'}
+      reorderHint={reorderHint}
+      reorderControls={
+        canReorder && spatialArrangement === 'stream'
+          ? {
+              canMoveUp: index > 0,
+              canMoveDown: index < group.surfaces.length - 1,
+              onMoveUp: () => {
+                onReorder?.(
+                  surface.surfaceId as TSurfaceId,
+                  resolveReorderTarget(index, -1, group.surfaces.length),
+                );
+              },
+              onMoveDown: () => {
+                onReorder?.(
+                  surface.surfaceId as TSurfaceId,
+                  resolveReorderTarget(index, 1, group.surfaces.length),
+                );
+              },
+            }
+          : undefined
+      }
+    />
+  );
+
+  const renderContentItems = () => {
+    if (!group.surfaces.length) {
+      return (
+        <View style={[styles.emptyState, compact ? styles.emptyStateCompact : null]}>
+          <Text style={styles.emptyText}>{emptyMessage}</Text>
         </View>
-        <Text style={styles.description}>
-          {description ?? ZONE_DESCRIPTIONS[group.zone] ?? 'Shared workspace zone.'}
-        </Text>
-      </View>
-      <View style={styles.body}>
-        {group.surfaces.length ? (
-          group.surfaces.map((surface) => (
+      );
+    }
+
+    if (spatialArrangement === 'carousel') {
+      return (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={296}
+          decelerationRate="fast"
+          contentContainerStyle={styles.carouselContainer}
+        >
+          {group.surfaces.map((surface, index) => (
+            <View key={surface.surfaceId} style={styles.carouselItem}>
+              {renderCard(surface, index)}
+            </View>
+          ))}
+        </ScrollView>
+      );
+    }
+
+    if (spatialArrangement === 'catalog-grid') {
+      return (
+        <View style={styles.gridContainer}>
+          {group.surfaces.map((surface, index) => (
+            <View key={surface.surfaceId} style={styles.gridItem}>
+              {renderCard(surface, index)}
+            </View>
+          ))}
+        </View>
+      );
+    }
+
+    // Default: 'stream' (Vertical stacked flow with drag reordering)
+    return (
+      <View style={styles.streamContainer}>
+        {group.surfaces.map((surface, index) => {
+          if (isWeb) {
+            return (
+              <WebDraggableCanvasSurface
+                key={surface.surfaceId}
+                id={surface.surfaceId}
+                disabled={!canReorder || !dragEnabled}
+              >
+                <View style={styles.webSurfaceItem}>{renderCard(surface, index)}</View>
+              </WebDraggableCanvasSurface>
+            );
+          }
+
+          return (
             <DraggableCanvasSurface
               key={surface.surfaceId}
               id={surface.surfaceId}
@@ -150,67 +261,34 @@ export function CanvasZoneColumn<
                   cardHeightsRef.current[surface.surfaceId as string] = e.nativeEvent.layout.height;
                 }}
               >
-                <CanvasSurfaceCard
-                  surface={surface}
-                  title={getSurfaceTitle?.(surface)}
-                  subtitle={getSurfaceSubtitle?.(surface)}
-                  summary={getSurfaceSummary?.(surface)}
-                  snapshot={getSurfaceSnapshot?.(surface)}
-                  temporalLabel={getSurfaceTemporalLabel?.(surface)}
-                  temporalTone={getSurfaceTemporalTone?.(surface)}
-                  metadata={getSurfaceMetadata?.(surface)}
-                  content={renderSurfaceContent?.(surface)}
-                  actions={renderSurfaceActions?.(surface)}
-                  onPress={onSurfacePress}
-                  onPressInfo={onPressSurfaceInfo}
-                  onToggleHidden={onToggleHidden}
-                  reorderEnabled={canReorder}
-                  dragEnabled={dragEnabled}
-                  reorderHint={reorderHint}
-                  reorderControls={
-                    canReorder
-                      ? {
-                          canMoveUp:
-                            group.surfaces.findIndex(
-                              (item) => item.surfaceId === surface.surfaceId,
-                            ) > 0,
-                          canMoveDown:
-                            group.surfaces.findIndex(
-                              (item) => item.surfaceId === surface.surfaceId,
-                            ) <
-                            group.surfaces.length - 1,
-                          onMoveUp: () => {
-                            const currentIndex = group.surfaces.findIndex(
-                              (item) => item.surfaceId === surface.surfaceId,
-                            );
-                            onReorder?.(
-                              surface.surfaceId as TSurfaceId,
-                              resolveReorderTarget(currentIndex, -1, group.surfaces.length),
-                            );
-                          },
-                          onMoveDown: () => {
-                            const currentIndex = group.surfaces.findIndex(
-                              (item) => item.surfaceId === surface.surfaceId,
-                            );
-                            onReorder?.(
-                              surface.surfaceId as TSurfaceId,
-                              resolveReorderTarget(currentIndex, 1, group.surfaces.length),
-                            );
-                          },
-                        }
-                      : undefined
-                  }
-                />
+                {renderCard(surface, index)}
               </View>
             </DraggableCanvasSurface>
-          ))
-        ) : (
-          <View style={[styles.emptyState, compact ? styles.emptyStateCompact : null]}>
-            <Text style={styles.emptyLabel}>Zone ready</Text>
-            <Text style={styles.emptyText}>{emptyMessage}</Text>
-          </View>
-        )}
+          );
+        })}
       </View>
+    );
+  };
+
+  return (
+    <View
+      style={[styles.column, compact ? styles.columnCompact : null, style]}
+      onLayout={(e) => {
+        if (onMeasureZone) {
+          const { y, height } = e.nativeEvent.layout;
+          onMeasureZone(group.zone, y, height);
+        }
+      }}
+    >
+      <View accessibilityRole="header" style={styles.header}>
+        <View style={styles.headerRow}>
+          <Text style={styles.title}>{title ?? ZONE_TITLES[group.zone] ?? group.zone}</Text>
+          <View style={styles.countPill}>
+            <Text style={styles.countText}>{group.surfaces.length}</Text>
+          </View>
+        </View>
+      </View>
+      {renderContentItems()}
     </View>
   );
 }
@@ -220,14 +298,14 @@ function createStyles(colors: ReturnType<typeof useThemedColors>) {
     column: {
       minWidth: 320,
       flex: 1,
-      gap: Theme.spacing.md,
+      gap: Theme.spacing.sm,
     },
     columnCompact: {
       minWidth: 0,
     },
     header: {
-      gap: 4,
-      paddingHorizontal: 2,
+      paddingHorizontal: 4,
+      paddingVertical: 2,
     },
     headerRow: {
       flexDirection: 'row',
@@ -236,60 +314,71 @@ function createStyles(colors: ReturnType<typeof useThemedColors>) {
       gap: Theme.spacing.sm,
     },
     title: {
-      fontSize: Theme.typography.fontSize.xl,
+      fontSize: Theme.typography.fontSize.sm,
       fontWeight: '700',
-      color: colors.text,
+      letterSpacing: 0.5,
+      color: colors.textSecondary,
+      textTransform: 'uppercase',
     },
     countPill: {
-      minWidth: 28,
+      minWidth: 20,
+      height: 20,
       alignItems: 'center',
+      justifyContent: 'center',
       borderRadius: Theme.corners.full,
-      paddingHorizontal: 8,
-      paddingVertical: 4,
+      paddingHorizontal: 6,
       backgroundColor: Theme.colors.silk,
       borderWidth: 1,
       borderColor: Theme.colors.border,
     },
     countText: {
-      fontSize: Theme.typography.fontSize.xs,
+      fontSize: 10,
       fontWeight: '700',
       color: colors.textSecondary,
     },
-    description: {
-      fontSize: Theme.typography.fontSize.sm,
-      lineHeight: 20,
-      color: colors.textSecondary,
+    streamContainer: {
+      gap: Theme.spacing.sm,
     },
-    body: {
-      gap: Theme.spacing.md,
+    gridContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Theme.spacing.sm,
+    },
+    gridItem: {
+      flexGrow: 1,
+      flexShrink: 1,
+      flexBasis: '47%',
+      minWidth: 140,
+    },
+    carouselContainer: {
+      gap: Theme.spacing.sm,
+      paddingVertical: 4,
+    },
+    carouselItem: {
+      width: 280,
+    },
+    webSurfaceItem: {
+      gap: Theme.spacing.xs,
     },
     emptyState: {
-      borderRadius: Theme.corners.generous,
-      borderWidth: 1,
-      borderStyle: 'dashed',
-      borderColor: Theme.colors.saffronMuted,
-      padding: Theme.spacing.lg,
-      backgroundColor: 'rgba(250, 247, 237, 0.55)',
-      gap: 4,
-      minHeight: 180,
+      borderRadius: Theme.corners.comfortable,
+      borderWidth: 1.25,
+      borderColor: Theme.colors.border,
+      backgroundColor: colors.card,
+      padding: Theme.spacing.md,
+      minHeight: 100,
       justifyContent: 'center',
+      alignItems: 'center',
     },
     emptyStateCompact: {
-      minHeight: 120,
-    },
-    emptyLabel: {
-      fontSize: Theme.typography.fontSize.xs,
-      fontWeight: '700',
-      letterSpacing: 1,
-      color: Theme.colors.saffronMuted,
-      textTransform: 'uppercase',
+      minHeight: 80,
     },
     emptyText: {
-      fontSize: Theme.typography.fontSize.md,
-      lineHeight: 22,
+      fontSize: Theme.typography.fontSize.xs,
       color: colors.textSecondary,
     },
   });
 }
 
+export { CanvasZoneColumn as WebCanvasZoneColumn };
 export default CanvasZoneColumn;

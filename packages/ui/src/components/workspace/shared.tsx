@@ -92,30 +92,25 @@ export function WorkspaceCanvasHero({
 
   return (
     <View style={styles.hero}>
-      <View style={styles.heroGlow} />
       <View style={styles.heroHeader}>
         <View style={styles.heroCopy}>
-          <Text style={styles.kicker}>CAPABILITY CANVAS</Text>
+          <Text style={styles.kicker}>WORKSPACE · {renderer.platform.toUpperCase()}</Text>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
         <View style={styles.metrics}>
-          <View style={styles.metricPill}>
-            <LayoutGrid size={14} color={Theme.colors.inkTruth} />
+          <View style={styles.metricChip}>
+            <LayoutGrid size={13} color={colors.text} />
             <Text style={styles.metricText}>{visibleCount} surfaces</Text>
           </View>
-          <View style={styles.metricPillMuted}>
-            <Pin size={14} color={colors.textSecondary} />
-            <Text style={styles.metricTextMuted}>
-              {pinnedCount} pinned · max {maxPinned}
-            </Text>
-          </View>
-          <View style={styles.rendererPill}>
-            <Text style={styles.rendererText}>
-              {renderer.platform.toUpperCase()} {String.fromCharCode(8226)}{' '}
-              {renderer.mode.toUpperCase()}
-            </Text>
-          </View>
+          {pinnedCount > 0 ? (
+            <View style={styles.metricChip}>
+              <Pin size={12} color={Theme.colors.sanctuarySaffron} />
+              <Text style={styles.metricText}>
+                {pinnedCount}/{maxPinned} pinned
+              </Text>
+            </View>
+          ) : null}
         </View>
       </View>
     </View>
@@ -128,124 +123,146 @@ export function WorkspaceCanvasEmptyState({ emptyMessage }: { emptyMessage: stri
 
   return (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyTitle}>Canvas ready for adoption</Text>
+      <Text style={styles.emptyTitle}>Workspace Ready</Text>
       <Text style={styles.emptyText}>{emptyMessage}</Text>
     </View>
   );
 }
 
+export function clampReorderIndex(currentIndex: number, shift: number, itemCount: number) {
+  if (itemCount <= 0) return 0;
+  return Math.max(0, Math.min(itemCount - 1, currentIndex + shift));
+}
+
+export function resolveReorderTarget(currentIndex: number, shift: -1 | 1, itemCount: number) {
+  return clampReorderIndex(currentIndex, shift, itemCount);
+}
+
+export function resolveDragTranslation(
+  axis: 'vertical' | 'both',
+  translation: { x: number; y: number },
+) {
+  return axis === 'vertical' ? { x: 0, y: translation.y } : translation;
+}
+
+export const DEPTH_PRESETS = {
+  'sanctuary-calm': {
+    id: 'sanctuary-calm' as const,
+    name: 'Sanctuary Calm',
+    showDots: true,
+    dotColor: '#544A3D',
+    dotOpacity: 0.08,
+    dotSpacing: 18,
+    borderWidth: 1.25,
+    borderColor: '#E8E2CF',
+    rimOffset: 1.5,
+    rimColor: 'rgba(107, 100, 128, 0.16)',
+    borderRadius: 14,
+  },
+  'architectural-ink': {
+    id: 'architectural-ink' as const,
+    name: 'Architectural Ink',
+    showDots: true,
+    dotColor: '#2A2318',
+    dotOpacity: 0.12,
+    dotSpacing: 16,
+    borderWidth: 1.5,
+    borderColor: '#2A2318',
+    rimOffset: 2.5,
+    rimColor: '#2A2318',
+    borderRadius: 12,
+  },
+  'flat-zen': {
+    id: 'flat-zen' as const,
+    name: 'Flat Zen',
+    showDots: false,
+    dotColor: '#544A3D',
+    dotOpacity: 0,
+    dotSpacing: 0,
+    borderWidth: 1,
+    borderColor: '#E8E2CF',
+    rimOffset: 0,
+    rimColor: 'transparent',
+    borderRadius: 16,
+  },
+};
+
 function createStyles(colors: ReturnType<typeof useThemedColors>) {
   return StyleSheet.create({
     hero: {
-      position: 'relative',
-      overflow: 'hidden',
-      borderRadius: 32,
-      padding: Theme.spacing.lg,
-      backgroundColor: Theme.colors.inkTruth,
-      ...Theme.shadows.lg,
-    },
-    heroGlow: {
-      position: 'absolute',
-      top: -80,
-      right: -30,
-      width: 220,
-      height: 220,
-      borderRadius: 999,
-      backgroundColor: 'rgba(246, 191, 140, 0.22)',
+      borderRadius: Theme.corners.comfortable,
+      paddingHorizontal: Theme.spacing.md,
+      paddingVertical: Theme.spacing.sm,
+      backgroundColor: colors.card,
+      borderWidth: 1.25,
+      borderColor: Theme.colors.border,
+      boxShadow: '0px 1.5px 0px rgba(107, 100, 128, 0.14)',
     },
     heroHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       gap: Theme.spacing.md,
     },
     heroCopy: {
       flex: 1,
-      gap: 6,
+      gap: 2,
     },
     kicker: {
-      fontSize: Theme.typography.fontSize.xs,
+      fontSize: 10,
       fontWeight: '700',
-      letterSpacing: 1.4,
-      color: Theme.colors.saffronWhisper,
+      letterSpacing: 1,
+      color: Theme.colors.saffronMuted,
     },
     title: {
-      fontSize: Theme.typography.fontSize['2xl'],
+      fontSize: Theme.typography.fontSize.lg,
       fontWeight: '700',
-      color: Theme.colors.sacredWhite,
+      color: colors.text,
     },
     subtitle: {
-      maxWidth: 620,
-      fontSize: Theme.typography.fontSize.md,
-      lineHeight: 22,
-      color: Theme.colors.starlightGray,
+      fontSize: Theme.typography.fontSize.xs,
+      color: colors.textSecondary,
     },
     metrics: {
-      alignItems: 'flex-end',
-      gap: Theme.spacing.xs,
-    },
-    metricPill: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
-      borderRadius: Theme.corners.full,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      backgroundColor: Theme.colors.templeGold,
+      gap: 6,
     },
-    metricPillMuted: {
+    metricChip: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 5,
       borderRadius: Theme.corners.full,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      backgroundColor: 'rgba(252, 249, 242, 0.08)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      backgroundColor: Theme.colors.silk,
       borderWidth: 1,
-      borderColor: 'rgba(252, 249, 242, 0.14)',
-    },
-    rendererPill: {
-      borderRadius: Theme.corners.full,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      backgroundColor: 'rgba(246, 191, 140, 0.14)',
-      borderWidth: 1,
-      borderColor: 'rgba(246, 191, 140, 0.18)',
+      borderColor: Theme.colors.border,
     },
     metricText: {
-      fontSize: Theme.typography.fontSize.sm,
-      fontWeight: '700',
-      color: Theme.colors.inkTruth,
-    },
-    metricTextMuted: {
-      fontSize: Theme.typography.fontSize.sm,
+      fontSize: 11,
       fontWeight: '600',
-      color: Theme.colors.sacredWhite,
-    },
-    rendererText: {
-      fontSize: Theme.typography.fontSize.xs,
-      fontWeight: '700',
-      color: Theme.colors.sacredWhite,
-      letterSpacing: 0.8,
+      color: colors.text,
     },
     emptyState: {
-      borderRadius: Theme.corners.generous,
-      borderWidth: 1,
-      borderStyle: 'dashed',
-      borderColor: Theme.colors.saffronMuted,
-      backgroundColor: Theme.colors.silk,
+      alignItems: 'center',
+      justifyContent: 'center',
       padding: Theme.spacing.xl,
-      gap: Theme.spacing.xs,
+      borderRadius: Theme.corners.comfortable,
+      borderWidth: 1.25,
+      borderColor: Theme.colors.border,
+      backgroundColor: colors.card,
+      gap: 4,
     },
     emptyTitle: {
-      fontSize: Theme.typography.fontSize.xl,
+      fontSize: Theme.typography.fontSize.sm,
       fontWeight: '700',
       color: colors.text,
     },
     emptyText: {
-      fontSize: Theme.typography.fontSize.md,
-      lineHeight: 22,
+      fontSize: Theme.typography.fontSize.xs,
       color: colors.textSecondary,
+      textAlign: 'center',
     },
   });
 }
