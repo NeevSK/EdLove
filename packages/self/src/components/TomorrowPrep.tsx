@@ -1,4 +1,6 @@
 import { useSafeMutation } from '@repo/core/hooks';
+import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
+import type { DailyPrepItem } from '@repo/self/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Calendar, Check, Plus, Trash2 } from '@repo/ui/icons';
@@ -18,14 +20,12 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { confirmAction } from '@repo/ui/utils/dialogs';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { confirmAction } from '@repo/ui/utils/dialogs';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
-import type { DailyPrepItem } from '@repo/self/types';
 
 interface TomorrowPrepProps {
   userId?: string;
@@ -78,7 +78,10 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         void refreshData();
       },
       onError: () => {
-        showToast({ message: 'This prep item could not be saved. Please try again.', type: 'error' });
+        showToast({
+          message: 'This prep item could not be saved. Please try again.',
+          type: 'error',
+        });
       },
     },
   );
@@ -107,7 +110,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const handleDelete = async (id: string) => {
     const confirmed = await confirmAction(
       'Remove prep item?',
-      'This will permanently remove it from tomorrow\'s plan.',
+      "This will permanently remove it from tomorrow's plan.",
     );
     if (!confirmed) return;
 

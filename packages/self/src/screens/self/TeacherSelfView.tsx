@@ -1,15 +1,5 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import type {
-  DerivedHistoryEntry,
-  DerivedHistoryPoint,
-} from '@repo/ui/components/DerivedHistoryView';
-import { Box, VStack } from '@repo/ui/primitives';
-
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -19,7 +9,6 @@ import FireJournal from '@repo/self/components/FireJournal';
 import GratitudeGlimmers from '@repo/self/components/GratitudeGlimmers';
 import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
 import JoyJar from '@repo/self/components/JoyJar';
-
 // Legacy/Role Components
 import MoodLotus from '@repo/self/components/MoodLotus';
 import { MoodPickerCard } from '@repo/self/components/MoodPickerCard';
@@ -38,7 +27,15 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection, TeacherPulse } from '@repo/self/views/sections';
+import type {
+  DerivedHistoryEntry,
+  DerivedHistoryPoint,
+} from '@repo/ui/components/DerivedHistoryView';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function TeacherSelfView() {
   const { t } = useTranslation();

@@ -6,13 +6,13 @@
 
 import { usePermissions } from '@repo/core/logic';
 import type { OrientationSeeds } from '@repo/profile';
+import { useOrientationInference } from '@repo/self/hooks/useOrientationInference';
+import type { EnergyForecast, MoodLog } from '@repo/self/types/Wellbeing';
 import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Canvas, Circle, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
 import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
-import { useOrientationInference } from '@repo/self/hooks/useOrientationInference';
-import type { EnergyForecast, MoodLog } from '@repo/self/types/Wellbeing';
 
 // —————————————————————————————————————————————————————————————————————————————
 // CONSTANTS

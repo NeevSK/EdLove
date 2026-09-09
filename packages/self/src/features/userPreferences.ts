@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type SelfFeatureZone = 'today' | 'private' | 'shared';
 
+export type SelfCanvasViewMode = 'carousel' | 'catalog-grid' | 'stream' | 'tiled';
+
 export interface SelfCanvasPreferences {
   layout: {
     version: 2;
@@ -18,7 +20,7 @@ export interface SelfCanvasPreferences {
     zoneOverrides: Partial<Record<string, SelfFeatureZone>>;
     roleWeights: Partial<Record<SelfViewRole, number>>;
   };
-  viewMode: 'carousel' | 'tiled';
+  viewMode: SelfCanvasViewMode;
   lastSyncedAt: number;
 }
 
@@ -27,7 +29,7 @@ const STORAGE_KEY = (userId?: string | null) => `self:canvas-preferences:${userI
 export const DEFAULT_SELF_PREFERENCES: SelfCanvasPreferences = {
   layout: { version: 2, isDefault: true, hiddenIds: [], order: [] },
   features: { selectedIds: [], customOrder: [], hiddenIds: [], zoneOverrides: {}, roleWeights: {} },
-  viewMode: 'tiled',
+  viewMode: 'catalog-grid',
   lastSyncedAt: 0,
 };
 
@@ -36,7 +38,12 @@ function parse(raw: string | null): SelfCanvasPreferences | null {
   try {
     const parsed = JSON.parse(raw) as Partial<SelfCanvasPreferences>;
     if (!parsed.layout || !parsed.features) return null;
-    return { ...DEFAULT_SELF_PREFERENCES, ...parsed, layout: { ...DEFAULT_SELF_PREFERENCES.layout, ...parsed.layout }, features: { ...DEFAULT_SELF_PREFERENCES.features, ...parsed.features } } as SelfCanvasPreferences;
+    return {
+      ...DEFAULT_SELF_PREFERENCES,
+      ...parsed,
+      layout: { ...DEFAULT_SELF_PREFERENCES.layout, ...parsed.layout },
+      features: { ...DEFAULT_SELF_PREFERENCES.features, ...parsed.features },
+    } as SelfCanvasPreferences;
   } catch {
     return null;
   }
@@ -62,7 +69,10 @@ export function useSelfCanvasPreferences(userId?: string | null) {
   const persist = useCallback(
     (next: SelfCanvasPreferences) => {
       setPreferences(next);
-      void SafeZustandStorage.setItem(STORAGE_KEY(userId), JSON.stringify({ ...next, lastSyncedAt: Date.now() }));
+      void SafeZustandStorage.setItem(
+        STORAGE_KEY(userId),
+        JSON.stringify({ ...next, lastSyncedAt: Date.now() }),
+      );
     },
     [userId],
   );
@@ -72,7 +82,11 @@ export function useSelfCanvasPreferences(userId?: string | null) {
       const hiddenIds = hidden
         ? [...new Set([...preferences.features.hiddenIds, featureId])]
         : preferences.features.hiddenIds.filter((id) => id !== featureId);
-      persist({ ...preferences, features: { ...preferences.features, hiddenIds }, layout: { ...preferences.layout, isDefault: false, hiddenIds } });
+      persist({
+        ...preferences,
+        features: { ...preferences.features, hiddenIds },
+        layout: { ...preferences.layout, isDefault: false, hiddenIds },
+      });
     },
     [preferences, persist],
   );

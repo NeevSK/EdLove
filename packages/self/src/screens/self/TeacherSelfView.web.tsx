@@ -1,12 +1,5 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
-import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
-import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
-import { TemporalShield } from '@repo/ui/components/TemporalShield';
-import { MessageSquare, Users } from '@repo/ui/icons';
-import { Icon } from '@repo/ui/primitives';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import DecisionJournalSection from '@repo/self/components/DecisionJournalSection';
@@ -31,7 +24,14 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection, TeacherPulse } from '@repo/self/views/sections';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
+import { MessageSquare, Users } from '@repo/ui/icons';
+import { Icon } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function TeacherSelfView() {
   const { t } = useTranslation();

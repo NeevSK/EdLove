@@ -7,6 +7,7 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
+import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
 import { Check, CircleAlert, Mic, Play, Square, Trash2 } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -32,7 +33,6 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
 
 interface VoiceJournalingProps {
   userId?: string;

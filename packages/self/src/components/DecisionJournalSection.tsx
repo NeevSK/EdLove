@@ -6,7 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
+import { useDecisionJournal } from '@repo/self/hooks/useDecisionJournal';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { History, Quote, Send } from '@repo/ui/icons';
 import {
@@ -24,7 +24,6 @@ import {
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
-import { useDecisionJournal } from '@repo/self/hooks/useDecisionJournal';
 
 interface DecisionJournalSectionProps {
   userId: string | null;
@@ -34,7 +33,9 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
   const [decisionText, setDecisionText] = useState('');
-  const { decisions, refreshData, addDecision, error } = useDecisionJournal(activeUserId ?? undefined);
+  const { decisions, refreshData, addDecision, error } = useDecisionJournal(
+    activeUserId ?? undefined,
+  );
 
   const { mutate, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {

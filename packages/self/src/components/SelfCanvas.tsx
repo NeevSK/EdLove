@@ -1,31 +1,32 @@
-import type { AccessibleFeature } from '@repo/self/features/accessPolicy';
+import type {
+  ResolvedWorkspaceSurface,
+  WorkspaceLayout,
+  WorkspaceOwnerPackage,
+  WorkspaceSurfaceDefinition,
+  WorkspaceZoneId,
+} from '@repo/core/types';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
-import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
-import { Box, Text, Pressable } from '@repo/ui/primitives';
-import React, { useCallback } from 'react';
+import type { AccessibleFeature } from '@repo/self/features/accessPolicy';
+import type { SelfCanvasViewMode } from '@repo/self/features/userPreferences';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import type { SpatialArrangement } from '@repo/ui/components/workspace';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace';
+import { Box, Pressable, Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
 
-export type SelfCanvasViewMode = 'carousel' | 'tiled';
+export type { SelfCanvasViewMode } from '@repo/self/features/userPreferences';
 
 type ZoneId = 'today' | 'private' | 'shared';
-
-const ZONE_LABELS: Record<ZoneId, string> = {
-  today: 'Today',
-  private: 'Private',
-  shared: 'Shared',
-};
-
-const ZONE_DESCRIPTIONS: Record<ZoneId, string> = {
-  today: 'What you use daily — use the controls to reorder, pin, or hide.',
-  private: 'Personal rhythms and reflections.',
-  shared: 'Growth visible to your circles.',
-};
 
 export interface SelfCanvasProps {
   features: AccessibleFeature[];
   byZone: Record<ZoneId, AccessibleFeature[]>;
   viewMode: SelfCanvasViewMode;
   onViewModeToggle: () => void;
+  onSetViewMode?: (mode: SelfCanvasViewMode) => void;
   onReorder: (orderedIds: string[]) => void;
   onToggleHidden: (featureId: string, hidden: boolean) => void;
   onTogglePin: (featureId: string) => void;
@@ -35,135 +36,239 @@ export interface SelfCanvasProps {
   onFeaturePress?: (feature: AccessibleFeature) => void;
 }
 
-function ZoneSection({
-  zoneId,
+export function SelfCanvas({
   features,
+  byZone,
+  viewMode,
+  onViewModeToggle,
+  onSetViewMode,
+  onReorder,
+  onToggleHidden,
+  onTogglePin,
   pinnedIds,
   hiddenIds,
   userId,
-  onToggleHidden,
-  onTogglePin,
   onFeaturePress,
-  onMove,
-}: {
-  zoneId: ZoneId;
-  features: AccessibleFeature[];
-  pinnedIds: string[];
-  hiddenIds: string[];
-  userId?: string;
-  onToggleHidden: (id: string, hidden: boolean) => void;
-  onTogglePin: (id: string) => void;
-  onFeaturePress?: (feature: AccessibleFeature) => void;
-  onMove: (featureId: string, dir: -1 | 1) => void;
-}) {
-  if (features.length === 0) return null;
+}: SelfCanvasProps) {
+  const [activeModalFeature, setActiveModalFeature] = useState<AccessibleFeature | null>(null);
+
+  // Map Self features into canonical WorkspaceSurfaceDefinitions
+  const surfaceDefinitions = React.useMemo<WorkspaceSurfaceDefinition[]>(() => {
+    return features.map((feature, index) => {
+      const defaultZone: WorkspaceZoneId =
+        feature.defaultZone === 'shared'
+          ? 'work'
+          : ((feature.defaultZone as WorkspaceZoneId) ?? 'today');
+      return {
+        surfaceId: feature.id,
+        workspaceId: 'self',
+        title: feature.label,
+        ownerPackage: 'core' as WorkspaceOwnerPackage,
+        capabilityKey: feature.requiredCapabilities[0] ?? 'read:SelfJourney',
+        defaultZone,
+        defaultOrder: index * 10,
+      };
+    });
+  }, [features]);
+
+  const workspaceLayout = React.useMemo<WorkspaceLayout>(() => {
+    const zoneBySurface: Partial<Record<string, WorkspaceZoneId>> = {};
+    for (const f of features) {
+      zoneBySurface[f.id] =
+        f.defaultZone === 'shared' ? 'work' : ((f.defaultZone as WorkspaceZoneId) ?? 'today');
+    }
+
+    return {
+      workspaceId: 'self',
+      userId: userId ?? 'guest',
+      order: features.map((f) => f.id),
+      hidden: hiddenIds,
+      pinned: pinnedIds,
+      zoneBySurface,
+      updatedAt: new Date().toISOString(),
+    };
+  }, [features, hiddenIds, pinnedIds, userId]);
+
+  const spatialMode: SpatialArrangement =
+    viewMode === 'carousel' ? 'carousel' : viewMode === 'stream' ? 'stream' : 'catalog-grid';
+
+  const featureMap = React.useMemo(() => {
+    const map = new Map<string, AccessibleFeature>();
+    for (const f of features) map.set(f.id, f);
+    return map;
+  }, [features]);
 
   return (
-    <SettingsGroup title={ZONE_LABELS[zoneId]} subtitle={ZONE_DESCRIPTIONS[zoneId]}>
-      {features.map((feature) => {
-        const isPinned = pinnedIds.includes(feature.id);
-        const isHidden = hiddenIds.includes(feature.id);
-        return (
-          <Box
-            key={feature.id}
-            className="rounded-2xl border border-border bg-phase-surface p-3 mb-3"
-            accessibilityLabel={`${feature.emoji} ${feature.label}${isPinned ? ', pinned' : ''}${isHidden ? ', hidden' : ''}`}
+    <View style={styles.container}>
+      {/* Executive Spatial Switcher */}
+      <View style={styles.modeBar}>
+        <View style={styles.modePillGroup}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Switch to Catalog Grid"
+            onPress={() => {
+              hapticLight();
+              onSetViewMode ? onSetViewMode('catalog-grid') : onViewModeToggle();
+            }}
+            style={[
+              styles.modePill,
+              viewMode === 'catalog-grid' || viewMode === 'tiled' ? styles.modePillActive : null,
+            ]}
           >
-            <Box className="flex-row justify-between items-center mb-2">
-              <Box className="flex-row items-center gap-2 flex-1">
-                <Text className="text-base">{feature.emoji}</Text>
-                <Text className="text-sm font-bold text-ink flex-1" numberOfLines={1}>
-                  {feature.label}
-                </Text>
-                {feature.isGeneral ? (
-                  <Box className="px-2 py-0.5 rounded-full bg-ink/5">
-                    <Text className="text-[10px] font-bold text-ink/50">GENERAL</Text>
-                  </Box>
-                ) : null}
-              </Box>
-              <Box className="flex-row gap-1 items-center">
-                <Pressable onPress={() => { hapticLight(); onMove(feature.id, -1); }} className="w-7 h-7 rounded-full bg-white border border-border items-center justify-center" accessibilityLabel={`Move ${feature.label} up`}>
-                  <Text className="text-xs font-bold text-ink">↑</Text>
-                </Pressable>
-                <Pressable onPress={() => { hapticLight(); onMove(feature.id, 1); }} className="w-7 h-7 rounded-full bg-white border border-border items-center justify-center" accessibilityLabel={`Move ${feature.label} down`}>
-                  <Text className="text-xs font-bold text-ink">↓</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => { hapticLight(); onTogglePin(feature.id); }}
-                  accessibilityRole="button"
-                  accessibilityLabel={isPinned ? `Unpin ${feature.label}` : `Pin ${feature.label}`}
-                  className={`px-3 py-1.5 rounded-full border ${isPinned ? 'bg-ink border-ink' : 'bg-white border-border'}`}
-                >
-                  <Text className={`text-xs font-bold ${isPinned ? 'text-white' : 'text-ink'}`}>{isPinned ? 'Pinned' : 'Pin'}</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => { hapticLight(); onToggleHidden(feature.id, !isHidden); }}
-                  accessibilityRole="button"
-                  accessibilityLabel={isHidden ? `Show ${feature.label}` : `Hide ${feature.label}`}
-                  className="px-3 py-1.5 rounded-full bg-white border border-border"
-                >
-                  <Text className="text-xs font-bold text-ink">{isHidden ? 'Show' : 'Hide'}</Text>
-                </Pressable>
-              </Box>
-            </Box>
-            <Box className="rounded-xl bg-phase-canvas/50 p-2">
-              <SelfFeatureRenderer componentId={feature.componentId} featureId={feature.id} userId={userId} compact />
-            </Box>
-            {onFeaturePress ? (
-              <Pressable
-                onPress={() => { hapticLight(); onFeaturePress(feature); }}
-                className="mt-2 self-start"
-                accessibilityRole="button"
-                accessibilityLabel={`Open ${feature.label} detail`}
-              >
-                <Text className="text-xs font-semibold text-phase-interactive">Open →</Text>
-              </Pressable>
-            ) : null}
+            <Text
+              style={[
+                styles.modePillText,
+                viewMode === 'catalog-grid' || viewMode === 'tiled'
+                  ? styles.modePillTextActive
+                  : null,
+              ]}
+            >
+              Catalog Grid
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Switch to Hero Carousel"
+            onPress={() => {
+              hapticLight();
+              onSetViewMode ? onSetViewMode('carousel') : onViewModeToggle();
+            }}
+            style={[styles.modePill, viewMode === 'carousel' ? styles.modePillActive : null]}
+          >
+            <Text
+              style={[
+                styles.modePillText,
+                viewMode === 'carousel' ? styles.modePillTextActive : null,
+              ]}
+            >
+              Hero Carousel
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Switch to Workbench Stream"
+            onPress={() => {
+              hapticLight();
+              onSetViewMode ? onSetViewMode('stream') : onViewModeToggle();
+            }}
+            style={[styles.modePill, viewMode === 'stream' ? styles.modePillActive : null]}
+          >
+            <Text
+              style={[
+                styles.modePillText,
+                viewMode === 'stream' ? styles.modePillTextActive : null,
+              ]}
+            >
+              Workbench Stream
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Universal Workspace Canvas */}
+      <WorkspaceCanvas
+        depthPreset="sanctuary-calm"
+        spatialArrangement={spatialMode}
+        surfaces={surfaceDefinitions}
+        layout={workspaceLayout}
+        getSurfaceEmoji={(surface) => featureMap.get(surface.surfaceId)?.emoji}
+        getSurfaceCategory={(surface) => featureMap.get(surface.surfaceId)?.category}
+        getSurfaceEnergyVibe={(surface) => featureMap.get(surface.surfaceId)?.energyVibe}
+        renderSurfaceContent={(surface) => {
+          const feature = featureMap.get(surface.surfaceId);
+          if (!feature) return null;
+          return (
+            <SelfFeatureRenderer
+              componentId={feature.componentId}
+              featureId={feature.id}
+              userId={userId}
+              compact={spatialMode !== 'stream'}
+            />
+          );
+        }}
+        onSurfacePress={(surface) => {
+          const feature = featureMap.get(surface.surfaceId);
+          if (!feature) return;
+          if (onFeaturePress) {
+            onFeaturePress(feature);
+          } else {
+            setActiveModalFeature(feature);
+          }
+        }}
+        onToggleHidden={(surface) => onToggleHidden(surface.surfaceId, !surface.hidden)}
+        onTogglePin={(surface) => onTogglePin(surface.surfaceId)}
+        onReorder={(surfaceId, newIndex) => {
+          const ids = features.map((f) => f.id);
+          const currentIndex = ids.indexOf(surfaceId);
+          if (currentIndex === -1) return;
+          const next = [...ids];
+          const [removed] = next.splice(currentIndex, 1);
+          if (removed) next.splice(newIndex, 0, removed);
+          onReorder(next);
+        }}
+      />
+
+      {/* Deep Feature Inspector Modal for Tile / Discovery mode */}
+      {activeModalFeature ? (
+        <SanctuaryModal
+          isOpen={Boolean(activeModalFeature)}
+          onClose={() => setActiveModalFeature(null)}
+          title={`${activeModalFeature.emoji} ${activeModalFeature.label}`}
+          subtitle={activeModalFeature.category?.toUpperCase()}
+          size="lg"
+        >
+          <Box className="py-2">
+            <SelfFeatureRenderer
+              componentId={activeModalFeature.componentId}
+              featureId={activeModalFeature.id}
+              userId={userId}
+              compact={false}
+            />
           </Box>
-        );
-      })}
-    </SettingsGroup>
+        </SanctuaryModal>
+      ) : null}
+    </View>
   );
 }
 
-export function SelfCanvas({ features, byZone, viewMode, onViewModeToggle, onReorder, onToggleHidden, onTogglePin, pinnedIds, hiddenIds, userId, onFeaturePress }: SelfCanvasProps) {
-  const zones: ZoneId[] = ['today', 'private', 'shared'];
-  const handleMove = useCallback(
-    (featureId: string, dir: -1 | 1) => {
-      const idx = features.findIndex((f) => f.id === featureId);
-      if (idx === -1) return;
-      const next = idx + dir;
-      if (next < 0 || next >= features.length) return;
-      const ids = features.map((f) => f.id);
-      const tmp = ids[idx]!;
-      ids[idx] = ids[next]!;
-      ids[next] = tmp;
-      onReorder(ids);
-    },
-    [features, onReorder],
-  );
+const styles = StyleSheet.create({
+  container: {
+    gap: Theme.spacing.md,
+  },
+  modeBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  modePillGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: Theme.corners.full,
+    borderWidth: 1.25,
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.silk,
+    padding: 3,
+    gap: 3,
+    boxShadow: '0px 1.5px 0px rgba(107, 100, 128, 0.12)',
+  },
+  modePill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Theme.corners.full,
+  },
+  modePillActive: {
+    backgroundColor: Theme.colors.inkTruth,
+  },
+  modePillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Theme.colors.bark,
+  },
+  modePillTextActive: {
+    color: Theme.colors.sacredWhite,
+  },
+});
 
-  return (
-    <Box className="gap-4">
-      <Box className="flex-row gap-2">
-        <Pressable onPress={() => { hapticLight(); onViewModeToggle(); }} className="px-3 py-1.5 rounded-full border bg-white border-border">
-          <Text className="text-xs font-bold text-ink">{viewMode === 'tiled' ? 'Tiled' : 'Carousel'} — toggle</Text>
-        </Pressable>
-      </Box>
-      {zones.map((zoneId) => (
-        <ZoneSection
-          key={zoneId}
-          zoneId={zoneId}
-          features={byZone[zoneId] ?? []}
-          pinnedIds={pinnedIds}
-          hiddenIds={hiddenIds}
-          userId={userId}
-          onToggleHidden={onToggleHidden}
-          onTogglePin={onTogglePin}
-          onFeaturePress={onFeaturePress}
-          onMove={handleMove}
-        />
-      ))}
-    </Box>
-  );
-}
+export default SelfCanvas;

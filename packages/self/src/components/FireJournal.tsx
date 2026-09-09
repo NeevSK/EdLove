@@ -4,6 +4,7 @@
  */
 
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
+import { useFireJournal } from '@repo/self/hooks/useFireJournal';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { CircleCheck, Flame, Mic } from '@repo/ui/icons';
@@ -35,7 +36,6 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useFireJournal } from '@repo/self/hooks/useFireJournal';
 
 interface FireJournalProps {
   userId?: string;
@@ -54,7 +54,13 @@ export default function FireJournal({
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
   const isPastView = useTemporalStore((state) => state.isPastView);
-  const { journalHistory, burnEntry, isLoading, error: historyError, refreshData } = useFireJournal(activeUserId ?? undefined);
+  const {
+    journalHistory,
+    burnEntry,
+    isLoading,
+    error: historyError,
+    refreshData,
+  } = useFireJournal(activeUserId ?? undefined);
   const [showSuccess, setShowSuccess] = useState(false);
   const [burnError, setBurnError] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -242,7 +248,11 @@ export default function FireJournal({
           <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
             {historyError} Showing the last available entries.
           </Text>
-          <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading journal history">
+          <Pressable
+            onPress={() => void refreshData()}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading journal history"
+          >
             <Text className="font-bold text-sanctuarySaffron">Retry</Text>
           </Pressable>
         </HStack>

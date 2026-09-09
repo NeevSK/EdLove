@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged legacy components and integrated Sanctuary design system.
  */
 
+import { useProgressTree } from '@repo/self/hooks/useProgressTree';
 import { Flower2, Leaf, Shapes, Sparkles, Sprout, TreePine } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -28,7 +29,6 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useProgressTree } from '@repo/self/hooks/useProgressTree';
 
 interface ProgressTreeProps {
   userId?: string;

@@ -6,6 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Battery, BatteryLow, BatteryMedium, Zap } from '@repo/ui/icons';
@@ -15,7 +16,6 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
-import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 
 interface EnergyForecastProps {
   userId?: string;
@@ -148,8 +148,14 @@ export default function EnergyForecast({
   if (historyError) {
     return (
       <VStack className="gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
-        <Text className="text-sm text-mistGray" accessibilityRole="alert">{historyError}</Text>
-        <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading energy history">
+        <Text className="text-sm text-mistGray" accessibilityRole="alert">
+          {historyError}
+        </Text>
+        <Pressable
+          onPress={() => void refreshData()}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading energy history"
+        >
           <Text className="font-bold text-sanctuarySaffron">Retry</Text>
         </Pressable>
       </VStack>
@@ -177,7 +183,11 @@ export default function EnergyForecast({
         </Text>
       </VStack>
 
-      {saveError ? <Text className="text-sm text-emberRed" accessibilityRole="alert">{saveError}</Text> : null}
+      {saveError ? (
+        <Text className="text-sm text-emberRed" accessibilityRole="alert">
+          {saveError}
+        </Text>
+      ) : null}
 
       {/* Picker Area */}
       <Box className="bg-obsidian p-lg rounded-comfortable border border-white/5 shadow-sm">

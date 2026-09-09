@@ -5,10 +5,10 @@
  * Metro resolves this over StudentGoals.tsx on the web platform.
  */
 
-import { Circle, CircleCheck, Target } from '@repo/ui/icons';
-import { useState } from 'react';
 import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
 import type { Goal } from '@repo/self/types';
+import { Circle, CircleCheck, Target } from '@repo/ui/icons';
+import { useState } from 'react';
 
 interface StudentGoalsProps {
   userId: string;
@@ -110,9 +110,25 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
       </div>
 
       {(loadError || actionError) && (
-        <div role="alert" style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', border: '1px solid #EF4444', borderRadius: '10px' }}>
-          <span style={{ flex: 1, fontSize: '12px' }}>{actionError ?? 'Goals could not be refreshed. Showing the last available goals.'}</span>
-          {loadError && <button type="button" onClick={() => void refreshData()}>Retry</button>}
+        <div
+          role="alert"
+          style={{
+            display: 'flex',
+            gap: '10px',
+            alignItems: 'center',
+            padding: '10px 12px',
+            border: '1px solid #EF4444',
+            borderRadius: '10px',
+          }}
+        >
+          <span style={{ flex: 1, fontSize: '12px' }}>
+            {actionError ?? 'Goals could not be refreshed. Showing the last available goals.'}
+          </span>
+          {loadError && (
+            <button type="button" onClick={() => void refreshData()}>
+              Retry
+            </button>
+          )}
         </div>
       )}
 

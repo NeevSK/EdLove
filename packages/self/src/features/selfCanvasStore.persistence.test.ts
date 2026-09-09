@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { describeSelfCanvasPersistence } from './selfCanvasPersistence';
-import { DEFAULT_SELF_PREFERENCES } from './userPreferences';
 import { useSelfCanvasStore } from './selfCanvasStore';
+import { DEFAULT_SELF_PREFERENCES } from './userPreferences';
 
 describe('Self canvas local-first persistence', () => {
   afterEach(() => {

@@ -1,3 +1,4 @@
+import BreathGuide from '@repo/self/components/BreathGuide';
 import { GlassCard } from '@repo/ui/components/GlassCard';
 import { CloudRain, Flower2, Sun, Wind, Zap } from '@repo/ui/icons';
 import { AnimatedView, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
@@ -5,7 +6,6 @@ import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import BreathGuide from '@repo/self/components/BreathGuide';
 
 /**
  * MOOD LOTUS COMPONENT
@@ -97,7 +97,9 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) 
             onPress={() => setShowBreath(!showBreath)}
             accessibilityRole="button"
             accessibilityLabel="Breath guide"
-            accessibilityHint={showBreath ? 'Closes the breathing guide' : 'Opens a breathing guide'}
+            accessibilityHint={
+              showBreath ? 'Closes the breathing guide' : 'Opens a breathing guide'
+            }
             accessibilityState={{ expanded: showBreath }}
             className={`px-3 py-1.5 rounded-full border transition-all ${showBreath ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron' : 'bg-white/5 border-white/10'}`}
           >

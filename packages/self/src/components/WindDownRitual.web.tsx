@@ -5,9 +5,9 @@
  * Metro resolves this over WindDownRitual.tsx on the web platform.
  */
 
+import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
 import { CircleCheck } from '@repo/ui/icons';
 import { useState } from 'react';
-import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
 
 interface WindDownRitualProps {
   userId?: string;
@@ -80,7 +80,9 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           });
         }
       } catch {
-        setSaveError('Your ritual could not be saved. Your reflections are still here—please try again.');
+        setSaveError(
+          'Your ritual could not be saved. Your reflections are still here—please try again.',
+        );
         setSaving(false);
         return;
       } finally {

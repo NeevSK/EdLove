@@ -1,12 +1,5 @@
 import { useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
-import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
-import { TemporalShield } from '@repo/ui/components/TemporalShield';
-
-import { Lightbulb, Sparkles } from '@repo/ui/icons';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
 import MoodLotus from '@repo/self/components/MoodLotus';
@@ -22,6 +15,12 @@ import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { useWisdom } from '@repo/self/hooks/useWisdom';
 import { MoodSection, PhilosophySection, VisionSection } from '@repo/self/views/sections';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
+import { Lightbulb, Sparkles } from '@repo/ui/icons';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function FounderSelfView() {
   const { t } = useTranslation();

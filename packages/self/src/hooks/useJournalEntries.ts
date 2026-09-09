@@ -2,9 +2,9 @@ import { authAPI, growthSignalsAPI, identityAPI } from '@repo/core/api/client';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { useCallback, useEffect, useState } from 'react';
 import { createJournalEntry, fetchJournalEntries } from '@repo/self/api/selfFeatureRepository';
 import type { JournalEntry } from '@repo/self/types';
+import { useCallback, useEffect, useState } from 'react';
 
 const JOURNAL_ENTRIES_CACHE_KEY = 'gurudevi-journal-entries-cache';
 
@@ -170,7 +170,10 @@ export const useJournalEntries = () => {
 
         return data;
       } catch (error) {
-        console.warn('[useJournalEntries] Offline or failed to sync new journal entry with server:', error);
+        console.warn(
+          '[useJournalEntries] Offline or failed to sync new journal entry with server:',
+          error,
+        );
         return tempEntry;
       }
     },

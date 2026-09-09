@@ -1,3 +1,4 @@
+import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { CircleCheck, Moon } from '@repo/ui/icons';
 import {
@@ -16,7 +17,6 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -112,7 +112,9 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         hapticSuccess();
         setCompleted(true);
       } catch {
-        setSaveError('Your ritual could not be saved. Your reflections are still here—please try again.');
+        setSaveError(
+          'Your ritual could not be saved. Your reflections are still here—please try again.',
+        );
       } finally {
         setSaving(false);
       }
@@ -282,7 +284,10 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       {/* Navigation Controls */}
       <HStack className="justify-between mt-auto pb-4 gap-4">
         {saveError ? (
-          <Text className="absolute bottom-20 left-0 right-0 text-emberRed text-xs text-center" accessibilityRole="alert">
+          <Text
+            className="absolute bottom-20 left-0 right-0 text-emberRed text-xs text-center"
+            accessibilityRole="alert"
+          >
             {saveError}
           </Text>
         ) : null}
@@ -299,16 +304,20 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           onPress={handleNext}
           isDisabled={
             saving ||
-            !!currentStepData.input &&
-            (!currentStepData.value || currentStepData.value.trim() === '')
+            (!!currentStepData.input &&
+              (!currentStepData.value || currentStepData.value.trim() === ''))
           }
-          accessibilityLabel={currentStep === steps.length - 1 ? 'Complete wind-down ritual' : 'Next ritual step'}
+          accessibilityLabel={
+            currentStep === steps.length - 1 ? 'Complete wind-down ritual' : 'Next ritual step'
+          }
           className="bg-sanctuarySaffron rounded-comfortable flex-1 h-12"
         >
           <ButtonText className="text-black font-bold">
-            {saving ? 'Saving...' : currentStep === steps.length - 1
-              ? t('common.complete') || 'Complete'
-              : t('common.next') || 'Next'}
+            {saving
+              ? 'Saving...'
+              : currentStep === steps.length - 1
+                ? t('common.complete') || 'Complete'
+                : t('common.next') || 'Next'}
           </ButtonText>
         </Button>
       </HStack>

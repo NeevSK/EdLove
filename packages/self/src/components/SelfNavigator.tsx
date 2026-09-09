@@ -1,20 +1,20 @@
+import { useReducedMotion } from '@repo/core/hooks/useAccessibility';
 import type { SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { tokens } from '@repo/ui/tokens';
-import { LayoutGrid, Layers } from '@repo/ui/icons';
+import type { SelfNavigatorMode } from '@repo/self/hooks/useSelfNavigatorMode';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { useBreakpoint, useResponsiveGrid } from '@repo/ui/components/layout';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { Layers, LayoutGrid } from '@repo/ui/icons';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticMedium, hapticSelection } from '@repo/ui/utils/haptics';
 import React, { useCallback, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
-import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useBreakpoint, useResponsiveGrid } from '@repo/ui/components/layout';
-import { useReducedMotion } from '@repo/core/hooks/useAccessibility';
-import type { SelfNavigatorMode } from '@repo/self/hooks/useSelfNavigatorMode';
+import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 
 export interface SelfNavigatorProps {
   features: (SelfViewFeature & { domainColor?: string })[];
@@ -106,7 +106,10 @@ export function SelfNavigator({
           accessibilityState={{ selected: isActive }}
           accessibilityHint="Double tap to open. Long press to save or remove from shortcuts."
           className="items-center"
-          style={{ width: isTiled ? (isTablet ? 104 : 92) : isTablet ? 104 : 72, margin: isTiled ? 6 : 0 }}
+          style={{
+            width: isTiled ? (isTablet ? 104 : 92) : isTablet ? 104 : 72,
+            margin: isTiled ? 6 : 0,
+          }}
         >
           <Box
             className="w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2"
@@ -173,7 +176,11 @@ export function SelfNavigator({
             onPress={onRetry}
             accessibilityRole="button"
             className="px-4 py-2 rounded-full"
-            style={{ backgroundColor: tokens.colors.surfaceElevated, borderWidth: 1, borderColor: tokens.colors.border }}
+            style={{
+              backgroundColor: tokens.colors.surfaceElevated,
+              borderWidth: 1,
+              borderColor: tokens.colors.border,
+            }}
           >
             <Text className="text-xs font-bold" style={{ color: tokens.colors.ink }}>
               Try again
@@ -200,14 +207,19 @@ export function SelfNavigator({
   return (
     <VStack className="gap-1" onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
       <HStack className="justify-between items-center px-md pb-2">
-        <Text className="text-[11px] font-bold uppercase tracking-widest" style={{ color: tokens.colors.textMuted }}>
+        <Text
+          className="text-[11px] font-bold uppercase tracking-widest"
+          style={{ color: tokens.colors.textMuted }}
+        >
           {mode === 'tiled' ? `All spaces • ${features.length}` : 'Quick glide'}
         </Text>
         <Pressable
           onPress={handleToggle}
           accessibilityRole="button"
           accessibilityLabel={mode === 'tiled' ? 'Switch to carousel' : 'Switch to full menu'}
-          accessibilityHint={mode === 'tiled' ? 'Comfort view: compact carousel' : 'Discovery view: full tiled menu'}
+          accessibilityHint={
+            mode === 'tiled' ? 'Comfort view: compact carousel' : 'Discovery view: full tiled menu'
+          }
           className="w-9 h-9 rounded-full justify-center items-center border"
           style={{
             backgroundColor: tokens.colors.surfaceInteractive,
@@ -244,13 +256,22 @@ export function SelfNavigator({
             getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
           />
         ) : (
-          <Box className="px-md" style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+          <Box
+            className="px-md"
+            style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+          >
             {features.map((feature) => (
               <Animated.View
                 key={feature.id}
                 layout={reducedMotion ? undefined : Layout.springify()}
                 entering={reducedMotion ? undefined : FadeIn.delay(20).duration(200)}
-                style={{ width: colWidthPct as unknown as number, alignItems: 'center', paddingVertical: 8 } as never}
+                style={
+                  {
+                    width: colWidthPct as unknown as number,
+                    alignItems: 'center',
+                    paddingVertical: 8,
+                  } as never
+                }
               >
                 {renderItem({ item: feature })}
               </Animated.View>

@@ -6,6 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { useJoyJar } from '@repo/self/hooks/useJoyJar';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen, MessageSquare, Plus, Save, Sparkles, Star, User, X } from '@repo/ui/icons';
@@ -28,7 +29,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInUp, SlideInRight } from 'react-native-reanimated';
-import { useJoyJar } from '@repo/self/hooks/useJoyJar';
 
 interface JoyJarProps {
   userId?: string;
@@ -41,7 +41,9 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
 
-  const { joyMoments, refreshData, isLoading, addJoyMoment, error } = useJoyJar(activeUserId ?? undefined);
+  const { joyMoments, refreshData, isLoading, addJoyMoment, error } = useJoyJar(
+    activeUserId ?? undefined,
+  );
   const [showForm, setShowForm] = useState(false);
 
   // Form state
@@ -153,7 +155,11 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
               <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
                 {error} Showing the last available moments.
               </Text>
-              <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading Joy Jar history">
+              <Pressable
+                onPress={() => void refreshData()}
+                accessibilityRole="button"
+                accessibilityLabel="Retry loading Joy Jar history"
+              >
                 <Text className="font-bold text-sanctuarySaffron">Retry</Text>
               </Pressable>
             </HStack>
@@ -286,10 +292,10 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
               <Box className="bg-obsidian rounded-xl border border-white/10 p-4 min-h-[140px]">
                 <InputField
                   placeholder={t('self.momentDescriptionPlaceholder') || 'What made you smile?'}
-                value={momentDescription}
-                onChangeText={setMomentDescription}
-                accessibilityLabel="Joy moment description"
-                accessibilityHint="Describe the teaching spark you want to remember"
+                  value={momentDescription}
+                  onChangeText={setMomentDescription}
+                  accessibilityLabel="Joy moment description"
+                  accessibilityHint="Describe the teaching spark you want to remember"
                   multiline
                   className="text-sacredWhite text-base text-start align-top"
                   placeholderTextColor="rgba(255,255,255,0.2)"

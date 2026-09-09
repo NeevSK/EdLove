@@ -4,6 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
+import { useTimetable } from '@repo/self/hooks/useTimetable';
+import type { Period } from '@repo/self/types';
 import { Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from '@repo/ui/icons';
 import {
   Box,
@@ -26,8 +28,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useState } from 'react';
-import { useTimetable } from '@repo/self/hooks/useTimetable';
-import type { Period } from '@repo/self/types';
 
 const DAYS = [
   { id: 1, label: 'Mon' },

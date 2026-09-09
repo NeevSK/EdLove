@@ -1,13 +1,5 @@
 import { useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, VStack } from '@repo/ui/primitives';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
@@ -31,6 +23,12 @@ import {
   PhilosophySection,
   VisionSection,
 } from '@repo/self/views/sections';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function FounderSelfView() {
   const { t } = useTranslation();

@@ -1,6 +1,6 @@
-import { Box, Text, Pressable } from '@repo/ui/primitives';
-import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
+import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
+import { Box, Pressable, Text } from '@repo/ui/primitives';
 import React from 'react';
 
 export interface RoleWeightEditorProps {
@@ -20,7 +20,9 @@ export function RoleWeightEditor({ roles, weights, onChange }: RoleWeightEditorP
   return (
     <SettingsGroup title="Role emphasis" subtitle="You hold multiple roles. Adjust prioritization.">
       <Box className="gap-3">
-        <Text className="text-xs text-ink/60">Detected roles: {roles.join(' + ') || 'student'}</Text>
+        <Text className="text-xs text-ink/60">
+          Detected roles: {roles.join(' + ') || 'student'}
+        </Text>
         <Box className="flex-row flex-wrap gap-2">
           {PRESETS.map((preset) => (
             <Pressable
@@ -33,7 +35,10 @@ export function RoleWeightEditor({ roles, weights, onChange }: RoleWeightEditorP
           ))}
         </Box>
         {roles.map((role) => (
-          <Box key={role} className="flex-row items-center justify-between rounded-xl border border-border p-3 bg-phase-surface">
+          <Box
+            key={role}
+            className="flex-row items-center justify-between rounded-xl border border-border p-3 bg-phase-surface"
+          >
             <Text className="text-sm font-bold capitalize text-ink">{role}</Text>
             <Box className="flex-row gap-1">
               {[0, 30, 70, 100].map((v) => (
@@ -42,7 +47,11 @@ export function RoleWeightEditor({ roles, weights, onChange }: RoleWeightEditorP
                   onPress={() => onChange({ ...weights, [role]: v })}
                   className={`px-3 py-1 rounded-full border ${weights[role] === v ? 'bg-ink border-ink' : 'bg-white border-border'}`}
                 >
-                  <Text className={`text-xs font-bold ${weights[role] === v ? 'text-white' : 'text-ink'}`}>{v}</Text>
+                  <Text
+                    className={`text-xs font-bold ${weights[role] === v ? 'text-white' : 'text-ink'}`}
+                  >
+                    {v}
+                  </Text>
                 </Pressable>
               ))}
             </Box>

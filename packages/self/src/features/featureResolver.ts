@@ -28,7 +28,11 @@ export function resolveFeatureZone(
 }
 
 export interface ScoringStrategy {
-  score(feature: AccessibleFeature, roleWeights: Record<string, number>, phase: 'morning' | 'afternoon' | 'night'): number;
+  score(
+    feature: AccessibleFeature,
+    roleWeights: Record<string, number>,
+    phase: 'morning' | 'afternoon' | 'night',
+  ): number;
 }
 export class RoleAffinityStrategy implements ScoringStrategy {
   score(feature: AccessibleFeature, roleWeights: Record<string, number>): number {
@@ -36,17 +40,31 @@ export class RoleAffinityStrategy implements ScoringStrategy {
   }
 }
 export class TemporalPhaseStrategy implements ScoringStrategy {
-  score(feature: AccessibleFeature, _roleWeights: Record<string, number>, phase: 'morning' | 'afternoon' | 'night'): number {
+  score(
+    feature: AccessibleFeature,
+    _roleWeights: Record<string, number>,
+    phase: 'morning' | 'afternoon' | 'night',
+  ): number {
     return feature.timing?.preferredPhase === phase ? 50 : 0;
   }
 }
 export class CompositeScoringStrategy implements ScoringStrategy {
   constructor(private readonly strategies: ScoringStrategy[]) {}
-  score(feature: AccessibleFeature, roleWeights: Record<string, number>, phase: 'morning' | 'afternoon' | 'night'): number {
-    return this.strategies.reduce((s, strat) => s + strat.score(feature, roleWeights, phase), 0) - feature.defaultOrder * 0.01;
+  score(
+    feature: AccessibleFeature,
+    roleWeights: Record<string, number>,
+    phase: 'morning' | 'afternoon' | 'night',
+  ): number {
+    return (
+      this.strategies.reduce((s, strat) => s + strat.score(feature, roleWeights, phase), 0) -
+      feature.defaultOrder * 0.01
+    );
   }
 }
-const defaultScoring = new CompositeScoringStrategy([new RoleAffinityStrategy(), new TemporalPhaseStrategy()]);
+const defaultScoring = new CompositeScoringStrategy([
+  new RoleAffinityStrategy(),
+  new TemporalPhaseStrategy(),
+]);
 
 function sortDiscoverable(
   features: AccessibleFeature[],
@@ -56,7 +74,9 @@ function sortDiscoverable(
   const nowHour = new Date().getHours();
   const phase: 'morning' | 'afternoon' | 'night' =
     nowHour >= 5 && nowHour < 12 ? 'morning' : nowHour >= 18 || nowHour < 5 ? 'night' : 'afternoon';
-  return [...features].sort((a, b) => scoring.score(b, roleWeights, phase) - scoring.score(a, roleWeights, phase));
+  return [...features].sort(
+    (a, b) => scoring.score(b, roleWeights, phase) - scoring.score(a, roleWeights, phase),
+  );
 }
 
 function groupBy<T, K extends string>(items: T[], keyFn: (item: T) => K): Record<K, T[]> {
@@ -91,11 +111,13 @@ export function resolveFeatureSet(
   const discoverableRaw = visible.filter((f) => !selected.some((s) => s.id === f.id));
   const discoverable = sortDiscoverable(discoverableRaw, roleWeights);
 
-  const byZone = groupBy(visible, (feature) => resolveFeatureZone(feature, zoneOverrides)) as Record<
-    FeatureZone,
+  const byZone = groupBy(visible, (feature) =>
+    resolveFeatureZone(feature, zoneOverrides),
+  ) as Record<FeatureZone, AccessibleFeature[]>;
+  const byCategory = groupBy(visible, (f) => f.category as ResolverCategory) as Record<
+    ResolverCategory,
     AccessibleFeature[]
   >;
-  const byCategory = groupBy(visible, (f) => f.category as ResolverCategory) as Record<ResolverCategory, AccessibleFeature[]>;
 
   // Ensure all zones present
   (['today', 'private', 'shared'] as FeatureZone[]).forEach((z) => {

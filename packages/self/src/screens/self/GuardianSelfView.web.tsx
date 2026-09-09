@@ -1,10 +1,5 @@
 import { useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
-import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
-import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
-import { TemporalShield } from '@repo/ui/components/TemporalShield';
-import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import FireJournal from '@repo/self/components/FireJournal';
@@ -23,6 +18,10 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection } from '@repo/self/views/sections';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
+import { useTranslation } from 'react-i18next';
 
 export default function GuardianSelfView() {
   const { t } = useTranslation();

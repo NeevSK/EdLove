@@ -7,11 +7,11 @@
  * Metro resolves this over GratitudeGlimmers.tsx on the web platform.
  */
 
+import { useGratitude } from '@repo/self/hooks/useGratitude';
+import type { GratitudeEntry } from '@repo/self/types';
 import { Heart, Plus } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
-import { useGratitude } from '@repo/self/hooks/useGratitude';
-import type { GratitudeEntry } from '@repo/self/types';
 
 interface GratitudeGlimmersProps {
   userId?: string;
@@ -46,7 +46,8 @@ const CATEGORIES: Array<{
 ];
 
 export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
-  const { entries, isLoading, setEntries, addGratitudeEntry, error, refreshData } = useGratitude(userId);
+  const { entries, isLoading, setEntries, addGratitudeEntry, error, refreshData } =
+    useGratitude(userId);
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<Category>('student-said');
@@ -140,7 +141,11 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
             borderRadius: '12px',
           }}
         >
-          {saveError && <div role="alert" style={{ color: '#B42318', fontSize: '12px' }}>{saveError}</div>}
+          {saveError && (
+            <div role="alert" style={{ color: '#B42318', fontSize: '12px' }}>
+              {saveError}
+            </div>
+          )}
           {/* Category selector */}
           <div style={{ display: 'flex', gap: '8px' }}>
             {CATEGORIES.map((cat) => (
@@ -214,9 +219,32 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
 
       {/* Entries */}
       {error && (
-        <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', background: 'var(--background-alt)', border: '1px solid #EF4444', borderRadius: '10px' }}>
-          <span style={{ flex: 1, fontSize: '12px', color: 'var(--ink-soft)' }}>{error} Showing the last available entries.</span>
-          <button type="button" onClick={() => void refreshData()} style={{ border: 0, background: 'transparent', color: '#D4843A', fontWeight: 700, cursor: 'pointer' }}>
+        <div
+          role="alert"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '12px 14px',
+            background: 'var(--background-alt)',
+            border: '1px solid #EF4444',
+            borderRadius: '10px',
+          }}
+        >
+          <span style={{ flex: 1, fontSize: '12px', color: 'var(--ink-soft)' }}>
+            {error} Showing the last available entries.
+          </span>
+          <button
+            type="button"
+            onClick={() => void refreshData()}
+            style={{
+              border: 0,
+              background: 'transparent',
+              color: '#D4843A',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
             Retry
           </button>
         </div>

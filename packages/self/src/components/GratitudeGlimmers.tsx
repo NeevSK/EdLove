@@ -6,6 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { useGratitude } from '@repo/self/hooks/useGratitude';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ChevronLeft, Heart, MessageCircle, Plus, Save, Sparkles, User } from '@repo/ui/icons';
@@ -27,7 +28,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';
-import { useGratitude } from '@repo/self/hooks/useGratitude';
 
 interface GratitudeGlimmersProps {
   userId?: string;
@@ -149,7 +149,11 @@ export default function GratitudeGlimmers({
               <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
                 {error} Showing the last available entries.
               </Text>
-              <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading gratitude history">
+              <Pressable
+                onPress={() => void refreshData()}
+                accessibilityRole="button"
+                accessibilityLabel="Retry loading gratitude history"
+              >
                 <Text className="font-bold text-sanctuarySaffron">Retry</Text>
               </Pressable>
             </HStack>
@@ -262,11 +266,11 @@ export default function GratitudeGlimmers({
               <Box className="bg-white/5 rounded-xl border border-white/10 p-4 min-h-[140px]">
                 <InputField
                   placeholder={t('self.gratitudePlaceholder') || 'What warmed your heart?'}
-                value={content}
-                onChangeText={setContent}
-                multiline
-                accessibilityLabel="Gratitude reflection"
-                accessibilityHint="Write what warmed your heart"
+                  value={content}
+                  onChangeText={setContent}
+                  multiline
+                  accessibilityLabel="Gratitude reflection"
+                  accessibilityHint="Write what warmed your heart"
                   className="text-sacredWhite text-base text-start align-top"
                   placeholderTextColor="rgba(255,255,255,0.2)"
                 />

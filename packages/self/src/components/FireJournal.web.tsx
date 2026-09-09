@@ -5,6 +5,7 @@
  * Purged raw HTML fragments in favor of @repo/ui primitives and NativeWind v4.
  */
 
+import { useFireJournal } from '@repo/self/hooks/useFireJournal';
 import { CircleCheck, Flame } from '@repo/ui/icons';
 import {
   Box,
@@ -19,7 +20,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useState } from 'react';
-import { useFireJournal } from '@repo/self/hooks/useFireJournal';
 
 interface FireJournalProps {
   userId?: string;

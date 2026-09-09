@@ -5,7 +5,9 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 function isMissingTableError(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false;
   const e = error as { code?: string; message?: string };
-  return e.code === '42P01' || (typeof e.message === 'string' && e.message.includes('does not exist'));
+  return (
+    e.code === '42P01' || (typeof e.message === 'string' && e.message.includes('does not exist'))
+  );
 }
 
 interface Props {

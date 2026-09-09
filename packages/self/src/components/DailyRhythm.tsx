@@ -5,7 +5,8 @@
  */
 
 import { useIsGuest } from '@repo/core/hooks';
-
+import { useTimetable } from '@repo/self/hooks/useTimetable';
+import type { Period } from '@repo/self/types';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
@@ -52,8 +53,6 @@ import { useToast } from '@repo/ui/providers';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';
-import { useTimetable } from '@repo/self/hooks/useTimetable';
-import type { Period } from '@repo/self/types';
 
 const DAYS = [
   { id: 1, label: 'M' },
@@ -139,7 +138,10 @@ function DailyRhythmContent() {
       toast.show({
         placement: 'top',
         render: ({ id }: { id: string }) => (
-          <Toast nativeID={id} className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl">
+          <Toast
+            nativeID={id}
+            className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl"
+          >
             <ToastTitle className="text-sacredWhite text-sm font-bold">
               {t('self.timetableSaveFailed') || 'Timetable could not be saved. Please try again.'}
             </ToastTitle>
@@ -457,9 +459,13 @@ function DailyRhythmContent() {
                           toast.show({
                             placement: 'top',
                             render: ({ id }: { id: string }) => (
-                              <Toast nativeID={id} className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl">
+                              <Toast
+                                nativeID={id}
+                                className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl"
+                              >
                                 <ToastTitle className="text-sacredWhite text-sm font-bold">
-                                  {t('self.timetableDeleteFailed') || 'Timetable period could not be deleted.'}
+                                  {t('self.timetableDeleteFailed') ||
+                                    'Timetable period could not be deleted.'}
                                 </ToastTitle>
                               </Toast>
                             ),

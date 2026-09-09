@@ -4,6 +4,13 @@
  * Default: "Drink water intermittently while teaching"
  */
 
+import {
+  createReminder,
+  fetchReminders as fetchReminderRecords,
+  type ReminderRecord,
+  deleteReminder as removeReminderRecord,
+  updateReminder,
+} from '@repo/self/api/selfFeatureRepository';
 import { Bell, Clock, Droplet, Plus, SquarePen, Trash2 } from '@repo/ui/icons';
 import {
   Box,
@@ -25,20 +32,13 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
-import { confirmAction } from '@repo/ui/utils/dialogs';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { confirmAction } from '@repo/ui/utils/dialogs';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
-import {
-  createReminder,
-  fetchReminders as fetchReminderRecords,
-  type ReminderRecord,
-  deleteReminder as removeReminderRecord,
-  updateReminder,
-} from '@repo/self/api/selfFeatureRepository';
 
 type Reminder = ReminderRecord;
 
@@ -88,14 +88,18 @@ async function scheduleReminderNotification(reminder: Reminder) {
         repeats: true,
       } as unknown as Notifications.NotificationTriggerInput,
     });
-  } catch {}
+  } catch {
+    // Notification schedule failed, ignore gracefully
+  }
 }
 
 async function cancelReminderNotification(reminderId: string) {
   if (Platform.OS === 'web') return;
   try {
     await Notifications.cancelScheduledNotificationAsync(reminderId);
-  } catch {}
+  } catch {
+    // Notification cancel failed, ignore gracefully
+  }
 }
 
 if (Platform.OS !== 'web') {
@@ -109,7 +113,9 @@ if (Platform.OS !== 'web') {
         shouldShowList: true,
       }),
     } as any);
-  } catch {}
+  } catch {
+    // Notification handler setup failed, ignore gracefully
+  }
 }
 
 export default function RemindersManager({ userId }: RemindersManagerProps) {

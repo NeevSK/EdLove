@@ -1,11 +1,11 @@
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { useCallback, useEffect, useState } from 'react';
 import {
   fetchEnergyForecastsForView,
   saveEnergyForecastForDate,
 } from '@repo/self/api/selfInsightsRepository';
 import type { EnergyForecast } from '@repo/self/types';
+import { useCallback, useEffect, useState } from 'react';
 
 const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
 /**

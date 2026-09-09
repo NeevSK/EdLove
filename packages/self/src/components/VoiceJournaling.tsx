@@ -4,6 +4,7 @@
  * Simple, focused, and intimate interface.
  */
 
+import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
 import { Check, Mic, Play, Square, Volume2, X } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -15,10 +16,15 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { AudioModule, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import * as FileSystem from 'expo-file-system/legacy';
+import { Observe } from 'expo-observe';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import {
   Easing,
   FadeInUp,
@@ -28,13 +34,6 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-
-import { AudioModule, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import * as FileSystem from 'expo-file-system/legacy';
-import { Platform } from 'react-native';
-import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
-import { Observe } from 'expo-observe';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 interface VoiceJournalingProps {
   userId?: string;
@@ -137,7 +136,11 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
         setRecordingError('Microphone access is needed to record a voice journal.');
         return;
       }
-      const rec: InstanceType<typeof AudioModule.AudioRecorder> = new (AudioModule.AudioRecorder as unknown as { new (opts?: unknown): InstanceType<typeof AudioModule.AudioRecorder> })({
+      const rec: InstanceType<typeof AudioModule.AudioRecorder> = new (
+        AudioModule.AudioRecorder as unknown as {
+          new (opts?: unknown): InstanceType<typeof AudioModule.AudioRecorder>;
+        }
+      )({
         extension: '.m4a',
         sampleRate: 44100,
         numberOfChannels: 1,
@@ -178,7 +181,9 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
           await FileSystem.makeDirectoryAsync(dir, { intermediates: true }).catch(() => {});
           const dest = `${dir}voice_${Date.now()}.m4a`;
           await FileSystem.copyAsync({ from: uri, to: dest }).catch(() => {});
-        } catch {}
+        } catch {
+          // File copy fallback, ignore gracefully
+        }
       }
     } catch (e) {
       console.warn('[voice] stop failed', e);
@@ -222,7 +227,9 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
             });
             const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
             blob = new Blob([bytes], { type: 'audio/m4a' });
-          } catch {}
+          } catch {
+            // Blob conversion error, ignore
+          }
         }
         await saveVoiceJournalRecord(userId, {
           durationSeconds: duration,
@@ -231,10 +238,15 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
           contentType: 'audio/m4a',
         });
         try {
-          (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('self_voice_recorded', {
-            attributes: { durationSeconds: duration, hasBlob: !!blob },
-          } as unknown as never);
-        } catch {}
+          (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent(
+            'self_voice_recorded',
+            {
+              attributes: { durationSeconds: duration, hasBlob: !!blob },
+            } as unknown as never,
+          );
+        } catch {
+          // Analytics log event error, ignore
+        }
       }
       hapticSuccess();
       onFinished?.(recordedUri ?? 'mock-uri');
@@ -291,8 +303,8 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
             Platform.OS === 'web'
               ? 'Voice recording is available in the mobile app'
               : recordingState === 'recording'
-              ? 'Stops the current voice reflection'
-              : 'Starts a new voice reflection'
+                ? 'Stops the current voice reflection'
+                : 'Starts a new voice reflection'
           }
           className={`w-24 h-24 rounded-full items-center justify-center transition-all duration-300 shadow-lg ${
             recordingState === 'recording'

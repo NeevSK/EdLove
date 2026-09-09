@@ -33,7 +33,10 @@ class AccessPolicyComposite implements Policy {
     return this.policies.every((p) => p.isAllowed(feature, ctx, caps));
   }
 }
-const defaultComposite = new AccessPolicyComposite([new CapabilityPolicy(), new CitizenshipPolicy()]);
+const defaultComposite = new AccessPolicyComposite([
+  new CapabilityPolicy(),
+  new CitizenshipPolicy(),
+]);
 
 /**
  * Pure function — no hooks, fully testable. Delegates to composite.
@@ -54,7 +57,7 @@ export function resolveAccessibleFeatures(
     });
 }
 
-export { CapabilityPolicy, CitizenshipPolicy, AccessPolicyComposite };
+export { AccessPolicyComposite, CapabilityPolicy, CitizenshipPolicy };
 
 /**
  * Derive roles from capabilities using a pure fallback (mirrors roleResolution.ts but supports multi-role).

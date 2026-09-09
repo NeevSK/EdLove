@@ -5,7 +5,7 @@
  */
 
 import { useSafeMutation } from '@repo/core/hooks';
-
+import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ChevronRight, Flame, Goal, Minus, Plus, Sparkles, Target, Trophy } from '@repo/ui/icons';
 import {
@@ -26,7 +26,6 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
-import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
 
 interface StudentGoalsProps {
   userId: string;

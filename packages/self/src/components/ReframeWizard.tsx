@@ -1,4 +1,4 @@
-﻿/**
+/**
  * REFRAME WIZARD
  * A guided thought record: notice the automatic thought, name the feeling,
  * spot the thinking trap, weigh evidence, and write a balanced reframe. The
@@ -182,8 +182,9 @@ export default function ReframeWizard({
   const { t } = useTranslation();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
+  const hookResult = useThoughtRecords(activeUserId ?? undefined);
   const { records, isLoading, isAnonymous, addThoughtRecord, completeFollowUp } =
-    persistence ?? useThoughtRecords(activeUserId ?? undefined);
+    persistence ?? hookResult;
 
   const [stepIndex, setStepIndex] = useState(0);
   const [preMood, setPreMood] = useState(3);

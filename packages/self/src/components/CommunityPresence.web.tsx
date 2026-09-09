@@ -5,8 +5,8 @@
  * focused on rendering only.
  */
 
-import { Users, WifiOff } from '@repo/ui/icons';
 import { useCommunityPresence } from '@repo/self/hooks/useCommunityPresence';
+import { Users, WifiOff } from '@repo/ui/icons';
 
 interface CommunityPresenceProps {
   compact?: boolean;

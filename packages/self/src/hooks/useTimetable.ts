@@ -2,14 +2,13 @@ import { authAPI, identityAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-
-import { useCallback, useEffect, useState } from 'react';
 import {
   createTimetablePeriod,
   deleteTimetablePeriod,
   fetchTimetablePeriods,
   updateTimetablePeriod,
 } from '@repo/self/api/selfFeatureRepository';
+import { useCallback, useEffect, useState } from 'react';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 

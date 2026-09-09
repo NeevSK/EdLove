@@ -5,9 +5,10 @@
  * On web we use a direct Supabase insert with optimistic local update
  * and a clean HTML form. Metro resolves this over WisdomSeeds.tsx on web.
  */
+
+import { useWisdom } from '@repo/self/hooks/useWisdom';
 import { Lightbulb } from '@repo/ui/icons';
 import { useState } from 'react';
-import { useWisdom } from '@repo/self/hooks/useWisdom';
 
 interface WisdomSeedsProps {
   userId?: string;
@@ -123,9 +124,20 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
 
       {/* Seeds list */}
       {historyError && (
-        <div role="alert" style={{ display: 'flex', gap: '12px', padding: '12px 14px', border: '1px solid #EF4444', borderRadius: '10px' }}>
+        <div
+          role="alert"
+          style={{
+            display: 'flex',
+            gap: '12px',
+            padding: '12px 14px',
+            border: '1px solid #EF4444',
+            borderRadius: '10px',
+          }}
+        >
           <span style={{ flex: 1 }}>{historyError} Showing the last available notes.</span>
-          <button type="button" onClick={() => void refreshData()}>Retry</button>
+          <button type="button" onClick={() => void refreshData()}>
+            Retry
+          </button>
         </div>
       )}
       {isLoading ? (

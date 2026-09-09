@@ -4,14 +4,24 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { dailyContentAPI } from '@repo/self/api/dailyContent';
+import type { DailyContent } from '@repo/self/types/Wellbeing';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ChevronDown, ChevronUp, Lightbulb, Sparkles, User } from '@repo/ui/icons';
-import { Box, Button, ButtonText, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  Icon,
+  Pressable,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { dailyContentAPI } from '@repo/self/api/dailyContent';
-import type { DailyContent } from '@repo/self/types/Wellbeing';
 
 interface DailyContentCardProps {
   type: 'motivation' | 'did_you_know';
@@ -85,7 +95,9 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
         onPress={() => needsExpansion && setExpanded(!expanded)}
         accessibilityRole={needsExpansion ? 'button' : undefined}
         accessibilityLabel={needsExpansion ? `${title}: ${content.content}` : title}
-        accessibilityHint={needsExpansion ? (expanded ? 'Collapses content' : 'Expands content') : undefined}
+        accessibilityHint={
+          needsExpansion ? (expanded ? 'Collapses content' : 'Expands content') : undefined
+        }
         accessibilityState={needsExpansion ? { expanded } : undefined}
         className={`p-xl rounded-3xl border-l-4 border-y border-r border-white/5 shadow-sm transition-all active:scale-[0.98] ${bgClass} ${borderClass}`}
       >

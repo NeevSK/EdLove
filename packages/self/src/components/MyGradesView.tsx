@@ -1,9 +1,18 @@
+import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen, MessageSquare } from '@repo/ui/icons';
-import { Box, Button, ButtonText, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  Button,
+  ButtonText,
+  HStack,
+  Icon,
+  ScrollView,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
 
 interface MyGradesViewProps {
   userId?: string;

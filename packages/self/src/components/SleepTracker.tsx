@@ -6,7 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
+import { useSleepTracker } from '@repo/self/hooks/useSleepTracker';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Moon, Sparkles } from '@repo/ui/icons';
 import {
@@ -32,7 +32,6 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { useSleepTracker } from '@repo/self/hooks/useSleepTracker';
 
 interface SleepTrackerProps {
   userId?: string;
@@ -42,7 +41,13 @@ interface SleepTrackerProps {
 export default function SleepTracker({ userId, disabled: componentDisabled }: SleepTrackerProps) {
   const { context } = usePermissions();
   const activeUserId = userId || context.userId || undefined;
-  const { sleepLogs, refreshData, isLoading, addSleepLog, error: historyError } = useSleepTracker(activeUserId);
+  const {
+    sleepLogs,
+    refreshData,
+    isLoading,
+    addSleepLog,
+    error: historyError,
+  } = useSleepTracker(activeUserId);
   const { t } = useTranslation();
 
   const [sleepQuality, setSleepQuality] = useState(3);
@@ -197,7 +202,12 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
           <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
             {historyError} Showing the last available log.
           </Text>
-          <Button variant="outline" size="sm" onPress={() => void refreshData()} accessibilityLabel="Retry loading sleep history">
+          <Button
+            variant="outline"
+            size="sm"
+            onPress={() => void refreshData()}
+            accessibilityLabel="Retry loading sleep history"
+          >
             <ButtonText>Retry</ButtonText>
           </Button>
         </HStack>
@@ -250,7 +260,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
               className="h-10 w-full"
               accessibilityLabel="Sleep quality"
               accessibilityHint="Choose from restless to excellent"
-              accessibilityValue={{ min: 1, max: 5, now: sleepQuality, text: currentQuality.label }}
+              accessibilityValue={{ min: 1, max: 5, now: sleepQuality }}
             />
 
             <HStack className="justify-between mt-4">

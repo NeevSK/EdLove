@@ -4,7 +4,7 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
-    test: {
+  test: {
     fsModuleCache: true,
     sharedViteServer: true,
     globals: true,

@@ -38,16 +38,30 @@ export async function indexWisdomNotes(notes: { id: string; insight: string }[])
   for (const n of notes) {
     try {
       await d.runAsync('DELETE FROM wisdom_notes_fts WHERE id = ?', [n.id]);
-      await d.runAsync('INSERT INTO wisdom_notes_fts (id, insight) VALUES (?, ?)', [n.id, n.insight]);
-    } catch {}
+      await d.runAsync('INSERT INTO wisdom_notes_fts (id, insight) VALUES (?, ?)', [
+        n.id,
+        n.insight,
+      ]);
+    } catch {
+      // FTS indexing error, ignore gracefully
+    }
   }
 }
 
-export async function searchWisdomNotes(query: string, limit = 20): Promise<{ id: string; snippet: string }[]> {
+export async function searchWisdomNotes(
+  query: string,
+  limit = 20,
+): Promise<{ id: string; snippet: string }[]> {
   if (!query.trim()) return [];
   const d = await getDb();
   if (!d) return [];
-  const sanitized = query.trim().replace(/"/g, '').replace(/\s+/g, ' ').split(' ').filter(Boolean).join(' OR ');
+  const sanitized = query
+    .trim()
+    .replace(/"/g, '')
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .join(' OR ');
   // use snippet for highlight
   try {
     const rows = await d.getAllAsync<{ id: string; snippet: string }>(
@@ -65,7 +79,9 @@ export async function clearWisdomFts(): Promise<void> {
   if (!d) return;
   try {
     await d.execAsync('DELETE FROM wisdom_notes_fts;');
-  } catch {}
+  } catch {
+    // Clear FTS error, ignore gracefully
+  }
 }
 
 export async function indexVoiceJournals(
@@ -77,16 +93,20 @@ export async function indexVoiceJournals(
   for (const r of records) {
     try {
       await d.runAsync('DELETE FROM voice_journals_fts WHERE id = ?', [r.id]);
-      await d.runAsync('INSERT INTO voice_journals_fts (id, duration_text, insight) VALUES (?, ?, ?)', [
-        r.id,
-        `${r.duration_seconds}s voice`,
-        r.transcript ?? '',
-      ]);
-    } catch {}
+      await d.runAsync(
+        'INSERT INTO voice_journals_fts (id, duration_text, insight) VALUES (?, ?, ?)',
+        [r.id, `${r.duration_seconds}s voice`, r.transcript ?? ''],
+      );
+    } catch {
+      // Index voice journal FTS error, ignore gracefully
+    }
   }
 }
 
-export async function searchVoiceJournals(query: string, limit = 20): Promise<{ id: string; snippet: string }[]> {
+export async function searchVoiceJournals(
+  query: string,
+  limit = 20,
+): Promise<{ id: string; snippet: string }[]> {
   if (!query.trim()) return [];
   const d = await getDb();
   if (!d) return [];

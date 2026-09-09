@@ -1,7 +1,5 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-import { useTranslation } from 'react-i18next';
-
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import FireJournal from '@repo/self/components/FireJournal';
@@ -16,6 +14,7 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useSanctuaryRegistry } from '@repo/self/hooks/useSanctuaryRegistry';
 import { JournalSection, MoodSection, StudentPulse } from '@repo/self/views/sections';
+import { useTranslation } from 'react-i18next';
 
 export default function StudentSelfView() {
   const { t } = useTranslation();

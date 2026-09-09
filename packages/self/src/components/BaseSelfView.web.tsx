@@ -1,24 +1,24 @@
 import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
-import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
-import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
-import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import ErrorMessage from '@repo/ui/components/ErrorMessage';
-import { tokens } from '@repo/ui/tokens';
-import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { useEffect, useMemo, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
 import type { BaseSelfViewProps, SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
+import { getCalmFeatureLabel, getHistoryNotice } from '@repo/self/components/selfEntryPresentation';
 import {
   canonicalSelfFeatureId,
   FEATURE_DISCOVERY_DATA,
   FEATURE_EMOJIS,
 } from '@repo/self/constants/selfRegistry';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
-import { getCalmFeatureLabel, getHistoryNotice } from '@repo/self/components/selfEntryPresentation';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
+import ErrorMessage from '@repo/ui/components/ErrorMessage';
+import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
+import { useEffect, useMemo, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.
@@ -31,7 +31,12 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   const { width } = useWindowDimensions();
   const breakpoint = width >= 1024 ? 'desktop' : width >= 600 ? 'tablet' : 'phone';
   const frame = {
-    gutter: breakpoint === 'desktop' ? tokens.spacing.xl : breakpoint === 'tablet' ? tokens.spacing.lg : tokens.spacing.md,
+    gutter:
+      breakpoint === 'desktop'
+        ? tokens.spacing.xl
+        : breakpoint === 'tablet'
+          ? tokens.spacing.lg
+          : tokens.spacing.md,
     maxWidth: breakpoint === 'desktop' ? 960 : breakpoint === 'tablet' ? 720 : '100%',
   } as const;
   const gridColumns = breakpoint === 'desktop' ? 3 : breakpoint === 'tablet' ? 2 : 1;
@@ -42,9 +47,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   const allFeatures = useMemo(
     () => [
       ...domains.flatMap((domain) =>
-          (domain.features || []).map((feature) => ({
-            ...feature,
-            id: canonicalSelfFeatureId(feature.id),
+        (domain.features || []).map((feature) => ({
+          ...feature,
+          id: canonicalSelfFeatureId(feature.id),
           domainId: domain.id,
           domainColor: domain.accentColor,
           energyVibe: domain.energyVibe,
@@ -72,7 +77,10 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
               historyContent: reminders,
               domainId: 'reminders',
               domainColor: tokens.colors.warning,
-              energyVibe: [tokens.colors.surfaceElevated, tokens.colors.surfaceSubtle] as [string, string],
+              energyVibe: [tokens.colors.surfaceElevated, tokens.colors.surfaceSubtle] as [
+                string,
+                string,
+              ],
             },
           ]
         : []),
@@ -114,9 +122,10 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
 
   // Energy Sensing: Derive background from focused domain or perspective
   const backgroundStyle = useMemo(() => {
-    const baseVibe = perspective === 'student'
-      ? [tokens.colors.surface, tokens.colors.surfaceElevated]
-      : [tokens.colors.surfaceElevated, tokens.colors.surface];
+    const baseVibe =
+      perspective === 'student'
+        ? [tokens.colors.surface, tokens.colors.surfaceElevated]
+        : [tokens.colors.surfaceElevated, tokens.colors.surface];
     const activeVibe = focusedFeature?.energyVibe || baseVibe;
     return {
       backgroundColor: activeVibe[0],
@@ -174,17 +183,38 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
       >
         <HStack className="justify-between items-center gap-6 flex-wrap">
           <VStack>
-            <Text style={{ fontSize: tokens.typography.sizes.xxl, fontWeight: '800', color: tokens.colors.ink }}>
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.xxl,
+                fontWeight: '800',
+                color: tokens.colors.ink,
+              }}
+            >
               Sadhana
             </Text>
-            <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.colors.inkSubtle, textTransform: 'uppercase', letterSpacing: 1.2 }}>
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.xs,
+                fontWeight: '700',
+                color: tokens.colors.inkSubtle,
+                textTransform: 'uppercase',
+                letterSpacing: 1.2,
+              }}
+            >
               {isHistoryMode ? `History · ${viewScale}` : 'Now'}
             </Text>
           </VStack>
 
           <HStack className="gap-4 items-center">
             <TemporalNavigator />
-            <Box style={{ height: 32, width: 1, backgroundColor: tokens.colors.surfaceSubtle, marginHorizontal: tokens.spacing.sm }} />
+            <Box
+              style={{
+                height: 32,
+                width: 1,
+                backgroundColor: tokens.colors.surfaceSubtle,
+                marginHorizontal: tokens.spacing.sm,
+              }}
+            />
             <HStack className="gap-2.5 items-center">
               <Pressable
                 onPress={() => {
@@ -195,17 +225,25 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                 accessibilityLabel="Show current self spaces"
                 accessibilityHint="Switches from history to the current view"
                 accessibilityState={{ selected: !isHistoryMode }}
-                  style={{
-                    paddingHorizontal: tokens.spacing.lg,
-                    paddingVertical: tokens.spacing.sm,
-                    borderRadius: tokens.radii.full,
-                    borderWidth: 1,
-                    borderColor: !isHistoryMode ? tokens.colors.success : tokens.colors.borderSubtle,
-                    backgroundColor: !isHistoryMode ? tokens.colors.surfaceElevated : tokens.colors.surface,
-                    opacity: !isHistoryMode ? 1 : 0.5,
-                  }}
+                style={{
+                  paddingHorizontal: tokens.spacing.lg,
+                  paddingVertical: tokens.spacing.sm,
+                  borderRadius: tokens.radii.full,
+                  borderWidth: 1,
+                  borderColor: !isHistoryMode ? tokens.colors.success : tokens.colors.borderSubtle,
+                  backgroundColor: !isHistoryMode
+                    ? tokens.colors.surfaceElevated
+                    : tokens.colors.surface,
+                  opacity: !isHistoryMode ? 1 : 0.5,
+                }}
               >
-                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '600', color: tokens.colors.ink }}>
+                <Text
+                  style={{
+                    fontSize: tokens.typography.sizes.xs,
+                    fontWeight: '600',
+                    color: tokens.colors.ink,
+                  }}
+                >
                   Now
                 </Text>
               </Pressable>
@@ -215,17 +253,25 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                 accessibilityLabel="Show self history"
                 accessibilityHint="Switches to the timeline view"
                 accessibilityState={{ selected: isHistoryMode }}
-                  style={{
-                    paddingHorizontal: tokens.spacing.lg,
-                    paddingVertical: tokens.spacing.sm,
-                    borderRadius: tokens.radii.full,
-                    borderWidth: 1,
-                    borderColor: isHistoryMode ? tokens.colors.info : tokens.colors.borderSubtle,
-                    backgroundColor: isHistoryMode ? tokens.colors.surfaceInteractive : tokens.colors.surface,
-                    opacity: isHistoryMode ? 1 : 0.5,
-                  }}
+                style={{
+                  paddingHorizontal: tokens.spacing.lg,
+                  paddingVertical: tokens.spacing.sm,
+                  borderRadius: tokens.radii.full,
+                  borderWidth: 1,
+                  borderColor: isHistoryMode ? tokens.colors.info : tokens.colors.borderSubtle,
+                  backgroundColor: isHistoryMode
+                    ? tokens.colors.surfaceInteractive
+                    : tokens.colors.surface,
+                  opacity: isHistoryMode ? 1 : 0.5,
+                }}
               >
-                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '600', color: tokens.colors.ink }}>
+                <Text
+                  style={{
+                    fontSize: tokens.typography.sizes.xs,
+                    fontWeight: '600',
+                    color: tokens.colors.ink,
+                  }}
+                >
                   History
                 </Text>
               </Pressable>
@@ -236,146 +282,198 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: frame.gutter, paddingVertical: tokens.spacing.xl }}
+        contentContainerStyle={{
+          paddingHorizontal: frame.gutter,
+          paddingVertical: tokens.spacing.xl,
+        }}
         showsVerticalScrollIndicator={false}
       >
         <Box style={{ maxWidth: frame.maxWidth, width: '100%', alignSelf: 'center' }}>
           {!isOnline && (
-            <Box style={{ marginBottom: tokens.spacing.lg, padding: tokens.spacing.md, borderRadius: tokens.radii.md, backgroundColor: tokens.colors.surfaceSubtle, borderWidth: 1, borderColor: tokens.colors.surfaceSubtle }}>
-              <Text style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}>
+            <Box
+              style={{
+                marginBottom: tokens.spacing.lg,
+                padding: tokens.spacing.md,
+                borderRadius: tokens.radii.md,
+                backgroundColor: tokens.colors.surfaceSubtle,
+                borderWidth: 1,
+                borderColor: tokens.colors.surfaceSubtle,
+              }}
+            >
+              <Text
+                style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}
+              >
                 Offline · saved entries remain available. New entries will sync later.
               </Text>
             </Box>
           )}
           {isHistoryMode && (
-            <Box style={{ marginBottom: tokens.spacing.lg, padding: tokens.spacing.md, borderRadius: tokens.radii.md, backgroundColor: tokens.colors.surfaceSubtle, borderWidth: 1, borderColor: tokens.colors.surfaceSubtle }}>
-              <Text style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}>
+            <Box
+              style={{
+                marginBottom: tokens.spacing.lg,
+                padding: tokens.spacing.md,
+                borderRadius: tokens.radii.md,
+                backgroundColor: tokens.colors.surfaceSubtle,
+                borderWidth: 1,
+                borderColor: tokens.colors.surfaceSubtle,
+              }}
+            >
+              <Text
+                style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}
+              >
                 {getHistoryNotice(viewScale)}
               </Text>
             </Box>
           )}
-        {focusedItemId ? (
-          <Box className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <Pressable
-              onPress={() => updateFocusedId(null)}
-              accessibilityRole="button"
-              className="flex-row items-center gap-2 mb-8 group opacity-60 hover:opacity-100 transition-all"
-            >
-              <Text className="text-xl group-hover:-translate-x-1 transition-transform">←</Text>
-              <Text className="text-sm font-semibold" style={{ color: tokens.colors.inkSubtle }}>
-                Back
-              </Text>
-            </Pressable>
+          {focusedItemId ? (
+            <Box className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <Pressable
+                onPress={() => updateFocusedId(null)}
+                accessibilityRole="button"
+                className="flex-row items-center gap-2 mb-8 group opacity-60 hover:opacity-100 transition-all"
+              >
+                <Text className="text-xl group-hover:-translate-x-1 transition-transform">←</Text>
+                <Text className="text-sm font-semibold" style={{ color: tokens.colors.inkSubtle }}>
+                  Back
+                </Text>
+              </Pressable>
 
-            <SanctuaryCard
-              className="p-10 border-l-[8px] sanctuary-glass-card shadow-2xl"
-              style={{ borderLeftColor: focusedFeature?.domainColor ?? tokens.colors.accentDepth }}
-            >
-              <HStack className="justify-between items-start mb-8">
-                <HStack className="items-center gap-4">
-                  <Text className="text-4xl">
-                    {FEATURE_EMOJIS[focusedFeature?.id as keyof typeof FEATURE_EMOJIS] || '✨'}
-                  </Text>
-                  <VStack>
-                    <Text className="text-2xl font-black tracking-tight">
-                      {focusedFeature?.label}
+              <SanctuaryCard
+                className="p-10 border-l-[8px] sanctuary-glass-card shadow-2xl"
+                style={{
+                  borderLeftColor: focusedFeature?.domainColor ?? tokens.colors.accentDepth,
+                }}
+              >
+                <HStack className="justify-between items-start mb-8">
+                  <HStack className="items-center gap-4">
+                    <Text className="text-4xl">
+                      {FEATURE_EMOJIS[focusedFeature?.id as keyof typeof FEATURE_EMOJIS] || '✨'}
                     </Text>
-                  </VStack>
-                </HStack>
-                <HStack className="gap-3">
-                  <FeatureInfoIcon
-                    title={focusedFeature?.label ?? 'Capability'}
-                    discoveryInfo={
-                      FEATURE_DISCOVERY_DATA[
-                        focusedFeature?.id as keyof typeof FEATURE_DISCOVERY_DATA
-                      ]
-                    }
-                    color={focusedFeature?.domainColor}
-                  />
-                  <Pressable
-                    onPress={() => togglePin(focusedFeature?.id || '')}
-                    accessibilityRole="button"
-                    accessibilityLabel={pinned.includes(focusedFeature?.id || '') ? 'Unpin focused space' : 'Pin focused space'}
-                    accessibilityState={{ selected: pinned.includes(focusedFeature?.id || '') }}
-                    className="p-2 bg-black/5 rounded-full"
-                  >
-                    <Box
-                      accessible={false}
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: pinned.includes(focusedFeature?.id || '') ? tokens.colors.success : tokens.colors.textMuted }}
-                    />
-                  </Pressable>
-                </HStack>
-              </HStack>
-              <Box className="min-h-[500px]">{renderFocusedFeature(focusedFeature)}</Box>
-            </SanctuaryCard>
-          </Box>
-        ) : (
-          <VStack className="gap-16 w-full">
-            {!domains.length ? (
-              <ErrorMessage type="warning" message="Your current perspective does not have a readable Self surface." />
-            ) : null}
-            {domains.map((domain) => (
-              <VStack key={domain.id} className="gap-8">
-                <HStack className="items-center gap-4">
-                  <Box
-                    className="w-2 h-8 rounded-full"
-                    style={{ backgroundColor: domain.accentColor || tokens.colors.accentDepth }}
-                  />
-                  <Text className="text-xl font-semibold" style={{ color: tokens.colors.ink }}>
-                    {domain.title}
-                  </Text>
-                </HStack>
-                {domain.content && (
-                  <Box className="mb-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                    {domain.content}
-                  </Box>
-                )}
-
-                <Box
-                  className={`grid gap-6 ${gridColumns === 3 ? 'xl:grid-cols-3' : gridColumns === 2 ? 'md:grid-cols-2' : 'grid-cols-1'}`}
-                >
-                  {domain.features?.map((feature) => (
-                    <SanctuaryCard
-                      key={feature.id}
-                      onPress={() => updateFocusedId(feature.id)}
-                      className="hover:scale-[1.02] hover:shadow-2xl transition-all duration-500 border-l-[4px] sanctuary-glass-card"
-                      style={{ borderLeftColor: domain.accentColor }}
-                    >
-                      <HStack className="justify-between items-start mb-4">
-                        <Text className="text-3xl">
-                          {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨'}
-                        </Text>
-                        {pinned.includes(feature.id) && <Text className="text-xs">📌</Text>}
-                      </HStack>
-                      <Text className="text-base font-semibold mb-1" style={{ color: tokens.colors.ink }}>
-                        {getCalmFeatureLabel(feature)}
+                    <VStack>
+                      <Text className="text-2xl font-black tracking-tight">
+                        {focusedFeature?.label}
                       </Text>
-                      {feature.summary ? (
-                        <Text className="text-sm leading-relaxed" style={{ color: tokens.colors.inkSubtle }} numberOfLines={2}>
-                          {feature.summary}
-                        </Text>
-                      ) : null}
-                    </SanctuaryCard>
-                  ))}
-                </Box>
-              </VStack>
-            ))}
+                    </VStack>
+                  </HStack>
+                  <HStack className="gap-3">
+                    <FeatureInfoIcon
+                      title={focusedFeature?.label ?? 'Capability'}
+                      discoveryInfo={
+                        FEATURE_DISCOVERY_DATA[
+                          focusedFeature?.id as keyof typeof FEATURE_DISCOVERY_DATA
+                        ]
+                      }
+                      color={focusedFeature?.domainColor}
+                    />
+                    <Pressable
+                      onPress={() => togglePin(focusedFeature?.id || '')}
+                      accessibilityRole="button"
+                      accessibilityLabel={
+                        pinned.includes(focusedFeature?.id || '')
+                          ? 'Unpin focused space'
+                          : 'Pin focused space'
+                      }
+                      accessibilityState={{ selected: pinned.includes(focusedFeature?.id || '') }}
+                      className="p-2 bg-black/5 rounded-full"
+                    >
+                      <Box
+                        accessible={false}
+                        className="w-2 h-2 rounded-full"
+                        style={{
+                          backgroundColor: pinned.includes(focusedFeature?.id || '')
+                            ? tokens.colors.success
+                            : tokens.colors.textMuted,
+                        }}
+                      />
+                    </Pressable>
+                  </HStack>
+                </HStack>
+                <Box className="min-h-[500px]">{renderFocusedFeature(focusedFeature)}</Box>
+              </SanctuaryCard>
+            </Box>
+          ) : (
+            <VStack className="gap-16 w-full">
+              {!domains.length ? (
+                <ErrorMessage
+                  type="warning"
+                  message="Your current perspective does not have a readable Self surface."
+                />
+              ) : null}
+              {domains.map((domain) => (
+                <VStack key={domain.id} className="gap-8">
+                  <HStack className="items-center gap-4">
+                    <Box
+                      className="w-2 h-8 rounded-full"
+                      style={{ backgroundColor: domain.accentColor || tokens.colors.accentDepth }}
+                    />
+                    <Text className="text-xl font-semibold" style={{ color: tokens.colors.ink }}>
+                      {domain.title}
+                    </Text>
+                  </HStack>
+                  {domain.content && (
+                    <Box className="mb-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      {domain.content}
+                    </Box>
+                  )}
 
-            {isAnonymous && (
-              <Box className="mt-20 py-20 border-t border-black/5 flex items-center justify-center">
-                <Box className="max-w-2xl w-full">
-                  <PositiveInvitation context="self" />
+                  <Box
+                    className={`grid gap-6 ${gridColumns === 3 ? 'xl:grid-cols-3' : gridColumns === 2 ? 'md:grid-cols-2' : 'grid-cols-1'}`}
+                  >
+                    {domain.features?.map((feature) => (
+                      <SanctuaryCard
+                        key={feature.id}
+                        onPress={() => updateFocusedId(feature.id)}
+                        className="hover:scale-[1.02] hover:shadow-2xl transition-all duration-500 border-l-[4px] sanctuary-glass-card"
+                        style={{ borderLeftColor: domain.accentColor }}
+                      >
+                        <HStack className="justify-between items-start mb-4">
+                          <Text className="text-3xl">
+                            {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨'}
+                          </Text>
+                          {pinned.includes(feature.id) && <Text className="text-xs">📌</Text>}
+                        </HStack>
+                        <Text
+                          className="text-base font-semibold mb-1"
+                          style={{ color: tokens.colors.ink }}
+                        >
+                          {getCalmFeatureLabel(feature)}
+                        </Text>
+                        {feature.summary ? (
+                          <Text
+                            className="text-sm leading-relaxed"
+                            style={{ color: tokens.colors.inkSubtle }}
+                            numberOfLines={2}
+                          >
+                            {feature.summary}
+                          </Text>
+                        ) : null}
+                      </SanctuaryCard>
+                    ))}
+                  </Box>
+                </VStack>
+              ))}
+
+              {isAnonymous && (
+                <Box className="mt-20 py-20 border-t border-black/5 flex items-center justify-center">
+                  <Box className="max-w-2xl w-full">
+                    <PositiveInvitation context="self" />
+                  </Box>
                 </Box>
-              </Box>
-            )}
-            {sideBar && (
-              <Box style={{ marginTop: tokens.spacing.xl, paddingTop: tokens.spacing.xl, borderTopWidth: 1, borderTopColor: tokens.colors.surfaceSubtle }}>
-                {sideBar}
-              </Box>
-            )}
-          </VStack>
-        )}
+              )}
+              {sideBar && (
+                <Box
+                  style={{
+                    marginTop: tokens.spacing.xl,
+                    paddingTop: tokens.spacing.xl,
+                    borderTopWidth: 1,
+                    borderTopColor: tokens.colors.surfaceSubtle,
+                  }}
+                >
+                  {sideBar}
+                </Box>
+              )}
+            </VStack>
+          )}
         </Box>
       </ScrollView>
     </Box>

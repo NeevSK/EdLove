@@ -1,6 +1,6 @@
-import { Box, Text, Pressable } from '@repo/ui/primitives';
-import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
 import type { SelfFeatureDefinition } from '@repo/self/features/featureCatalog';
+import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
+import { Box, Pressable, Text } from '@repo/ui/primitives';
 import React, { useDeferredValue, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
 
@@ -12,7 +12,13 @@ export interface FeaturePickerProps {
   onToggleHidden: (id: string, hidden: boolean) => void;
 }
 
-export function FeaturePicker({ catalog, selectedIds, hiddenIds, onToggleSelected, onToggleHidden }: FeaturePickerProps) {
+export function FeaturePicker({
+  catalog,
+  selectedIds,
+  hiddenIds,
+  onToggleSelected,
+  onToggleHidden,
+}: FeaturePickerProps) {
   const [query, setQuery] = useState('');
   const deferredQuery = useDeferredValue(query);
 
@@ -20,11 +26,19 @@ export function FeaturePicker({ catalog, selectedIds, hiddenIds, onToggleSelecte
     const q = deferredQuery.trim().toLowerCase();
     const all = Object.values(catalog) as SelfFeatureDefinition[];
     if (!q) return all;
-    return all.filter((f) => f.label.toLowerCase().includes(q) || f.id.toLowerCase().includes(q) || f.category.toLowerCase().includes(q));
+    return all.filter(
+      (f) =>
+        f.label.toLowerCase().includes(q) ||
+        f.id.toLowerCase().includes(q) ||
+        f.category.toLowerCase().includes(q),
+    );
   }, [catalog, deferredQuery]);
 
   return (
-    <SettingsGroup title="Pick your spaces" subtitle="Select, search, and prioritize. Selected stays first.">
+    <SettingsGroup
+      title="Pick your spaces"
+      subtitle="Select, search, and prioritize. Selected stays first."
+    >
       <Box className="gap-3">
         <Box className="rounded-xl border border-border bg-white px-3 py-2">
           <TextInput
@@ -39,7 +53,10 @@ export function FeaturePicker({ catalog, selectedIds, hiddenIds, onToggleSelecte
           const isSelected = selectedIds.includes(feature.id);
           const isHidden = hiddenIds.includes(feature.id);
           return (
-            <Box key={feature.id} className="rounded-xl border border-border p-3 bg-phase-surface gap-2">
+            <Box
+              key={feature.id}
+              className="rounded-xl border border-border p-3 bg-phase-surface gap-2"
+            >
               <Box className="flex-row justify-between items-center gap-2">
                 <Box className="flex-row items-center gap-2 flex-1">
                   <Text className="text-base">{feature.emoji}</Text>
@@ -57,7 +74,9 @@ export function FeaturePicker({ catalog, selectedIds, hiddenIds, onToggleSelecte
                   accessibilityRole="button"
                   className={`px-3 py-1.5 rounded-full border ${isSelected ? 'bg-ink border-ink' : 'bg-white border-border'}`}
                 >
-                  <Text className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-ink'}`}>{isSelected ? 'Selected' : 'Add'}</Text>
+                  <Text className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-ink'}`}>
+                    {isSelected ? 'Selected' : 'Add'}
+                  </Text>
                 </Pressable>
               </Box>
               <Box className="flex-row gap-1">

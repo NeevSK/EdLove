@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { featureCatalog } from '@repo/self/features/featureCatalog';
+import { describe, expect, it } from 'vitest';
 
 describe('FeatureCatalog', () => {
   it('is immutable and byCategory/byZone work', () => {

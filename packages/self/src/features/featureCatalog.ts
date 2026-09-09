@@ -1,5 +1,5 @@
-import type React from 'react';
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
+import type React from 'react';
 
 // Lightweight component type — actual components are lazy-loaded by SelfFeatureRenderer
 export type SelfFeatureComponentProps = {

@@ -6,6 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { useWisdom } from '@repo/self/hooks/useWisdom';
 import { ChevronRight, Leaf, Plus, Send, Sprout } from '@repo/ui/icons';
 import {
   Box,
@@ -25,7 +26,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
-import { useWisdom } from '@repo/self/hooks/useWisdom';
 
 interface WisdomSeedsProps {
   userId?: string;
@@ -152,7 +152,11 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
                 {historyError} Showing the last available notes.
               </Text>
-              <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading wisdom notes">
+              <Pressable
+                onPress={() => void refreshData()}
+                accessibilityRole="button"
+                accessibilityLabel="Retry loading wisdom notes"
+              >
                 <Text className="font-bold text-sanctuarySaffron">Retry</Text>
               </Pressable>
             </HStack>

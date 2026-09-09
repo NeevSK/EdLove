@@ -6,9 +6,8 @@
  * Metro resolves this over SleepTracker.tsx on the web platform.
  */
 import { useTemporalStore } from '@repo/core/logic';
-
-import { useEffect, useState } from 'react';
 import { useSleepTracker } from '@repo/self/hooks/useSleepTracker';
+import { useEffect, useState } from 'react';
 
 interface SleepTrackerProps {
   userId?: string;

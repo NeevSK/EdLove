@@ -1,12 +1,4 @@
 import { usePermissions, useStore } from '@repo/core/logic';
-
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, VStack } from '@repo/ui/primitives';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -28,7 +20,18 @@ import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
-import { DecisionSection, JournalSection, MoodSection, PrincipalPulse } from '@repo/self/views/sections';
+import {
+  DecisionSection,
+  JournalSection,
+  MoodSection,
+  PrincipalPulse,
+} from '@repo/self/views/sections';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function PrincipalSelfView() {
   const { t } = useTranslation();

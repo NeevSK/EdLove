@@ -5,6 +5,8 @@
  */
 
 import { useTemporalStore } from '@repo/core/logic';
+import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Battery, CircleCheck } from '@repo/ui/icons';
 import {
@@ -19,8 +21,6 @@ import {
 } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
-import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
-import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 
 interface EnergyForecastProps {
   userId?: string;
@@ -63,7 +63,13 @@ const LEVEL_LABELS: Record<
 };
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
-  const { forecasts, refreshData, isLoading, saveForecast, error: historyError } = useEnergyForecast(userId);
+  const {
+    forecasts,
+    refreshData,
+    isLoading,
+    saveForecast,
+    error: historyError,
+  } = useEnergyForecast(userId);
   const { isPastView, viewDate } = useTemporalStore();
 
   const currentForecast = forecasts.find((f) => f.forecast_date === viewDate) ?? null;
@@ -108,7 +114,11 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       {historyError ? (
         <Text className="text-sm text-emberRed" accessibilityRole="alert">
           {historyError}{' '}
-          <Pressable onPress={() => void refreshData()} accessibilityRole="button" accessibilityLabel="Retry loading energy history">
+          <Pressable
+            onPress={() => void refreshData()}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading energy history"
+          >
             <Text className="font-bold text-sanctuarySaffron">Retry</Text>
           </Pressable>
         </Text>

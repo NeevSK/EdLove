@@ -1,16 +1,17 @@
-import { create } from 'zustand';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { circuitBreakerRegistry } from '@repo/core/lib/circuit-breaker';
 import { generateIdempotencyKey } from '@repo/core/lib/idempotency';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
 import { withResilience } from '@repo/core/offline/resilience';
-import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
+import type { SelfCanvasPersistenceState } from '@repo/self/features/selfCanvasPersistence';
 import {
   DEFAULT_SELF_PREFERENCES,
   type SelfCanvasPreferences,
+  type SelfCanvasViewMode,
   type SelfFeatureZone,
 } from '@repo/self/features/userPreferences';
-import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
-import type { SelfCanvasPersistenceState } from '@repo/self/features/selfCanvasPersistence';
+import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
+import { create } from 'zustand';
 
 type StoreState = SelfCanvasPreferences & {
   userId: string | null;
@@ -24,7 +25,7 @@ type StoreState = SelfCanvasPreferences & {
   setOrder: (order: string[]) => void;
   setSelected: (selectedIds: string[]) => void;
   setRoleWeights: (weights: Partial<Record<SelfViewRole, number>>) => void;
-  setViewMode: (mode: 'carousel' | 'tiled') => void;
+  setViewMode: (mode: SelfCanvasViewMode) => void;
   reset: () => void;
 };
 
@@ -51,19 +52,29 @@ async function flushToSupabase(pending: PendingPersist): Promise<boolean> {
   const { userId, state, idempotencyKey } = pending;
   const attempt = async () => {
     const { supabaseClient } = await import('@repo/core/adapters/supabaseClient');
-    const { error } = await supabaseClient
-      .from('user_preferences')
-      .upsert(
-        { user_id: userId ?? 'guest', key: 'self:canvas', value: state, updated_at: new Date().toISOString(), idempotency_key: idempotencyKey } as never,
-        { onConflict: 'user_id,key' } as never,
-      );
+    const { error } = await supabaseClient.from('user_preferences').upsert(
+      {
+        user_id: userId ?? 'guest',
+        key: 'self:canvas',
+        value: state,
+        updated_at: new Date().toISOString(),
+        idempotency_key: idempotencyKey,
+      } as never,
+      { onConflict: 'user_id,key' } as never,
+    );
     if (error) throw error;
   };
 
   try {
-    await breaker.execute(() => withResilience(attempt, { retries: 3, backoff: 'exponential', timeout: 8000 } as never));
+    await breaker.execute(() =>
+      withResilience(attempt, { retries: 3, backoff: 'exponential', timeout: 8000 } as never),
+    );
     logBreadcrumb('self:canvas persisted');
-    trackEvent('self_canvas_persisted', { userId: userId ?? 'guest', isDefault: state.layout.isDefault, orderLength: state.layout.order.length });
+    trackEvent('self_canvas_persisted', {
+      userId: userId ?? 'guest',
+      isDefault: state.layout.isDefault,
+      orderLength: state.layout.order.length,
+    });
     return true;
   } catch (e) {
     captureException(e as Error, { tags: { feature: 'self:canvas' } });
@@ -90,17 +101,17 @@ function applyPersistResult(
 }
 
 function markLocalPersistenceFailure(error: unknown, set: (partial: Partial<StoreState>) => void) {
-  captureException(error instanceof Error ? error : new Error('Self canvas local persistence failed'), {
-    tags: { feature: 'self:canvas', op: 'persist_local' },
-  });
+  captureException(
+    error instanceof Error ? error : new Error('Self canvas local persistence failed'),
+    {
+      tags: { feature: 'self:canvas', op: 'persist_local' },
+    },
+  );
   logBreadcrumb('self:canvas local persist failed');
   set({ persistenceState: 'localError' });
 }
 
-function schedulePersist(
-  pending: PendingPersist,
-  set: (partial: Partial<StoreState>) => void,
-) {
+function schedulePersist(pending: PendingPersist, set: (partial: Partial<StoreState>) => void) {
   pendingPersist = pending;
   if (debounceTimer) clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
@@ -149,7 +160,12 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as Partial<SelfCanvasPreferences>;
-        set({ ...DEFAULT_SELF_PREFERENCES, ...parsed, userId: uid, isHydrated: true } as Partial<StoreState>);
+        set({
+          ...DEFAULT_SELF_PREFERENCES,
+          ...parsed,
+          userId: uid,
+          isHydrated: true,
+        } as Partial<StoreState>);
         // Flush pending if any (offline queue)
         if (pendingPersist && pendingPersist.userId === uid) {
           const pending = pendingPersist;
@@ -174,16 +190,29 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
           if (Array.isArray(pinned) && pinned.length) {
             const migrated: SelfCanvasPreferences = {
               ...DEFAULT_SELF_PREFERENCES,
-              features: { ...DEFAULT_SELF_PREFERENCES.features, selectedIds: pinned, customOrder: pinned },
+              features: {
+                ...DEFAULT_SELF_PREFERENCES.features,
+                selectedIds: pinned,
+                customOrder: pinned,
+              },
               layout: { ...DEFAULT_SELF_PREFERENCES.layout, isDefault: false, order: pinned },
               lastSyncedAt: Date.now(),
             };
             const key = generateIdempotencyKey();
             void SafeZustandStorage.setItem(keyFor(uid), JSON.stringify(migrated));
             void SafeZustandStorage.setItem(migratedKey, '1');
-            set({ ...migrated, userId: uid, isHydrated: true, lastIdempotencyKey: key, persistenceState: 'queued' } as Partial<StoreState>);
+            set({
+              ...migrated,
+              userId: uid,
+              isHydrated: true,
+              lastIdempotencyKey: key,
+              persistenceState: 'queued',
+            } as Partial<StoreState>);
             schedulePersist({ userId: uid, state: migrated, idempotencyKey: key }, set);
-            trackEvent('self_canvas_migrated', { userId: uid ?? 'guest', pinnedCount: pinned.length });
+            trackEvent('self_canvas_migrated', {
+              userId: uid ?? 'guest',
+              pinnedCount: pinned.length,
+            });
             return;
           }
         } catch (e) {
@@ -210,7 +239,9 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
   },
   setHidden: (featureId, hidden) =>
     set((s) => {
-      const hiddenIds = hidden ? [...new Set([...s.features.hiddenIds, featureId])] : s.features.hiddenIds.filter((id) => id !== featureId);
+      const hiddenIds = hidden
+        ? [...new Set([...s.features.hiddenIds, featureId])]
+        : s.features.hiddenIds.filter((id) => id !== featureId);
       const key = generateIdempotencyKey();
       const next: SelfCanvasPreferences = {
         layout: { ...s.layout, isDefault: false, hiddenIds },
@@ -220,7 +251,11 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_toggle_hidden', { featureId, hidden });
-      return { ...next, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
   setZone: (featureId, zone) =>
     set((s) => {
@@ -234,7 +269,11 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_change_zone', { featureId, zone });
-      return { ...next, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
   setOrder: (order) =>
     set((s) => {
@@ -247,7 +286,11 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_reorder', { orderLength: order.length });
-      return { ...next, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
   setSelected: (selectedIds) =>
     set((s) => {
@@ -260,7 +303,11 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_selected', { count: selectedIds.length });
-      return { ...next, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
   setRoleWeights: (weights) =>
     set((s) => {
@@ -272,7 +319,11 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_role_weights', { weights });
-      return { ...next, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
   setViewMode: (viewMode) =>
     set((s) => {
@@ -280,7 +331,11 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       const next: SelfCanvasPreferences = { ...s, viewMode, lastSyncedAt: Date.now() };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_view_mode', { viewMode });
-      return { ...next, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
   reset: () =>
     set((s) => {
@@ -288,6 +343,12 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
       const next = { ...DEFAULT_SELF_PREFERENCES, lastSyncedAt: Date.now() };
       persistLocal(s.userId, next, key, set);
       trackEvent('self_canvas_reset', {});
-      return { ...next, userId: s.userId, isHydrated: true, lastIdempotencyKey: key, persistenceState: 'saving' } as Partial<StoreState>;
+      return {
+        ...next,
+        userId: s.userId,
+        isHydrated: true,
+        lastIdempotencyKey: key,
+        persistenceState: 'saving',
+      } as Partial<StoreState>;
     }),
 }));

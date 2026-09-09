@@ -4,10 +4,10 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
 import { Activity, Zap } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { FadeInUp, LinearTransition } from 'react-native-reanimated';
-import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
 
 interface EnergyBarChartProps {
   /** Energy forecast rows, already reversed so oldest→newest left→right. */

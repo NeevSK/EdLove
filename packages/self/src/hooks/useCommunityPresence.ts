@@ -1,6 +1,9 @@
 import { usePermissions } from '@repo/core/logic';
+import {
+  fetchPresenceFallbackCount,
+  startPresenceSession,
+} from '@repo/self/api/selfInsightsRepository';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchPresenceFallbackCount, startPresenceSession } from '@repo/self/api/selfInsightsRepository';
 
 interface UseCommunityPresenceOptions {
   userId: string;

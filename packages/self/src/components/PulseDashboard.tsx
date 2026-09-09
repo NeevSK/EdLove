@@ -7,6 +7,7 @@
 
 import { usePendingActions } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
+import { dailyContentAPI } from '@repo/self/api/dailyContent';
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
 import { GlassCard } from '@repo/ui/components/GlassCard';
@@ -26,7 +27,6 @@ import {
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dailyContentAPI } from '@repo/self/api/dailyContent';
 
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void }) {
   const { t } = useTranslation();

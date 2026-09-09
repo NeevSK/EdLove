@@ -9,7 +9,9 @@ export type SelfCanvasPersistenceFeedback = {
  * Copy is intentionally precise: local storage is confirmed separately from
  * the server so a network failure never looks like a completed cloud save.
  */
-export function describeSelfCanvasPersistence(state: SelfCanvasPersistenceState): SelfCanvasPersistenceFeedback {
+export function describeSelfCanvasPersistence(
+  state: SelfCanvasPersistenceState,
+): SelfCanvasPersistenceFeedback {
   switch (state) {
     case 'saving':
       return { label: 'Saving your sanctuary layout…', canRetry: false };

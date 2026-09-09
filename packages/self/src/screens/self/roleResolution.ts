@@ -1,12 +1,6 @@
 import type { Subject } from '@repo/core/types/authorization';
 
-export type SelfViewRole =
-  | 'admin'
-  | 'founder'
-  | 'principal'
-  | 'teacher'
-  | 'guardian'
-  | 'student';
+export type SelfViewRole = 'admin' | 'founder' | 'principal' | 'teacher' | 'guardian' | 'student';
 
 type SelfRoleCapability =
   | 'AdminDashboard'

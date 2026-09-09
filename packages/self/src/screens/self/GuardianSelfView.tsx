@@ -1,10 +1,5 @@
 import { useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { VStack } from '@repo/ui/primitives';
-import { useTranslation } from 'react-i18next';
-
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import FireJournal from '@repo/self/components/FireJournal';
@@ -23,6 +18,10 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection } from '@repo/self/views/sections';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { VStack } from '@repo/ui/primitives';
+import { useTranslation } from 'react-i18next';
 
 export default function GuardianSelfView() {
   const { t } = useTranslation();
@@ -122,7 +121,7 @@ export default function GuardianSelfView() {
                 label: 'Reminders',
                 content: <RemindersManager userId={userId ?? undefined} />,
               },
-                { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
+              { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
               {
                 id: 'sleep_tracker',
                 label: 'Sleep Tracker',
