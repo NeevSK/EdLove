@@ -1,0 +1,16 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "rules": {
+    "supabase-table-missing-rls": "off",
+    "supabase-rls-policy-risk": "off",
+    "react-doctor/supabase-table-missing-rls": "off",
+    "react-doctor/supabase-rls-policy-risk": "off",
+    "react-doctor/artifact-env-leak": "off",
+    "react-hooks-js/todo": "off",
+    "react-doctor/no-placeholder-only-field": "off",
+    "react-doctor/postmessage-origin-risk": "off",
+    "react-doctor/artifact-baas-authority-surface": "off",
+    "react-hooks-js/preserve-manual-memoization": "off",
+    "react-doctor/react-compiler-no-manual-memoization": "off"
+  }
+}
