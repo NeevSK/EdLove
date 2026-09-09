@@ -37,7 +37,9 @@ export default function DeleteAccountModal({
           action="negative"
           onPress={onDelete}
           isLoading={isLoading}
-          accessibilityLabel={isLoading ? 'Submitting account deletion request' : 'Request account deletion'}
+          accessibilityLabel={
+            isLoading ? 'Submitting account deletion request' : 'Request account deletion'
+          }
           accessibilityHint="Submits a protected request that may permanently remove your account"
         >
           {isLoading ? 'Submitting...' : 'Request account deletion'}

@@ -1,6 +1,16 @@
 import type { CommercialPerspective, MediumOfInstruction } from '@repo/core/types/Perspective';
 import { Briefcase, Check, Sparkles, X } from '@repo/ui/icons';
-import { Box, HStack, Modal, ModalContent, Pressable, ScrollView, Text, TextInput, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  HStack,
+  Modal,
+  ModalContent,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  VStack,
+} from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useState } from 'react';
@@ -45,7 +55,9 @@ export function CommercialBatchModal({
       batchName: batchName.trim(),
       role,
       customAlias: customAlias.trim() || null,
-      displayTitle: customAlias.trim() || `${instituteName} · ${subjectName} ${grade} (${medium.toUpperCase()})`,
+      displayTitle:
+        customAlias.trim() ||
+        `${instituteName} · ${subjectName} ${grade} (${medium.toUpperCase()})`,
     };
 
     onCreateBatch(newBatch);
@@ -72,7 +84,13 @@ export function CommercialBatchModal({
           elevation: 8,
         }}
       >
-        <HStack style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+        <HStack
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: tokens.spacing.md,
+          }}
+        >
           <HStack style={{ alignItems: 'center', gap: 8 }}>
             <Box
               style={{
@@ -102,7 +120,10 @@ export function CommercialBatchModal({
                   color: tokens.semantic.text.secondary,
                 }}
               >
-                {t('commercial.createSubtitle', 'Register an independent or institute tuition class.')}
+                {t(
+                  'commercial.createSubtitle',
+                  'Register an independent or institute tuition class.',
+                )}
               </Text>
             </VStack>
           </HStack>
@@ -127,7 +148,13 @@ export function CommercialBatchModal({
         <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
           <VStack style={{ gap: tokens.spacing.md, paddingBottom: tokens.spacing.md }}>
             <VStack style={{ gap: 4 }}>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 Institute / Hall Name
               </Text>
               <TextInput
@@ -135,6 +162,7 @@ export function CommercialBatchModal({
                 onChangeText={setInstituteName}
                 placeholder="e.g. Apex Institute - Nugegoda or Private Home Studio"
                 placeholderTextColor={tokens.semantic.text.muted}
+                accessibilityLabel="Institute or Hall Name"
                 style={{
                   borderWidth: 1,
                   borderColor: tokens.semantic.border.base,
@@ -150,7 +178,13 @@ export function CommercialBatchModal({
 
             <HStack style={{ gap: tokens.spacing.md }}>
               <VStack style={{ flex: 1, gap: 4 }}>
-                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+                <Text
+                  style={{
+                    fontSize: tokens.typography.sizes.xs,
+                    fontWeight: '700',
+                    color: tokens.semantic.text.primary,
+                  }}
+                >
                   Subject
                 </Text>
                 <TextInput
@@ -158,6 +192,7 @@ export function CommercialBatchModal({
                   onChangeText={setSubjectName}
                   placeholder="e.g. Physics"
                   placeholderTextColor={tokens.semantic.text.muted}
+                  accessibilityLabel="Subject"
                   style={{
                     borderWidth: 1,
                     borderColor: tokens.semantic.border.base,
@@ -172,7 +207,13 @@ export function CommercialBatchModal({
               </VStack>
 
               <VStack style={{ flex: 1, gap: 4 }}>
-                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+                <Text
+                  style={{
+                    fontSize: tokens.typography.sizes.xs,
+                    fontWeight: '700',
+                    color: tokens.semantic.text.primary,
+                  }}
+                >
                   Target Grade / Exam
                 </Text>
                 <TextInput
@@ -180,6 +221,7 @@ export function CommercialBatchModal({
                   onChangeText={setGrade}
                   placeholder="e.g. 2026 A/L"
                   placeholderTextColor={tokens.semantic.text.muted}
+                  accessibilityLabel="Target Grade or Exam"
                   style={{
                     borderWidth: 1,
                     borderColor: tokens.semantic.border.base,
@@ -195,7 +237,13 @@ export function CommercialBatchModal({
             </HStack>
 
             <VStack style={{ gap: 4 }}>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 Medium of Instruction
               </Text>
               <HStack style={{ gap: tokens.spacing.sm }}>
@@ -203,13 +251,16 @@ export function CommercialBatchModal({
                   <Pressable
                     key={m}
                     onPress={() => setMedium(m)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${m} medium`}
                     style={{
                       flex: 1,
                       paddingVertical: 6,
                       borderRadius: tokens.radii.full,
                       borderWidth: 1,
                       borderColor: medium === m ? tokens.colors.info : tokens.semantic.border.base,
-                      backgroundColor: medium === m ? 'rgba(79, 125, 163, 0.15)' : tokens.colors.surface,
+                      backgroundColor:
+                        medium === m ? 'rgba(79, 125, 163, 0.15)' : tokens.colors.surface,
                       alignItems: 'center',
                     }}
                   >
@@ -229,7 +280,13 @@ export function CommercialBatchModal({
             </VStack>
 
             <VStack style={{ gap: 4 }}>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 Batch Slot & Schedule
               </Text>
               <TextInput
@@ -237,6 +294,7 @@ export function CommercialBatchModal({
                 onChangeText={setBatchName}
                 placeholder="e.g. Sunday Morning Theory (7:30 AM - 12:30 PM)"
                 placeholderTextColor={tokens.semantic.text.muted}
+                accessibilityLabel="Batch Slot and Schedule"
                 style={{
                   borderWidth: 1,
                   borderColor: tokens.semantic.border.base,
@@ -251,7 +309,13 @@ export function CommercialBatchModal({
             </VStack>
 
             <VStack style={{ gap: 4 }}>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 Personal Custom Alias (Optional)
               </Text>
               <TextInput
@@ -259,6 +323,7 @@ export function CommercialBatchModal({
                 onChangeText={setCustomAlias}
                 placeholder="e.g. My Main Sunday Theory 🚀"
                 placeholderTextColor={tokens.semantic.text.muted}
+                accessibilityLabel="Personal Custom Alias"
                 style={{
                   borderWidth: 1,
                   borderColor: tokens.semantic.border.base,
@@ -289,7 +354,9 @@ export function CommercialBatchModal({
         >
           <HStack style={{ alignItems: 'center', gap: 6 }}>
             <Check size={16} color="#FFFFFF" />
-            <Text style={{ fontSize: tokens.typography.sizes.sm, fontWeight: '700', color: '#FFFFFF' }}>
+            <Text
+              style={{ fontSize: tokens.typography.sizes.sm, fontWeight: '700', color: '#FFFFFF' }}
+            >
               Create Commercial Perspective
             </Text>
           </HStack>

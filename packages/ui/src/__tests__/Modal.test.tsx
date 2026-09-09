@@ -3,7 +3,9 @@ import React from 'react';
 import { Text } from 'react-native';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from '../components/ui/modal';
 
-describe('Modal Component (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
+describe('Modal Component (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('does not render when isOpen is false', async () => {
     const { queryByText } = await render(
       <Modal isOpen={false} onClose={() => {}}>

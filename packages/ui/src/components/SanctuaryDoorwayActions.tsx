@@ -6,7 +6,7 @@ import { PressableScale } from './PressableScale';
 export interface SanctuaryDoorwayActionsProps {
   isConnecting?: boolean;
   hasPreviousSession?: boolean;
-  onExploreGuest: () => void;
+  onExploreGuest: () => void | Promise<void>;
   onSignIn: () => void;
   guestLabel?: string;
   signInLabel?: string;
@@ -32,7 +32,9 @@ export const SanctuaryDoorwayActions = memo(
       <VStack className="gap-3 pt-2 w-full">
         {/* Primary Action Button: 56dp height for optimal mobile ergonomics */}
         <PressableScale
-          onPress={onExploreGuest}
+          onPress={() => {
+            void onExploreGuest();
+          }}
           disabled={isConnecting}
           accessibilityRole="button"
           accessibilityLabel={resolvedGuestLabel}

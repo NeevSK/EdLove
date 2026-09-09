@@ -176,7 +176,8 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
                 isDark ? 'text-slate-200' : 'text-slate-800'
               }`}
             >
-              Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
+              Your account keeps lessons, achievements, and invitations synchronized across all
+              devices in a quiet, distraction-free environment.
             </p>
           </div>
 
@@ -189,7 +190,9 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
               <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Gentle entry
               </span>
-              <span className={`text-[11px] leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              <span
+                className={`text-[11px] leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+              >
                 Google, Passkey, or email. Switch roles anytime.
               </span>
             </div>
@@ -201,7 +204,9 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
               <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Guest safe
               </span>
-              <span className={`text-[11px] leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              <span
+                className={`text-[11px] leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+              >
                 Sync progress automatically when you sign in.
               </span>
             </div>
@@ -402,7 +407,8 @@ export const AuthScreenWeb = memo(
             : (apiError as any).message || 'An authentication error occurred';
 
         const existingAccountError =
-          mode === 'signup' && /already registered|already exists|user already|duplicate/i.test(baseMsg);
+          mode === 'signup' &&
+          /already registered|already exists|user already|duplicate/i.test(baseMsg);
         const guidedMsg = existingAccountError
           ? 'You already have an account. Switching to login…'
           : mode === 'signup'
@@ -532,7 +538,9 @@ export const AuthScreenWeb = memo(
                   type="button"
                   onClick={onBack}
                   className={`self-start flex items-center gap-2 text-sm font-semibold transition-colors cursor-pointer -ml-1 py-1 ${
-                    isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                    isDark
+                      ? 'text-slate-300 hover:text-white'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <span>←</span>
@@ -565,20 +573,26 @@ export const AuthScreenWeb = memo(
                   {/* Mode Toggle Switch */}
                   <div
                     className={`flex p-1 rounded-full border shadow-inner flex-shrink-0 ${
-                      isDark ? 'bg-slate-800/80 border-white/10' : 'bg-slate-100 border-slate-900/10'
+                      isDark
+                        ? 'bg-slate-800/80 border-white/10'
+                        : 'bg-slate-100 border-slate-900/10'
                     }`}
                   >
                     <button
                       type="button"
                       aria-pressed={mode === 'signup'}
                       className="px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer font-extrabold"
-                      style={mode === 'signup' ? {
-                        background: accent.action,
-                        color: textOnAccent,
-                        boxShadow: `0 4px 12px rgba(${accentRgb}, 0.35)`,
-                      } : {
-                        color: isDark ? '#94A3B8' : '#57606A',
-                      }}
+                      style={
+                        mode === 'signup'
+                          ? {
+                              background: accent.action,
+                              color: textOnAccent,
+                              boxShadow: `0 4px 12px rgba(${accentRgb}, 0.35)`,
+                            }
+                          : {
+                              color: isDark ? '#94A3B8' : '#57606A',
+                            }
+                      }
                       onClick={switchToSignup}
                     >
                       Sign Up
@@ -587,13 +601,17 @@ export const AuthScreenWeb = memo(
                       type="button"
                       aria-pressed={mode === 'login'}
                       className="px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer font-extrabold"
-                      style={mode === 'login' ? {
-                        background: accent.action,
-                        color: textOnAccent,
-                        boxShadow: `0 4px 12px rgba(${accentRgb}, 0.35)`,
-                      } : {
-                        color: isDark ? '#94A3B8' : '#57606A',
-                      }}
+                      style={
+                        mode === 'login'
+                          ? {
+                              background: accent.action,
+                              color: textOnAccent,
+                              boxShadow: `0 4px 12px rgba(${accentRgb}, 0.35)`,
+                            }
+                          : {
+                              color: isDark ? '#94A3B8' : '#57606A',
+                            }
+                      }
                       onClick={switchToLogin}
                     >
                       Log In
@@ -636,7 +654,7 @@ export const AuthScreenWeb = memo(
                   >
                     <div
                       className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: `rgba(${accentRgb}, ${isDark ? 0.20 : 0.10})` }}
+                      style={{ background: `rgba(${accentRgb}, ${isDark ? 0.2 : 0.1})` }}
                     >
                       <Key size={12} color={accent.action} />
                     </div>
@@ -672,7 +690,9 @@ export const AuthScreenWeb = memo(
                         isDark ? 'border-white/10' : 'border-slate-900/10'
                       }`}
                     >
-                      <span className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      <span
+                        className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}
+                      >
                         Email Authentication
                       </span>
                       <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -702,7 +722,12 @@ export const AuthScreenWeb = memo(
                               ? 'border-white/18 bg-slate-900 text-white placeholder:text-slate-500'
                               : 'border-slate-900/16 bg-white text-slate-900 placeholder:text-slate-400'
                           }`}
-                          style={{ '--focus-ring-color': accent.action, '--focus-ring-rgb': accentRgb } as React.CSSProperties}
+                          style={
+                            {
+                              '--focus-ring-color': accent.action,
+                              '--focus-ring-rgb': accentRgb,
+                            } as React.CSSProperties
+                          }
                         />
                         {errors.email && (
                           <span className="text-xs text-rose-500 font-medium ml-1">
@@ -732,7 +757,12 @@ export const AuthScreenWeb = memo(
                               ? 'border-white/18 bg-slate-900 text-white placeholder:text-slate-500'
                               : 'border-slate-900/16 bg-white text-slate-900 placeholder:text-slate-400'
                           }`}
-                          style={{ '--focus-ring-color': accent.action, '--focus-ring-rgb': accentRgb } as React.CSSProperties}
+                          style={
+                            {
+                              '--focus-ring-color': accent.action,
+                              '--focus-ring-rgb': accentRgb,
+                            } as React.CSSProperties
+                          }
                         />
                         {errors.password && (
                           <span className="text-xs text-rose-500 font-medium ml-1">
@@ -764,7 +794,9 @@ export const AuthScreenWeb = memo(
                         type="button"
                         onClick={backToGoogle}
                         className={`text-xs text-center underline cursor-pointer py-1 font-medium ${
-                          isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                          isDark
+                            ? 'text-slate-300 hover:text-white'
+                            : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
                         Cancel email form & return
@@ -778,7 +810,9 @@ export const AuthScreenWeb = memo(
                     type="button"
                     onClick={handleGuestPress}
                     className={`text-sm font-semibold text-center py-2 transition-colors cursor-pointer ${
-                      isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      isDark
+                        ? 'text-slate-300 hover:text-white'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Continue as Guest Explorer

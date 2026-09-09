@@ -1,5 +1,3 @@
-// @ts-ignore
-import lkEduData from '@intuitui-labs/lk-edu-geo/data/lk-edu-data.json';
 import type { PerspectiveViewProps } from '@repo/core/types';
 import { UnifiedMapView } from '@repo/ui/components/maps/UnifiedMapView';
 import { UnifiedMarker } from '@repo/ui/components/maps/UnifiedMarker';
@@ -9,30 +7,22 @@ import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 import { useMemo } from 'react';
 
+// Representative Sri Lankan districts for geo perspective choropleth demo
+const DEMO_DISTRICTS = [
+  { id: 'district-D_11', label: 'Colombo', geo: { lat: 6.9271, lng: 79.8612 } },
+  { id: 'district-D_21', label: 'Kandy', geo: { lat: 7.2906, lng: 80.6337 } },
+  { id: 'district-D_81', label: 'Galle', geo: { lat: 6.0535, lng: 80.221 } },
+  { id: 'district-D_41', label: 'Jaffna', geo: { lat: 9.6615, lng: 80.0255 } },
+  { id: 'district-D_51', label: 'Anuradhapura', geo: { lat: 8.3114, lng: 80.4037 } },
+];
+
 /**
  * TerraView - The Geographical Perspective.
  */
 export const TerraView: React.FC<PerspectiveViewProps> = ({ data, onNodePress }) => {
   const colors = useThemedColors();
   const geoNodes = useMemo(() => data.nodes.filter((n: any) => n.geo), [data.nodes]);
-  // LK Edu Geo districts for powerhouse choropleth (first 5 for demo)
-  const districtMarkers = useMemo(() => {
-    try {
-      const districts =
-        (
-          lkEduData as unknown as {
-            districts?: { id: string; name: string; lat?: number; lng?: number }[];
-          }
-        ).districts ?? [];
-      return districts.slice(0, 5).map((d) => ({
-        id: `district-${d.id}`,
-        label: d.name,
-        geo: { lat: d.lat ?? 7.9, lng: d.lng ?? 80.7 },
-      }));
-    } catch {
-      return [];
-    }
-  }, []);
+  const districtMarkers = DEMO_DISTRICTS;
 
   const initialRegion = useMemo(() => {
     if (geoNodes.length === 0) {

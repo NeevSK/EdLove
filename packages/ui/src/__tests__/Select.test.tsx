@@ -48,7 +48,9 @@ const SelectTest = ({ onValueChange }: { onValueChange?: (val: string) => void }
   );
 };
 
-describe('Select Component (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
+describe('Select Component (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('renders trigger with placeholder and accessibility attributes initially', async () => {
     const { getByRole } = await render(<SelectTest />);
     const trigger = getByRole('combobox');

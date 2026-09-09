@@ -6,7 +6,9 @@ import {
   ActionsheetItemText,
 } from '../components/ui/actionsheet';
 
-describe('Actionsheet Component (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
+describe('Actionsheet Component (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('does not render when isOpen is false', async () => {
     const { queryByText } = await render(
       <Actionsheet isOpen={false} onClose={() => {}}>

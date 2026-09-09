@@ -4,7 +4,10 @@ import LogoutModal from '../LogoutModal';
 
 vi.mock('../SanctuaryModal', () => ({
   default: ({ children, footer }: { children: React.ReactNode; footer: React.ReactNode }) => (
-    <>{children}{footer}</>
+    <>
+      {children}
+      {footer}
+    </>
   ),
 }));
 

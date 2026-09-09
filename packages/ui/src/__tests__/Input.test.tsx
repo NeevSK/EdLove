@@ -15,7 +15,9 @@ vi.mock('@repo/ui/hooks/useTheme', () => ({
   useTheme: () => ({ text: { muted: '#8A8175' } }),
 }));
 
-describe('Input Component (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
+describe('Input Component (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('renders correctly with default props', async () => {
     const { getByPlaceholderText } = await render(
       <Input>

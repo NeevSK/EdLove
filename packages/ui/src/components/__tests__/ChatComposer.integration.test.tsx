@@ -1,5 +1,5 @@
-import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
 
 import { ChatComposer } from '../ChatComposer';
 
@@ -46,15 +46,10 @@ describe('ChatComposer interaction flow', () => {
   it('does not send whitespace and exposes the attachment action', async () => {
     const onSend = vi.fn();
     const { getByLabelText, queryByLabelText } = await renderComposer(
-      <ChatComposer
-        value="   "
-        onChangeText={vi.fn()}
-        onSend={onSend}
-      />,
+      <ChatComposer value="   " onChangeText={vi.fn()} onSend={onSend} />,
     );
 
     expect(queryByLabelText('Send message')).toBeNull();
     expect(onSend).not.toHaveBeenCalled();
-
   });
 });

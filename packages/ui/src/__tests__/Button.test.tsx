@@ -15,10 +15,9 @@ beforeEach(() => {
   mockedHapticImpact.mockClear();
 });
 
-describe(
-  'Button Component (scenario contract)',
-  { tags: ['interaction', 'a11y', 'scenario', 'boundary'] },
-  () => {
+describe('Button Component (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('exposes an accessible name and button role', async () => {
     const { getByRole } = await render(
       <Button>
@@ -132,5 +131,4 @@ describe(
 
     expect(mockedHapticImpact).not.toHaveBeenCalled();
   });
-  },
-);
+});

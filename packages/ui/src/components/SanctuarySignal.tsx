@@ -56,11 +56,7 @@ export const SanctuarySignal = () => {
               <Text className="text-xs font-black text-phase-accent uppercase tracking-wider">
                 {t('common.claimYourSpace') || 'Claim Space'}
               </Text>
-              <Icon
-                as={ArrowRight}
-                size={14}
-                className="text-phase-accent"
-              />
+              <Icon as={ArrowRight} size={14} className="text-phase-accent" />
             </HStack>
           </HStack>
         </VStack>

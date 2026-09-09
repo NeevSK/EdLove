@@ -1,8 +1,28 @@
-import type { WorkspaceSwitcherTarget } from '@repo/core/types';
 import { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
+import type { WorkspaceSwitcherTarget } from '@repo/core/types';
 import { useBreakpoint } from '@repo/ui/components/layout';
-import { Briefcase, Check, ChevronRight, Heart, Plus, School, Settings, Sparkles, Users, X } from '@repo/ui/icons';
-import { Box, HStack, Modal, ModalContent, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import {
+  Briefcase,
+  Check,
+  ChevronRight,
+  Heart,
+  Plus,
+  School,
+  Settings,
+  Sparkles,
+  Users,
+  X,
+} from '@repo/ui/icons';
+import {
+  Box,
+  HStack,
+  Modal,
+  ModalContent,
+  Pressable,
+  ScrollView,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useMemo } from 'react';
@@ -36,7 +56,9 @@ export function PerspectiveSwitcherSheet({
 
   const groupedTargets = useMemo(() => {
     const personal = targets.filter((tgt) => tgt.category === 'personal' || tgt.id === 'personal');
-    const commercial = targets.filter((tgt) => tgt.category === 'commercial' || tgt.id === 'commercial');
+    const commercial = targets.filter(
+      (tgt) => tgt.category === 'commercial' || tgt.id === 'commercial',
+    );
     const institutional = targets.filter((tgt) => tgt.category === 'institutional');
     const guardian = targets.filter((tgt) => tgt.category === 'guardian' || tgt.id === 'guardian');
 
@@ -138,7 +160,9 @@ export function PerspectiveSwitcherSheet({
           elevation: isCurrent ? 2 : 1,
         }}
       >
-        <HStack style={{ alignItems: 'center', justifyContent: 'space-between', gap: tokens.spacing.md }}>
+        <HStack
+          style={{ alignItems: 'center', justifyContent: 'space-between', gap: tokens.spacing.md }}
+        >
           <HStack style={{ alignItems: 'center', gap: tokens.spacing.md, flex: 1 }}>
             <Box
               style={{
@@ -489,11 +513,7 @@ export function PerspectiveSwitcherSheet({
               </HStack>
               {groupedTargets.guardian.length > 0 ? (
                 groupedTargets.guardian.map((target) =>
-                  renderTargetCard(
-                    target,
-                    <Users size={20} color="#7B61FF" />,
-                    'guardian',
-                  ),
+                  renderTargetCard(target, <Users size={20} color="#7B61FF" />, 'guardian'),
                 )
               ) : (
                 <Text
@@ -561,5 +581,3 @@ export function PerspectiveSwitcherSheet({
 }
 
 export default PerspectiveSwitcherSheet;
-
-

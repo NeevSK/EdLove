@@ -12,6 +12,8 @@
  */
 
 import {
+  type ApcaEvaluation,
+  type ApcaFontMatrix,
   calculateApca,
   evaluateApca,
   evaluateTargetSize,
@@ -20,18 +22,34 @@ import {
   getDeltaE,
   getWcagContrastRatio,
   hexToRgb,
+  type RGB,
   rgbToHex,
   simulateCvd,
   simulateCvdHex,
   TOUCH_TARGET_STANDARDS,
-  type ApcaEvaluation,
-  type ApcaFontMatrix,
-  type RGB,
   type WcagRating,
 } from '@intuitui-labs/a11y-gate';
 
+// Re-export spatial and motion primitives
+export {
+  type AuditGateStage,
+  auditReactNativeScreen,
+  generateFluidClamp,
+  getInterpolatedMotion,
+  isValidSpatialQuantum,
+  type MotionIntensity,
+  prefersReducedMotion,
+  type ReactNativeScreenAuditResult,
+  type ReactNativeScreenFinding,
+  runReactNativeScreenAuditSuite,
+  SPATIAL_INTERVALS,
+  SPRING_PRESETS,
+  type SpringSpec,
+} from '@intuitui-labs/a11y-gate';
 // Re-export canonical primitives from @intuitui-labs/a11y-gate
 export {
+  type ApcaEvaluation,
+  type ApcaFontMatrix,
   calculateApca,
   evaluateApca,
   evaluateTargetSize,
@@ -40,32 +58,13 @@ export {
   getDeltaE,
   getWcagContrastRatio,
   hexToRgb as a11yHexToRgb,
+  type RGB,
   rgbToHex,
   simulateCvd,
   simulateCvdHex,
   TOUCH_TARGET_STANDARDS,
-  type ApcaEvaluation,
-  type ApcaFontMatrix,
-  type RGB,
   type WcagRating,
 };
-
-// Re-export spatial and motion primitives
-export {
-  generateFluidClamp,
-  isValidSpatialQuantum,
-  SPATIAL_INTERVALS,
-  SPRING_PRESETS,
-  getInterpolatedMotion,
-  prefersReducedMotion,
-  auditReactNativeScreen,
-  runReactNativeScreenAuditSuite,
-  type MotionIntensity,
-  type SpringSpec,
-  type ReactNativeScreenAuditResult,
-  type ReactNativeScreenFinding,
-  type AuditGateStage,
-} from '@intuitui-labs/a11y-gate';
 
 export interface ContrastResult {
   ratio: number;
@@ -193,7 +192,9 @@ export function checkMobileTouchTarget(
   required: number;
 } {
   const required =
-    standard === 'strict' ? MOBILE_A11Y.MIN_TOUCH_TARGET_DP : MOBILE_A11Y.MIN_TOUCH_TARGET_COMPACT_PT;
+    standard === 'strict'
+      ? MOBILE_A11Y.MIN_TOUCH_TARGET_DP
+      : MOBILE_A11Y.MIN_TOUCH_TARGET_COMPACT_PT;
   const passes = widthDp >= required && heightDp >= required;
 
   return {

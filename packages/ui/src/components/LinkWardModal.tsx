@@ -1,6 +1,15 @@
 import type { GuardianBondPerspective } from '@repo/core/types/Perspective';
 import { Check, Users, X } from '@repo/ui/icons';
-import { Box, HStack, Modal, ModalContent, Pressable, Text, TextInput, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  HStack,
+  Modal,
+  ModalContent,
+  Pressable,
+  Text,
+  TextInput,
+  VStack,
+} from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useState } from 'react';
@@ -12,11 +21,7 @@ export interface LinkWardModalProps {
   onLinkWard: (wardPerspective: GuardianBondPerspective) => void;
 }
 
-export function LinkWardModal({
-  isOpen,
-  onClose,
-  onLinkWard,
-}: LinkWardModalProps) {
+export function LinkWardModal({ isOpen, onClose, onLinkWard }: LinkWardModalProps) {
   const { t } = useTranslation();
   const [studentId, setStudentId] = useState('');
   const [childName, setChildName] = useState('');
@@ -58,7 +63,13 @@ export function LinkWardModal({
           elevation: 8,
         }}
       >
-        <HStack style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+        <HStack
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: tokens.spacing.md,
+          }}
+        >
           <HStack style={{ alignItems: 'center', gap: 8 }}>
             <Box
               style={{
@@ -88,7 +99,10 @@ export function LinkWardModal({
                   color: tokens.semantic.text.secondary,
                 }}
               >
-                {t('guardian.linkSubtitle', 'Connect your child to view attendance & school updates.')}
+                {t(
+                  'guardian.linkSubtitle',
+                  'Connect your child to view attendance & school updates.',
+                )}
               </Text>
             </VStack>
           </HStack>
@@ -112,7 +126,13 @@ export function LinkWardModal({
 
         <VStack style={{ gap: tokens.spacing.md }}>
           <VStack style={{ gap: 4 }}>
-            <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.xs,
+                fontWeight: '700',
+                color: tokens.semantic.text.primary,
+              }}
+            >
               Child / Student Full Name
             </Text>
             <TextInput
@@ -120,6 +140,7 @@ export function LinkWardModal({
               onChangeText={setChildName}
               placeholder="e.g. Maya Sandeepa"
               placeholderTextColor={tokens.semantic.text.muted}
+              accessibilityLabel="Child or Student Full Name"
               style={{
                 borderWidth: 1,
                 borderColor: tokens.semantic.border.base,
@@ -134,7 +155,13 @@ export function LinkWardModal({
           </VStack>
 
           <VStack style={{ gap: 4 }}>
-            <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.xs,
+                fontWeight: '700',
+                color: tokens.semantic.text.primary,
+              }}
+            >
               Student Registration ID / Index Number
             </Text>
             <TextInput
@@ -142,6 +169,7 @@ export function LinkWardModal({
               onChangeText={setStudentId}
               placeholder="e.g. STU-2026-9482"
               placeholderTextColor={tokens.semantic.text.muted}
+              accessibilityLabel="Student Registration ID or Index Number"
               autoCapitalize="characters"
               style={{
                 borderWidth: 1,
@@ -157,7 +185,13 @@ export function LinkWardModal({
           </VStack>
 
           <VStack style={{ gap: 4 }}>
-            <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.xs,
+                fontWeight: '700',
+                color: tokens.semantic.text.primary,
+              }}
+            >
               Parent Verification PIN (Provided by School)
             </Text>
             <TextInput
@@ -165,6 +199,7 @@ export function LinkWardModal({
               onChangeText={setParentPin}
               placeholder="e.g. 4-digit PIN"
               placeholderTextColor={tokens.semantic.text.muted}
+              accessibilityLabel="Parent Verification PIN"
               keyboardType="number-pad"
               maxLength={6}
               secureTextEntry
@@ -197,8 +232,17 @@ export function LinkWardModal({
             }}
           >
             <HStack style={{ alignItems: 'center', gap: 6 }}>
-              <Check size={16} color={studentId && childName ? '#FFFFFF' : tokens.semantic.text.muted} />
-              <Text style={{ fontSize: tokens.typography.sizes.sm, fontWeight: '700', color: studentId && childName ? '#FFFFFF' : tokens.semantic.text.muted }}>
+              <Check
+                size={16}
+                color={studentId && childName ? '#FFFFFF' : tokens.semantic.text.muted}
+              />
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.sm,
+                  fontWeight: '700',
+                  color: studentId && childName ? '#FFFFFF' : tokens.semantic.text.muted,
+                }}
+              >
                 Link Student Ward
               </Text>
             </HStack>

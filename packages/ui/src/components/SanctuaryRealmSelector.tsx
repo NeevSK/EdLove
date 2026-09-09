@@ -19,12 +19,7 @@ export interface SanctuaryRealmSelectorProps {
 }
 
 export const SanctuaryRealmSelector = memo(
-  ({
-    realms,
-    selectedRealmId,
-    onSelectRealm,
-    className = '',
-  }: SanctuaryRealmSelectorProps) => {
+  ({ realms, selectedRealmId, onSelectRealm, className = '' }: SanctuaryRealmSelectorProps) => {
     const activeRealm = realms.find((r) => r.id === selectedRealmId) ?? realms[0];
 
     const handleSelect = useCallback(

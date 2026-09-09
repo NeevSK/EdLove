@@ -6,7 +6,9 @@ import {
   CheckboxLabel,
 } from '../components/ui/checkbox';
 
-describe('Checkbox Component (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
+describe('Checkbox Component (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('renders correctly', async () => {
     const { getByText } = await render(
       <Checkbox value="test">

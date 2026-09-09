@@ -169,7 +169,9 @@ const NameStep = memo(
         currentStep={0}
         step={getOnboardingStepLabel(0)}
         title={t('onboarding.nameTitle', { defaultValue: 'What should we call you?' })}
-        subtitle={t('onboarding.nameSubtitle', { defaultValue: 'Enter your preferred name or friendly nickname for the sanctuary.' })}
+        subtitle={t('onboarding.nameSubtitle', {
+          defaultValue: 'Enter your preferred name or friendly nickname for the sanctuary.',
+        })}
         artwork={artwork}
       >
         <VStack className="gap-4">
@@ -188,7 +190,9 @@ const NameStep = memo(
           <Input className="rounded-xl border-phase-border bg-phase-secondary/50 px-3 py-1">
             <InputField
               ref={inputRef}
-              placeholder={t('onboarding.namePlaceholder', { defaultValue: 'e.g. Maya, Alex, Coach David' })}
+              placeholder={t('onboarding.namePlaceholder', {
+                defaultValue: 'e.g. Maya, Alex, Coach David',
+              })}
               value={name}
               onChangeText={onNameChange}
               className="text-phase-text-primary text-base"
@@ -214,7 +218,8 @@ const NameStep = memo(
                 : name === 'Guest User'
                   ? "Please choose a friendly name other than 'Guest User'."
                   : t('onboarding.nameHint', {
-                      defaultValue: 'This is the friendly name other members and teachers will see.',
+                      defaultValue:
+                        'This is the friendly name other members and teachers will see.',
                     })}
             </Text>
           )}
@@ -231,9 +236,7 @@ const NameStep = memo(
             </ButtonText>
           </Button>
           <Button variant="ghost" onPress={onBackToWelcome} className="mt-1">
-            <ButtonText className="text-phase-text-tertiary">
-              {resolvedBackLabel}
-            </ButtonText>
+            <ButtonText className="text-phase-text-tertiary">{resolvedBackLabel}</ButtonText>
           </Button>
         </VStack>
       </StepShell>
@@ -652,7 +655,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
         if (pendingInvite) {
           const res = await resolveStoredInvite(pendingInvite);
           if (res.valid && res.data) {
-            console.log('🎟️ [Onboarding] Resolved stored invite:', res.data.code, res.data.school_name);
+            console.log(
+              '🎟️ [Onboarding] Resolved stored invite:',
+              res.data.code,
+              res.data.school_name,
+            );
             dispatch({ type: 'SET_SCHOOL_ID', schoolId: res.data.school_id });
             dispatch({ type: 'SET_CAPACITY', capacity: res.data.capacity });
             dispatch({ type: 'SET_PRICING', pricing: 'INSTITUTIONAL' });
@@ -1103,7 +1110,13 @@ const OnboardingScreen = memo(function OnboardingScreen({
                 <DevSandboxConsole
                   onClose={() => dispatch({ type: 'SHOW_DEV_SANDBOX', visible: false })}
                   onSave={(devName, devRole, devPricing, devCitizenship, devSchoolId) => {
-                    void handleDevFastTrack(devName, devRole, devPricing, devCitizenship, devSchoolId);
+                    void handleDevFastTrack(
+                      devName,
+                      devRole,
+                      devPricing,
+                      devCitizenship,
+                      devSchoolId,
+                    );
                   }}
                 />
               ) : (

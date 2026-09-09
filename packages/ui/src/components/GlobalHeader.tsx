@@ -1,15 +1,18 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
-import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { BondBadge } from '@repo/ui/components/BondBadge';
-import { Bell, ChevronDown, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
+import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Bell, ChevronDown, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Easing, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -65,21 +68,6 @@ function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
   }
 }
 
-function useRoleLabel() {
-  const { can } = usePermissions();
-  const { t } = useTranslation();
-
-  return useMemo(() => {
-    if (can('manage', 'AdminDashboard')) return t('roles.admin') || 'Admin';
-    if (can('manage', 'PrincipalDashboard')) return t('roles.principal') || 'Principal';
-    if (can('manage', 'SectionHeadDashboard')) return t('roles.sectionHead') || 'Section Head';
-    if (can('manage', 'GradeHeadDashboard')) return t('roles.gradeHead') || 'Grade Head';
-    if (can('manage', 'TeacherDashboard')) return t('roles.teacher') || 'Teacher';
-    if (can('manage', 'StudentDashboard')) return t('roles.student') || 'Student';
-    return t('roles.member') || 'Member';
-  }, [can, t]);
-}
-
 export default function GlobalHeader({
   title,
   subtitle,
@@ -96,19 +84,28 @@ export default function GlobalHeader({
 }: GlobalHeaderProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
+  const theme = useTheme();
   const user = useStore((state: TotalState) => state.user);
   const insets = useSafeAreaInsets();
   const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
   const isCompactLandscape = viewportWidth > viewportHeight && viewportHeight < 600;
-  const roleLabel = useRoleLabel();
-  const [showSecondaryActions, setShowSecondaryActions] = useState(false);
-  const animatedSecondary = useState(() => new Animated.Value(0))[0];
 
   const [state, dispatch] = useReducer(headerReducer, {
     showNotifications: false,
     isSearchActive: false,
     internalSearchQuery: '',
   });
+
+  const searchAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(searchAnim, {
+      toValue: state.isSearchActive ? 1 : 0,
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [state.isSearchActive, searchAnim]);
 
   const searchQuery = searchProps?.value ?? state.internalSearchQuery;
 
@@ -127,12 +124,8 @@ export default function GlobalHeader({
   const userFullName = userName || user?.display_name || '';
   const showFullNameAsPrimary = can('manage', 'StudentDashboard');
 
-  const greetingDetails = useMemo(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return { text: t('goodMorning') };
-    if (hour < 18) return { text: t('goodAfternoon') };
-    return { text: t('goodEvening') };
-  }, [t]);
+  const roleContext = useMemo(() => getHeaderRoleContext(can, t), [can, t]);
+  const greetingDetails = useMemo(() => getHeaderGreeting(t), [t]);
 
   const handleToggleSearch = useCallback(() => {
     hapticLight();
@@ -145,6 +138,7 @@ export default function GlobalHeader({
   }, []);
 
   const handleOpenDrawer = useCallback(() => {
+    hapticLight();
     router.push('/self');
   }, []);
 
@@ -153,6 +147,7 @@ export default function GlobalHeader({
   }, []);
 
   const handleBack = useCallback(() => {
+    hapticLight();
     if (onBack) {
       onBack();
       return;
@@ -161,12 +156,16 @@ export default function GlobalHeader({
   }, [onBack]);
 
   const handleNavigateProfile = useCallback(() => {
+    hapticLight();
     router.push('/profile');
   }, []);
 
-  const toggleSecondaryActions = useCallback(() => {
-    setShowSecondaryActions((value) => !value);
-  }, []);
+  const handlePerspectivePress = useCallback(() => {
+    if (perspectivePill?.onPress) {
+      hapticLight();
+      perspectivePill.onPress();
+    }
+  }, [perspectivePill]);
 
   const {
     notifications,
@@ -178,60 +177,53 @@ export default function GlobalHeader({
     markAllRead,
   } = useNotifications(user?.id);
 
-  useEffect(() => {
-    Animated.timing(animatedSecondary, {
-      toValue: showSecondaryActions ? 1 : 0,
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-  }, [animatedSecondary, showSecondaryActions]);
-
-  const secondaryMaxHeight = animatedSecondary.interpolate({
+  const searchMaxHeight = searchAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, isCompactLandscape ? 52 : 64],
+    outputRange: [0, 56],
   });
-
-  const secondaryOpacity = animatedSecondary.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
+  const searchOpacity = searchAnim.interpolate({
+    inputRange: [0, 0.4, 1],
+    outputRange: [0, 0, 1],
   });
-
-  const headerHeight =
-    insets.top +
-    (isCompactLandscape ? 64 : 92) +
-    (showSecondaryActions ? (isCompactLandscape ? 52 : 64) : 0);
 
   return (
-    <Box accessibilityRole="header" className="w-full relative" style={{ height: headerHeight }}>
+    <Box
+      accessibilityRole="header"
+      className="w-full relative"
+      style={{
+        paddingTop: insets.top + (isCompactLandscape ? 6 : 10),
+        paddingBottom: isCompactLandscape ? 6 : 12,
+      }}
+    >
+      {/* Living Phase Backdrop */}
       <Box
         className="absolute inset-0 border-b"
         style={{
+          backgroundColor: theme.isDark ? '#1A1610' : '#F5EDD6',
+          borderBottomColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(42,35,24,0.08)',
           opacity: 0.98,
-          backgroundColor: '#F5EDD6',
-          borderBottomColor: 'rgba(42,35,24,0.08)',
         }}
       />
 
       <VStack
         className="flex-1 px-4"
         style={{
-          gap: isCompactLandscape ? 6 : 12,
-          paddingTop: insets.top + (isCompactLandscape ? 6 : 10),
-          paddingBottom: isCompactLandscape ? 6 : 12,
+          gap: isCompactLandscape ? 6 : 10,
         }}
       >
         <HStack className="items-center justify-between gap-2">
+          {/* Left / Center Navigation Section */}
           <HStack className="items-center gap-2 flex-1">
             {showBack ? (
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('common.back', 'Go back')}
                 accessibilityHint={t('common.backHint', 'Returns to the previous screen')}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 onPress={handleBack}
               >
                 <Box
-                  className="p-2 rounded-full"
+                  className="p-2 rounded-xl"
                   style={{ backgroundColor: tokens.colors.surfaceInteractive }}
                 >
                   <ChevronLeft size={24} className="text-phase-text-primary" />
@@ -242,6 +234,7 @@ export default function GlobalHeader({
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('common.openSelf', 'Open Self')}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   onPress={handleOpenDrawer}
                 >
                   <Menu className="text-phase-text-primary" size={24} />
@@ -253,13 +246,14 @@ export default function GlobalHeader({
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('profile.open', 'Open profile')}
+                hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
                 onPress={handleNavigateProfile}
               >
-                <Box className="mr-2">
+                <Box className="mr-1.5">
                   <UserAvatar
                     avatarUrl={avatarUrl || user?.avatar_url}
                     fullName={userFullName}
-                    fallbackEmoji="G"
+                    fallbackEmoji={roleContext.emoji}
                     size={32}
                     borderRadius={12}
                   />
@@ -273,6 +267,7 @@ export default function GlobalHeader({
                   <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
                     {title ? subtitle : greetingDetails.text}
                   </Text>
+                  {!title && <Text className="text-xs">{greetingDetails.emoji}</Text>}
                 </HStack>
               )}
 
@@ -280,7 +275,7 @@ export default function GlobalHeader({
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`Current perspective: ${perspectivePill.label}. Tap to switch perspective.`}
-                  onPress={perspectivePill.onPress}
+                  onPress={handlePerspectivePress}
                   style={{
                     alignSelf: 'flex-start',
                     marginTop: 2,
@@ -312,68 +307,15 @@ export default function GlobalHeader({
                     : isSelfView
                       ? showFullNameAsPrimary
                         ? userFullName
-                        : roleLabel
+                        : roleContext.label
                       : displayName}
                 </Text>
               )}
             </VStack>
           </HStack>
 
-          <HStack className="items-center gap-2">
-            {!rightAction && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('notifications.title', 'Notifications')}
-                accessibilityHint={
-                  unreadCount > 0
-                    ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
-                    : 'Open your notifications'
-                }
-                onPress={handleOpenNotifications}
-              >
-                <Box className="relative p-2 rounded-full" style={{ backgroundColor: tokens.colors.surfaceInteractive }}>
-                  <Bell size={22} className="text-phase-text-primary" />
-                  {unreadCount > 0 && !error && (
-                    <Box
-                      className="absolute -right-0.5 -top-0.5 min-w-4 h-4 px-0.5 rounded-full items-center justify-center"
-                      style={{ backgroundColor: tokens.colors.error }}
-                    >
-                      <Text className="text-[9px] font-bold text-white">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </Text>
-                    </Box>
-                  )}
-                </Box>
-              </Pressable>
-            )}
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={
-                showSecondaryActions
-                  ? t('common.closeActions', 'Close actions')
-                  : t('common.moreActions', 'More actions')
-              }
-              accessibilityState={{ expanded: showSecondaryActions }}
-              onPress={toggleSecondaryActions}
-            >
-              <Box
-                className="p-2 rounded-full"
-                style={{ backgroundColor: tokens.colors.surfaceInteractive }}
-              >
-                <MoreHorizontal size={22} className="text-phase-text-primary" />
-              </Box>
-            </Pressable>
-          </HStack>
-        </HStack>
-
-        <Animated.View
-          style={{
-            maxHeight: secondaryMaxHeight,
-            opacity: secondaryOpacity,
-            overflow: 'hidden',
-          }}
-        >
-          <VStack style={{ gap: 10 }}>
+          {/* Right Action Bar */}
+          <HStack className="items-center gap-2.5">
             {showSearch && (
               <Pressable
                 accessibilityRole="button"
@@ -383,32 +325,88 @@ export default function GlobalHeader({
                     : t('common.search', 'Search')
                 }
                 accessibilityState={{ expanded: state.isSearchActive }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 onPress={handleToggleSearch}
               >
                 <Box
-                  className="p-2 rounded-2xl"
+                  className="p-2 rounded-full"
                   style={{
                     backgroundColor: state.isSearchActive
                       ? tokens.colors.surfaceInteractive
-                      : tokens.colors.surfaceSubtle,
+                      : 'transparent',
                   }}
                 >
-                  <HStack className="items-center gap-2">
-                    {state.isSearchActive ? (
-                      <X size={20} className="text-phase-text-primary" />
-                    ) : (
-                      <Search size={20} className="text-phase-text-primary" />
-                    )}
-                    <Text className="text-sm text-phase-text-primary">
-                      {state.isSearchActive ? 'Close search' : 'Search'}
-                    </Text>
-                  </HStack>
+                  {state.isSearchActive ? (
+                    <X size={22} className="text-phase-text-primary" />
+                  ) : (
+                    <Search size={22} className="text-phase-text-primary" />
+                  )}
                 </Box>
               </Pressable>
             )}
 
-            {rightAction}
-          </VStack>
+            {rightAction ? (
+              rightAction
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('notifications.title', 'Notifications')}
+                accessibilityHint={
+                  unreadCount > 0
+                    ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
+                    : 'Open your notifications'
+                }
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                onPress={handleOpenNotifications}
+              >
+                <Box
+                  className="relative p-2 rounded-full"
+                  style={{ backgroundColor: tokens.colors.surfaceInteractive }}
+                >
+                  <Bell
+                    size={22}
+                    className={
+                      error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
+                    }
+                  />
+                  {(error || isLoading || (unreadCount > 0 && !error)) && (
+                    <Box
+                      className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full"
+                      style={{
+                        backgroundColor: error
+                          ? tokens.colors.error
+                          : isLoading
+                            ? tokens.colors.warning
+                            : tokens.colors.success,
+                        borderWidth: 1.5,
+                        borderColor: theme.isDark ? '#1A1610' : '#F5EDD6',
+                      }}
+                    />
+                  )}
+                </Box>
+              </Pressable>
+            )}
+          </HStack>
+        </HStack>
+
+        {/* Smooth Animated In-Place Search Input Row */}
+        <Animated.View
+          style={{
+            maxHeight: searchMaxHeight,
+            opacity: searchOpacity,
+            overflow: 'hidden',
+          }}
+        >
+          {state.isSearchActive && (
+            <Box className="pt-1">
+              <SanctuaryInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder={searchProps?.placeholder ?? t('searchPlaceholder', 'Search...')}
+                leftIcon={Search}
+              />
+            </Box>
+          )}
         </Animated.View>
 
         <NotificationDrawer

@@ -133,7 +133,18 @@ export function EaseView({
       borderWidth,
       elevation,
     }),
-    [opacity, translateX, translateY, scale, scaleX, scaleY, rotate, borderRadius, borderWidth, elevation],
+    [
+      opacity,
+      translateX,
+      translateY,
+      scale,
+      scaleX,
+      scaleY,
+      rotate,
+      borderRadius,
+      borderWidth,
+      elevation,
+    ],
   );
 
   // Set initial values
@@ -200,9 +211,9 @@ export function EaseView({
     animate.borderWidth,
     animate.elevation,
     transition.type,
-    // @ts-ignore
+    // @ts-expect-error transition may have optional duration
     transition.duration,
-    // @ts-ignore
+    // @ts-expect-error transition may have optional loop
     transition.loop,
   ]);
 

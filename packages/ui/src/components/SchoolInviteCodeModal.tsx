@@ -1,5 +1,14 @@
 import { Check, School, Sparkles, X } from '@repo/ui/icons';
-import { Box, HStack, Modal, ModalContent, Pressable, Text, TextInput, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  HStack,
+  Modal,
+  ModalContent,
+  Pressable,
+  Text,
+  TextInput,
+  VStack,
+} from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useState } from 'react';
@@ -100,7 +109,13 @@ export function SchoolInviteCodeModal({
           elevation: 8,
         }}
       >
-        <HStack style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+        <HStack
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: tokens.spacing.md,
+          }}
+        >
           <HStack style={{ alignItems: 'center', gap: 8 }}>
             <Box
               style={{
@@ -164,6 +179,7 @@ export function SchoolInviteCodeModal({
               {t('school.inviteCodeLabel', 'Institutional Invite Code')}
             </Text>
             <TextInput
+              accessibilityLabel={t('school.inviteCodeLabel', 'Institutional Invite Code')}
               value={code}
               onChangeText={handleCodeChange}
               placeholder="e.g. ROY-2026 or UOC-POSTGRAD"
@@ -185,7 +201,12 @@ export function SchoolInviteCodeModal({
           </VStack>
 
           {isVerifying ? (
-            <Text style={{ fontSize: tokens.typography.sizes.xs, color: tokens.semantic.text.secondary }}>
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.xs,
+                color: tokens.semantic.text.secondary,
+              }}
+            >
               Verifying institutional cryptographic signature...
             </Text>
           ) : null}
@@ -218,7 +239,11 @@ export function SchoolInviteCodeModal({
                       color: tokens.semantic.text.secondary,
                     }}
                   >
-                    Role: <Text style={{ fontWeight: '700' }}>{verifiedSchool.capacity.toUpperCase()}</Text> · Verified ReBAC Bond
+                    Role:{' '}
+                    <Text style={{ fontWeight: '700' }}>
+                      {verifiedSchool.capacity.toUpperCase()}
+                    </Text>{' '}
+                    · Verified ReBAC Bond
                   </Text>
                 </VStack>
               </HStack>

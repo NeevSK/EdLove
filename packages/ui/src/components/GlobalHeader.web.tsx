@@ -1,15 +1,16 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
+import { Bell, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
 import { router } from 'expo-router';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface GlobalHeaderProps {
@@ -57,21 +58,6 @@ function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
   }
 }
 
-function useRoleLabel() {
-  const { can } = usePermissions();
-  const { t } = useTranslation();
-
-  return useMemo(() => {
-    if (can('manage', 'AdminDashboard')) return t('roles.admin') || 'Admin';
-    if (can('manage', 'PrincipalDashboard')) return t('roles.principal') || 'Principal';
-    if (can('manage', 'SectionHeadDashboard')) return t('roles.sectionHead') || 'Section Head';
-    if (can('manage', 'GradeHeadDashboard')) return t('roles.gradeHead') || 'Grade Head';
-    if (can('manage', 'TeacherDashboard')) return t('roles.teacher') || 'Teacher';
-    if (can('manage', 'StudentDashboard')) return t('roles.student') || 'Student';
-    return t('roles.member') || 'Member';
-  }, [can, t]);
-}
-
 export default function GlobalHeader({
   title,
   subtitle,
@@ -89,9 +75,6 @@ export default function GlobalHeader({
   const { can } = usePermissions();
   const user = useStore((state: TotalState) => state.user);
   const insets = useSafeAreaInsets();
-  const roleLabel = useRoleLabel();
-  const [showSecondaryActions, setShowSecondaryActions] = useState(true);
-  const animatedSecondary = useState(() => new Animated.Value(1))[0];
 
   const [state, dispatch] = useReducer(headerReducer, {
     showNotifications: false,
@@ -126,12 +109,8 @@ export default function GlobalHeader({
   const userFullName = userName || user?.display_name || '';
   const showFullNameAsPrimary = can('manage', 'StudentDashboard');
 
-  const greetingDetails = useMemo(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return { text: t('goodMorning') };
-    if (hour < 18) return { text: t('goodAfternoon') };
-    return { text: t('goodEvening') };
-  }, [t]);
+  const roleContext = useMemo(() => getHeaderRoleContext(can, t), [can, t]);
+  const greetingDetails = useMemo(() => getHeaderGreeting(t), [t]);
 
   const handleToggleSearch = useCallback(() => {
     hapticLight();
@@ -163,30 +142,7 @@ export default function GlobalHeader({
     router.push('/profile');
   }, []);
 
-  const toggleSecondaryActions = useCallback(() => {
-    setShowSecondaryActions((value) => !value);
-  }, []);
-
-  useEffect(() => {
-    Animated.timing(animatedSecondary, {
-      toValue: showSecondaryActions ? 1 : 0,
-      duration: 200,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-  }, [animatedSecondary, showSecondaryActions]);
-
-  const secondaryMaxHeight = animatedSecondary.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 56],
-  });
-
-  const secondaryOpacity = animatedSecondary.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
-
-  const headerHeight = insets.top + 84 + (showSecondaryActions ? 56 : 0);
+  const headerHeight = insets.top + 80 + (state.isSearchActive ? 64 : 0);
 
   return (
     <Box accessibilityRole="header" className="w-full relative" style={{ height: headerHeight }}>
@@ -205,13 +161,14 @@ export default function GlobalHeader({
       <VStack
         className="flex-1 px-4"
         style={{
-          gap: 12,
-          paddingTop: insets.top + 14,
+          gap: 10,
+          paddingTop: insets.top + 12,
           paddingBottom: 12,
         }}
       >
         <HStack className="items-center justify-between gap-2">
-          <HStack className="items-center gap-2">
+          {/* Left / Center Section */}
+          <HStack className="items-center gap-2 flex-1">
             {showBack ? (
               <Pressable accessibilityRole="button" onPress={handleBack}>
                 <Box className="p-2 rounded-xl bg-white/8">
@@ -232,7 +189,7 @@ export default function GlobalHeader({
                   <UserAvatar
                     avatarUrl={avatarUrl || user?.avatar_url}
                     fullName={userFullName}
-                    fallbackEmoji={roleContextFallback(can)}
+                    fallbackEmoji={roleContext.emoji}
                     size={32}
                     borderRadius={12}
                   />
@@ -240,31 +197,58 @@ export default function GlobalHeader({
               </Pressable>
             )}
 
-            <VStack className="gap-0.5">
+            <VStack className="gap-0.5 flex-1">
               {(subtitle || (!title && greetingDetails.text)) && (
                 <HStack className="items-center gap-1">
                   <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
                     {title ? subtitle : greetingDetails.text}
                   </Text>
+                  {!title && <Text className="text-xs">{greetingDetails.emoji}</Text>}
                 </HStack>
               )}
-              <Text className="text-lg font-bold text-phase-text-primary">
+              <Text className="text-lg font-bold text-phase-text-primary" numberOfLines={1}>
                 {title
                   ? title
                   : isSelfView
                     ? showFullNameAsPrimary
                       ? userFullName
-                      : roleLabel
+                      : roleContext.label
                     : displayName}
               </Text>
             </VStack>
           </HStack>
 
-          <HStack className="items-center gap-2">
-            {!rightAction && (
+          {/* Right Action Bar */}
+          <HStack className="items-center gap-3">
+            {showSearch && (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Notifications"
+                accessibilityLabel={
+                  state.isSearchActive
+                    ? t('common.closeSearch', 'Close search')
+                    : t('common.search', 'Search')
+                }
+                accessibilityState={{ expanded: state.isSearchActive }}
+                onPress={handleToggleSearch}
+              >
+                <Box
+                  className={`p-2 rounded-full ${state.isSearchActive ? 'bg-phase-accent/20' : 'bg-transparent'}`}
+                >
+                  {state.isSearchActive ? (
+                    <X size={22} className="text-phase-accent" />
+                  ) : (
+                    <Search size={22} className="text-phase-text-primary" />
+                  )}
+                </Box>
+              </Pressable>
+            )}
+
+            {rightAction ? (
+              rightAction
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('notifications.title', 'Notifications')}
                 accessibilityHint={
                   unreadCount > 0
                     ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
@@ -273,55 +257,43 @@ export default function GlobalHeader({
                 onPress={handleOpenNotifications}
               >
                 <Box className="relative p-2 rounded-full bg-white/8">
-                  <Bell size={22} className="text-phase-text-primary" />
-                  {unreadCount > 0 && !error && (
-                    <Box className="absolute -right-0.5 -top-0.5 min-w-4 h-4 px-0.5 rounded-full items-center justify-center bg-red-500">
-                      <Text className="text-[9px] font-bold text-white">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </Text>
-                    </Box>
+                  <Bell
+                    size={22}
+                    className={
+                      error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
+                    }
+                  />
+                  {(error || notifLoading || (unreadCount > 0 && !error)) && (
+                    <Box
+                      className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full"
+                      style={{
+                        backgroundColor: error
+                          ? tokens.colors.error
+                          : notifLoading
+                            ? tokens.colors.warning
+                            : tokens.colors.success,
+                        borderWidth: 1.5,
+                        borderColor: '#2A2318',
+                      }}
+                    />
                   )}
                 </Box>
               </Pressable>
             )}
-            <Pressable accessibilityRole="button" onPress={toggleSecondaryActions}>
-              <Box className="p-2 rounded-full bg-white/8">
-                <MoreHorizontal size={22} className="text-phase-text-primary" />
-              </Box>
-            </Pressable>
           </HStack>
         </HStack>
 
-        <Animated.View
-          style={{
-            maxHeight: secondaryMaxHeight,
-            opacity: secondaryOpacity,
-            overflow: 'hidden',
-          }}
-        >
-          <HStack className="items-center gap-2 pt-1">
-            {showSearch && (
-              <Pressable accessibilityRole="button" onPress={handleToggleSearch}>
-                <Box
-                  className={`px-3 py-2 rounded-full ${state.isSearchActive ? 'bg-phase-accent/20' : 'bg-white/8'}`}
-                >
-                  <HStack className="items-center gap-2">
-                    {state.isSearchActive ? (
-                      <X size={18} className="text-phase-accent" />
-                    ) : (
-                      <Search size={18} className="text-phase-text-primary" />
-                    )}
-                    <Text className="text-sm text-phase-text-primary">
-                      {state.isSearchActive ? 'Close search' : 'Search'}
-                    </Text>
-                  </HStack>
-                </Box>
-              </Pressable>
-            )}
-
-            {rightAction}
-          </HStack>
-        </Animated.View>
+        {/* In-place Search Input Row (Active State Only) */}
+        {state.isSearchActive && (
+          <Box className="mt-1">
+            <SanctuaryInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={searchProps?.placeholder ?? t('searchPlaceholder', 'Search...')}
+              leftIcon={Search}
+            />
+          </Box>
+        )}
 
         <NotificationDrawer
           isVisible={state.showNotifications}
@@ -341,14 +313,4 @@ export default function GlobalHeader({
       </VStack>
     </Box>
   );
-}
-
-function roleContextFallback(can: (action: any, subject: any) => boolean) {
-  if (can('manage', 'AdminDashboard')) return 'A';
-  if (can('manage', 'PrincipalDashboard')) return 'P';
-  if (can('manage', 'SectionHeadDashboard')) return 'S';
-  if (can('manage', 'GradeHeadDashboard')) return 'G';
-  if (can('manage', 'TeacherDashboard')) return 'T';
-  if (can('manage', 'StudentDashboard')) return 'L';
-  return 'G';
 }

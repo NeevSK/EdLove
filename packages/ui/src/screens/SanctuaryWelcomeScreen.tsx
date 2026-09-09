@@ -3,23 +3,15 @@ import { LanguageUtils } from '@repo/core/logic';
 import {
   LanguageSwitcher,
   SanctuaryDoorwayActions,
-  SanctuaryRealmSelector,
   type SanctuaryRealmItem,
+  SanctuaryRealmSelector,
 } from '@repo/ui/components';
 import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { SkiaGlowAura } from '@repo/ui/components/SkiaGlowAura';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { useTheme } from '@repo/ui/hooks/useTheme';
-import {
-  Box,
-  Heading,
-  HStack,
-  Link,
-  LinkText,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { Box, Heading, HStack, Link, LinkText, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { getGuestEntryErrorMessage } from '@repo/ui/screens/welcomeFlow';
 import { Theme } from '@repo/ui/theme/Theme';

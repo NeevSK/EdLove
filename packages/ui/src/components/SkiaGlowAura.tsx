@@ -73,7 +73,11 @@ export function SkiaGlowAura({
       <Animated.View style={[{ width: size, height: size, pointerEvents: 'none' }, animatedStyle]}>
         <Canvas style={{ width: size, height: size }}>
           <Rect x={0} y={0} width={size} height={size}>
-            <RadialGradient c={center} r={size / 2} colors={[color, secondaryColor, 'transparent']} />
+            <RadialGradient
+              c={center}
+              r={size / 2}
+              colors={[color, secondaryColor, 'transparent']}
+            />
             <Blur blur={blurRadius} />
           </Rect>
         </Canvas>

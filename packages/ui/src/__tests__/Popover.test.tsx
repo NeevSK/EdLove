@@ -2,7 +2,9 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Text } from '../components/ui/text';
 
-describe('Popover (scenario contract)', { tags: ['interaction', 'a11y', 'scenario', 'boundary'] }, () => {
+describe('Popover (scenario contract)', {
+  tags: ['interaction', 'a11y', 'scenario', 'boundary'],
+}, () => {
   it('toggles content and closes through its close control', async () => {
     const onOpenChange = vi.fn();
     const { getByText, queryByText, rerender } = await render(
