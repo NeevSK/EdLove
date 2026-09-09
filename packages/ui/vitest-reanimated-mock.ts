@@ -22,7 +22,11 @@ export const useSharedValue = <T>(value: T) => ({ value });
 export const useAnimatedStyle = <T>(factory: () => T) => factory();
 export const useAnimatedProps = <T>(factory: () => T) => factory();
 export const useDerivedValue = <T>(factory: () => T) => ({ value: factory() });
-export const withTiming = <T>(value: T, _config?: unknown, callback?: (finished: boolean) => void) => {
+export const withTiming = <T>(
+  value: T,
+  _config?: unknown,
+  callback?: (finished: boolean) => void,
+) => {
   callback?.(true);
   return value;
 };
@@ -31,7 +35,8 @@ export const withSequence = <T>(...values: T[]) => values.at(-1);
 export const withRepeat = <T>(value: T) => value;
 export const cancelAnimation = () => undefined;
 export const createAnimatedComponent = <T>(component: T) => component;
-export const interpolate = (value: number, _input: number[], output: number[]) => output[0] ?? value;
+export const interpolate = (value: number, _input: number[], output: number[]) =>
+  output[0] ?? value;
 export const Extrapolate = { CLAMP: 'clamp' };
 export const FadeIn = animation;
 export const FadeOut = animation;

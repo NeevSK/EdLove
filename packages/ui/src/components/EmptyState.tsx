@@ -61,8 +61,12 @@ export function EmptyState({
 
   const renderedIcon = React.isValidElement(icon)
     ? icon
-    : typeof icon === 'function' || (typeof icon === 'object' && icon !== null && '$$typeof' in (icon as any))
-      ? React.createElement(icon as any, { size: Math.min(size, 48), color: color.neutral.warmGray400 })
+    : typeof icon === 'function' ||
+        (typeof icon === 'object' && icon !== null && '$$typeof' in (icon as any))
+      ? React.createElement(icon as any, {
+          size: Math.min(size, 48),
+          color: color.neutral.warmGray400,
+        })
       : null;
 
   const illustration = renderedIcon ? (

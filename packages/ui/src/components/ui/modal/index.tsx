@@ -7,8 +7,8 @@ import { cn } from '@repo/ui/utils/classNames';
 import type React from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import {
-  Platform,
   type AccessibilityRole,
+  Platform,
   type StyleProp,
   type ViewProps,
   type ViewStyle,
@@ -203,7 +203,8 @@ export const ModalFooter = ({ children, className }: ModalSectionProps) => (
   </Box>
 );
 
-export interface ModalCloseButtonProps extends Omit<React.ComponentProps<typeof Pressable>, 'onPress'> {
+export interface ModalCloseButtonProps
+  extends Omit<React.ComponentProps<typeof Pressable>, 'onPress'> {
   children?: React.ReactNode;
   onPress?: () => void;
 }

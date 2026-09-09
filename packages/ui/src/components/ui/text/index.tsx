@@ -1,5 +1,5 @@
-import { styled } from 'nativewind';
 import { cn } from '@repo/ui/utils/classNames';
+import { styled } from 'nativewind';
 import React from 'react';
 import { Text as RNText, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 

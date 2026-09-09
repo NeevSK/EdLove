@@ -11,16 +11,8 @@ export {
 export { default as AccountPinModal } from '@repo/ui/components/AccountPinModal';
 export { default as AchievementUnlockOverlay } from '@repo/ui/components/AchievementUnlockOverlay';
 export { AdaptiveLayout } from '@repo/ui/components/AdaptiveLayout';
-export type { BondBadgeProps, BondBadgeKind } from '@repo/ui/components/BondBadge';
+export type { BondBadgeKind, BondBadgeProps } from '@repo/ui/components/BondBadge';
 export { BondBadge, default as BondBadgeComponent } from '@repo/ui/components/BondBadge';
-export type { PerspectiveSwitcherSheetProps } from '@repo/ui/components/PerspectiveSwitcherSheet';
-export { PerspectiveSwitcherSheet, default as PerspectiveSwitcherSheetComponent } from '@repo/ui/components/PerspectiveSwitcherSheet';
-export type { SchoolInviteCodeModalProps } from '@repo/ui/components/SchoolInviteCodeModal';
-export { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
-export type { CommercialBatchModalProps } from '@repo/ui/components/CommercialBatchModal';
-export { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
-export type { LinkWardModalProps } from '@repo/ui/components/LinkWardModal';
-export { LinkWardModal } from '@repo/ui/components/LinkWardModal';
 export type { BrandedEmptyStateProps } from '@repo/ui/components/BrandedEmptyState';
 export { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 export type { BrandPulseProps } from '@repo/ui/components/BrandPulse';
@@ -31,6 +23,8 @@ export type { ChatComposerProps } from '@repo/ui/components/ChatComposer';
 export { ChatComposer } from '@repo/ui/components/ChatComposer';
 export type { CollectionCardProps } from '@repo/ui/components/CollectionCard';
 export { CollectionCard } from '@repo/ui/components/CollectionCard';
+export type { CommercialBatchModalProps } from '@repo/ui/components/CommercialBatchModal';
+export { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
 export type { ComposerProps, Tag as ComposerTag } from '@repo/ui/components/ContentComposer';
 export { ContentComposer } from '@repo/ui/components/ContentComposer';
 export type { CommentAuthor, CommentItem } from '@repo/ui/components/ConversationSheet';
@@ -82,7 +76,15 @@ export type { InternalBrowserProps } from '@repo/ui/components/InternalBrowser';
 export { InternalBrowser } from '@repo/ui/components/InternalBrowser';
 export type { JourneyEvent } from '@repo/ui/components/JourneyHistoryCard';
 export { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+export {
+  DEFAULT_SANCTUARY_LANGUAGES,
+  default as LanguageSwitcher,
+  type LanguageOption,
+  type LanguageSwitcherProps,
+} from '@repo/ui/components/LanguageSwitcher';
 export * from '@repo/ui/components/LifecycleMonitor';
+export type { LinkWardModalProps } from '@repo/ui/components/LinkWardModal';
+export { LinkWardModal } from '@repo/ui/components/LinkWardModal';
 export { LivingGlow } from '@repo/ui/components/LivingGlow';
 export { default as LoadingOverlay } from '@repo/ui/components/LoadingOverlay';
 export { default as LogoutModal } from '@repo/ui/components/LogoutModal';
@@ -106,6 +108,11 @@ export * from '@repo/ui/components/motion';
 export { default as NetworkStatusBanner } from '@repo/ui/components/NetworkStatusBanner';
 export { default as NotificationDrawer } from '@repo/ui/components/NotificationDrawer';
 export { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
+export type { PerspectiveSwitcherSheetProps } from '@repo/ui/components/PerspectiveSwitcherSheet';
+export {
+  default as PerspectiveSwitcherSheetComponent,
+  PerspectiveSwitcherSheet,
+} from '@repo/ui/components/PerspectiveSwitcherSheet';
 export type { PollData, PollOption } from '@repo/ui/components/PollWidget';
 export { PollWidget } from '@repo/ui/components/PollWidget';
 export { default as PositiveInvitation } from '@repo/ui/components/PositiveInvitation';
@@ -132,6 +139,10 @@ export type { SanctuaryChatScrollViewProps } from '@repo/ui/components/Sanctuary
 export { SanctuaryChatScrollView } from '@repo/ui/components/SanctuaryChatScrollView';
 export type { SanctuaryChipProps } from '@repo/ui/components/SanctuaryChip';
 export { SanctuaryChip } from '@repo/ui/components/SanctuaryChip';
+export {
+  default as SanctuaryDoorwayActions,
+  type SanctuaryDoorwayActionsProps,
+} from '@repo/ui/components/SanctuaryDoorwayActions';
 export { default as SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 export { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
 export { SanctuaryGuard } from '@repo/ui/components/SanctuaryGuard';
@@ -146,10 +157,17 @@ export { default as SanctuaryModal } from '@repo/ui/components/SanctuaryModal';
 export { SanctuaryNudge } from '@repo/ui/components/SanctuaryNudge';
 export type { SanctuaryProgressBarProps } from '@repo/ui/components/SanctuaryProgressBar';
 export { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
+export {
+  default as SanctuaryRealmSelector,
+  type SanctuaryRealmItem,
+  type SanctuaryRealmSelectorProps,
+} from '@repo/ui/components/SanctuaryRealmSelector';
 export { SanctuarySignal } from '@repo/ui/components/SanctuarySignal';
 export { default as SanctuaryStatsCard } from '@repo/ui/components/SanctuaryStatsCard';
 export { default as SanctuaryToast } from '@repo/ui/components/SanctuaryToast';
 export { default as SandboxBanner } from '@repo/ui/components/SandboxBanner';
+export type { SchoolInviteCodeModalProps } from '@repo/ui/components/SchoolInviteCodeModal';
+export { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
 export type { ScreenWrapperProps } from '@repo/ui/components/ScreenWrapper';
 export { default as ScreenWrapper, useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 export {
@@ -189,21 +207,5 @@ export { VisualCapabilityInspector } from '@repo/ui/components/VisualCapabilityI
 export * from '@repo/ui/components/visualization';
 export { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 export * from '@repo/ui/components/workspace';
-export {
-  default as LanguageSwitcher,
-  type LanguageOption,
-  type LanguageSwitcherProps,
-  DEFAULT_SANCTUARY_LANGUAGES,
-} from '@repo/ui/components/LanguageSwitcher';
-export {
-  default as SanctuaryDoorwayActions,
-  type SanctuaryDoorwayActionsProps,
-} from '@repo/ui/components/SanctuaryDoorwayActions';
-export {
-  default as SanctuaryRealmSelector,
-  type SanctuaryRealmItem,
-  type SanctuaryRealmSelectorProps,
-} from '@repo/ui/components/SanctuaryRealmSelector';
 export type { ActionItem, TabType } from '@repo/ui/context/FABContext';
 export * from '@repo/ui/qr';
-

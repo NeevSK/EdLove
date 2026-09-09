@@ -175,7 +175,8 @@ const NameStep = memo(
         </div>
         <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
         <p className="ob-step-subtitle">
-          {t('onboarding.nameSubtitle') || 'Enter your preferred name or friendly nickname for the sanctuary.'}
+          {t('onboarding.nameSubtitle') ||
+            'Enter your preferred name or friendly nickname for the sanctuary.'}
         </p>
         <input
           className="ob-input"
@@ -539,7 +540,11 @@ export default memo(function OnboardingScreenWeb({
         if (pendingInvite) {
           const res = await resolveStoredInvite(pendingInvite);
           if (res.valid && res.data) {
-            console.log('🎟️ [Onboarding.web] Resolved stored invite:', res.data.code, res.data.school_name);
+            console.log(
+              '🎟️ [Onboarding.web] Resolved stored invite:',
+              res.data.code,
+              res.data.school_name,
+            );
             dispatch({ type: 'SET_SCHOOL_ID', schoolId: res.data.school_id });
             dispatch({ type: 'SET_CAPACITY', capacity: res.data.capacity });
             dispatch({ type: 'SET_PRICING', pricing: 'INSTITUTIONAL' });

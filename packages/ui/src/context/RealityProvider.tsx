@@ -126,7 +126,7 @@ export function RealityProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ reality, refreshReality }), [reality, refreshReality]);
 
-  return <RealityContext value={value}>{children}</RealityContext>;
+  return <RealityContext.Provider value={value}>{children}</RealityContext.Provider>;
 }
 
 export function useReality() {

@@ -153,12 +153,8 @@ function ErrorCard({
             style={[
               styles.secondaryButton,
               {
-                backgroundColor: isDark
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'rgba(42, 35, 24, 0.04)',
-                borderColor: isDark
-                  ? 'rgba(212, 132, 58, 0.2)'
-                  : tokens.semantic.border.subtle,
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(42, 35, 24, 0.04)',
+                borderColor: isDark ? 'rgba(212, 132, 58, 0.2)' : tokens.semantic.border.subtle,
               },
               copied && styles.copiedButton,
             ]}
@@ -456,4 +452,3 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
-

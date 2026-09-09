@@ -818,7 +818,7 @@ const AuthScreen = memo(
                 {!showEmailAuth && (
                   <BreathAnimation delay={400}>
                     <VStack className="gap-5">
-                          <VStack className="gap-1">
+                      <VStack className="gap-1">
                         <Text className="text-[10px] text-phase-muted font-bold tracking-widest uppercase">
                           CHOOSE YOUR PATH
                         </Text>

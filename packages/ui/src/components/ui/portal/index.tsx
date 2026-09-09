@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useEffect, useId, useMemo, useSyncExternalStore } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useSyncExternalStore,
+} from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 type PortalNode = React.ReactNode;

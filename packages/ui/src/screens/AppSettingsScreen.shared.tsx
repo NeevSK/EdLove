@@ -30,12 +30,12 @@ import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { GURUDEVI_SUPPORT_EMAIL } from '@repo/ui/utils';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, TextInput, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
 
 interface SettingsNavigation {
   navigate: (route: string, params?: Record<string, unknown>) => void;

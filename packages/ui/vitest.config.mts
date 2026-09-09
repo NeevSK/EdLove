@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import { reactNative, presets } from 'vitest-native';
+import { presets, reactNative } from 'vitest-native';
 
 export default defineConfig({
   cacheDir: new URL('../../node_modules/.vitest-ui-cache', import.meta.url).pathname,
@@ -7,11 +7,7 @@ export default defineConfig({
     reactNative({
       engine: 'mock',
       platform: 'ios',
-      presets: [
-        presets.reanimated(),
-        presets.gestureHandler(),
-        presets.asyncStorage(),
-      ],
+      presets: [presets.reanimated(), presets.gestureHandler(), presets.asyncStorage()],
     }),
   ],
   resolve: {

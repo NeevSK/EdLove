@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { cn } from '@repo/ui/utils/classNames';
+import { describe, expect, it } from 'vitest';
 
 describe('cn', () => {
   it('composes present class names without extra whitespace', () => {

@@ -164,7 +164,10 @@ export default function NotificationsScreen() {
             <HStack className="items-center gap-2 rounded-xl bg-phase-surface px-3 py-2">
               <CircleAlert size={15} color={accent.action} />
               <Text className="flex-1 text-xs" style={{ color: text.secondary }}>
-                {t('notifications.offline_notice', 'Showing the latest saved notifications while you are offline.')}
+                {t(
+                  'notifications.offline_notice',
+                  'Showing the latest saved notifications while you are offline.',
+                )}
               </Text>
             </HStack>
           ) : isStale ? (
