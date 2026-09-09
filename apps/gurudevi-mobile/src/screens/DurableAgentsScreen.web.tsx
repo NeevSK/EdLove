@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 type Capability = 'teacher-summary' | 'student-support';
 type Mode = 'demo' | 'live';
@@ -29,7 +37,11 @@ const SCENARIOS: Record<Capability, string[]> = {
 };
 
 function createApiClient() {
-  const baseUrl = (process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL || process.env.EXPO_PUBLIC_API_URL || '').replace(/\/$/, '');
+  const baseUrl = (
+    process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL ||
+    process.env.EXPO_PUBLIC_API_URL ||
+    ''
+  ).replace(/\/$/, '');
 
   return {
     async getRuns(limit = 8): Promise<Run[]> {
@@ -60,7 +72,9 @@ function createApiClient() {
       reviewMode: 'draft_only';
     }): Promise<{ runId: string; status: string; mode: string; reviewMode: string }> {
       if (!baseUrl) throw new Error('API URL not configured');
-      const capability = body.evidenceScopes.includes('assignments') ? 'teacher-summary' : 'student-support';
+      const capability = body.evidenceScopes.includes('assignments')
+        ? 'teacher-summary'
+        : 'student-support';
       const response = await fetch(`${baseUrl}/api/durable-agents/${capability}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -84,7 +98,16 @@ function createApiClient() {
       }
     },
 
-    async promoteRun(runId: string, actorId: string): Promise<{ runId: string; teacherNoteId?: string; alreadyPromoted?: boolean; promotionMode?: string; status: string }> {
+    async promoteRun(
+      runId: string,
+      actorId: string,
+    ): Promise<{
+      runId: string;
+      teacherNoteId?: string;
+      alreadyPromoted?: boolean;
+      promotionMode?: string;
+      status: string;
+    }> {
       if (!baseUrl) throw new Error('API URL not configured');
       const response = await fetch(`${baseUrl}/api/durable-agents/runs/${runId}/promote`, {
         method: 'POST',
@@ -131,7 +154,11 @@ export default function DurableAgentsScreenWeb() {
   }, [loadRuns]);
 
   const startRun = async () => {
-    const baseUrl = (process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL || process.env.EXPO_PUBLIC_API_URL || '').replace(/\/$/, '');
+    const baseUrl = (
+      process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL ||
+      process.env.EXPO_PUBLIC_API_URL ||
+      ''
+    ).replace(/\/$/, '');
     if (!baseUrl) {
       setMessage('The review worker is not configured for this environment yet.');
       return;
@@ -148,7 +175,10 @@ export default function DurableAgentsScreenWeb() {
       studentId,
       studentName,
       focusPrompt: focusPrompt || undefined,
-      evidenceScopes: capability === 'teacher-summary' ? ['attendance', 'grades', 'wellbeing', 'assignments'] : ['attendance', 'grades', 'wellbeing'],
+      evidenceScopes:
+        capability === 'teacher-summary'
+          ? ['attendance', 'grades', 'wellbeing', 'assignments']
+          : ['attendance', 'grades', 'wellbeing'],
       reviewMode: 'draft_only' as const,
     };
     try {
@@ -157,7 +187,9 @@ export default function DurableAgentsScreenWeb() {
       for (let attempt = 0; attempt < 20; attempt += 1) {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         const run = await apiClient.getRun(data.runId);
-        if (run) { setActiveRun(run); }
+        if (run) {
+          setActiveRun(run);
+        }
         if (run?.status === 'completed' || run?.status === 'failed') break;
       }
       await loadRuns();
@@ -195,51 +227,156 @@ export default function DurableAgentsScreenWeb() {
       <View style={styles.intro}>
         <Text style={styles.eyebrow}>AGENT LAB · REVIEW-FIRST</Text>
         <Text style={styles.title}>Bounded help for the people doing the work.</Text>
-        <Text style={styles.lede}>Generate evidence-bound drafts for human review. Nothing is published or promoted automatically.</Text>
+        <Text style={styles.lede}>
+          Generate evidence-bound drafts for human review. Nothing is published or promoted
+          automatically.
+        </Text>
       </View>
 
       <View style={styles.grid}>
         <View style={styles.panel}>
           <Text style={styles.panelTitle}>Start a draft</Text>
-          <Text style={styles.panelNote}>Choose a bounded capability, then provide the smallest useful context.</Text>
+          <Text style={styles.panelNote}>
+            Choose a bounded capability, then provide the smallest useful context.
+          </Text>
           <Text style={styles.label}>Capability</Text>
           <View style={styles.choiceRow}>
             {(['teacher-summary', 'student-support'] as Capability[]).map((value) => (
-              <Choice key={value} active={capability === value} label={value === 'teacher-summary' ? 'Teacher summary' : 'Student support'} onPress={() => { setCapability(value); setScenario(SCENARIOS[value][0] ?? ''); }} />
+              <Choice
+                key={value}
+                active={capability === value}
+                label={value === 'teacher-summary' ? 'Teacher summary' : 'Student support'}
+                onPress={() => {
+                  setCapability(value);
+                  setScenario(SCENARIOS[value][0] ?? '');
+                }}
+              />
             ))}
           </View>
           <Text style={styles.label}>Mode</Text>
-          <View style={styles.choiceRow}>{(['demo', 'live'] as Mode[]).map((value) => <Choice key={value} active={mode === value} label={value} onPress={() => setMode(value)} />)}</View>
+          <View style={styles.choiceRow}>
+            {(['demo', 'live'] as Mode[]).map((value) => (
+              <Choice
+                key={value}
+                active={mode === value}
+                label={value}
+                onPress={() => setMode(value)}
+              />
+            ))}
+          </View>
           <Text style={styles.label}>Scenario</Text>
-          <View style={styles.choiceRow}>{SCENARIOS[capability].map((value) => <Choice key={value} active={scenario === value} label={value.replace(/-/g, ' ')} onPress={() => setScenario(value)} />)}</View>
+          <View style={styles.choiceRow}>
+            {SCENARIOS[capability].map((value) => (
+              <Choice
+                key={value}
+                active={scenario === value}
+                label={value.replace(/-/g, ' ')}
+                onPress={() => setScenario(value)}
+              />
+            ))}
+          </View>
           {field('School ID', schoolId, setSchoolId)}
           {field('Classroom ID', classroomId, setClassroomId)}
           {field('Teacher ID', teacherId, setTeacherId)}
-          {capability === 'student-support' && <>{field('Student ID', studentId, setStudentId)}{field('Student name', studentName, setStudentName)}</>}
+          {capability === 'student-support' && (
+            <>
+              {field('Student ID', studentId, setStudentId)}
+              {field('Student name', studentName, setStudentName)}
+            </>
+          )}
           <Text style={styles.label}>Focus prompt</Text>
-          <TextInput value={focusPrompt} onChangeText={setFocusPrompt} style={[styles.input, styles.textarea]} multiline placeholder="Optional: what should the reviewer pay attention to?" />
-          <Pressable disabled={busy} onPress={() => void startRun()} style={[styles.primary, busy && styles.disabled]}>{busy ? <ActivityIndicator color="#fffdf8" /> : <Text style={styles.primaryText}>Start draft run</Text>}</Pressable>
-          <Text accessibilityLiveRegion="polite" style={styles.message}>{message}</Text>
+          <TextInput
+            value={focusPrompt}
+            onChangeText={setFocusPrompt}
+            style={[styles.input, styles.textarea]}
+            multiline
+            placeholder="Optional: what should the reviewer pay attention to?"
+          />
+          <Pressable
+            disabled={busy}
+            onPress={() => void startRun()}
+            style={[styles.primary, busy && styles.disabled]}
+          >
+            {busy ? (
+              <ActivityIndicator color="#fffdf8" />
+            ) : (
+              <Text style={styles.primaryText}>Start draft run</Text>
+            )}
+          </Pressable>
+          <Text accessibilityLiveRegion="polite" style={styles.message}>
+            {message}
+          </Text>
         </View>
 
         <View style={styles.side}>
-          <View style={styles.ruleBlock}><Text style={styles.sideTitle}>Governor rules</Text>{['Allowlisted evidence only', 'Draft-only by default', 'Auditable and pollable runs', 'Explicit human promotion'].map((rule) => <Text key={rule} style={styles.rule}>— {rule}</Text>)}</View>
-          <View style={styles.ruleBlock}><Text style={styles.sideTitle}>Recent runs</Text>{runs.length === 0 ? <Text style={styles.sideText}>No runs loaded yet.</Text> : runs.map((run) => <Pressable key={run.runId} onPress={() => setActiveRun(run)} style={styles.run}><Text style={styles.runTitle}>{run.runType ?? 'draft run'}</Text><Text style={styles.runStatus}>{run.status}</Text></Pressable>)}</View>
+          <View style={styles.ruleBlock}>
+            <Text style={styles.sideTitle}>Governor rules</Text>
+            {[
+              'Allowlisted evidence only',
+              'Draft-only by default',
+              'Auditable and pollable runs',
+              'Explicit human promotion',
+            ].map((rule) => (
+              <Text key={rule} style={styles.rule}>
+                — {rule}
+              </Text>
+            ))}
+          </View>
+          <View style={styles.ruleBlock}>
+            <Text style={styles.sideTitle}>Recent runs</Text>
+            {runs.length === 0 ? (
+              <Text style={styles.sideText}>No runs loaded yet.</Text>
+            ) : (
+              runs.map((run) => (
+                <Pressable key={run.runId} onPress={() => setActiveRun(run)} style={styles.run}>
+                  <Text style={styles.runTitle}>{run.runType ?? 'draft run'}</Text>
+                  <Text style={styles.runStatus}>{run.status}</Text>
+                </Pressable>
+              ))
+            )}
+          </View>
         </View>
       </View>
 
       <View style={styles.output}>
-        <View style={styles.outputHeader}><Text style={styles.panelTitle}>Run output</Text><Text style={styles.status}>{activeRun?.status ?? 'Idle'}</Text></View>
-        {activeRun?.summaryDraft ? <Text selectable style={styles.draft}>{activeRun.summaryDraft}</Text> : <Text style={styles.empty}>Start a run to see the review draft and its evidence boundary.</Text>}
+        <View style={styles.outputHeader}>
+          <Text style={styles.panelTitle}>Run output</Text>
+          <Text style={styles.status}>{activeRun?.status ?? 'Idle'}</Text>
+        </View>
+        {activeRun?.summaryDraft ? (
+          <Text selectable style={styles.draft}>
+            {activeRun.summaryDraft}
+          </Text>
+        ) : (
+          <Text style={styles.empty}>
+            Start a run to see the review draft and its evidence boundary.
+          </Text>
+        )}
         {activeRun?.error && <Text style={styles.error}>{activeRun.error}</Text>}
-        {activeRun?.status === 'completed' && !activeRun.promotedTeacherNoteId && <Pressable disabled={busy} onPress={() => void promoteRun()} style={styles.secondary}><Text style={styles.secondaryText}>Promote for teacher review</Text></Pressable>}
+        {activeRun?.status === 'completed' && !activeRun.promotedTeacherNoteId && (
+          <Pressable disabled={busy} onPress={() => void promoteRun()} style={styles.secondary}>
+            <Text style={styles.secondaryText}>Promote for teacher review</Text>
+          </Pressable>
+        )}
       </View>
     </ScrollView>
   );
 }
 
-function Choice({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={[styles.choice, active && styles.choiceActive]}><Text style={[styles.choiceText, active && styles.choiceTextActive]}>{label}</Text></Pressable>;
+function Choice({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable onPress={onPress} style={[styles.choice, active && styles.choiceActive]}>
+      <Text style={[styles.choiceText, active && styles.choiceTextActive]}>{label}</Text>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -248,37 +385,103 @@ const styles = StyleSheet.create({
   eyebrow: { color: '#c86f3d', fontSize: 12, fontWeight: '800', letterSpacing: 2 },
   title: { color: '#1d2933', fontSize: 54, fontWeight: '700', lineHeight: 58, maxWidth: 760 },
   lede: { color: '#685e55', fontSize: 17, lineHeight: 28, maxWidth: 620 },
-  grid: { width: '100%', maxWidth: 1180, alignSelf: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 24 },
-  panel: { flex: 1, minWidth: 420, gap: 14, padding: 28, backgroundColor: '#fffdf8', borderColor: '#d8cdbd', borderWidth: 1, borderRadius: 18 },
+  grid: {
+    width: '100%',
+    maxWidth: 1180,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 24,
+  },
+  panel: {
+    flex: 1,
+    minWidth: 420,
+    gap: 14,
+    padding: 28,
+    backgroundColor: '#fffdf8',
+    borderColor: '#d8cdbd',
+    borderWidth: 1,
+    borderRadius: 18,
+  },
   side: { width: 300, minWidth: 280, gap: 24 },
   panelTitle: { color: '#1d2933', fontSize: 26, fontWeight: '700' },
   panelNote: { color: '#685e55', lineHeight: 22, marginBottom: 8 },
-  label: { color: '#685e55', fontSize: 11, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', marginTop: 8 },
+  label: {
+    color: '#685e55',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginTop: 8,
+  },
   choiceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  choice: { paddingHorizontal: 13, paddingVertical: 10, borderRadius: 999, borderColor: '#d8cdbd', borderWidth: 1 },
+  choice: {
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+    borderRadius: 999,
+    borderColor: '#d8cdbd',
+    borderWidth: 1,
+  },
   choiceActive: { backgroundColor: '#1d2933', borderColor: '#1d2933' },
   choiceText: { color: '#685e55', fontSize: 13, fontWeight: '700' },
   choiceTextActive: { color: '#fffdf8' },
   field: { gap: 5 },
-  input: { minHeight: 44, paddingHorizontal: 12, borderRadius: 10, borderColor: '#d8cdbd', borderWidth: 1, backgroundColor: '#fbf6ee', color: '#1d2933' },
+  input: {
+    minHeight: 44,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderColor: '#d8cdbd',
+    borderWidth: 1,
+    backgroundColor: '#fbf6ee',
+    color: '#1d2933',
+  },
   textarea: { minHeight: 88, paddingTop: 12, textAlignVertical: 'top' },
-  primary: { minHeight: 48, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, borderRadius: 999, backgroundColor: '#c86f3d', marginTop: 10 },
+  primary: {
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    backgroundColor: '#c86f3d',
+    marginTop: 10,
+  },
   primaryText: { color: '#fffdf8', fontWeight: '800' },
   disabled: { opacity: 0.55 },
   message: { minHeight: 22, color: '#685e55', fontSize: 13 },
-  ruleBlock: { padding: 24, gap: 12, borderTopWidth: 2, borderTopColor: '#c86f3d', backgroundColor: '#1d2933' },
+  ruleBlock: {
+    padding: 24,
+    gap: 12,
+    borderTopWidth: 2,
+    borderTopColor: '#c86f3d',
+    backgroundColor: '#1d2933',
+  },
   sideTitle: { color: '#fffdf8', fontSize: 20, fontWeight: '700' },
   rule: { color: '#d8d0c6', lineHeight: 22 },
   sideText: { color: '#d8d0c6', lineHeight: 22 },
   run: { paddingVertical: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,253,248,0.16)', gap: 3 },
   runTitle: { color: '#fffdf8', fontWeight: '700' },
   runStatus: { color: '#e5b57f', fontSize: 12 },
-  output: { width: '100%', maxWidth: 1180, alignSelf: 'center', gap: 16, padding: 28, backgroundColor: '#e8dfd2' },
+  output: {
+    width: '100%',
+    maxWidth: 1180,
+    alignSelf: 'center',
+    gap: 16,
+    padding: 28,
+    backgroundColor: '#e8dfd2',
+  },
   outputHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   status: { color: '#685e55', fontSize: 12, fontWeight: '800', textTransform: 'uppercase' },
   empty: { color: '#685e55', lineHeight: 24 },
   draft: { color: '#1d2933', fontSize: 15, lineHeight: 25 },
   error: { color: '#a23b36' },
-  secondary: { alignSelf: 'flex-start', minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 18, borderRadius: 999, backgroundColor: '#1d2933' },
+  secondary: {
+    alignSelf: 'flex-start',
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+    borderRadius: 999,
+    backgroundColor: '#1d2933',
+  },
   secondaryText: { color: '#fffdf8', fontWeight: '800' },
 });

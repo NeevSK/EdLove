@@ -1,7 +1,17 @@
 import { usePerspectiveSwitch } from '@repo/core/logic';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Briefcase, CircleCheck, ChevronRight, FileText, QrCode, Send, Sparkles, TrendingUp, Users } from '@repo/ui/icons';
+import {
+  Briefcase,
+  ChevronRight,
+  CircleCheck,
+  FileText,
+  QrCode,
+  Send,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from '@repo/ui/icons';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -12,14 +22,17 @@ export { RouteErrorBoundary as ErrorBoundary };
 
 export default function CommercialBatchScreen() {
   const { batchId } = useLocalSearchParams<{ batchId?: string }>();
-  const { activePerspective, availablePerspectives, getPerspectiveStorage } = usePerspectiveSwitch();
+  const { activePerspective, availablePerspectives, getPerspectiveStorage } =
+    usePerspectiveSwitch();
 
   const commercialBatch = useMemo(() => {
     if (activePerspective.kind === 'commercial') {
       return activePerspective as CommercialPerspective;
     }
     const found = availablePerspectives.find(
-      (p) => p.kind === 'commercial' && (p.id === batchId || (p as CommercialPerspective).batchId === batchId),
+      (p) =>
+        p.kind === 'commercial' &&
+        (p.id === batchId || (p as CommercialPerspective).batchId === batchId),
     );
     return (found as CommercialPerspective) || null;
   }, [activePerspective, availablePerspectives, batchId]);
@@ -31,11 +44,31 @@ export default function CommercialBatchScreen() {
 
   if (!commercialBatch) {
     return (
-      <Box style={{ flex: 1, backgroundColor: tokens.colors.background, padding: tokens.spacing.lg, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: tokens.typography.sizes.md, fontWeight: '700', color: tokens.semantic.text.primary }}>
+      <Box
+        style={{
+          flex: 1,
+          backgroundColor: tokens.colors.background,
+          padding: tokens.spacing.lg,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: tokens.typography.sizes.md,
+            fontWeight: '700',
+            color: tokens.semantic.text.primary,
+          }}
+        >
           Batch Workspace Not Found
         </Text>
-        <Text style={{ fontSize: tokens.typography.sizes.xs, color: tokens.semantic.text.secondary, marginTop: 4 }}>
+        <Text
+          style={{
+            fontSize: tokens.typography.sizes.xs,
+            color: tokens.semantic.text.secondary,
+            marginTop: 4,
+          }}
+        >
           Please select an active commercial tuition batch from the perspective switcher.
         </Text>
       </Box>
@@ -62,7 +95,13 @@ export default function CommercialBatchScreen() {
             elevation: 3,
           }}
         >
-          <HStack style={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: tokens.spacing.sm }}>
+          <HStack
+            style={{
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: tokens.spacing.sm,
+            }}
+          >
             <VStack style={{ flex: 1, gap: 4 }}>
               <HStack style={{ alignItems: 'center', gap: 6 }}>
                 <Box
@@ -79,7 +118,9 @@ export default function CommercialBatchScreen() {
                     {roleTitle}
                   </Text>
                 </Box>
-                <Text style={{ fontSize: 11, fontWeight: '700', color: tokens.semantic.text.secondary }}>
+                <Text
+                  style={{ fontSize: 11, fontWeight: '700', color: tokens.semantic.text.secondary }}
+                >
                   {commercialBatch.instituteName}
                 </Text>
               </HStack>
@@ -95,8 +136,14 @@ export default function CommercialBatchScreen() {
                 {commercialBatch.displayTitle || commercialBatch.displayName}
               </Text>
 
-              <Text style={{ fontSize: tokens.typography.sizes.xs, color: tokens.semantic.text.secondary }}>
-                {commercialBatch.batchName} · {commercialBatch.grade} ({commercialBatch.medium?.toUpperCase()})
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  color: tokens.semantic.text.secondary,
+                }}
+              >
+                {commercialBatch.batchName} · {commercialBatch.grade} (
+                {commercialBatch.medium?.toUpperCase()})
               </Text>
             </VStack>
 
@@ -158,7 +205,13 @@ export default function CommercialBatchScreen() {
               >
                 <QrCode size={18} color={tokens.colors.primary} />
               </Box>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 Card Scan Entry
               </Text>
               <Text style={{ fontSize: 10, color: tokens.semantic.text.muted }}>
@@ -194,7 +247,13 @@ export default function CommercialBatchScreen() {
               >
                 <FileText size={18} color={tokens.colors.success} />
               </Box>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 Paper Marks
               </Text>
               <Text style={{ fontSize: 10, color: tokens.semantic.text.muted }}>
@@ -230,7 +289,13 @@ export default function CommercialBatchScreen() {
               >
                 <Send size={18} color={tokens.colors.info} />
               </Box>
-              <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: '700',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 SMS Broadcast
               </Text>
               <Text style={{ fontSize: 10, color: tokens.semantic.text.muted }}>
@@ -267,11 +332,19 @@ export default function CommercialBatchScreen() {
             >
               <HStack style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <Users size={14} color={tokens.semantic.text.secondary} />
-                <Text style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}>
+                <Text
+                  style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}
+                >
                   Enrolled Students
                 </Text>
               </HStack>
-              <Text style={{ fontSize: tokens.typography.sizes.xl, fontWeight: '800', color: tokens.semantic.text.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xl,
+                  fontWeight: '800',
+                  color: tokens.semantic.text.primary,
+                }}
+              >
                 248
               </Text>
             </Box>
@@ -288,11 +361,19 @@ export default function CommercialBatchScreen() {
             >
               <HStack style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <CircleCheck size={14} color={tokens.colors.success} />
-                <Text style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}>
+                <Text
+                  style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}
+                >
                   Today's Attendance
                 </Text>
               </HStack>
-              <Text style={{ fontSize: tokens.typography.sizes.xl, fontWeight: '800', color: tokens.colors.success }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xl,
+                  fontWeight: '800',
+                  color: tokens.colors.success,
+                }}
+              >
                 92%
               </Text>
             </Box>
@@ -309,11 +390,19 @@ export default function CommercialBatchScreen() {
             >
               <HStack style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <TrendingUp size={14} color={tokens.colors.primary} />
-                <Text style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}>
+                <Text
+                  style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}
+                >
                   Monthly Fees Paid
                 </Text>
               </HStack>
-              <Text style={{ fontSize: tokens.typography.sizes.xl, fontWeight: '800', color: tokens.colors.primary }}>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xl,
+                  fontWeight: '800',
+                  color: tokens.colors.primary,
+                }}
+              >
                 88%
               </Text>
             </Box>

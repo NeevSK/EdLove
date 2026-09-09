@@ -1,20 +1,17 @@
-import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
 import { deepLink, useAuth } from '@repo/core/logic';
 import { storage } from '@repo/core/native';
+import * as Notifications from 'expo-notifications';
 import { type Href, router } from 'expo-router';
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { Platform } from 'react-native';
 
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
-import {
-  isQRDeepLink,
-  normalizeAcceptedInternalRoute,
-} from '@/lib/deepLinks/urlPolicy';
 import { trackDeepLink } from '@/lib/deepLinks/trackDeepLink';
+import { isQRDeepLink, normalizeAcceptedInternalRoute } from '@/lib/deepLinks/urlPolicy';
 
 /**
  * PushNotificationProvider
- * 
+ *
  * Handles push notification registration, incoming notifications,
  * and notification responses (taps).
  */
@@ -35,44 +32,38 @@ if (Platform.OS !== 'web') {
 export function PushNotificationProvider({ children }: { children: React.ReactNode }) {
   const { session } = useAuth();
 
-  const handleNotificationReceived = useCallback(
-    (notification: Notifications.Notification) => {
-      // Handle foreground notification
-      console.log('[PushNotification] Received:', notification);
-      // Could update UI state, show in-app banner, etc.
-    },
-    [],
-  );
+  const handleNotificationReceived = useCallback((notification: Notifications.Notification) => {
+    // Handle foreground notification
+    console.log('[PushNotification] Received:', notification);
+    // Could update UI state, show in-app banner, etc.
+  }, []);
 
-  const handleNotificationResponse = useCallback(
-    (response: Notifications.NotificationResponse) => {
-      const data = response.notification.request.content.data as Record<string, unknown> | undefined;
-      const target = typeof data?.deepLink === 'string' ? data.deepLink : data?.path;
-      if (typeof target !== 'string') return;
+  const handleNotificationResponse = useCallback((response: Notifications.NotificationResponse) => {
+    const data = response.notification.request.content.data as Record<string, unknown> | undefined;
+    const target = typeof data?.deepLink === 'string' ? data.deepLink : data?.path;
+    if (typeof target !== 'string') return;
 
-      void (async () => {
-        if (target.startsWith('/')) {
-          const route = normalizeAcceptedInternalRoute(target);
-          if (route) router.push(route as Href);
-          return;
-        }
+    void (async () => {
+      if (target.startsWith('/')) {
+        const route = normalizeAcceptedInternalRoute(target);
+        if (route) router.push(route as Href);
+        return;
+      }
 
-        if (isQRDeepLink(target)) {
-          router.push({ pathname: '/qr', params: { payload: target } });
-          return;
-        }
+      if (isQRDeepLink(target)) {
+        router.push({ pathname: '/qr', params: { payload: target } });
+        return;
+      }
 
-        await dispatchDeepLink(target, {
-          handleURL: deepLink.handleURL.bind(deepLink),
-          navigateToClassroomInvite: (inviteCode) => {
-            router.push({ pathname: '/community', params: { inviteCode } });
-          },
-          track: trackDeepLink,
-        });
-      })().catch(() => undefined);
-    },
-    [],
-  );
+      await dispatchDeepLink(target, {
+        handleURL: deepLink.handleURL.bind(deepLink),
+        navigateToClassroomInvite: (inviteCode) => {
+          router.push({ pathname: '/community', params: { inviteCode } });
+        },
+        track: trackDeepLink,
+      });
+    })().catch(() => undefined);
+  }, []);
 
   const registerForPushNotifications = useCallback(async () => {
     if (Platform.OS === 'web') return;
@@ -80,12 +71,12 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
     try {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
-      
+
       if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
-      
+
       if (finalStatus !== 'granted') {
         console.warn('[PushNotification] Permission not granted');
         return;
@@ -95,11 +86,11 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
       const token = await Notifications.getExpoPushTokenAsync({
         projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID,
       });
-      
+
       // Store token locally and send to backend
       const tokenString = token.data;
       storage.set('expo_push_token', tokenString);
-      
+
       // Send to backend (if we have a session)
       try {
         const { api } = await import('@repo/core/api/client');
@@ -107,7 +98,7 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
       } catch (e) {
         console.warn('[PushNotification] Failed to register token with backend:', e);
       }
-      
+
       console.log('[PushNotification] Registered token:', tokenString);
     } catch (e) {
       console.error('[PushNotification] Registration error:', e);
@@ -125,8 +116,12 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
   useEffect(() => {
     if (Platform.OS === 'web') return;
 
-    const notificationListener = Notifications.addNotificationReceivedListener(handleNotificationReceived);
-    const responseListener = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+    const notificationListener = Notifications.addNotificationReceivedListener(
+      handleNotificationReceived,
+    );
+    const responseListener = Notifications.addNotificationResponseReceivedListener(
+      handleNotificationResponse,
+    );
 
     return () => {
       notificationListener.remove();

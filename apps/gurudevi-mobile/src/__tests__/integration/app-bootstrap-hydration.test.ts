@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 
 describe('Suite A: Full App Bootstrap, Rehydration & Essential Startup Gate', () => {
@@ -40,7 +40,9 @@ describe('Suite A: Full App Bootstrap, Rehydration & Essential Startup Gate', ()
   });
 
   it('fails safely and surfaces error if a critical startup service fails', async () => {
-    const failingBootstrap = vi.fn().mockRejectedValue(new Error('Native MMKV initialization failed'));
+    const failingBootstrap = vi
+      .fn()
+      .mockRejectedValue(new Error('Native MMKV initialization failed'));
 
     await expect(
       completeEssentialStartup({
@@ -48,7 +50,7 @@ describe('Suite A: Full App Bootstrap, Rehydration & Essential Startup Gate', ()
         isRuntimeRegistered: () => true,
         loadCatalog: async () => ({ registerAppCatalog: vi.fn() }),
         initializeDeviceAccounts: async () => {},
-      })
+      }),
     ).rejects.toThrow('Native MMKV initialization failed');
 
     // Store hydration remains false on critical bootstrap failure

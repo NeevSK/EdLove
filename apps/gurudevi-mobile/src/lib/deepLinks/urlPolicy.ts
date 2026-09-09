@@ -30,7 +30,8 @@ export function normalizeAcceptedDeepLink(url: string): string | null {
     }
 
     if (parsed.protocol === 'https:') {
-      return parsed.hostname === PLATFORM_HOST && startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
+      return parsed.hostname === PLATFORM_HOST &&
+        startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
         ? url
         : null;
     }

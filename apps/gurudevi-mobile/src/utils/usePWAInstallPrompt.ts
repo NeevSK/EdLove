@@ -63,13 +63,14 @@ export function usePWAInstallPrompt(): PWAInstallState {
   // Restore dismissed state from localStorage
   useEffect(() => {
     if (Platform.OS !== 'web') return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       const raw = localStorage.getItem(DISMISSED_KEY);
       if (raw) {
         const ts = Number.parseInt(raw, 10);
         // eslint-disable-next-line no-restricted-syntax
         if (!Number.isNaN(ts) && Date.now() - ts < DISMISS_TTL_MS) {
-          setTimeout(() => {
+          timer = setTimeout(() => {
             setIsDismissed(true);
           }, 0);
         } else {
@@ -79,6 +80,9 @@ export function usePWAInstallPrompt(): PWAInstallState {
     } catch {
       /* localStorage unavailable in some contexts */
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   // Capture the deferred install prompt

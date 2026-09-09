@@ -26,7 +26,6 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
 
   useEffect(() => {
     let active = true;
-    setDb(null);
     const activeAccountId = accountId;
 
     const unsubscribe = browserAccountCoordinator.subscribe((signal) => {

@@ -2,8 +2,8 @@ import 'react-native-url-polyfill/auto';
 import '../src/i18n/config';
 import '@repo/ui/global.css';
 
-import * as SplashScreen from 'expo-splash-screen';
 import { Observe, ObserveRoot } from 'expo-observe';
+import * as SplashScreen from 'expo-splash-screen';
 
 import { EntryStartupBoundary } from '@/entry/EntryStartupBoundary';
 

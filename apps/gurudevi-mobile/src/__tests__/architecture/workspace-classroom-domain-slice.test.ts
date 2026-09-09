@@ -36,7 +36,13 @@ describe('workspace classroom domain slice contracts', () => {
       'components',
       'AttendanceSheet.tsx',
     );
-    const attendanceScreen = read('packages', 'classroom', 'src', 'screens', 'AttendanceScreen.tsx');
+    const attendanceScreen = read(
+      'packages',
+      'classroom',
+      'src',
+      'screens',
+      'AttendanceScreen.tsx',
+    );
 
     expect(attendanceSheet).not.toContain('Anura Kumara');
     expect(attendanceSheet).not.toContain('api.attendance.record');

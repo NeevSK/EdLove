@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { profileContract } from '@repo/core/api/profile.contract';
+import { describe, expect, it } from 'vitest';
 
 describe('profile native oRPC contract coverage', () => {
   it('registers strict profile procedures in the canonical contract', () => {

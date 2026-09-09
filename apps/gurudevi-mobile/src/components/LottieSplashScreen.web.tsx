@@ -1,5 +1,5 @@
-import { StyleSheet, View } from 'react-native';
 import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 interface LottieSplashScreenProps {
   onAnimationFinish?: () => void;
@@ -8,9 +8,7 @@ interface LottieSplashScreenProps {
 }
 
 /** Web-safe splash fallback; native keeps the SQL/Lottie-backed animation. */
-export function LottieSplashScreen({
-  onAnimationFinish,
-}: LottieSplashScreenProps) {
+export function LottieSplashScreen({ onAnimationFinish }: LottieSplashScreenProps) {
   useEffect(() => {
     onAnimationFinish?.();
   }, [onAnimationFinish]);

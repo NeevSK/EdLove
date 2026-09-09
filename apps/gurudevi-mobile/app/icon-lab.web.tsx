@@ -1,13 +1,3 @@
-import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
-import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
-import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
-import { HeartIcon } from 'phosphor-react-native/src/icons/Heart';
-import { LeafIcon } from 'phosphor-react-native/src/icons/Leaf';
-import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
-import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
-import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
-import { UsersIcon } from 'phosphor-react-native/src/icons/Users';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
   BellRing,
   BookOpen,
@@ -19,6 +9,16 @@ import {
   TriangleAlert,
   Users,
 } from '@repo/ui/icons';
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
+import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
+import { HeartIcon } from 'phosphor-react-native/src/icons/Heart';
+import { LeafIcon } from 'phosphor-react-native/src/icons/Leaf';
+import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
+import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
+import { UsersIcon } from 'phosphor-react-native/src/icons/Users';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const samples = [
   ['Navigation', BookOpen, BookOpenIcon],
@@ -81,7 +81,18 @@ const styles = StyleSheet.create({
   table: { borderTopWidth: 1, borderTopColor: '#D9CEBD' },
   headerRow: { flexDirection: 'row', minHeight: 56, alignItems: 'center' },
   headerCell: { flex: 1, color: '#2A2318', fontSize: 14, fontWeight: '800' },
-  row: { flexDirection: 'row', minHeight: 76, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#E2D8C8' },
+  row: {
+    flexDirection: 'row',
+    minHeight: 76,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E2D8C8',
+  },
   label: { flex: 1, color: '#A8643A', fontSize: 13, fontWeight: '800' },
-  iconGroup: { flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },
+  iconGroup: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
 });

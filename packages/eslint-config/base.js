@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import pluginImport from 'eslint-plugin-import-x';
+import onlyWarn from 'eslint-plugin-only-warn';
 import eslintPluginOxlint from 'eslint-plugin-oxlint';
 import pluginSonarjs from 'eslint-plugin-sonarjs';
 import turboPlugin from 'eslint-plugin-turbo';
@@ -30,6 +31,7 @@ export const config = [
       turbo: turboPlugin,
       sonarjs: pluginSonarjs,
       polymath: { rules: { 'ban-use-store': banUseStore } },
+      'only-warn': onlyWarn,
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
@@ -61,6 +63,9 @@ export const config = [
       '**/*.config.js',
       '**/*.config.mjs',
       '**/*.config.ts',
+      '**/*.config.mts',
+      '**/*.config.cts',
+      '**/*.native.config.mts',
       '**/.astro/**',
       'docs/**',
       '**/__tests__/**',
@@ -69,6 +74,8 @@ export const config = [
       '**/*.test.js',
       '**/*.test.jsx',
       '**/__mocks__/**',
+      '**/test-shims/**',
+      'test-shims/**',
     ],
   },
   {

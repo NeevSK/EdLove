@@ -1,9 +1,14 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { createSupabaseGuardianRepository } from '@repo/core/adapters/supabase/guardianRepository';
 import { createSupabaseSchoolInviteRepository } from '@repo/core/adapters/supabase/schoolInviteRepository';
 import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supabase/tuitionBatchRepository';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useNotifications, useRewards } from '@repo/core/hooks';
-import { resolveWorkspaceSwitcherTargets, usePermissions, usePerspectiveSwitch, useStore } from '@repo/core/logic';
+import {
+  resolveWorkspaceSwitcherTargets,
+  usePermissions,
+  usePerspectiveSwitch,
+  useStore,
+} from '@repo/core/logic';
 import { BreathGuide } from '@repo/self/wellbeing';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
@@ -19,8 +24,8 @@ import { router, Tabs, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
+import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -56,7 +61,13 @@ function TabsLayoutContent() {
   const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
 
   // Multi-Perspective State
-  const { availablePerspectives, activePerspective, switchPerspective, addPerspective, hydratePerspectivesFromDatabase } = usePerspectiveSwitch();
+  const {
+    availablePerspectives,
+    activePerspective,
+    switchPerspective,
+    addPerspective,
+    hydratePerspectivesFromDatabase,
+  } = usePerspectiveSwitch();
   const [isPerspectiveSwitcherOpen, setPerspectiveSwitcherOpen] = useState(false);
   const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
   const [isCommercialModalOpen, setCommercialModalOpen] = useState(false);
@@ -83,7 +94,8 @@ function TabsLayoutContent() {
           return relationships.map((rel: any) => ({
             id: rel.id || `ward-${rel.student_id}`,
             kind: 'guardian' as const,
-            displayName: rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
+            displayName:
+              rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
             wardUserId: rel.student_id,
             wardName: rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
             schoolId: rel.school_id,
@@ -395,9 +407,7 @@ function TabsLayoutContent() {
                   width: size + 16,
                   height: size + 16,
                   borderRadius: tokens.radii.full,
-                  backgroundColor: focused
-                    ? tokens.semantic.surface.interactive
-                    : 'transparent',
+                  backgroundColor: focused ? tokens.semantic.surface.interactive : 'transparent',
                 }}
               >
                 <Heart

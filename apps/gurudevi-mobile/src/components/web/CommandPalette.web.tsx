@@ -432,9 +432,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                             backgroundColor: isSelected
                               ? webShellTokens.color.activeSurface
                               : webShellTokens.color.controlSurface,
-                            borderColor: isSelected
-                              ? webShellTokens.color.activeBorder
-                              : border,
+                            borderColor: isSelected ? webShellTokens.color.activeBorder : border,
                           }}
                         >
                           <Text

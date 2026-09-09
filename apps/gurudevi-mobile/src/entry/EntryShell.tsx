@@ -1,23 +1,21 @@
-import { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
-import { Stack } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClientProvider } from '@tanstack/react-query';
-
+import { GlobalProvider } from '@repo/core/logic';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import LotusPetalFAB from '@repo/ui/components/LotusPetalFAB';
 import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
-import { GlobalProvider } from '@repo/core/logic';
-
-import { SessionRouteGate } from '@/entry/SessionRouteGate';
-import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
-import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
+import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
+import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
+import { SessionRouteGate } from '@/entry/SessionRouteGate';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 
@@ -64,7 +62,10 @@ export function EntryShell() {
                                   <Stack.Screen name="onboarding" />
                                   <Stack.Screen name="public-form/[slug]" />
                                   <Stack.Screen name="(tabs)" />
-                                  <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
+                                  <Stack.Screen
+                                    name="(modal)"
+                                    options={{ presentation: 'modal' }}
+                                  />
                                 </Stack>
                               </SessionRouteGate>
                               <LotusPetalFAB />

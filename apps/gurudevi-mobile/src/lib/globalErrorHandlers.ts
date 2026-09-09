@@ -4,9 +4,10 @@
  * Import this module once at app root (_layout.tsx) to capture errors
  * that escape React's ErrorBoundary (async failures, network errors).
  */
-import { Platform } from 'react-native';
-import * as Sentry from '@sentry/react-native';
+
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
+import * as Sentry from '@sentry/react-native';
+import { Platform } from 'react-native';
 
 import { recordDevError } from './devErrorPipeline';
 

@@ -8,7 +8,9 @@ export function OCRScannerBridge({
   colors,
   providerName = 'mlkit',
 }: {
-  onStudentsScanned: (students: { name: string; index_number: string; uncertain: boolean; notes?: string }[]) => void;
+  onStudentsScanned: (
+    students: { name: string; index_number: string; uncertain: boolean; notes?: string }[],
+  ) => void;
   onCancel: () => void;
   colors?: {
     primary?: string;

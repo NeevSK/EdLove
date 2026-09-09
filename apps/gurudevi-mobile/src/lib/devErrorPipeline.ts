@@ -39,16 +39,17 @@ async function sendDiagnosticReport(batch: DevErrorBatch): Promise<void> {
   // Print unified high-visibility banner in Metro console
   console.warn(
     `\n╔══════════════════════════════════════════════════════════════════════════════╗\n` +
-    `║ 🚨 [DEV ERROR PIPELINE] Aggregated ${batch.count} cascading error(s)                      ║\n` +
-    `║ ROOT CAUSE: ${batch.primary.message.slice(0, 60)}\n` +
-    `║ SOURCE: ${batch.primary.source} | FATAL: ${Boolean(batch.primary.isFatal)}\n` +
-    (batch.cascades.length > 0
-      ? `║ CASCADE FALLOUT (${batch.cascades.length}):\n` +
-        batch.cascades
-          .map((c, i) => `║   [${i + 1}/${batch.cascades.length}] ${c.message.slice(0, 56)}`)
-          .join('\n') + '\n'
-      : '') +
-    `╚══════════════════════════════════════════════════════════════════════════════╝\n`
+      `║ 🚨 [DEV ERROR PIPELINE] Aggregated ${batch.count} cascading error(s)                      ║\n` +
+      `║ ROOT CAUSE: ${batch.primary.message.slice(0, 60)}\n` +
+      `║ SOURCE: ${batch.primary.source} | FATAL: ${Boolean(batch.primary.isFatal)}\n` +
+      (batch.cascades.length > 0
+        ? `║ CASCADE FALLOUT (${batch.cascades.length}):\n` +
+          batch.cascades
+            .map((c, i) => `║   [${i + 1}/${batch.cascades.length}] ${c.message.slice(0, 56)}`)
+            .join('\n') +
+          '\n'
+        : '') +
+      `╚══════════════════════════════════════════════════════════════════════════════╝\n`,
   );
 
   // Dispatch to local dev server over reversed port 3000

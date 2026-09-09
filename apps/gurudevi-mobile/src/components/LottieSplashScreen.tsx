@@ -1,6 +1,6 @@
 import LottieView from 'lottie-react-native';
-import { StyleSheet, View } from 'react-native';
 import { useEffect, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 interface LottieSplashScreenProps {
   onAnimationFinish?: () => void;

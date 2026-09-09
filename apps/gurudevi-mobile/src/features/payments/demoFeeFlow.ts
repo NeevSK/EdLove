@@ -1,5 +1,5 @@
-import { payments } from '@repo/payments';
 import { Ledger } from '@repo/accounting';
+import { payments } from '@repo/payments';
 
 export async function demoFeeFlow(amount: number, currency: string = 'USD') {
   const provider = payments.getCheapestProvider(amount) || payments.getAllProviders()[0];

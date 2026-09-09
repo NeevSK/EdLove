@@ -1,8 +1,6 @@
-import { profileAPI as rawProfileAPI } from '@repo/core/api/profile';
-import { useStore } from '@repo/core/store/useStore';
+import { profileAPI, profileAPI as rawProfileAPI } from '@repo/core/api/profile';
 import type { TotalState } from '@repo/core/store';
-
-import { profileAPI } from '@repo/core/api/profile';
+import { useStore } from '@repo/core/store/useStore';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const profileMocks = vi.hoisted(() => ({

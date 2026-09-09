@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Linking, Modal, StyleSheet } from 'react-native';
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { BrandPulse } from '@repo/ui';
+import React from 'react';
+import { Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 /**
  * AppVersionGateOverlay
@@ -36,14 +36,19 @@ export function AppVersionGateOverlay() {
           <BrandPulse size={48} tintColor="#D4843A" />
           <Text style={styles.hardBlockTitle}>Critical Update Required</Text>
           <Text style={styles.hardBlockMessage}>
-            Your installed version (v{currentInstalledVersion}) is no longer supported. To protect your data and security, you must update to at least v{minSupportedVersion} to continue.
+            Your installed version (v{currentInstalledVersion}) is no longer supported. To protect
+            your data and security, you must update to at least v{minSupportedVersion} to continue.
           </Text>
           {releaseNotes ? (
             <View style={styles.notesContainer}>
               <Text style={styles.notesText}>{releaseNotes}</Text>
             </View>
           ) : null}
-          <TouchableOpacity style={styles.primaryButton} onPress={handleOpenStore} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleOpenStore}
+            activeOpacity={0.85}
+          >
             <Text style={styles.primaryButtonText}>Update Gurudevi</Text>
           </TouchableOpacity>
         </View>
@@ -57,7 +62,9 @@ export function AppVersionGateOverlay() {
       <View style={styles.softNudgeBanner}>
         <View style={styles.softNudgeContent}>
           <Text style={styles.softNudgeTitle}>Update Available</Text>
-          <Text style={styles.softNudgeSubtitle}>A newer version of Gurudevi is ready for you.</Text>
+          <Text style={styles.softNudgeSubtitle}>
+            A newer version of Gurudevi is ready for you.
+          </Text>
         </View>
         <View style={styles.softNudgeActions}>
           <TouchableOpacity onPress={handleOpenStore} style={styles.updateActionBtn}>

@@ -36,6 +36,8 @@ describe('workspace drag production contract', () => {
     const source = fs.readFileSync(achievementOverlayPath, 'utf8');
 
     expect(source).toContain("from 'react-native-worklets'");
-    expect(source).not.toMatch(/import\s*\{[^}]*\brunOnJS\b[^}]*\}\s*from\s*['\"]react-native-reanimated['\"]/);
+    expect(source).not.toMatch(
+      /import\s*\{[^}]*\brunOnJS\b[^}]*\}\s*from\s*['\"]react-native-reanimated['\"]/,
+    );
   });
 });

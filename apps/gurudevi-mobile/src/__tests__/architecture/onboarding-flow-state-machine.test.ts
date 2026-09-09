@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
 import {
   canProceedOnboardingStep,
   getOnboardingPhase,
   getOnboardingStepLabel,
 } from '@repo/ui/screens/onboardingFlow';
+import { describe, expect, it } from 'vitest';
 
 describe('onboarding flow state machine', () => {
   it('maps steps to explicit phases and labels', () => {

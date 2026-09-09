@@ -1,5 +1,5 @@
-import { v7 as uuidv7 } from 'uuid';
 import { bytesToBase64, toArrayBuffer } from '@repo/library/utils/bytes';
+import { v7 as uuidv7 } from 'uuid';
 
 export interface CloudProvider {
   id: string;
@@ -126,9 +126,7 @@ export class CloudAPI {
     const config = this.configs[provider];
     if (!config) throw new Error(`Provider ${provider} not configured`);
 
-    const scopes = provider === 'google' 
-      ? config.scopes.join(' ')
-      : config.scopes.join(' ');
+    const scopes = provider === 'google' ? config.scopes.join(' ') : config.scopes.join(' ');
 
     const params = new URLSearchParams({
       client_id: config.clientId,
@@ -140,9 +138,10 @@ export class CloudAPI {
       state: state || uuidv7(),
     });
 
-    const baseUrl = provider === 'google' 
-      ? 'https://accounts.google.com/o/oauth2/v2/auth'
-      : `https://login.microsoftonline.com/${this.configs.microsoft?.tenantId ?? 'common'}/oauth2/v2.0/authorize`;
+    const baseUrl =
+      provider === 'google'
+        ? 'https://accounts.google.com/o/oauth2/v2/auth'
+        : `https://login.microsoftonline.com/${this.configs.microsoft?.tenantId ?? 'common'}/oauth2/v2.0/authorize`;
 
     return `${baseUrl}?${params.toString()}`;
   }
@@ -162,9 +161,10 @@ export class CloudAPI {
       grant_type: 'authorization_code',
     });
 
-    const tokenUrl = provider === 'google'
-      ? 'https://oauth2.googleapis.com/token'
-      : `https://login.microsoftonline.com/${this.configs.microsoft?.tenantId ?? 'common'}/oauth2/v2.0/token`;
+    const tokenUrl =
+      provider === 'google'
+        ? 'https://oauth2.googleapis.com/token'
+        : `https://login.microsoftonline.com/${this.configs.microsoft?.tenantId ?? 'common'}/oauth2/v2.0/token`;
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -181,7 +181,7 @@ export class CloudAPI {
     const result: CloudAuthResult = {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
-      expiresAt: Date.now() + (tokens.expires_in * 1000),
+      expiresAt: Date.now() + tokens.expires_in * 1000,
       scope: tokens.scope,
       tokenType: tokens.token_type,
     };
@@ -207,9 +207,10 @@ export class CloudAPI {
       grant_type: 'refresh_token',
     });
 
-    const tokenUrl = provider === 'google'
-      ? 'https://oauth2.googleapis.com/token'
-      : `https://login.microsoftonline.com/${this.configs.microsoft?.tenantId ?? 'common'}/oauth2/v2.0/token`;
+    const tokenUrl =
+      provider === 'google'
+        ? 'https://oauth2.googleapis.com/token'
+        : `https://login.microsoftonline.com/${this.configs.microsoft?.tenantId ?? 'common'}/oauth2/v2.0/token`;
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -230,7 +231,7 @@ export class CloudAPI {
     const result: CloudAuthResult = {
       accessToken: refreshed.access_token,
       refreshToken: refreshed.refresh_token || tokens.refreshToken,
-      expiresAt: Date.now() + (refreshed.expires_in * 1000),
+      expiresAt: Date.now() + refreshed.expires_in * 1000,
       scope: refreshed.scope,
       tokenType: refreshed.token_type,
     };
@@ -246,7 +247,8 @@ export class CloudAPI {
     const tokens = this.tokens.get(provider);
     if (!tokens) throw new Error(`Not authenticated with ${provider}`);
 
-    if (Date.now() >= tokens.expiresAt - 60000) { // 1 min buffer
+    if (Date.now() >= tokens.expiresAt - 60000) {
+      // 1 min buffer
       await this.refreshToken(provider);
       const refreshed = this.tokens.get(provider)!;
       return refreshed.accessToken;
@@ -268,7 +270,7 @@ export class CloudAPI {
   }): Promise<CloudImportResult> {
     const accessToken = await this.getAccessToken('google');
     const boundary = `boundary_${uuidv7()}`;
-    
+
     const metadata = {
       name: options.fileName,
       mimeType: options.mimeType,
@@ -282,14 +284,17 @@ export class CloudAPI {
 
     const body = metadataPart + contentPart + endPart;
 
-    const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${await this.getAccessToken('google')}`,
-        'Content-Type': `multipart/related; boundary=${boundary}`,
+    const response = await fetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${await this.getAccessToken('google')}`,
+          'Content-Type': `multipart/related; boundary=${boundary}`,
+        },
+        body: body,
       },
-      body: body,
-    });
+    );
 
     if (!response.ok) throw new Error(`Google Drive upload failed: ${await response.text()}`);
     return response.json();
@@ -304,7 +309,7 @@ export class CloudAPI {
     download?: boolean;
   }): Promise<CloudExportResult> {
     const accessToken = await this.getAccessToken('google');
-    
+
     const exportMimeTypes: Record<string, string> = {
       pdf: 'application/pdf',
       docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -319,20 +324,22 @@ export class CloudAPI {
     if (!mimeType) throw new Error(`Unsupported target format: ${options.targetFormat}`);
 
     const url = `https://www.googleapis.com/drive/v3/files/${options.fileId}/export?mimeType=${encodeURIComponent(mimeType)}`;
-    
+
     const response = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${await this.getAccessToken('google')}` },
+      headers: { Authorization: `Bearer ${await this.getAccessToken('google')}` },
     });
 
     if (!response.ok) throw new Error(`Google Docs export failed: ${await response.text()}`);
 
     const content = await response.arrayBuffer();
-    
+
     return {
       fileId: options.fileId,
       fileName: `${options.fileId}.${options.targetFormat}`,
       mimeType,
-      downloadUrl: options.download ? `https://www.googleapis.com/drive/v3/files/${options.fileId}/export?mimeType=${encodeURIComponent(mimeType)}` : undefined,
+      downloadUrl: options.download
+        ? `https://www.googleapis.com/drive/v3/files/${options.fileId}/export?mimeType=${encodeURIComponent(mimeType)}`
+        : undefined,
       content: new Uint8Array(content),
       webViewLink: `https://docs.google.com/document/d/${options.fileId}/edit`,
       size: content.byteLength,
@@ -342,27 +349,31 @@ export class CloudAPI {
   /**
    * List files in Google Drive
    */
-  async listGoogleDriveFiles(options: {
-    query?: string;
-    pageSize?: number;
-    pageToken?: string;
-    orderBy?: string;
-    fields?: string;
-  } = {}): Promise<{ files: CloudFile[]; nextPageToken?: string }> {
+  async listGoogleDriveFiles(
+    options: {
+      query?: string;
+      pageSize?: number;
+      pageToken?: string;
+      orderBy?: string;
+      fields?: string;
+    } = {},
+  ): Promise<{ files: CloudFile[]; nextPageToken?: string }> {
     const params = new URLSearchParams({
       pageSize: String(options.pageSize || 100),
-      fields: options.fields || 'nextPageToken, files(id, name, mimeType, size, createdTime, modifiedTime, webViewLink, thumbnailLink, parents, shared, ownedByMe)',
+      fields:
+        options.fields ||
+        'nextPageToken, files(id, name, mimeType, size, createdTime, modifiedTime, webViewLink, thumbnailLink, parents, shared, ownedByMe)',
       ...(options.query && { q: options.query }),
       ...(options.pageToken && { pageToken: options.pageToken }),
       ...(options.orderBy && { orderBy: options.orderBy }),
     });
 
     const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, {
-      headers: { 'Authorization': `Bearer ${await this.getAccessToken('google')}` },
+      headers: { Authorization: `Bearer ${await this.getAccessToken('google')}` },
     });
 
     if (!response.ok) throw new Error(`Google Drive list failed: ${await response.text()}`);
-    
+
     const data = await response.json();
     return {
       files: data.files.map((f: any) => ({
@@ -401,15 +412,13 @@ export class CloudAPI {
     const uploadUrl = `https://graph.microsoft.com/v1.0/me/drive/root:/${folderSegment}${encodeURIComponent(options.fileName)}:/content`;
 
     const body: string | ArrayBuffer =
-      typeof options.content === 'string'
-        ? options.content
-        : toArrayBuffer(options.content);
+      typeof options.content === 'string' ? options.content : toArrayBuffer(options.content);
 
     const conflictParam = `?@microsoft.graph.conflictBehavior=${options.conflictBehavior ?? 'rename'}`;
     const response = await fetch(`${uploadUrl}${conflictParam}`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/octet-stream',
       },
       body,
@@ -428,7 +437,7 @@ export class CloudAPI {
     download?: boolean;
   }): Promise<CloudExportResult> {
     const accessToken = await this.getAccessToken('microsoft');
-    
+
     const formatMap: Record<string, string> = {
       pdf: 'pdf',
       docx: 'docx',
@@ -443,15 +452,15 @@ export class CloudAPI {
     if (!format) throw new Error(`Unsupported target format: ${options.targetFormat}`);
 
     const url = `https://graph.microsoft.com/v1.0/me/drive/items/${options.fileId}/content?format=${format}`;
-    
+
     const response = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${await this.getAccessToken('microsoft')}` },
+      headers: { Authorization: `Bearer ${await this.getAccessToken('microsoft')}` },
     });
 
     if (!response.ok) throw new Error(`Microsoft Graph export failed: ${await response.text()}`);
 
     const content = await response.arrayBuffer();
-    
+
     return {
       fileId: options.fileId,
       fileName: `${options.fileId}.${options.targetFormat}`,
@@ -464,34 +473,36 @@ export class CloudAPI {
   /**
    * List OneDrive files
    */
-  async listOneDriveFiles(options: {
-    folderId?: string;
-    pageSize?: number;
-    search?: string;
-  } = {}): Promise<{ files: CloudFile[]; nextPageToken?: string }> {
+  async listOneDriveFiles(
+    options: { folderId?: string; pageSize?: number; search?: string } = {},
+  ): Promise<{ files: CloudFile[]; nextPageToken?: string }> {
     let url = 'https://graph.microsoft.com/v1.0/me/drive/root/children';
     if (options.folderId) {
       url = `https://graph.microsoft.com/v1.0/me/drive/items/${options.folderId}/children`;
     }
-    
+
     const params = new URLSearchParams({
       $top: String(options.pageSize || 100),
-      $select: 'id,name,mimeType,size,createdDateTime,lastModifiedDateTime,webUrl,thumbnails,parentReference,file,folder',
+      $select:
+        'id,name,mimeType,size,createdDateTime,lastModifiedDateTime,webUrl,thumbnails,parentReference,file,folder',
       ...(options.search && { $search: `"${options.search}"` }),
     });
 
     const response = await fetch(`${url}?${params}`, {
-      headers: { 'Authorization': `Bearer ${await this.getAccessToken('microsoft')}` },
+      headers: { Authorization: `Bearer ${await this.getAccessToken('microsoft')}` },
     });
 
     if (!response.ok) throw new Error(`OneDrive list failed: ${await response.text()}`);
-    
+
     const data = await response.json();
     return {
       files: data.value.map((f: any) => ({
         id: f.id,
         name: f.name,
-        mimeType: f.file?.mimeType || f.folder ? 'application/vnd.google-apps.folder' : 'application/octet-stream',
+        mimeType:
+          f.file?.mimeType || f.folder
+            ? 'application/vnd.google-apps.folder'
+            : 'application/octet-stream',
         size: f.size,
         createdAt: new Date(f.createdDateTime),
         modifiedAt: new Date(f.lastModifiedDateTime),
@@ -565,17 +576,13 @@ export class CloudAPI {
     };
 
     // Generate JWT if secret provided
-    let token = '';
-    if (config.jwtSecret) {
-      // Would need jsonwebtoken package
-      // token = jwt.sign(docConfig, config.jwtSecret, { algorithm: 'HS256' });
-    }
+    const token = '';
 
     const response = await fetch(`${config.serverUrl}/api/documents/convert`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(config.jwtSecret && { 'Authorization': `Bearer ${token}` }),
+        ...(config.jwtSecret && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify({
         async: true,
@@ -589,7 +596,7 @@ export class CloudAPI {
     });
 
     if (!response.ok) throw new Error(`OnlyOffice conversion failed: ${await response.text()}`);
-    
+
     return response.json();
   }
 
@@ -605,7 +612,24 @@ export class CloudAPI {
   async convertWithAdobePDF(options: {
     fileContent: Uint8Array | string;
     fileName: string;
-    operation: 'createPDF' | 'exportPDF' | 'ocr' | 'compress' | 'protect' | 'split' | 'merge' | 'rotate' | 'reorder' | 'extract' | 'insert' | 'replace' | 'watermark' | 'stamp' | 'sign' | 'certify' | 'forms';
+    operation:
+      | 'createPDF'
+      | 'exportPDF'
+      | 'ocr'
+      | 'compress'
+      | 'protect'
+      | 'split'
+      | 'merge'
+      | 'rotate'
+      | 'reorder'
+      | 'extract'
+      | 'insert'
+      | 'replace'
+      | 'watermark'
+      | 'stamp'
+      | 'sign'
+      | 'certify'
+      | 'forms';
     options?: Record<string, any>;
   }): Promise<{ assetId: string; downloadUrl: string }> {
     const config = this.configs.adobe;
@@ -619,19 +643,20 @@ export class CloudAPI {
 
     // This is a simplified version - full implementation would need more steps
     const accessToken = await this.getAdobeAccessToken();
-    
+
     // Create asset
     const assetResponse = await fetch('https://pdf-services.adobe.io/assets', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'x-api-key': config.apiKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ mediaType: 'application/pdf' }),
     });
 
-    if (!assetResponse.ok) throw new Error(`Adobe asset creation failed: ${await assetResponse.text()}`);
+    if (!assetResponse.ok)
+      throw new Error(`Adobe asset creation failed: ${await assetResponse.text()}`);
     const { assetId } = await assetResponse.json();
 
     // Upload file content
@@ -639,19 +664,20 @@ export class CloudAPI {
     await fetch(uploadUrl, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/pdf',
       },
-      body: typeof options.fileContent === 'string'
-        ? options.fileContent
-        : toArrayBuffer(options.fileContent),
+      body:
+        typeof options.fileContent === 'string'
+          ? options.fileContent
+          : toArrayBuffer(options.fileContent),
     });
 
     // Create job
     const jobResponse = await fetch('https://pdf-services.adobe.io/operation', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'x-api-key': config.apiKey,
         'Content-Type': 'application/json',
       },
@@ -669,9 +695,9 @@ export class CloudAPI {
     let status = 'running';
     let result: any;
     while (status === 'running') {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 2000));
       const statusResponse = await fetch(`https://pdf-services.adobe.io/operation/${jobId}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}`, 'x-api-key': config.apiKey },
+        headers: { Authorization: `Bearer ${accessToken}`, 'x-api-key': config.apiKey },
       });
       result = await statusResponse.json();
       status = result.status;
@@ -717,24 +743,67 @@ export class CloudAPI {
    */
   getBestProvider(sourceFormat: string, targetFormat: string): CloudProvider | undefined {
     const providers: CloudProvider[] = [
-      { id: 'google', name: 'Google Docs', type: 'google', authType: 'oauth2', baseUrl: 'https://www.googleapis.com', scopes: ['https://www.googleapis.com/auth/drive'] },
-      { id: 'microsoft', name: 'Microsoft Graph', type: 'microsoft', authType: 'oauth2', baseUrl: 'https://graph.microsoft.com', scopes: ['https://graph.microsoft.com/.default'] },
-      { id: 'onlyoffice', name: 'OnlyOffice', type: 'onlyoffice', authType: 'api-key', baseUrl: this.configs.onlyoffice?.serverUrl || '', scopes: [] },
-      { id: 'adobe', name: 'Adobe PDF Services', type: 'adobe', authType: 'oauth2', baseUrl: 'https://pdf-services.adobe.io', scopes: [] },
+      {
+        id: 'google',
+        name: 'Google Docs',
+        type: 'google',
+        authType: 'oauth2',
+        baseUrl: 'https://www.googleapis.com',
+        scopes: ['https://www.googleapis.com/auth/drive'],
+      },
+      {
+        id: 'microsoft',
+        name: 'Microsoft Graph',
+        type: 'microsoft',
+        authType: 'oauth2',
+        baseUrl: 'https://graph.microsoft.com',
+        scopes: ['https://graph.microsoft.com/.default'],
+      },
+      {
+        id: 'onlyoffice',
+        name: 'OnlyOffice',
+        type: 'onlyoffice',
+        authType: 'api-key',
+        baseUrl: this.configs.onlyoffice?.serverUrl || '',
+        scopes: [],
+      },
+      {
+        id: 'adobe',
+        name: 'Adobe PDF Services',
+        type: 'adobe',
+        authType: 'oauth2',
+        baseUrl: 'https://pdf-services.adobe.io',
+        scopes: [],
+      },
     ];
 
     // Priority logic based on format
     if (['docx', 'doc', 'odt'].includes(sourceFormat) && targetFormat === 'pdf') {
-      return providers.find(p => p.type === 'google') ?? providers.find(p => p.type === 'microsoft') ?? providers.find(p => p.type === 'onlyoffice');
+      return (
+        providers.find((p) => p.type === 'google') ??
+        providers.find((p) => p.type === 'microsoft') ??
+        providers.find((p) => p.type === 'onlyoffice')
+      );
     }
     if (['xlsx', 'xls', 'ods', 'csv'].includes(sourceFormat) && targetFormat === 'pdf') {
-      return providers.find(p => p.type === 'google') ?? providers.find(p => p.type === 'microsoft') ?? providers.find(p => p.type === 'onlyoffice');
+      return (
+        providers.find((p) => p.type === 'google') ??
+        providers.find((p) => p.type === 'microsoft') ??
+        providers.find((p) => p.type === 'onlyoffice')
+      );
     }
     if (sourceFormat === 'pdf' && ['docx', 'txt', 'html'].includes(targetFormat)) {
-      return providers.find(p => p.type === 'google') ?? providers.find(p => p.type === 'microsoft') ?? providers.find(p => p.type === 'adobe');
+      return (
+        providers.find((p) => p.type === 'google') ??
+        providers.find((p) => p.type === 'microsoft') ??
+        providers.find((p) => p.type === 'adobe')
+      );
     }
     if (['pptx', 'ppt'].includes(sourceFormat) && targetFormat === 'pdf') {
-      return providers.find(p => p.type === 'onlyoffice') ?? providers.find(p => p.type === 'microsoft');
+      return (
+        providers.find((p) => p.type === 'onlyoffice') ??
+        providers.find((p) => p.type === 'microsoft')
+      );
     }
 
     return undefined;
@@ -751,23 +820,27 @@ export class CloudAPI {
     onProgress?: (progress: number) => void;
   }): Promise<{ output: Uint8Array; provider: string; metadata: any }> {
     const provider = this.getBestProvider(options.sourceFormat, options.targetFormat);
-    
+
     if (!provider) {
-      throw new Error(`No cloud provider available for ${options.sourceFormat} -> ${options.targetFormat}`);
+      throw new Error(
+        `No cloud provider available for ${options.sourceFormat} -> ${options.targetFormat}`,
+      );
     }
 
     // Upload to provider
     // Convert
     // Download result
     // This is a simplified placeholder
-    throw new Error('Cloud conversion not fully implemented - needs provider-specific implementation');
+    throw new Error(
+      'Cloud conversion not fully implemented - needs provider-specific implementation',
+    );
   }
 
   /**
    * Check which providers are configured
    */
   getConfiguredProviders(): string[] {
-    return Object.keys(this.configs).filter(k => this.configs[k as keyof CloudProviderConfig]);
+    return Object.keys(this.configs).filter((k) => this.configs[k as keyof CloudProviderConfig]);
   }
 }
 
@@ -781,7 +854,7 @@ export const getCloudAPI = (): CloudAPI => {
     cloudInstance = new CloudAPI();
   }
   return cloudInstance;
-}
+};
 
 /**
  * High-level convenience functions
@@ -790,10 +863,14 @@ export const cloudUtils = {
   /**
    * Convert document using best available cloud provider
    */
-  async convertDocument(input: Uint8Array, sourceFormat: string, targetFormat: string): Promise<Uint8Array> {
+  async convertDocument(
+    input: Uint8Array,
+    sourceFormat: string,
+    targetFormat: string,
+  ): Promise<Uint8Array> {
     const cloud = getCloudAPI();
     const provider = cloud.getBestProvider(sourceFormat, targetFormat);
-    
+
     if (!provider) {
       throw new Error(`No cloud provider available for ${sourceFormat} -> ${targetFormat}`);
     }
@@ -808,7 +885,7 @@ export const cloudUtils = {
   async uploadToCloud(file: Uint8Array, fileName: string, mimeType: string): Promise<string> {
     const cloud = getCloudAPI();
     const configured = cloud.getConfiguredProviders();
-    
+
     if (configured.includes('google')) {
       // Upload to Google Drive
       // return cloud.uploadToGoogleDrive({ fileName, mimeType, content: file });
@@ -817,7 +894,7 @@ export const cloudUtils = {
       // Upload to OneDrive
       // return cloud.uploadToOneDrive({ fileName, content: file });
     }
-    
+
     throw new Error('No cloud storage configured');
   },
 
@@ -833,16 +910,16 @@ export const cloudUtils = {
    */
   getConversionPaths(): Record<string, string[]> {
     return {
-      'docx': ['pdf', 'txt', 'html', 'odt', 'rtf'],
-      'doc': ['pdf', 'txt', 'html', 'odt'],
-      'odt': ['pdf', 'docx', 'txt', 'html'],
-      'xlsx': ['pdf', 'csv', 'html', 'ods'],
-      'xls': ['pdf', 'csv', 'html', 'xlsx'],
-      'ods': ['pdf', 'xlsx', 'csv', 'html'],
-      'csv': ['xlsx', 'pdf', 'json', 'html'],
-      'pptx': ['pdf', 'html', 'odp'],
-      'ppt': ['pdf', 'html', 'odp'],
-      'pdf': ['docx', 'txt', 'html', 'docx'],
+      docx: ['pdf', 'txt', 'html', 'odt', 'rtf'],
+      doc: ['pdf', 'txt', 'html', 'odt'],
+      odt: ['pdf', 'docx', 'txt', 'html'],
+      xlsx: ['pdf', 'csv', 'html', 'ods'],
+      xls: ['pdf', 'csv', 'html', 'xlsx'],
+      ods: ['pdf', 'xlsx', 'csv', 'html'],
+      csv: ['xlsx', 'pdf', 'json', 'html'],
+      pptx: ['pdf', 'html', 'odp'],
+      ppt: ['pdf', 'html', 'odp'],
+      pdf: ['docx', 'txt', 'html', 'docx'],
     };
   },
 };

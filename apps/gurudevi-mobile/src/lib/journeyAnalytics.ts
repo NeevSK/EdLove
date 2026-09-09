@@ -52,11 +52,7 @@ export function journeyStarted(journey: JourneyType, entryPoint: string) {
 /**
  * User completed a step within a journey.
  */
-export function journeyStepCompleted(
-  journey: JourneyType,
-  step: string,
-  durationMs: number,
-) {
+export function journeyStepCompleted(journey: JourneyType, step: string, durationMs: number) {
   emit({
     type: 'journey_step_completed',
     journey,

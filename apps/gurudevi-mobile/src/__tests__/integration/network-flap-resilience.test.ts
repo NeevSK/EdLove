@@ -1,7 +1,7 @@
-import { describe, expect, it, beforeEach } from 'vitest';
 import { authenticatedSovereignFetch } from '@repo/core/api/clientRuntime';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { createScenarioTestContext } from '@repo/core/testing/scenarioHarness';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Scenario 2: Network Flapping, Offline Drops & Silent Recovery', () => {
   const harness = createScenarioTestContext();

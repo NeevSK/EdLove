@@ -1,8 +1,8 @@
 import { Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 export function DemoFeeScreen() {
   const { t } = useTranslation();
@@ -37,7 +37,9 @@ export function DemoFeeScreen() {
 
   return (
     <VStack className="p-lg gap-lg items-center bg-phase-surface">
-      <Heading size="lg" className="text-ink">{t('payments.demoTitle') || 'Demo Fee Flow'}</Heading>
+      <Heading size="lg" className="text-ink">
+        {t('payments.demoTitle') || 'Demo Fee Flow'}
+      </Heading>
       <Text className="text-mistGray text-center">
         {t('payments.demoDescription') || 'Test the Stripe integration with a demo fee'}
       </Text>

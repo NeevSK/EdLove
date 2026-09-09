@@ -39,7 +39,12 @@ export default [
       "**/*.spec.tsx",
       "**/*.d.ts",
       "**/*.js",
-      "**/*.jsx"
+      "**/*.jsx",
+      "index.ts",
+      "jest-setup.ts",
+      "vitest-*.ts",
+      "runtime-fixtures/**",
+      "supabase/**"
     ]
   },
   {

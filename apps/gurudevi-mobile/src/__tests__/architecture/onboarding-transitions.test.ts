@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
 import {
   canSkipOnboardingStep,
   getNextOnboardingStep,
   getPreviousOnboardingStep,
 } from '@repo/ui/screens/onboardingFlow';
+import { describe, expect, it } from 'vitest';
 
 describe('onboarding transitions', () => {
   it('advances and rewinds by phase', () => {

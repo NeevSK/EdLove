@@ -1,13 +1,13 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import {
   getLocalGuestIdentity,
-  updateLocalGuestIdentity,
   migrateGuestDataToAuthenticatedUser,
+  updateLocalGuestIdentity,
 } from '@repo/core/native/guestIdentity';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { createScenarioTestContext } from '@repo/core/testing/scenarioHarness';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Suite B: Full Guest -> Offline Creation -> Auth Upgrade -> Replay E2E Pipeline', () => {
   const harness = createScenarioTestContext();
@@ -61,7 +61,10 @@ describe('Suite B: Full Guest -> Offline Creation -> Auth Upgrade -> Replay E2E 
     expect(activeUser?.is_anonymous).toBe(false);
 
     // 5. Account Migration: Use official migrateGuestDataToAuthenticatedUser helper
-    const migratedIdentity = await migrateGuestDataToAuthenticatedUser(authenticatedUserId, 'guest');
+    const migratedIdentity = await migrateGuestDataToAuthenticatedUser(
+      authenticatedUserId,
+      'guest',
+    );
     expect(migratedIdentity.display_name).toBe('Pioneer Guest');
     expect(migratedIdentity.onboarding_completed).toBe(true);
 

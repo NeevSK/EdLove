@@ -42,11 +42,41 @@ describe('theme contrast audit', { tags: ['a11y', 'theme', 'fast'] }, () => {
   });
 
   test.for([
-    { fg: 'textPrimary', fgVal: Theme.colors.textPrimary, bg: 'backgroundLight', bgVal: Theme.colors.backgroundLight, size: 'normal' },
-    { fg: 'textSecondary', fgVal: Theme.colors.textSecondary, bg: 'backgroundLight', bgVal: Theme.colors.backgroundLight, size: 'normal' },
-    { fg: 'textTertiary', fgVal: Theme.colors.textTertiary, bg: 'backgroundLight', bgVal: Theme.colors.backgroundLight, size: 'large' },
-    { fg: 'sacredWhite', fgVal: Theme.colors.sacredWhite, bg: 'backgroundDark', bgVal: Theme.colors.backgroundDark, size: 'normal' },
-    { fg: 'errorText', fgVal: Theme.colors.errorText, bg: 'errorBackground', bgVal: Theme.colors.errorBackground, size: 'normal' },
+    {
+      fg: 'textPrimary',
+      fgVal: Theme.colors.textPrimary,
+      bg: 'backgroundLight',
+      bgVal: Theme.colors.backgroundLight,
+      size: 'normal',
+    },
+    {
+      fg: 'textSecondary',
+      fgVal: Theme.colors.textSecondary,
+      bg: 'backgroundLight',
+      bgVal: Theme.colors.backgroundLight,
+      size: 'normal',
+    },
+    {
+      fg: 'textTertiary',
+      fgVal: Theme.colors.textTertiary,
+      bg: 'backgroundLight',
+      bgVal: Theme.colors.backgroundLight,
+      size: 'large',
+    },
+    {
+      fg: 'sacredWhite',
+      fgVal: Theme.colors.sacredWhite,
+      bg: 'backgroundDark',
+      bgVal: Theme.colors.backgroundDark,
+      size: 'normal',
+    },
+    {
+      fg: 'errorText',
+      fgVal: Theme.colors.errorText,
+      bg: 'errorBackground',
+      bgVal: Theme.colors.errorBackground,
+      size: 'normal',
+    },
   ] as const)('WCAG AA contrast: $fg on $bg ($size) (T17 test.for)', ({ fgVal, bgVal, size }) => {
     const ratio = getContrastRatio(fgVal, bgVal);
     expect(ratio).toBeGreaterThan(1);

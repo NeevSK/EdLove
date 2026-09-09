@@ -1,8 +1,8 @@
-import { lessonsAPI } from '@repo/core/api/classroom';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { lessonsAPI } from '@repo/core/api/classroom';
 import { selfContract } from '@repo/core/api/self.contract';
-import { useStore } from '@repo/core/store/useStore';
 import type { TotalState } from '@repo/core/store';
+import { useStore } from '@repo/core/store/useStore';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const TEACHER_ID = '11111111-1111-4111-8111-111111111111';

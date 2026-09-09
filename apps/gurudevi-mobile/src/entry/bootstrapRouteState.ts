@@ -1,8 +1,8 @@
 import {
   getAuthRouteTarget,
   getSessionIdentityMode,
-  isResolvedAuthSubjectCurrent,
   type IdentityAvailability,
+  isResolvedAuthSubjectCurrent,
   useAuth,
   useStore,
 } from '@repo/core/logic';

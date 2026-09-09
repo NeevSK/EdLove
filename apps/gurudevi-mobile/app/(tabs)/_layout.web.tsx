@@ -1,6 +1,6 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { createSupabaseGuardianRepository } from '@repo/core/adapters/supabase/guardianRepository';
 import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supabase/tuitionBatchRepository';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, usePerspectiveSwitch, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self/wellbeing';
@@ -39,17 +39,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, type TextStyle, useWindowDimensions, type ViewStyle } from 'react-native';
 
 export { RouteErrorBoundary as ErrorBoundary };
-import {
-  getResponsiveShellConfig,
-  resolveResponsiveShellMode,
-  webShellTokens,
-} from '@/lib/responsiveShell';
+
 import {
   appNavigation,
   getNavigationTitle,
   isNavigationRouteActive,
   type NavigationIconKey,
 } from '@/lib/navigation/appNavigation';
+import {
+  getResponsiveShellConfig,
+  resolveResponsiveShellMode,
+  webShellTokens,
+} from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 type NavItem = (typeof appNavigation)[number] & { badge?: number };
@@ -109,7 +110,8 @@ function WebTabsLayoutContent() {
           return relationships.map((rel: any) => ({
             id: rel.id || `ward-${rel.student_id}`,
             kind: 'guardian' as const,
-            displayName: rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
+            displayName:
+              rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
             wardUserId: rel.student_id,
             wardName: rel.wardName || `Student ${String(rel.student_id).slice(-4).toUpperCase()}`,
             schoolId: rel.school_id,
@@ -460,9 +462,7 @@ function WebNavigation({
                 {
                   width: webShellTokens.size.control,
                   height: webShellTokens.size.control,
-                  backgroundColor: isDark
-                    ? 'rgba(252, 249, 242, 0.08)'
-                    : 'rgba(84, 74, 61, 0.07)',
+                  backgroundColor: isDark ? 'rgba(252, 249, 242, 0.08)' : 'rgba(84, 74, 61, 0.07)',
                 },
               ]}
             >
@@ -508,9 +508,7 @@ function WebNavigation({
                 styles.abToggle,
                 {
                   justifyContent: labelsVisible ? 'flex-start' : 'center',
-                  backgroundColor: isDark
-                    ? 'rgba(252, 249, 242, 0.05)'
-                    : 'rgba(84, 74, 61, 0.05)',
+                  backgroundColor: isDark ? 'rgba(252, 249, 242, 0.05)' : 'rgba(84, 74, 61, 0.05)',
                   paddingHorizontal: labelsVisible ? 10 : 0,
                 },
               ]}
@@ -591,9 +589,7 @@ function WebNavigation({
                     styles.profileBadge,
                     {
                       backgroundColor: isDark ? colors.ink : colors.silk,
-                      borderColor: isDark
-                        ? 'rgba(252, 249, 242, 0.15)'
-                        : 'rgba(84, 74, 61, 0.18)',
+                      borderColor: isDark ? 'rgba(252, 249, 242, 0.15)' : 'rgba(84, 74, 61, 0.18)',
                     },
                   ]}
                 >
@@ -686,11 +682,7 @@ function WebNavItemButton({
   const activeBorder = isDark ? 'rgba(125, 212, 192, 0.45)' : 'rgba(139, 191, 122, 0.5)';
   const activeTextColor = isDark ? colors.sacredWhite : colors.inkTruth;
   const inactiveTextColor = isDark ? colors.starlightGray : colors.bark;
-  const iconColor = active
-    ? isDark
-      ? colors.gurudeviBlue
-      : colors.sageGreen
-    : inactiveTextColor;
+  const iconColor = active ? (isDark ? colors.gurudeviBlue : colors.sageGreen) : inactiveTextColor;
 
   return (
     <Pressable

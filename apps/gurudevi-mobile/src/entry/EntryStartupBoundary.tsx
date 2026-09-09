@@ -8,7 +8,10 @@ import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
 
-type StartupState = { status: 'starting' } | { status: 'ready' } | { status: 'failed'; error: Error };
+type StartupState =
+  | { status: 'starting' }
+  | { status: 'ready' }
+  | { status: 'failed'; error: Error };
 
 function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => void }) {
   useEffect(() => {
@@ -22,7 +25,13 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
     <View
       accessibilityRole={error ? 'alert' : 'progressbar'}
       accessibilityLabel={error ? 'Gurudevi could not start' : 'Preparing Gurudevi'}
-      style={{ alignItems: 'center', backgroundColor: '#20140E', flex: 1, justifyContent: 'center', padding: 32 }}
+      style={{
+        alignItems: 'center',
+        backgroundColor: '#20140E',
+        flex: 1,
+        justifyContent: 'center',
+        padding: 32,
+      }}
     >
       <BrandPulse size={32} tintColor="#D4843A" />
       <Text style={{ color: '#F5EDD6', fontSize: 16, marginTop: 16, textAlign: 'center' }}>
@@ -37,7 +46,13 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
             accessibilityRole="button"
             accessibilityLabel="Retry starting Gurudevi"
             onPress={onRetry}
-            style={{ backgroundColor: '#D4843A', borderRadius: 10, marginTop: 20, paddingHorizontal: 20, paddingVertical: 12 }}
+            style={{
+              backgroundColor: '#D4843A',
+              borderRadius: 10,
+              marginTop: 20,
+              paddingHorizontal: 20,
+              paddingVertical: 12,
+            }}
           >
             <Text style={{ color: '#20140E', fontWeight: '700' }}>Try again</Text>
           </TouchableOpacity>
@@ -95,8 +110,13 @@ export function EntryStartupBoundary() {
   }, [attempt]);
 
   if (state.status === 'ready') return <EntryShell />;
-  return <StartupFallback error={state.status === 'failed' ? state.error : undefined} onRetry={() => {
-    setState({ status: 'starting' });
-    setAttempt((value) => value + 1);
-  }} />;
+  return (
+    <StartupFallback
+      error={state.status === 'failed' ? state.error : undefined}
+      onRetry={() => {
+        setState({ status: 'starting' });
+        setAttempt((value) => value + 1);
+      }}
+    />
+  );
 }

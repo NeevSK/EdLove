@@ -112,7 +112,6 @@ describe('bootstrap route-state adapter', () => {
     expect(target).toMatchObject({ decision: 'booting', redirectTo: null });
   });
 
-
   it('routes an inactive account to recovery instead of rendering app content', () => {
     const target = getBootstrapRouteTarget(
       routeState({

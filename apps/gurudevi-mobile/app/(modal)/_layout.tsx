@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+import { Stack } from 'expo-router';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

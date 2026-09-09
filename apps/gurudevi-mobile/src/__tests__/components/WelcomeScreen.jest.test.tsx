@@ -1,6 +1,6 @@
-import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import WelcomeScreen from '@repo/ui/screens/WelcomeScreen';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import React from 'react';
 
 const mockSignInAnonymously = jest.fn();
 const mockShowToast = jest.fn();

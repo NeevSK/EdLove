@@ -1,8 +1,8 @@
 import { Button, ButtonText, Heading, Input, InputField, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import type { WorkforceJobFamily } from '@repo/workforce';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { WorkforceJobFamily } from '@repo/workforce';
 
 export function WorkforceRoleScreen() {
   const { t } = useTranslation();
@@ -20,14 +20,18 @@ export function WorkforceRoleScreen() {
 
   return (
     <VStack className="p-lg gap-lg items-center bg-phase-surface">
-      <Heading size="lg" className="text-ink">{t('workforce.assignTitle') || 'Assign Workforce Role'}</Heading>
+      <Heading size="lg" className="text-ink">
+        {t('workforce.assignTitle') || 'Assign Workforce Role'}
+      </Heading>
       <Text className="text-mistGray text-center">
         {t('workforce.assignDescription') || 'Assign a workforce role to an employee'}
       </Text>
-      
+
       <VStack className="gap-md w-full max-w-md">
         <VStack className="gap-1">
-          <Text className="text-starlightGray text-sm">{t('workforce.employeeName') || 'Employee Name'}</Text>
+          <Text className="text-starlightGray text-sm">
+            {t('workforce.employeeName') || 'Employee Name'}
+          </Text>
           <Input className="bg-ink border-obsidian">
             <InputField
               value={employeeName}
@@ -40,7 +44,9 @@ export function WorkforceRoleScreen() {
         </VStack>
 
         <VStack className="gap-1">
-          <Text className="text-starlightGray text-sm">{t('workforce.jobFamily') || 'Job Family'}</Text>
+          <Text className="text-starlightGray text-sm">
+            {t('workforce.jobFamily') || 'Job Family'}
+          </Text>
           <Input className="bg-ink border-obsidian">
             <InputField
               value={selectedFamily}

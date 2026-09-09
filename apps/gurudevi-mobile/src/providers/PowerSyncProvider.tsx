@@ -18,10 +18,10 @@
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/react-native';
-import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
-import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
-import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
 import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
+import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
+import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
@@ -35,7 +35,6 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
 
   useEffect(() => {
     let active = true;
-    setDb(null);
     const activeAccountId = accountId;
 
     if (!isPowerSyncEnabled || !activeAccountId) {
@@ -61,11 +60,13 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
 
           injectNativePowerSyncDB(database, drizzleDb);
           if (source.sync) {
-            void connectPowerSyncRuntime(database, source.sync, resolvedAccountId).catch((error) => {
-              // Local reads/writes remain available while the sync stream is
-              // offline; PowerSync will retry when connectivity returns.
-              console.warn('[PowerSync] Native first sync unavailable:', error);
-            });
+            void connectPowerSyncRuntime(database, source.sync, resolvedAccountId).catch(
+              (error) => {
+                // Local reads/writes remain available while the sync stream is
+                // offline; PowerSync will retry when connectivity returns.
+                console.warn('[PowerSync] Native first sync unavailable:', error);
+              },
+            );
           }
           return database;
         });

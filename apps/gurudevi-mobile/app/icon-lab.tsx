@@ -1,15 +1,4 @@
 import { Lucide } from '@react-native-vector-icons/lucide/static';
-import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
-import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
-import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
-import { HeartIcon } from 'phosphor-react-native/src/icons/Heart';
-import { LeafIcon } from 'phosphor-react-native/src/icons/Leaf';
-import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
-import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
-import { UsersIcon } from 'phosphor-react-native/src/icons/Users';
-import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import type React from 'react';
 import {
   BellRing,
   BookOpen,
@@ -21,19 +10,70 @@ import {
   TriangleAlert,
   Users,
 } from '@repo/ui/icons';
+import { BellIcon } from 'phosphor-react-native/src/icons/Bell';
+import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
+import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
+import { HeartIcon } from 'phosphor-react-native/src/icons/Heart';
+import { LeafIcon } from 'phosphor-react-native/src/icons/Leaf';
+import { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
+import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
+import { UsersIcon } from 'phosphor-react-native/src/icons/Users';
+import { WarningIcon } from 'phosphor-react-native/src/icons/Warning';
+import type React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-type IconComponent = (props: { size?: number; color?: string; strokeWidth?: number }) => React.ReactNode;
+type IconComponent = (props: {
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+}) => React.ReactNode;
 
 const samples = [
-  { label: 'Navigation', name: 'Book', rnviName: 'book-open', lucide: BookOpen, phosphor: BookOpenIcon },
-  { label: 'Notifications', name: 'Bell', rnviName: 'bell-ring', lucide: BellRing, phosphor: BellIcon },
-  { label: 'Learning', name: 'Graduation', rnviName: 'graduation-cap', lucide: GraduationCap, phosphor: GraduationCapIcon },
+  {
+    label: 'Navigation',
+    name: 'Book',
+    rnviName: 'book-open',
+    lucide: BookOpen,
+    phosphor: BookOpenIcon,
+  },
+  {
+    label: 'Notifications',
+    name: 'Bell',
+    rnviName: 'bell-ring',
+    lucide: BellRing,
+    phosphor: BellIcon,
+  },
+  {
+    label: 'Learning',
+    name: 'Graduation',
+    rnviName: 'graduation-cap',
+    lucide: GraduationCap,
+    phosphor: GraduationCapIcon,
+  },
   { label: 'Care', name: 'Heart', rnviName: 'heart', lucide: Heart, phosphor: HeartIcon },
   { label: 'Nature', name: 'Leaf', rnviName: 'leaf', lucide: Leaf, phosphor: LeafIcon },
-  { label: 'Trust', name: 'Shield', rnviName: 'shield-check', lucide: ShieldCheck, phosphor: ShieldCheckIcon },
-  { label: 'Expression', name: 'Sparkle', rnviName: 'sparkles', lucide: Sparkles, phosphor: SparkleIcon },
+  {
+    label: 'Trust',
+    name: 'Shield',
+    rnviName: 'shield-check',
+    lucide: ShieldCheck,
+    phosphor: ShieldCheckIcon,
+  },
+  {
+    label: 'Expression',
+    name: 'Sparkle',
+    rnviName: 'sparkles',
+    lucide: Sparkles,
+    phosphor: SparkleIcon,
+  },
   { label: 'Community', name: 'Users', rnviName: 'users', lucide: Users, phosphor: UsersIcon },
-  { label: 'Warning', name: 'Alert', rnviName: 'triangle-alert', lucide: TriangleAlert, phosphor: WarningIcon },
+  {
+    label: 'Warning',
+    name: 'Alert',
+    rnviName: 'triangle-alert',
+    lucide: TriangleAlert,
+    phosphor: WarningIcon,
+  },
 ];
 
 const sizes = [16, 20, 24, 32];
@@ -72,7 +112,11 @@ export default function IconLabRoute() {
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.matrix}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.matrix}
+      >
         <View style={styles.matrixInner}>
           <View style={styles.columnHeader}>
             <Text style={styles.columnTitle}>Concept</Text>
@@ -112,7 +156,12 @@ export default function IconLabRoute() {
                 </IconCell>
                 <IconCell>
                   {sizes.map((size) => (
-                    <Lucide key={size} name={sample.rnviName as never} size={size} color="#6F5A88" />
+                    <Lucide
+                      key={size}
+                      name={sample.rnviName as never}
+                      size={size}
+                      color="#6F5A88"
+                    />
                   ))}
                 </IconCell>
               </View>
@@ -125,8 +174,12 @@ export default function IconLabRoute() {
         <Text style={styles.reviewTitle}>Review prompts</Text>
         <Text style={styles.reviewText}>• Which set feels most like Gurudevi at 16–20px?</Text>
         <Text style={styles.reviewText}>• Which set stays legible in dense classroom screens?</Text>
-        <Text style={styles.reviewText}>• Does the native font path feel materially different on Android?</Text>
-        <Text style={styles.reviewText}>• Which weight language should belong to status, care, and celebration?</Text>
+        <Text style={styles.reviewText}>
+          • Does the native font path feel materially different on Android?
+        </Text>
+        <Text style={styles.reviewText}>
+          • Which weight language should belong to status, care, and celebration?
+        </Text>
       </View>
     </ScrollView>
   );
@@ -146,15 +199,40 @@ const styles = StyleSheet.create({
   legendText: { color: '#665B4C', fontSize: 12, fontWeight: '600' },
   matrix: { paddingRight: 24 },
   matrixInner: { minWidth: 760, borderTopWidth: 1, borderTopColor: '#D9CEBD' },
-  columnHeader: { width: 170, minHeight: 68, justifyContent: 'center', paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: '#D9CEBD' },
+  columnHeader: {
+    width: 170,
+    minHeight: 68,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#D9CEBD',
+  },
   columnTitle: { color: ink, fontSize: 14, fontWeight: '800' },
   columnMeta: { color: '#8C806E', fontSize: 11, marginTop: 3 },
   row: { flexDirection: 'row', minHeight: 78, borderBottomWidth: 1, borderBottomColor: '#E2D8C8' },
   conceptCell: { width: 170, justifyContent: 'center', paddingHorizontal: 14 },
-  conceptLabel: { color: accent, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
+  conceptLabel: {
+    color: accent,
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
   conceptName: { color: ink, fontSize: 15, fontWeight: '700', marginTop: 2 },
-  iconCell: { width: 170, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', paddingHorizontal: 8 },
-  reviewBlock: { borderLeftWidth: 3, borderLeftColor: accent, paddingLeft: 16, gap: 7, maxWidth: 720 },
+  iconCell: {
+    width: 170,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    paddingHorizontal: 8,
+  },
+  reviewBlock: {
+    borderLeftWidth: 3,
+    borderLeftColor: accent,
+    paddingLeft: 16,
+    gap: 7,
+    maxWidth: 720,
+  },
   reviewTitle: { color: ink, fontSize: 16, fontWeight: '800' },
   reviewText: { color: '#665B4C', fontSize: 14, lineHeight: 20 },
 });

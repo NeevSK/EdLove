@@ -1,6 +1,4 @@
-import { describe, expect, it } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Theme } from '@repo/ui/theme/Theme';
 import {
   auditReactNativeScreen,
   checkAccessibility,
@@ -12,9 +10,13 @@ import {
   MOBILE_A11Y,
   simulateCvdHex,
 } from '@repo/ui/utils/a11yUtils';
-import { Theme } from '@repo/ui/theme/Theme';
+import * as fs from 'fs';
+import * as path from 'path';
+import { describe, expect, it } from 'vitest';
 
-describe('Canonical A11y Gate Integration [@intuitui-labs/a11y-gate]', { tags: ['a11y', 'fast'] }, () => {
+describe('Canonical A11y Gate Integration [@intuitui-labs/a11y-gate]', {
+  tags: ['a11y', 'fast'],
+}, () => {
   describe('APCA / WCAG 3 Perceptual Contrast', () => {
     it('computes APCA contrast and font weight matrix', () => {
       const evalResult = evaluateApca(Theme.colors.textPrimary, Theme.colors.backgroundLight);
@@ -100,24 +102,35 @@ describe('Canonical A11y Gate Integration [@intuitui-labs/a11y-gate]', { tags: [
     });
 
     it('accurately catches legacy WelcomeScreen.tsx violations', () => {
-      const legacyPath = path.resolve(__dirname, '../../../../packages/ui/src/screens/WelcomeScreen.tsx');
+      const legacyPath = path.resolve(
+        __dirname,
+        '../../../../packages/ui/src/screens/WelcomeScreen.tsx',
+      );
       const legacyCode = fs.readFileSync(legacyPath, 'utf8');
       const legacyAudit = auditReactNativeScreen(legacyCode, 'WelcomeScreen.tsx');
 
       // Accurately flags legacy design debt
       expect(legacyAudit.isCompliant).toBe(false);
       expect(legacyAudit.summary.errors).toBeGreaterThan(0);
-      expect(legacyAudit.findings.some((f) => f.rule === 'MOBILE_TYPOGRAPHY_FLOOR_14PX')).toBe(true);
+      expect(legacyAudit.findings.some((f) => f.rule === 'MOBILE_TYPOGRAPHY_FLOOR_14PX')).toBe(
+        true,
+      );
       expect(legacyAudit.findings.some((f) => f.rule === 'COGNITIVE_FRICTION_CHECKBOX')).toBe(true);
       expect(legacyAudit.findings.some((f) => f.rule === 'NESTED_CARD_CLUTTER')).toBe(true);
     });
 
     it('validates SanctuaryWelcomeScreen.tsx passes quality gate with 100% compliance', () => {
-      const sanctuaryPath = path.resolve(__dirname, '../../../../packages/ui/src/screens/SanctuaryWelcomeScreen.tsx');
+      const sanctuaryPath = path.resolve(
+        __dirname,
+        '../../../../packages/ui/src/screens/SanctuaryWelcomeScreen.tsx',
+      );
       const sanctuaryCode = fs.readFileSync(sanctuaryPath, 'utf8');
       const sanctuaryAudit = auditReactNativeScreen(sanctuaryCode, 'SanctuaryWelcomeScreen.tsx');
 
-      expect(sanctuaryAudit.isCompliant, `Unexpected audit findings:\n${JSON.stringify(sanctuaryAudit.findings, null, 2)}`).toBe(true);
+      expect(
+        sanctuaryAudit.isCompliant,
+        `Unexpected audit findings:\n${JSON.stringify(sanctuaryAudit.findings, null, 2)}`,
+      ).toBe(true);
       expect(sanctuaryAudit.summary.errors).toBe(0);
     });
   });

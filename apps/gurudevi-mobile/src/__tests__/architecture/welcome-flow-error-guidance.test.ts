@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { getGuestEntryErrorMessage } from '@repo/ui/screens/welcomeFlow';
+import { describe, expect, it } from 'vitest';
 
 describe('welcome flow error guidance', () => {
   it('prefers a real error message and falls back to guidance text', () => {

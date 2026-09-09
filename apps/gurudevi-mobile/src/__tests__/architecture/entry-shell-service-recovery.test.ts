@@ -10,12 +10,16 @@ describe('entry shell service recovery', () => {
     expect(entryShell.match(/<GlobalProvider>/g)).toHaveLength(1);
     expect(entryShell.match(/<DeepLinkProvider>/g)).toHaveLength(1);
     expect(entryShell.match(/<AuthenticatedSyncService\s*\/>/g)).toHaveLength(1);
-    expect(entryShell.indexOf('<GlobalProvider>')).toBeLessThan(entryShell.indexOf('<DeepLinkProvider>'));
+    expect(entryShell.indexOf('<GlobalProvider>')).toBeLessThan(
+      entryShell.indexOf('<DeepLinkProvider>'),
+    );
   });
 
   it('does not revive the legacy SanctuaryProvider', () => {
     expect(entryShell).not.toContain('SanctuaryProvider');
-    expect(existsSync(resolve(import.meta.dirname, '../../providers/SanctuaryProvider.tsx'))).toBe(false);
+    expect(existsSync(resolve(import.meta.dirname, '../../providers/SanctuaryProvider.tsx'))).toBe(
+      false,
+    );
   });
 
   it('provides and renders the shared FAB contract for registered workspace actions', () => {

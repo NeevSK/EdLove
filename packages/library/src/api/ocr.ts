@@ -1,5 +1,5 @@
-import { createWorker, PSM, OEM, WorkerOptions, RecognizeResult } from 'tesseract.js';
 import { Platform } from 'react-native';
+import { createWorker, OEM, PSM, RecognizeResult, WorkerOptions } from 'tesseract.js';
 
 export interface OCRWorkerOptions {
   logger?: (m: { status: string; progress: number }) => void;
@@ -103,7 +103,7 @@ export class OCRAPI {
     if (options.workerPath) workerOptions.workerPath = options.workerPath;
     if (options.corePath) workerOptions.corePath = options.corePath;
     if (options.logger) {
-      workerOptions.logger = message => {
+      workerOptions.logger = (message) => {
         options.logger!({ status: message.status, progress: message.progress });
       };
     }
@@ -142,7 +142,7 @@ export class OCRAPI {
    */
   async recognize(
     image: string | Uint8Array | HTMLImageElement | HTMLCanvasElement | File | Blob,
-    options: OCRRecognizeOptions = {}
+    options: OCRRecognizeOptions = {},
   ): Promise<OCRResult> {
     await this.ensureInitialized();
 
@@ -153,25 +153,23 @@ export class OCRAPI {
     }
 
     const startTime = Date.now();
-    
+
     try {
-      let recognizeOptions: any = {
+      const recognizeOptions: Record<string, unknown> = {
         timeout,
+        ...(rectangle ? { rectangle } : {}),
+        ...(skipCache ? { skipCache: true } : {}),
       };
 
-      if (rectangle) {
-        recognizeOptions.rectangle = rectangle;
-      }
-
-      if (skipCache) {
-        recognizeOptions.skipCache = true;
-      }
-
       const result = await this.worker.recognize(image, recognizeOptions);
-      
+
       return this.formatResult(result, Date.now() - startTime);
     } catch (error) {
-      throw new Error(`OCR recognition failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const err = new Error(
+        `OCR recognition failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      (err as unknown as { cause?: unknown }).cause = error;
+      throw err;
     }
   }
 
@@ -197,14 +195,12 @@ export class OCRAPI {
    */
   async recognizeBatch(
     images: (string | Uint8Array | HTMLImageElement | HTMLCanvasElement | File | Blob)[],
-    options: OCRRecognizeOptions = {}
+    options: OCRRecognizeOptions = {},
   ): Promise<OCRResult[]> {
     await this.ensureInitialized();
-    
-    const results = await Promise.all(
-      images.map(img => this.recognize(img, options))
-    );
-    
+
+    const results = await Promise.all(images.map((img) => this.recognize(img, options)));
+
     return results;
   }
 
@@ -227,7 +223,7 @@ export class OCRAPI {
     numericMode?: boolean;
   }): Promise<void> {
     await this.ensureInitialized();
-    
+
     if (options.psm !== undefined) {
       await this.worker.setParameters({ tessedit_pageseg_mode: options.psm });
     }
@@ -235,7 +231,9 @@ export class OCRAPI {
       await this.worker.setParameters({ tessedit_ocr_engine_mode: options.oem });
     }
     if (options.preserveInterwordSpaces !== undefined) {
-      await this.worker.setParameters({ preserve_interword_spaces: options.preserveInterwordSpaces ? '1' : '0' });
+      await this.worker.setParameters({
+        preserve_interword_spaces: options.preserveInterwordSpaces ? '1' : '0',
+      });
     }
     if (options.minWordLength !== undefined) {
       await this.worker.setParameters({ min_word_length: options.minWordLength.toString() });
@@ -275,32 +273,15 @@ export class OCRAPI {
 
   private formatResult(result: RecognizeResult, elapsedMs: number): OCRResult {
     const { data } = result;
-    
-    const words: OCRWord[] = data.words?.map(w => ({
-      text: w.text,
-      confidence: w.confidence,
-      bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
-      baseline: w.baseline ? { x0: w.baseline.x0, y0: w.baseline.y0, x1: w.baseline.x1, y1: w.baseline.y1 } : undefined,
-      fontName: w.font_name,
-      fontSize: w.font_size,
-      bold: w.is_bold,
-      italic: w.is_italic,
-      underlined: w.is_underlined,
-      monospace: w.is_monospace,
-      serif: w.is_serif,
-      smallcaps: w.is_smallcaps,
-    })) || [];
 
-    const lines: OCRLines[] = data.lines?.map(l => ({
-      text: l.text,
-      confidence: l.confidence,
-      bbox: { x0: l.bbox.x0, y0: l.bbox.y0, x1: l.bbox.x1, y1: l.bbox.y1 },
-      baseline: l.baseline ? { x0: l.baseline.x0, y0: l.baseline.y0, x1: l.baseline.x1, y1: l.baseline.y1 } : undefined,
-      words: l.words?.map(w => ({
+    const words: OCRWord[] =
+      data.words?.map((w) => ({
         text: w.text,
         confidence: w.confidence,
         bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
-        baseline: w.baseline ? { x0: w.baseline.x0, y0: w.baseline.y0, x1: w.baseline.x1, y1: w.baseline.y1 } : undefined,
+        baseline: w.baseline
+          ? { x0: w.baseline.x0, y0: w.baseline.y0, x1: w.baseline.x1, y1: w.baseline.y1 }
+          : undefined,
         fontName: w.font_name,
         fontSize: w.font_size,
         bold: w.is_bold,
@@ -309,42 +290,78 @@ export class OCRAPI {
         monospace: w.is_monospace,
         serif: w.is_serif,
         smallcaps: w.is_smallcaps,
-      })) || [],
-    })) || [];
+      })) || [];
 
-    const blocks: OCRBlocks[] = data.blocks?.map(b => ({
-      text: b.text,
-      confidence: b.confidence,
-      bbox: { x0: b.bbox.x0, y0: b.bbox.y0, x1: b.bbox.x1, y1: b.bbox.y1 },
-      lines: b.lines?.map(l => ({
+    const lines: OCRLines[] =
+      data.lines?.map((l) => ({
         text: l.text,
         confidence: l.confidence,
         bbox: { x0: l.bbox.x0, y0: l.bbox.y0, x1: l.bbox.x1, y1: l.bbox.y1 },
-        baseline: l.baseline ? { x0: l.baseline.x0, y0: l.baseline.y0, x1: l.baseline.x1, y1: l.baseline.y1 } : undefined,
-        words: l.words?.map(w => ({
-          text: w.text,
-          confidence: w.confidence,
-          bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
-        })) || [],
-      })) || [],
-    })) || [];
+        baseline: l.baseline
+          ? { x0: l.baseline.x0, y0: l.baseline.y0, x1: l.baseline.x1, y1: l.baseline.y1 }
+          : undefined,
+        words:
+          l.words?.map((w) => ({
+            text: w.text,
+            confidence: w.confidence,
+            bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
+            baseline: w.baseline
+              ? { x0: w.baseline.x0, y0: w.baseline.y0, x1: w.baseline.x1, y1: w.baseline.y1 }
+              : undefined,
+            fontName: w.font_name,
+            fontSize: w.font_size,
+            bold: w.is_bold,
+            italic: w.is_italic,
+            underlined: w.is_underlined,
+            monospace: w.is_monospace,
+            serif: w.is_serif,
+            smallcaps: w.is_smallcaps,
+          })) || [],
+      })) || [];
 
-    const paragraphs: OCRParagraphs[] = data.paragraphs?.map(p => ({
-      text: p.text,
-      confidence: p.confidence,
-      bbox: { x0: p.bbox.x0, y0: p.bbox.y0, x1: p.bbox.x1, y1: p.bbox.y1 },
-      lines: p.lines?.map(l => ({
-        text: l.text,
-        confidence: l.confidence,
-        bbox: { x0: l.bbox.x0, y0: l.bbox.y0, x1: l.bbox.x1, y1: l.bbox.y1 },
-        baseline: l.baseline ? { x0: l.baseline.x0, y0: l.baseline.y0, x1: l.baseline.x1, y1: l.baseline.y1 } : undefined,
-        words: l.words?.map(w => ({
-          text: w.text,
-          confidence: w.confidence,
-          bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
-        })) || [],
-      })) || [],
-    })) || [];
+    const blocks: OCRBlocks[] =
+      data.blocks?.map((b) => ({
+        text: b.text,
+        confidence: b.confidence,
+        bbox: { x0: b.bbox.x0, y0: b.bbox.y0, x1: b.bbox.x1, y1: b.bbox.y1 },
+        lines:
+          b.lines?.map((l) => ({
+            text: l.text,
+            confidence: l.confidence,
+            bbox: { x0: l.bbox.x0, y0: l.bbox.y0, x1: l.bbox.x1, y1: l.bbox.y1 },
+            baseline: l.baseline
+              ? { x0: l.baseline.x0, y0: l.baseline.y0, x1: l.baseline.x1, y1: l.baseline.y1 }
+              : undefined,
+            words:
+              l.words?.map((w) => ({
+                text: w.text,
+                confidence: w.confidence,
+                bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
+              })) || [],
+          })) || [],
+      })) || [];
+
+    const paragraphs: OCRParagraphs[] =
+      data.paragraphs?.map((p) => ({
+        text: p.text,
+        confidence: p.confidence,
+        bbox: { x0: p.bbox.x0, y0: p.bbox.y0, x1: p.bbox.x1, y1: p.bbox.y1 },
+        lines:
+          p.lines?.map((l) => ({
+            text: l.text,
+            confidence: l.confidence,
+            bbox: { x0: l.bbox.x0, y0: l.bbox.y0, x1: l.bbox.x1, y1: l.bbox.y1 },
+            baseline: l.baseline
+              ? { x0: l.baseline.x0, y0: l.baseline.y0, x1: l.baseline.x1, y1: l.baseline.y1 }
+              : undefined,
+            words:
+              l.words?.map((w) => ({
+                text: w.text,
+                confidence: w.confidence,
+                bbox: { x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 },
+              })) || [],
+          })) || [],
+      })) || [];
 
     return {
       text: data.text,
@@ -389,7 +406,7 @@ export const getOCRInstance = (): OCRAPI => {
     ocrInstance = new OCRAPI();
   }
   return ocrInstance;
-}
+};
 
 /**
  * High-level convenience functions
@@ -400,7 +417,7 @@ export const ocrUtils = {
    */
   async quickOCR(
     image: string | Uint8Array | HTMLImageElement | HTMLCanvasElement | File | Blob,
-    languages = ['eng']
+    languages = ['eng'],
   ): Promise<string> {
     const ocr = getOCRInstance();
     await ocr.initialize();
@@ -415,7 +432,7 @@ export const ocrUtils = {
   async ocrWithProgress(
     image: string | Uint8Array | HTMLImageElement | HTMLCanvasElement | File | Blob,
     onProgress: (progress: OCRProgress) => void,
-    languages = ['eng']
+    languages = ['eng'],
   ): Promise<OCRResult> {
     const ocr = getOCRInstance();
     await ocr.initialize({ logger: onProgress });
@@ -430,7 +447,7 @@ export const ocrUtils = {
   async ocrPDF(
     pdfBytes: Uint8Array,
     onProgress?: (page: number, total: number, progress: OCRProgress) => void,
-    languages = ['eng']
+    languages = ['eng'],
   ): Promise<string[]> {
     const ocr = getOCRInstance();
     await ocr.initialize();
@@ -438,33 +455,78 @@ export const ocrUtils = {
     // Try pdfjs-dist for true page split, fallback to single recognize
     try {
       const pdfjs = await import('pdfjs-dist').catch(() => null);
-      if (pdfjs && (pdfjs as unknown as { getDocument: (o: unknown) => { promise: Promise<{ numPages: number; getPage: (n: number) => Promise<{ getViewport: (o: unknown) => { width: number; height: number }; render: (o: unknown) => { promise: Promise<void> } }> }> } }).getDocument) {
-        const doc = await (pdfjs as unknown as { getDocument: (o: unknown) => { promise: Promise<{ numPages: number; getPage: (n: number) => Promise<never> }> } }).getDocument({ data: pdfBytes }).promise;
+      if (
+        pdfjs &&
+        (
+          pdfjs as unknown as {
+            getDocument: (o: unknown) => {
+              promise: Promise<{
+                numPages: number;
+                getPage: (n: number) => Promise<{
+                  getViewport: (o: unknown) => { width: number; height: number };
+                  render: (o: unknown) => { promise: Promise<void> };
+                }>;
+              }>;
+            };
+          }
+        ).getDocument
+      ) {
+        const doc = await (
+          pdfjs as unknown as {
+            getDocument: (o: unknown) => {
+              promise: Promise<{ numPages: number; getPage: (n: number) => Promise<never> }>;
+            };
+          }
+        ).getDocument({ data: pdfBytes }).promise;
         const results: string[] = [];
         for (let i = 1; i <= doc.numPages; i++) {
           onProgress?.(i, doc.numPages, { status: 'recognizing', progress: i / doc.numPages });
           // Render page to canvas via OffscreenCanvas if available (web), else skip
           try {
             const page = await doc.getPage(i);
-            const viewport = (page as unknown as { getViewport: (o: unknown) => { width: number; height: number } }).getViewport({ scale: 2 });
-            const canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(viewport.width, viewport.height) : (document.createElement('canvas') as unknown as { width: number; height: number; getContext: (s: string) => CanvasRenderingContext2D | null });
+            const viewport = (
+              page as unknown as { getViewport: (o: unknown) => { width: number; height: number } }
+            ).getViewport({ scale: 2 });
+            const canvas =
+              typeof OffscreenCanvas !== 'undefined'
+                ? new OffscreenCanvas(viewport.width, viewport.height)
+                : (document.createElement('canvas') as unknown as {
+                    width: number;
+                    height: number;
+                    getContext: (s: string) => CanvasRenderingContext2D | null;
+                  });
             (canvas as { width: number }).width = viewport.width;
             (canvas as { height: number }).height = viewport.height;
-            const ctx = (canvas as unknown as { getContext: (s: string) => CanvasRenderingContext2D | null }).getContext('2d');
-            if (ctx && (page as unknown as { render: (o: unknown) => { promise: Promise<void> } }).render) {
-              await (page as unknown as { render: (o: unknown) => { promise: Promise<void> } }).render({ canvasContext: ctx, viewport }).promise;
-              const result = await ocr.recognize(canvas as unknown as HTMLCanvasElement, { language: languages });
+            const ctx = (
+              canvas as unknown as { getContext: (s: string) => CanvasRenderingContext2D | null }
+            ).getContext('2d');
+            if (
+              ctx &&
+              (page as unknown as { render: (o: unknown) => { promise: Promise<void> } }).render
+            ) {
+              await (
+                page as unknown as { render: (o: unknown) => { promise: Promise<void> } }
+              ).render({ canvasContext: ctx, viewport }).promise;
+              const result = await ocr.recognize(canvas as unknown as HTMLCanvasElement, {
+                language: languages,
+              });
               results.push(result.text);
               continue;
             }
-          } catch {}
+          } catch {
+            // Render error, continue to fallback
+          }
           // Fallback per page: try recognize on raw bytes slice
-          const result = await ocr.recognize(pdfBytes as unknown as string, { language: languages });
+          const result = await ocr.recognize(pdfBytes as unknown as string, {
+            language: languages,
+          });
           results.push(result.text);
         }
         return results;
       }
-    } catch {}
+    } catch {
+      // PDF parse error, continue to fallback
+    }
     // Fallback: single image recognize (works if pdfBytes is actually an image)
     const single = await ocr.recognize(pdfBytes as unknown as string, { language: languages });
     onProgress?.(1, 1, { status: 'done', progress: 1 });
@@ -482,7 +544,7 @@ export const ocrUtils = {
       threshold?: number;
       deskew?: boolean;
       denoise?: boolean;
-    } = {}
+    } = {},
   ): Promise<string> {
     try {
       const ImageManipulator = await import('expo-image-manipulator').catch(() => null);
@@ -494,11 +556,20 @@ export const ocrUtils = {
         actions.push({ resize: { width: 1800 } });
       }
       if (actions.length === 0) return imageUri;
-      const result = await (ImageManipulator as unknown as { manipulateAsync: (uri: string, actions: unknown[], opts: unknown) => Promise<{ uri: string }> }).manipulateAsync(
-        imageUri,
-        actions as never,
-        { compress: 0.9, format: (ImageManipulator as unknown as { SaveFormat: { JPEG: string } }).SaveFormat?.JPEG ?? 'jpeg' },
-      );
+      const result = await (
+        ImageManipulator as unknown as {
+          manipulateAsync: (
+            uri: string,
+            actions: unknown[],
+            opts: unknown,
+          ) => Promise<{ uri: string }>;
+        }
+      ).manipulateAsync(imageUri, actions as never, {
+        compress: 0.9,
+        format:
+          (ImageManipulator as unknown as { SaveFormat: { JPEG: string } }).SaveFormat?.JPEG ??
+          'jpeg',
+      });
       return result.uri ?? imageUri;
     } catch {
       return imageUri;
@@ -513,7 +584,7 @@ export const ocrUtils = {
 export const defaultOCRPipeline = {
   async recognize(
     image: string | Uint8Array | HTMLImageElement | HTMLCanvasElement | File | Blob,
-    options: { language?: string[] } = {}
+    options: { language?: string[] } = {},
   ): Promise<{ text: string }> {
     const ocr = getOCRInstance();
     await ocr.initialize();

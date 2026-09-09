@@ -23,7 +23,14 @@ describe('Library surface entrypoints', () => {
   it('publishes capability entrypoints', () => {
     const pkg = JSON.parse(fs.readFileSync(LIBRARY_PACKAGE_JSON, 'utf8'));
 
-    for (const entrypoint of ['./api', './browse', './readers', './collections', './curation', './map']) {
+    for (const entrypoint of [
+      './api',
+      './browse',
+      './readers',
+      './collections',
+      './curation',
+      './map',
+    ]) {
       expect(pkg.exports[entrypoint]).toBeDefined();
     }
   });
@@ -40,4 +47,3 @@ describe('Library surface entrypoints', () => {
     expect(combined).toContain("from '@repo/library/map'");
   });
 });
-

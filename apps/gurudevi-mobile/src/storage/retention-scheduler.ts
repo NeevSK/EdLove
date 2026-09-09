@@ -1,9 +1,9 @@
 /**
  * Storage Eviction Scheduler for Gurudevi Mobile.
- * 
+ *
  * Purpose: Reclaim SQLite file size and MMKV storage on a recurring basis
  * to support low-storage / low-RAM devices (the hard constraint case).
- * 
+ *
  * Features:
  * - TTL-driven prune of old rows across key tables
  * - Full compaction: incremental_vacuum + shrink_memory + wal_checkpoint + VACUUM + optimize
@@ -12,14 +12,14 @@
  * - Observability hooks (PostHog metrics, error tracking)
  * - Circuit breaker for compaction operations
  * - Device context awareness (battery, network, disk space)
- * 
+ *
  * TTL policy (config-driven, safe defaults):
  *   ai_messages.retention_days → 90 (matches existing DB column)
  *   mood_logs                  → 90 days old
  *   group_messages             → 60 days old
  *   community_posts            → 180 days old
  *   attendance                 → 365 days old (but VACUUM after prune)
- * 
+ *
  * Safety:
  * - Dry-run mode first (no rows deleted, just reports count)
  * - VACUUM only runs after prune succeeds
@@ -31,8 +31,8 @@
 import { getPowerSyncDB } from '@repo/core/adapters/powersync/database';
 import {
   CRITICAL_FREE_DISK_BYTES,
-  LOW_BATTERY_LEVEL,
   evaluateEfficiency,
+  LOW_BATTERY_LEVEL,
   normalizeNetworkConditions,
 } from '@repo/core/efficiency';
 import { storage } from '@repo/core/native/storage';
@@ -42,11 +42,13 @@ import { AppState, Platform } from 'react-native';
 const storageDegradation = {
   isReadOnly: () => false,
   getReadOnlyReason: () => 'none',
-  enterReadOnly: (reason: string) => console.warn(`[StorageDegradation] Read-only entered: ${reason}`),
+  enterReadOnly: (reason: string) =>
+    console.warn(`[StorageDegradation] Read-only entered: ${reason}`),
   getCircuitBreaker: (key: string) => ({ getState: () => 'CLOSED' }),
 };
 
-const withResilience = async <T>(key: string, fn: () => Promise<T>, ..._rest: any[]): Promise<T> => fn();
+const withResilience = async <T>(key: string, fn: () => Promise<T>, ..._rest: any[]): Promise<T> =>
+  fn();
 const recordCompactionMetrics = (_metrics: any) => {};
 const recordPruneError = (_msg: string) => {};
 const recordDiskFullEvent = () => {};
@@ -64,11 +66,11 @@ type RetentionTtl = {
 
 // Safe defaults aligned with the schema / migration definitions.
 const DEFAULT_TTL: RetentionTtl = {
-  aiMessagesMs: 90 * 24 * 60 * 60 * 1000,       // 90 days
+  aiMessagesMs: 90 * 24 * 60 * 60 * 1000, // 90 days
   moodLogsMs: 90 * 24 * 60 * 60 * 1000,
   groupMessagesMs: 60 * 24 * 60 * 60 * 1000,
   communityPostsMs: 180 * 24 * 60 * 60 * 1000,
-  attendanceMs: 365 * 24 * 60 * 60 * 1000,     // 1 year
+  attendanceMs: 365 * 24 * 60 * 60 * 1000, // 1 year
 };
 
 interface CompactionConfig {
@@ -98,19 +100,23 @@ const CIRCUIT_KEY = 'storage-compaction';
 /**
  * Determine if compaction should run based on device state
  */
-async function shouldRunCompaction(): Promise<{ allowed: boolean; reason?: string; config: CompactionConfig }> {
+async function shouldRunCompaction(): Promise<{
+  allowed: boolean;
+  reason?: string;
+  config: CompactionConfig;
+}> {
   try {
     const Battery = await import('expo-battery');
     const Network = await import('expo-network');
     const FileSystem = await import('expo-file-system');
-    
+
     const [batteryLevel, batteryState, networkState, diskInfo] = await Promise.all([
-      import('expo-battery').then(m => m.getBatteryLevelAsync()),
-      import('expo-battery').then(m => m.getBatteryStateAsync()),
-      import('expo-network').then(m => m.getNetworkStateAsync()),
-      import('expo-file-system').then(m => m.getFreeDiskStorageAsync()),
+      import('expo-battery').then((m) => m.getBatteryLevelAsync()),
+      import('expo-battery').then((m) => m.getBatteryStateAsync()),
+      import('expo-network').then((m) => m.getNetworkStateAsync()),
+      import('expo-file-system').then((m) => m.getFreeDiskStorageAsync()),
     ]);
-    
+
     const isCharging = batteryState === 2; // BatteryState.CHARGING
     const isMetered = (networkState as any)?.isMetered ?? false;
     const diskFree = typeof diskInfo === 'number' ? diskInfo : ((diskInfo as any)?.freeSpace ?? 0);
@@ -130,7 +136,12 @@ async function shouldRunCompaction(): Promise<{ allowed: boolean; reason?: strin
       return {
         allowed: false,
         reason: decision.reason,
-        config: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false },
+        config: {
+          runVacuum: false,
+          runIncrementalVacuum: false,
+          incrementalPages: 0,
+          runOptimize: false,
+        },
       };
     }
 
@@ -138,49 +149,80 @@ async function shouldRunCompaction(): Promise<{ allowed: boolean; reason?: strin
       return {
         allowed: true,
         reason: decision.reason,
-        config: { runVacuum: false, runIncrementalVacuum: true, incrementalPages: 25, runOptimize: true },
+        config: {
+          runVacuum: false,
+          runIncrementalVacuum: true,
+          incrementalPages: 25,
+          runOptimize: true,
+        },
       };
     }
-    
+
     // Disk critical check
-    if (diskFree < CRITICAL_FREE_DISK_BYTES) { // < 100MB
-      return { 
-        allowed: false, 
-        reason: 'disk_critical', 
-        config: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false }
+    if (diskFree < CRITICAL_FREE_DISK_BYTES) {
+      // < 100MB
+      return {
+        allowed: false,
+        reason: 'disk_critical',
+        config: {
+          runVacuum: false,
+          runIncrementalVacuum: false,
+          incrementalPages: 0,
+          runOptimize: false,
+        },
       };
     }
-    
+
     // Battery check
     if (!isCharging && batteryLevel < LOW_BATTERY_LEVEL) {
-      return { 
-        allowed: false, 
-        reason: `battery_low_${Math.round(batteryLevel * 100)}%`, 
-        config: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false }
+      return {
+        allowed: false,
+        reason: `battery_low_${Math.round(batteryLevel * 100)}%`,
+        config: {
+          runVacuum: false,
+          runIncrementalVacuum: false,
+          incrementalPages: 0,
+          runOptimize: false,
+        },
       };
     }
-    
+
     // Metered network - only light operations
     if (isMetered) {
-      return { 
-        allowed: true, 
+      return {
+        allowed: true,
         reason: 'metered_network',
-        config: { runVacuum: false, runIncrementalVacuum: true, incrementalPages: 50, runOptimize: true }
+        config: {
+          runVacuum: false,
+          runIncrementalVacuum: true,
+          incrementalPages: 50,
+          runOptimize: true,
+        },
       };
     }
-    
+
     // Normal operation
-    return { 
-      allowed: true, 
+    return {
+      allowed: true,
       reason: 'normal',
-      config: { runVacuum: true, runIncrementalVacuum: true, incrementalPages: 100, runOptimize: true }
+      config: {
+        runVacuum: true,
+        runIncrementalVacuum: true,
+        incrementalPages: 100,
+        runOptimize: true,
+      },
     };
   } catch {
     // Unknown device state must not trigger a potentially expensive full compaction.
-    return { 
-      allowed: false, 
+    return {
+      allowed: false,
       reason: 'unknown_device_state',
-      config: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false }
+      config: {
+        runVacuum: false,
+        runIncrementalVacuum: false,
+        incrementalPages: 0,
+        runOptimize: false,
+      },
     };
   }
 }
@@ -198,42 +240,37 @@ async function pruneTables(ttl: RetentionTtl): Promise<Record<string, number>> {
 
   // 1. ai_messages
   const aiCutoff = new Date(Date.now() - ttl.aiMessagesMs);
-  const aiResult = await psDb.execute(
-    `DELETE FROM ai_messages WHERE createdAt < ?`,
-    [aiCutoff.toISOString()]
-  );
+  const aiResult = await psDb.execute(`DELETE FROM ai_messages WHERE createdAt < ?`, [
+    aiCutoff.toISOString(),
+  ]);
   rowsDeleted['ai_messages'] = aiResult?.rowsAffected || 0;
 
   // 2. mood_logs
   const moodCutoff = new Date(Date.now() - ttl.moodLogsMs);
-  const moodResult = await psDb.execute(
-    `DELETE FROM mood_logs WHERE createdAt < ?`,
-    [moodCutoff.toISOString()]
-  );
+  const moodResult = await psDb.execute(`DELETE FROM mood_logs WHERE createdAt < ?`, [
+    moodCutoff.toISOString(),
+  ]);
   rowsDeleted['mood_logs'] = moodResult?.rowsAffected || 0;
 
   // 3. group_messages
   const gmCutoff = new Date(Date.now() - ttl.groupMessagesMs);
-  const gmResult = await psDb.execute(
-    `DELETE FROM group_messages WHERE createdAt < ?`,
-    [gmCutoff.toISOString()]
-  );
+  const gmResult = await psDb.execute(`DELETE FROM group_messages WHERE createdAt < ?`, [
+    gmCutoff.toISOString(),
+  ]);
   rowsDeleted['group_messages'] = gmResult?.rowsAffected || 0;
 
   // 4. community_posts
   const cpCutoff = new Date(Date.now() - ttl.communityPostsMs);
-  const cpResult = await psDb.execute(
-    `DELETE FROM community_posts WHERE createdAt < ?`,
-    [cpCutoff.toISOString()]
-  );
+  const cpResult = await psDb.execute(`DELETE FROM community_posts WHERE createdAt < ?`, [
+    cpCutoff.toISOString(),
+  ]);
   rowsDeleted['community_posts'] = cpResult?.rowsAffected || 0;
 
   // 5. attendance
   const attCutoff = new Date(Date.now() - ttl.attendanceMs);
-  const attResult = await psDb.execute(
-    `DELETE FROM attendance WHERE date < ?`,
-    [attCutoff.toISOString().split('T')[0]]
-  );
+  const attResult = await psDb.execute(`DELETE FROM attendance WHERE date < ?`, [
+    attCutoff.toISOString().split('T')[0],
+  ]);
   rowsDeleted['attendance'] = attResult?.rowsAffected || 0;
 
   return rowsDeleted;
@@ -242,7 +279,9 @@ async function pruneTables(ttl: RetentionTtl): Promise<Record<string, number>> {
 /**
  * Run SQLite compaction sequence
  */
-async function runCompaction(config: CompactionConfig): Promise<{ reclaimedBytes: number; errors: string[] }> {
+async function runCompaction(
+  config: CompactionConfig,
+): Promise<{ reclaimedBytes: number; errors: string[] }> {
   const psDb = getPowerSyncDB() as any;
   if (!psDb) {
     throw new Error('PowerSync DB not initialized for compaction');
@@ -279,7 +318,7 @@ async function runCompaction(config: CompactionConfig): Promise<{ reclaimedBytes
     const error = e as Error;
     errors.push(error.message);
     console.warn('[StorageScheduler] Compaction step failed:', error);
-    
+
     // Check for specific error types
     if (error.message.includes('locked')) {
       storageDegradation.enterReadOnly('database_locked');
@@ -311,7 +350,11 @@ async function reportAndTrimStorage(): Promise<void> {
         const afterSize = storage.byteSize?.();
         if (afterSize) {
           const afterTotal = Object.values(afterSize).reduce((sum, bytes) => sum + bytes, 0);
-          console.log('[StorageScheduler] MMKV size after trim:', afterSize, `(${afterTotal} bytes total)`);
+          console.log(
+            '[StorageScheduler] MMKV size after trim:',
+            afterSize,
+            `(${afterTotal} bytes total)`,
+          );
         }
       }
     }
@@ -332,14 +375,24 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
     return {
       freedBytes: 0,
       rowsDeleted: {},
-      compactionConfig: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false },
-      deviceContext: { batteryLevel: 1, isCharging: true, isMeteredNetwork: false, diskFreeBytes: 0 },
+      compactionConfig: {
+        runVacuum: false,
+        runIncrementalVacuum: false,
+        incrementalPages: 0,
+        runOptimize: false,
+      },
+      deviceContext: {
+        batteryLevel: 1,
+        isCharging: true,
+        isMeteredNetwork: false,
+        diskFreeBytes: 0,
+      },
       durationMs: Date.now() - startTime,
       skipped: true,
       skipReason: 'web_platform_unsupported',
     };
   }
-  
+
   // Set account for metrics
   if (accountId) {
     setMetricsAccountId(accountId);
@@ -347,12 +400,25 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
 
   // Check if already in read-only mode
   if (storageDegradation.isReadOnly()) {
-    console.log('[StorageScheduler] Skipped - read-only mode active:', storageDegradation.getReadOnlyReason());
+    console.log(
+      '[StorageScheduler] Skipped - read-only mode active:',
+      storageDegradation.getReadOnlyReason(),
+    );
     return {
       freedBytes: 0,
       rowsDeleted: {},
-      compactionConfig: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false },
-      deviceContext: { batteryLevel: 0, isCharging: false, isMeteredNetwork: false, diskFreeBytes: 0 },
+      compactionConfig: {
+        runVacuum: false,
+        runIncrementalVacuum: false,
+        incrementalPages: 0,
+        runOptimize: false,
+      },
+      deviceContext: {
+        batteryLevel: 0,
+        isCharging: false,
+        isMeteredNetwork: false,
+        diskFreeBytes: 0,
+      },
       durationMs: Date.now() - startTime,
       skipped: true,
       skipReason: 'read_only_mode',
@@ -363,9 +429,9 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
 
   // 1. Check device state and determine compaction config
   const { allowed, reason, config } = await shouldRunCompaction();
-  
+
   const deviceContext = await collectDeviceContextForMetrics();
-  
+
   if (!allowed) {
     console.log('[StorageScheduler] Skipped:', reason);
     return {
@@ -389,7 +455,7 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
       CIRCUIT_KEY,
       () => pruneTables(DEFAULT_TTL),
       { maxRetries: 2, baseDelayMs: 500 },
-      { failureThreshold: 3, timeout: 60000 }
+      { failureThreshold: 3, timeout: 60000 },
     );
 
     // 3. Run compaction sequence
@@ -420,7 +486,7 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
     const error = e as Error;
     recordPruneError(error.message);
     console.error('[StorageScheduler] Eviction job failed:', error);
-    
+
     // Don't throw - scheduler must not crash the app
   } finally {
     recordBackgroundTaskDuration(Date.now() - startTime);
@@ -454,14 +520,14 @@ async function collectDeviceContextForMetrics(): Promise<{
     const Battery = await import('expo-battery');
     const Network = await import('expo-network');
     const FileSystem = await import('expo-file-system');
-    
+
     const [batteryLevel, batteryState, networkState, diskInfo] = await Promise.all([
       Battery.getBatteryLevelAsync(),
       Battery.getBatteryStateAsync(),
       Network.getNetworkStateAsync(),
       FileSystem.getFreeDiskStorageAsync(),
     ]);
-    
+
     return {
       batteryLevel,
       isCharging: batteryState === 2,

@@ -2,9 +2,9 @@ import { deviceAccounts } from '@repo/core';
 import { useAuth } from '@repo/core/logic';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { AccountRecoveryScreen } from '@/screens/AccountRecoveryScreen';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { AccountRecoveryScreen } from '@/screens/AccountRecoveryScreen';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -30,7 +30,10 @@ export default function AccountRecoveryRoute() {
       .catch((error: unknown) => {
         console.warn('[account recovery] local sign-out failed', error);
         showToast({
-          message: error instanceof Error ? error.message : 'Could not sign out on this device. Please try again.',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Could not sign out on this device. Please try again.',
           type: 'error',
         });
         setIsSigningOut(false);

@@ -41,9 +41,8 @@ export async function registerStorageEvictionTask(): Promise<void> {
       return;
     }
 
-    const isRegistered = await coreRuntime.backgroundTask.isTaskRegisteredAsync(
-      STORAGE_EVICTION_TASK,
-    );
+    const isRegistered =
+      await coreRuntime.backgroundTask.isTaskRegisteredAsync(STORAGE_EVICTION_TASK);
     if (!isRegistered) {
       await coreRuntime.backgroundTask.registerTaskAsync(STORAGE_EVICTION_TASK, {
         minimumInterval: 60, // Run at most once per hour in background

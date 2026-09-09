@@ -95,11 +95,9 @@ describe('essential startup coordinator', () => {
   ] satisfies readonly [string, EssentialStartupDependencies][])(
     'turns a stalled %s stage into a named retryable failure',
     async (label, dependencies) => {
-    vi.useFakeTimers();
+      vi.useFakeTimers();
       const startup = completeEssentialStartup(dependencies);
-      const rejection = expect(startup).rejects.toThrow(
-        `[boot] ${label} timed out after 10000ms`,
-      );
+      const rejection = expect(startup).rejects.toThrow(`[boot] ${label} timed out after 10000ms`);
 
       await vi.advanceTimersByTimeAsync(10_000);
       await rejection;

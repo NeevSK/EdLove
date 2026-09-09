@@ -1,9 +1,9 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { getLocalGuestIdentity } from '@repo/core/native/guestIdentity';
-import { trackingAPI } from '@repo/core/api/tracking';
 import { profileAPI } from '@repo/core/api/profile';
 import { rewardsAPI } from '@repo/core/api/rewards';
+import { trackingAPI } from '@repo/core/api/tracking';
+import { getLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { createScenarioTestContext } from '@repo/core/testing/scenarioHarness';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Scenario 1: Full Guest-Mode Isolation & Traversal (App Integration)', () => {
   const harness = createScenarioTestContext();

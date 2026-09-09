@@ -109,8 +109,7 @@ export function getNativeShellConfig(
 ): NativeShellConfig {
   const isLandscape = width > height;
   const isTablet = Math.min(width, height) >= NATIVE_SHELL_BREAKPOINTS.tabletMinWidth;
-  const isShortHeight =
-    isLandscape && height <= NATIVE_SHELL_BREAKPOINTS.shortLandscapeMaxHeight;
+  const isShortHeight = isLandscape && height <= NATIVE_SHELL_BREAKPOINTS.shortLandscapeMaxHeight;
   const mode: NativeShellMode = isTablet
     ? isLandscape
       ? 'tabletLandscape'

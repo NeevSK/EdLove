@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
+import { describe, expect, it } from 'vitest';
 
 describe('educational native oRPC contract coverage', () => {
   it('registers strict native procedures for the migrated educational APIs', () => {

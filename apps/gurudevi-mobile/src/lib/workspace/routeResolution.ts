@@ -93,7 +93,11 @@ export function resolveWorkspaceRoute({
   }
 
   if (perspectiveKind === 'commercial') {
-    return { kind: 'role-ready', target: { kind: 'commercial', perspectiveId }, ...backgroundStatus };
+    return {
+      kind: 'role-ready',
+      target: { kind: 'commercial', perspectiveId },
+      ...backgroundStatus,
+    };
   }
 
   if (resolvedCapacity.data === 'founder') {

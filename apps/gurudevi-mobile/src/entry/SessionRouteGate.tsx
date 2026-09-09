@@ -17,11 +17,7 @@ export function SessionRouteGate({ children }: { children: ReactNode }) {
 
   // The index route only redirects to /welcome; withholding it here would leave
   // the router with no mounted route while the session restores.
-  if (
-    routeTarget.decision === 'booting' &&
-    pathname !== '/' &&
-    !isPublicBootstrapRoute(pathname)
-  ) {
+  if (routeTarget.decision === 'booting' && pathname !== '/' && !isPublicBootstrapRoute(pathname)) {
     return null;
   }
 

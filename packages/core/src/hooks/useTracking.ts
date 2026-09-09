@@ -68,7 +68,7 @@ export function useTracking() {
         console.warn('Tracking: Failed to resolve identity', e);
       }
     };
-    getUserId();
+    void getUserId();
     return () => {
       active = false;
     };
@@ -172,10 +172,7 @@ export function useTracking() {
    */
   const isDiscovered = useCallback(
     (featureName: string) => {
-      return (
-        sessionDiscoveredFeatures.has(featureName) ||
-        exploredFeatures.includes(featureName)
-      );
+      return sessionDiscoveredFeatures.has(featureName) || exploredFeatures.includes(featureName);
     },
     [exploredFeatures],
   );
@@ -210,4 +207,3 @@ export function useTracking() {
     [exploredFeatures, isLoading, discoverFeature, trackSnapshot, isDiscovered],
   );
 }
-

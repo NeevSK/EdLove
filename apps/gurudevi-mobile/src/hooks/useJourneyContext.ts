@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import {
+  type BootstrapEntryPoint,
+  type BootstrapSessionState,
+  getBootstrapSessionState,
+} from '@repo/core/logic/auth/bootstrapContract';
 import { useAuth } from '@repo/core/providers';
 import { useStore } from '@repo/core/store';
-import {
-  getBootstrapSessionState,
-  type BootstrapSessionState,
-  type BootstrapEntryPoint,
-} from '@repo/core/logic/auth/bootstrapContract';
+import { useMemo } from 'react';
 
 export type JourneyType = 'auth' | 'onboarding' | 'create' | 'sync' | 'general';
 

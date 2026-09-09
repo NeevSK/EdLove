@@ -1,19 +1,21 @@
-import { OCRScannerBridge } from '@/features/scanner/OCRScannerBridge';
 import { BrandPulse } from '@repo/ui';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { OCRScannerBridge } from '@/features/scanner/OCRScannerBridge';
 
 export function DocumentScannerScreen() {
   const { t } = useTranslation();
   const { showToast } = useSanctuaryToast();
-  const [scannedStudents, setScannedStudents] = useState<{
-    name: string;
-    index_number: string;
-    uncertain: boolean;
-    notes?: string;
-  }[]>([]);
+  const [scannedStudents, setScannedStudents] = useState<
+    {
+      name: string;
+      index_number: string;
+      uncertain: boolean;
+      notes?: string;
+    }[]
+  >([]);
   const [showScanner, setShowScanner] = useState(false);
 
   const handleStudentsScanned = useCallback((students: any[]) => {
@@ -36,7 +38,8 @@ export function DocumentScannerScreen() {
         {t('library.documentScanner') || 'Document Scanner'}
       </Text>
       <Text className="text-mistGray text-center">
-        {t('library.documentScannerDescription') || 'Scan attendance registers and documents with OCR'}
+        {t('library.documentScannerDescription') ||
+          'Scan attendance registers and documents with OCR'}
       </Text>
 
       <VStack className="gap-md w-full max-w-md">
@@ -63,10 +66,7 @@ export function DocumentScannerScreen() {
                 </VStack>
               ))}
             </VStack>
-            <Button
-              className="bg-emeraldGreen rounded-full px-xl h-[56px]"
-              onPress={handleConfirm}
-            >
+            <Button className="bg-emeraldGreen rounded-full px-xl h-[56px]" onPress={handleConfirm}>
               <ButtonText className="text-white font-bold">
                 {t('common.save') || 'Save All'}
               </ButtonText>
