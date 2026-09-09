@@ -310,6 +310,9 @@ importers:
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1
+      '@unrs/resolver-binding-win32-x64-msvc':
+        specifier: ^1.12.2
+        version: 1.12.2
       '@zenstackhq/cli':
         specifier: 3.8.0
         version: 3.8.0(better-sqlite3@12.9.0)(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(hono@4.13.5)(kysely@0.28.16)(pg@8.23.0)(supports-color@10.2.2)(typescript@7.0.2)
@@ -2118,6 +2121,9 @@ importers:
       '@rnx-kit/eslint-plugin':
         specifier: ^0.5.2
         version: 0.5.3(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
+      '@unrs/resolver-binding-win32-x64-msvc':
+        specifier: 1.11.1
+        version: 1.11.1
       eslint:
         specifier: ^10.4.1
         version: 10.10.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -11508,6 +11514,11 @@ packages:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
+    cpu: [x64]
+    os: [win32]
+
+  '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
+    resolution: {integrity: sha512-nAB74NfSNKknqQ1RrYj6uz8FcXEomu/MATJZxh/x+BArzN2U3JbOYC0APYzUIGhVY3m5hRxA8VPNdPBoG8txlA==}
     cpu: [x64]
     os: [win32]
 
@@ -32232,8 +32243,9 @@ snapshots:
   '@unrs/resolver-binding-win32-ia32-msvc@1.11.1':
     optional: true
 
-  '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
-    optional: true
+  '@unrs/resolver-binding-win32-x64-msvc@1.11.1': {}
+
+  '@unrs/resolver-binding-win32-x64-msvc@1.12.2': {}
 
   '@use-voltra/android-client@1.4.1(expo@57.0.20)(react-native@0.86.3(@babel/core@7.29.7(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.0.2))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@10.2.2))(react@19.2.3)(supports-color@10.2.2))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@types/react@19.2.18)(react@19.2.3)(supports-color@10.2.2))(react@19.2.3)':
     dependencies:
