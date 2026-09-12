@@ -287,7 +287,7 @@ export const AuthScreenWeb = memo(
               title: 'Welcome back to Gurudevi',
               subtitle:
                 'Pick up your journey where you left it across self, classroom, community, and library.',
-              primary: 'Log In',
+              primary: 'Sign In',
               google: 'Sign in with Google',
               email: 'Sign in with Email',
               emoji: '🗝️',

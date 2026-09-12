@@ -1,4 +1,4 @@
-import { useStore } from '@repo/core/logic';
+﻿import { useStore } from '@repo/core/logic';
 import { Box, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
@@ -15,13 +15,13 @@ export default function GuardianStudentsScreen() {
 
   return (
     <GuardianRoomShell
-      eyebrow="Linked, learners"
-      title="Family, learner room"
-      description="A, focused view, of every, linked learner, so the, family can, move from awareness into, support without, losing the, school-home, bridge."
+      eyebrow="Linked Learners"
+      title="Family Learner Room"
+      description="A focused view of every linked learner, so the family can move from awareness into support without losing the school-home bridge."
       stats={[
         { label: 'Children', value: students.length },
         {
-          label: 'Avg, attendance',
+          label: 'Avg Attendance',
           value: students.length
             ? `${Math.round(students.reduce((sum, student) => sum + student.attendance.percentage, 0) / students.length)}%`
             : '0%',
@@ -34,7 +34,7 @@ export default function GuardianStudentsScreen() {
           {students.map((student) => (
             <Pressable
               key={student.studentId}
-              onPress={() => router.push('/workspace')}
+              onPress={() => router.push({ pathname: '/workspace/guardian/[studentId]', params: { studentId: student.studentId, studentName: student.name } })}
               accessibilityRole="button"
               accessibilityLabel={`Open guardian workspace for ${student.name}`}
               accessibilityHint="Returns to the guardian workspace"

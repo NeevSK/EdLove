@@ -1,4 +1,4 @@
-import { useStore } from '@repo/core/logic';
+﻿import { useStore } from '@repo/core/logic';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
@@ -14,9 +14,9 @@ export default function GuardianNotificationsScreen() {
 
   return (
     <GuardianRoomShell
-      eyebrow="School, feed"
-      title="Family, notification room"
-      description="Every, family-facing, notice in, one place, so, the school, voice stays, coherent instead, of scattered, across channels."
+      eyebrow="School Feed"
+      title="Family Notification Room"
+      description="Every family-facing notice in one place, so the school voice stays coherent instead of scattered across channels."
       stats={[
         {
           label: 'Unread',

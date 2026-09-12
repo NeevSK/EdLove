@@ -2,7 +2,7 @@ export { NotificationSettingsPanel } from '@repo/ui/components/NotificationSetti
 export { SignupPrompt } from '@repo/ui/components/prompts/SignupPrompt';
 export { SanctuaryGuard } from '@repo/ui/components/SanctuaryGuard';
 export * from '@repo/ui/context';
-export * from '@repo/ui/hooks';
+export * from './hooks';
 export { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
 // Keep the root surface intentionally light. Heavy UI modules now live behind
 // explicit subpaths such as `@repo/ui/components/...` and `@repo/ui/screens/...`.
@@ -88,3 +88,5 @@ export { SuccessCheck, SuccessGlow } from './components/Success';
 export { sharedTransitionTiming, softCrossfadeScale } from './components/screenTransitions';
 export { VisualCapabilityInspector } from './components/VisualCapabilityInspector';
 export { WorkspaceRenderer } from './components/workspace/WorkspaceRenderer';
+export { ActiveSubTabStrip, type ActiveSubTabStripProps } from './components/ActiveSubTabStrip';
+export { DomainSubHeader, type DomainSubHeaderProps } from './components/DomainSubHeader';

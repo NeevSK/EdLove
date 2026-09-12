@@ -1,4 +1,4 @@
-import { useStore } from '@repo/core/logic';
+﻿import { useStore } from '@repo/core/logic';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
@@ -14,9 +14,9 @@ export default function GuardianEventsScreen() {
 
   return (
     <GuardianRoomShell
-      eyebrow="Calendar, bridge"
-      title="Family, event room"
-      description="A, calmer look, ahead for the dates, that shape, home planning, school, participation, and, family presence."
+      eyebrow="Calendar Bridge"
+      title="Family Event Room"
+      description="A calmer look ahead for the dates that shape home planning, school participation, and family presence."
       stats={[
         { label: 'Events', value: events.length },
         {

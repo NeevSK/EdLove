@@ -26,7 +26,7 @@ import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import { useAuthStore, useFeatureStore, useTemporalStore } from '@repo/core/store';
 import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
-import { color } from '@repo/ui';
+import { color, useScrollChromeCollapser } from '@repo/ui';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -36,7 +36,7 @@ import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context';
-import { Info, Plus } from '@repo/ui/icons';
+import { Info, Plus, Sparkles } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { router } from 'expo-router';
 import type React from 'react';
@@ -170,6 +170,7 @@ function communityScreenReducer(
 
 export default function CommunityScreen() {
   const bottomPadding = useBottomTabPadding();
+  const { onScroll } = useScrollChromeCollapser();
   const { width, height } = useWindowDimensions();
   const isShortLandscape = width > height && height < 500;
   const { discoverFeature } = useTracking();
@@ -631,6 +632,8 @@ export default function CommunityScreen() {
         data={posts}
         keyExtractor={(item) => item.id}
         estimatedItemSize={260}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         refreshing={isFetchingPosts && !loadingPosts}
         onRefresh={() => void refetchPosts()}
         renderItem={({ item }: { item: CommunityPost }) => (
@@ -681,17 +684,38 @@ export default function CommunityScreen() {
             </Box>
           )
         }
-        onEndReached={() => {
-          if (hasNextPosts) {
-            void fetchNextPosts();
-          }
-        }}
-        onEndReachedThreshold={0.5}
         ListFooterComponent={
           isFetchingNextPosts ? (
             <Box className="py-8 items-center">
               <BrandPulse size={28} />
             </Box>
+          ) : posts.length > 0 ? (
+            hasNextPosts ? (
+              <Box className="mx-4 mt-2 mb-6 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 items-center gap-2.5">
+                <Sparkles size={22} color="#D4843A" />
+                <Text className="text-base font-bold text-ink">
+                  You have reached the mindful pause
+                </Text>
+                <Text className="text-xs text-ink/70 text-center leading-relaxed max-w-[280px]">
+                  Take a mindful breath before continuing. Carry these reflections with you.
+                </Text>
+                <SanctuaryButton
+                  action="secondary"
+                  onPress={() => void fetchNextPosts()}
+                  className="mt-1 px-5"
+                >
+                  <Text className="font-bold text-xs text-ink">Load Past Reflections</Text>
+                </SanctuaryButton>
+              </Box>
+            ) : (
+              <Box className="mx-4 mt-2 mb-6 p-5 rounded-2xl bg-ink/5 border border-ink/10 items-center gap-1.5">
+                <Sparkles size={18} color="#8A7A6C" />
+                <Text className="text-sm font-bold text-ink/80">You are all caught up</Text>
+                <Text className="text-xs text-ink/50 text-center">
+                  All community notes and hearth reflections have been explored.
+                </Text>
+              </Box>
+            )
           ) : null
         }
         contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}

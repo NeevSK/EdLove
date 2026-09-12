@@ -8,11 +8,13 @@ Canonical browser Gurudevi — one Next.js application for public and authentica
 
 | Package | Layer | Purpose |
 | :--- | :--- | :--- |
+| [@repo/core](../stack-map.md#repocore) | core | Platform spine — shared contracts & infrastructure every domain relies on. |
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
 
-## External deps (3 direct)
+## External deps (4 direct)
 
 ```text
+@supabase/ssr
 next
 react
 react-dom

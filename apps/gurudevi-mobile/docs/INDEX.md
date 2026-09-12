@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-09-07
+updated: 2026-09-12
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -15,6 +15,10 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 ---
 
 ## Feature lifecycle authority — read first
+
+## Navigation and adaptive chrome authority
+
+1. [Mobile Navigation and Adaptive Chrome Architecture](./architecture/mobile-navigation-and-adaptive-chrome.md) — canonical authority for active sub-tabs, domain registries, adaptive header hierarchy, collapsible chrome on scroll, and mindful community cadence.
 
 ## Schema and database authority
 
@@ -61,13 +65,9 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-09-12** | [Navigation & Sanctuary Refactor](./current_progress/2026-09-12-navigation-and-sanctuary-refactor.md) + [Mobile Navigation & Adaptive Chrome](./architecture/mobile-navigation-and-adaptive-chrome.md) | Navigation / UI / Architecture / Current Progress | `active` | Active sub-tabs terminology purge, 5-tab LRU cap, role-aware domain feature registries, Sanctuary overview hub with query param serialization, adaptive header hierarchy, collapsible chrome on scroll, and mindful anti-infinite community feed. |
 | **2026-09-07** | [URL and URI Boundary Audit](./architecture/2026-09-07-url-uri-deep-link-audit.md) + [Implementation Plan](./current_progress/2026-09-07-url-uri-deep-link-implementation-plan.md) | Architecture / Security / Current Progress | `active` | Audits auth callbacks, deep-link policy, notification routing, public share URLs, local file URIs, external URI opening, and Android/iOS verified-link configuration; prioritizes credential redaction and a unified dispatcher. |
 | **2026-09-05** | [Android Build Chronicle & Performance Savings Report](./infra/2026-09-05-android-build-chronicle-and-savings-report.md) | Infrastructure / Build | `active` | Post-mortem of MLKit blocker removal, ccache CMake launcher activation (905 units cached), Gradle build-cache metrics (77.2% reuse), and successful installation of versionCode 24 APK onto Samsung Galaxy physical device. |
-| **2026-09-04** | [Forage Research: Candidate Catalog](./research/2026-09-04-forage-candidate-catalog.md) | Research / Catalog | `draft` | All candidates with rationale, use case, benefit, cost, verdict. Baseline-then-own pattern. |
-| **2026-09-04** | [Spike: cn Parity + withSkills](./research/2026-09-04-spike-cn-parity.md) + [ADR: cn Merge Strategy](./decisions/2026-09-04-cn-merge-strategy.md) | Spike / ADR | `accepted` | 25-case parity: adopted tailwind-merge+clsx behind cn path (zero consumer edits); shadcn engine re-eval later. |
-| **2026-09-04** | [Spike: Native Capabilities](./research/2026-09-04-spike-native-capabilities.md) + [ADR: paste-input](./decisions/2026-09-04-paste-input-adoption.md) + [ADR: Nitro Fetch](./decisions/2026-09-04-nitro-fetch-adoption.md) | Spike / ADR | `accepted` | paste-input dev-build gated, Nitro Fetch profile-gated, plain-text watch. Implementation: ComposerPasteWrapper, fetchFn factory. |
-| **2026-09-04** | [Trial: CI Visual](./research/2026-09-04-trial-ci-visual.md) + [ADR: Visual QA Contract](./decisions/2026-09-04-visual-qa-contract.md) | Trial / ADR | `dropped` | Screenmap trial dropped (no Expo token, no iOS app, no Screenmap project ID). Visual QA contract ADR remains for future reference. |
-| **2026-09-04** | [Pilot: Agent Evidence](./research/2026-09-04-pilot-agent-evidence.md) + [ADR: Web Evidence Proxy](./decisions/2026-09-04-web-evidence-proxy.md) + [ADR: Agent Docs QA](./decisions/2026-09-04-agent-docs-qa.md) | Pilot / ADR | `deferred` | TinyFish proxy deferred (no VPS/managed service). Agent docs/QA accepted. |
 | **2026-09-04** | [Adopt: Hygiene](./research/2026-09-04-adopt-hygiene.md) + [ADR: Play Hygiene + Pedagogy](./decisions/2026-09-04-play-hygiene-pedagogy.md) | Adopt / ADR | `draft` | Play vitals baseline, Vitest 5 close-out, SRL/mastered/coasting composition. |
 | **2026-09-04** | [Forage Research: RN Performance Patterns](./research/2026-09-04-rn-performance-patterns.md) | Research / React Native | `draft` | Suspense 300ms throttle, RNGH v3 hooks, useEffect, .mjs, Plain Text vs workspace (Expo 57, RNGH 3.2.1). No Suspense+lazy exposure; continue hooks migration. |
 | **2026-09-04** | [Forage Research: Expo Native Evolution](./research/2026-09-04-expo-native-evolution.md) | Research / Expo | `draft` | Modules v2 SDK58 preview, paste-input, Screenmap, Play Feb-2027 thresholds. Hold SDK 57; hygiene now. |

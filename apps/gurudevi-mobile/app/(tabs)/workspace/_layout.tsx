@@ -12,6 +12,11 @@ export default function WorkspaceLayout() {
         <Stack.Screen name="principal" />
         <Stack.Screen name="founder" />
         <Stack.Screen name="guardian" />
+        <Stack.Screen name="guardian/students" />
+        <Stack.Screen name="guardian/[studentId]" />
+        <Stack.Screen name="guardian/events" />
+        <Stack.Screen name="guardian/notifications" />
+        <Stack.Screen name="guardian/bridge" />
         <Stack.Screen name="classroom/index" />
         <Stack.Screen name="classroom/[classroomId]/index" />
         <Stack.Screen name="classroom/[classroomId]/attendance" />

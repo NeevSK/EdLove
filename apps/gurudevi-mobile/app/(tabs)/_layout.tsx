@@ -14,13 +14,16 @@ import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverl
 import { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { ActiveSubTabStrip, DomainSubHeader } from '@repo/ui';
+import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
+import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { LinkWardModal } from '@repo/ui/components/LinkWardModal';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
 import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
-import { router, Tabs, usePathname } from 'expo-router';
+import { router, Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -69,6 +72,7 @@ function TabsLayoutContent() {
     hydratePerspectivesFromDatabase,
   } = usePerspectiveSwitch();
   const [isPerspectiveSwitcherOpen, setPerspectiveSwitcherOpen] = useState(false);
+  const [catalogSheetTab, setCatalogSheetTab] = useState<'workspace' | 'self' | 'library' | 'community' | 'profile' | null>(null);
   const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
   const [isCommercialModalOpen, setCommercialModalOpen] = useState(false);
   const [isLinkWardModalOpen, setLinkWardModalOpen] = useState(false);
@@ -256,12 +260,128 @@ function TabsLayoutContent() {
     [addPerspective, switchPerspective, user?.id],
   );
 
+  const currentDomain = useMemo<'workspace' | 'self' | 'library' | 'community' | 'profile'>(() => {
+    if (pathname.startsWith('/workspace')) return 'workspace';
+    if (pathname.startsWith('/self')) return 'self';
+    if (pathname.startsWith('/library')) return 'library';
+    if (pathname.startsWith('/community')) return 'community';
+    return 'profile';
+  }, [pathname]);
+
+  const globalParams = useGlobalSearchParams<{ feature?: string }>();
+
+  const isDomainRoot = useMemo(() => {
+    if (currentDomain === 'self') {
+      return !globalParams.feature;
+    }
+    if (currentDomain === 'workspace') {
+      return pathname === '/workspace' || pathname === '/workspace/';
+    }
+    return pathname === `/${currentDomain}` || pathname === `/${currentDomain}/`;
+  }, [currentDomain, globalParams.feature, pathname]);
+
+  const domainTabs = useActiveSubTabsStore((s) => s.tabsByDomain[currentDomain] || []);
+  const showActiveSubTabs = useActiveSubTabsStore((s) => s.preferences.showActiveSubTabs);
+  const headerStyle = useActiveSubTabsStore((s) => s.preferences.headerStyle);
+  const autoHideChromeOnScroll = useActiveSubTabsStore((s) => s.preferences.autoHideChromeOnScroll);
+  const isChromeVisible = useActiveSubTabsStore((s) => s.isChromeVisible);
+
+  const globalHeaderRightAction = (
+    <Box
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: tokens.spacing.sm,
+        paddingHorizontal: shell.header.horizontalPadding - tokens.spacing.md,
+      }}
+    >
+      {pathname.startsWith('/workspace') ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open editorial workspace"
+          accessibilityHint="Write or review editorial submissions"
+          onPress={() => router.push('/workspace/editorial')}
+          style={{
+            width: tokens.interaction.minTouchTarget,
+            height: tokens.interaction.minTouchTarget,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: tokens.radii.full,
+            backgroundColor: tokens.semantic.surface.interactive,
+          }}
+        >
+          <FileText size={18} color={tokens.semantic.text.primary} />
+        </Pressable>
+      ) : null}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Open notifications"
+        accessibilityHint="Navigates to the notifications page to view updates"
+        onPress={() => router.push('/notifications')}
+        style={{
+          position: 'relative',
+          width: tokens.interaction.minTouchTarget,
+          height: tokens.interaction.minTouchTarget,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: tokens.radii.full,
+          backgroundColor: tokens.semantic.surface.interactive,
+        }}
+      >
+        <Bell size={18} color={tokens.semantic.text.primary} />
+        {unreadCount > 0 ? (
+          <Box
+            style={{
+              position: 'absolute',
+              top: 7,
+              right: 8,
+              minWidth: 16,
+              height: 16,
+              borderRadius: 8,
+              backgroundColor: tokens.colors.primary,
+              paddingHorizontal: 4,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                color: tokens.semantic.text.inverse,
+                fontSize: tokens.typography.sizes.xs,
+                fontWeight: '800',
+              }}
+            >
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </Text>
+          </Box>
+        ) : null}
+      </Pressable>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Open settings"
+        accessibilityHint="Navigates to the settings page to configure user preferences"
+        onPress={() => router.push('/settings')}
+        style={{
+          width: tokens.interaction.minTouchTarget,
+          height: tokens.interaction.minTouchTarget,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: tokens.radii.full,
+          backgroundColor: tokens.semantic.surface.interactive,
+        }}
+      >
+        <Settings size={18} color={tokens.semantic.text.primary} />
+      </Pressable>
+    </Box>
+  );
+
   return (
     <>
       <Tabs
         initialRouteName="self"
         screenOptions={{
-          headerShown: true,
+          headerShown: !autoHideChromeOnScroll || isChromeVisible,
           tabBarHideOnKeyboard: true,
           tabBarShowLabel: shell.visibleChrome.tabLabels,
           tabBarStyle: {
@@ -270,119 +390,163 @@ function TabsLayoutContent() {
             paddingBottom: shell.tabBar.paddingBottom,
             backgroundColor: tokens.semantic.surface.canvas,
             borderTopColor: tokens.semantic.border.subtle,
+            display: !autoHideChromeOnScroll || isChromeVisible ? 'flex' : 'none',
           },
           tabBarLabelStyle: {
             fontSize: tokens.typography.sizes.xs,
             fontWeight: '600',
           },
-          header: () => (
-            <GlobalHeader
-              title={isWorkspace ? undefined : title}
-              subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-              perspectivePill={
-                isWorkspace
-                  ? {
-                      label: perspectiveLabel,
-                      kind: perspectiveKind,
-                      onPress: () => setPerspectiveSwitcherOpen(true),
-                    }
-                  : undefined
-              }
-              rightAction={
-                <Box
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: tokens.spacing.sm,
-                    paddingHorizontal: shell.header.horizontalPadding - tokens.spacing.md,
-                  }}
-                >
-                  {pathname.startsWith('/workspace') ? (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="Open editorial workspace"
-                      accessibilityHint="Write or review editorial submissions"
-                      onPress={() => router.push('/workspace/editorial')}
-                      style={{
-                        width: tokens.interaction.minTouchTarget,
-                        height: tokens.interaction.minTouchTarget,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: tokens.radii.full,
-                        backgroundColor: tokens.semantic.surface.interactive,
-                      }}
-                    >
-                      <FileText size={18} color={tokens.semantic.text.primary} />
-                    </Pressable>
-                  ) : null}
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Open notifications"
-                    accessibilityHint="Navigates to the notifications page to view updates"
-                    onPress={() => router.push('/notifications')}
-                    style={{
-                      position: 'relative',
-                      width: tokens.interaction.minTouchTarget,
-                      height: tokens.interaction.minTouchTarget,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: tokens.radii.full,
-                      backgroundColor: tokens.semantic.surface.interactive,
-                    }}
-                  >
-                    <Bell size={18} color={tokens.semantic.text.primary} />
-                    {unreadCount > 0 ? (
-                      <Box
-                        style={{
-                          position: 'absolute',
-                          top: 7,
-                          right: 8,
-                          minWidth: 16,
-                          height: 16,
-                          borderRadius: 8,
-                          backgroundColor: tokens.colors.primary,
-                          paddingHorizontal: 4,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: tokens.semantic.text.inverse,
-                            fontSize: tokens.typography.sizes.xs,
-                            fontWeight: '800',
-                          }}
-                        >
-                          {unreadCount > 99 ? '99+' : unreadCount}
-                        </Text>
-                      </Box>
-                    ) : null}
-                  </Pressable>
-
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Open settings"
-                    accessibilityHint="Navigates to the settings page to configure user preferences"
-                    onPress={() => router.push('/settings')}
-                    style={{
-                      width: tokens.interaction.minTouchTarget,
-                      height: tokens.interaction.minTouchTarget,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: tokens.radii.full,
-                      backgroundColor: tokens.semantic.surface.interactive,
-                    }}
-                  >
-                    <Settings size={18} color={tokens.semantic.text.primary} />
-                  </Pressable>
+          header: () => {
+            if (headerStyle === 'minimal_tabs_only') {
+              return (
+                <Box>
+                  {showActiveSubTabs && (
+                    <ActiveSubTabStrip
+                      domain={currentDomain}
+                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                    />
+                  )}
                 </Box>
-              }
-            />
-          ),
+              );
+            }
+
+            if (headerStyle === 'compact_domain') {
+              return (
+                <Box>
+                  <DomainSubHeader
+                    title={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
+                    subtitle={isWorkspace ? undefined : displayName}
+                    domain={currentDomain}
+                    perspectivePill={
+                      isWorkspace
+                        ? {
+                            label: perspectiveLabel,
+                            onPress: () => setPerspectiveSwitcherOpen(true),
+                          }
+                        : undefined
+                    }
+                    unreadCount={unreadCount}
+                    onBackPress={
+                      !isDomainRoot
+                        ? () => {
+                            if (currentDomain === 'self') router.push('/self' as any);
+                            else if (currentDomain === 'workspace') router.push('/workspace' as any);
+                            else router.back();
+                          }
+                        : undefined
+                    }
+                    onNotificationsPress={() => router.push('/notifications')}
+                    onSettingsPress={() => router.push('/settings')}
+                    onCatalogPress={() => setCatalogSheetTab(currentDomain)}
+                  />
+                  {showActiveSubTabs && (
+                    <ActiveSubTabStrip
+                      domain={currentDomain}
+                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                    />
+                  )}
+                </Box>
+              );
+            }
+
+            if (headerStyle === 'classic_global') {
+              return (
+                <Box>
+                  <GlobalHeader
+                    title={isWorkspace ? undefined : title}
+                    subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
+                    perspectivePill={
+                      isWorkspace
+                        ? {
+                            label: perspectiveLabel,
+                            kind: perspectiveKind,
+                            onPress: () => setPerspectiveSwitcherOpen(true),
+                          }
+                        : undefined
+                    }
+                    rightAction={globalHeaderRightAction}
+                  />
+                  {showActiveSubTabs && (
+                    <ActiveSubTabStrip
+                      domain={currentDomain}
+                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                    />
+                  )}
+                </Box>
+              );
+            }
+
+            // 'adaptive' (SMART DEFAULT)
+            if (!isDomainRoot) {
+              return (
+                <Box>
+                  <DomainSubHeader
+                    title={title}
+                    subtitle={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
+                    domain={currentDomain}
+                    perspectivePill={
+                      isWorkspace
+                        ? {
+                            label: perspectiveLabel,
+                            onPress: () => setPerspectiveSwitcherOpen(true),
+                          }
+                        : undefined
+                    }
+                    unreadCount={unreadCount}
+                    onBackPress={() => {
+                      if (currentDomain === 'self') {
+                        router.push('/self' as any);
+                      } else if (currentDomain === 'workspace') {
+                        router.push('/workspace' as any);
+                      } else {
+                        router.back();
+                      }
+                    }}
+                    onNotificationsPress={() => router.push('/notifications')}
+                    onSettingsPress={() => router.push('/settings')}
+                    onCatalogPress={() => setCatalogSheetTab(currentDomain)}
+                  />
+                  {showActiveSubTabs && (
+                    <ActiveSubTabStrip
+                      domain={currentDomain}
+                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                    />
+                  )}
+                </Box>
+              );
+            }
+
+            // Default Overview Screen under GlobalHeader (no redundant subheader!)
+            return (
+              <Box>
+                <GlobalHeader
+                  title={isWorkspace ? undefined : title}
+                  subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
+                  perspectivePill={
+                    isWorkspace
+                      ? {
+                          label: perspectiveLabel,
+                          kind: perspectiveKind,
+                          onPress: () => setPerspectiveSwitcherOpen(true),
+                        }
+                      : undefined
+                  }
+                  rightAction={globalHeaderRightAction}
+                />
+                {showActiveSubTabs && domainTabs.length > 0 && (
+                  <ActiveSubTabStrip
+                    domain={currentDomain}
+                    onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                  />
+                )}
+              </Box>
+            );
+          },
         }}
       >
         <Tabs.Screen
           name="library"
+          listeners={{ tabLongPress: () => setCatalogSheetTab("library") }}
           options={{
             title: 'Library',
             tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
@@ -390,6 +554,7 @@ function TabsLayoutContent() {
         />
         <Tabs.Screen
           name="workspace"
+          listeners={{ tabLongPress: () => setCatalogSheetTab("workspace") }}
           options={{
             title: 'Workspace',
             tabBarIcon: ({ color, size }) => <School color={color} size={size} />,
@@ -397,6 +562,7 @@ function TabsLayoutContent() {
         />
         <Tabs.Screen
           name="self"
+          listeners={{ tabLongPress: () => setCatalogSheetTab("self") }}
           options={{
             title: 'Self',
             tabBarIcon: ({ color, size, focused }) => (
@@ -422,6 +588,7 @@ function TabsLayoutContent() {
         />
         <Tabs.Screen
           name="community"
+          listeners={{ tabLongPress: () => setCatalogSheetTab("community") }}
           options={{
             title: 'Community',
             tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
@@ -429,6 +596,7 @@ function TabsLayoutContent() {
         />
         <Tabs.Screen
           name="profile"
+          listeners={{ tabLongPress: () => setCatalogSheetTab("profile") }}
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
@@ -452,6 +620,12 @@ function TabsLayoutContent() {
         title={currentAchievement}
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
+      />
+
+            <TabFeatureCatalogSheet
+        isOpen={Boolean(catalogSheetTab)}
+        onClose={() => setCatalogSheetTab(null)}
+        activeTabKey={catalogSheetTab || 'workspace'}
       />
 
       <PerspectiveSwitcherSheet

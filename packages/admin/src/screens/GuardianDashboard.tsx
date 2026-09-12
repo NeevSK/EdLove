@@ -1,4 +1,4 @@
-import {
+﻿import {
   resolveWorkspaceSwitcherTargets,
   useDomainFeature,
   usePermissions,
@@ -79,17 +79,20 @@ export default function GuardianDashboard() {
   );
 
   const handleOpenStudentsRoom = React.useCallback(() => {
-    router.push('/workspace');
+    router.push('/workspace/guardian/students');
   }, [router]);
 
   const handleOpenStudent = React.useCallback(
     (studentId?: string, studentName?: string) => {
       if (studentId) {
-        router.push('/workspace');
+        router.push({
+          pathname: '/workspace/guardian/[studentId]',
+          params: { studentId, studentName: studentName || '' },
+        });
         return;
       }
 
-      router.push('/workspace');
+      router.push('/workspace/guardian/students');
     },
     [router],
   );
@@ -114,11 +117,11 @@ export default function GuardianDashboard() {
     },
     onOpenNotification: (notification) => {
       void notification;
-      router.push('/notifications');
+      router.push('/workspace/guardian/notifications');
     },
     onOpenEvent: (event) => {
       void event;
-      router.push('/notifications');
+      router.push('/workspace/guardian/events');
     },
     onOpenCommunity: () => router.push('/community'),
     onOpenLibrary: handleOpenLibrary,
@@ -138,17 +141,17 @@ export default function GuardianDashboard() {
       }
 
       if (surface.surfaceId === 'school_feed') {
-        router.push('/notifications');
+        router.push('/workspace/guardian/notifications');
         return;
       }
 
       if (surface.surfaceId === 'upcoming_events') {
-        router.push('/notifications');
+        router.push('/workspace/guardian/events');
         return;
       }
 
       if (surface.surfaceId === 'communication_bridge') {
-        router.push('/community');
+        router.push('/workspace/guardian/bridge');
         return;
       }
 
@@ -176,8 +179,8 @@ export default function GuardianDashboard() {
       <GuardianDashboardScreen
         guardianId={user.id}
         onStudentPress={(student) => handleOpenStudent(student.studentId, student.name)}
-        onNotificationPress={(_notification) => router.push('/notifications')}
-        onEventPress={(_event) => router.push('/notifications')}
+        onNotificationPress={(_notification) => router.push('/workspace/guardian/notifications')}
+        onEventPress={(_event) => router.push('/workspace/guardian/events')}
       />
     );
   }

@@ -1,4 +1,5 @@
 import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
 import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import { useResponsiveGrid } from '@repo/ui/components/layout';
@@ -20,6 +21,7 @@ import {
   EyeOff,
   Globe,
   Info,
+  Layers,
   Lock,
   Shield,
   Smartphone,
@@ -35,7 +37,7 @@ import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, TextInput, TouchableOpacity } from 'react-native';
+import { Linking, Platform, TextInput, TouchableOpacity } from 'react-native';
 
 interface SettingsNavigation {
   navigate: (route: string, params?: Record<string, unknown>) => void;
@@ -233,6 +235,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
   const [_showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showHeaderModal, setShowHeaderModal] = useState(false);
+
+  const navPreferences = useActiveSubTabsStore((s) => s.preferences);
+  const updateNavPreferences = useActiveSubTabsStore((s) => s.updatePreferences);
 
   // Biometrics & Screen Capture States
   const [requireBiometrics, setRequireBiometrics] = useState(() => {
@@ -565,74 +571,100 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
 
   const handlePreviewProfile = useCallback(() => {
     hapticLight();
-    if (navigation) {
-      navigation.navigate('Community', {
-        screen: 'UserProfile',
-        params: { userId: user?.id, userName: user?.display_name },
-      });
-      return;
+    if (navigation && typeof navigation.navigate === 'function') {
+      try {
+        navigation.navigate('Community', {
+          screen: 'UserProfile',
+          params: { userId: user?.id, userName: user?.display_name },
+        });
+        return;
+      } catch (err) {
+        console.warn('[handlePreviewProfile] navigation error:', err);
+      }
     }
     router.push('/community');
   }, [navigation, router, user]);
 
   const handleTrubeLab = useCallback(() => {
-    if (navigation) navigation.navigate('TrubeLab');
-    else router.push('/trube-lab');
+    if (navigation && typeof navigation.navigate === 'function') {
+      try {
+        navigation.navigate('TrubeLab');
+        return;
+      } catch (err) {
+        console.warn('[handleTrubeLab] navigation error:', err);
+      }
+    }
+    router.push('/trube-lab');
   }, [navigation, router]);
+
   const handleIconLab = useCallback(() => {
-    if (navigation) navigation.navigate('icon-lab');
-    else router.push('/icon-lab');
+    if (navigation && typeof navigation.navigate === 'function') {
+      try {
+        navigation.navigate('icon-lab');
+        return;
+      } catch (err) {
+        console.warn('[handleIconLab] navigation error:', err);
+      }
+    }
+    router.push('/icon-lab');
   }, [navigation, router]);
+
+  const headerStyleOptions = useMemo(
+    () => [
+      {
+        id: 'adaptive',
+        label: 'Adaptive Smart (Recommended)',
+        description: 'Full Global Header on overview hub, focused task bar with back button in sub-tasks.',
+        icon: <Sparkles size={20} color={accent.action} />,
+        isSelected: navPreferences.headerStyle === 'adaptive',
+      },
+      {
+        id: 'compact_domain',
+        label: 'Compact Domain Bar',
+        description: 'High-density domain header with active perspective switcher on all screens.',
+        icon: <Layers size={20} color={accent.action} />,
+        isSelected: navPreferences.headerStyle === 'compact_domain',
+      },
+      {
+        id: 'classic_global',
+        label: 'Full Global Header Always',
+        description: 'Spacious sanctuary header with prominent title and avatar greeting everywhere.',
+        icon: <Layers size={20} color={accent.action} />,
+        isSelected: navPreferences.headerStyle === 'classic_global',
+      },
+      {
+        id: 'minimal_tabs_only',
+        label: 'Active Sub-Tabs Only',
+        description: 'Maximum content area, displaying only running multitasking tabs.',
+        icon: <Smartphone size={20} color={accent.action} />,
+        isSelected: navPreferences.headerStyle === 'minimal_tabs_only',
+      },
+    ],
+    [accent.action, navPreferences.headerStyle],
+  );
 
   const handleContactSupport = useCallback(async () => {
     hapticLight();
     const bodyText = `Hi Support Team,\n\n[Write your message here]\n\n---\nDevice info:\nOS: ${Platform.OS}\nFidelity: ${fidelityLevel}\nLanguage: ${language}\n`;
     try {
-      const MailComposer = require('expo-mail-composer');
-      const isAvailable = await MailComposer.isAvailableAsync();
-      if (isAvailable) {
-        await MailComposer.composeAsync({
-          recipients: [GURUDEVI_SUPPORT_EMAIL],
-          subject: 'Gurudevi App Feedback / Support Request',
-          body: bodyText,
-        });
+      const url = `mailto:${GURUDEVI_SUPPORT_EMAIL}?subject=${encodeURIComponent(
+        'Gurudevi App Feedback / Support Request',
+      )}&body=${encodeURIComponent(bodyText)}`;
+
+      if (await Linking.canOpenURL(url)) {
+        await Linking.openURL(url);
       } else {
-        const url = `mailto:${GURUDEVI_SUPPORT_EMAIL}?subject=${encodeURIComponent(
-          'Gurudevi App Feedback / Support Request',
-        )}&body=${encodeURIComponent(bodyText)}`;
-
-        const Linking = require('react-native').Linking;
-        if (await Linking.canOpenURL(url)) {
-          await Linking.openURL(url);
-        } else {
-          showToast({
-            message: t('settings.support.email_not_available', 'Email client not available'),
-            type: 'error',
-          });
-        }
-      }
-    } catch (err) {
-      console.warn('[AppSettingsScreen] MailComposer error:', err);
-      try {
-        const url = `mailto:${GURUDEVI_SUPPORT_EMAIL}?subject=${encodeURIComponent(
-          'Gurudevi App Feedback / Support Request',
-        )}&body=${encodeURIComponent(bodyText)}`;
-
-        const Linking = require('react-native').Linking;
-        if (await Linking.canOpenURL(url)) {
-          await Linking.openURL(url);
-        } else {
-          showToast({
-            message: t('settings.support.email_not_available', 'Email client not available'),
-            type: 'error',
-          });
-        }
-      } catch (linkErr) {
         showToast({
-          message: t('settings.support.composer_failed', 'Failed to open email composer'),
+          message: t('settings.support.email_not_available', 'Email client not available'),
           type: 'error',
         });
       }
+    } catch (err) {
+      console.warn('[AppSettingsScreen] Contact support error:', err);
+      showToast({
+        message: t('settings.support.composer_failed', 'Failed to open email composer'),
+        type: 'error',
+      });
     }
   }, [fidelityLevel, language, showToast, t]);
 
@@ -864,6 +896,109 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
             </HStack>
           </Box>
         ))}
+
+        {/* Navigation & Multitasking */}
+        <SectionHeader
+          title="Navigation & Active Sub-Tabs"
+          description="Customize the top header chrome, multitasking sub-tabs, and catalog behavior."
+        />
+
+        <SettingsOption
+          icon={
+            <Box className="text-phase-secondary">
+              <Layers size={24} />
+            </Box>
+          }
+          title="Header Layout Style"
+          description={
+            navPreferences.headerStyle === 'adaptive'
+              ? 'Adaptive Smart (Recommended)'
+              : navPreferences.headerStyle === 'compact_domain'
+              ? 'Compact Domain Bar'
+              : navPreferences.headerStyle === 'classic_global'
+              ? 'Full Global Header Always'
+              : 'Active Sub-Tabs Only'
+          }
+          onPress={() => setShowHeaderModal(true)}
+          accessibilityLabel="Header layout style"
+          accessibilityHint="Choose between compact domain bar, full global header, or sub-tabs only"
+        />
+
+        <Box className="bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px]">
+          <HStack className="gap-4 items-center justify-between">
+            <VStack className="flex-1 gap-1">
+              <Text className="text-base font-semibold text-phase-primary">Active Sub-Tabs Strip</Text>
+              <Text className="text-sm text-phase-secondary">
+                Display running tasks and activities beneath the header for fluid switching.
+              </Text>
+            </VStack>
+            <Switch
+              value={navPreferences.showActiveSubTabs}
+              onValueChange={(val) => {
+                hapticLight();
+                updateNavPreferences({ showActiveSubTabs: val });
+              }}
+              trackColor={trackColor}
+              thumbColor="#FFFFFF"
+              accessible={true}
+              accessibilityRole="switch"
+              accessibilityLabel="Show active sub-tabs strip"
+              accessibilityState={{ checked: navPreferences.showActiveSubTabs }}
+            />
+          </HStack>
+        </Box>
+
+        <Box className="bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px]">
+          <HStack className="gap-4 items-center justify-between">
+            <VStack className="flex-1 gap-1">
+              <Text className="text-base font-semibold text-phase-primary">Catalog Opens in Sub-Tab</Text>
+              <Text className="text-sm text-phase-secondary">
+                Selecting a feature from the bottom tab catalog automatically adds it as an active sub-tab.
+              </Text>
+            </VStack>
+            <Switch
+              value={navPreferences.catalogDefaultAction === 'open_in_subtab'}
+              onValueChange={(val) => {
+                hapticLight();
+                updateNavPreferences({
+                  catalogDefaultAction: val ? 'open_in_subtab' : 'navigate_direct',
+                });
+              }}
+              trackColor={trackColor}
+              thumbColor="#FFFFFF"
+              accessible={true}
+              accessibilityRole="switch"
+              accessibilityLabel="Open catalog items in sub-tabs"
+              accessibilityState={{ checked: navPreferences.catalogDefaultAction === 'open_in_subtab' }}
+            />
+          </HStack>
+        </Box>
+
+        <Box className="bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px]">
+          <HStack className="gap-4 items-center justify-between">
+            <VStack className="flex-1 gap-1">
+              <Text className="text-base font-semibold text-phase-primary">Auto-Collapse on Scroll</Text>
+              <Text className="text-sm text-phase-secondary">
+                Collapse header and bottom tabs while scrolling down; flick up or reach the top to reveal.
+              </Text>
+            </VStack>
+            <Switch
+              value={navPreferences.autoHideChromeOnScroll}
+              onValueChange={(val) => {
+                hapticLight();
+                updateNavPreferences({
+                  autoHideChromeOnScroll: val,
+                });
+              }}
+              trackColor={trackColor}
+              thumbColor="#FFFFFF"
+              accessible={true}
+              accessibilityRole="switch"
+              accessibilityLabel="Auto-collapse navigation chrome on scroll"
+              accessibilityState={{ checked: navPreferences.autoHideChromeOnScroll }}
+            />
+          </HStack>
+        </Box>
 
         {/* Language & Localization */}
         <SectionHeader
@@ -1243,6 +1378,20 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
             void handleFidelityChange(level as any);
           }}
           onClose={handleCloseFidelity}
+        />
+      )}
+
+      {/* Header Style Selection Modal */}
+      {showHeaderModal && (
+        <SelectionModal
+          title="Select Header Layout Style"
+          options={headerStyleOptions}
+          onSelect={(styleId) => {
+            hapticSuccess();
+            updateNavPreferences({ headerStyle: styleId });
+            setShowHeaderModal(false);
+          }}
+          onClose={() => setShowHeaderModal(false)}
         />
       )}
 

@@ -1,4 +1,4 @@
-import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
+﻿import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
@@ -39,28 +39,28 @@ export default function GuardianCommunicationBridgeScreen() {
 
   return (
     <GuardianRoomShell
-      eyebrow="School-home, bridge"
-      title="Communication, bridge"
+      eyebrow="School-Home Bridge"
+      title="Communication Bridge"
       description="This room helps the guardian move from awareness into the right school, community, and resource spaces without losing context."
       onBack={() => safeBack('/workspace')}
     >
       <VStack className="gap-3">
         <BridgeCard
           icon={MessagesSquare}
-          title="Open, community commons"
-          copy="Step, into family-safe, community space for school, conversation, groups, and, shared updates."
+          title="Open Community Commons"
+          copy="Step into family-safe community space for school conversation, groups, and shared updates."
           onPress={() => router.push('/community')}
         />
         <BridgeCard
           icon={BookOpenText}
-          title="Open, learning resources"
-          copy="Move from school, signal into, study support, and resource, discovery."
+          title="Open Learning Resources"
+          copy="Move from school signal into study support and resource discovery."
           onPress={() => router.push('/library')}
         />
         <BridgeCard
           icon={School}
-          title="Return, to family, workspace"
-          copy="Come, back to, the guardian, canvas after, checking the, broader school, ecosystem."
+          title="Return to Family Workspace"
+          copy="Come back to the guardian canvas after checking the broader school ecosystem."
           onPress={() => router.push('/workspace')}
         />
       </VStack>

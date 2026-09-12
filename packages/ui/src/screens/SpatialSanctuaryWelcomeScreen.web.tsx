@@ -66,7 +66,7 @@ export const SpatialSanctuaryWelcomeScreen = memo(
           message: getGuestEntryErrorMessage(
             error,
             t('auth.guestLoginFailed') ||
-              'We could not open the sanctuary doors for you right now. Please try again.',
+              'Guest sign-in failed. Please try again.',
             t('common.offlineMessage') ||
               'You appear to be offline. Please check your connection to enter as a guest.',
           ),
@@ -550,7 +550,7 @@ export const SpatialSanctuaryWelcomeScreen = memo(
                     e.currentTarget.style.boxShadow = '0 2px 0 rgba(107, 100, 128, 0.15)';
                   }}
                 >
-                  {t('welcome.login') || 'I have an account · Log In'}
+                  {t('welcome.login') || 'I have an account · Sign In'}
                 </button>
               </div>
 

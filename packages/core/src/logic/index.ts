@@ -142,6 +142,13 @@ export { useFeatureStore } from '@repo/core/store/useFeatureStore';
 export { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
+export { useDraftsStore, type DraftEntry, type DraftsState } from '@repo/core/store/useDraftsStore';
+export {
+  useActiveSubTabsStore,
+  type ActiveSubTabItem,
+  type ActiveSubTabsState,
+  type NavigationPreferences,
+} from '@repo/core/store/useActiveSubTabsStore';
 
 // Types (Agnostic / logic-layer)
 export type { Bond } from '@repo/core/types';

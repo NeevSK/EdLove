@@ -325,7 +325,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenP
                     className="h-[54px] rounded-2xl border-phase-border bg-transparent w-full"
                   >
                     <ButtonText className="text-phase-text-secondary font-medium">
-                      {t('welcome.login')}
+                      {t('welcome.login') || 'Sign In'}
                     </ButtonText>
                   </Button>
                 </VStack>

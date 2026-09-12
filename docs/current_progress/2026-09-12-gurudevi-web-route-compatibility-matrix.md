@@ -67,6 +67,7 @@ replicate Expo Router topology or UI.
 | `/` | `https://gurudevi.app/` when anonymous; authorized sanctuary entry when signed in | Contextual | 3 | The current session gate owns resolution. The new server/client boundary must resolve safely without exposing a signed-in landing to an anonymous request. |
 | `/welcome` | `https://gurudevi.app/` | Public | 3 | Fold welcome narrative into the public root; preserve intentional guest and sign-in choices. |
 | `/auth` | `https://sanctuary.gurudevi.app/sign-in` | Public | 3 | Implement real browser authentication before redirecting. Return URL must be allow-listed. |
+| New browser registration | `https://sanctuary.gurudevi.app/sign-up` | Public | 3 | Uses Supabase email/password registration. Confirmation and a verified authorized-entry result are required before a workspace is shown. |
 | `/auth/callback` | `https://sanctuary.gurudevi.app/auth/callback` | Callback-only | 3 | Register the web callback with the identity provider. Never redirect opaque callback parameters through a public route. |
 | `/account-recovery` | `https://sanctuary.gurudevi.app/account-recovery` | Public | 3 | Preserve recovery, sign-out, and failure handling as an end-to-end browser flow. |
 | `/onboarding?entry=guest` | `https://sanctuary.gurudevi.app/onboarding?entry=guest` | Session / guest policy required | 3 | Keep only validated, non-sensitive query state. Define guest access deliberately rather than copying native behavior. |

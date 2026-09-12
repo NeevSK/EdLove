@@ -14,3 +14,4 @@ export * from './useSanctuaryTable';
 export * from './useShake';
 export * from './useTheme';
 export * from './useThemedColors';
+export * from './useScrollChromeCollapser';

@@ -28,7 +28,7 @@ This is the **compressed master catalog**. Thin per-app footprint sheets link ba
 | [@repo/analytics](#repoanalytics) | domain | 1.5.0 | 3 | Premium analytics engine — student performance insights, GPA calculations, predictive analytics. |
 | [@repo/classroom](#repoclassroom) | domain | 1.5.0 | 1 | Pedagogical & classroom-operational domain — the living teacher-student-classroom cell. |
 | [@repo/community](#repocommunity) | domain | 1.5.0 | 3 | Relational ecosystem — groups, feed participation, community creation & discovery flows. |
-| [@repo/core](#repocore) | core | 1.5.0 | 18 | Platform spine — shared contracts & infrastructure every domain relies on. |
+| [@repo/core](#repocore) | core | 1.5.0 | 19 | Platform spine — shared contracts & infrastructure every domain relies on. |
 | [@repo/database](#repodatabase) | core | 1.0.1 | 3 | Data-access layer — ZenStack ORM + Postgres, schema-driven queries. |
 | [@repo/editorial](#repoeditorial) | domain | 0.1.0 | 2 | Provider-neutral editorial publishing contracts and distribution ledger |
 | [@repo/eslint-config](#repoeslint-config) | core | 0.0.1 | 25 | Internal eslint configuration set used across the workspace. |
@@ -59,7 +59,7 @@ This is the **compressed master catalog**. Thin per-app footprint sheets link ba
 | [apps-edlove-web](#apps-edlove-web) | app (web) | 3 | [catalog/edlove-web.md](./catalog/edlove-web.md) |
 | [apps-gurudevi-marketing-web](#apps-gurudevi-marketing-web) | app (web) | 3 | [catalog/gurudevi-marketingWeb.md](./catalog/gurudevi-marketingWeb.md) |
 | [gurudevi-mobile](#gurudevi-mobile) | app (mobile) | 19 | [catalog/gurudevi-mobile.md](./catalog/gurudevi-mobile.md) |
-| [gurudevi-web](#gurudevi-web) | app (web) | 3 | [catalog/gurudevi-web.md](./catalog/gurudevi-web.md) |
+| [gurudevi-web](#gurudevi-web) | app (web) | 4 | [catalog/gurudevi-web.md](./catalog/gurudevi-web.md) |
 | [@repo/sanctuary-api](#reposanctuary-api) | app (api) | 3 | [catalog/sanctuary-api.md](./catalog/sanctuary-api.md) |
 
 ## Overlap watchlist

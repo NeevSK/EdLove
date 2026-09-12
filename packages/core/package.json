@@ -198,6 +198,16 @@
       "import": "./src/api/auth.ts",
       "default": "./src/api/auth.ts"
     },
+    "./web-auth": {
+      "types": "./src/webAuth.ts",
+      "import": "./src/webAuth.ts",
+      "default": "./src/webAuth.ts"
+    },
+    "./web-authorized-entry": {
+      "types": "./src/webAuthorizedEntry.ts",
+      "import": "./src/webAuthorizedEntry.ts",
+      "default": "./src/webAuthorizedEntry.ts"
+    },
     "./identity": {
       "types": "./src/api/identity.ts",
       "import": "./src/api/identity.ts",
@@ -307,6 +317,11 @@
       "types": "./src/logic/ports/*.ts",
       "import": "./src/logic/ports/*.ts",
       "default": "./src/logic/ports/*.ts"
+    },
+    "./logic/managers/StorageManager": {
+      "types": "./src/logic/managers/StorageManager.ts",
+      "import": "./src/logic/managers/StorageManager.ts",
+      "default": "./src/logic/managers/StorageManager.ts"
     },
     "./logic/utils/*": {
       "types": "./src/logic/utils/*.ts",

@@ -209,3 +209,5 @@ export { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 export * from '@repo/ui/components/workspace';
 export type { ActionItem, TabType } from '@repo/ui/context/FABContext';
 export * from '@repo/ui/qr';
+export { ActiveSubTabStrip, type ActiveSubTabStripProps } from '@repo/ui/components/ActiveSubTabStrip';
+export { DomainSubHeader, type DomainSubHeaderProps } from '@repo/ui/components/DomainSubHeader';
