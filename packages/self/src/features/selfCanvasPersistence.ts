@@ -1,4 +1,4 @@
-export type SelfCanvasPersistenceState = 'idle' | 'saving' | 'queued' | 'localError' | 'synced';
+export type SelfCanvasPersistenceState = 'idle' | 'saving' | 'queued' | 'local' | 'localError' | 'synced';
 
 export type SelfCanvasPersistenceFeedback = {
   label: string;
@@ -17,6 +17,8 @@ export function describeSelfCanvasPersistence(
       return { label: 'Saving your sanctuary layout…', canRetry: false };
     case 'queued':
       return { label: 'Saved on this device. Sync needs a connection.', canRetry: true };
+    case 'local':
+      return { label: 'Saved on this device. Create an account to keep it across devices.', canRetry: false };
     case 'localError':
       return { label: 'Could not save your sanctuary layout on this device.', canRetry: true };
     case 'synced':

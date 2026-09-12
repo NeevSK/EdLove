@@ -35,12 +35,10 @@ Each application is independent but philosophically connected.
 
 #### Gurudevi Platform (Web App)
 
-- App: `gurudevi-mobile` (web build via Metro resolution)
-- Identity: The "real app" on web (React Native Web)
-- Context: [gurudevi-mobile/README.md](./gurudevi-mobile/README.md)
-- Web guide: [gurudevi-mobile/docs/web/WEB_GUIDE.md](./gurudevi-mobile/docs/web/WEB_GUIDE.md)
-- Relation: Built from `apps/gurudevi-mobile` using `*.web.tsx` overrides.
-- Domain/hosting: `platform.gurudevi.edlove.org` via GitHub Pages (build output: `apps/gurudevi-mobile/dist/`)
+- App: `gurudevi-web` (Next.js)
+- Identity: Canonical browser app for public Gurudevi and the authenticated sanctuary.
+- Relation: Replaces the Metro/React Native Web target incrementally; it does not replace Android or iOS.
+- Domains: `gurudevi.app` (public) and future `sanctuary.gurudevi.app` (authenticated).
 
 #### Gurudevi Mobile
 

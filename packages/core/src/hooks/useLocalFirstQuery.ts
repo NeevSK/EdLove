@@ -1,7 +1,8 @@
+import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
+import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useStore } from '@repo/core/store/useStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
-import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export interface UseLocalFirstQueryOptions<TData> {
@@ -43,6 +44,7 @@ export function useLocalFirstQuery<TData>({
 }: UseLocalFirstQueryOptions<TData>): LocalFirstQueryResult<TData> {
   const user = useAuthStore((s) => s.user);
   const isAnonymous = Boolean(!user || user.is_anonymous);
+  const isLocalOnly = isLocalOnlyIdentity(user);
   const isOnline = useStore((s) => s.isOnline);
   const viewDate = useTemporalStore((s) => s.viewDate);
 
@@ -72,7 +74,7 @@ export function useLocalFirstQuery<TData>({
     let active = true;
     const hydrate = async () => {
       try {
-        if (isAnonymous && guestResolverRef.current) {
+        if (isLocalOnly && guestResolverRef.current) {
           const guestResult = await guestResolverRef.current();
           if (active && guestResult !== null && guestResult !== undefined) {
             setDataState(guestResult);
@@ -96,7 +98,7 @@ export function useLocalFirstQuery<TData>({
     return () => {
       active = false;
     };
-  }, [enabled, isAnonymous, storageKey]);
+  }, [enabled, isLocalOnly, storageKey]);
 
   const sequenceRef = useRef(0);
 
@@ -106,11 +108,15 @@ export function useLocalFirstQuery<TData>({
 
     const currentSequence = ++sequenceRef.current;
 
-    if (isAnonymous) {
+    if (isLocalOnly) {
       if (guestResolverRef.current) {
         try {
           const guestResult = await guestResolverRef.current();
-          if (currentSequence === sequenceRef.current && guestResult !== null && guestResult !== undefined) {
+          if (
+            currentSequence === sequenceRef.current &&
+            guestResult !== null &&
+            guestResult !== undefined
+          ) {
             setDataState(guestResult);
           }
         } catch (e) {
@@ -128,7 +134,11 @@ export function useLocalFirstQuery<TData>({
     try {
       const remoteData = await fetcherRef.current(activeUserId, viewDate);
       // Discard stale out-of-order responses if a newer request was dispatched
-      if (currentSequence === sequenceRef.current && remoteData !== null && remoteData !== undefined) {
+      if (
+        currentSequence === sequenceRef.current &&
+        remoteData !== null &&
+        remoteData !== undefined
+      ) {
         setDataState(remoteData);
         setIsOfflineState(false);
         void SafeZustandStorage.setItem(storageKey, JSON.stringify(remoteData));
@@ -139,7 +149,7 @@ export function useLocalFirstQuery<TData>({
         setIsOfflineState(true);
       }
     }
-  }, [activeUserId, enabled, isAnonymous, isOnline, queryKey, storageKey, viewDate]);
+  }, [activeUserId, enabled, isLocalOnly, isOnline, queryKey, storageKey, viewDate]);
 
   useEffect(() => {
     void syncRemote();
@@ -148,7 +158,10 @@ export function useLocalFirstQuery<TData>({
   const setData = useCallback(
     (updater: TData | null | ((prev: TData | null) => TData | null)) => {
       setDataState((prev) => {
-        const next = typeof updater === 'function' ? (updater as (p: TData | null) => TData | null)(prev) : updater;
+        const next =
+          typeof updater === 'function'
+            ? (updater as (p: TData | null) => TData | null)(prev)
+            : updater;
         if (next !== null && next !== undefined) {
           void SafeZustandStorage.setItem(storageKey, JSON.stringify(next));
         }

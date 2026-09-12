@@ -1,0 +1,422 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const fontCategories = [
+  {
+    categoryTitle: 'Archetype I · Immersive Editorial & Literary Serifs',
+    categoryDescription: 'Warm bracketed serifs with horizontal feet that ground every word on the baseline. Designed for deep reading, contemplative scholarship, and epistemic permanence.',
+    fonts: [
+      {
+        id: 'newsreader',
+        name: 'Newsreader',
+        tag: 'Editorial Benchmark · Continuous Reading Masterpiece',
+        fontFamily: '"Newsreader", Georgia, serif',
+        idealRole: 'Body Narratives, Philosophy, Essays, Educational Prose',
+      },
+      {
+        id: 'lora',
+        name: 'Lora',
+        tag: 'Contemporary Calligraphic Serif · Sturdy Anchors',
+        fontFamily: '"Lora", Georgia, serif',
+        idealRole: 'Universal Body Copy, Grounded Paragraphs',
+      },
+      {
+        id: 'spectral',
+        name: 'Spectral',
+        tag: 'Clean Screen Serif · High Information Density',
+        fontFamily: '"Spectral", Georgia, serif',
+        idealRole: 'UI Lists, Metadata Descriptions, Multi-Column Text',
+      },
+    ],
+  },
+  {
+    categoryTitle: 'Archetype II · Classical & Venetian Heritage Serifs',
+    categoryDescription: 'Centuries of humanistic printing tradition, graceful stroke modulation, and timeless institutional weight.',
+    fonts: [
+      {
+        id: 'fraunces',
+        name: 'Fraunces (Optical Size 144)',
+        tag: 'Heritage Soft-Serif · Warm Monumental Authority',
+        fontFamily: '"Fraunces", Georgia, serif',
+        idealRole: 'Hero Headlines, Milestone Phases, Sanctuary Titles',
+      },
+      {
+        id: 'ebgaramond',
+        name: 'EB Garamond',
+        tag: 'Pure Renaissance Heritage · Dignified Scholarship',
+        fontFamily: '"EB Garamond", Georgia, serif',
+        idealRole: 'Sacred Inscriptions, Academic Grounding, Mantras',
+      },
+      {
+        id: 'cormorant',
+        name: 'Cormorant Garamond',
+        tag: 'Noble & Regal · High Contrast Literary Presence',
+        fontFamily: '"Cormorant Garamond", Georgia, serif',
+        idealRole: 'Major Landmark Headings, Display Statements',
+      },
+      {
+        id: 'cinzel',
+        name: 'Cinzel',
+        tag: 'Inscriptional Classical · Roman Capital Gravitas',
+        fontFamily: '"Cinzel", Georgia, serif',
+        idealRole: 'Milestone Years, Historical Badges, Epoch Pillars',
+      },
+    ],
+  },
+  {
+    categoryTitle: 'Archetype III · Slab Serifs & Structural Blocks (Unflinching Physical Weight)',
+    categoryDescription: 'Heavy, blocky rectangular serifs. Absolute zero floating or wispy lines—maximum structural anchor and tactile heft.',
+    fonts: [
+      {
+        id: 'bitter',
+        name: 'Bitter',
+        tag: 'Contemporary Slab Serif · Purpose-Built for Screens',
+        fontFamily: '"Bitter", Georgia, serif',
+        idealRole: 'Punchy Micro-Badges, Robust Body Text, Dense Deliverables',
+      },
+      {
+        id: 'zillaslab',
+        name: 'Zilla Slab',
+        tag: 'Industrial & Academic Slab · Solid Square Feet',
+        fontFamily: '"Zilla Slab", Georgia, serif',
+        idealRole: 'Section Subheadings, Technical Summaries, Card Phase Titles',
+      },
+    ],
+  },
+  {
+    categoryTitle: 'Archetype IV · Architectural Grotesque & Engineered Monospace',
+    categoryDescription: 'Square shoulders, flat stroke terminals, and structured geometry. Solid, intentional stroke weight without the hollow circular curves of generic floating sans.',
+    fonts: [
+      {
+        id: 'outfit',
+        name: 'Outfit',
+        tag: 'Structured Display Grotesque · Solid Stroke Weight',
+        fontFamily: '"Outfit", ui-sans-serif, system-ui, sans-serif',
+        idealRole: 'Punchy Card Titles, Eyebrows, Clean Structural Badges',
+      },
+      {
+        id: 'spacegrotesk',
+        name: 'Space Grotesk',
+        tag: 'Architectural Heavy Grotesque · Flat Terminals',
+        fontFamily: '"Space Grotesk", monospace, sans-serif',
+        idealRole: 'Roadmap Milestone Codes, Sovereign Tech Labels, Eyebrows',
+      },
+      {
+        id: 'spacemono',
+        name: 'Space Mono',
+        tag: 'Editorial Monospace · Deliberate Structural Grid',
+        fontFamily: '"Space Mono", monospace',
+        idealRole: 'Countdown Timers, Version Telemetry, Cryptographic Status',
+      },
+      {
+        id: 'jetbrains',
+        name: 'JetBrains Mono',
+        tag: 'Engineered Precision · High-Legibility Code & Badges',
+        fontFamily: '"JetBrains Mono", monospace',
+        idealRole: 'Status Dots, Metadata Tags, Specimen Markers',
+      },
+    ],
+  },
+];
+---
+
+<Layout title="Typography Comparison Lab">
+  <Header />
+  <main class="page-shell">
+    <div class="page-intro" style="padding-top: 40px; padding-bottom: 40px;">
+      <p class="eyebrow" style="color: var(--color-sanctuary-saffron);">Live Font Comparison Lab</p>
+      <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); margin: 12px 0;">Compare Small Text & UI Typography</h1>
+      <p style="font-size: 1.15rem; color: var(--color-mud-brown);">
+        Test how different font families, weights, eyebrows, badges, and body copy render live in your browser.
+      </p>
+    </div>
+
+    <div class="font-lab-grid">
+      {fontCategories.map((cat) => (
+        <section class="archetype-section">
+          <header class="archetype-header">
+            <h2 class="archetype-title">{cat.categoryTitle}</h2>
+            <p class="archetype-desc">{cat.categoryDescription}</p>
+          </header>
+
+          <div class="cards-list">
+            {cat.fonts.map((font) => (
+              <article class="font-card" style={`--test-font: ${font.fontFamily}`}>
+                <header class="font-card__header">
+                  <div>
+                    <span class="font-card__badge">{font.tag}</span>
+                    <h3 class="font-card__name">{font.name}</h3>
+                    <span class="font-card__role">Recommended Role: <strong>{font.idealRole}</strong></span>
+                  </div>
+                  <code class="font-card__code">font-family: {font.name}</code>
+                </header>
+
+                <!-- Eyebrow & Metadata Specimen -->
+                <div class="specimen-group">
+                  <h4 class="specimen-label">01 · Eyebrows, Badges & Small Metadata (14px, Weight 700/800)</h4>
+                  <div class="specimen-row">
+                    <span class="test-eyebrow">THE MULTI-YEAR HORIZON</span>
+                    <span class="test-pill">Alpha Release · Oct 6, 2026</span>
+                    <span class="test-pill test-pill--gold">Design Cycle Genesis</span>
+                    <span class="test-code">#ROADMAP · v1.0.0</span>
+                  </div>
+                </div>
+
+                <!-- Body & Deliverable Copy Specimen -->
+                <div class="specimen-group">
+                  <h4 class="specimen-label">02 · Body Copy & Paragraph (17px, Line-height 1.68, Weight 500)</h4>
+                  <p class="test-body">
+                    Grounded in rigorous field inquiry and foundational conceptual architecture, the Alpha release brings primary design artifacts to life for initial invited teacher cohorts and sanctuary classrooms across Sri Lanka.
+                  </p>
+                </div>
+
+                <!-- Checklist & UI Controls Specimen -->
+                <div class="specimen-group">
+                  <h4 class="specimen-label">03 · UI Checklist & Interactive Controls</h4>
+                  <ul class="test-list">
+                    <li>
+                      <span class="test-check">✦</span>
+                      <strong>Core Teacher Sanctuary:</strong> Local-first offline resilience & private cryptographic storage.
+                    </li>
+                    <li>
+                      <span class="test-check">✦</span>
+                      <strong>Visibility Without Surveillance:</strong> School leadership view with strict privacy boundaries.
+                    </li>
+                  </ul>
+
+                  <div class="test-actions">
+                    <button class="test-btn test-btn--primary" type="button">Follow October 6 Launch ↘</button>
+                    <a class="test-link" href="#">Explore Living Ecology ↗</a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .archetype-section {
+    margin-bottom: 72px;
+  }
+
+  .archetype-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgb(104 94 85 / 0.35);
+  }
+
+  .archetype-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--color-charcoal-truth);
+    margin: 0 0 8px 0;
+  }
+
+  .archetype-desc {
+    font-size: 1.05rem;
+    color: #453c35;
+    margin: 0;
+  }
+
+  .cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .font-card__role {
+    display: block;
+    font-size: 0.88rem;
+    color: #5a5047;
+    margin-top: 6px;
+  }
+  .font-lab-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    margin-top: 24px;
+    margin-bottom: 96px;
+  }
+
+  .font-card {
+    font-family: var(--test-font);
+    background: var(--color-sacred-white);
+    border: 2px solid rgb(104 94 85 / 0.25);
+    border-radius: 8px;
+    padding: 36px 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .font-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 24px;
+    border-bottom: 2px solid rgb(104 94 85 / 0.15);
+    margin-bottom: 28px;
+  }
+
+  .font-card__badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-sanctuary-saffron);
+    background: rgba(168, 80, 34, 0.12);
+    padding: 4px 12px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .font-card__name {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-charcoal-truth);
+    font-family: var(--test-font);
+  }
+
+  .font-card__code {
+    font-size: 0.82rem;
+    background: #ebe3d4;
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #453c35;
+  }
+
+  .specimen-group {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgb(104 94 85 / 0.12);
+  }
+
+  .specimen-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .specimen-label {
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #7a7068;
+    margin: 0 0 16px 0;
+  }
+
+  .specimen-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .test-eyebrow {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: var(--color-sanctuary-saffron);
+  }
+
+  .test-pill {
+    font-size: 0.82rem;
+    font-weight: 700;
+    background: #ebe3d4;
+    color: #131e27;
+    padding: 6px 14px;
+    border-radius: 999px;
+    letter-spacing: 0.08em;
+  }
+
+  .test-pill--gold {
+    background: #fbe6cb;
+    color: #824112;
+    border: 1px solid rgba(168, 80, 34, 0.25);
+  }
+
+  .test-code {
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: #131e27;
+    color: #fffdf8;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .test-body {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: #3a342e;
+    margin: 0;
+    max-width: 800px;
+    letter-spacing: 0.045em;
+    word-spacing: 0.06em;
+  }
+
+  .test-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .test-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: #2b241e;
+    letter-spacing: 0.04em;
+  }
+    color: #2b241e;
+  }
+
+  .test-check {
+    color: var(--color-sanctuary-saffron);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .test-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .test-btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--test-font);
+  }
+
+  .test-btn--primary {
+    background: #131e27;
+    color: #fffdf8;
+  }
+
+  .test-link {
+    color: var(--color-sanctuary-saffron);
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+</style>

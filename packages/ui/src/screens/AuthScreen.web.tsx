@@ -2,6 +2,7 @@ import { authAPI, identityAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
 import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
+import { GuestDataSync } from '@repo/core/native';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
@@ -368,6 +369,7 @@ export const AuthScreenWeb = memo(
           const isAnonymousUser = isAnonymousIdentity(currentUser);
 
           if (isAnonymousUser) {
+            if (currentUser) GuestDataSync.rememberGuestSession(currentUser.id);
             const existingName =
               (currentUser?.display_name && String(currentUser.display_name).trim()) ||
               'Sanctuary User';
@@ -377,6 +379,15 @@ export const AuthScreenWeb = memo(
               existingName,
               'teacher' as Capacity,
             );
+            if (currentUser) {
+              const migration = await GuestDataSync.syncAllData(currentUser.id);
+              if (!migration.success) {
+                showToast({
+                  message: 'Your work remains on this device and will be retried after sign-in.',
+                  type: 'info',
+                });
+              }
+            }
             await applyPendingInvite('Welcome to your new school sanctuary!');
             showToast({ message: 'Welcome! Your identity is now secured.', type: 'success' });
             onSuccess?.();

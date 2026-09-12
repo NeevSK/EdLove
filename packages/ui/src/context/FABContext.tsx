@@ -48,7 +48,9 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const unregisterFAB = useCallback(() => {
-    setState((prev) => ({ ...prev, actions: [], visible: false }));
+    setState((prev) =>
+      prev.actions.length === 0 && !prev.visible ? prev : { ...prev, actions: [], visible: false },
+    );
   }, []);
 
   const setVisibility = useCallback((visible: boolean) => {

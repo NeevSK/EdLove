@@ -56,6 +56,37 @@ describe('featureSlice', () => {
   });
 
   describe('recomputeFlags', () => {
+    it('ignores a stale rollout response after a newer context recompute', async () => {
+      let resolveFirst: (snapshot: unknown) => void = () => undefined;
+      let resolveSecond: (snapshot: unknown) => void = () => undefined;
+      const first = new Promise((resolve) => {
+        resolveFirst = resolve;
+      });
+      const second = new Promise((resolve) => {
+        resolveSecond = resolve;
+      });
+      mockResolveFlags.mockReturnValueOnce(first).mockReturnValueOnce(second);
+
+      slice.recomputeFlags({ userId: 'first-user' } as any);
+      slice.recomputeFlags({ userId: 'second-user' } as any);
+
+      resolveSecond({
+        flags: { isInventoryEnabled: true },
+        source: 'remote',
+        refreshedAt: new Date().toISOString(),
+      });
+      await vi.waitFor(() => expect(set).toHaveBeenCalledTimes(1));
+
+      resolveFirst({
+        flags: { isInventoryEnabled: false },
+        source: 'remote',
+        refreshedAt: new Date().toISOString(),
+      });
+      await Promise.resolve();
+
+      expect(set).toHaveBeenCalledTimes(1);
+    });
+
     it('calls resolveFlags with the provided context', () => {
       const context = { userId: 'user-123', email: 'test@test.com' };
       mockResolveFlags.mockResolvedValue({

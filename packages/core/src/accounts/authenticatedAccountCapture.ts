@@ -1,6 +1,9 @@
 import { deviceAccounts, type DeviceAccountProfile } from '@repo/core/accounts/deviceAccounts';
 import type { ActiveCitizen } from '@repo/core/api/identity';
-import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import {
+  getSessionIdentityMode,
+  isResolvedAuthSubjectCurrent,
+} from '@repo/core/logic/auth/identityState';
 import type { Session } from '@supabase/supabase-js';
 
 /**
@@ -12,11 +15,13 @@ import type { Session } from '@supabase/supabase-js';
 export function getVerifiedDeviceAccountProfile(
   session: Session | null,
   identity: ActiveCitizen | null,
+  resolvedAuthSubjectId: string | null,
 ): DeviceAccountProfile | null {
   if (
     !session?.user ||
     getSessionIdentityMode(session) !== 'authenticated' ||
-    !identity
+    !identity ||
+    !isResolvedAuthSubjectCurrent(resolvedAuthSubjectId, session.user.id)
   ) {
     return null;
   }
@@ -39,14 +44,16 @@ export async function captureAuthenticatedDeviceAccount({
   capturedSessionKeys,
   capturingSessionKeys,
   identity,
+  resolvedAuthSubjectId,
   session,
 }: {
   capturedSessionKeys: Set<string>;
   capturingSessionKeys: Set<string>;
   identity: ActiveCitizen;
+  resolvedAuthSubjectId: string | null;
   session: Session | null;
 }): Promise<void> {
-  const profile = getVerifiedDeviceAccountProfile(session, identity);
+  const profile = getVerifiedDeviceAccountProfile(session, identity, resolvedAuthSubjectId);
   const captureKey = session ? `${session.user.id}:${session.access_token}` : null;
 
   if (

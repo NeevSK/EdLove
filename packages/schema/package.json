@@ -38,7 +38,7 @@
     "@repo/typescript-config": "workspace:*",
     "@zenstackhq/cli": "3.8.3",
     "@zenstackhq/language": "3.8.3",
-    "@zenstackhq/plugin-policy": "^3.8.3",
+    "@zenstackhq/plugin-policy": "^3.9.4",
     "@zenstackhq/sdk": "3.8.3",
     "typescript": "rc"
   },

@@ -10,12 +10,13 @@ Marketing web (gurudevi.edlove.org) — forms, analytics, landings.
 | :--- | :--- | :--- |
 | [@repo/editorial](../stack-map.md#repoeditorial) | domain | Provider-neutral editorial publishing contracts and distribution ledger |
 
-## External deps (8 direct)
+## External deps (9 direct)
 
 ```text
 @astrojs/sitemap
 @astrojs/svelte
 @astrojs/vercel
+@intuitui-labs/a11y-gate
 @tailwindcss/vite
 astro
 svelte

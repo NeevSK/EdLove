@@ -2,7 +2,7 @@
 title: "AGENTS.md — Agent Guardrails for Polymath Platform"
 status: "active"
 created: 2026-08-03
-updated: 2026-09-05
+updated: 2026-09-09
 author: "Naveen"
 scribe: "Antigravity"
 tags: [AGENTS.md, quality, guardrails]
@@ -83,21 +83,27 @@ export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
 # Enable ccache if installed
 if command -v ccache >/dev/null 2>&1; then
   export NDK_CCACHE="$(which ccache)"
+  export CCACHE_DIR="$HOME/.ccache"
+  export CCACHE_MAXSIZE="10G"
 fi
 
-cd /mnt/c/x/apps/gurudevi-mobile/android
+cd /home/nsk/projects/polymath-platform/apps/gurudevi-mobile/android
 
 # Standard development build (default):
-./gradlew :app:assembleDebug --no-daemon --max-workers=2 \
+./gradlew :app:assembleDebug --build-cache --no-daemon --max-workers=2 \
   -PreactNativeArchitectures=arm64-v8a --console=plain
 
 # Standalone release build (ONLY if user explicitly requested):
-# doppler run --no-fallback -- ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+# doppler run --no-fallback -- ./gradlew :app:assembleRelease --build-cache --no-daemon --max-workers=2 \
 #   -PreactNativeArchitectures=arm64-v8a --console=plain
 ```
 
-4. **Never build in detached/stale clones**:
-   Always execute the build against the active workspace (`/mnt/c/x/apps/gurudevi-mobile/android`). Do not build inside isolated stale clones (e.g. `/home/<user>/polymath-platform-wsl`) which causes outdated APKs and misleading logs.
+4. **One-Command Unified Execution from Windows**:
+   Always prefer running the standardized scripts from the Windows workspace root:
+   - **Dev Debug APK**: `pnpm run build:android`
+   - **Release APK**: `pnpm run build:android:release`
+   - **Install Dev APK**: `pnpm run install:android`
+   - **Install Release APK**: `pnpm run install:android:release`
 
 ---
 
@@ -107,15 +113,14 @@ These packages are pinned to specific versions for new-architecture compatibilit
 
 | Package | Sacred version | Why |
 |---|---|---|
-| `react-native-gesture-handler` | 3.2.1 | RNGH v3 for new arch |
+| `react-native-gesture-handler` | 3.3.0 | RNGH v3 for new arch |
 | `react-native-reanimated` | 4.6.0 | Reanimated 4 for new arch |
-| `react-native-worklets` | 0.12.1 | Required by reanimated 4 |
+| `react-native-worklets` | 0.12.2 | Required by reanimated 4 |
 | `react-native-mmkv` | 4.3.2 | Nitro modules v4 |
 | `react-native-nitro-modules` | 0.37.1 | Required by mmkv 4 / Nitro v0.37 |
 | `@shopify/react-native-skia` | 2.11.2 | New arch Skia |
 | `typescript` | 7.0.2 | Latest stable |
 
-To update any of these: discuss with the user first, verify compatibility with Expo 57, and test on a physical device.
 
 ---
 
@@ -223,6 +228,47 @@ merges. **They apply with extra force to agent-authored changes.**
   duplication, and complexity in changed files. Both must exit 0. If a
   finding is inherited (pre-existing), note it in the PR description — do
   not suppress the tool to pass.
+
+### Test-claim protocol — mandatory for every agent and code review
+
+Never write or repeat the unqualified statement **"tests passed"**. A test
+result is only valid when its evidence level, engine, scope, and limitations are
+stated. Before reporting a result, inspect both the command output and the test
+assertions that produced it; filenames, tags, snapshots, and a green exit code
+are not sufficient proof of behavior.
+
+Every test claim must include:
+
+- the exact command and configuration file;
+- the evidence level: G0 contract/unit, G1 boundary/mock, G2 scenario contract,
+  G3 real component/runtime, G4 browser/Metro platform, G5 device/emulator, or
+  R1 production assurance;
+- the engine and runtime version, including whether host modules, CSS, portals,
+  animation, network, storage, or native APIs were substituted;
+- the exact test files/scenarios and passed/failed counts;
+- what the assertions actually prove;
+- what they do not prove, including untested platforms, devices, failure paths,
+  accessibility behavior, visual output, and known warnings or exclusions.
+
+The shared runner enforces `--evidence-level` and writes it into reports. Run
+`pnpm run check:test-evidence` to find package/app scripts that bypass this
+classification. A failing evidence audit is a real quality failure and must be
+reported as blocked; do not relabel an unclassified or mock result as native,
+platform, device, or production evidence.
+
+Required reporting form:
+
+```text
+G1 boundary / Vitest 5 mock engine — Dialog.test.tsx: 4/4 passed.
+Proves: the named contract assertions under the configured substitutions.
+Does not prove: real React Native, browser CSS/focus, device back handling,
+visual fidelity, or production behavior.
+```
+
+Only use a higher-level label when that exact level's runtime command passed.
+Do not infer G3/G4/G5/R1 from G1 or G2, and do not claim a component is
+production-hardened until its contract matrix and all required evidence levels
+are complete.
 
 ### TypeScript policy
 

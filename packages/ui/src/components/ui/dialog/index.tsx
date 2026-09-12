@@ -19,9 +19,22 @@ export interface DialogProps extends Omit<ViewProps, 'children'> {
   accessibilityLabel?: string;
 }
 
-export function Dialog({ open, onOpenChange, children, ...props }: DialogProps) {
+export function Dialog({
+  open,
+  onOpenChange,
+  children,
+  closeOnBackdropPress,
+  trapFocus,
+  ...props
+}: DialogProps) {
   return (
-    <Modal isOpen={open} onClose={() => onOpenChange(false)} {...props}>
+    <Modal
+      isOpen={open}
+      onClose={() => onOpenChange(false)}
+      closeOnBackdropPress={closeOnBackdropPress}
+      trapFocus={trapFocus}
+      {...props}
+    >
       {children}
     </Modal>
   );

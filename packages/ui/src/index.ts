@@ -46,6 +46,8 @@ export { FireflyProductMoment } from './components/FireflyProductMoment';
 export type { FocusRingProps } from './components/FocusRing';
 export { FocusRing } from './components/FocusRing';
 export { JourneyErrorBoundary } from './components/JourneyErrorBoundary';
+export type { LivingFireflyProps } from './components/LivingFirefly';
+export { LivingFirefly } from './components/LivingFirefly';
 export type { PageFrame } from './components/layout';
 export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
 export type { MascotArtworkSource, MascotConfig, MascotId, MascotMode } from './components/Mascot';

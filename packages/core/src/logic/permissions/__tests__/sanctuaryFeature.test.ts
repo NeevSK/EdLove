@@ -29,6 +29,7 @@ describe('meetsCitizenship', () => {
 
 describe('sanctuaryFeature', () => {
   const baseCtx: SanctuaryEvaluationContext = {
+    userId: 'user-1',
     cedarSnapshotLoaded: true,
     entitlementManifestLoaded: true,
     citizenship: CITIZENSHIP.FIRST_CLASS,
@@ -64,6 +65,90 @@ describe('sanctuaryFeature', () => {
       permitted: false,
       reason: 'not_initialized',
     });
+  });
+
+  it('permits a safe baseline read while capability state hydrates', () => {
+    expect(
+      sanctuaryFeature(
+        {
+          ...baseCtx,
+          cedarSnapshotLoaded: false,
+          entitlementManifestLoaded: false,
+          entitlementReadiness: 'unknown',
+          cedarDecision: 'no_decision',
+        },
+        {
+          citizenshipRequired: CITIZENSHIP.SECOND_CLASS,
+          action: 'read',
+          subject: 'SelfJourney',
+          allowDuringBootstrap: true,
+        },
+      ),
+    ).toEqual({ permitted: true });
+  });
+
+  it('permits third-class baseline reads while capability state hydrates', () => {
+    expect(
+      sanctuaryFeature(
+        {
+          ...baseCtx,
+          citizenship: CITIZENSHIP.THIRD_CLASS,
+          isLocalOnly: true,
+          cedarSnapshotLoaded: false,
+          entitlementManifestLoaded: false,
+          entitlementReadiness: 'unknown',
+          cedarDecision: 'no_decision',
+        },
+        {
+          citizenshipRequired: CITIZENSHIP.THIRD_CLASS,
+          action: 'read',
+          subject: 'SelfJourney',
+          allowDuringBootstrap: true,
+        },
+      ),
+    ).toEqual({ permitted: true });
+  });
+
+  it('permits third-class personal mutations locally while capability state hydrates', () => {
+    expect(
+      sanctuaryFeature(
+        {
+          ...baseCtx,
+          citizenship: CITIZENSHIP.THIRD_CLASS,
+          isLocalOnly: true,
+          cedarSnapshotLoaded: false,
+          entitlementManifestLoaded: false,
+          entitlementReadiness: 'unknown',
+          cedarDecision: 'no_decision',
+        },
+        {
+          citizenshipRequired: CITIZENSHIP.THIRD_CLASS,
+          action: 'create',
+          subject: 'SelfJourney',
+        },
+      ),
+    ).toEqual({ permitted: true });
+  });
+
+  it('does not expose baseline bootstrap UI to anonymous users', () => {
+    const result = sanctuaryFeature(
+      {
+        ...baseCtx,
+        userId: null,
+        cedarSnapshotLoaded: false,
+        entitlementManifestLoaded: false,
+        entitlementReadiness: 'unknown',
+        cedarDecision: 'no_decision',
+      },
+      {
+        citizenshipRequired: CITIZENSHIP.SECOND_CLASS,
+        action: 'read',
+        subject: 'SelfJourney',
+        allowDuringBootstrap: true,
+      },
+    );
+
+    expect(result).toEqual({ permitted: false, reason: 'not_initialized' });
   });
 
   it('fails citizenship gate when level is insufficient', () => {

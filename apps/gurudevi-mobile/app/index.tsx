@@ -1,8 +1,9 @@
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Redirect } from 'expo-router';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function IndexRoute() {
-  return <Redirect href="/welcome" />;
+  // SessionRouteGate owns root resolution so a verified returning account can
+  // enter the app while every other launch resolves to the public step zero.
+  return null;
 }

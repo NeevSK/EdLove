@@ -11,7 +11,7 @@ export interface EssentialStartupDependencies {
   initializeDeviceAccounts: () => Promise<unknown>;
 }
 
-const ESSENTIAL_STARTUP_TIMEOUT_MS = 10_000;
+const ESSENTIAL_STARTUP_TIMEOUT_MS = 200_000;
 
 /**
  * Race a promise against a deadline.

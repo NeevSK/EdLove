@@ -20,10 +20,10 @@ Audit date: 2026-09-07.
 
 | Evidence | Current state | Meaning |
 | --- | --- | --- |
-| G1 boundary | 50 test files / 191 tests pass through the explicit Vitest 5 boundary command | Harness execution is available; it is not a device or CSS claim |
+| G1 boundary | 52 test files / 214 tests pass through the explicit Vitest 5 boundary command | Harness execution is available; it is not a device or CSS claim; known act/device-provider warnings remain |
 | G2 scenario | Button, Input, FormField, and Switch have explicit observable state/interaction contracts | These are eligible for later runtime promotion |
-| G3 component-real | Button, Input, and FormField | Real React Native 0.86.3 execution passes for the promoted scenarios |
-| G4 platform-real | Button, Input, and FormField | Browser/Metro fixture verifies behavior and NativeWind/react-native-css output |
+| G3 component-real | Button, Input, FormField, and Dialog/Modal | Real React Native 0.86.3 execution passes for named scenarios; not a hardening sign-off |
+| G4 platform-real | Button, Input, FormField, and Dialog/Modal | Browser/Metro fixture verifies named behavior, NativeWind/react-native-css output, Escape dismissal, and focus restoration; not a hardening sign-off |
 | G5 device-confirmed | Not started | Requires a real debug build and supported device/emulator smoke |
 | R1 production-assured | Not started | Post-G5 release, rollout, telemetry, rollback, and soak gate |
 
@@ -38,8 +38,8 @@ contract is explicit and observable.
 | Button | ready, press, disabled, loading duplicate-block, loading recovery, accessible name | G2 | Maintain and promote remaining variants |
 | Input/TextInput | label, helper/error description, invalid, disabled, edit/recovery | G2 | Add controlled/uncontrolled and platform keyboard cases |
 | FormField | helper → error → recovery, required, invalid, described-by | G2 | Add required and submit/failure contract |
-| Dialog/Modal | closed/open, name, backdrop policy, close, Escape/web, focus entry/restoration | Partial G2 | Add Escape/web and focus scenarios |
-| Sheet/Actionsheet | closed/open, item selection, cancellation, backdrop dismissal, long content | Partial G2 | Add controlled close and cancellation matrix |
+| Dialog/Modal | closed/open, name, backdrop policy, close, Escape/web, focus entry/restoration | G3 + G4 browser execution evidence | Implement and verify a real focus trap, portal cleanup, rapid-dismissal, and native back/cancellation behavior before calling the primitive production-hardened |
+| Sheet/Actionsheet | closed/open, item selection closes, disabled item guard, backdrop dismissal policy, controlled removal | G2 boundary scenarios | Add long-content, gesture-cancellation, portal-cleanup, and native/runtime evidence |
 | Select/Combobox | closed/open, selected value, disabled, empty/no match, keyboard selection, cancellation | Partial G2 | Add keyboard selection and cancellation scenarios |
 | Tabs | initial selection, switch, selected state, disabled trigger, keyboard traversal | Partial G2 | Add disabled and keyboard contract |
 | Toast | show, accessible alert/status, minimum duration, manual dismiss, timer cleanup | Partial G1 | Add queue replacement and cleanup evidence |
@@ -53,6 +53,9 @@ contract is explicit and observable.
 
 - A passing `test:boundary` run supplies G1 only for the behavior that the
   test actually observes.
+- Every UI test script must emit an explicit evidence level through
+  `scripts/run-and-report.mjs`; an unqualified `tests passed` statement is a
+  governance failure.
 - G2 requires a named journey and acceptance criteria; a render assertion or
   mock call count alone is insufficient.
 - Pure utilities and state machines remain G0 contract/unit evidence unless

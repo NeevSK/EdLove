@@ -4,6 +4,13 @@ Reusable UI consumes semantic roles, not palette values. The role names below
 are the stable contract; the temporal theme resolver and NativeWind mappings
 remain implementation details.
 
+## Cross-platform import boundary
+
+Use `@repo/ui/tokens` for the stable, dependency-free value contract. It is
+safe for browser and native consumers because it imports neither React, React
+Native, DOM APIs, nor a styling framework. Browser and native component
+implementations may share these values, but must not share component imports.
+
 | Role | Meaning | Existing NativeWind mapping |
 | --- | --- | --- |
 | `surface.canvas` | app/page background | `phase-surface` |

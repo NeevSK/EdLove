@@ -27,94 +27,71 @@ describe('MultiTenantAnalyticsEngine', () => {
     vi.restoreAllMocks();
   });
   describe('Data Aggregation', () => {
-    it('should aggregate tenant metrics correctly', async () => {
+    it('fails closed when institutional metric sources are not connected', async () => {
       const tenantIds = ['tenant-1', 'tenant-2'];
       const timeRange = {
         startDate: '2024-01-01',
         endDate: '2024-03-31',
       };
-      const result = await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
-      expect(result).toHaveLength(2);
-      expect(result[0]!).toHaveProperty('tenantId');
-      expect(result[0]!).toHaveProperty('metrics');
-      expect(result[0]!).toHaveProperty('period');
+      await expect(
+        multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange),
+      ).rejects.toThrow('Institutional analytics are unavailable');
     });
-    it('should calculate tenant metrics with proper structure', async () => {
+    it('does not return fabricated tenant metric values', async () => {
       const tenantIds = ['tenant-1'];
       const timeRange = {
         startDate: '2024-01-01',
         endDate: '2024-03-31',
       };
-      const result = await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
-      const metrics = result[0]!.metrics;
-      expect(metrics).toHaveProperty('attendance_rate');
-      expect(metrics).toHaveProperty('grade_average');
-      expect(metrics).toHaveProperty('enrollment_count');
-      expect(typeof metrics.attendance_rate).toBe('number');
+      await expect(
+        multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange),
+      ).rejects.toThrow('Institutional analytics are unavailable');
     });
   });
   describe('Tenant Comparison', () => {
-    it('should compare tenant performance across metrics', async () => {
+    it('fails closed when comparison data sources are not connected', async () => {
       const tenantIds = ['tenant-1', 'tenant-2', 'tenant-3'];
       const metrics = ['attendance_rate', 'grade_average'];
       const industry = 'elementary';
-      const result = await multiTenantAnalyticsEngine.compareTenantPerformance(
-        tenantIds,
-        metrics as MetricDefinition[],
-        industry as EducationSector,
-      );
-      expect(result).toHaveLength(2); // One comparison per metric
-      expect(result[0]!).toHaveProperty('metric');
-      expect(result[0]!).toHaveProperty('tenants');
-      expect(result[0]!.tenants).toHaveLength(3);
+      await expect(
+        multiTenantAnalyticsEngine.compareTenantPerformance(
+          tenantIds,
+          metrics as MetricDefinition[],
+          industry as EducationSector,
+        ),
+      ).rejects.toThrow('Institutional comparisons are unavailable');
     });
-    it('should calculate rankings and percentiles correctly', async () => {
+    it('does not fabricate rankings or percentiles', async () => {
       const tenantIds = ['tenant-1', 'tenant-2', 'tenant-3'];
       const metrics = ['attendance_rate'];
       const industry = 'elementary';
-      const result = await multiTenantAnalyticsEngine.compareTenantPerformance(
-        tenantIds,
-        metrics as MetricDefinition[],
-        industry as EducationSector,
-      );
-      const comparison = result[0]!;
-      const tenants = comparison.tenants;
-      // Check that rankings are calculated
-      tenants.forEach((tenant, _index) => {
-        expect(tenant.rank).toBeGreaterThan(0);
-        expect(tenant.rank).toBeLessThanOrEqual(3);
-        expect(tenant.percentile).toBeGreaterThanOrEqual(0);
-        expect(tenant.percentile).toBeLessThanOrEqual(100);
-      });
+      await expect(
+        multiTenantAnalyticsEngine.compareTenantPerformance(
+          tenantIds,
+          metrics as MetricDefinition[],
+          industry as EducationSector,
+        ),
+      ).rejects.toThrow('Institutional comparisons are unavailable');
     });
   });
   describe('Live Metrics', () => {
-    it('should retrieve live metrics for a tenant', async () => {
+    it('fails closed until live telemetry instrumentation is connected', async () => {
       const tenantId = 'tenant-1';
-      const result = await multiTenantAnalyticsEngine.getLiveMetrics(tenantId);
-      expect(result).toHaveProperty('timestamp');
-      expect(result).toHaveProperty('active_users');
-      expect(result).toHaveProperty('concurrent_sessions');
-      expect(result).toHaveProperty('api_requests_per_minute');
-      expect(result).toHaveProperty('error_rate');
-      expect(result).toHaveProperty('system_health');
-      expect(result).toHaveProperty('resource_usage');
-      expect(result!.active_users).toBeDefined();
+      await expect(multiTenantAnalyticsEngine.getLiveMetrics(tenantId)).rejects.toThrow(
+        'Live system telemetry is unavailable',
+      );
     });
-    it('should calculate system health correctly', async () => {
+    it('does not fabricate system health', async () => {
       const tenantId = 'tenant-1';
-      const result = await multiTenantAnalyticsEngine.getLiveMetrics(tenantId);
-      expect(['healthy', 'warning', 'critical']).toContain(result!.system_health);
+      await expect(multiTenantAnalyticsEngine.getLiveMetrics(tenantId)).rejects.toThrow(
+        'Live system telemetry is unavailable',
+      );
     });
-    it('should include resource usage metrics', async () => {
+    it('does not fabricate resource usage metrics', async () => {
       const tenantId = 'tenant-1';
-      const result = await multiTenantAnalyticsEngine.getLiveMetrics(tenantId);
-      expect(result!.resource_usage).toHaveProperty('cpu');
-      expect(result!.resource_usage).toHaveProperty('memory');
-      expect(result!.resource_usage).toHaveProperty('storage');
-      expect(typeof result!.resource_usage.cpu).toBe('number');
-      expect(typeof result!.resource_usage.memory).toBe('number');
-      expect(typeof result!.resource_usage.storage).toBe('number');
+      await expect(multiTenantAnalyticsEngine.getLiveMetrics(tenantId)).rejects.toThrow(
+        'Live system telemetry is unavailable',
+      );
     });
   });
   describe('Custom Reports', () => {
@@ -230,36 +207,16 @@ describe('MultiTenantAnalyticsEngine', () => {
       const tenantId = 'tenant-1';
       const context = { userRole: 'admin' };
       const _options = { limit: 10 };
-      const result = await multiTenantAnalyticsEngine.generateRecommendations(tenantId, context);
-      expect(Array.isArray(result)).toBe(true);
-      result.forEach((insight) => {
-        expect(insight).toHaveProperty('id');
-        expect(insight).toHaveProperty('tenantId');
-        expect(insight).toHaveProperty('type');
-        expect(insight).toHaveProperty('priority');
-        expect(insight).toHaveProperty('title');
-        expect(insight).toHaveProperty('description');
-        expect(insight).toHaveProperty('impact');
-        expect(insight).toHaveProperty('recommendations');
-        expect(insight).toHaveProperty('supporting_data');
-        expect(insight).toHaveProperty('generatedAt');
-        expect(['low', 'medium', 'high', 'critical']).toContain(insight.priority);
-      });
+      await expect(
+        multiTenantAnalyticsEngine.generateRecommendations(tenantId, context),
+      ).rejects.toThrow('Institutional analytics are unavailable');
     });
     it('should benchmark performance against industry standards', async () => {
       const tenantId = 'tenant-1';
       const industry = 'elementary';
-      const result = await multiTenantAnalyticsEngine.benchmarkPerformance(tenantId, industry);
-      expect(result).toHaveProperty('industry');
-      expect(result).toHaveProperty('tenant_performance');
-      expect(result).toHaveProperty('industry_trends');
-      expect(result).toHaveProperty('recommendations');
-      expect(result.tenant_performance).toHaveProperty('overall_rank');
-      expect(result.tenant_performance).toHaveProperty('total_tenants');
-      expect(result.tenant_performance).toHaveProperty('percentile');
-      expect(result.tenant_performance).toHaveProperty('strengths');
-      expect(result.tenant_performance).toHaveProperty('weaknesses');
-      expect(result.tenant_performance).toHaveProperty('opportunities');
+      await expect(
+        multiTenantAnalyticsEngine.benchmarkPerformance(tenantId, industry),
+      ).rejects.toThrow('Institutional analytics are unavailable');
     });
   });
   describe('Performance', () => {
@@ -272,9 +229,10 @@ describe('MultiTenantAnalyticsEngine', () => {
         endDate: '2024-03-31',
       };
       const startTime = performance.now();
-      const result = await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
+      await expect(
+        multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange),
+      ).rejects.toThrow('Institutional analytics are unavailable');
       const endTime = performance.now();
-      expect(result).toHaveLength(100);
       expect(endTime - startTime).toBeLessThan(5000); // Should complete within 5 seconds
     });
     it('should handle concurrent requests', async () => {
@@ -287,9 +245,10 @@ describe('MultiTenantAnalyticsEngine', () => {
         multiTenantAnalyticsEngine.aggregateTenantMetrics([tenantId], timeRange),
       );
       const startTime = performance.now();
-      const results = await Promise.all(promises);
+      await expect(Promise.all(promises)).rejects.toThrow(
+        'Institutional analytics are unavailable',
+      );
       const endTime = performance.now();
-      expect(results).toHaveLength(3);
       expect(endTime - startTime).toBeLessThan(3000); // Should complete within 3 seconds
     });
   });

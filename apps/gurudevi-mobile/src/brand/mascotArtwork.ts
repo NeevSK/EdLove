@@ -16,6 +16,7 @@ import proSceneArtwork from '../../assets/mascot/firefly-guide-pro-light-v2.png'
 import welcomeArtwork from '../../assets/mascot/firefly-guide-welcome-light-cutout-v2.webp';
 import welcomeSceneArtwork from '../../assets/mascot/firefly-guide-welcome-light-scene.webp';
 import guideArtwork from '../../assets/mascot/Gemini_Generated_Image_ezd4cqezd4cqezd4.webp';
+import cleanExploreArtwork from '../../assets/mascot/firefly-guide-explore-light-cutout-clean-v1.png';
 
 /** The supplied Gemini artwork remains the guide fallback for unassigned states. */
 export const fireflyGuideArtwork: MascotArtworkSource = {
@@ -69,6 +70,12 @@ export const fireflyProductArtwork = {
     accessibilityLabel: 'Gurudevi firefly following a trail of light through lotus leaves',
   },
 } satisfies Record<'comingSoon' | 'pro' | 'onboarding' | 'explore', MascotArtworkSource>;
+
+export const fireflyPrototypeArtwork: MascotArtworkSource = {
+  source: cleanExploreArtwork,
+  accessibilityLabel: 'Gurudevi firefly guiding the learner with a living light',
+};
+
 
 export const fireflyProductSceneArtwork = {
   comingSoon: {

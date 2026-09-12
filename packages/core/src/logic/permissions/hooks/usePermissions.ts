@@ -1,16 +1,25 @@
+import { isAnonymousIdentity, isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
+import {
+  isBaselineReadCapability,
+  isLocalOnlyMutation,
+} from '@repo/core/logic/permissions/baselineCapabilities';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
-import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
+import {
+  CITIZENSHIP,
+  meetsCitizenship,
+  sanctuaryFeature,
+} from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveScopedEntitlement } from '@repo/core/logic/ports/entitlement.port';
 import {
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
 } from '@repo/core/logic/registry/featureLifecycleManifest';
+import { type Capacity, CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import {
   type TenantKind,
   type UserContext,
   UserContextSchema,
 } from '@repo/core/logic/schemas/user.schema';
-import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
@@ -26,10 +35,8 @@ const PERSONAL_SANCTUARY_READ_SUBJECTS = new Set<string>([
   'InnerPulse',
   'SelfCare',
   'SelfReflection',
-  'StudentDashboard',
   'LibraryResource',
   'CommunityPost',
-  'Classroom',
 ]);
 
 /**
@@ -75,7 +82,15 @@ export const usePermissions = () => {
         entity_id: activePerspective.wardUserId,
       } as any;
     } else if (!activeBond && user?.capacity) {
-      activeBond = { id: 'personal', capacity: user.capacity, is_personal: true } as any;
+      const personalCapacity: Capacity = CapacitySchema.safeParse(user.capacity).data ?? 'student';
+      activeBond = {
+        id: 'personal',
+        user_id: user.id,
+        entity_id: `personal-${user.id}`,
+        entity_type: 'PERSONAL',
+        capacity: personalCapacity,
+        status: 'active',
+      };
     }
 
     const bondScope = resolveBondScope(activeBond);
@@ -112,7 +127,9 @@ export const usePermissions = () => {
       citizenship:
         user?.citizenship === 'SECOND_CLASS' || user?.citizenship === 'FIRST_CLASS'
           ? user.citizenship
-          : 'THIRD_CLASS',
+          : user?.citizenship === 'WANDERER'
+            ? 'THIRD_CLASS'
+            : 'SECOND_CLASS',
       pricing_tier: pricingTier === 'PRO' || pricingTier === 'INSTITUTIONAL' ? pricingTier : 'FREE',
       features: user?.features || [],
       flags: user?.flags || {},
@@ -130,7 +147,8 @@ export const usePermissions = () => {
         isPersonal,
       },
       tenantKind: 'customer' as TenantKind,
-      isAnonymous: !user,
+      isAnonymous: isAnonymousIdentity(user),
+      isLocalOnly: isLocalOnlyIdentity(user),
       hasGlobalAccess:
         activeBond?.capacity === 'founder' ||
         activeBond?.capacity === 'admin' ||
@@ -147,20 +165,28 @@ export const usePermissions = () => {
       return rawContext;
     }
     return parsed.data;
-  }, [user, activeBondState, activePerspective, schoolType, pricingTier, activeEntitlements, grants]);
+  }, [
+    user,
+    activeBondState,
+    activePerspective,
+    schoolType,
+    pricingTier,
+    activeEntitlements,
+    grants,
+  ]);
 
   const can = useCallback(
     (action: Action, subject: Subject) => {
-      const citizenshipStr = user?.citizenship ?? 'THIRD_CLASS';
+      const citizenshipStr = context.citizenship;
       const citizenship =
-        citizenshipStr === 'WANDERER' || citizenshipStr === 'THIRD_CLASS'
+        citizenshipStr === 'THIRD_CLASS'
           ? CITIZENSHIP.THIRD_CLASS
           : citizenshipStr === 'SECOND_CLASS'
             ? CITIZENSHIP.SECOND_CLASS
             : CITIZENSHIP.FIRST_CLASS;
 
       let cedarDecision: 'allow' | 'deny' | 'no_decision' = 'no_decision';
-      if (user?.id) {
+      if (context.userId) {
         const rawDecision = getDecision(subject as string, action as string);
         if (rawDecision === 'allow' || rawDecision === 'deny') {
           cedarDecision = rawDecision;
@@ -178,11 +204,33 @@ export const usePermissions = () => {
       const flagActive = resolveFeatureFlagValue(flags, flagKey);
       const flagType = resolveFeatureFlagClass(flagKey);
 
+      if (
+        context.isLocalOnly &&
+        Boolean(context.userId) &&
+        isLocalOnlyMutation(action, subject) &&
+        flagActive
+      ) {
+        return true;
+      }
+
+      // Keep the core shell usable while remote Cedar and entitlement state
+      // hydrates. This is deliberately limited to read-only baseline surfaces;
+      // mutations and paid capabilities still require the full evaluator.
+      if (
+        isBaselineReadCapability(action, subject) &&
+        Boolean(context.userId) &&
+        flagActive &&
+        meetsCitizenship(citizenship, CITIZENSHIP.THIRD_CLASS)
+      ) {
+        return true;
+      }
+
       return sanctuaryFeature(
         {
-          userId: user?.id ?? null,
-          activeBondId: activeBondState?.id ?? null,
-          primaryCapacity: activeBondState?.capacity ?? null,
+          userId: context.userId,
+          isLocalOnly: context.isLocalOnly === true,
+          activeBondId: context.activeBond?.id ?? null,
+          primaryCapacity: context.activeBond?.capacity ?? context.capacity ?? null,
           cedarSnapshotLoaded,
           entitlementManifestLoaded: manifestLoaded,
           entitlementReadiness: readiness,
@@ -204,7 +252,7 @@ export const usePermissions = () => {
       ).permitted;
     },
     [
-      user,
+      context,
       flags,
       cedarSnapshotLoaded,
       getDecision,
@@ -213,7 +261,6 @@ export const usePermissions = () => {
       pricingTier,
       manifestLoaded,
       readiness,
-      activeBondState,
     ],
   );
 
@@ -234,4 +281,3 @@ export const usePermissions = () => {
     [context, flags, can, cannot],
   );
 };
-

@@ -15,6 +15,7 @@ import {
 } from '@/boot/sessionRouteReadiness';
 
 export type BootstrapRouteState = {
+  hasActiveAccessToken: boolean;
   identityAvailability: IdentityAvailability;
   isProfileResolving: boolean;
   isSessionLoading: boolean;
@@ -53,8 +54,14 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
   const hasLiveCapacity = Boolean(profileBelongsToSession && activeBond?.capacity);
   const hasProfileName = Boolean(profileBelongsToSession && profile?.display_name?.trim());
   const { manifestLoaded, readiness, snapshotUserId } = useEntitlementStore();
+  const hasActiveAccessToken = Boolean(
+    session?.access_token &&
+      typeof session.expires_at === 'number' &&
+      session.expires_at > Math.floor(Date.now() / 1000),
+  );
 
   return {
+    hasActiveAccessToken,
     identityAvailability,
     isProfileResolving,
     isSessionLoading: loading,
@@ -69,7 +76,10 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
   };
 }
 
-export function getBootstrapRouteTarget(state: BootstrapRouteState) {
+export function getBootstrapRouteTarget(
+  state: BootstrapRouteState,
+  options: { guestOnboardingIntent?: boolean } = {},
+) {
   const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
     sessionUserId: state.session?.user.id,
     snapshotUserId: state.entitlement.snapshotUserId,
@@ -81,6 +91,7 @@ export function getBootstrapRouteTarget(state: BootstrapRouteState) {
     isProfileResolving: state.isProfileResolving,
     hasProfileError: Boolean(state.profileError),
     hasSession: Boolean(state.session),
+    guestOnboardingIntent: options.guestOnboardingIntent,
     hasCachedCapabilities,
     hasLiveCapacity: state.hasLiveCapacity,
   });
@@ -88,6 +99,7 @@ export function getBootstrapRouteTarget(state: BootstrapRouteState) {
   return getAuthRouteTarget({
     bootstrapReady: readiness.routeGuardReady,
     hasActiveCapacity: readiness.hasActiveCapacity,
+    hasActiveAccessToken: state.hasActiveAccessToken,
     hasSession: Boolean(state.session),
     identityAvailability: state.identityAvailability,
     hasProfileForSession: state.isProfileForSession,

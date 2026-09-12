@@ -28,6 +28,24 @@ const explicitBoundary = tests.filter((path) =>
 );
 
 const errors = [];
+const evidenceLevels = new Set(['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'R1']);
+const testScripts = Object.entries(packageJson.scripts).filter(
+  ([name]) => name === 'test' || name.startsWith('test:'),
+);
+
+for (const [name, command] of testScripts) {
+  if (name === 'test:governance') continue;
+  const level = command.match(/--evidence-level\s+(G[0-5]|R1)\b/)?.[1];
+  const delegatesToLevelledScript =
+    name === 'test' && /pnpm\s+run\s+test:(boundary|runtime|native)\b/.test(command);
+  if (!level && !delegatesToLevelledScript) {
+    errors.push(`${name} must declare --evidence-level or delegate to a levelled test script`);
+  }
+  if (level && !evidenceLevels.has(level)) {
+    errors.push(`${name} declares unsupported evidence level ${level}`);
+  }
+}
+
 if (!packageJson.scripts['test:boundary']?.includes('vitest.config.mts')) {
   errors.push('test:boundary must use vitest.config.mts');
 }

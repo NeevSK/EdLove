@@ -1,8 +1,11 @@
 import { circuitBreakerRegistry } from '@repo/core/lib/circuit-breaker';
 import { generateIdempotencyKey } from '@repo/core/lib/idempotency';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { isLocalOnlyIdentity } from '@repo/core/logic';
 import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
+import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';
 import { withResilience } from '@repo/core/offline/resilience';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { SelfCanvasPersistenceState } from '@repo/self/features/selfCanvasPersistence';
 import {
   DEFAULT_SELF_PREFERENCES,
@@ -47,6 +50,11 @@ type PendingPersist = {
 
 let pendingPersist: PendingPersist | null = null;
 let retryablePersist: PendingPersist | null = null;
+
+function isGuestLocalOnly(userId: string | null | undefined): boolean {
+  const user = useAuthStore.getState().user;
+  return user?.id === userId && isLocalOnlyIdentity(user);
+}
 
 async function flushToSupabase(pending: PendingPersist): Promise<boolean> {
   const { userId, state, idempotencyKey } = pending;
@@ -135,9 +143,21 @@ function persistLocal(
   const next = { ...state, lastSyncedAt: Date.now() };
   const pending = { userId: userId ?? null, state: next, idempotencyKey };
   retryablePersist = pending;
+  const localOnly = isGuestLocalOnly(userId);
   try {
     void Promise.resolve(SafeZustandStorage.setItem(keyFor(userId), JSON.stringify(next))).then(
-      () => schedulePersist(pending, set),
+      async () => {
+        try {
+          if (localOnly) {
+            if (userId) await registerGuestLeaseDataKey(userId, keyFor(userId));
+            set({ persistenceState: 'local' });
+            return;
+          }
+          schedulePersist(pending, set);
+        } catch (error) {
+          markLocalPersistenceFailure(error, set);
+        }
+      },
       (error: unknown) => markLocalPersistenceFailure(error, set),
     );
   } catch (error) {
@@ -166,6 +186,14 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
           userId: uid,
           isHydrated: true,
         } as Partial<StoreState>);
+        if (!isGuestLocalOnly(uid)) {
+          const pending: PendingPersist = {
+            idempotencyKey: generateIdempotencyKey(),
+            state: { ...DEFAULT_SELF_PREFERENCES, ...parsed },
+            userId: uid,
+          };
+          schedulePersist(pending, set);
+        }
         // Flush pending if any (offline queue)
         if (pendingPersist && pendingPersist.userId === uid) {
           const pending = pendingPersist;

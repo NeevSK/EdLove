@@ -22,7 +22,9 @@ export type AuthRouteInput = {
   hasProfileName?: boolean;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
+  hasActiveAccessToken?: boolean;
   hasSession?: boolean;
+  guestOnboardingIntent?: boolean;
 };
 
 export function getAuthRouteDecision(params: AuthRouteInput): RouteDecision {
@@ -36,10 +38,10 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     pathname === '/welcome' ||
     pathname === '/auth' ||
     pathname === '/auth/callback' ||
+    pathname === '/onboarding' ||
     pathname.startsWith('/public-form');
   const isAppEntryPath =
     pathname === '/' ||
-    pathname === '/welcome' ||
     pathname === '/auth' ||
     pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';
@@ -105,8 +107,39 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     };
   }
 
+  if (params.guestOnboardingIntent && isOnboardingPath) {
+    return {
+      decision: 'public',
+      redirectTo: null,
+      policy: {
+        state: 'public',
+        entryPoint: 'onboarding',
+        reason: 'already-public',
+        redirectTo: null,
+        canRenderCurrentPath: true,
+      },
+    };
+  }
+
+  if (params.sessionMode === 'anonymous' && pathname === '/') {
+    return {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: {
+        state: 'public',
+        entryPoint: 'welcome',
+        reason: 'no-session',
+        redirectTo: '/welcome',
+        canRenderCurrentPath: false,
+      },
+    };
+  }
+
   return {
     decision: 'app',
+    // Welcome is an explicit public landing surface. Restoring a remembered
+    // session must never move someone into the app before they choose a
+    // sign-in or onboarding action.
     redirectTo: isAppEntryPath || isOnboardingPath ? '/self' : null,
     policy: {
       state: 'ready' satisfies BootstrapSessionState,
@@ -123,6 +156,7 @@ export function isPublicBootstrapRoute(pathname: string): boolean {
     pathname === '/welcome' ||
     pathname === '/auth' ||
     pathname === '/auth/callback' ||
+    pathname === '/onboarding' ||
     pathname.startsWith('/public-form')
   );
 }

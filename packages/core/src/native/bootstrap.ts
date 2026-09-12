@@ -8,6 +8,7 @@ import { SentryTelemetryAdapter } from '@repo/core/adapters/native/SentryTelemet
 import { SimulatorDeviceIdentityAdapter } from '@repo/core/adapters/native/SimulatorDeviceIdentityAdapter';
 import { WebCryptoAdapter } from '@repo/core/adapters/WebCryptoAdapter';
 import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
+import { BrowserStorageAdapter } from '@repo/core/adapters/web/BrowserStorageAdapter';
 import { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
 import { deviceIdentity } from '@repo/core/logic/managers/DeviceIdentityManager';
 import { networkManager } from '@repo/core/logic/managers/NetworkManager';
@@ -58,7 +59,9 @@ async function initializePlatform(): Promise<void> {
   }
 
   // 2. Initialize Storage
-  if (isExpoGo || isWeb || !isReady || !useMMKV) {
+  if (isWeb) {
+    storage.registerAdapter(new BrowserStorageAdapter());
+  } else if (isExpoGo || !isReady || !useMMKV) {
     storage.registerAdapter(new AsyncStorageAdapter());
   } else {
     try {

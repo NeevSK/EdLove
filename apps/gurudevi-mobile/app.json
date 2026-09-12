@@ -52,11 +52,6 @@
               "scheme": "https",
               "host": "platform.gurudevi.edlove.org",
               "pathPrefix": "/qr"
-            },
-            {
-              "scheme": "https",
-              "host": "platform.gurudevi.edlove.org",
-              "pathPrefix": "/p"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]

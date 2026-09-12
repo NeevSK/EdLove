@@ -34,9 +34,10 @@ successful 2026-09-07 gate used Python's built-in static server.
 
 The gate checks computed styles for layout, text, pressable, SVG icon and virtualized-list adapters,
 then runs a real Button/Input/FormField scenario: helper text, validation error, loading, transient
-failure, retry, recovery, and final style output. It fails on missing elements, page errors, or
-incorrect user-visible state. Jest/Vitest prop assertions do not count as runtime evidence for this
-fixture.
+failure, retry, recovery, and final style output. It also opens a real web Dialog and verifies focus
+entry, Tab focus trapping, Escape dismissal, close-button dismissal, and focus restoration. It fails on missing elements,
+page errors, or incorrect user-visible state. Jest/Vitest prop assertions do not count as runtime
+evidence for this fixture.
 
 This fixture is a Metro/browser runtime gate, not a device test and not a replacement for the
 Vitest contract/component lanes. It is the supported place to verify NativeWind/react-native-css

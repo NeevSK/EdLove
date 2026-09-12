@@ -558,3 +558,40 @@ compatibility checks or runtime findings as fully trustworthy.
   destination is clear to keyboard and screen-reader users.
 - Re-ran the app integration suite: 6 files and 13 tests passed, including
   bootstrap, guest traversal, and network-flap recovery scenarios.
+
+### 2026-09-09 — analytics truthfulness guard
+
+- Removed fabricated tenant analytics and random comparison values from the
+  aggregate engine; unsupported institutional analytics now fail closed.
+- Removed fabricated live CPU, memory, storage, and health telemetry; the live
+  telemetry path now reports an explicit unavailable error until instrumentation
+  is connected.
+- Added an honest dashboard unavailable state and changed engine tests from
+  shape-only assertions to behavior assertions that reject fabricated data.
+- Admin analytics engine tests pass: 18 tests. Repaired the stale-poll screen
+  harness with async fake timers; the focused analytics suites now pass 21 tests.
+
+### 2026-09-09 — route transition behavior coverage
+
+- Strengthened `SessionRouteGate` coverage from static render snapshots to a
+  stateful bootstrap-to-public transition: protected content remains withheld,
+  the redirect is issued once, and the settled destination does not loop.
+- Focused route-gate suite passes: 4 tests.
+
+### 2026-09-09 — navigation-shell recovery slice
+
+- Extended the shared navigation contract to resolve every primary and utility
+  destination against the live Expo Router route tree, then bound the native
+  tab list, hidden header-only routes, keyboard behavior, and web metadata use
+  to that contract. Route, responsive-shell, and navigation tests pass.
+- Essential startup now applies its retryable deadline to platform bootstrap,
+  app-catalog loading, and device-account initialization. Kernel tests execute
+  all three real timeout paths rather than imitating them in a separate race.
+- A live web trace showed startup completing before `FABContext` repeatedly
+  emitted empty cleanup state and caused React's maximum update-depth error in
+  the Community layout. Empty FAB cleanup is now a state-identity no-op and an
+  app-level provider integration test proves it does not rerender the shell.
+- Current browser interaction evidence remains open: the current Doppler-backed
+  Metro process reaches configuration/plugin setup but does not bind port 8081.
+  It must become live before route clicks, web keyboard traversal, or an
+  absence-of-runtime-error claim can be accepted.

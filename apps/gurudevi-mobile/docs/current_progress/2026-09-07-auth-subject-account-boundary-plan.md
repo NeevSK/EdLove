@@ -43,6 +43,21 @@ admission and remembered-account capture had compared the two IDs directly.
    browser and native through restore, A → B switch, sign-out, recovery,
    deletion request/cancel, reload, offline return, and stale-response races.
 
+## Phase 1 evidence and limits
+
+Implemented client proof now keys in-flight identity requests by auth subject
+and token, rejects stale resolutions, carries the resolved auth subject through
+the auth context, and requires that binding before either route admission or
+remembered-account capture. Offline restoration also verifies the persisted
+`{ accountId, authUserId }` pair; it never uses equality between those two IDs
+as proof.
+
+Focused unit coverage includes mapped account IDs, a mismatched resolved
+subject, stale-resolution ownership, and the account-capture retry path.
+`@repo/core` type-check and the focused test suite pass. This remains code
+evidence, not device or real-Supabase acceptance: Phase 2 must expose or prove
+the server-side subject binding before the Phase 4 matrix can be signed off.
+
 ## Explicit non-goals
 
 This does not alter account authority, create a reactivation workflow, change

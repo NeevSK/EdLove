@@ -7,7 +7,10 @@ vi.mock('../deviceAccounts', () => ({
   deviceAccounts: { captureCurrentAccount },
 }));
 
-import { captureAuthenticatedDeviceAccount } from '../authenticatedAccountCapture';
+import {
+  captureAuthenticatedDeviceAccount,
+  getVerifiedDeviceAccountProfile,
+} from '../authenticatedAccountCapture';
 
 function session(accessToken = 'access-token'): Session {
   return {
@@ -51,12 +54,14 @@ describe('captureAuthenticatedDeviceAccount', () => {
       capturedSessionKeys,
       capturingSessionKeys,
       identity,
+      resolvedAuthSubjectId: 'account-1',
       session: session(),
     });
     await captureAuthenticatedDeviceAccount({
       capturedSessionKeys,
       capturingSessionKeys,
       identity,
+      resolvedAuthSubjectId: 'account-1',
       session: session(),
     });
 
@@ -75,6 +80,7 @@ describe('captureAuthenticatedDeviceAccount', () => {
       capturedSessionKeys,
       capturingSessionKeys,
       identity: { ...identity, id: 'public-account-1' },
+      resolvedAuthSubjectId: 'account-1',
       session: session(),
     });
 
@@ -82,6 +88,16 @@ describe('captureAuthenticatedDeviceAccount', () => {
       expect.objectContaining({ access_token: 'access-token' }),
       expect.objectContaining({ id: 'public-account-1' }),
     );
+  });
+
+  it('rejects an identity resolved for a different auth subject', () => {
+    expect(
+      getVerifiedDeviceAccountProfile(
+        session(),
+        { ...identity, id: 'public-account-1' },
+        'different-auth-subject',
+      ),
+    ).toBeNull();
   });
 
   it('leaves a failed capture eligible for a later session refresh retry', async () => {
@@ -93,12 +109,14 @@ describe('captureAuthenticatedDeviceAccount', () => {
       capturedSessionKeys,
       capturingSessionKeys,
       identity,
+      resolvedAuthSubjectId: 'account-1',
       session: session(),
     });
     await captureAuthenticatedDeviceAccount({
       capturedSessionKeys,
       capturingSessionKeys,
       identity,
+      resolvedAuthSubjectId: 'account-1',
       session: session(),
     });
 

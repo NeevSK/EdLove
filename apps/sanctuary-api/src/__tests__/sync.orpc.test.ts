@@ -1,7 +1,7 @@
 import './setup';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
-import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
+import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: PowerSync upload via native oRPC', () => {
   const userId = '123e4567-e89b-12d3-a456-426614174000';
@@ -9,6 +9,7 @@ describe('Sanctuary API: PowerSync upload via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
+    setMockUserData(null);
     setMockActiveBond({
       id: 'bond-sync',
       user_id: userId,
@@ -66,5 +67,29 @@ describe('Sanctuary API: PowerSync upload via native oRPC', () => {
     });
 
     expect(response).toMatchObject({ success: true, processedCount: 1 });
+  });
+
+  it('rejects third-class synchronization at the server boundary', async () => {
+    setMockUserData({
+      id: userId,
+      citizenship: 'THIRD_CLASS',
+      is_anonymous: false,
+    });
+
+    await expect(
+      createTestORPCClient(headers).sync.uploadBatch({
+        body: {
+          idempotencyKey: 'sync-third-class',
+          crud: [
+            {
+              id: '123e4567-e89b-12d3-a456-426614174098',
+              op: 'PUT',
+              table: 'self_journey',
+              opData: { title: 'must remain local' },
+            },
+          ],
+        },
+      }),
+    ).rejects.toMatchObject({ status: 403 });
   });
 });

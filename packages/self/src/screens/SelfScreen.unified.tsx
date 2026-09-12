@@ -86,7 +86,14 @@ export default function SelfScreenUnified() {
 
   const capabilities = permissionResolution.capabilities;
 
-  const roles = useMemo(() => deriveRolesFromCapabilities(capabilities), [capabilities]);
+  const capacities = useMemo(
+    () => (context.capacity ? [context.capacity] : ['student']),
+    [context.capacity],
+  );
+  const roles = useMemo(
+    () => deriveRolesFromCapabilities(capabilities, capacities),
+    [capabilities, capacities],
+  );
 
   const citizenshipLevel = useMemo(() => {
     const c = (context as unknown as { citizenshipLevel?: number }).citizenshipLevel;
@@ -109,11 +116,11 @@ export default function SelfScreenUnified() {
       resolveAccessibleFeatures({
         userId,
         capabilities,
-        capacities: (context as unknown as { capacities?: string[] }).capacities ?? [],
+        capacities,
         citizenshipLevel,
         roles: roles as never,
       }),
-    [userId, capabilities, context, citizenshipLevel, roles],
+    [userId, capabilities, capacities, context, citizenshipLevel, roles],
   );
 
   const featureSet = useMemo(

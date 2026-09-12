@@ -73,7 +73,7 @@ describe('route flow decision helper', () => {
     ).toMatchObject({ decision: 'onboarding', redirectTo: '/onboarding' });
   });
 
-  it('routes onboarded authenticated users away from public entry points', () => {
+  it('keeps welcome visible while a remembered authenticated session restores', () => {
     expect(
       getAuthRouteTarget({
         pathname: '/welcome',
@@ -83,6 +83,48 @@ describe('route flow decision helper', () => {
         hasActiveCapacity: true,
         hasSession: true,
       }),
-    ).toMatchObject({ decision: 'app', redirectTo: '/self' });
+    ).toMatchObject({ decision: 'app', redirectTo: null });
+  });
+
+  it('keeps guest onboarding available after choosing to explore', () => {
+    expect(
+      getAuthRouteTarget({
+        pathname: '/onboarding',
+        bootstrapReady: true,
+        sessionMode: 'anonymous',
+        onboardingCompleted: false,
+        hasActiveCapacity: false,
+        hasSession: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
+
+  it('keeps the explicit guest handoff on onboarding while the old account snapshot drains', () => {
+    expect(
+      getAuthRouteTarget({
+        pathname: '/onboarding',
+        bootstrapReady: true,
+        sessionMode: 'authenticated',
+        onboardingCompleted: true,
+        hasActiveCapacity: true,
+        hasActiveAccessToken: true,
+        hasSession: true,
+        guestOnboardingIntent: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
+
+  it('does not treat a completed anonymous session as a returning account at root', () => {
+    expect(
+      getAuthRouteTarget({
+        pathname: '/',
+        bootstrapReady: true,
+        sessionMode: 'anonymous',
+        onboardingCompleted: true,
+        hasActiveCapacity: true,
+        hasActiveAccessToken: true,
+        hasSession: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
   });
 });

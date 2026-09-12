@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/*
+ * App-local seed values. When @repo/ui/tokens exposes browser-safe CSS custom
+ * properties, this block is the single integration point; route components
+ * consume the semantic Tailwind theme names below rather than raw values.
+ */
+:root {
+  --ink: var(--gd-text-primary);
+  --ink-soft: var(--gd-text-secondary);
+  --paper: var(--gd-surface-page);
+  --paper-light: var(--gd-surface-canvas);
+  --water: var(--gd-accent-atmospheric);
+  --lotus: var(--gd-primary);
+  --line: var(--gd-border-subtle);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-light: var(--paper-light);
+  --color-water: var(--water);
+  --color-lotus: var(--lotus);
+  --color-line: var(--line);
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: Arial, sans-serif;
+  --breakpoint-phone: 42rem;
+}
+
+html { background: var(--paper); }
+body { margin: 0; color: var(--ink); background: var(--paper); font-family: Georgia, 'Times New Roman', serif; }
+a { color: inherit; }
+
+.landing-shell { min-height: 100svh; }
+.site-header { width: min(100% - 32px, 72rem); min-height: 4.5rem; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.site-header nav { display: flex; align-items: center; gap: 1.25rem; font-family: Arial, sans-serif; font-size: .95rem; }
+.wordmark { font-size: 1.3rem; font-weight: 700; letter-spacing: -.04em; text-decoration: none; }
+.quiet-link { padding: .65rem .9rem; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
+.landing-hero { width: min(100% - 32px, 72rem); min-height: calc(100svh - 4.5rem); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(14rem, .8fr); align-items: center; gap: clamp(2rem, 8vw, 7rem); padding: clamp(3rem, 10vh, 7rem) 0; }
+.hero-copy { max-width: 40rem; }
+.kicker { margin: 0 0 1rem; color: #68756c; font-family: Arial, sans-serif; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+h1, h2, p { margin-top: 0; }
+h1 { max-width: 12ch; margin-bottom: 1.5rem; font-size: clamp(3rem, 8vw, 6.4rem); font-weight: 500; letter-spacing: -.07em; line-height: .94; }
+.lede, .reading-shell > p:not(.kicker), .sanctuary-card p:not(.kicker) { max-width: 38rem; color: var(--ink-soft); font-size: clamp(1.08rem, 2.5vw, 1.25rem); line-height: 1.7; }
+.primary-action { display: inline-flex; min-height: var(--gd-touch-target); align-items: center; justify-content: center; margin-top: 1rem; padding: .8rem 1.15rem; border-radius: 999px; background: var(--ink); color: var(--paper-light); font-family: Arial, sans-serif; font-size: .95rem; font-weight: 700; text-decoration: none; }
+.primary-action:hover { background: var(--gd-primary); }
+.primary-action:focus-visible, .site-header a:focus-visible, .back-link:focus-visible { outline: 3px solid var(--gd-border-focus); outline-offset: 4px; }
+.lotus-field { position: relative; width: min(66vw, 25rem); aspect-ratio: 1; justify-self: center; }
+.lotus-petal, .lotus-core { position: absolute; inset: 50%; display: block; background: var(--water); transform-origin: 0 0; }
+.lotus-petal { width: 46%; height: 22%; border-radius: 100% 0 100% 0; }
+.lotus-petal-one { transform: rotate(14deg) translate(-25%, -50%); background: var(--gd-secondary); }
+.lotus-petal-two { transform: rotate(134deg) translate(-25%, -50%); background: var(--gd-accent-atmospheric); }
+.lotus-petal-three { transform: rotate(254deg) translate(-25%, -50%); background: var(--gd-accent-depth); }
+.lotus-core { width: 18%; height: 18%; border-radius: 50%; background: var(--lotus); transform: translate(-50%, -50%); }
+.principles { width: min(100% - 32px, 72rem); margin: 0 auto; padding: 2rem 0 5rem; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+.principles article { padding: 1.25rem 1.5rem 1.25rem 0; border-right: 1px solid var(--line); }
+.principles article + article { padding-left: 1.5rem; }
+.principles article:last-child { border-right: 0; }
+.principles h2 { margin-bottom: .6rem; font-size: 1.5rem; font-weight: 500; }
+.principles p { margin-bottom: 0; color: var(--ink-soft); font-family: Arial, sans-serif; font-size: .94rem; line-height: 1.6; }
+.reading-shell, .sanctuary-shell { min-height: 100svh; padding: clamp(3rem, 12vw, 8rem) max(1rem, calc((100% - 48rem) / 2)); }
+.reading-shell h1, .sanctuary-card h1 { font-size: clamp(2.75rem, 8vw, 5.5rem); }
+.back-link { display: inline-block; margin-bottom: 5rem; font-family: Arial, sans-serif; font-size: .95rem; font-weight: 700; text-decoration: none; }
+.sanctuary-shell { display: grid; place-items: center; background: radial-gradient(circle at 50% 15%, #c1e1d5, transparent 40%), var(--ink); }
+.sanctuary-card { width: min(100%, 42rem); padding: clamp(2rem, 8vw, 5rem); border: 1px solid rgb(245 237 214 / 25%); background: rgb(31 45 61 / 72%); color: var(--paper-light); }
+.sanctuary-card .kicker, .sanctuary-card p { color: #c9ddd8; }
+.sanctuary-card .primary-action { background: var(--paper); color: var(--ink); }
+
+@media (max-width: 42rem) {
+  .landing-hero { min-height: auto; grid-template-columns: 1fr; padding-top: 4rem; }
+  .lotus-field { grid-row: 1; width: min(62vw, 17rem); }
+  .hero-copy { grid-row: 2; }
+  .principles { grid-template-columns: 1fr; padding-bottom: 3rem; }
+  .principles article, .principles article + article { padding: 1.25rem 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .principles article:last-child { border-bottom: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }

@@ -34,7 +34,7 @@
     "gn-divisions",
     "educational-zones"
   ],
-  "packageManager": "pnpm@12.1.0",
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
     "build": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsup src/index.ts --format esm,cjs --dts --clean\" --name \"packages_lk-edu-geo-build\"",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_lk-edu-geo-test\"",
@@ -57,11 +57,11 @@
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/glob": "^9.0.0",
-    "@types/node": "^25.9.5",
-    "eslint": "^10.9.1",
+    "@types/node": "^25.9.6",
+    "eslint": "^10.10.0",
     "glob": "^13.0.6",
     "tsup": "^8.5.1",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0",

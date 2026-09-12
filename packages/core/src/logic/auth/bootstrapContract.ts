@@ -40,6 +40,7 @@ export function getBootstrapSessionState(params: {
   hasProfileName?: boolean;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
+  hasActiveAccessToken?: boolean;
   hasSession?: boolean;
 }): BootstrapSessionState {
   const {
@@ -50,11 +51,12 @@ export function getBootstrapSessionState(params: {
     hasProfileName = true,
     onboardingCompleted,
     hasActiveCapacity = true,
+    hasActiveAccessToken = true,
     hasSession,
   } = params;
 
   if (!bootstrapReady) return 'booting';
-  if (!hasSession || sessionMode === 'unauthenticated') return 'public';
+  if (!hasSession || !hasActiveAccessToken || sessionMode === 'unauthenticated') return 'public';
   if (sessionMode === 'anonymous' && (!onboardingCompleted || !hasActiveCapacity)) {
     return 'public';
   }

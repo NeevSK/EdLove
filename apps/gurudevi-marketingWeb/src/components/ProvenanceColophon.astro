@@ -60,36 +60,26 @@ const formattedUpdated = parsedUpdated
 
 const cadenceMap: Record<
   ContentCadence,
-  { label: string; badge: string; icon: string; explanation: string }
+  { label: string; explanation: string }
 > = {
   perennial: {
     label: 'Foundational Canon',
-    badge: 'bg-sage-green/15 text-sage-green border-sage-green/30',
-    icon: '🏛️',
     explanation: 'Perennial philosophy & ecological manifesto. Maintained as stable, enduring canon.',
   },
   'living-document': {
     label: 'Living Framework',
-    badge: 'bg-sanctuary-saffron/15 text-sanctuary-saffron border-sanctuary-saffron/30',
-    icon: '🌱',
     explanation: 'Active sanctuary framework & operational guidance. Reviewed and refined as practice matures.',
   },
   diagnostic: {
     label: 'Empirical Diagnostic',
-    badge: 'bg-peacock-blue/15 text-peacock-blue border-peacock-blue/30',
-    icon: '📊',
     explanation: 'Time-sensitive field diagnostic assessing ground realities across classrooms.',
   },
   'field-report': {
     label: 'Field Dispatch',
-    badge: 'bg-teal-water/15 text-teal-water border-teal-water/30',
-    icon: '🧭',
     explanation: 'Classroom reflections and pedagogical field experiments.',
   },
   archival: {
     label: 'Archival Record',
-    badge: 'bg-mud-brown/15 text-mud-brown border-mud-brown/30',
-    icon: '📜',
     explanation: 'Preserved documentation of previous milestones and versions.',
   },
 };
@@ -98,137 +88,122 @@ const cadenceMeta = cadenceMap[cadence] || cadenceMap['living-document'];
 ---
 
 <div class:list={["w-full", className]}>
-  <details class="group rounded-2xl bg-temple-stone/30 backdrop-blur-md border border-charcoal-truth/10 shadow-xs transition-all duration-300 hover:border-sanctuary-saffron/40 hover:shadow-sm overflow-hidden">
+  <details class="colophon-card group">
     <!-- Compact Summary Byline (Always Visible, Single Line) -->
-    <summary class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none select-none text-xs font-content text-charcoal-truth/80">
-      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-        <span class="font-bold text-charcoal-truth">{author}</span>
+    <summary class="colophon-summary">
+      <div class="colophon-summary__left">
+        <span class="colophon-summary__author">{author}</span>
         {formattedPublished && (
-          <>
-            <span class="opacity-40">•</span>
+          <span class="colophon-summary__date">
+            <span class="colophon-dot" aria-hidden="true">·</span>
             <time datetime={parsedPublished?.toISOString()}>{formattedPublished}</time>
-          </>
+          </span>
         )}
         {formattedUpdated && (
-          <>
-            <span class="opacity-40">•</span>
-            <span class="text-[11px] text-charcoal-truth/70">Updated {formattedUpdated}</span>
-          </>
+          <span class="colophon-summary__updated">
+            <span class="colophon-dot" aria-hidden="true">·</span>
+            <span>Rev. {formattedUpdated}</span>
+          </span>
         )}
         {readingTime && (
-          <>
-            <span class="opacity-40 hidden sm:inline">•</span>
-            <span class="hidden sm:inline opacity-70">{readingTime} min read</span>
-          </>
+          <span class="colophon-summary__time">
+            <span class="colophon-dot" aria-hidden="true">·</span>
+            <span>{readingTime} min read</span>
+          </span>
         )}
       </div>
 
-      <div class="flex items-center gap-2 ml-auto">
-        <!-- Translation Trust Chip (if applicable) -->
+      <div class="colophon-summary__right">
         {translationStatus === 'approved' && (
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sage-green/15 text-sage-green text-[10px] font-bold border border-sage-green/30 font-mono">
-            <span>✦</span>
-            <span>Reviewed</span>
+          <span class="colophon-tag colophon-tag--verified">
+            <span>✦ Verified</span>
           </span>
         )}
         {translationStatus === 'machine_generated' && (
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sanctuary-saffron/15 text-sanctuary-saffron text-[10px] font-bold border border-sanctuary-saffron/30 font-mono">
-            <span>🤖</span>
+          <span class="colophon-tag colophon-tag--draft">
             <span>Machine Translated</span>
           </span>
         )}
 
         <!-- Cadence Badge -->
-        <span class:list={["inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border", cadenceMeta.badge]}>
-          <span>{cadenceMeta.icon}</span>
+        <span class="colophon-tag colophon-tag--cadence">
           <span>{cadenceMeta.label}</span>
-          <span class="opacity-50">({version})</span>
+          <span class="colophon-tag__sub">· {version}</span>
         </span>
 
-        <!-- Expand Indicator Icon -->
-        <span class="text-sanctuary-saffron font-mono text-xs transition-transform duration-300 group-open:rotate-180">
-          ▾
-        </span>
+        <!-- Chevron Indicator -->
+        <span class="colophon-chevron" aria-hidden="true">▾</span>
       </div>
     </summary>
 
-    <!-- Expanded Deep Rigor & Epistemic Provenance Drawer -->
-    <div class="border-t border-charcoal-truth/10 bg-white/50 p-6 sm:p-8 text-xs leading-relaxed font-content text-charcoal-truth animate-fade-in-up">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Expanded Epistemic Provenance Drawer -->
+    <div class="colophon-drawer">
+      <div class="colophon-grid">
         <!-- Col 1: Stewardship & Authorship -->
-        <div class="space-y-1.5 border-b md:border-b-0 md:border-r border-charcoal-truth/10 pb-4 md:pb-0 md:pr-6">
-          <span class="block font-mono uppercase text-[10px] tracking-widest font-bold text-charcoal-truth/50">
-            Stewardship & Authorship
-          </span>
-          <p class="font-bold text-sm text-charcoal-truth">{author}</p>
-          <p class="text-[11px] text-charcoal-truth/70">
-            <strong>Intent & Custody:</strong> Authored by {author}.
+        <div class="colophon-col">
+          <p class="eyebrow colophon-eyebrow">Stewardship & Authorship</p>
+          <h4 class="colophon-col__title">{author}</h4>
+          <p class="colophon-col__desc">
+            <strong>Intent & Custody:</strong> Grounded in pedagogical care and authorial stewardship.
           </p>
           {scribe && (
-            <div class="mt-2 pt-2 border-t border-charcoal-truth/10">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-900/5 text-charcoal-truth text-[10px] font-mono border border-charcoal-truth/15">
-                <span>✍️ Scribe:</span>
-                <span class="font-bold">{scribe}</span>
-              </span>
-              <p class="text-[10px] text-charcoal-truth/60 italic mt-1 font-serif">
-                {scribeNote ?? `Synthesized and transcribed under authorial stewardship by ${scribe}.`}
+            <div class="colophon-scribe">
+              <span class="colophon-scribe__tag">Scribe: {scribe}</span>
+              <p class="colophon-scribe__note">
+                {scribeNote ?? `Transcribed under authorial stewardship by ${scribe}.`}
               </p>
             </div>
           )}
           {translator && (
-            <p class="text-[11px] text-charcoal-truth/70 mt-2">
+            <p class="colophon-col__desc mt-2">
               <strong>Translator:</strong> {translator} ({translationStatus})
             </p>
           )}
         </div>
 
         <!-- Col 2: Epistemic Rigor & Dates -->
-        <div class="space-y-1.5 border-b md:border-b-0 md:border-r border-charcoal-truth/10 pb-4 md:pb-0 md:pr-6">
-          <span class="block uppercase text-[10px] tracking-widest font-bold text-charcoal-truth/50">
-            Verification & Cadence
-          </span>
-          <div class="space-y-1 text-[11px]">
+        <div class="colophon-col">
+          <p class="eyebrow colophon-eyebrow">Verification & Cadence</p>
+          <div class="colophon-meta-list">
             {formattedPublished && (
-              <div class="flex justify-between">
-                <span class="text-charcoal-truth/60">First Inscribed:</span>
-                <span class="font-medium">{formattedPublished}</span>
+              <div class="colophon-meta-item">
+                <span>Inscribed</span>
+                <strong>{formattedPublished}</strong>
               </div>
             )}
-            <div class="flex justify-between">
-              <span class="text-charcoal-truth/60">Last Verified / Revised:</span>
-              <span class="font-medium">{formattedUpdated ?? formattedPublished ?? 'Continuous'}</span>
+            <div class="colophon-meta-item">
+              <span>Cadence</span>
+              <strong>{formattedUpdated ?? formattedPublished ?? 'Continuous'}</strong>
             </div>
             {readingTime && (
-              <div class="flex justify-between">
-                <span class="text-charcoal-truth/60">Reading Pace:</span>
-                <span class="font-medium">{readingTime} min contemplative reading</span>
+              <div class="colophon-meta-item">
+                <span>Reading Pace</span>
+                <strong>{readingTime} min contemplative</strong>
               </div>
             )}
           </div>
-          <p class="text-[10px] text-charcoal-truth/60 italic mt-2 border-t border-charcoal-truth/10 pt-1.5 font-serif">
+          <p class="colophon-col__note">
             {customNote ?? cadenceMeta.explanation}
           </p>
         </div>
 
         <!-- Col 3: Rights & Canonical Ledger -->
-        <div class="space-y-1.5">
-          <span class="block uppercase text-[10px] tracking-widest font-bold text-charcoal-truth/50">
-            Open Knowledge Rights
-          </span>
-          <p class="font-bold text-charcoal-truth">{license}</p>
-          <p class="text-[11px] text-charcoal-truth/70">
+        <div class="colophon-col">
+          <p class="eyebrow colophon-eyebrow">Open Knowledge Rights</p>
+          <h4 class="colophon-col__title">{license}</h4>
+          <p class="colophon-col__desc">
             Open Knowledge Commons. Free for attribution and non-commercial learning reproduction.
           </p>
           {canonicalUrl && (
-            <div class="pt-2">
+            <div class="colophon-col__link-wrap">
               <a
                 href={canonicalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-[11px] text-charcoal-truth font-semibold hover:text-sanctuary-saffron underline underline-offset-2"
+                class="colophon-link"
               >
-                <span>Canonical Ledger & Source</span>
-                <span class="text-[10px]">↗</span>
+                <span>Canonical Ledger</span>
+                <span aria-hidden="true">↗</span>
               </a>
             </div>
           )}
@@ -237,3 +212,292 @@ const cadenceMeta = cadenceMap[cadence] || cadenceMap['living-document'];
     </div>
   </details>
 </div>
+
+<style>
+  .colophon-card {
+    background: #ede5d7;
+    border: 1px solid rgb(104 94 85 / 0.18);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+  }
+
+  .colophon-card:hover {
+    border-color: rgb(168 80 34 / 0.4);
+    box-shadow: 0 4px 16px -4px rgba(29, 41, 51, 0.06);
+  }
+
+  .colophon-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    background: transparent;
+    font-size: 1.05rem;
+    color: var(--color-charcoal-truth);
+  }
+
+  .colophon-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .colophon-summary__left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-mud-brown);
+  }
+
+  .colophon-summary__author {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.12rem;
+    color: var(--color-charcoal-truth);
+    letter-spacing: 0.01em;
+  }
+
+  .colophon-dot {
+    color: var(--color-mud-brown);
+    opacity: 0.5;
+    margin-right: 8px;
+  }
+
+  .colophon-summary__date,
+  .colophon-summary__updated,
+  .colophon-summary__time {
+    font-size: 0.98rem;
+    color: var(--color-mud-brown);
+    letter-spacing: 0.02em;
+  }
+
+  .colophon-summary__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+
+  .colophon-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-family: var(--font-ui-grotesque);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .colophon-tag--cadence {
+    background: #fbe6cb;
+    color: #824112;
+    border: 1px solid rgba(168, 80, 34, 0.28);
+  }
+
+  .colophon-tag__sub {
+    opacity: 0.8;
+    font-weight: 600;
+  }
+
+  .colophon-tag--verified {
+    background: rgba(45, 90, 55, 0.12);
+    color: #2d5a37;
+    border: 1px solid rgba(45, 90, 55, 0.28);
+  }
+
+  .colophon-tag--draft {
+    background: rgba(168, 80, 34, 0.12);
+    color: #a85022;
+    border: 1px solid rgba(168, 80, 34, 0.28);
+  }
+
+  .colophon-chevron {
+    color: var(--color-sanctuary-saffron);
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: transform 220ms ease;
+  }
+
+  details[open] .colophon-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Expanded Drawer */
+  .colophon-drawer {
+    border-top: 1px solid rgb(104 94 85 / 0.16);
+    background: var(--color-sacred-white);
+    padding: 36px 32px;
+    animation: drawer-fade-in 220ms ease-out both;
+  }
+
+  .colophon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+  }
+
+  .colophon-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 20px;
+    border-right: 1px solid rgb(104 94 85 / 0.14);
+  }
+
+  .colophon-col:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .colophon-eyebrow {
+    color: var(--color-sanctuary-saffron);
+    font-size: 0.88rem;
+    letter-spacing: 0.12em;
+    margin: 0;
+  }
+
+  .colophon-col__title {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--color-charcoal-truth);
+    margin: 0;
+    letter-spacing: 0.005em;
+  }
+
+  .colophon-col__desc {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.72;
+    color: var(--color-mud-brown);
+    letter-spacing: 0.02em;
+  }
+
+  .colophon-scribe {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid rgb(104 94 85 / 0.14);
+  }
+
+  .colophon-scribe__tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: #ede5d7;
+    border: 1px solid rgb(104 94 85 / 0.2);
+    font-family: var(--font-mono-sanctuary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-charcoal-truth);
+    letter-spacing: 0.04em;
+  }
+
+  .colophon-scribe__note {
+    margin: 10px 0 0;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-mud-brown);
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  .colophon-meta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .colophon-meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 1.02rem;
+    color: var(--color-mud-brown);
+    letter-spacing: 0.02em;
+  }
+
+  .colophon-meta-item strong {
+    color: var(--color-charcoal-truth);
+    font-weight: 600;
+  }
+
+  .colophon-col__note {
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgb(104 94 85 / 0.14);
+    font-size: 1rem;
+    line-height: 1.68;
+    color: var(--color-mud-brown);
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  .colophon-col__link-wrap {
+    margin-top: 6px;
+    padding-top: 12px;
+  }
+
+  .colophon-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-ui-grotesque);
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--color-sanctuary-saffron);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    letter-spacing: 0.04em;
+  }
+
+  .colophon-link:hover {
+    color: var(--color-charcoal-truth);
+  }
+
+  @keyframes drawer-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .colophon-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .colophon-col {
+      padding-right: 0;
+      padding-bottom: 20px;
+      border-right: none;
+      border-bottom: 1px solid rgb(104 94 85 / 0.14);
+    }
+
+    .colophon-col:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .colophon-summary {
+      padding: 14px 18px;
+    }
+
+    .colophon-drawer {
+      padding: 24px 18px;
+    }
+  }
+</style>
+

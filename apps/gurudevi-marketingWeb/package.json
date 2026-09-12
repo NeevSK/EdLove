@@ -16,15 +16,18 @@
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_gurudevi-marketingWeb-test\"",
     "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"apps_gurudevi-marketingWeb-test_watch\"",
     "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"apps_gurudevi-marketingWeb-test_ui\"",
+    "doctor": "node ../../scripts/run-and-report.mjs --cmd \"npx -y react-doctor --yes --no-telemetry --blocking none\" --name \"apps_gurudevi-marketingWeb-doctor\"",
+    "doctor:design": "node ../../scripts/run-and-report.mjs --cmd \"npx -y react-doctor design --no-telemetry\" --name \"apps_gurudevi-marketingWeb-doctor-design\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"apps_gurudevi-marketingWeb-clean\""
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/sitemap": "^3.7.4",
     "@astrojs/svelte": "^9.0.1",
-    "@astrojs/vercel": "^11.0.8",
+    "@astrojs/vercel": "^11.0.10",
+    "@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate",
     "@repo/editorial": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.9",
+    "astro": "^7.3.2",
     "svelte": "^5.57.0",
     "tailwindcss": "^4.3.3",
     "typescript": "7.0.2"
@@ -33,8 +36,8 @@
     "@astrojs/check": "^0.9.10",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.18",
-    "eslint": "^10.9.1",
+    "@types/react": "^19.3.0",
+    "eslint": "^10.10.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0"
   },

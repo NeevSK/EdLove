@@ -11,6 +11,7 @@ import type { CitizenshipLevel } from '@repo/core/logic/registry/citizenship';
  */
 export interface FeatureAccessContext {
   userId?: string | null;
+  isLocalOnly?: boolean;
   activeBondId?: string | null;
   activeEntityId?: string | null;
   activeEntityType?: string | null;

@@ -1,5 +1,6 @@
 import { deepLink, useAuth } from '@repo/core/logic';
 import { storage } from '@repo/core/native';
+import { dispatchQRDeepLink } from '@repo/scanner-kit';
 import * as Notifications from 'expo-notifications';
 import { type Href, router } from 'expo-router';
 import { useCallback, useEffect } from 'react';
@@ -38,32 +39,45 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
     // Could update UI state, show in-app banner, etc.
   }, []);
 
-  const handleNotificationResponse = useCallback((response: Notifications.NotificationResponse) => {
-    const data = response.notification.request.content.data as Record<string, unknown> | undefined;
-    const target = typeof data?.deepLink === 'string' ? data.deepLink : data?.path;
-    if (typeof target !== 'string') return;
+  const handleNotificationResponse = useCallback(
+    (response: Notifications.NotificationResponse) => {
+      const data = response.notification.request.content.data as
+        | Record<string, unknown>
+        | undefined;
+      const target = typeof data?.deepLink === 'string' ? data.deepLink : data?.path;
+      if (typeof target !== 'string') return;
 
-    void (async () => {
-      if (target.startsWith('/')) {
-        const route = normalizeAcceptedInternalRoute(target);
-        if (route) router.push(route as Href);
-        return;
-      }
+      void (async () => {
+        if (target.startsWith('/')) {
+          const route = normalizeAcceptedInternalRoute(target);
+          if (route) router.push(route as Href);
+          return;
+        }
 
-      if (isQRDeepLink(target)) {
-        router.push({ pathname: '/qr', params: { payload: target } });
-        return;
-      }
+        if (isQRDeepLink(target)) {
+          await dispatchQRDeepLink(
+            target,
+            session
+              ? (payload) =>
+                  router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } })
+              : undefined,
+          );
+          return;
+        }
 
-      await dispatchDeepLink(target, {
-        handleURL: deepLink.handleURL.bind(deepLink),
-        navigateToClassroomInvite: (inviteCode) => {
-          router.push({ pathname: '/community', params: { inviteCode } });
-        },
-        track: trackDeepLink,
+        await dispatchDeepLink(target, {
+          handleURL: deepLink.handleURL.bind(deepLink),
+          navigateToClassroomInvite: (inviteCode) => {
+            router.push({ pathname: '/community', params: { inviteCode } });
+          },
+          track: trackDeepLink,
+        });
+      })().catch((error: unknown) => {
+        console.warn('[PushNotification] Failed to dispatch notification target', error);
       });
-    })().catch(() => undefined);
-  }, []);
+    },
+    [session],
+  );
 
   const registerForPushNotifications = useCallback(async () => {
     if (Platform.OS === 'web') return;

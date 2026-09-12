@@ -35,19 +35,19 @@
     "@zenstackhq/orm": "3.8.3",
     "@zenstackhq/schema": "3.8.3",
     "kysely": "0.28.16",
-    "pg": "^8.21.0",
+    "pg": "^8.23.0",
     "zod": "4.5.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/pg": "^8.20.0",
+    "@types/pg": "^8.23.1",
     "@zenstackhq/cli": "3.8.3",
     "@zenstackhq/language": "3.8.3",
-    "@zenstackhq/plugin-policy": "^3.8.3",
+    "@zenstackhq/plugin-policy": "^3.9.4",
     "@zenstackhq/sdk": "3.8.3",
     "@zenstackhq/zod": "3.8.3",
-    "eslint": "^10.4.1",
+    "eslint": "^10.10.0",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0"

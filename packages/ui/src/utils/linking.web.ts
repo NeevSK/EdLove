@@ -36,11 +36,25 @@ interface ExternalLinkRuntime {
 
 const WEB_PREFERENCE_KEY = 'external_link_preference_web';
 const WEB_OVERRIDE_COUNT_KEY = 'external_link_override_count_web';
+const ALLOWED_URI_SCHEMES = new Set(['gurudevi:', 'mailto:', 'tel:', 'whatsapp:']);
 
 let runtime: ExternalLinkRuntime | null = null;
 
 function isWebUrl(url: string) {
   return /^https?:\/\//i.test(url);
+}
+
+export function isAllowedExternalUri(url: string): boolean {
+  try {
+    const parsed = new URL(url, window.location.href);
+    if (parsed.protocol === 'https:') return true;
+    if (parsed.protocol === 'http:') {
+      return parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+    }
+    return ALLOWED_URI_SCHEMES.has(parsed.protocol);
+  } catch {
+    return false;
+  }
 }
 
 function getPlatformKey() {
@@ -143,6 +157,8 @@ async function openExternalURLInternal(
   forcePrompt = false,
 ): Promise<boolean> {
   if (!url) return false;
+
+  if (!isAllowedExternalUri(url)) return false;
 
   if (runtime && isWebUrl(url) && !runtime.isOnline()) {
     runtime.notifyOffline('No internet connection. Reconnect to open external links.');

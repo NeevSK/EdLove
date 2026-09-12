@@ -93,36 +93,10 @@ export class MultiTenantAnalyticsEngine {
   }
   // Real-time analytics
   async getLiveMetrics(tenantId: string): Promise<LiveMetrics> {
-    const now = new Date().toISOString();
-    // Get active users from sessions table
-    const { data: activeSessions } = await supabase
-      .from('user_sessions')
-      .select('user_id, last_activity')
-      .eq('tenant_id', tenantId)
-      .gte('last_activity', new Date(Date.now() - 5 * 60 * 1000).toISOString());
-    // Get API metrics from logs
-    const { data: apiMetrics } = await supabase
-      .from('api_metrics')
-      .select('*')
-      .eq('tenant_id', tenantId)
-      .gte('timestamp', new Date(Date.now() - 60 * 1000).toISOString());
-    const apiRequestsPerMinute = apiMetrics?.length || 0;
-    const errorRate = apiMetrics
-      ? (apiMetrics.filter((m) => m.status_code >= 400).length / apiMetrics.length) * 100
-      : 0;
-    return {
-      timestamp: now,
-      active_users: activeSessions?.length || 0,
-      concurrent_sessions: activeSessions?.length || 0,
-      api_requests_per_minute: apiRequestsPerMinute,
-      error_rate: errorRate,
-      system_health: this.calculateSystemHealth(errorRate, apiRequestsPerMinute),
-      resource_usage: {
-        cpu: await this.getCPUUsage(),
-        memory: await this.getMemoryUsage(),
-        storage: await this.getStorageUsage(),
-      },
-    };
+    void tenantId;
+    throw new Error(
+      'Live system telemetry is unavailable until resource instrumentation is connected.',
+    );
   }
   async createCustomReport(config: CustomReportConfig): Promise<ReportResult> {
     const startTime = Date.now();
@@ -246,27 +220,11 @@ export class MultiTenantAnalyticsEngine {
     tenantId: string,
     timeRange: DateRange,
   ): Promise<TenantMetrics> {
-    const tenantInfo = await this.getTenantInfo(tenantId);
-    const metrics: Record<MetricDefinition, number> = {
-      attendance_rate: await this.calculateAttendanceRate(tenantId, timeRange),
-      grade_average: await this.calculateGradeAverage(tenantId, timeRange),
-      enrollment_count: await this.getEnrollmentCount(tenantId, timeRange),
-      staff_turnover: await this.calculateStaffTurnover(tenantId, timeRange),
-      resource_utilization: await this.calculateResourceUtilization(tenantId, timeRange),
-      parent_engagement: await this.calculateParentEngagement(tenantId, timeRange),
-      document_processing_time: await this.calculateDocumentProcessingTime(tenantId, timeRange),
-      revenue_per_student: await this.calculateRevenuePerStudent(tenantId, timeRange),
-      operational_efficiency: await this.calculateOperationalEfficiency(tenantId, timeRange),
-      compliance_score: await this.calculateComplianceScore(tenantId, timeRange),
-    };
-    return {
-      tenantId,
-      tenantName: tenantInfo.name,
-      tenantKind: tenantInfo.kind,
-      metrics,
-      period: timeRange,
-      benchmarks: await this.getBenchmarksForMetrics(Object.keys(metrics) as MetricDefinition[]),
-    };
+    void tenantId;
+    void timeRange;
+    throw new Error(
+      'Institutional analytics are unavailable until attendance, grading, enrollment, and operational data sources are connected.',
+    );
   }
   private async generateVisualizations(config: CustomReportConfig, data: any[]): Promise<any[]> {
     const visualizations = [];
@@ -614,11 +572,10 @@ export class MultiTenantAnalyticsEngine {
     _metric: MetricDefinition,
     _timeRange: DateRange,
   ): Promise<any[]> {
-    // Implementation would get metric comparison data
-    return tenantIds.map((id) => ({
-      tenantName: `Tenant ${id}`,
-      value: Math.random() * 100,
-    })); // Placeholder
+    void tenantIds;
+    throw new Error(
+      'Institutional comparisons are unavailable until analytics data sources are connected.',
+    );
   }
   private getIndustryMetrics(_industry: EducationSector): MetricDefinition[] {
     // Return relevant metrics for the industry

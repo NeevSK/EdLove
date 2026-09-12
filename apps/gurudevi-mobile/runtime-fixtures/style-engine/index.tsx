@@ -2,6 +2,7 @@ import './style-engine.css';
 
 import { Box } from '@repo/ui/components/ui/box';
 import { Button, ButtonText } from '@repo/ui/components/ui/button';
+import { Dialog, DialogBody, DialogClose, DialogContent } from '@repo/ui/components/ui/dialog';
 import { FormField } from '@repo/ui/components/ui/form-field';
 import { Icon } from '@repo/ui/components/ui/icon';
 import { Input, InputField } from '@repo/ui/components/ui/input';
@@ -17,6 +18,7 @@ export default function StyleEngineRuntimeFixture() {
   const [displayName, setDisplayName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'error' | 'success'>('idle');
+  const [dialogOpen, setDialogOpen] = useState(false);
   const attemptsRef = useRef(0);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nameError = submitted && displayName.trim().length === 0 ? 'Name is required.' : undefined;
@@ -29,9 +31,12 @@ export default function StyleEngineRuntimeFixture() {
           ? 'Saved'
           : 'Save profile';
 
-  useEffect(() => () => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    },
+    [],
+  );
 
   const saveProfile = () => {
     setSubmitted(true);
@@ -96,6 +101,27 @@ export default function StyleEngineRuntimeFixture() {
                 ? 'Saving profile…'
                 : 'Ready to save.'}
         </Text>
+        <Button
+          testID="dialog-open-button"
+          className="mt-4"
+          accessibilityLabel="Open profile actions"
+          onPress={() => setDialogOpen(true)}
+        >
+          <ButtonText>Open profile actions</ButtonText>
+        </Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen} accessibilityLabel="Profile actions">
+          <DialogContent>
+            <DialogBody>
+              <Text>Profile actions are ready.</Text>
+              <Button accessibilityLabel="Secondary profile action" className="mt-4">
+                <ButtonText>Secondary</ButtonText>
+              </Button>
+              <DialogClose accessibilityLabel="Close profile actions" className="mt-4">
+                <Text>Close</Text>
+              </DialogClose>
+            </DialogBody>
+          </DialogContent>
+        </Dialog>
       </View>
     </View>
   );

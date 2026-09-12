@@ -111,6 +111,10 @@ export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 // 3. Auth & Context
 export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
+export {
+  CapabilityHydrationProvider,
+  useCapabilityHydration,
+} from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export type { FeatureSlice } from '@repo/core/store/slices/feature.slice';
 // 2. Logic State & Storage (Zustand & Supabase)

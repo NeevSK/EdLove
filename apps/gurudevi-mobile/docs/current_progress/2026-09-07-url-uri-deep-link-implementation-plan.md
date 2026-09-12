@@ -16,6 +16,27 @@ This plan turns the findings in [the URL and URI boundary audit](../architecture
 
 The plan is intentionally narrow. It repairs URL and URI contracts without redesigning the broader navigation tree or changing the public product domain without an explicit decision.
 
+## Implementation status - 2026-09-09
+
+Completed in the current working tree:
+
+- auth callback query and fragment parameters are merged correctly;
+- deep-link telemetry omits raw URLs and sensitive auth parameters;
+- HTTPS deep links are restricted to the canonical platform host and approved paths;
+- unsupported URI schemes are rejected by native and web external-link helpers;
+- deferred links are retained when dispatch fails;
+- notification paths and QR links pass through validation before navigation;
+- the native auth redirect uses `gurudevi://auth/callback` consistently;
+- iOS associated-domain configuration is declared;
+- library and profile share builders use real current route-tree paths.
+
+Still blocked or intentionally deferred:
+
+- public post sharing needs a public post route and privacy contract;
+- Android `assetlinks.json` and iOS `apple-app-site-association` must be published and verified on the deployment host;
+- the final public URL shape for legacy `/p/...` links needs an explicit compatibility decision;
+- full physical-device universal-link verification requires signed builds and installed apps.
+
 ## Constraints and decisions to preserve
 
 - Do not edit generated `android/` or `ios/` files directly.
@@ -280,3 +301,9 @@ The implementation owner should attach:
 - deployed association-file checks;
 - a note confirming that no secrets appear in telemetry or logs;
 - an update to the audit document describing resolved and deferred findings.
+
+## Implementation status - 2026-09-09
+
+Completed in the working tree: strict URL policy, traversal/size/CRLF rejection, unified notification/deferred dispatch, safe auth callback parsing, invite decoding, telemetry redaction, external URI allowlisting, and adversarial regression coverage. Core, mobile, and UI typechecks pass; focused suites pass with 7 core tests, 13 mobile focused tests, and 13 UI URI tests.
+
+Release-gated items intentionally not marked complete: public post route resolution, deployment of Android/iOS association files, and real Android/iOS verified-link launches. Legacy `/p` compatibility is intentionally dissolved; `/p` is no longer accepted or declared as an app-link namespace, so old links fail closed. The remaining items require deployment or product ownership input and cannot be established by unit tests.

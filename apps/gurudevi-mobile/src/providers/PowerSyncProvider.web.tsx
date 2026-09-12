@@ -5,6 +5,7 @@ import { BrowserPowerSyncAccountCoordinator } from '@repo/core/adapters/powersyn
 import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
 import { WASQLiteAdapter } from '@repo/core/adapters/powersync/wasqlite.adapter';
+import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
@@ -22,7 +23,9 @@ const browserAccountCoordinator = new BrowserPowerSyncAccountCoordinator();
 export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
   const [db, setDb] = useState<PowerSyncDatabase | null>(null);
   const accountId = useStore((state) => state.user?.id ?? null);
+  const user = useStore((state) => state.user);
   const isPowerSyncEnabled = useStore((state) => state.flags.isPowerSyncEnabled);
+  const isLocalOnly = isLocalOnlyIdentity(user);
 
   useEffect(() => {
     let active = true;
@@ -38,7 +41,7 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
     });
     browserAccountCoordinator.announce(activeAccountId);
 
-    if (!isPowerSyncEnabled || !activeAccountId) {
+    if (!isPowerSyncEnabled || !activeAccountId || isLocalOnly) {
       void powerSyncRuntime.deactivate().catch((error) => {
         console.error('[PowerSync] Failed to deactivate inactive web runtime:', error);
       });
@@ -83,13 +86,13 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
         console.error('[PowerSync] Web runtime cleanup failed:', error);
       });
     };
-  }, [accountId, isPowerSyncEnabled]);
+  }, [accountId, isLocalOnly, isPowerSyncEnabled]);
 
   // PowerSync is a capability for authenticated, opted-in tab sessions; it
   // must not become the app shell's render gate. During signed-out startup
   // there is no account to initialize, so keep the navigation mounted and let
   // screen-level data states handle sync readiness.
-  if (!db) return <>{children}</>;
+  if (!db || isLocalOnly) return <>{children}</>;
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
 }

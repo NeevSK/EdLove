@@ -1,0 +1,181 @@
+---
+import { ROADMAP_MILESTONES } from '../lib/site';
+---
+
+<section class="section section--roadmap" id="roadmap" aria-labelledby="roadmap-title">
+  <div class="section__heading">
+    <div>
+      <p class="eyebrow">The Multi-Year Horizon</p>
+      <h2 id="roadmap-title">From conceptual genesis to living sanctuary.</h2>
+    </div>
+    <p>
+      Built for enduring transformation in Sri Lanka—progressing with care, dignity, and relationship across three distinct phases.
+    </p>
+  </div>
+
+  <!-- Main Clean Product Roadmap Grid -->
+  <div class="roadmap-grid">
+    {ROADMAP_MILESTONES.map((milestone, idx) => (
+      <article
+        class={`roadmap-card ${milestone.status === 'active' ? 'roadmap-card--active' : ''}`}
+        style={`--delay: ${idx * 100}ms`}
+      >
+        <div class="roadmap-card__header">
+          <span class="roadmap-card__year">{milestone.year}</span>
+          <span class="roadmap-card__badge">{milestone.badge}</span>
+        </div>
+
+        <div class="roadmap-card__titles">
+          <p class="roadmap-card__date">{milestone.date}</p>
+          <h3 class="roadmap-card__phase">{milestone.phase}</h3>
+        </div>
+
+        <p class="roadmap-card__summary">{milestone.summary}</p>
+
+        <div class="roadmap-card__deliverables">
+          <ul>
+            {milestone.deliverables.map((item) => (
+              <li>
+                <span class="roadmap-card__check" aria-hidden="true">✦</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .section--roadmap {
+    padding-top: 80px;
+    padding-bottom: 96px;
+  }
+
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+
+  .roadmap-card {
+    display: flex;
+    flex-direction: column;
+    padding: 38px 32px;
+    background: var(--color-sacred-white);
+    border: 1px solid rgb(104 94 85 / 0.16);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  }
+
+  .roadmap-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -6px rgba(29, 41, 51, 0.08);
+    border-color: rgb(168 80 34 / 0.4);
+  }
+
+  .roadmap-card--active {
+    border-top: 3px solid var(--color-sanctuary-saffron);
+    background: linear-gradient(180deg, rgba(247, 242, 232, 0.45) 0%, rgba(255, 253, 248, 1) 100%);
+  }
+
+  .roadmap-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .roadmap-card__year {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--color-charcoal-truth);
+    letter-spacing: 0.02em;
+  }
+
+  .roadmap-card__badge {
+    font-family: var(--font-ui-grotesque);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #824112;
+    background: #fbe6cb;
+    border: 1px solid rgba(168, 80, 34, 0.28);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .roadmap-card__titles {
+    margin-bottom: 16px;
+  }
+
+  .roadmap-card__date {
+    font-family: var(--font-mono-sanctuary);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-sanctuary-saffron);
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .roadmap-card__phase {
+    margin: 0;
+    font-size: clamp(1.65rem, 2.2vw, 2.05rem);
+    font-weight: 600;
+    color: var(--color-charcoal-truth);
+    line-height: 1.2;
+    letter-spacing: 0.005em;
+  }
+
+  .roadmap-card__summary {
+    font-size: 1.12rem;
+    line-height: 1.76;
+    color: var(--color-mud-brown);
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
+  }
+
+  .roadmap-card__deliverables {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgb(104 94 85 / 0.16);
+  }
+
+  .roadmap-card__deliverables ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .roadmap-card__deliverables li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #2b241e;
+    letter-spacing: 0.02em;
+  }
+
+  .roadmap-card__check {
+    color: var(--color-sanctuary-saffron);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 960px) {
+    .roadmap-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

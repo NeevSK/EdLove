@@ -57,6 +57,8 @@ function applyFeatureFlags(
 }
 
 export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
+  let recomputeGeneration = 0;
+
   const applySnapshot = (snapshot: FeatureRolloutSnapshot) => {
     const normalizedSnapshot = normalizeFeatureRolloutSnapshot(snapshot);
     leaveBreadcrumb('flags', 'Feature flags applied', 'info', {
@@ -73,10 +75,12 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
     snapshot: null,
     applySnapshot,
     recomputeFlags: (context) => {
+      const generation = ++recomputeGeneration;
       leaveBreadcrumb('flags', 'Recomputing feature flags', 'info');
       featureFlags
         .resolveFlags(context)
         .then((snapshot) => {
+          if (generation !== recomputeGeneration) return;
           applySnapshot(snapshot);
         })
         .catch((err) => {

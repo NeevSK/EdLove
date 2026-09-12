@@ -15,11 +15,23 @@ export interface SheetProps extends Omit<ViewProps, 'children'> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  closeOnBackdropPress?: boolean;
 }
 
-export function Sheet({ open, onOpenChange, children, ...props }: SheetProps) {
+export function Sheet({
+  open,
+  onOpenChange,
+  children,
+  closeOnBackdropPress,
+  ...props
+}: SheetProps) {
   return (
-    <Actionsheet isOpen={open} onClose={() => onOpenChange(false)} {...props}>
+    <Actionsheet
+      isOpen={open}
+      onClose={() => onOpenChange(false)}
+      closeOnBackdropPress={closeOnBackdropPress}
+      {...props}
+    >
       {children}
     </Actionsheet>
   );

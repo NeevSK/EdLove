@@ -8,6 +8,7 @@ function snapshot(
 ): BootstrapRouteState {
   return {
     entitlement: { manifestLoaded: false, readiness: 'unknown', snapshotUserId: null },
+    hasActiveAccessToken: Boolean(userId),
     hasLiveCapacity: true,
     hasProfileName: true,
     identityAvailability: userId ? 'active' : 'unknown',
@@ -17,7 +18,13 @@ function snapshot(
     onboardingCompleted: true,
     pathname: '/self',
     profileError: null,
-    session: userId ? ({ user: { id: userId } } as BootstrapRouteState['session']) : null,
+    session: userId
+      ? ({
+          access_token: 'active-access-token',
+          expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
+          user: { id: userId },
+        } as BootstrapRouteState['session'])
+      : null,
     ...overrides,
   };
 }

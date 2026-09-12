@@ -1,10 +1,15 @@
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
-import { SanctuaryWelcomeScreen, WelcomeScreen } from '@repo/ui/screens';
+import { Platform } from 'react-native';
+import {
+  SanctuaryWelcomeScreen,
+  SpatialSanctuaryWelcomeScreen,
+  WelcomeScreen,
+} from '@repo/ui/screens';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
-import { fireflyProductArtwork } from '@/brand/mascotArtwork';
+import { fireflyPrototypeArtwork } from '@/brand/mascotArtwork';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -18,28 +23,37 @@ function Fallback() {
 
 export default function WelcomeRoute() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ legacy?: string }>();
+  const params = useLocalSearchParams<{ legacy?: string; mode?: string }>();
 
   const handleLogin = useCallback(() => {
     router.push('/auth');
   }, [router]);
 
   const handleGuest = useCallback(() => {
-    router.push('/onboarding');
+    router.push('/onboarding?entry=guest');
   }, [router]);
+
+  // On Web by default (or when mode=spatial is requested), render the new decoupled SpatialSanctuaryWelcomeScreen
+  const useSpatialWeb = Platform.OS === 'web' && params.legacy !== '1';
 
   return (
     <ErrorBoundary name="WelcomeRoute">
       <Suspense fallback={<Fallback />}>
         {params.legacy === '1' ? (
           <WelcomeScreen
-            exploreArtwork={fireflyProductArtwork.explore}
+            exploreArtwork={fireflyPrototypeArtwork}
+            onLogin={handleLogin}
+            onGuest={handleGuest}
+          />
+        ) : useSpatialWeb ? (
+          <SpatialSanctuaryWelcomeScreen
+            exploreArtwork={fireflyPrototypeArtwork}
             onLogin={handleLogin}
             onGuest={handleGuest}
           />
         ) : (
           <SanctuaryWelcomeScreen
-            exploreArtwork={fireflyProductArtwork.explore}
+            exploreArtwork={fireflyPrototypeArtwork}
             onLogin={handleLogin}
             onGuest={handleGuest}
           />

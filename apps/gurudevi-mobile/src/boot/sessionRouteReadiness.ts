@@ -28,6 +28,7 @@ export function getSessionRouteReadiness({
   isProfileResolving,
   hasProfileError,
   hasSession,
+  guestOnboardingIntent,
   hasCachedCapabilities,
   hasLiveCapacity,
 }: {
@@ -35,10 +36,11 @@ export function getSessionRouteReadiness({
   isProfileResolving: boolean;
   hasProfileError: boolean;
   hasSession: boolean;
+  guestOnboardingIntent?: boolean;
   hasCachedCapabilities: boolean;
   hasLiveCapacity: boolean;
 }) {
-  const needsCapabilityResolution = hasSession && !hasCachedCapabilities;
+  const needsCapabilityResolution = hasSession && !guestOnboardingIntent && !hasCachedCapabilities;
   const isCapabilityResolutionBlocked = needsCapabilityResolution && hasProfileError;
   const routeGuardReady =
     !isSessionLoading &&

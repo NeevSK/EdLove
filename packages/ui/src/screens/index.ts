@@ -9,5 +9,6 @@ export { default as NotificationsScreen } from '@repo/ui/screens/NotificationsSc
 export { default as OnboardingScreen } from '@repo/ui/screens/OnboardingScreen';
 export { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
 export { default as SanctuaryWelcomeScreen } from '@repo/ui/screens/SanctuaryWelcomeScreen';
+export { SpatialSanctuaryWelcomeScreen } from '@repo/ui/screens/SpatialSanctuaryWelcomeScreen.web';
 export { default as WelcomeScreen } from '@repo/ui/screens/WelcomeScreen';
 export { default as WorkspaceCanvasDemo } from '@repo/ui/screens/WorkspaceCanvasDemo';

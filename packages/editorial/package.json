@@ -20,7 +20,7 @@
   },
   "scripts": {
     "check-types": "tsc --build --noEmit",
-    "test": "vitest run",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_editorial-test\" --evidence-level G0",
     "lint:biome": "biome check src",
     "lint:eslint": "eslint src"
   },
@@ -28,9 +28,9 @@
     "@intuitui-labs/editorial": "link:C:/projects/packages/editorial"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.11",
+    "@biomejs/biome": "^2.5.13",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "typescript": "7.0.2",
     "vitest": "^5.0.0"
   }

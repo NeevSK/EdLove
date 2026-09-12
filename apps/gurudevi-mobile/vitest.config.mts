@@ -15,11 +15,27 @@ export default defineConfig({
         find: /^@repo\/([^/]+)(\/.*)?$/,
         replacement: `${resolve(import.meta.dirname, '../../packages')}/$1/src$2`,
       },
-      { find: 'react-native', replacement: resolve(import.meta.dirname, './vitest-react-native-mock.ts') },
+      {
+        find: 'react-native',
+        replacement: resolve(import.meta.dirname, './vitest-react-native-mock.ts'),
+      },
+      {
+        find: 'react-native-reanimated',
+        replacement: resolve(import.meta.dirname, './vitest-reanimated-mock.ts'),
+      },
       { find: 'expo-sqlite', replacement: resolve(import.meta.dirname, './vitest-sqlite-mock.ts') },
-      { find: 'expo-modules-core', replacement: resolve(import.meta.dirname, './vitest-expo-modules-core-mock.ts') },
-      { find: 'expo-constants', replacement: resolve(import.meta.dirname, './vitest-expo-constants-mock.ts') },
-      { find: '@cedar-policy/cedar-wasm/web', replacement: resolve(import.meta.dirname, './vitest-cedar-web-mock.ts') },
+      {
+        find: 'expo-modules-core',
+        replacement: resolve(import.meta.dirname, './vitest-expo-modules-core-mock.ts'),
+      },
+      {
+        find: 'expo-constants',
+        replacement: resolve(import.meta.dirname, './vitest-expo-constants-mock.ts'),
+      },
+      {
+        find: '@cedar-policy/cedar-wasm/web',
+        replacement: resolve(import.meta.dirname, './vitest-cedar-web-mock.ts'),
+      },
     ],
   },
   test: {

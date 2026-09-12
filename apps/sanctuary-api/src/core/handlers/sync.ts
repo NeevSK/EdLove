@@ -16,6 +16,16 @@ export const syncRouter = impl.router({
       });
     }
 
+    const profile = await context.db.user.findUnique({
+      where: { id: context.user.id },
+      select: { citizenship: true, is_anonymous: true },
+    });
+    if (profile?.is_anonymous === true || profile?.citizenship === 'THIRD_CLASS') {
+      throw new ORPCError('FORBIDDEN', {
+        message: 'Local-only identities cannot synchronize account data.',
+      });
+    }
+
     return applyPowerSyncBatch(
       context.db,
       input.body.crud,

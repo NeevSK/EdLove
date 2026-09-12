@@ -42,11 +42,13 @@ export const Actionsheet = ({
   isOpen,
   onClose,
   children,
+  closeOnBackdropPress = true,
   ...props
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  closeOnBackdropPress?: boolean;
 } & ViewProps) => {
   const contextValue = useMemo(() => ({ onClose, isOpen }), [isOpen, onClose]);
   const [isPresent, setIsPresent] = useState(isOpen);
@@ -66,7 +68,7 @@ export const Actionsheet = ({
   return (
     <ActionsheetContext.Provider value={contextValue}>
       <Portal>
-        <Overlay isOpen={isOpen} onPress={onClose} />
+        <Overlay isOpen={isOpen} onPress={closeOnBackdropPress ? onClose : undefined} />
         <View
           className="absolute inset-0 justify-end"
           style={{ zIndex: 1001, pointerEvents: 'box-none' }}
@@ -81,7 +83,12 @@ export const Actionsheet = ({
 
 export const ActionsheetBackdrop = Overlay;
 
-export const ActionsheetContent = ({ children, className }: any) => {
+export interface ActionsheetContentProps {
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export const ActionsheetContent = ({ children, className }: ActionsheetContentProps) => {
   const { isOpen, onClose } = useActionsheet();
   const translateY = useSharedValue(0);
   const panGesture = Gesture.Pan()
@@ -129,6 +136,13 @@ export const ActionsheetContent = ({ children, className }: any) => {
   );
 };
 
+export interface ActionsheetItemProps
+  extends Omit<React.ComponentProps<typeof Pressable>, 'children' | 'onPress'> {
+  children?: React.ReactNode;
+  onPress?: () => void;
+  isDisabled?: boolean;
+}
+
 export const ActionsheetItem = ({
   children,
   onPress,
@@ -136,7 +150,7 @@ export const ActionsheetItem = ({
   disabled,
   className,
   ...props
-}: any) => {
+}: ActionsheetItemProps) => {
   const { onClose } = useActionsheet();
   const resolvedDisabled = disabled || isDisabled;
 
@@ -146,6 +160,7 @@ export const ActionsheetItem = ({
       onPress={() => {
         if (resolvedDisabled) return;
         onPress?.();
+        onClose();
       }}
       disabled={resolvedDisabled}
       accessibilityRole="menuitem"
@@ -161,13 +176,16 @@ export const ActionsheetItem = ({
   );
 };
 
-export const ActionsheetItemText = ({ children, className }: any) => (
+export const ActionsheetItemText = ({ children, className }: ActionsheetContentProps) => (
   <Text className={cn('text-phase-text-primary text-base font-semibold tracking-tight', className)}>
     {children}
   </Text>
 );
 
-export const ActionsheetDragIndicatorWrapper = ({ children, className }: any) => (
+export const ActionsheetDragIndicatorWrapper = ({
+  children,
+  className,
+}: ActionsheetContentProps) => (
   <Box className={cn('w-full items-center py-4', className)}>{children}</Box>
 );
 
@@ -175,7 +193,7 @@ export const ActionsheetDragIndicator = () => (
   <Box className="w-12 h-1.5 bg-phase-text-primary/25 rounded-full" />
 );
 
-export const ActionsheetIcon = ({ children, className }: any) => (
+export const ActionsheetIcon = ({ children, className }: ActionsheetContentProps) => (
   <Box className={cn('mr-3', className)}>{children}</Box>
 );
 

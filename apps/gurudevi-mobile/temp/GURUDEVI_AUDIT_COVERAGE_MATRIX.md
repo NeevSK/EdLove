@@ -33,7 +33,7 @@ Status meanings:
 | GD-017 | Native delete confirmation | Two-Layer | resolved-code | Fixed 2026-09-07: `confirmAction` now gates deletion on both web and native; requires device dialog validation. |
 | GD-018 | Native clipboard false success | Two-Layer | resolved-code | Fixed 2026-09-07: current dashboard now writes through `coreRuntime.clipboard`, verifies its result, and only then toasts. |
 | GD-019 | Soft-failure stuck saving | Two-Layer | resolved-code | Fixed 2026-09-07: calendar and observation saves convert soft failures to visible errors and clear saving in `finally`. |
-| GD-020 | Stale analytics polling | Two-Layer | resolved-code | Fixed 2026-09-07: stable loaders prevent effect churn; failed refreshes preserve prior metrics and disclose stale/unavailable live data. Behavior proof is blocked until the admin test harness is repaired. |
+| GD-020 | Stale analytics polling | Two-Layer | resolved-code | Failed refreshes preserve prior metrics and disclose stale/unavailable live data; async fake-timer coverage now verifies the stale banner. |
 | GD-021 | Cold-start effect count | useEffect Analysis | stale framing | Current root layout does not match supplied 13-effect claim. Rebuild startup graph. |
 | GD-022 | Auth listener event gap | useEffect Analysis | resolved-code | Fixed 2026-09-07: the auth listener is registered before the asynchronous initial-session request begins. A hook-level race test remains required. |
 | GD-023 | Unused lifecycle utilities | useEffect Analysis | stale/disproven | Named utilities have current consumers. Search only remaining truly unused exports. |

@@ -64,6 +64,7 @@ export { AccessPolicyComposite, CapabilityPolicy, CitizenshipPolicy };
  */
 export function deriveRolesFromCapabilities(
   capabilities: string[],
+  capacities: string[] = [],
   roleCapabilityMap: Record<string, string> = {
     admin: 'manage:AdminDashboard',
     founder: 'manage:FounderDashboard',
@@ -75,8 +76,31 @@ export function deriveRolesFromCapabilities(
 ): SelfViewRole[] {
   const caps = new Set(capabilities);
   const roles: SelfViewRole[] = [];
+  const capacityRoleMap: Record<string, SelfViewRole> = {
+    admin: 'admin',
+    developer: 'admin',
+    founder: 'founder',
+    principal: 'principal',
+    assistantPrincipal: 'principal',
+    gradeHead: 'principal',
+    sectionHead: 'principal',
+    teacher: 'teacher',
+    librarian: 'teacher',
+    guardian: 'guardian',
+    parent: 'guardian',
+    student: 'student',
+    member: 'student',
+  };
+
+  for (const capacity of capacities) {
+    const role = capacityRoleMap[capacity];
+    if (role && !roles.includes(role)) roles.push(role);
+  }
+
   for (const [role, cap] of Object.entries(roleCapabilityMap)) {
-    if (caps.has(cap)) roles.push(role as SelfViewRole);
+    if (caps.has(cap) && !roles.includes(role as SelfViewRole)) {
+      roles.push(role as SelfViewRole);
+    }
   }
   return roles.length > 0 ? roles : ['student'];
 }

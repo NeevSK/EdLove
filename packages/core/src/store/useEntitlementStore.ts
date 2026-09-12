@@ -58,26 +58,72 @@ function snapshotFields(
 
 export const useEntitlementStore = create<EntitlementState>()(
   persist(
-    (set, get) => ({
-      activeEntitlements: [],
-      grants: [],
-      pricingTier: 'FREE',
-      manifestLoaded: false,
-      readiness: 'unknown',
-      snapshotRefreshedAt: null,
-      snapshotUserId: null,
-      snapshotActiveBondId: null,
-      isLoading: false,
-      error: null,
+    (set, get) => {
+      let loadGeneration = 0;
 
-      loadEntitlements: async (userId: string, scope: EntitlementScopeContext = {}) => {
-        const current = get();
-        if (!userId) {
-          get().clearEntitlements();
-          return;
-        }
+      return {
+        activeEntitlements: [],
+        grants: [],
+        pricingTier: 'FREE',
+        manifestLoaded: false,
+        readiness: 'unknown',
+        snapshotRefreshedAt: null,
+        snapshotUserId: null,
+        snapshotActiveBondId: null,
+        isLoading: false,
+        error: null,
 
-        if (current.snapshotUserId && current.snapshotUserId !== userId) {
+        loadEntitlements: async (userId: string, scope: EntitlementScopeContext = {}) => {
+          const generation = ++loadGeneration;
+          const current = get();
+          if (!userId) {
+            get().clearEntitlements();
+            return;
+          }
+
+          if (current.snapshotUserId && current.snapshotUserId !== userId) {
+            set({
+              activeEntitlements: [],
+              grants: [],
+              pricingTier: 'FREE',
+              manifestLoaded: false,
+              readiness: 'unknown',
+              snapshotRefreshedAt: null,
+              snapshotUserId: null,
+              snapshotActiveBondId: null,
+            });
+          } else if (current.snapshotActiveBondId !== (scope.activeBondId ?? null)) {
+            set({ manifestLoaded: false, readiness: 'unknown', grants: [] });
+          } else if (
+            current.manifestLoaded &&
+            !isEntitlementSnapshotFresh(current.snapshotRefreshedAt)
+          ) {
+            set({ readiness: 'stale', manifestLoaded: false });
+          }
+
+          set({ isLoading: true, error: null });
+
+          try {
+            const snapshot = await _adapter.getEntitlements(userId, scope);
+            if (generation !== loadGeneration) return;
+            set(snapshotFields(snapshot, userId, scope));
+          } catch (err) {
+            if (generation !== loadGeneration) return;
+            const cached = get();
+            const canUseCache =
+              cached.snapshotUserId === userId &&
+              isEntitlementSnapshotFresh(cached.snapshotRefreshedAt);
+            set({
+              manifestLoaded: canUseCache,
+              readiness: canUseCache ? 'cached' : 'error',
+              isLoading: false,
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        },
+
+        clearEntitlements: () => {
+          loadGeneration += 1;
           set({
             activeEntitlements: [],
             grants: [],
@@ -87,49 +133,12 @@ export const useEntitlementStore = create<EntitlementState>()(
             snapshotRefreshedAt: null,
             snapshotUserId: null,
             snapshotActiveBondId: null,
-          });
-        } else if (current.snapshotActiveBondId !== (scope.activeBondId ?? null)) {
-          set({ manifestLoaded: false, readiness: 'unknown', grants: [] });
-        } else if (
-          current.manifestLoaded &&
-          !isEntitlementSnapshotFresh(current.snapshotRefreshedAt)
-        ) {
-          set({ readiness: 'stale', manifestLoaded: false });
-        }
-
-        set({ isLoading: true, error: null });
-
-        try {
-          const snapshot = await _adapter.getEntitlements(userId, scope);
-          set(snapshotFields(snapshot, userId, scope));
-        } catch (err) {
-          const cached = get();
-          const canUseCache =
-            cached.snapshotUserId === userId &&
-            isEntitlementSnapshotFresh(cached.snapshotRefreshedAt);
-          set({
-            manifestLoaded: canUseCache,
-            readiness: canUseCache ? 'cached' : 'error',
             isLoading: false,
-            error: err instanceof Error ? err.message : String(err),
+            error: null,
           });
-        }
-      },
-
-      clearEntitlements: () =>
-        set({
-          activeEntitlements: [],
-          grants: [],
-          pricingTier: 'FREE',
-          manifestLoaded: false,
-          readiness: 'unknown',
-          snapshotRefreshedAt: null,
-          snapshotUserId: null,
-          snapshotActiveBondId: null,
-          isLoading: false,
-          error: null,
-        }),
-    }),
+        },
+      };
+    },
     {
       name: 'gurudevi-entitlement-storage',
       storage: createJSONStorage(() => SafeZustandStorage),

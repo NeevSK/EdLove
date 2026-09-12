@@ -87,6 +87,25 @@ export function isAnonymousIdentity(
   return false;
 }
 
+/** Third-class and anonymous identities are usable local-first identities. */
+export function isLocalOnlyIdentity(
+  value:
+    | {
+        citizenship?: string | null;
+        email?: string | null;
+        is_anonymous?: boolean | null;
+        identity_state?: string | null;
+      }
+    | null
+    | undefined,
+): boolean {
+  return (
+    isAnonymousIdentity(value) ||
+    value?.citizenship === 'THIRD_CLASS' ||
+    value?.citizenship === 'WANDERER'
+  );
+}
+
 /** Soft-deactivated profiles remain in storage but must not enter the app shell. */
 export function isActiveIdentityProfile(
   value: { deleted_at?: string | null } | null | undefined,
@@ -98,10 +117,12 @@ export function isActiveIdentityProfile(
  * Derives a recommended friendly display name from auth user metadata or email.
  * Replaces cumbersome manual typing for OAuth or verified email logins.
  */
-export function suggestDisplayName(user?: {
-  email?: string | null;
-  user_metadata?: Record<string, unknown> | null;
-} | null): string {
+export function suggestDisplayName(
+  user?: {
+    email?: string | null;
+    user_metadata?: Record<string, unknown> | null;
+  } | null,
+): string {
   if (!user) return '';
 
   const metadata = user.user_metadata ?? {};

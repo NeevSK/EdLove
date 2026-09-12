@@ -1,8 +1,9 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
 
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
+export const MAX_DEEP_LINK_LENGTH = 8192;
 const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite']);
-const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/qr', '/p', '/invite', '/app'];
+const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/qr', '/invite', '/app'];
 const ALLOWED_INTERNAL_ROUTE_PREFIXES = [
   '/a-i-assistant',
   '/community',
@@ -22,7 +23,17 @@ function startsWithPathPrefix(pathname: string, prefixes: string[]): boolean {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
+function containsTraversal(value: string): boolean {
+  try {
+    const path = decodeURIComponent(value).split(/[?#]/, 1)[0] ?? '';
+    return path.split('/').some((segment) => segment === '.' || segment === '..');
+  } catch {
+    return true;
+  }
+}
+
 export function normalizeAcceptedDeepLink(url: string): string | null {
+  if (url.length > MAX_DEEP_LINK_LENGTH || containsTraversal(url)) return null;
   try {
     const parsed = new URL(url);
     if (parsed.protocol === 'gurudevi:') {
@@ -50,6 +61,7 @@ export function normalizeAcceptedDeepLink(url: string): string | null {
 }
 
 export function isQRDeepLink(url: string): boolean {
+  if (url.length > MAX_DEEP_LINK_LENGTH || containsTraversal(url)) return false;
   try {
     const parsed = new URL(url);
     return (
@@ -64,7 +76,15 @@ export function isQRDeepLink(url: string): boolean {
 }
 
 export function normalizeAcceptedInternalRoute(path: string): string | null {
-  if (!path.startsWith('/') || path.startsWith('//') || /[\r\n]/.test(path)) return null;
+  if (
+    path.length > MAX_DEEP_LINK_LENGTH ||
+    !path.startsWith('/') ||
+    path.startsWith('//') ||
+    /[\r\n]/.test(path) ||
+    containsTraversal(path)
+  ) {
+    return null;
+  }
   return startsWithPathPrefix(path.split(/[?#]/)[0] ?? '', ALLOWED_INTERNAL_ROUTE_PREFIXES)
     ? path
     : null;

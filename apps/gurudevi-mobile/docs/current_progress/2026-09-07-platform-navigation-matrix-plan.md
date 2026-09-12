@@ -25,6 +25,8 @@ route authority, and never render prior-account chrome during account changes.
 | Footer/profile | No native footer; profile is visible tab | Profile card/footer is account-scoped and routes to `/profile` | Account-scoped shell gate | Avatar/name transition during A → B |
 | Account A → B / sign-out | Protected shell withheld until profile matches active session | Same withheld shell, including sidebar/footer | `SessionRouteGate` render contract | Actual device/account switch and sign-out |
 | Keyboard/insets | Tab bar hides on keyboard; safe-area-derived tab sizing | Responsive rail/topbar behavior | Source contract only | Native keyboard and gesture/inset walkthrough |
+| Shell recovery | Essential startup resolves or shows retry UI; it cannot hold navigation indefinitely | Same startup contract before the web rail/topbar can mount | Coordinator deadline tests | Live recovery state after a real stalled service |
+| FAB lifecycle | Empty registration cleanup does not rerender the tab subtree | Same shared provider contract | Provider integration regression | Community route mount with real data/capabilities |
 
 ## Implementation phases
 
@@ -43,6 +45,18 @@ route authority, and never render prior-account chrome during account changes.
    title specificity, keyboard navigation, and account-transition neutrality.
 6. **Physical-device acceptance** — native keyboard, safe areas, deep-link
    re-entry, account A → B, sign-out, and re-sign-in.
+
+## Current runtime findings
+
+- Essential startup was only deadline-bound at platform bootstrap. Catalog
+  loading and device-account restoration could leave the router permanently on
+  its preparing state. All three critical stages now have the same retryable
+  deadline contract.
+- A live web run completed startup and mounted the tab shell, then reported
+  `Maximum update depth exceeded` from `FABContext` while rendering the
+  Community layout. Empty FAB cleanup is now identity-preserving, with an
+  app-level provider integration test. The next live web run must confirm this
+  error stays absent before browser route interaction is accepted as evidence.
 
 ## Rules
 

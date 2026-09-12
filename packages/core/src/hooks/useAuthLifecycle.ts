@@ -1,7 +1,5 @@
-import {
-  captureAuthenticatedDeviceAccount,
-  getVerifiedDeviceAccountProfile,
-} from '@repo/core/accounts/authenticatedAccountCapture';
+import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture';
+import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { disconnectPowerSync } from '@repo/core/adapters/powersync/database';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
@@ -50,6 +48,7 @@ export function useAuthLifecycle() {
   const hasBootstrappedRef = useRef(false);
   const authEventGenerationRef = useRef(0);
   const identityResolutionGenerationRef = useRef(0);
+  const resolvedAuthSubjectIdRef = useRef<string | null>(null);
   const capturedSessionKeysRef = useRef(new Set<string>());
   const capturingSessionKeysRef = useRef(new Set<string>());
   const previousUserIdRef = useRef<string | null>(null);
@@ -71,6 +70,7 @@ export function useAuthLifecycle() {
     setSchoolType(null);
     setOnboardingCompleted(false);
     setIdentityAvailability('unknown');
+    resolvedAuthSubjectIdRef.current = null;
     setResolvedAuthSubjectId(null);
     setAccountLifecycleStatus(null);
   }, [
@@ -83,6 +83,32 @@ export function useAuthLifecycle() {
     setSchoolType,
     setUser,
   ]);
+
+  const hasVerifiedLocalIdentityForSubject = useCallback(
+    async (
+      accountId: string | null | undefined,
+      authSubjectId: string | null,
+    ): Promise<boolean> => {
+      if (!accountId || !authSubjectId) {
+        return false;
+      }
+
+      if (resolvedAuthSubjectIdRef.current === authSubjectId) {
+        return true;
+      }
+
+      try {
+        const accounts = await deviceAccounts.list();
+        return accounts.some(
+          (account) => account.accountId === accountId && account.authUserId === authSubjectId,
+        );
+      } catch (error) {
+        console.warn('[auth] unable to verify the remembered account owner:', error);
+        return false;
+      }
+    },
+    [],
+  );
 
   const fetchAndSetUserProfile = useCallback(
     async (sessionToCapture?: Session | null) => {
@@ -126,6 +152,7 @@ export function useAuthLifecycle() {
         if (resolution.kind === 'active') {
           const { identity, schoolType } = resolution;
           setIdentityAvailability('active');
+          resolvedAuthSubjectIdRef.current = authSubjectId;
           setResolvedAuthSubjectId(authSubjectId);
           setAccountLifecycleStatus(null);
           setUser(identity as unknown as User);
@@ -139,6 +166,7 @@ export function useAuthLifecycle() {
             capturedSessionKeys: capturedSessionKeysRef.current,
             capturingSessionKeys: capturingSessionKeysRef.current,
             identity,
+            resolvedAuthSubjectId: authSubjectId,
             session: sessionToCapture ?? null,
           });
 
@@ -154,22 +182,28 @@ export function useAuthLifecycle() {
           clearDerivedIdentityState();
           setAccountLifecycleStatus(resolution.accountLifecycleStatus);
           setIdentityAvailability('inactive');
+          resolvedAuthSubjectIdRef.current = authSubjectId;
           setResolvedAuthSubjectId(authSubjectId);
           void disconnectPowerSync().catch((err) => {
-            console.warn('[useAuthLifecycle] unable to disconnect PowerSync for inactive identity', err);
+            console.warn(
+              '[useAuthLifecycle] unable to disconnect PowerSync for inactive identity',
+              err,
+            );
           });
         } else {
           // resolution.kind === 'unavailable'
           // Non-destructive offline fallback: If a valid local user exists in persisted storage,
           // preserve their offline state and mark identity active rather than kicking them to onboarding.
           const existingUser = useStore.getState().user;
-          const hasMatchingLocalUser = Boolean(
-            existingUser?.id &&
-              (!sessionToCapture?.user?.id || existingUser.id === sessionToCapture.user.id),
+          const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
+            existingUser?.id,
+            authSubjectId,
           );
 
           if (hasMatchingLocalUser) {
             setIdentityAvailability('active');
+            resolvedAuthSubjectIdRef.current = authSubjectId;
+            setResolvedAuthSubjectId(authSubjectId);
           } else {
             clearDerivedIdentityState();
           }
@@ -181,30 +215,34 @@ export function useAuthLifecycle() {
       } catch (error) {
         console.warn('❌ Profile: Fetching encountered an error:', error);
         const existingUser = useStore.getState().user;
-        if (existingUser?.id) {
+        if (await hasVerifiedLocalIdentityForSubject(existingUser?.id, authSubjectId)) {
           setIdentityAvailability('active');
+          resolvedAuthSubjectIdRef.current = authSubjectId;
+          setResolvedAuthSubjectId(authSubjectId);
+        } else {
+          clearDerivedIdentityState();
         }
         setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
       } finally {
         if (
-          !isCurrentIdentityResolutionGeneration(
+          isCurrentIdentityResolutionGeneration(
             resolutionGeneration,
             identityResolutionGenerationRef.current,
           )
         ) {
-          return;
+          setIsProfileResolving(false);
+          if (isFirstLoad) {
+            setIsProfileLoading(false);
+          }
+          // Mark bootstrap as complete after the first attempt, whether it succeeded
+          // or failed — so tab switches never trigger the spinner again.
+          hasBootstrappedRef.current = true;
         }
-        setIsProfileResolving(false);
-        if (isFirstLoad) {
-          setIsProfileLoading(false);
-        }
-        // Mark bootstrap as complete after the first attempt, whether it succeeded
-        // or failed — so tab switches never trigger the spinner again.
-        hasBootstrappedRef.current = true;
       }
     },
     [
       clearDerivedIdentityState,
+      hasVerifiedLocalIdentityForSubject,
       setUser,
       setPerspective,
       setAvailableBonds,

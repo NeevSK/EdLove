@@ -1,4 +1,7 @@
-import { resolveAccessibleFeatures } from '@repo/self/features/accessPolicy';
+import {
+  deriveRolesFromCapabilities,
+  resolveAccessibleFeatures,
+} from '@repo/self/features/accessPolicy';
 import { FEATURE_CATALOG } from '@repo/self/features/featureCatalog';
 import { describe, expect, it } from 'vitest';
 
@@ -41,6 +44,18 @@ describe('AccessPolicy composite', () => {
     });
     const pulse = both.find((f) => f.id === 'daily_pulse');
     expect(pulse?.roleAffinity).toBeGreaterThanOrEqual(60);
+  });
+
+  it('derives the base role from capacity without granting an operation', () => {
+    expect(deriveRolesFromCapabilities([], ['teacher'])).toEqual(['teacher']);
+    const teacher = resolveAccessibleFeatures({
+      ...base,
+      capacities: ['teacher'],
+      capabilities: ['read:TeacherDashboard'],
+      citizenshipLevel: 2,
+      roles: ['teacher'] as never,
+    });
+    expect(teacher.some((feature) => feature.id === 'daily_rhythm')).toBe(true);
   });
 
   it('returns no spaces when the account has no matching capabilities', () => {

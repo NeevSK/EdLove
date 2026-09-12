@@ -10,6 +10,17 @@ export { FlowResolver } from '@repo/core/native/flows/FlowResolver';
 export { GuestDataManager } from '@repo/core/native/guestDataManager';
 export { GuestDataSync } from '@repo/core/native/guestDataSync';
 export {
+  clearGuestLease,
+  clearGuestLeaseData,
+  dismissGuestLeaseReminder,
+  getGuestLeaseStatus,
+  getOrCreateGuestLease,
+  GUEST_LEASE_DAYS,
+  GUEST_LEASE_REMINDER_DAYS,
+  registerGuestLeaseDataKey,
+} from '@repo/core/native/guestLease';
+export type { GuestLeaseStatus } from '@repo/core/native/guestLease';
+export {
   clearLocalGuestIdentity,
   getLocalGuestIdentity,
   updateLocalGuestIdentity,

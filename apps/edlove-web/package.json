@@ -20,14 +20,14 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
-    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/sitemap": "^3.7.4",
     "@astrojs/starlight": "^0.42.0",
     "@astrojs/svelte": "^9.0.1",
     "@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate",
     "@repo/editorial": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "@types/three": "^0.185.4",
-    "astro": "^7.2.9",
+    "astro": "^7.3.2",
     "pagefind": "^1.5.2",
     "svelte": "^5.57.0",
     "tailwindcss": "^4.3.3",
@@ -37,7 +37,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0"
   },

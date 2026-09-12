@@ -1,0 +1,33 @@
+{
+  "name": "gurudevi-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "lint:biome": "node ../../scripts/scoped-biome.mjs",
+    "lint:eslint": "eslint .",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/ui": "workspace:*",
+    "next": "16.3.5",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.0",
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.1",
+    "eslint": "^10.10.0",
+    "postcss": "^8.5.8",
+    "tailwindcss": "4.3.0",
+    "typescript": "7.0.2"
+  }
+}

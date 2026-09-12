@@ -3,6 +3,6 @@
   "private": true,
   "main": "index.tsx",
   "dependencies": {
-    "expo": "~57.0.20"
+    "expo": "~57.0.22"
   }
 }

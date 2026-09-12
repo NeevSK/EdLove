@@ -2,9 +2,11 @@
 import { WEB_LINKS } from '../lib/site';
 
 const navItems = [
-  { name: 'The ecology', href: '/about' },
+  { name: 'The Ecology', href: '/about' },
+  { name: 'Workspaces', href: '/#workspaces' },
+  { name: 'Roadmap', href: '/#roadmap' },
   { name: 'Journal', href: '/journal' },
-  { name: 'Questions', href: '/faq' },
+  { name: 'FAQ', href: '/faq' },
   { name: 'Support', href: '/support' },
 ];
 ---
@@ -19,8 +21,7 @@ const navItems = [
       {navItems.map((item) => <a href={item.href}>{item.name}</a>)}
     </nav>
     <div class="header-actions">
-      <a href="/#launch" class="header-launch">October 6 <span aria-hidden="true">↗</span></a>
-      <a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="header-platform">Open platform</a>
+      <a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="header-platform">Open platform <span aria-hidden="true">↗</span></a>
       <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false">
         <span></span><span></span>
       </button>
@@ -30,7 +31,6 @@ const navItems = [
     <div class="mobile-menu__top"><span class="eyebrow">Gurudevi</span><button id="menu-close" type="button" aria-label="Close navigation menu">Close</button></div>
     <nav aria-label="Mobile navigation">
       {navItems.map((item) => <a href={item.href}>{item.name}</a>)}
-      <a href="/#launch">The October 6 launch</a>
       <a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer">Open platform ↗</a>
     </nav>
   </div>

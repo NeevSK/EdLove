@@ -213,6 +213,23 @@ The focused test run completed with:
 
 This result validates existing happy paths only. It does not close the findings in this document.
 
+## Remediation update - 2026-09-09
+
+The following findings have been implemented in the current working tree: P0 telemetry redaction, P1 query-plus-fragment parsing, P1 canonical native auth callback alignment, P1 strict HTTPS host/path policy, P1 validated notification routing, P1 deferred-link retention on failure, P2 explicit external URI scheme allowlisting, and route-safe library/profile share builder updates.
+
+The following remain open: end-to-end post sharing, deployment-host association files, and physical Android/iOS verified-link testing. Legacy public `/p/...` links are intentionally dissolved: no active app-link filter or native acceptance rule remains, and old links fail closed. These cannot be truthfully closed by repository tests alone: post sharing needs a product/API route contract, association files are deployment-owned, and verified-link behavior requires installed binaries on real OSes. The implementation therefore rejects unsafe inputs and documents these as release gates rather than presenting simulated coverage as proof.
+
+## Adversarial verification update - 2026-09-09
+
+The regression suite now exercises the boundary as a hostile input surface, not just happy paths:
+
+- Core parser: query-plus-fragment auth, code exchange, error callbacks, QR token non-confusion, encoded invite IDs, invalid percent encoding, and malformed URLs (7/7).
+- Mobile policy/dispatcher: trusted scheme and host allowlists, unsupported schemes, canonical path families, path traversal, CRLF injection, oversized URLs/routes, QR recognition, and invite dispatch (9/9 in the policy file; 13/13 across the focused mobile set).
+- Telemetry: redacted auth material remains covered by the existing focused suite.
+- UI URI boundary: HTTPS, localhost development HTTP, app/mail/phone/WhatsApp schemes, and rejection of HTTP internet URLs, `javascript:`, `data:`, `file:`, unknown schemes, and malformed values (13/13).
+
+TypeScript build checks pass for mobile, core, and UI. Native OS-level verification is still intentionally unclaimed because no Android/iOS device-control surface is available in this workspace.
+
 ## Recommended definition of done
 
 The URL/URI boundary is considered repaired when:

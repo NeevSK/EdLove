@@ -21,6 +21,7 @@ import { PowerSyncDatabase } from '@powersync/react-native';
 import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
 import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
@@ -31,13 +32,15 @@ const powerSyncRuntime = new SingleActivePowerSyncRuntime<PowerSyncDatabase>();
 export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
   const [db, setDb] = useState<PowerSyncDatabase | null>(null);
   const accountId = useStore((state) => state.user?.id ?? null);
+  const user = useStore((state) => state.user);
   const isPowerSyncEnabled = useStore((state) => state.flags.isPowerSyncEnabled);
+  const isLocalOnly = isLocalOnlyIdentity(user);
 
   useEffect(() => {
     let active = true;
     const activeAccountId = accountId;
 
-    if (!isPowerSyncEnabled || !activeAccountId) {
+    if (!isPowerSyncEnabled || !activeAccountId || isLocalOnly) {
       void powerSyncRuntime.deactivate().catch((error) => {
         console.error('[PowerSync] Failed to deactivate inactive runtime:', error);
       });
@@ -85,15 +88,17 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
         console.error('[PowerSync] Native runtime cleanup failed:', error);
       });
     };
-  }, [accountId, isPowerSyncEnabled]);
+  }, [accountId, isLocalOnly, isPowerSyncEnabled]);
 
-  if (!isPowerSyncEnabled || !accountId) {
+  if (!isPowerSyncEnabled || !accountId || isLocalOnly) {
     return <>{children}</>;
   }
 
   if (!db) {
-    // Return null or splash screen during fast JSI load sequence (<20ms)
-    return null;
+    // Database startup is a capability, not the route-shell render gate.
+    // Screens render their loading/offline states while the local runtime
+    // becomes available.
+    return <>{children}</>;
   }
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;

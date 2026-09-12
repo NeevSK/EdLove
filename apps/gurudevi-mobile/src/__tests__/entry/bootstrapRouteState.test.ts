@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { type BootstrapRouteState, getBootstrapRouteTarget } from '@/entry/bootstrapRouteState';
 
 const authenticatedSession = {
+  access_token: 'active-access-token',
+  expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
   user: { id: 'account-a' },
 } as BootstrapRouteState['session'];
 
@@ -14,6 +16,7 @@ function routeState(overrides: Partial<BootstrapRouteState> = {}): BootstrapRout
       snapshotUserId: null,
     },
     hasLiveCapacity: true,
+    hasActiveAccessToken: true,
     hasProfileName: true,
     isProfileForSession: true,
     identityAvailability: 'active',
@@ -131,5 +134,30 @@ describe('bootstrap route-state adapter', () => {
     );
 
     expect(target).toMatchObject({ decision: 'app', redirectTo: '/self' });
+  });
+
+  it('returns an unauthenticated root launch to public step zero', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({
+        hasLiveCapacity: false,
+        identityAvailability: 'unknown',
+        onboardingCompleted: false,
+        pathname: '/',
+        session: null,
+      }),
+    );
+
+    expect(target).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+  });
+
+  it('returns an expired authenticated session to public step zero', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({
+        hasActiveAccessToken: false,
+        pathname: '/self',
+      }),
+    );
+
+    expect(target).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
   });
 });

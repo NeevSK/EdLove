@@ -46,6 +46,9 @@ These files form the active design constitution:
 - `gurudevi-component-library.md` (component contracts)
 - `gurudevi-skia-implementation.md` (Skia and token migration path)
 - `gurudevi-architecture.md` (file placement and monorepo boundaries)
+- `gurudevi-external-world-design-canon.md` (external HCI, spatial, material, and human-process principles)
+- `gurudevi-anti-slop-enforcement.md` (design review and machine-checkable anti-slop policy)
+- `gurudevi-human-interface-implementation-method.md` (process for implementing and validating new screens)
 
 This file (`GURUDEVI_DESIGN_MASTER.md`) governs how those docs stay aligned.
 
@@ -107,10 +110,13 @@ For any design-system change:
 ### C. Ongoing
 - [ ] Monthly doc-code drift review.
 - [ ] Before major UI work, re-validate this hierarchy.
+- [ ] Apply the external-world canon and anti-slop gates to every substantial screen redesign.
 
 ---
 
 ## 7) Change Log
+
+- **2026-09-09**: Added the external-world design canon, anti-slop enforcement policy, and human-interface implementation method. These documents separate external design principles from existing repo vocabulary and define delivery gates for future UI work.
 
 - **2026-03-20**: Retuned Gurudevi dark-phase palettes toward sanctuary graphite with blue-violet undertones so guarded dark mode no longer depends on the older brown-black night world.
 - **2026-03-20**: Added `gurudevi-scene-token-hierarchy.md` to formalize the shared layer grammar for world, chrome, canvas, surfaces, elevation, and readable text roles across web and mobile.

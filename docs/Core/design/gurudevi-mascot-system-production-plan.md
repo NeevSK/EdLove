@@ -15,9 +15,9 @@ Build an original, light-first mascot family that combines:
 
 - firefly as the guide and emotional companion;
 - lotus, sanctuary, warmth, and human dignity as the world around it;
-- soft dimensional illustration with elegant organic forms;
+- soft dimensional illustration with elegant organic forms and visible emotional life;
 - a small related cast for student, teacher, guardian, librarian, and host roles;
-- static production assets first, with animation deferred.
+- clean generated production assets first, with meaningful organic motion layered on after the static poses are approved.
 
 The existing primitive SVGs and generated character sheet remain references only—not final production artwork.
 
@@ -30,11 +30,13 @@ Winnie-the-Pooh’s bees will influence emotional qualities only: tenderness, cu
 The mascot system will be:
 
 - soft dimensional rather than flat geometric;
-- warm and humane rather than childish or chibi;
+- warm, humane, expressive, and alive rather than childish or chibi;
 - slightly asymmetrical and memorable at silhouette level;
 - elegant enough for light mode and calm enough for dark mode;
 - expressive through gaze, posture, and gesture before props;
 - visually connected to lotus through light, petal-like rhythm, sanctuary atmosphere, and unfolding—not through literal lotus costumes.
+
+The app surface should remain spacious and quiet so the companion can carry presence. Quiet does not mean emotionally flat: the firefly should breathe, notice, blink, lean, gesture, hover, settle, and change its light with purpose. A resting pose remains present and feeling; reduced motion removes movement while preserving that personality.
 
 Light mode is the primary approval target:
 

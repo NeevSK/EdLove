@@ -98,6 +98,7 @@ export const UserContextSchema = z.preprocess(
 
     // Metadata & Flags
     isAnonymous: z.boolean().nullish().default(false),
+    isLocalOnly: z.boolean().nullish().default(false),
     hasGlobalAccess: z.boolean().nullish().default(false),
     isPersonal: z.boolean().nullish().default(false),
 
@@ -107,7 +108,7 @@ export const UserContextSchema = z.preprocess(
         (value) => (value === 'WANDERER' ? 'THIRD_CLASS' : value),
         z.enum(['THIRD_CLASS', 'SECOND_CLASS', 'FIRST_CLASS']),
       )
-      .default('THIRD_CLASS'),
+      .default('SECOND_CLASS'),
     pricing_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).default('FREE'),
     features: z
       .array(z.string())
@@ -147,8 +148,8 @@ if ((import.meta as any).vitest) {
     expect(() => UserSchema.parse(invalidUser)).toThrow();
   });
 
-  it('defaults authenticated context citizenship to THIRD_CLASS and normalizes WANDERER', () => {
-    expect(UserContextSchema.parse({}).citizenship).toBe('THIRD_CLASS');
+  it('defaults authenticated context citizenship to SECOND_CLASS and normalizes WANDERER', () => {
+    expect(UserContextSchema.parse({}).citizenship).toBe('SECOND_CLASS');
     expect(UserContextSchema.parse({ citizenship: 'WANDERER' }).citizenship).toBe('THIRD_CLASS');
   });
 }

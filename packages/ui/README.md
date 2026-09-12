@@ -16,7 +16,7 @@ tags: [packages, ui, design-system, nativewind]
 
 The package is organized as a small ownership hierarchy:
 
-1. **Tokens** — semantic colors, typography, spacing, geometry, motion, and responsive behavior.
+1. **Tokens** — semantic colors, typography, spacing, geometry, motion, and responsive behavior. Import the dependency-free contract explicitly from `@repo/ui/tokens`.
 2. **Primitives** — `Box`, `Text`, `Heading`, `VStack`, `HStack`, `Pressable`, `Input`, `Icon`, and related neutral building blocks.
 3. **Compounds** — `Button`, `FormField`, `Tabs`, `Command`, `Combobox`, `Popover`, `Dialog`, `Sheet`, and other reusable interaction contracts.
 4. **Brand components** — Gurudevi-specific feedback, loading, empty, success, and shell components.
@@ -33,6 +33,8 @@ The compatibility layer in `@repo/ui/gluestack` is retained for migration only. 
 ## Platform boundaries
 
 Shared components should work across native and web where practical. Use `.native.tsx` and `.web.tsx` variants when platform behavior genuinely differs; keep the public contract aligned across variants. React Native imports are appropriate inside primitive implementations and platform adapters. Native capabilities such as storage, haptics, location, and sync belong behind the relevant `@repo/core` runtime boundary.
+
+`@repo/ui/tokens` is the cross-platform UI contract boundary. It contains plain immutable values and types: no React, React Native, DOM, Tailwind, NativeWind, or framework imports. `@repo/ui/native` and future `@repo/ui/web` surfaces may consume it, but must never import one another. Domain logic remains outside this package.
 
 ## Showcase and documentation
 

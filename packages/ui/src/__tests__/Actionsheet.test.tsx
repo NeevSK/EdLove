@@ -47,8 +47,9 @@ describe('Actionsheet Component (scenario contract)', {
 
   it('handles item selection and closing', async () => {
     const onItemPress = vi.fn();
+    const onClose = vi.fn();
     const { getByText } = await render(
-      <Actionsheet isOpen={true} onClose={() => {}}>
+      <Actionsheet isOpen={true} onClose={onClose}>
         <ActionsheetContent>
           <ActionsheetItem onPress={onItemPress}>
             <ActionsheetItemText>Select Me</ActionsheetItemText>
@@ -59,5 +60,40 @@ describe('Actionsheet Component (scenario contract)', {
 
     fireEvent.press(getByText('Select Me'));
     expect(onItemPress).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('does not select or close when an item is disabled', async () => {
+    const onItemPress = vi.fn();
+    const onClose = vi.fn();
+    const { getByText } = await render(
+      <Actionsheet isOpen onClose={onClose}>
+        <ActionsheetContent>
+          <ActionsheetItem isDisabled onPress={onItemPress}>
+            <ActionsheetItemText>Disabled option</ActionsheetItemText>
+          </ActionsheetItem>
+        </ActionsheetContent>
+      </Actionsheet>,
+    );
+
+    fireEvent.press(getByText('Disabled option'));
+
+    expect(onItemPress).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('honors an explicit backdrop-dismissal policy', async () => {
+    const onClose = vi.fn();
+    const { getByLabelText } = await render(
+      <Actionsheet isOpen onClose={onClose} closeOnBackdropPress={false}>
+        <ActionsheetContent>
+          <ActionsheetItemText>Protected option</ActionsheetItemText>
+        </ActionsheetContent>
+      </Actionsheet>,
+    );
+
+    fireEvent.press(getByLabelText('backdrop'));
+
+    expect(onClose).not.toHaveBeenCalled();
   });
 });

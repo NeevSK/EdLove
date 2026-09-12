@@ -7,14 +7,14 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_policies-test\""
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_policies-test\" --evidence-level G2"
   },
   "dependencies": {
-    "@cedar-policy/cedar-wasm": "^4.11.0"
+    "@cedar-policy/cedar-wasm": "^4.12.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.6",
     "typescript": "rc",
     "vitest": "^5.0.0"
   },

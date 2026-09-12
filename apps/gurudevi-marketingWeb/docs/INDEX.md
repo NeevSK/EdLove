@@ -25,6 +25,7 @@ This index acts as a reference for the core ideas and checklists for the Gurudev
 |---|---|
 | [Core/core-idea.md](Core/core-idea.md) | Vision and core branding ideas for the Gurudevi marketing ecosystem |
 | [Core/gurudevi-copy-and-content-guide.md](Core/gurudevi-copy-and-content-guide.md) | Sri Lankan education copy, role language, and content integrity guide |
+| [Core/typography-families-and-optical-physics.md](Core/typography-families-and-optical-physics.md) | Typographic taxonomy, optical weight physics, and character archetypes |
 
 ---
 

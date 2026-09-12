@@ -2,7 +2,6 @@
 
 export * from '@repo/core/api/history';
 export { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
-export { useSanctuaryVisitor, type SanctuaryVisitorState } from '@repo/core/hooks/useSanctuaryVisitor';
 export {
   type DeviceAccountRecord,
   useDeviceAccounts,
@@ -11,6 +10,11 @@ export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 // Logic Hooks & Utilities
 export { useNotifications } from '@repo/core/hooks/useNotifications';
+export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
+export {
+  type SanctuaryVisitorState,
+  useSanctuaryVisitor,
+} from '@repo/core/hooks/useSanctuaryVisitor';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { accountPin } from '@repo/core/lib/accountPin';
 export {
@@ -43,6 +47,7 @@ export {
   isAnonymousIdentity,
   isAnonymousSession,
   isDemoSession,
+  isLocalOnlyIdentity,
   isResolvedAuthSubjectCurrent,
   isSandboxSession,
   suggestDisplayName,
@@ -126,12 +131,15 @@ export * from '@repo/core/logic/store-slices';
 export * from '@repo/core/logic/utils';
 export * from '@repo/core/logic/workspace/index';
 export { useAuth } from '@repo/core/providers/AuthProvider';
+export {
+  CapabilityHydrationProvider,
+  useCapabilityHydration,
+} from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export { useAuthStore } from '@repo/core/store/useAuthStore';
 export { useConsentStore } from '@repo/core/store/useConsentStore';
 export { useFeatureStore } from '@repo/core/store/useFeatureStore';
 export { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
-export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
 

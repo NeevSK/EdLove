@@ -5,9 +5,10 @@ import { Pressable } from '@repo/ui/components/ui/pressable';
 import { AnimatedView, View } from '@repo/ui/components/ui/view';
 import { cn } from '@repo/ui/utils/classNames';
 import type React from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   type AccessibilityRole,
+  BackHandler,
   Platform,
   type StyleProp,
   type ViewProps,
@@ -27,6 +28,15 @@ interface ModalContextType {
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
+
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+
+function getFocusableElements(dialog: HTMLElement): HTMLElement[] {
+  return Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (element) => !element.hasAttribute('aria-hidden'),
+  );
+}
 
 function useModal() {
   const context = useContext(ModalContext);
@@ -52,6 +62,7 @@ export const Modal = ({
 } & ViewProps) => {
   const contextValue = useMemo(() => ({ onClose }), [onClose]);
   const [isPresent, setIsPresent] = useState(isOpen);
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
   const enteringAnimation =
     Platform.OS === 'web' ? undefined : ZoomIn.duration(300).springify().damping(20);
   const exitingAnimation = Platform.OS === 'web' ? undefined : ZoomOut.duration(200);
@@ -68,12 +79,101 @@ export const Modal = ({
 
   useEffect(() => {
     if (!isOpen || Platform.OS !== 'web') return;
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (!trapFocus || event.key !== 'Tab') return;
+
+      const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+      if (!dialog) return;
+
+      const focusableElements = getFocusableElements(dialog);
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      if (!first || !last) return;
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && (activeElement === first || activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (activeElement === last || activeElement === dialog)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
+    const onFocusIn = (event: FocusEvent) => {
+      if (!trapFocus) return;
+
+      const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+      if (!dialog || !(event.target instanceof Node) || dialog.contains(event.target)) return;
+
+      getFocusableElements(dialog)[0]?.focus();
+    };
+
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener('focusin', onFocusIn);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('focusin', onFocusIn);
+    };
+  }, [isOpen, onClose, trapFocus]);
+
+  useEffect(() => {
+    if (!isOpen || Platform.OS !== 'android') return;
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      onClose();
+      return true;
+    });
+
+    return () => subscription.remove();
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+
+    if (isOpen) {
+      if (!previouslyFocusedElement.current && document.activeElement instanceof HTMLElement) {
+        previouslyFocusedElement.current = document.activeElement;
+      }
+
+      let attempts = 0;
+      let frame = 0;
+      const focusDialog = () => {
+        const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+        const focusTarget = dialog?.querySelector<HTMLElement>('button, input, [tabindex]');
+        if (focusTarget) {
+          focusTarget.focus();
+          return;
+        }
+
+        if (attempts < 4) {
+          attempts += 1;
+          frame = window.requestAnimationFrame(focusDialog);
+        }
+      };
+
+      const timeout = window.setTimeout(focusDialog, 0);
+
+      return () => {
+        window.clearTimeout(timeout);
+        window.cancelAnimationFrame(frame);
+      };
+    }
+
+    previouslyFocusedElement.current?.focus();
+    previouslyFocusedElement.current = null;
+  }, [isOpen]);
 
   if (!isPresent) return null;
 
@@ -83,6 +183,7 @@ export const Modal = ({
         <Overlay isOpen={isOpen} onPress={closeOnBackdropPress ? onClose : undefined} />
         {Platform.OS === 'web' ? (
           <View
+            {...props}
             role="dialog"
             aria-modal={true}
             accessibilityLabel={accessibilityLabel}
@@ -216,6 +317,7 @@ export const ModalCloseButton = ({ children, onPress, ...props }: ModalCloseButt
       {...props}
       accessibilityRole="button"
       accessibilityLabel={props.accessibilityLabel ?? 'Close'}
+      {...(Platform.OS === 'web' ? { autoFocus: true } : {})}
       onPress={() => {
         onClose();
         onPress?.();

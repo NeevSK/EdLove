@@ -79,8 +79,49 @@ await page.getByText('Could not save your profile. Try again.').waitFor();
 await page.getByRole('button', { name: 'Try again' }).click();
 await page.getByText('Profile saved.').waitFor();
 
-const buttonHeight = await page.getByRole('button', { name: 'Saved' }).evaluate((node) => getComputedStyle(node).height);
-if (buttonHeight !== '48px') throw new Error(`Button height: expected 48px, received ${buttonHeight}`);
+const buttonHeight = await page
+  .getByRole('button', { name: 'Saved' })
+  .evaluate((node) => getComputedStyle(node).height);
+if (buttonHeight !== '48px')
+  throw new Error(`Button height: expected 48px, received ${buttonHeight}`);
+
+const dialogTrigger = page.getByRole('button', { name: 'Open profile actions' });
+await dialogTrigger.click();
+const dialog = page.getByRole('dialog', { name: 'Profile actions' });
+await dialog.waitFor();
+const secondaryDialogAction = page.getByRole('button', { name: 'Secondary profile action' });
+const dialogClose = page.getByRole('button', { name: 'Close profile actions' });
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Secondary profile action',
+);
+await page.keyboard.press('Tab');
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Close profile actions',
+);
+await page.keyboard.press('Tab');
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Secondary profile action',
+);
+await page.keyboard.press('Shift+Tab');
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Close profile actions',
+);
+await dialogTrigger.focus();
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Secondary profile action',
+);
+await page.keyboard.press('Escape');
+await dialog.waitFor({ state: 'detached' });
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Open profile actions',
+);
+
+await dialogTrigger.click();
+await dialogClose.click();
+await dialog.waitFor({ state: 'detached' });
+await page.waitForFunction(
+  () => document.activeElement?.getAttribute('aria-label') === 'Open profile actions',
+);
 
 console.log(JSON.stringify({ url, actual, pageErrors: errors }, null, 2));
 await browser.close();

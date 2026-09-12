@@ -1,34 +1,10 @@
 /**
  * a11yUtils — Modern Accessibility & Ergonomics Infrastructure
  *
- * Canonical Engine: @intuitui-labs/a11y-gate (C:\projects\packages\a11y-gate)
- *
- * Implements:
- * - W3C APCA 0.98G (Accessible Perceptual Contrast Algorithm - WCAG 3 Candidate)
- * - WCAG 2.1 / 2.2 / 2.3 Relative Luminance (ISO 9241-306)
- * - Brettel/Viénot Color Vision Deficiency (CVD) simulation
+ * Integrates:
+ * - Canonical @intuitui-labs/a11y-gate (APCA, WCAG 2.2/3, CVD simulations, screen audits)
  * - Mobile Ergonomics: Touch Target Geometry (>= 48dp), Safe Areas, 14px Typography Floor
- * - Spatial Harmony & Fluid Responsive Clamp
  */
-
-import {
-  type ApcaEvaluation,
-  type ApcaFontMatrix,
-  calculateApca,
-  evaluateApca,
-  evaluateTargetSize,
-  evaluateWcag,
-  getApcaFontMatrix,
-  getDeltaE,
-  getWcagContrastRatio,
-  hexToRgb,
-  type RGB,
-  rgbToHex,
-  simulateCvd,
-  simulateCvdHex,
-  TOUCH_TARGET_STANDARDS,
-  type WcagRating,
-} from '@intuitui-labs/a11y-gate';
 
 // Re-export spatial and motion primitives
 export {
@@ -46,6 +22,7 @@ export {
   SPRING_PRESETS,
   type SpringSpec,
 } from '@intuitui-labs/a11y-gate';
+
 // Re-export canonical primitives from @intuitui-labs/a11y-gate
 export {
   type ApcaEvaluation,
@@ -64,7 +41,14 @@ export {
   simulateCvdHex,
   TOUCH_TARGET_STANDARDS,
   type WcagRating,
-};
+} from '@intuitui-labs/a11y-gate';
+
+import {
+  calculateApca,
+  getWcagContrastRatio,
+  hexToRgb,
+  rgbToHex,
+} from '@intuitui-labs/a11y-gate';
 
 export interface ContrastResult {
   ratio: number;

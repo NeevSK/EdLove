@@ -60,7 +60,7 @@
     "check-types": "node ../../scripts/run-and-report.mjs --cmd \"tsc --build --noEmit\" --name \"packages_form-builder-engine-check-types\""
   },
   "dependencies": {
-    "@tanstack/form-core": "^0.20.0",
+    "@tanstack/form-core": "^0.20.3",
     "zod": "4.5.4"
   },
   "devDependencies": {

@@ -15,34 +15,144 @@ export const SITE_KEYWORDS = [
 export const LAUNCH = {
   iso: '2026-10-06T09:00:00+05:30',
   label: 'October 6, 2026',
+  phase: 'Alpha Opening',
   timezone: 'Asia/Colombo',
   timezoneLabel: 'Sri Lanka time',
   status: 'scheduled' as const,
-  ctaTarget: '#launch',
+  ctaTarget: '#roadmap',
 } as const;
+
+export interface RoadmapMilestone {
+  year: string;
+  date: string;
+  phase: string;
+  badge: string;
+  status: 'active' | 'upcoming' | 'vision';
+  summary: string;
+  deliverables: string[];
+}
+
+export const ROADMAP_MILESTONES: RoadmapMilestone[] = [
+  {
+    year: '2026',
+    date: 'October 6, 2026',
+    phase: 'Alpha Release',
+    badge: 'Opening Cohort',
+    status: 'active',
+    summary:
+      'The genesis of the Gurudevi sanctuary. Foundational reflection and preparation tools for invited Sri Lankan pilot schools.',
+    deliverables: [
+      'Teacher Sanctuary & reflection spaces',
+      'Local-first offline storage & privacy',
+      'Invited school pilot cohorts',
+    ],
+  },
+  {
+    year: '2027',
+    date: 'October 6, 2027',
+    phase: 'Beta Release',
+    badge: 'Ecology Expansion',
+    status: 'upcoming',
+    summary:
+      'Extending the sanctuary across students, families, and school leaders with shared reality and clear privacy boundaries.',
+    deliverables: [
+      'Classroom, School, Family, and Studio spaces',
+      'Federated coordination without surveillance',
+      'Bilingual Sinhala & Tamil trials',
+    ],
+  },
+  {
+    year: '2028',
+    date: 'October 6, 2028',
+    phase: 'GA Sanctuary',
+    badge: 'Nationwide Opening',
+    status: 'vision',
+    summary:
+      'Nationwide availability of the open educational sanctuary, delivering lasting institutional harmony and digital sovereignty.',
+    deliverables: [
+      'Open access for all Sri Lankan schools',
+      'Sovereign open infrastructure & data protocols',
+      'Community-led pedagogical stewardship',
+    ],
+  },
+];
+
+export const HEVNER_RESEARCH_GROUNDING = {
+  title: 'Methodological Grounding',
+  lead: 'Design Science Research (Hevner 3-Cycle)',
+  body:
+    'Gurudevi progresses through the Hevner Design Science Research cadence, connecting classroom realities with pedagogical science.',
+  cycles: [
+    {
+      name: 'Relevance Cycle',
+      phase: 'Field Realities',
+      description:
+        'Sensing classroom realities and educator burdens across Sri Lanka.',
+    },
+    {
+      name: 'Design Cycle',
+      phase: 'Alpha 2026 Genesis',
+      description:
+        'Calibrating tactile, local-first sanctuary tools with early teachers.',
+    },
+    {
+      name: 'Rigor Cycle',
+      phase: 'Foundational Commons',
+      description:
+        'Grounding system architecture in pedagogical science and open protocols.',
+    },
+  ],
+};
+
+export const ROADMAP_CAVEAT = {
+  title: 'Sustainable Cadence',
+  lead: 'Calibrated by care, capacity, and stewardship.',
+  body:
+    'While October 6 anchors our annual milestones, progress moves in harmony with research stewardship and the sustainable capacity of our team and community.',
+};
 
 // Keep public language in a locale-shaped object so Sinhala/Tamil translations
 // can be added without changing page structure or CTA wiring.
 export const MARKETING_COPY = {
   en: {
     hero: {
-      eyebrow: 'Gurudevi · An education ecology',
+      eyebrow: 'Gurudevi · Education Ecology',
       title: 'Technology that gives energy back to education.',
-      lede: 'A connected, respectful space for teachers, students, schools, families, and communities in Sri Lanka.',
-      primaryCta: 'Follow the October 6 launch',
-      secondaryCta: 'See how it works',
+      lede: 'A sovereign, respectful sanctuary for teachers, students, schools, and families in Sri Lanka.',
+      primaryCta: 'Follow the Multi-Year Horizon',
+      secondaryCta: 'Explore Workspaces',
     },
     roles: [
-      { label: 'For teachers', title: 'More room to teach.', body: 'Prepare, teach, reflect, and stay connected without carrying every part of the work alone.' },
-      { label: 'For principals', title: 'Visibility without surveillance.', body: 'Coordinate the school with useful patterns while respecting the private lives of educators.' },
-      { label: 'For students', title: 'Learning with agency.', body: 'A learning space that treats young people as participants, not as data points.' },
-      { label: 'For families', title: 'Connection with dignity.', body: 'A clearer way to stay close to a learner’s journey without turning care into control.' },
+      { label: 'Teachers', title: 'More room to teach.', body: 'Prepare and reflect without administrative exhaustion.' },
+      { label: 'Leaders', title: 'Visibility without surveillance.', body: 'Coordinate the school while respecting teacher privacy.' },
+      { label: 'Students', title: 'Agency and curiosity.', body: 'Participate actively with dignity and consent.' },
+      { label: 'Families', title: 'Connection with care.', body: 'Stay close to learning without turning care into control.' },
     ],
     workspaces: [
-      { number: '01', name: 'Classroom', body: 'The everyday place where teaching, learning, preparation, and care meet.' },
-      { number: '02', name: 'School', body: 'A shared view for coordination, support, and decisions that serve the whole community.' },
-      { number: '03', name: 'Family Space', body: 'A respectful bridge between the learner’s world at school and the people who care for them.' },
-      { number: '04', name: 'Learning Studio', body: 'A place for curiosity, practice, resources, and the learner’s own direction.' },
+      {
+        number: '01',
+        roleLabel: 'Teachers & Students',
+        name: 'Classroom Sanctuary',
+        body: 'Lesson preparation, reflection, and teaching—grounded in pedagogical care.',
+      },
+      {
+        number: '02',
+        roleLabel: 'School Leaders',
+        name: 'School Coordination',
+        body: 'Institutional patterns and resource stewardship without surveillance.',
+      },
+      {
+        number: '03',
+        roleLabel: 'Families & Guardians',
+        name: 'Family Space',
+        body: 'A transparent bridge between school and home with mutual respect.',
+      },
+      {
+        number: '04',
+        roleLabel: 'Young Learners',
+        name: 'Learning Studio',
+        body: 'A quiet space for self-directed practice, learning commons, and agency.',
+      },
     ],
   },
 } as const;

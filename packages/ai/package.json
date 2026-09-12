@@ -62,15 +62,15 @@
     "@tanstack/ai-client": "^0.23.3",
     "@tanstack/ai-react": "^0.19.3",
     "@tanstack/react-query": "^5.102.8",
-    "expo-router": "~57.0.17",
-    "react-i18next": "^17.0.12",
+    "expo-router": "~57.0.21",
+    "react-i18next": "^17.0.13",
     "react-native-reanimated": "4.3.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.18",
-    "eslint": "^10.9.1",
+    "@types/react": "^19.3.0",
+    "eslint": "^10.10.0",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0"

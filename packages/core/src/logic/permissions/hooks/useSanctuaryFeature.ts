@@ -1,4 +1,4 @@
-import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
+import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import {
   CITIZENSHIP,
   type FeatureRequirement,
@@ -9,7 +9,6 @@ import {
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
 } from '@repo/core/logic/registry/featureLifecycleManifest';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
@@ -21,10 +20,8 @@ export function useSanctuaryFeature(
   requirement: FeatureRequirement,
   resourceId?: string,
 ): SanctuaryFeatureResult {
-  const user = useAuthStore((s) => s.user);
-  const activeBond = useAuthStore((s) => s.activeBond);
-  const citizenshipStr = user?.citizenship ?? 'THIRD_CLASS';
-  const principalId = user?.id ?? null;
+  const { context } = usePermissions();
+  const principalId = context.userId;
   const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
   const getDecision = useCedarDecisionStore((s) => s.getDecision);
   const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
@@ -32,14 +29,12 @@ export function useSanctuaryFeature(
   const flags = useFeatureStore((s) => s.flags);
 
   return useMemo(() => {
-    const bondScope = resolveBondScope(activeBond);
-    // Map string citizenship to numeric level
     const citizenship =
-      citizenshipStr === 'WANDERER' || citizenshipStr === 'THIRD_CLASS'
-        ? CITIZENSHIP.THIRD_CLASS
-        : citizenshipStr === 'SECOND_CLASS'
+      context.citizenship === 'FIRST_CLASS'
+        ? CITIZENSHIP.FIRST_CLASS
+        : context.citizenship === 'SECOND_CLASS'
           ? CITIZENSHIP.SECOND_CLASS
-          : CITIZENSHIP.FIRST_CLASS;
+          : CITIZENSHIP.THIRD_CLASS;
 
     // Cedar evaluation — synchronous against locally-computed decision store
     const cedarDecision: 'allow' | 'deny' | 'no_decision' = principalId
@@ -54,11 +49,12 @@ export function useSanctuaryFeature(
     return sanctuaryFeature(
       {
         userId: principalId,
-        activeBondId: activeBond?.id ?? null,
-        activeEntityId: bondScope.activeEntityId,
-        activeEntityType: bondScope.activeEntityType,
-        schoolId: bondScope.schoolId,
-        primaryCapacity: activeBond?.capacity ?? null,
+        isLocalOnly: context.isLocalOnly === true,
+        activeBondId: context.activeBond?.id ?? null,
+        activeEntityId: context.activeEntityId,
+        activeEntityType: context.activeEntityType,
+        schoolId: context.schoolId,
+        primaryCapacity: context.activeBond?.capacity ?? context.capacity ?? null,
         cedarSnapshotLoaded,
         entitlementManifestLoaded: manifestLoaded,
         entitlementReadiness: readiness,
@@ -79,15 +75,12 @@ export function useSanctuaryFeature(
   }, [
     action,
     subject,
-    resourceId,
     requirement,
-    user,
-    citizenshipStr,
+    context,
     cedarSnapshotLoaded,
     getDecision,
     flags,
     principalId,
-    activeBond,
     activeEntitlements,
     grants,
     pricingTier,

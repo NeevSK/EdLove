@@ -209,7 +209,7 @@ zod
 zustand
 ```
 
-## Dev tooling (35)
+## Dev tooling (36)
 
 ```text
 @babel/runtime
@@ -238,6 +238,7 @@ expo-doctor
 globals
 jest-cucumber
 jest-expo
+lightningcss-linux-x64-gnu
 playwright
 postcss
 react-native-bundle-visualizer

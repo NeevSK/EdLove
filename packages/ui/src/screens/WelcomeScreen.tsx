@@ -117,6 +117,8 @@ const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenP
           error,
           t('auth.guestLoginFailed') ||
             'We could not open the sanctuary doors for you right now. Please try again.',
+          t('common.offlineMessage') ||
+            'You appear to be offline. Please check your connection to enter as a guest.',
         ),
         type: 'error',
       });

@@ -57,20 +57,16 @@ const liveMetrics: LiveMetrics = {
 };
 
 describe('AnalyticsDashboardScreen', () => {
-  let poll: (() => void) | undefined;
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    vi.spyOn(globalThis, 'setInterval').mockImplementation((callback) => {
-      poll = callback as () => void;
-      return 1 as unknown as ReturnType<typeof setInterval>;
-    });
+    vi.useFakeTimers();
     analyticsApi.aggregateTenantMetrics.mockResolvedValue([tenantMetrics]);
     analyticsApi.getLiveMetrics.mockResolvedValue(liveMetrics);
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -92,8 +88,7 @@ describe('AnalyticsDashboardScreen', () => {
     analyticsApi.getLiveMetrics.mockRejectedValueOnce(new Error('network unavailable'));
 
     await act(async () => {
-      poll?.();
-      await Promise.resolve();
+      await vi.advanceTimersByTimeAsync(30000);
     });
 
     await waitFor(() => expect(screen.getByText('Last update may be stale')).toBeTruthy());
@@ -107,6 +102,20 @@ describe('AnalyticsDashboardScreen', () => {
     await waitFor(() => {
       expect(
         screen.getByText('Live metrics are temporarily unavailable. Showing the last successful update.'),
+      ).toBeTruthy();
+    });
+  });
+
+  it('announces when institutional metrics are not connected', async () => {
+    analyticsApi.aggregateTenantMetrics.mockRejectedValueOnce(
+      new Error('Institutional analytics are unavailable until data sources are connected.'),
+    );
+
+    await renderScreen();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Institutional analytics are unavailable until data sources are connected.'),
       ).toBeTruthy();
     });
   });

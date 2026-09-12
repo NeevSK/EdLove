@@ -48,9 +48,7 @@ export class DeepLinkManager {
       // 1. Auth Callback Check
       if (
         (parsedUrl.hostname === 'auth' && parsedUrl.pathname === '/callback') ||
-        parsedUrl.pathname === '/auth/callback' ||
-        params.access_token ||
-        params.code
+        parsedUrl.pathname === '/auth/callback'
       ) {
         return this.handleAuthCallback(params);
       }
@@ -58,7 +56,8 @@ export class DeepLinkManager {
       // 2. Classroom Invite Check
       const inviteMatch = parsedUrl.pathname.match(/^\/(?:invite\/)?classroom\/([^/]+)$/);
       if (inviteMatch) {
-        const inviteCode = inviteMatch[1];
+        const encodedInviteCode = inviteMatch[1];
+        const inviteCode = encodedInviteCode ? decodeURIComponent(encodedInviteCode) : undefined;
         return {
           type: DeepLinkType.CLASSROOM_INVITE,
           params: inviteCode ? { inviteCode, ...params } : params,

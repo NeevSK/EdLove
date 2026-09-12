@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
 import {
   isQRDeepLink,
+  MAX_DEEP_LINK_LENGTH,
   normalizeAcceptedDeepLink,
   normalizeAcceptedInternalRoute,
 } from '@/lib/deepLinks/urlPolicy';
@@ -15,9 +16,17 @@ describe('deep-link URL policy', () => {
       normalizeAcceptedDeepLink('https://platform.gurudevi.edlove.org/auth/callback'),
     ).not.toBeNull();
     expect(normalizeAcceptedDeepLink('https://untrusted.example/auth/callback')).toBeNull();
+    expect(
+      normalizeAcceptedDeepLink('https://platform.gurudevi.edlove.org/p/library/resource/1'),
+    ).toBeNull();
     expect(normalizeAcceptedDeepLink('edlove://auth/callback')).toBeNull();
     expect(normalizeAcceptedDeepLink('javascript:alert(1)')).toBeNull();
     expect(normalizeAcceptedDeepLink('not a url')).toBeNull();
+    expect(
+      normalizeAcceptedDeepLink(
+        `https://platform.gurudevi.edlove.org/qr?x=${'a'.repeat(MAX_DEEP_LINK_LENGTH)}`,
+      ),
+    ).toBeNull();
   });
 
   it('recognizes QR links before generic dispatch', () => {
@@ -33,6 +42,20 @@ describe('deep-link URL policy', () => {
     );
     expect(normalizeAcceptedInternalRoute('//evil.example')).toBeNull();
     expect(normalizeAcceptedInternalRoute('/unknown-route')).toBeNull();
+    expect(
+      normalizeAcceptedInternalRoute(`/community?x=${'a'.repeat(MAX_DEEP_LINK_LENGTH)}`),
+    ).toBeNull();
+  });
+
+  it.each([
+    'https://platform.gurudevi.edlove.org/../auth/callback',
+    'https://platform.gurudevi.edlove.org/%2f%2fevil.example',
+    'https://platform.gurudevi.edlove.org/qr\r\nLocation:%20https://evil.example',
+    'https://platform.gurudevi.edlove.org/admin',
+    'edlove://invite/classroom/code',
+  ])('keeps adversarial or unsupported link shape out of native dispatch: %s', (url) => {
+    const accepted = normalizeAcceptedDeepLink(url);
+    expect(accepted).toBeNull();
   });
 });
 

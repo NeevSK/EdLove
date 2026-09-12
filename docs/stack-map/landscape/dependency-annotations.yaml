@@ -67,11 +67,11 @@ dependency_entries:
   react-native-worklets:
     category: animation
     purpose: "Worklet thread runtime required by Reanimated 4"
-    sacred: "0.12.1"
+    sacred: "0.12.2"
   react-native-gesture-handler:
     category: ui-kit
     purpose: "Gesture system (v3, new arch)"
-    sacred: "3.2.1"
+    sacred: "3.3.0"
   react-native-mmkv:
     category: storage
     purpose: "High-performance key-value store (Nitro v4)"

@@ -32,8 +32,8 @@ const resolvedIdentity = {
 };
 
 describe('getVerifiedDeviceAccountProfile', () => {
-  it('maps an identity only after it agrees with an authenticated session', () => {
-    expect(getVerifiedDeviceAccountProfile(session(), resolvedIdentity)).toEqual({
+  it('maps an identity resolved for the authenticated session', () => {
+    expect(getVerifiedDeviceAccountProfile(session(), resolvedIdentity, 'account-1')).toEqual({
       id: 'account-1',
       email: 'member@example.com',
       display_name: 'Member',
@@ -45,15 +45,23 @@ describe('getVerifiedDeviceAccountProfile', () => {
 
   it('rejects anonymous, sandbox, unresolved, and mismatched sessions', () => {
     expect(
-      getVerifiedDeviceAccountProfile(session({ is_anonymous: true }), resolvedIdentity),
+      getVerifiedDeviceAccountProfile(
+        session({ is_anonymous: true }),
+        resolvedIdentity,
+        'account-1',
+      ),
     ).toBeNull();
     expect(
       getVerifiedDeviceAccountProfile(
         session({ user_metadata: { experience_mode: 'sandbox' } }),
         resolvedIdentity,
+        'account-1',
       ),
     ).toBeNull();
-    expect(getVerifiedDeviceAccountProfile(null, resolvedIdentity)).toBeNull();
-    expect(getVerifiedDeviceAccountProfile({} as Session, resolvedIdentity)).toBeNull();
+    expect(getVerifiedDeviceAccountProfile(null, resolvedIdentity, null)).toBeNull();
+    expect(getVerifiedDeviceAccountProfile({} as Session, resolvedIdentity, null)).toBeNull();
+    expect(
+      getVerifiedDeviceAccountProfile(session(), resolvedIdentity, 'other-subject'),
+    ).toBeNull();
   });
 });

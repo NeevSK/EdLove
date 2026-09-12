@@ -41,4 +41,45 @@ describe('Dialog (scenario contract)', {
 
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
+
+  it('dismisses from the backdrop by default', async () => {
+    const onOpenChange = vi.fn();
+
+    await render(
+      <Dialog open onOpenChange={onOpenChange} accessibilityLabel="Example dialog">
+        <DialogContent>
+          <DialogBody>
+            <Text>Dialog content</Text>
+          </DialogBody>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    fireEvent.press(screen.getByRole('button', { name: 'backdrop' }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('honors an explicit backdrop-dismissal policy', async () => {
+    const onOpenChange = vi.fn();
+
+    await render(
+      <Dialog
+        open
+        onOpenChange={onOpenChange}
+        closeOnBackdropPress={false}
+        accessibilityLabel="Example dialog"
+      >
+        <DialogContent>
+          <DialogBody>
+            <Text>Dialog content</Text>
+          </DialogBody>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    fireEvent.press(screen.getByRole('button', { name: 'backdrop' }));
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
 });

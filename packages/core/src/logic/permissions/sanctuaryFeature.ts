@@ -3,6 +3,10 @@ import {
   isFeatureAccessContextReady,
 } from '@repo/core/logic/permissions/accessContext';
 import {
+  isBaselineReadCapability,
+  isLocalOnlyMutation,
+} from '@repo/core/logic/permissions/baselineCapabilities';
+import {
   type EntitlementScope,
   type EntitlementSnapshot,
   meetsSubscriptionTier,
@@ -57,6 +61,8 @@ export type SanctuaryFeatureResult =
 export type SanctuaryEvaluationContext = FeatureAccessContext;
 
 export interface FeatureRequirement {
+  action?: string;
+  subject?: string;
   citizenshipRequired: CitizenshipLevel;
   platformSupported?: boolean;
   entitlementModule?: string;
@@ -64,6 +70,8 @@ export interface FeatureRequirement {
   entitlementScope?: EntitlementScope;
   flagKey?: string;
   lifecycleState?: FeatureLifecycleState;
+  /** Allow a safe read-only shell before remote capability hydration completes. */
+  allowDuringBootstrap?: boolean;
 }
 
 export function sanctuaryFeature(
@@ -71,6 +79,25 @@ export function sanctuaryFeature(
   requirement: FeatureRequirement,
 ): SanctuaryFeatureResult {
   if (!isFeatureAccessContextReady(ctx)) {
+    if (
+      ctx.isLocalOnly &&
+      Boolean(ctx.userId) &&
+      isLocalOnlyMutation(requirement.action ?? '', requirement.subject ?? '') &&
+      ctx.flagActive
+    ) {
+      return { permitted: true };
+    }
+    if (
+      requirement.allowDuringBootstrap &&
+      isBaselineReadCapability(requirement.action ?? '', requirement.subject ?? '') &&
+      Boolean(ctx.userId) &&
+      !requirement.entitlementTier &&
+      !requirement.entitlementModule &&
+      ctx.flagActive &&
+      meetsCitizenship(ctx.citizenship, CITIZENSHIP.THIRD_CLASS)
+    ) {
+      return { permitted: true };
+    }
     return { permitted: false, reason: 'not_initialized' };
   }
 

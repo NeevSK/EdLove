@@ -24,6 +24,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [liveMetricsError, setLiveMetricsError] = useState<string | null>(null);
+  const [metricsError, setMetricsError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeRange, _setSelectedTimeRange] = useState<
     'week' | 'month' | 'quarter' | 'year'
@@ -32,6 +33,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   const loadDashboard = useCallback(async () => {
     try {
       setIsLoading(true);
+      setMetricsError(null);
       const timeRange = getTimeRange(selectedTimeRange);
       const tenantMetrics = await multiTenantAnalyticsAPI.aggregateTenantMetrics(
         [tenantId],
@@ -40,6 +42,12 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       setMetrics(tenantMetrics[0] || null);
     } catch (error) {
       console.error('Failed to load analytics dashboard:', error);
+      setMetrics(null);
+      setMetricsError(
+        error instanceof Error
+          ? error.message
+          : 'Institutional analytics are temporarily unavailable.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -211,6 +219,14 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
               Key Performance Metrics
             </Heading>
+            {metricsError ? (
+              <Box
+                accessibilityRole="alert"
+                className="rounded-2xl border border-phase-warning/30 bg-phase-warning/10 p-4"
+              >
+                <Text className="text-sm font-bold text-phaseText-primary">{metricsError}</Text>
+              </Box>
+            ) : null}
             <HStack className="flex-wrap justify-between">
               {metrics &&
                 Object.entries(metrics.metrics).map(([key, value]) => {

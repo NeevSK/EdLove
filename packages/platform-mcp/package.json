@@ -33,8 +33,8 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^25.9.5",
-    "eslint": "^10.9.1",
+    "@types/node": "^25.9.6",
+    "eslint": "^10.10.0",
     "mcp-remote": "^0.1.49",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",

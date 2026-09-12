@@ -3,6 +3,7 @@ import {
   isActiveIdentityProfile,
   isCurrentAuthBootstrapGeneration,
   isCurrentIdentityResolutionGeneration,
+  isLocalOnlyIdentity,
   isResolvedAuthSubjectCurrent,
 } from './identityState';
 
@@ -42,5 +43,17 @@ describe('auth subject and profile resolution boundaries', () => {
     expect(isResolvedAuthSubjectCurrent('auth-subject-1', 'auth-subject-1')).toBe(true);
     expect(isResolvedAuthSubjectCurrent('auth-subject-1', 'auth-subject-2')).toBe(false);
     expect(isResolvedAuthSubjectCurrent(null, 'auth-subject-1')).toBe(false);
+  });
+});
+
+describe('retention boundary', () => {
+  it('keeps anonymous and third-class identities local-only', () => {
+    expect(isLocalOnlyIdentity({ is_anonymous: true })).toBe(true);
+    expect(isLocalOnlyIdentity({ citizenship: 'THIRD_CLASS' })).toBe(true);
+    expect(isLocalOnlyIdentity({ citizenship: 'WANDERER' })).toBe(true);
+  });
+
+  it('allows second-class identities to use synchronized retention', () => {
+    expect(isLocalOnlyIdentity({ citizenship: 'SECOND_CLASS', is_anonymous: false })).toBe(false);
   });
 });

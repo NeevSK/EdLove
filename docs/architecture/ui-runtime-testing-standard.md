@@ -78,6 +78,56 @@ Release assurance: not started | blocked | passed (R1)
 Blocked by: exact failure, if any
 ```
 
+Every repository test command must also declare its evidence level at execution
+time. The shared `scripts/run-and-report.mjs` runner rejects test commands that
+do not provide `--evidence-level G0|G1|G2|G3|G4|G5|R1`, and writes the level and
+engine classification into the report. A result may therefore be reported only
+as, for example, `G1 boundary: 52 tests passed` or `G3 component-real: 4 tests
+passed`; `tests passed` by itself is not an accepted quality statement.
+
+The levels are claims about the environment that executed the named scenarios:
+
+- G0: pure contract, type, token, or static evidence;
+- G1: deterministic boundary execution with mocks or host substitutions;
+- G2: explicit scenario contract with observable state transitions;
+- G3: real component/runtime execution;
+- G4: real browser or Metro platform execution;
+- G5: real device or emulator execution;
+- R1: production release/operations assurance after G5.
+
+A higher number is not inferred from a lower one. A mock result cannot be
+reported as native, platform, device, or production evidence. The exact command,
+config, engine, and scenario IDs must accompany the level.
+
+### Reusable primitive contract schema
+
+Before implementation work starts, every canonical primitive gets one contract
+record. The record is the same for native and web; platform-specific rows may
+add obligations but may not remove the shared ones.
+
+```text
+Primitive and public API: props, controlled/uncontrolled state, defaults, slots
+State matrix: idle, pressed/active, focused, disabled, loading, invalid, empty,
+  error, success, cancelled, and repeated/rapid interaction as applicable
+Accessibility contract: role, accessible name, hint/description, required,
+  disabled, busy, invalid, checked/selected/expanded, and focus order
+Interaction contract: pointer/press, keyboard, Escape/back, dismissal,
+  cancellation, outside interaction, and duplicate-action behavior
+Failure contract: failure input, visible recovery state, retry action, retry
+  result, and cleanup after success or unmount
+Composition contract: cn usage, static variant/token maps, light/dark/theme
+  behavior, focus/contrast styles, and native/web style differences
+Lifecycle contract: portal mount/unmount, focus entry/restoration, timers,
+  subscriptions, animations, and no-open-handle behavior
+Evidence mapping: G0/G1/G2/G3/G4/G5 scenario IDs and exact commands
+Known gaps: explicit unimplemented behavior; never hidden by a promotion label
+```
+
+An implementation is not complete when the record merely exists. The record
+must link to behavioral assertions and to the component diff that makes each
+assertion true. A runtime-level label is evidence of execution only; it is not
+an approval that the implementation satisfies every contract row.
+
 ## G1/G2 uplift rule for the existing suite
 
 The package-wide boundary command is the G1 baseline only when the suite is
@@ -226,8 +276,8 @@ supporting evidence only.
 
 ## Current repository status
 
-- **Audit date: 2026-09-07.** `packages/ui` has 50 test files: 32 render
-  components, 18 are pure/non-rendering, and only a small native-engine subset
+- **Audit date: 2026-09-09.** `packages/ui` has 52 test files: 33 render
+  components, 19 are pure/non-rendering, and only a small native-engine subset
   has been exercised against real React Native execution. The default Vitest
   config uses the `vitest-native` mock engine and aliases NativeWind/
   `react-native-css`; therefore the default render suite is G1 even
@@ -237,19 +287,28 @@ supporting evidence only.
   observable state transition and recovery assertion.
 - The Vitest 5 mock/boundary lane is a bootstrap lane and currently passes its
   migrated baseline; it is not the production-quality gate.
-- The `vitest-native` lane executes real React Native 0.86.3 for the promoted
-  Button/Input/FormField slice. Its native-only alias points NativeWind v5 at
+- The `vitest-native` lane executes real React Native 0.86.3 for the tracked
+  Button/Input/FormField/Dialog slice. Its native-only alias points NativeWind v5 at
   the real `react-native-css` native API; it is not a CSS mock. This gives the
-  slice G3 evidence while leaving unpromoted primitives at their prior gate.
+  slice G3 execution evidence while leaving unpromoted primitives at their
+  prior gate.
 - The Metro style-engine fixture is the current real NativeWind/CSS evidence
   path. Its Button/Input/FormField scenario now exports successfully, loads in
   a static browser server with zero page errors, verifies computed styles, and
   exercises helper → validation error → loading → transient failure → retry →
-  success. Vite-side CSS aliases remain harness conveniences only.
+  success. The same fixture now proves web Dialog focus entry, Tab trapping,
+  outside-focus recovery, Escape dismissal, close-button dismissal, and focus
+  restoration. Vite-side CSS
+  aliases remain harness conveniences only.
 - Browser behavior, scenario/recovery matrices, and visual/a11y reporting are the next
   implementation layers, not assumptions implied by the mock suite.
-- Button has passed G2 and now has G3 native-engine plus G4 browser/Metro
-  evidence.
+- Button has G2 scenarios and G3 native-engine plus G4 browser/Metro execution
+  evidence; this is not a production-hardening sign-off.
+- Dialog/Modal has G2 scenarios and G3 native-engine plus G4 browser/Metro
+  execution evidence for the named scenarios, including web focus
+  entry/restoration, Escape dismissal, and controlled close behavior. It is not
+  production-hardened until the contract gaps in the evidence inventory are
+  closed.
 - Input/FormField have passed G2 for helper → invalid-error → recovery and now
   have G3 native-engine plus G4 browser/Metro evidence.
 - The fixture is not device evidence: G5 still requires a device/emulator
@@ -265,6 +324,12 @@ The package exposes separate commands so the evidence type is visible:
 - `pnpm --filter @repo/ui test:governance` — evidence audit and classification;
 - `pnpm --filter @repo/ui test` — compatibility alias for the boundary lane,
   retained so existing callers do not silently change meaning.
+
+Repository-wide enforcement is `pnpm run check:test-evidence`. It scans every
+package/app test script and fails direct or wrapped test commands without an
+explicit evidence level. The current migration gate reports the remaining
+unlevelled legacy scripts; those scripts must be classified before their
+results may be used as quality evidence.
 
 Until scenario and browser/Metro lanes are implemented, CI must not describe
 the compatibility `test` command as full UI production verification. New

@@ -71,6 +71,7 @@ export interface CanvasZoneColumnProps<
   onReorder?: (surfaceId: TSurfaceId, newIndex: number) => void;
   dragAxis?: 'vertical' | 'both';
   dragEnabled?: boolean;
+  webDragEnabled?: boolean;
   reorderHint?: string;
   emptyMessage?: string;
   compact?: boolean;
@@ -115,6 +116,7 @@ export function CanvasZoneColumn<
   onReorder,
   dragAxis = 'both',
   dragEnabled = Boolean(onReorder),
+  webDragEnabled = false,
   reorderHint = 'Hold and drag to reorder',
   emptyMessage = 'No visible surfaces in this zone yet.',
   compact = false,
@@ -227,7 +229,7 @@ export function CanvasZoneColumn<
     return (
       <View style={styles.streamContainer}>
         {group.surfaces.map((surface, index) => {
-          if (isWeb) {
+          if (isWeb && webDragEnabled) {
             return (
               <WebDraggableCanvasSurface
                 key={surface.surfaceId}

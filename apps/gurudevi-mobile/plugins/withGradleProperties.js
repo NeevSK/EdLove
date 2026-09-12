@@ -88,18 +88,17 @@ const withBridgelessEnabled = (config) => {
   });
 };
 
-const withReleaseAppIdSuffix = (config) => {
+const withDebugAppIdSuffix = (config) => {
   return withAppBuildGradle(config, (cfg) => {
     if (cfg.modResults.language === 'groovy') {
       cfg.modResults.contents = ensureAndroidBlockSnippets(cfg.modResults.contents, [
         {
-          breadcrumb: 'applicationIdSuffix ".release"',
+          breadcrumb: 'applicationIdSuffix ".dev"',
           code: [
             '    buildTypes {',
-            '        release {',
-            '            // TEMPORARY: Separate release package from debug on test devices',
-            '            applicationIdSuffix ".release"',
-            '            resValue "string", "app_name", "Gurudevi (Release)"',
+            '        debug {',
+            '            applicationIdSuffix ".dev"',
+            '            resValue "string", "app_name", "Gurudevi (Dev)"',
             '        }',
             '    }',
           ].join('\n'),
@@ -111,7 +110,7 @@ const withReleaseAppIdSuffix = (config) => {
 };
 
 const withCombinedGradleFixes = (config) => {
-  return withReleaseAppIdSuffix(
+  return withDebugAppIdSuffix(
     withBridgelessEnabled(withLintOptionsDisabled(withCustomGradleProperties(config)))
   );
 };

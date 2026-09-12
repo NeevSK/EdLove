@@ -12,6 +12,7 @@ const args = process.argv.slice(2);
 const cmdIndex = args.indexOf('--cmd');
 const nameIndex = args.indexOf('--name');
 const cwdIndex = args.indexOf('--cwd');
+const evidenceLevelIndex = args.indexOf('--evidence-level');
 
 if (cmdIndex === -1 || !args[cmdIndex + 1]) {
   console.error('Usage: node run-and-report.mjs --cmd "command" [--name "name"] [--cwd "dir"]');
@@ -21,6 +22,29 @@ if (cmdIndex === -1 || !args[cmdIndex + 1]) {
 let cmd = args[cmdIndex + 1];
 const name = nameIndex !== -1 ? args[nameIndex + 1] : cmd.replace(/[^a-zA-Z0-9_\-]/g, '_').substring(0, 50);
 const cwd = cwdIndex !== -1 ? resolve(ROOT_DIR, args[cwdIndex + 1]) : process.cwd();
+const evidenceLevel = evidenceLevelIndex !== -1 ? args[evidenceLevelIndex + 1] : null;
+const evidenceDescriptions = {
+  G0: 'contract/unit — pure logic, types, tokens, or static analysis',
+  G1: 'boundary — deterministic host substitutions or mocks',
+  G2: 'scenario — behavioral contract with observable state transitions',
+  G3: 'component-real — real React component/runtime execution',
+  G4: 'platform-real — browser/Metro platform execution',
+  G5: 'device-confirmed — real device or emulator execution',
+  R1: 'production-assured — release, rollout, telemetry, rollback, and soak',
+};
+const isTestCommand =
+  /\b(vitest|jest|playwright|detox|maestro)\b/i.test(cmd) || /(^|[-_:])test([:_-]|$)/i.test(name);
+
+if (isTestCommand && !evidenceLevel) {
+  console.error(
+    'ERROR: test commands must declare --evidence-level G0|G1|G2|G3|G4|G5|R1; never report an unqualified test pass.',
+  );
+  process.exit(1);
+}
+if (evidenceLevel && !evidenceDescriptions[evidenceLevel]) {
+  console.error(`ERROR: unsupported evidence level "${evidenceLevel}".`);
+  process.exit(1);
+}
 
 // Check if report should be bypassed
 const noReport = args.includes('--no-report');
@@ -29,6 +53,7 @@ const noReport = args.includes('--no-report');
 const parsedIndices = new Set([cmdIndex, cmdIndex + 1]);
 if (nameIndex !== -1) { parsedIndices.add(nameIndex); parsedIndices.add(nameIndex + 1); }
 if (cwdIndex !== -1) { parsedIndices.add(cwdIndex); parsedIndices.add(cwdIndex + 1); }
+if (evidenceLevelIndex !== -1) { parsedIndices.add(evidenceLevelIndex); parsedIndices.add(evidenceLevelIndex + 1); }
 
 const extraArgs = args.filter((_, idx) => !parsedIndices.has(idx) && args[idx] !== '--no-report');
 
@@ -278,6 +303,7 @@ if (noReport) {
       '',
       `STATUS: ${exitCode === 0 ? (findings.length === 0 ? 'SUCCESS' : 'COMPLETED WITH WARNINGS') : `FAILED (Exit Code: ${exitCode})`}`,
       `Command:  ${cmd}`,
+      `Evidence:  ${evidenceLevel ? `${evidenceLevel} — ${evidenceDescriptions[evidenceLevel]}` : 'not applicable'}`,
       `Dir:      ${cwd}`,
       `Time:     ${startTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })} (IST)`,
       `Duration: ${durationSec} s`,
@@ -345,6 +371,7 @@ if (noReport) {
       writeFileSync(reportFile, report.join('\n'), 'utf8');
       console.log('\n' + '-'.repeat(80));
       console.log('REPORT SUMMARY');
+      if (evidenceLevel) console.log(`Evidence: ${evidenceLevel} — ${evidenceDescriptions[evidenceLevel]}`);
       console.log(`Duration: ${durationSec} seconds`);
       console.log(`Findings: ${findings.length} (Errors: ${errorsCount}, Warnings: ${warningsCount})`);
       console.log(`Raw Log:  ${logFile}`);

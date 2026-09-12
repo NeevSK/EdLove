@@ -1,3 +1,4 @@
+import { isBaselineReadCapability } from '@repo/core/logic/permissions/baselineCapabilities';
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import type { SanctuaryFeatureResult } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { getDomainEntry } from '@repo/core/logic/registry/appCatalog';
@@ -27,22 +28,20 @@ export function useDomainFeature(domainId: string): DomainFeatureResult {
     entry.capabilityRequirement.action,
     entry.capabilityRequirement.subject,
     {
+      action: entry.capabilityRequirement.action,
+      subject: entry.capabilityRequirement.subject,
       citizenshipRequired: entry.citizenshipRequired,
       platformSupported: isWeb ? entry.webSupport : entry.mobileSupport,
       entitlementModule: entry.entitlementModule,
       entitlementTier: entry.entitlementTier,
       flagKey: entry.flagKey,
       lifecycleState: entry.state,
+      allowDuringBootstrap: isBaselineReadCapability(
+        entry.capabilityRequirement.action,
+        entry.capabilityRequirement.subject,
+      ),
     },
   );
 
   return { entry, result };
-}
-
-/**
- * useDomainFeatures — evaluate multiple domains at once.
- * Useful for tab bars that need to know which tabs to show.
- */
-export function useDomainFeatures(domainIds: string[]): Record<string, DomainFeatureResult> {
-  return Object.fromEntries(domainIds.map((id) => [id, useDomainFeature(id)]));
 }

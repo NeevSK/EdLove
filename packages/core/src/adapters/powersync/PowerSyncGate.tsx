@@ -16,6 +16,7 @@
 
 import { getActivePowerSyncDB } from '@repo/core/adapters/powersync/database';
 import { PowerSyncContext } from '@repo/core/adapters/powersync/powersync-react-shim';
+import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren } from 'react';
 
@@ -26,8 +27,8 @@ interface PowerSyncGateProps extends PropsWithChildren {
 
 export function PowerSyncGate({ children, enabled = true }: PowerSyncGateProps) {
   const isPowerSyncEnabled = useStore((s) => s.flags.isPowerSyncEnabled);
-  const isAnonymous = useStore((s) => s.user?.is_anonymous === true);
-  const isActive = enabled && isPowerSyncEnabled && !isAnonymous;
+  const user = useStore((s) => s.user);
+  const isActive = enabled && isPowerSyncEnabled && !isLocalOnlyIdentity(user);
 
   const db = isActive ? getActivePowerSyncDB() : null;
 

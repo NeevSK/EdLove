@@ -40,6 +40,9 @@ vi.mock('@repo/core/accounts/authenticatedAccountCapture', () => ({
   captureAuthenticatedDeviceAccount: vi.fn(),
   getVerifiedDeviceAccountProfile: vi.fn(),
 }));
+vi.mock('@repo/core/accounts/deviceAccounts', () => ({
+  deviceAccounts: { list: vi.fn().mockResolvedValue([]) },
+}));
 vi.mock('@repo/core/adapters/supabaseClient', () => ({
   supabaseClient: {
     auth: { onAuthStateChange: lifecycleMocks.onAuthStateChange, signOut: vi.fn() },
@@ -65,6 +68,7 @@ vi.mock('@repo/core/monitoring', () => ({
   clearAuthSubject: vi.fn(),
   identifyAuthSubject: vi.fn(),
   initSentry: vi.fn(),
+  leaveBreadcrumb: vi.fn(),
 }));
 vi.mock('@repo/core/store/useStore', () => {
   const mockUseStore = Object.assign(
@@ -145,7 +149,11 @@ describe('useAuthLifecycle bootstrap ordering', () => {
   it('skips redundant profile resolution on TOKEN_REFRESHED when user ID is unchanged', async () => {
     const activeSession = session({ id: 'account-1' });
     lifecycleMocks.getAuthSession.mockResolvedValue(activeSession);
-    lifecycleMocks.resolveAuthProfile.mockResolvedValue({ kind: 'active', identity: { id: 'account-1' }, schoolType: null });
+    lifecycleMocks.resolveAuthProfile.mockResolvedValue({
+      kind: 'active',
+      identity: { id: 'account-1' },
+      schoolType: null,
+    });
     lifecycleMocks.onAuthStateChange.mockImplementation((listener) => {
       lifecycleMocks.authStateListener = listener;
       return { data: { subscription: { unsubscribe: vi.fn() } } };

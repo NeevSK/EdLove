@@ -226,6 +226,7 @@ export function ResponsiveWorkspaceCanvas<
                     onToggleHidden={props.onToggleHidden}
                     onTogglePin={props.onTogglePin}
                     onReorder={props.onReorder}
+                    webDragEnabled={true}
                     reorderHint="Drag to reorder — or use move controls"
                     style={styles.webColumnItem}
                   />
