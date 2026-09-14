@@ -1,13 +1,18 @@
 ---
 title: "Unified Canvas — Next: Phase 1 Workspace Gaps"
-status: "active"
+status: "superseded"
 created: 2026-08-26
 updated: 2026-08-26
 author: "Naveen + Muse Spark"
 tags: [workspace, canvas, next, phase-1, dnd-kit, web, cross-zone, platform-aware]
 ---
 
-# Unified Canvas — Next: Phase 1 Workspace Gaps — ✅ SHIPPED + SELF CANVAS
+# Unified Canvas — Next: Phase 1 Workspace Gaps (Historical)
+
+> Superseded as active cross-platform execution guidance by
+> `docs/decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md`.
+> Its shipped-status claims are historical implementation notes, not acceptance
+> evidence for Library, Community, Profile, Self, or the browser product.
 
 > **GOOO executed.** Foundation → Phase 1 gaps closed. Web drag, sync, per-workspace caps, v1→v2 migration — all wired. Community/Library/Profile/Self canvas codified, platform-aware renderer ready. Settings surface + cross-zone next.
 

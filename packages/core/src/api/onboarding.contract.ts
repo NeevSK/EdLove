@@ -28,11 +28,6 @@ export const onboardingContract = {
   completeOnboarding: {
     method: 'post',
     path: '/identity/complete-onboarding',
-    request: {
-      body: z.object({
-        userId: z.string(),
-      }),
-    },
     responses: {
       200: {
         schema: z.object({ success: z.boolean() }),

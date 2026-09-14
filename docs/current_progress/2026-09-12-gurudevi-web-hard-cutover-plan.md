@@ -1,6 +1,8 @@
-# Gurudevi Web Hard Cutover Plan
+# Gurudevi Web Hard Cutover Plan (Superseded Implementation Sequence)
 
-**Status:** approved direction, ready for implementation sequencing  
+**Status:** superseded for implementation sequencing by
+`2026-09-14-gurudevi-sanctuary-web-implementation-plan.md`; retained as route,
+boundary, and cutover reference.
 **Date:** 2026-09-12  
 **Decision:** new browser work belongs only in `apps/gurudevi-web`.
 
@@ -70,6 +72,14 @@ The confirmed web shell is `app/(tabs)/_layout.web.tsx`; the actual entry
 decision sits in `SessionRouteGate`, not `app/index.tsx`. Treat existing Expo
 routes and `appNavigation` as a compatibility input, not the new URL design.
 
+The migration is functional rather than mechanical. Read the legacy shell,
+route dispatchers, `.web.tsx` screens, and domain packages to recover the
+product's navigation, visible states, and task flow. Then rebuild that behavior
+with semantic browser components in Next. Do not import legacy UI trees or
+their Expo/React Native/PowerSync dependencies. The authoritative navigation
+decision, route-inventory protocol, and navigation experiment are recorded in
+`docs/decisions/2026-09-14-gurudevi-web-sanctuary-functional-migration-and-navigation.md`.
+
 | Wave | Existing source journey | New web outcome |
 | --- | --- | --- |
 | 1 | welcome → auth → onboarding → role resolution | Browser session, callback, onboarding, and a real sanctuary entry |
@@ -107,8 +117,10 @@ affected by cutover.
 3. Extract the approved values to `@repo/design-tokens`, then generate CSS custom
    properties for web consumption.
 4. Build the small web foundation: document shell, typography, focus styles,
-   reduced motion, 44–48 px controls, mobile navigation, form controls, empty,
-   error, and loading patterns.
+   reduced motion, 44–48 px controls, compact-browser bottom tabs, global
+   account controls, and the adaptive canvas boundary. The shell is structure
+   and plumbing only; each domain canvas owns its own floor and the furniture
+   arranged on it, rather than inheriting a generic dashboard layout.
 5. Establish browser tests at 360 px, 390 px, 768 px, and desktop widths.
 
 **Exit:** the foundation contains no React Native Web imports, works with keyboard
@@ -128,13 +140,19 @@ tested redirect plan.
 
 ### Phase 3 — Functional sanctuary baseline
 
-1. Rebuild session detection, sign-in, callback handling, account recovery,
+1. Complete the route-and-behavior inventory for Self, Workspace, Community,
+   Library, Profile, Notifications, Settings, and development-only advanced
+   routes before writing the shared Sanctuary shell.
+2. Prototype and evaluate the two documented desktop navigation variants before
+   broad domain-slice implementation; do not use a generic Sanctuary home or
+   placeholder dashboard as the baseline.
+3. Rebuild session detection, sign-in, callback handling, account recovery,
    logout, and browser-safe persistence using the real authentication provider.
-2. Port onboarding and role resolution from their existing state machines and
+4. Port onboarding and role resolution from their existing state machines and
    contracts; do not reproduce native navigation mechanically.
-3. Implement the canonical sanctuary shell, authorization boundary, and error
+5. Implement the canonical sanctuary shell, authorization boundary, and error
    states.
-4. Test anonymous, authenticated, expired-session, and denied-capability cases.
+6. Test anonymous, authenticated, expired-session, and denied-capability cases.
 
 **Exit:** a user can complete a real browser auth/onboarding journey and enter
 their authorized sanctuary—not a mocked screen.

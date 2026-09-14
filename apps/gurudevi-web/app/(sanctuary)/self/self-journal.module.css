@@ -1,0 +1,172 @@
+.floor {
+  min-height: 100%;
+  padding: clamp(1.25rem, 5vw, 5rem);
+  background:
+    radial-gradient(
+      circle at 88% 6%,
+      color-mix(in srgb, var(--lotus) 12%, transparent),
+      transparent 28rem
+    ),
+    var(--paper);
+}
+.arrival {
+  max-width: 44rem;
+  padding: clamp(1.5rem, 4vw, 3.5rem) 0 clamp(2rem, 6vw, 5rem);
+}
+.eyebrow {
+  margin: 0;
+  color: var(--lotus);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.arrival h1,
+.alcove h2,
+.history h2 {
+  font-family: Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+.arrival h1 {
+  max-width: 32rem;
+  margin: 0.75rem 0 1rem;
+  font-size: clamp(2.5rem, 7vw, 5.2rem);
+  line-height: 0.92;
+}
+.arrival p:last-child {
+  max-width: 37rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.65;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  max-width: 72rem;
+  align-items: start;
+}
+.alcove,
+.history {
+  border-top: 1px solid var(--line);
+  padding-top: 1.25rem;
+}
+.alcove h2,
+.history h2 {
+  margin: 0.45rem 0 1.25rem;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+}
+.form {
+  display: grid;
+  gap: 0.7rem;
+}
+.form label {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.form textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 12rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light) 52%, transparent);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.65;
+}
+.form textarea:focus {
+  border-color: var(--lotus);
+  outline: 3px solid color-mix(in srgb, var(--lotus) 20%, transparent);
+  outline-offset: 2px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+.burnButton,
+.retryButton {
+  min-height: 2.75rem;
+  padding: 0 0.95rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.burnButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.hint,
+.status,
+.error,
+.empty,
+.entry time {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.status {
+  margin: 0.35rem 0 0;
+  color: #17603a;
+}
+.error {
+  margin: 0.35rem 0 0;
+  color: #9b2b24;
+}
+.historyHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.historyHeader h2 {
+  margin-bottom: 0.25rem;
+}
+.historyList {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.entry {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light) 55%, transparent);
+}
+.entry p {
+  margin: 0 0 0.55rem;
+  line-height: 1.5;
+}
+.entry footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.burned {
+  color: var(--lotus);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+@media (max-width: 48rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .floor {
+    padding-bottom: 7rem;
+  }
+}

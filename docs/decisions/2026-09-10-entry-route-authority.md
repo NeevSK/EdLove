@@ -45,7 +45,7 @@ capability snapshot can never compensate for a missing or expired token.
 - A completed guest flow does not turn an anonymous session into a returning
   account. Only a real authenticated account can receive automatic root entry.
 - Guest feature access and guest cloud-write authority are separate. The
-  fourteen-day local-first lease is specified in the Guest Local-First Lease
+  fifteen-day local-first lease is specified in the Guest Local-First Lease
   and Cloud-Save Boundary ADR.
 - Guest entry carries an explicit onboarding handoff while the auth observer
   replaces any previous session snapshot; it is not a timer or a bypass of the

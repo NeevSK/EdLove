@@ -1,6 +1,6 @@
 ---
 title: "Unified Canvas System — Workspace, Self, Library, Community, Profile + Tab Order"
-status: "active"
+status: "superseded"
 created: 2026-08-25
 updated: 2026-08-26
 author: "Naveen + Muse Spark"
@@ -9,7 +9,13 @@ reviewed: "2026-08-26"
 tags: [workspace, canvas, dnd-kit, architecture, cross-tab, cross-platform, design-system]
 ---
 
-# Unified Canvas System — The Dance Floor Spec
+# Unified Canvas System — The Dance Floor Spec (Historical)
+
+> Superseded as cross-platform canvas authority by
+> `docs/decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md`.
+> Retained as implementation evidence. “One canvas engine, five dialects” means
+> one shared model, not one generic visual renderer or evidence that all domain
+> renderers are complete.
 
 > **TL;DR:** One canvas engine, five dialects. Every tab can dance (`dnd-kit` on web, Reanimated on native), but each tab dances differently. Opinionated defaults win — customization is progressive disclosure, not obligation. Two-variable persistence (`isDefault` + codified layout) keeps sync cheap and local screaming fast.
 

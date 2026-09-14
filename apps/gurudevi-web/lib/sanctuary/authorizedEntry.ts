@@ -1,12 +1,21 @@
+import {
+  type AuthoritativeAuthorizedEntryFacts,
+  type AuthorizedEntryResult,
+  mapAuthorizedEntry,
+} from '@repo/core/web-authorized-entry';
 import type { ServerSupabaseClient } from '../supabase/server';
 
-export type AuthorizedEntry =
-  | Readonly<{ kind: 'ready'; displayName: string | null }>
-  | Readonly<{ kind: 'onboarding-required' }>
-  | Readonly<{ kind: 'signed-out' }>
-  | Readonly<{ kind: 'unavailable' }>;
+export type AuthorizedEntry = AuthorizedEntryResult | Readonly<{ kind: 'signed-out' }>;
 
-type IdentityPayload = Readonly<{ display_name?: unknown; name?: unknown }>;
+type IdentityPayload = Readonly<{
+  activeBond?: unknown;
+  display_name?: unknown;
+  id?: unknown;
+  name?: unknown;
+  onboarding_completed?: unknown;
+}>;
+
+type ActiveBondPayload = Readonly<{ capacity?: unknown }>;
 
 function isIdentityPayload(value: unknown): value is IdentityPayload {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -17,10 +26,43 @@ function apiOrigin(): string | null {
   return value ? value.replace(/\/+$/, '') : null;
 }
 
+function unavailable(message: string): AuthorizedEntryResult {
+  return { kind: 'unavailable', reason: 'profile-unavailable', message };
+}
+
 function displayName(payload: IdentityPayload): string | null {
-  if (typeof payload.display_name === 'string' && payload.display_name.trim()) return payload.display_name;
+  if (typeof payload.display_name === 'string' && payload.display_name.trim())
+    return payload.display_name;
   if (typeof payload.name === 'string' && payload.name.trim()) return payload.name;
   return null;
+}
+
+function activeCapacity(payload: IdentityPayload): string | null {
+  const bond = payload.activeBond;
+  if (!bond || typeof bond !== 'object' || Array.isArray(bond)) return null;
+  const capacity = (bond as ActiveBondPayload).capacity;
+  return typeof capacity === 'string' && capacity.trim() ? capacity : null;
+}
+
+function authoritativeFacts(
+  payload: IdentityPayload,
+  subject: string,
+): AuthoritativeAuthorizedEntryFacts {
+  if (payload.id !== subject || typeof payload.onboarding_completed !== 'boolean') {
+    return {
+      kind: 'unavailable',
+      message:
+        'The authoritative sanctuary response was incomplete or belonged to another account.',
+    };
+  }
+
+  return {
+    kind: 'active',
+    authSubjectId: subject,
+    displayName: displayName(payload),
+    onboardingCompleted: payload.onboarding_completed,
+    activeCapacity: activeCapacity(payload),
+  };
 }
 
 /**
@@ -34,18 +76,18 @@ export async function resolveAuthorizedEntry(
 ): Promise<AuthorizedEntry> {
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const subject = claimsData?.claims?.sub;
-  if (claimsError) return { kind: 'unavailable' };
+  if (claimsError) return unavailable('We could not verify your secure session. Please try again.');
   if (typeof subject !== 'string' || !subject) return { kind: 'signed-out' };
 
   const origin = apiOrigin();
-  if (!origin) return { kind: 'unavailable' };
+  if (!origin) return unavailable('Sanctuary access is not configured in this environment.');
 
   // getSession is intentionally used only after cryptographic claim verification
   // and only to forward the API's required bearer credential.
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   const session = sessionData.session;
   if (sessionError || !session?.access_token || session.user.id !== subject) {
-    return { kind: 'unavailable' };
+    return unavailable('We could not refresh your secure session. Please try again.');
   }
 
   try {
@@ -55,15 +97,14 @@ export async function resolveAuthorizedEntry(
       cache: 'no-store',
     });
 
-    // The API context reports this exact status when an authenticated person
-    // lacks an active bond. It is the only onboarding conclusion made here.
-    if (response.status === 403) return { kind: 'onboarding-required' };
-    if (!response.ok) return { kind: 'unavailable' };
+    if (!response.ok)
+      return unavailable('The authoritative sanctuary service is unavailable. Please try again.');
 
     const payload: unknown = await response.json();
-    if (!isIdentityPayload(payload)) return { kind: 'unavailable' };
-    return { kind: 'ready', displayName: displayName(payload) };
+    if (!isIdentityPayload(payload))
+      return unavailable('The authoritative sanctuary service returned an invalid response.');
+    return mapAuthorizedEntry(authoritativeFacts(payload, subject));
   } catch {
-    return { kind: 'unavailable' };
+    return unavailable('We could not reach the authoritative sanctuary service. Please try again.');
   }
 }

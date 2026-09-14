@@ -13,10 +13,6 @@ const createInitialBondSchema = z.object({
   }),
 });
 
-const completeOnboardingSchema = z.object({
-  userId: z.string().min(1),
-});
-
 export const onboardingHandlers = {
   createInitialBond: async (c: Context) => {
     const db = c.get('db');
@@ -174,8 +170,7 @@ export const onboardingHandlers = {
     }
 
     try {
-      const body = completeOnboardingSchema.parse(await c.req.json());
-      const { userId } = body;
+      const userId = user.id;
 
       const userProfile = await db.user.findUnique({ where: { id: userId } });
       if (!userProfile) return c.json({ message: 'User not found' }, 404);
@@ -193,10 +188,6 @@ export const onboardingHandlers = {
               400,
             );
           }
-          console.log(
-            `[completeOnboarding] User ${userId} has no bonds. Creating default PERSONAL_CLASSROOM sanctuary.`,
-          );
-
           const pc = await db.personalClassroom.create({
             data: {
               name: `${userProfile.display_name || 'Sanctuary'}'s Workspace`,

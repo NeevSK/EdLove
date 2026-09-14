@@ -99,6 +99,11 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-08-25-transparent-hosted-oss.md](decisions/2026-08-25-transparent-hosted-oss.md) | **ADR — Transparent Hosted OSS** (supersedes 2026-08-24 for monorepo): MIT public, hosted production, dev-only self-host seams |
 | [decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md](decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md) | ADR — Rewarded Ad Center compliance, app store policies, COPPA gating, ATT consent, and SSV cryptographic security governance |
 | [decisions/2026-08-31-editorial-platform-topology.md](decisions/2026-08-31-editorial-platform-topology.md) | ADR for shared editorial infrastructure and separate EdLove/GuruDevi publications |
+| [decisions/2026-09-14-gurudevi-web-sanctuary-functional-migration-and-navigation.md](decisions/2026-09-14-gurudevi-web-sanctuary-functional-migration-and-navigation.md) | Functional migration source, Sanctuary information architecture, and navigation-variant evaluation |
+| [decisions/2026-09-14-gurudevi-sanctuary-spatial-language-and-domain-transitions.md](decisions/2026-09-14-gurudevi-sanctuary-spatial-language-and-domain-transitions.md) | Domain canvas atmospheres, spatial language, light, and browser transition contract |
+| [decisions/2026-09-14-sanctuary-explore-access-and-persistence.md](decisions/2026-09-14-sanctuary-explore-access-and-persistence.md) | Public Explore, guest-cloud, durable-account, and developer-sandbox persistence boundaries |
+| [decisions/2026-09-14-gurudevi-browser-unified-canvas-foundation.md](decisions/2026-09-14-gurudevi-browser-unified-canvas-foundation.md) | DRY browser CanvasFrame foundation and real-product-first implementation order |
+| [decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md](decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md) | Canonical shared canvas model, domain-owned floor authority, and rejection of one generic renderer |
 
 ---
 
@@ -120,6 +125,9 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 | [current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md](current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md) | Gurudevi-first phased program for integrating the imported exploration corpus into the Edlove platform |
 | [current_progress/2026-08-10-live-supabase-inspection.md](current_progress/2026-08-10-live-supabase-inspection.md) | Read-only linked Supabase structural, RLS, grants, and advisor inspection |
 | [current_progress/2026-09-07-ui-primitives-production-hardening-plan.md](current_progress/2026-09-07-ui-primitives-production-hardening-plan.md) | Phased production hardening of owned UI primitives, accessibility contracts, `cn` composition, and Vitest 5 verification |
+| [current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md](current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md) | Active restart handoff, hybrid shell-and-slice plan, and multi-agent operating model for the Gurudevi Next.js migration |
+| [current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md](current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md) | Active real-product-first Sanctuary implementation sequence, with Explore as a later reuse adapter |
+| [current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md](current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md) | Evidence-backed map of each domain floor, configurable furniture, and browser migration order |
 | [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets |
 | [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
 | [current_progress/2026-08-31-ad-center-phased-implementation-plan.md](current_progress/2026-08-31-ad-center-phased-implementation-plan.md) | 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI) |
@@ -153,6 +161,13 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 ---
 
 ## Changelog
+
+### 2026-09-14
+
+- **Added**: `current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md` - restart checkpoint, phased hybrid migration plan, and Terra/Luna coordination rules for the canonical Gurudevi Next.js web application.
+- **Added**: `decisions/2026-09-14-sanctuary-explore-access-and-persistence.md` - authoritative public Explore and persistence model, separating local exploration from guest cloud, accounts, and developer sandbox tooling.
+- **Added**: `current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md` - real-product-first implementation sequence for the shell, domain floors, and later persistence adapters.
+- **Added**: `current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md` - source-grounded port map for Self, Workspace, Library, Community, and Profile.
 
 ### 2026-09-05
 

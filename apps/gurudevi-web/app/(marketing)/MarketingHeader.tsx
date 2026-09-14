@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const navigation = [
   { href: '/about', label: 'The ecology' },
-  { href: '/sanctuary', label: 'Sanctuary' },
+  { href: '/explore/self', label: 'Explore' },
 ];
 
 export function MarketingHeader() {
@@ -24,7 +24,7 @@ export function MarketingHeader() {
               {item.label}
             </Link>
           ))}
-          <Link className="ml-1 rounded-full border border-ink px-3 py-2 no-underline hover:bg-ink hover:text-paper focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/sanctuary">
+          <Link className="ml-1 rounded-full border border-ink px-3 py-2 no-underline hover:bg-ink hover:text-paper focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/explore/self">
             Enter sanctuary
           </Link>
         </nav>
