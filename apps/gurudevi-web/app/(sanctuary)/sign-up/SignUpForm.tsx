@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type FormEvent } from 'react';
+import { type FormEvent, useState } from 'react';
 import { browserAuthRuntime, safeReturnPath } from '../auth/browserAuth';
 
 type FormState = 'ready' | 'submitting' | 'pending' | 'created' | 'unavailable' | 'error';
@@ -38,8 +38,7 @@ export function SignUpForm({ returnTo }: Readonly<{ returnTo: string }>) {
       return;
     }
     if (data.session) {
-      setState('created');
-      setMessage('Your account was created. Gurudevi still needs to verify your profile and capacity before a sanctuary workspace can open.');
+      window.location.replace('/onboarding');
       return;
     }
     setState('pending');
@@ -49,17 +48,58 @@ export function SignUpForm({ returnTo }: Readonly<{ returnTo: string }>) {
   return (
     <form className="space-y-5" onSubmit={(event) => void signUp(event)}>
       <div>
-        <label className="block font-sans text-sm font-semibold" htmlFor="sign-up-email">Email address</label>
-        <input autoComplete="email" className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water" id="sign-up-email" name="email" required type="email" />
+        <label className="block font-sans text-sm font-semibold" htmlFor="sign-up-email">
+          Email address
+        </label>
+        <input
+          autoComplete="email"
+          className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          id="sign-up-email"
+          name="email"
+          required
+          type="email"
+        />
       </div>
       <div>
-        <label className="block font-sans text-sm font-semibold" htmlFor="sign-up-password">Password</label>
-        <input autoComplete="new-password" className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water" id="sign-up-password" minLength={8} name="password" required type="password" />
+        <label className="block font-sans text-sm font-semibold" htmlFor="sign-up-password">
+          Password
+        </label>
+        <input
+          autoComplete="new-password"
+          className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          id="sign-up-password"
+          minLength={8}
+          name="password"
+          required
+          type="password"
+        />
       </div>
-      {state === 'pending' || state === 'created' ? <p className="font-sans text-sm text-green-800" role="status">{message}</p> : null}
-      {state === 'error' || state === 'unavailable' ? <p className="font-sans text-sm text-red-700" role="alert">{message}</p> : null}
-      <button className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water" disabled={state === 'submitting' || state === 'pending' || state === 'created'} type="submit">{state === 'submitting' ? 'Signing up…' : 'Sign up'}</button>
-      <p className="text-center font-sans text-sm text-ink-soft">Already have an account? <Link className="font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water" href={`/sign-in?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}>Sign in</Link></p>
+      {state === 'pending' || state === 'created' ? (
+        <p className="font-sans text-sm text-green-800" role="status">
+          {message}
+        </p>
+      ) : null}
+      {state === 'error' || state === 'unavailable' ? (
+        <p className="font-sans text-sm text-red-700" role="alert">
+          {message}
+        </p>
+      ) : null}
+      <button
+        className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
+        disabled={state === 'submitting' || state === 'pending' || state === 'created'}
+        type="submit"
+      >
+        {state === 'submitting' ? 'Signing up…' : 'Sign up'}
+      </button>
+      <p className="text-center font-sans text-sm text-ink-soft">
+        Already have an account?{' '}
+        <Link
+          className="font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          href={`/sign-in?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
+        >
+          Sign in
+        </Link>
+      </p>
     </form>
   );
 }

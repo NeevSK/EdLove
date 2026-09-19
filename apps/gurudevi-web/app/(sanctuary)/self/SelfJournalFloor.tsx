@@ -1,11 +1,41 @@
 'use client';
 
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
+import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import {
+  resolveSelfFeatureManifest,
+  type SelfFeatureManifestItem,
+} from '@repo/self/features/catalog';
+import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
+import {
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   type BurnedJournalEntry,
   burnJournal,
   loadBurnedJournalHistory,
 } from '../../../lib/sanctuary/selfJournal';
+import {
+  loadMoodHistory,
+  logMood,
+  MOOD_CHOICES,
+  type MoodLog,
+  type MoodValue,
+} from '../../../lib/sanctuary/selfWellbeing';
+import { useDomainWorkbench } from '../../../lib/workbench';
+import { TaskStrip, TemporalHorizon } from '../components/workbench';
+import {
+  BROWSER_SELF_FEATURES,
+  getBrowserSelfFeature,
+  isBrowserSelfFeatureDelivered,
+} from './browserFeatureRegistry';
 import styles from './self-journal.module.css';
 
 type ScreenState = Readonly<{
@@ -26,6 +56,63 @@ const initialScreen: ScreenState = {
   notice: null,
 };
 
+const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
+  null,
+  {
+    customOrder: [],
+    hiddenIds: [],
+    selectedIds: [],
+  },
+  'browser',
+  { deliveredFeatureIds: Object.keys(BROWSER_SELF_FEATURES) },
+);
+
+const fireJournalFeature = requiredFeature('fire_journal');
+
+function requiredFeature(id: string): SelfFeatureManifestItem {
+  const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === id);
+  if (!feature) throw new Error(`The canonical Self catalog is missing ${id}.`);
+  return feature;
+}
+
+const fireJournalTask = {
+  featureId: fireJournalFeature.id,
+  route: '/self',
+  title: fireJournalFeature.label,
+  icon: fireJournalFeature.emoji,
+  temporalBinding: { kind: 'none' },
+  localStatePolicy: 'restore-permitted',
+} as const;
+
+function todayHorizon(): DomainTemporalHorizon {
+  const now = new Date();
+  return {
+    anchor: {
+      kind: 'date',
+      date: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
+        now.getDate(),
+      ).padStart(2, '0')}`,
+    },
+    scale: 'day',
+    intent: 'current',
+  };
+}
+
+function shiftDate(horizon: DomainTemporalHorizon, amount: number): DomainTemporalHorizon {
+  const anchorDate =
+    horizon.anchor.kind === 'date' ? horizon.anchor.date : new Date().toISOString();
+  const date = new Date(`${anchorDate.slice(0, 10)}T12:00:00`);
+  date.setDate(date.getDate() + amount);
+  return { ...horizon, anchor: { kind: 'date', date: date.toISOString().slice(0, 10) } };
+}
+
+function formatHorizon(horizon: DomainTemporalHorizon): string {
+  if (horizon.anchor.kind !== 'date') return 'Today';
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(
+    new Date(`${horizon.anchor.date}T12:00:00`),
+  );
+}
+
 function formatDate(value: string): string {
   const date = new Date(value);
   return Number.isNaN(date.valueOf())
@@ -35,6 +122,23 @@ function formatDate(value: string): string {
 
 export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
+  const [moodModalOpen, setMoodModalOpen] = useState(false);
+  const workbench = useDomainWorkbench('self');
+  const [showOverview, setShowOverview] = useState(true);
+  const horizon = workbench.state.temporalHorizon ?? todayHorizon();
+  const focusedTask = useMemo(
+    () =>
+      workbench.state.tasks.find((task) => task.taskKey === workbench.state.focusedTaskKey) ?? null,
+    [workbench.state.focusedTaskKey, workbench.state.tasks],
+  );
+
+  useEffect(() => {
+    if (!workbench.state.temporalHorizon) workbench.setTemporalHorizon(todayHorizon());
+  }, [workbench, workbench.state.temporalHorizon]);
+
+  useEffect(() => {
+    if (focusedTask) setShowOverview(false);
+  }, [focusedTask]);
 
   const loadHistory = useCallback(async () => {
     setScreen((current) => ({ ...current, error: null, historyStatus: 'loading' }));
@@ -50,10 +154,6 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
       }));
     }
   }, []);
-
-  useEffect(() => {
-    void loadHistory();
-  }, [loadHistory]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -79,17 +179,424 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
     }
   }
 
+  function openFireJournal() {
+    const result = workbench.open(fireJournalTask);
+    if (result.kind === 'at-capacity') {
+      setScreen((current) => ({
+        ...current,
+        error: 'Close one of your other Self tasks before opening Fire Journal.',
+      }));
+      return;
+    }
+    setShowOverview(false);
+  }
+
+  function focusTask(task: WorkbenchTaskDescriptor) {
+    workbench.focus(task.taskKey);
+    setShowOverview(false);
+  }
+
+  function closeTask(task: WorkbenchTaskDescriptor) {
+    const result = workbench.close(task.taskKey);
+    setShowOverview(result.kind === 'overview');
+  }
+
+  function openFeature(feature: SelfFeatureManifestItem) {
+    const delivery = getBrowserSelfFeature(feature.id);
+    if (delivery?.taskKind === 'modal' && delivery.renderer === 'mood-lotus') {
+      setMoodModalOpen(true);
+      return;
+    }
+    if (feature.id === fireJournalFeature.id && isBrowserSelfFeatureDelivered(feature.id)) {
+      openFireJournal();
+      return;
+    }
+    setScreen((current) => ({
+      ...current,
+      error: `${feature.label} is not delivered in the browser yet. It remains in the catalog so the same Self floor can grow without a second navigation model.`,
+    }));
+  }
+
+  const journalActive = !showOverview && focusedTask?.featureId === fireJournalFeature.id;
+
+  useEffect(() => {
+    if (journalActive) void loadHistory();
+  }, [journalActive, loadHistory]);
+
   return (
-    <article className={styles.floor} aria-labelledby="self-journal-title" data-domain="self">
+    <article className={styles.floor} aria-labelledby="self-floor-title" data-domain="self">
+      <div className={styles.workbenchChrome}>
+        <TaskStrip
+          focusedTaskKey={workbench.state.focusedTaskKey}
+          onCloseTask={closeTask}
+          onFocusTask={focusTask}
+          onOpenCatalog={() => setShowOverview(true)}
+          onOpenOverview={() => setShowOverview(true)}
+          overviewActive={showOverview}
+          tasks={workbench.state.tasks}
+        />
+        <TemporalHorizon
+          dateLabel={formatHorizon(horizon)}
+          onNext={() => workbench.setTemporalHorizon(shiftDate(horizon, 1))}
+          onPrevious={() => workbench.setTemporalHorizon(shiftDate(horizon, -1))}
+          onToday={() => workbench.setTemporalHorizon(todayHorizon())}
+          orientation="A quiet daily orientation for reflection; Fire Journal does not bind to a date."
+        />
+      </div>
+      {showOverview ? (
+        <SelfOverview
+          displayName={displayName}
+          onOpenFeature={openFeature}
+          onOpenFireJournal={openFireJournal}
+        />
+      ) : journalActive ? (
+        <FireJournal
+          screen={screen}
+          setScreen={setScreen}
+          loadHistory={loadHistory}
+          submit={submit}
+        />
+      ) : (
+        <UnavailableTask task={focusedTask} onReturnToOverview={() => setShowOverview(true)} />
+      )}
+      {moodModalOpen ? <MoodLotusModal onClose={() => setMoodModalOpen(false)} /> : null}
+    </article>
+  );
+}
+
+function SelfOverview({
+  displayName,
+  onOpenFeature,
+  onOpenFireJournal,
+}: Readonly<{
+  displayName: string;
+  onOpenFeature: (feature: SelfFeatureManifestItem) => void;
+  onOpenFireJournal: () => void;
+}>) {
+  const byZone = SELF_FEATURE_MANIFEST.all.reduce<Record<string, SelfFeatureManifestItem[]>>(
+    (groups, feature) => {
+      (groups[feature.defaultZone] ??= []).push(feature);
+      return groups;
+    },
+    {},
+  );
+
+  return (
+    <>
       <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Self · Fire Journal</p>
-        <h1 id="self-journal-title">Make room for what needs to be released.</h1>
+        <p className={styles.eyebrow}>Self · Overview</p>
+        <h1 id="self-floor-title">A place to notice what is asking for your care.</h1>
         <p>
-          {displayName}, write freely. When you release an entry, the full text is not retained;
-          your history holds only its first few words and the day it was offered.
+          {displayName}, this is your orientation floor. Open a practice when it is useful, then
+          return here without losing your place.
         </p>
       </header>
 
+      <section aria-labelledby="self-pinned-title" className={styles.catalog}>
+        <div>
+          <p className={styles.eyebrow}>Pinned practice</p>
+          <h2 id="self-pinned-title">Fire Journal</h2>
+          <p>
+            Release a private reflection. Only a short preview and the day remain in your history.
+          </p>
+        </div>
+        <button className={styles.burnButton} onClick={onOpenFireJournal} type="button">
+          Open Fire Journal
+        </button>
+      </section>
+      <section aria-labelledby="self-catalog-title" className={styles.catalog}>
+        <p className={styles.eyebrow}>Practice catalog</p>
+        <h2 id="self-catalog-title">Practices, held in one place</h2>
+        <p className={styles.catalogIntroduction}>
+          This catalog is the shared Self inventory. A practice opens only when its browser delivery
+          is real; the rest remain visible without pretending to be ready.
+        </p>
+        <div className={styles.catalogZones}>
+          {(['today', 'private', 'shared'] as const).map((zone) => (
+            <section
+              aria-labelledby={`self-zone-${zone}`}
+              className={styles.catalogZone}
+              key={zone}
+            >
+              <h3 id={`self-zone-${zone}`}>{zoneTitle(zone)}</h3>
+              <div className={styles.catalogGrid}>
+                {(byZone[zone] ?? []).map((feature) => (
+                  <FeatureCatalogCard
+                    feature={feature}
+                    key={feature.id}
+                    onOpen={() => onOpenFeature(feature)}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}
+
+function zoneTitle(zone: 'today' | 'private' | 'shared'): string {
+  return zone === 'today' ? 'Today' : zone === 'private' ? 'Private practice' : 'Shared context';
+}
+
+function FeatureCatalogCard({
+  feature,
+  onOpen,
+}: Readonly<{ feature: SelfFeatureManifestItem; onOpen: () => void }>) {
+  const runnable = isBrowserSelfFeatureDelivered(feature.id);
+  const status = runnable
+    ? feature.availability === 'authorization-unresolved'
+      ? 'Available after secure check'
+      : 'Open practice'
+    : 'Not yet delivered in browser';
+
+  return (
+    <article className={styles.catalogItem} data-runnable={runnable}>
+      <p aria-hidden="true" className={styles.catalogEmoji}>
+        {feature.emoji}
+      </p>
+      <h4>{feature.label}</h4>
+      <p>{featureDescription(feature)}</p>
+      {runnable ? (
+        <button className={styles.catalogOpen} onClick={onOpen} type="button">
+          {status}
+        </button>
+      ) : (
+        <span className={styles.catalogStatus}>{status}</span>
+      )}
+    </article>
+  );
+}
+
+function featureDescription(feature: SelfFeatureManifestItem): string {
+  if (feature.id === fireJournalFeature.id)
+    return 'Release a private reflection. Only a short preview and the day remain in history.';
+  return `${feature.category} practice · ${feature.timing?.preferredPhase ?? 'any time'}`;
+}
+
+function MoodLotusModal({ onClose }: Readonly<{ onClose: () => void }>) {
+  const [history, setHistory] = useState<readonly MoodLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [selectedMood, setSelectedMood] = useState<MoodValue | null>(null);
+  const [note, setNote] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const savingRef = useRef(false);
+
+  useEffect(() => {
+    savingRef.current = saving;
+  }, [saving]);
+
+  const refreshHistory = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setHistory(await loadMoodHistory());
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'We could not load your mood history.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshHistory();
+    const previousFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialogRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !savingRef.current) onClose();
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape);
+      previousFocus?.focus();
+    };
+  }, [onClose, refreshHistory]);
+
+  const latest = history[0] ?? null;
+  const selectedChoice = MOOD_CHOICES.find((choice) => choice.value === selectedMood) ?? null;
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedMood || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const entry = await logMood({ mood: selectedMood, note });
+      setHistory((current) => [entry, ...current].slice(0, 8));
+      setNote('');
+      setSelectedMood(null);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'We could not save this check-in.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div
+      className={styles.modalBackdrop}
+      onMouseDown={(event) => {
+        if (event.currentTarget === event.target && !saving) onClose();
+      }}
+    >
+      <section
+        aria-describedby="mood-lotus-description"
+        aria-labelledby="mood-lotus-title"
+        aria-modal="true"
+        className={styles.moodModal}
+        ref={dialogRef}
+        role="dialog"
+        tabIndex={-1}
+      >
+        <header className={styles.modalHeader}>
+          <div>
+            <p className={styles.eyebrow}>Mood Lotus</p>
+            <h2 id="mood-lotus-title">How are you arriving?</h2>
+            <p id="mood-lotus-description">
+              A brief check-in for this moment. It is saved to your private history, not opened as a
+              task.
+            </p>
+          </div>
+          <button
+            aria-label="Close Mood Lotus"
+            className={styles.modalClose}
+            disabled={saving}
+            onClick={onClose}
+            type="button"
+          >
+            Close
+          </button>
+        </header>
+        <form className={styles.moodForm} onSubmit={(event) => void submit(event)}>
+          <fieldset disabled={saving}>
+            <legend>Choose what feels closest</legend>
+            <div className={styles.moodChoices}>
+              {MOOD_CHOICES.map((choice) => (
+                <button
+                  aria-pressed={selectedMood === choice.value}
+                  className={styles.moodChoice}
+                  data-selected={selectedMood === choice.value}
+                  key={choice.value}
+                  onClick={() => setSelectedMood(choice.value)}
+                  type="button"
+                >
+                  <span aria-hidden="true">{choice.emoji}</span>
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <label htmlFor="mood-lotus-note">A few words, if useful</label>
+          <textarea
+            disabled={saving}
+            id="mood-lotus-note"
+            maxLength={500}
+            onChange={(event) => setNote(event.target.value)}
+            placeholder="Optional. Keep this gentle and brief."
+            rows={3}
+            value={note}
+          />
+          <div className={styles.actions}>
+            <button
+              className={styles.burnButton}
+              disabled={!selectedChoice || saving}
+              type="submit"
+            >
+              {saving
+                ? 'Saving…'
+                : selectedChoice
+                  ? `Save ${selectedChoice.label}`
+                  : 'Choose a feeling'}
+            </button>
+            {latest ? (
+              <span className={styles.hint}>Last check-in: {formatDate(latest.created_at)}</span>
+            ) : null}
+          </div>
+        </form>
+        {error ? (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
+        <section aria-labelledby="mood-history-title" className={styles.moodHistory}>
+          <div className={styles.historyHeader}>
+            <h3 id="mood-history-title">Recent check-ins</h3>
+            {error && !saving ? (
+              <button
+                className={styles.retryButton}
+                onClick={() => void refreshHistory()}
+                type="button"
+              >
+                Retry
+              </button>
+            ) : null}
+          </div>
+          {loading ? <p className={styles.empty}>Gathering the recent pattern…</p> : null}
+          {!loading && history.length === 0 ? (
+            <p className={styles.empty}>Your first check-in can begin here.</p>
+          ) : null}
+          {!loading && history.length > 0 ? (
+            <ol className={styles.moodHistoryList}>
+              {history.slice(0, 5).map((entry) => (
+                <li key={entry.id}>
+                  <span>
+                    {MOOD_CHOICES.find((choice) => choice.value === entry.mood)?.emoji ?? '🪷'}
+                  </span>
+                  <span>{entry.mood ?? 'Check-in'}</span>
+                  <time dateTime={entry.created_at}>{formatDate(entry.created_at)}</time>
+                </li>
+              ))}
+            </ol>
+          ) : null}
+        </section>
+      </section>
+    </div>
+  );
+}
+
+function UnavailableTask({
+  task,
+  onReturnToOverview,
+}: Readonly<{ task: WorkbenchTaskDescriptor | null; onReturnToOverview: () => void }>) {
+  return (
+    <section aria-labelledby="self-task-unavailable-title" className={styles.unavailableTask}>
+      <p className={styles.eyebrow}>Self · Restored task</p>
+      <h1 id="self-task-unavailable-title">This practice is not available in the browser.</h1>
+      <p>
+        {task?.title ?? 'This task'} was restored from your working set, but its browser renderer is
+        not delivered. Return to the Self overview to choose an available practice.
+      </p>
+      <button className={styles.burnButton} onClick={onReturnToOverview} type="button">
+        Return to overview
+      </button>
+    </section>
+  );
+}
+
+function FireJournal({
+  screen,
+  setScreen,
+  loadHistory,
+  submit,
+}: Readonly<{
+  screen: ScreenState;
+  setScreen: Dispatch<SetStateAction<ScreenState>>;
+  loadHistory: () => Promise<void>;
+  submit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
+}>) {
+  const historySnapshot = journalHistorySnapshot(screen);
+
+  return (
+    <>
+      <header className={styles.arrival}>
+        <p className={styles.eyebrow}>Self · Fire Journal</p>
+        <h1 id="self-floor-title">Make room for what needs to be released.</h1>
+        <p>Write freely. When you release an entry, the full text is not retained.</p>
+      </header>
       <div className={styles.grid}>
         <section className={styles.alcove} aria-labelledby="fire-journal-compose-title">
           <p className={styles.eyebrow}>Reflection</p>
@@ -138,25 +645,12 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
               <p className={styles.eyebrow}>What remains</p>
               <h2 id="fire-journal-history-title">Burned history</h2>
             </div>
-            {screen.historyStatus === 'error' ? (
-              <button
-                className={styles.retryButton}
-                onClick={() => {
-                  void loadHistory();
-                }}
-                type="button"
-              >
-                Retry
-              </button>
-            ) : null}
           </div>
-          {screen.historyStatus === 'loading' ? (
-            <p className={styles.empty}>Gathering your history…</p>
-          ) : null}
-          {screen.historyStatus === 'ready' && screen.entries.length === 0 ? (
-            <p className={styles.empty}>Nothing has been released here yet.</p>
-          ) : null}
-          {screen.historyStatus === 'ready' && screen.entries.length > 0 ? (
+          <FeatureStateBoundary
+            emptyTitle="Nothing has been released here yet"
+            onRetry={() => void loadHistory()}
+            snapshot={historySnapshot}
+          >
             <ol className={styles.historyList}>
               {screen.entries.map((entry) => (
                 <li key={entry.id}>
@@ -170,9 +664,37 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
                 </li>
               ))}
             </ol>
-          ) : null}
+          </FeatureStateBoundary>
         </section>
       </div>
-    </article>
+    </>
   );
+}
+
+function journalHistorySnapshot(screen: ScreenState): FeatureSurfaceStateSnapshot {
+  const state =
+    screen.historyStatus === 'loading'
+      ? 'loading'
+      : screen.historyStatus === 'error'
+        ? 'retryable_error'
+        : screen.entries.length === 0
+          ? 'empty'
+          : 'ready';
+
+  return {
+    state,
+    lastKnownGoodAt: null,
+    pendingMutationCount: 0,
+    canRetry: state === 'retryable_error',
+    canEdit: true,
+    isSensitive: true,
+    safeMessage:
+      state === 'loading'
+        ? 'Gathering your history…'
+        : state === 'retryable_error'
+          ? (screen.error ?? 'We could not load your Fire Journal history.')
+          : state === 'empty'
+            ? 'Your released reflections will appear here.'
+            : 'Your Fire Journal history is ready.',
+  };
 }

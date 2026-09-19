@@ -181,6 +181,21 @@ export type {
   PerspectiveViewProps,
 } from './visualization';
 export type {
+  DomainTemporalHorizon,
+  DomainWorkbenchState,
+  TaskTemporalBinding,
+  TemporalAnchor,
+  TemporalIntent,
+  WorkbenchDomain,
+  WorkbenchRestorationSnapshot,
+  WorkbenchTaskCreation,
+  WorkbenchTaskDescriptor,
+  WorkbenchTaskDescriptorIssue,
+  WorkbenchTaskInput,
+  WorkbenchTaskLocalStatePolicy,
+  WorkbenchTaskResource,
+} from './Workbench';
+export type {
   DomainFeature,
   ResolvedWorkspaceSurface,
   WorkspaceLayout,

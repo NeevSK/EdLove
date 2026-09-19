@@ -10,9 +10,9 @@
  */
 
 import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
-import { View as PrimitiveView, Text } from '@repo/ui/primitives';
+import { View as PrimitiveView, Text, Pressable } from '@repo/ui/primitives';
 import { useRef } from 'react';
-import { StyleSheet, TouchableOpacity, type View } from 'react-native';
+import { StyleSheet, type View } from 'react-native';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
@@ -114,7 +114,7 @@ export default function QRShareButton({
       </PrimitiveView>
 
       <PrimitiveView style={styles.buttonRow}>
-        <TouchableOpacity
+        <Pressable
           onPress={() => {
             void handleShareImage();
           }}
@@ -122,9 +122,9 @@ export default function QRShareButton({
           accessibilityLabel="Share QR code as image"
         >
           <Text style={[styles.buttonText, { color: accentColor }]}>Share Image</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
           onPress={() => {
             void handleCopyLink();
           }}
@@ -132,7 +132,7 @@ export default function QRShareButton({
           accessibilityLabel="Copy QR link to clipboard"
         >
           <Text style={[styles.buttonText, { color: accentColor }]}>Copy Link</Text>
-        </TouchableOpacity>
+        </Pressable>
       </PrimitiveView>
     </PrimitiveView>
   );

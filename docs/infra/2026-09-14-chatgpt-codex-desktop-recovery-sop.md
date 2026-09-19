@@ -74,6 +74,32 @@ if ($tmpFiles) {
     Write-Output "Purged $($tmpFiles.Count) stale temporary state files."
 }
 
+# 5. Clear active thread writer lock files (stuck turns, quota stops, account switch desync)
+$threadLocks = Get-ChildItem "$codexDir\thread-writer-locks" -Filter "*.lock" -ErrorAction SilentlyContinue
+if ($threadLocks) {
+    $threadLocks | Remove-Item -Force
+    Write-Output "Cleared $($threadLocks.Count) thread writer locks."
+}
+
+# 6. Mark any dangling inProgress turns in the local thread history SQLite database as failed
+# (prevents renderer from waiting indefinitely on turns interrupted by quota/account switch)
+python -c "import sqlite3, os
+db = os.path.expanduser('~/.codex/thread_history_1.sqlite')
+if os.path.exists(db):
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+    cur.execute('''UPDATE thread_turns SET status = 'failed' WHERE status = 'inProgress' ''')
+    conn.commit()
+    print(f'Marked {cur.rowcount} stale inProgress turns as failed.')
+"
+
+# 7. Clear WebView/Chromium Session Storage locks
+$sessionStorage = "$env:LOCALAPPDATA\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Roaming\Codex\web\Codex\Default\Session Storage"
+if (Test-Path $sessionStorage) {
+    Remove-Item "$sessionStorage\*" -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Output "Cleared WebView Session Storage."
+}
+
 Write-Output "Recovery complete. You can now launch ChatGPT / Codex and sign in."
 ```
 

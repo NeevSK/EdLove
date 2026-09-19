@@ -14,28 +14,33 @@ export { RouteErrorBoundary as ErrorBoundary };
 export default function SelfScreen() {
   const params = useLocalSearchParams<{ feature?: string }>();
   const featureId = params.feature;
-  const user = useStore((state) => state.user);
-
   const registry = useMemo(() => getSelfRegistry(), []);
   const activeFeatureDef = useMemo(() => {
     if (!featureId) return null;
-    return registry.items.find((item) => item.params?.feature === featureId || item.id === featureId);
+    return registry.items.find(
+      (item) => item.params?.feature === featureId || item.id === featureId,
+    );
   }, [featureId, registry.items]);
 
   const featureTitle = activeFeatureDef?.title || featureId || 'Task';
 
-  // Automatically register focused feature as an active sub-tab in Self domain
-  useTrackActiveSubTab({
-    id: featureId ? `self-${featureId}` : 'self-overview',
-    title: featureId ? featureTitle : 'Overview',
-    route: '/self',
-    params: featureId ? { feature: featureId } : undefined,
-    domain: 'self',
-  });
-
   if (!featureId) {
     return <SanctuaryOverviewHub />;
   }
+
+  return <SelfFeatureScreen featureId={featureId} title={featureTitle} />;
+}
+
+function SelfFeatureScreen({ featureId, title }: { featureId: string; title: string }) {
+  const user = useStore((state) => state.user);
+
+  useTrackActiveSubTab({
+    featureId,
+    title,
+    route: '/self',
+    params: { feature: featureId },
+    domain: 'self',
+  });
 
   return (
     <Box

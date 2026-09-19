@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 
 /**
  * ScannerModal — QR code scanner for Gurudevi
@@ -145,17 +145,17 @@ export default function ScannerModal({
               <Text style={{ textAlign: 'center', color: '#fff' }}>
                 {t('scanner.permission.message')}
               </Text>
-              <TouchableOpacity
+              <Pressable
                 onPress={() => {
                   void requestPermission();
                 }}
                 style={[styles.button, { backgroundColor: accentColor }]}
               >
                 <Text style={styles.buttonText}>{t('scanner.permission.grant')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={onClose}>
+              </Pressable>
+              <Pressable onPress={onClose}>
                 <Text style={{ color: '#888' }}>{t('common.cancel')}</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -180,9 +180,9 @@ export default function ScannerModal({
           <View style={styles.overlay}>
             <View style={styles.header}>
               <Text style={styles.heading}>{modalTitle}</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Pressable onPress={onClose} style={styles.closeButton}>
                 <Text style={{ color: 'white', fontSize: 20 }}>✕</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
 
             <View style={styles.scannerArea}>
@@ -216,7 +216,7 @@ export default function ScannerModal({
                   >
                     {galleryError}
                   </Text>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => setGalleryError(null)}
                     style={{ marginTop: 8, alignSelf: 'center' }}
                   >
@@ -229,7 +229,7 @@ export default function ScannerModal({
                     >
                       {t('scanner.dismiss')}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               ) : (
                 <Text style={styles.instructionText}>{t('scanner.instructions')}</Text>
@@ -237,7 +237,7 @@ export default function ScannerModal({
             </View>
 
             <View style={styles.controls}>
-              <TouchableOpacity
+              <Pressable
                 onPress={() => {
                   void pickImage();
                 }}
@@ -248,9 +248,9 @@ export default function ScannerModal({
                 <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>
                   {t('scanner.controls.gallery')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
 
-              <TouchableOpacity
+              <Pressable
                 onPress={toggleCameraFacing}
                 style={styles.controlButton}
                 disabled={processing}
@@ -259,7 +259,7 @@ export default function ScannerModal({
                 <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>
                   {t('scanner.controls.flip')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </CameraView>

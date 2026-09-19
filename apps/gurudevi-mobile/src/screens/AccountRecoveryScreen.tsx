@@ -1,6 +1,6 @@
 import { BrandedErrorState } from '@repo/ui';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View, Pressable } from '@repo/ui/primitives';
 
 export interface AccountRecoveryScreenProps {
   deactivatedAt: string | null;
@@ -49,16 +49,16 @@ export function AccountRecoveryScreen({
           ) : null}
         </View>
 
-        <TouchableOpacity
+        <Pressable
           accessibilityRole="button"
           accessibilityLabel="Retry restoring account status"
           onPress={onRetry}
           style={{ alignSelf: 'center', paddingVertical: 12, paddingHorizontal: 20 }}
         >
           <Text style={{ color: '#D4843A', fontSize: 16, fontWeight: '700' }}>Try again</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
           accessibilityRole="button"
           accessibilityLabel="Sign out on this device"
           accessibilityState={{ disabled: isSigningOut }}
@@ -76,7 +76,7 @@ export function AccountRecoveryScreen({
           <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>
             {isSigningOut ? 'Signing out…' : 'Sign out on this device'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </ScreenWrapper>
   );

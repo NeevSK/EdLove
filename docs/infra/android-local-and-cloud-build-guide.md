@@ -23,7 +23,7 @@ In `.github/workflows/android-build.yml`:
 3. **Heavy Native C++ / NDK Compilation**:
    Gurudevi Mobile uses React Native New Architecture with high-performance native modules:
    - `react-native-reanimated` 4.5.0 (C++ / Worklets)
-   - `@shopify/react-native-skia` 2.6.5 (C++ Skia engine)
+   - `@shopify/react-native-skia` 2.11.2 (C++ Skia engine)
    - `react-native-mmkv` 4.3.2 + `react-native-nitro-modules` (C++ Nitro bindings)
    - `@op-engineering/op-sqlite` (C++ SQLite / SQLCipher engine)
    - `react-native-gesture-handler` 3.0.2 (RNGH v3)

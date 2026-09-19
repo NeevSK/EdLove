@@ -6,6 +6,7 @@ export * from '@repo/self/constants/trapCatalog';
 export * from '@repo/self/constants/wellbeing';
 export * from '@repo/self/features/accessPolicy';
 export * from '@repo/self/features/featureCatalog';
+export * from '@repo/self/features/featureManifest';
 export * from '@repo/self/features/featureResolver';
 export * from '@repo/self/features/userPreferences';
 export * from '@repo/self/hooks';

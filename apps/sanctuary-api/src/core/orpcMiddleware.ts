@@ -37,6 +37,12 @@ export const sovereignErrorMiddleware = o.middleware(async ({ next }) => {
   try {
     return await next({});
   } catch (error) {
+    if (!(error instanceof SovereignError)) {
+      console.error('[oRPC] unexpected procedure failure', {
+        name: error instanceof Error ? error.name : 'unknown',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
     throw toORPCError(error);
   }
 });

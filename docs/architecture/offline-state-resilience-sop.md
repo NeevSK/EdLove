@@ -51,6 +51,20 @@ flowchart TD
 ### Pillar 3: Non-Destructive Auth Expiration Handling
 - **Separation of Permanent vs Auth Failures:** Expired JWTs (401) are explicitly classified under `AUTH_EXPIRED`. The `SyncManager` outbox immediately pauses execution, preserves all pending offline mutations in order, and emits a `sync:auth_required` event rather than dumping mutations into the Dead Letter Queue (DLQ).
 
+### Pillar 3A: Expiry Is Revalidation, Not Lost Work
+- **Local continuity:** Expired credentials, entitlement snapshots, policy leases, or
+  relationship scope snapshots must surface a freshness/reconciliation state;
+  they must not erase local data, sign a person out of their locally usable
+  Sanctuary, or discard a day of drafts and queued work.
+- **Replay authority:** A queued cloud mutation retains its identity, scope,
+  policy/version reference, and idempotency key. The server re-authorizes it
+  when connectivity returns. A rejected replay becomes a recoverable local
+  resolution item, never a silently deleted record.
+- **Safe degradation:** Local-only and previously supported queued work continues
+  offline. Irreversible external effects that require current authority remain
+  locally pending/needs-review until revalidation; the UI must never present
+  them as confirmed cloud success.
+
 ### Pillar 4: SWR Cache Poisoning Defense
 - **Preserve Stale Over Corrupt:** If a background revalidation receives a 500/503 or encounters a corrupted response, `withResilience` safely discards the failed payload and serves the previously validated cache without crashing or clearing local records.
 

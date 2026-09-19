@@ -32,6 +32,7 @@ import { aiRouter } from '../ai/routes';
 import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorization/rustEvaluator';
 import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
+import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
 import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
 import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext } from './orpc';
@@ -325,10 +326,12 @@ app.use('/api/*', async (c, next) => {
 app.use('/api/*', etag());
 app.use('/api/*', timing());
 
-// Cache-Control headers for read-heavy routes
+// Library responses can be personalized (for example, bookmarks and resources
+// visible through the caller's scope). A shared cache must never reuse one
+// caller's representation for another caller.
 app.use('/api/library/*', async (c, next) => {
   await next();
-  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
+  c.header('Cache-Control', 'private, no-store');
 });
 app.use('/api/daily-content/*', async (c, next) => {
   await next();
@@ -496,24 +499,10 @@ async function getRequestSecurityContext(c: any) {
   const classroom_ids: string[] = [];
   const child_student_ids: string[] = [];
 
-  const clientHeaderActiveBondId = c.req.header('x-active-bond-id') || null;
   const isOnboardingBootstrapRoute = isOnboardingBootstrapProcedure(c.req.path);
-  let hydratedFromDb = false;
   if (!isAnonymousUser && db) {
     try {
-      let activeBond: any;
-      if (clientHeaderActiveBondId) {
-        activeBond = await db.bond.findFirst({
-          where: { id: clientHeaderActiveBondId, user_id: user.id },
-        });
-      } else if (!isOnboardingBootstrapRoute) {
-        activeBond = await db.bond.findFirst({
-          where: { user_id: user.id },
-        });
-        if (!activeBond) {
-          throw new Error('MissingActiveBondSelection');
-        }
-      }
+      const activeBond = await resolvePersistedActiveBond(activeScopeReader(db), user.id);
       if (activeBond) {
         const bondScope = resolveBondScope(activeBond);
         activeBondId = bondScope.activeBondId;
@@ -521,18 +510,13 @@ async function getRequestSecurityContext(c: any) {
         activeEntityType = bondScope.activeEntityType;
         capacity = activeBond.capacity;
         school_id = bondScope.schoolId || '';
-        hydratedFromDb = true;
-      } else if (clientHeaderActiveBondId) {
-        throw new Error('MissingActiveCapacity');
+      } else if (!isOnboardingBootstrapRoute) {
+        throw new Error('MissingActiveBondSelection');
       }
     } catch (err: any) {
       if (err?.message === 'MissingActiveBondSelection') throw err;
       console.warn('Server failed to resolve active bond from DB:', err);
     }
-  }
-
-  if (!hydratedFromDb && !isAnonymousUser) {
-    throw new Error('MissingActiveCapacity');
   }
 
   if (isAnonymousUser) {

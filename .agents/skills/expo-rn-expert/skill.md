@@ -14,7 +14,7 @@ Authoritative engineering guidelines for building cross-platform React Native (w
 - **Sacred native pins** (do NOT change without explicit approval — see `AGENTS.md`):
   `react-native-gesture-handler` 3.0.2, `react-native-reanimated` 4.5.0,
   `react-native-worklets` 0.11.1, `react-native-mmkv` 4.3.2,
-  `react-native-nitro-modules` 0.36.1, `@shopify/react-native-skia` 2.6.5,
+  `react-native-nitro-modules` 0.36.1, `@shopify/react-native-skia` 2.11.2,
   `typescript` 7.0.2.
 - **NEVER run `npx expo install --fix` or `--check`** — it downgrades sacred pins
   and breaks the New-Architecture build. Use `pnpm --filter gurudevi-mobile exec expo-doctor`.

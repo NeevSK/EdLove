@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ScopeBootstrapSchema } from './identity.orpc.contract';
 
 const userIdentity = (action: 'update') =>
   ({
@@ -12,13 +13,14 @@ export const onboardingORPCContract = {
     request: {
       body: z.object({
         orientation: z.string(),
-        context: z.record(z.string(), z.any()),
+        confirmCapacityChange: z.boolean().default(false),
+        context: z.record(z.string(), z.unknown()),
       }),
     },
     responses: {
       200: {
-        schema: z.object({ success: z.boolean() }),
-        description: 'Initial bond and user profile created',
+        schema: z.strictObject({ success: z.literal(true), scopeBootstrap: ScopeBootstrapSchema }),
+        description: 'Initial Personal Sanctuary Bond and authoritative scope bootstrap created',
       },
     },
     metadata: userIdentity('update'),

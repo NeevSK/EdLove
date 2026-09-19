@@ -142,7 +142,6 @@ const SINGLETON_OVERRIDES = {
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
   nativewind: path.resolve(projectRoot, 'node_modules/nativewind'),
   'react-native-css': path.resolve(projectRoot, 'node_modules/react-native-css'),
-  'react-native-css-interop': path.resolve(projectRoot, 'node_modules/react-native-css-interop'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
   // These packages are a coordinated runtime. Pin their Metro resolution to
@@ -345,15 +344,6 @@ const UNIVERSAL_SHIMS = {
   vm: path.resolve(projectRoot, 'src/shims/stream-web.js'),
 };
 
-const CSS_INTEROP_RUNTIME_SHIMS = {
-  'react-native-css-interop/jsx-runtime': path.resolve(
-    resolvePnpmPackageRuntime('react-native-css-interop', 'dist/runtime/jsx-runtime.js'),
-  ),
-  'react-native-css-interop/jsx-dev-runtime': path.resolve(
-    resolvePnpmPackageRuntime('react-native-css-interop', 'dist/runtime/jsx-dev-runtime.js'),
-  ),
-};
-
 const defaultResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   // A. Asset & Metadata Bypass
@@ -407,16 +397,6 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     ) {
       console.log(`[Metro-Firewall] 🛡️ UNIVERSAL Intercept: ${moduleName} -> ${shimKey}`);
       return { filePath: UNIVERSAL_SHIMS[shimKey], type: 'sourceFile' };
-    }
-  }
-
-  for (const shimKey in CSS_INTEROP_RUNTIME_SHIMS) {
-    if (moduleName === shimKey || moduleName.startsWith(`${shimKey}/`)) {
-      console.log(`[Metro-Firewall] 🛡️ CSS Interop Intercept: ${moduleName} -> ${shimKey}`);
-      return {
-        filePath: CSS_INTEROP_RUNTIME_SHIMS[shimKey],
-        type: 'sourceFile',
-      };
     }
   }
 

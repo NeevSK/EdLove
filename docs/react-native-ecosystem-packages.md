@@ -479,7 +479,7 @@
 | Package | Purpose | Stars | Version |
 |---------|---------|-------|---------|
 | `@shopify/flash-list` | High-performance list component | - | 2.0.2 |
-| `@shopify/react-native-skia` | Skia graphics library | - | 2.6.5 |
+| `@shopify/react-native-skia` | Skia graphics library | - | 2.11.2 |
 | `@shopify/checkout-sheet-kit` | Shopify checkout integration | - | 3.8.5 |
 
 #### Performance
@@ -1064,7 +1064,7 @@
 
 **Shopify Packages (Installed):**
 - @shopify/flash-list (2.0.2)
-- @shopify/react-native-skia (2.6.5) - *Note: Sacred version per AGENTS.md*
+- @shopify/react-native-skia (2.11.2) - *Note: Sacred version per AGENTS.md*
 
 **Airbnb Packages (Installed):**
 - lottie-react-native (~7.5.0)
@@ -1420,7 +1420,7 @@ const orientation = useDeviceOrientation();
 - react-native-worklets: 0.11.1 ⚠️ (Below sacred version)
 - react-native-mmkv: 4.3.2 ✅ (Matches sacred version)
 - react-native-nitro-modules: 0.36.1 ⚠️ (Below sacred version)
-- @shopify/react-native-skia: 2.6.5 ⚠️ (Above sacred version)
+- @shopify/react-native-skia: 2.11.2 ✅ (Matches sacred version)
 - typescript: 7.0.2 ✅ (Matches sacred version)
 
 **Recommendation:** Review sacred version compliance with user before making changes.
@@ -1447,7 +1447,7 @@ const orientation = useDeviceOrientation();
 
 **Performance & Lists**
 - ✅ @shopify/flash-list 2.0.2
-- ✅ @shopify/react-native-skia 2.6.5
+- ✅ @shopify/react-native-skia 2.11.2
 - ✅ react-native-pager-view 8.0.5
 
 **State Management**
@@ -1555,7 +1555,7 @@ const orientation = useDeviceOrientation();
 | react-native-reanimated | 4.5.0 | 4.6.0 | ⚠️ Below | **UPGRADE** - Required for new arch |
 | react-native-worklets | 0.11.1 | 0.12.1 | ⚠️ Below | **UPGRADE** - Required by reanimated 4.6 |
 | react-native-nitro-modules | 0.36.1 | 0.37.1 | ⚠️ Below | **UPGRADE** - Required by mmkv 4.3 |
-| @shopify/react-native-skia | 2.6.5 | 2.11.1 | ⚠️ Above | **REVIEW** - May need downgrade or sacred version update |
+| @shopify/react-native-skia | 2.11.2 | 2.11.2 | ✅ Match | - |
 | react-native-mmkv | 4.3.2 | 4.3.2 | ✅ Match | - |
 | typescript | 7.0.2 | 7.0.2 | ✅ Match | - |
 

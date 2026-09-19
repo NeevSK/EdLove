@@ -12,6 +12,7 @@ import {
   withSanctuaryRoutePrefix,
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
+import { AccountSignOut } from './AccountSignOut';
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
@@ -121,6 +122,7 @@ export function SanctuaryShell({
                   {item.label}
                 </Link>
               ))}
+              {!navigationPrefix ? <AccountSignOut /> : null}
             </nav>
           ) : null}
         </div>

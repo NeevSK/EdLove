@@ -1,0 +1,238 @@
+.floor {
+  display: grid;
+  min-height: 100%;
+  align-content: start;
+  gap: clamp(1.2rem, 3vw, 2.4rem);
+  padding: clamp(1rem, 4vw, 3.5rem);
+  background:
+    radial-gradient(circle at 88% 4%, color-mix(in srgb, var(--lotus) 10%, transparent), transparent 28rem),
+    var(--paper);
+}
+
+.arrival {
+  max-width: 48rem;
+  padding: clamp(1rem, 4vw, 2.8rem) 0;
+}
+
+.eyebrow {
+  margin: 0 0 0.55rem;
+  color: var(--lotus);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.arrival h1,
+.sectionHeading h2,
+.overview h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.arrival > p:last-child,
+.sectionHeading > p:last-child,
+.overview > div > p:not(.eyebrow) {
+  max-width: 42rem;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.overview,
+.catalog {
+  display: grid;
+  max-width: 76rem;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 2.3rem);
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--paper-light) 72%, transparent);
+}
+
+.overview {
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 0.38fr);
+  align-items: center;
+}
+
+.overview h2,
+.sectionHeading h2 {
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.overviewAside {
+  padding: 1.2rem;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--lotus) 7%, var(--paper));
+}
+
+.overviewAside p {
+  margin: 0.25rem 0;
+  color: var(--ink-soft);
+}
+
+.count {
+  color: var(--ink) !important;
+  font-family: Georgia, serif;
+  font-size: 2.4rem;
+}
+
+.overview button,
+.search button,
+.state button {
+  min-height: 2.65rem;
+  margin-top: 0.8rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--lotus);
+  border-radius: 999px;
+  background: var(--lotus);
+  color: white;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.catalog {
+  gap: 1.2rem;
+}
+
+.sectionHeading p {
+  margin-bottom: 0.4rem;
+}
+
+.search {
+  display: grid;
+  max-width: 54rem;
+  gap: 0.55rem;
+}
+
+.search label {
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.searchRow {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.8rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.search button {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.search button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.resourceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resourceCard {
+  display: grid;
+  min-height: 13rem;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--paper);
+}
+
+.resourceMeta,
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.resourceMeta span,
+.tags span {
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lotus) 9%, var(--paper));
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+}
+
+.resourceCard h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 550;
+}
+
+.resourceCard > p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.resourceCard > a {
+  justify-self: start;
+  margin-top: auto;
+  padding-top: 0.35rem;
+  color: var(--lotus);
+  font-weight: 650;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+.unavailableLink {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.state {
+  max-width: 48rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.state p {
+  margin: 0.25rem 0;
+}
+
+@media (max-width: 42rem) {
+  .overview {
+    grid-template-columns: 1fr;
+  }
+
+  .searchRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search button {
+    width: 100%;
+  }
+}

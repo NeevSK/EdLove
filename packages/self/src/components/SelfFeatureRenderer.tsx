@@ -1,10 +1,11 @@
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
+import { getFeatureDefinition } from '@repo/self/features/featureCatalog';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Box, Text } from '@repo/ui/primitives';
 import React, { Suspense } from 'react';
 
 export type SelfFeatureRendererProps = {
-  componentId: string;
+  componentId?: string;
   featureId: string;
   userId?: string;
   compact?: boolean;
@@ -132,12 +133,13 @@ export function SelfFeatureRenderer({
   userId,
   compact,
 }: SelfFeatureRendererProps) {
-  const Lazy = componentMap[componentId];
+  const resolvedComponentId = componentId ?? getFeatureDefinition(featureId)?.componentId;
+  const Lazy = resolvedComponentId ? componentMap[resolvedComponentId] : undefined;
   if (!Lazy) {
     return (
       <Box className="py-4 px-4 rounded-2xl bg-amber-50 border border-amber-200">
         <Text className="text-xs text-amber-800">
-          Feature {featureId} ({componentId}) not yet mapped.
+          Feature {featureId} ({resolvedComponentId ?? 'unknown'}) not yet mapped.
         </Text>
       </Box>
     );
@@ -145,7 +147,12 @@ export function SelfFeatureRenderer({
   return (
     <FeatureErrorBoundary featureName={featureId} featureId={featureId}>
       <Suspense fallback={<Fallback label={featureId} />}>
-        <Lazy componentId={componentId} featureId={featureId} userId={userId} compact={compact} />
+        <Lazy
+          componentId={resolvedComponentId}
+          featureId={featureId}
+          userId={userId}
+          compact={compact}
+        />
       </Suspense>
     </FeatureErrorBoundary>
   );

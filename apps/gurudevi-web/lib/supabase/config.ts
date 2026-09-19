@@ -3,14 +3,21 @@ export type SupabaseConfig = Readonly<{
   publishableKey: string;
 }>;
 
-function configured(value: string | undefined): value is string {
-  return Boolean(value?.trim());
+function normalized(value: string | undefined): string | null {
+  const trimmed = value?.trim().replace(/^['\"]|['\"]$/g, '');
+  return trimmed ? trimmed : null;
 }
 
 export function supabaseConfig(): SupabaseConfig | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const url = normalized(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const publishableKey = normalized(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 
-  if (!configured(url) || !configured(publishableKey)) return null;
+  if (!url || !publishableKey) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+  } catch {
+    return null;
+  }
   return { url, publishableKey };
 }

@@ -4,6 +4,7 @@ import { canUseZenStackDb, createZenStackDb } from '@repo/database/client';
 import { endTime, startTime } from 'hono/timing';
 import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId } from '../telemetry/otel';
+import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
 import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext, o } from './orpc';
 
@@ -60,33 +61,31 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
     });
   }
 
-  const clientHeaderActiveBondId = req.headers.get('x-active-bond-id') || null;
-
   let schoolId = '';
   let capacity: string | null = null;
-  let activeBondId = clientHeaderActiveBondId;
+  let activeBondId: string | null = null;
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
   let classroomIds: string[] = [];
 
   if (user.id !== 'anonymous' && db) {
     try {
-      // The generated ZenStack relation type exposes the caller-owned bond
-      // scope but not an ID filter. Resolve one authoritative bond rather
-      // than ever falling back to the caller's claimed header scope.
-      const activeBond = await db.bond.findFirst({ where: { user_id: user.id } });
+      const activeBond = await resolvePersistedActiveBond(activeScopeReader(db), user.id);
       if (!activeBond) {
-        throw new ORPCError('FORBIDDEN', {
-          message: 'An active capacity is required before accessing this resource.',
-        });
+        if (!isOnboardingBootstrapProcedure(new URL(req.url).pathname)) {
+          throw new ORPCError('FORBIDDEN', {
+            message: 'Select a valid active scope before accessing this resource.',
+          });
+        }
+      } else {
+        const bondScope = resolveBondScope(activeBond);
+        activeBondId = bondScope.activeBondId;
+        activeEntityId = bondScope.activeEntityId;
+        activeEntityType = bondScope.activeEntityType;
+        capacity = activeBond.capacity;
+        schoolId = bondScope.schoolId || '';
+        classroomIds = await resolveClassroomIds(db, user.id, capacity, schoolId);
       }
-      const bondScope = resolveBondScope(activeBond as any);
-      activeBondId = bondScope.activeBondId;
-      activeEntityId = bondScope.activeEntityId;
-      activeEntityType = bondScope.activeEntityType;
-      capacity = (activeBond as any).capacity;
-      schoolId = bondScope.schoolId || '';
-      classroomIds = await resolveClassroomIds(db, user.id, capacity, schoolId);
     } catch (err) {
       if (err instanceof ORPCError) throw err;
       console.warn('Failed resolving active bond in oRPC context:', err);
@@ -150,13 +149,13 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
 
   let schoolId = '';
   let capacity: string | null = null;
-  let activeBondId = c.req.header('x-active-bond-id') || null;
+  let activeBondId: string | null = null;
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
   let classroomIds: string[] = [];
 
   if (user.id !== 'anonymous' && db) {
-    const activeBond = await db.bond.findFirst({ where: { user_id: user.id } });
+    const activeBond = await resolvePersistedActiveBond(activeScopeReader(db), user.id);
     if (!activeBond && !isOnboardingBootstrapProcedure(c.req.path)) {
       throw new ORPCError('FORBIDDEN', {
         message: 'An active capacity is required before accessing this resource.',

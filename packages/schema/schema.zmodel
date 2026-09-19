@@ -154,11 +154,15 @@ model Bond {
   entity_id   String   // 'GLOBAL' for platform, or specific School/Classroom ID
   entity_type String   // 'PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY'
   capacity    String   // 'admin', 'teacher', 'student', etc.
+  status      String   @default("active") // active, archived, revoked
+  valid_from  DateTime @default(now())
+  valid_until DateTime?
   metadata    Json?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
   user        User     @relation(fields: [user_id], references: [id])
+  selected_by UserPreferences? @relation("SelectedBond")
 
   // Access Control: Platform Admins or the user themselves can manage their bonds
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
@@ -1019,6 +1023,7 @@ model DecisionJournal {
 model UserPreferences {
   id                        String   @id @default(uuid())
   user_id                   String   @unique
+  active_bond_id            String?  @unique
   favorite_features         String[]
   hidden_features           String[]
   morning_check_time        String?
@@ -1030,6 +1035,7 @@ model UserPreferences {
   updated_at                DateTime @updatedAt
   created_at                DateTime @default(now())
   user                      User     @relation(fields: [user_id], references: [id])
+  active_bond               Bond?    @relation("SelectedBond", fields: [active_bond_id], references: [id], onDelete: SetNull)
 
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_preferences")

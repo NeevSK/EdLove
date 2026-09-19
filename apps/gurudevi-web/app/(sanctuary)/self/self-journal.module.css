@@ -9,6 +9,11 @@
     ),
     var(--paper);
 }
+.workbenchChrome {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 76rem;
+}
 .arrival {
   max-width: 44rem;
   padding: clamp(1.5rem, 4vw, 3.5rem) 0 clamp(2rem, 6vw, 5rem);
@@ -47,6 +52,115 @@
   gap: clamp(1.5rem, 4vw, 4rem);
   max-width: 72rem;
   align-items: start;
+}
+.catalog {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem 2rem;
+  max-width: 72rem;
+  margin-top: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper-light) 56%, transparent);
+}
+.catalog h2,
+.catalog h3 {
+  margin: 0.45rem 0;
+  font-family: Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.catalog h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+.catalog h3 {
+  font-size: 1.15rem;
+}
+.catalog p:not(.eyebrow),
+.catalogItem p {
+  max-width: 38rem;
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.catalogIntroduction {
+  grid-column: 1 / -1;
+  max-width: 45rem;
+  margin: -0.35rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.catalogZones {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 1.5rem;
+}
+.catalogZone {
+  display: grid;
+  gap: 0.65rem;
+}
+.catalogZone > h3 {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.catalogGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+.catalogItem {
+  display: flex;
+  flex-direction: column;
+  min-height: 12rem;
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+}
+.catalogItem[data-runnable="true"] {
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--lotus) 6%, transparent);
+}
+.catalogItem h4 {
+  margin: 0.4rem 0;
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.catalogEmoji {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.catalogStatus {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.catalogOpen {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0.45rem 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--lotus);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.catalogOpen:focus-visible,
+.burnButton:focus-visible,
+.retryButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lotus) 35%, transparent);
+  outline-offset: 3px;
 }
 .alcove,
 .history {
@@ -155,6 +269,23 @@
   justify-content: space-between;
   gap: 0.75rem;
 }
+.unavailableTask {
+  max-width: 44rem;
+  padding: clamp(2rem, 5vw, 4rem) 0;
+}
+.unavailableTask h1 {
+  margin: 0.75rem 0 1rem;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.unavailableTask p:not(.eyebrow) {
+  max-width: 38rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
 .burned {
   color: var(--lotus);
   font-size: 0.76rem;
@@ -162,11 +293,167 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+.modalBackdrop {
+  position: fixed;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  inset: 0;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--ink) 48%, transparent);
+}
+.moodModal {
+  width: min(100%, 39rem);
+  max-height: min(46rem, calc(100dvh - 2rem));
+  overflow: auto;
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background:
+    radial-gradient(
+      circle at 88% 0%,
+      color-mix(in srgb, var(--lotus) 13%, transparent),
+      transparent 18rem
+    ),
+    var(--paper);
+  box-shadow: 0 1.5rem 4.5rem color-mix(in srgb, var(--ink) 34%, transparent);
+}
+.moodModal:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lotus) 40%, transparent);
+  outline-offset: 3px;
+}
+.modalHeader,
+.historyHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.modalHeader h2 {
+  margin: 0.45rem 0;
+  font-family: Georgia, serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+.modalHeader p:last-child {
+  max-width: 33rem;
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.modalClose {
+  flex: none;
+  padding: 0.4rem 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+}
+.modalClose:focus-visible,
+.moodChoice:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lotus) 35%, transparent);
+  outline-offset: 3px;
+}
+.moodForm {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.moodForm fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.moodForm legend,
+.moodForm > label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.moodChoices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.moodChoice {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 4.65rem;
+  padding: 0.65rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+}
+.moodChoice > span {
+  font-size: 1.25rem;
+}
+.moodChoice[data-selected="true"] {
+  border-color: var(--lotus);
+  background: color-mix(in srgb, var(--lotus) 13%, var(--paper));
+}
+.moodForm textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 6rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.55;
+}
+.moodHistory {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.moodHistory h3 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.moodHistoryList {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.moodHistoryList li {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  color: var(--ink-soft);
+  text-transform: capitalize;
+}
+.moodHistoryList time {
+  font-size: 0.82rem;
+  text-transform: none;
+}
 @media (max-width: 48rem) {
   .grid {
     grid-template-columns: 1fr;
   }
   .floor {
     padding-bottom: 7rem;
+  }
+  .catalog {
+    grid-template-columns: 1fr;
+  }
+  .moodChoices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

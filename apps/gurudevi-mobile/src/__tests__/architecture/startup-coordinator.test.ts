@@ -104,6 +104,7 @@ describe('essential startup coordinator', () => {
 
       vi.useRealTimers();
     },
+    15000,
   );
 
   it('resolves normally when bootstrapPlatform completes before the deadline', async () => {

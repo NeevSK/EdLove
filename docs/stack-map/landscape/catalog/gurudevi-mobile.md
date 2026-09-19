@@ -25,7 +25,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
 
-## External deps (179 direct)
+## External deps (178 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
@@ -167,7 +167,6 @@ react-is
 react-native
 react-native-avoid-softinput
 react-native-css
-react-native-css-interop
 react-native-custom-pull-refresh
 react-native-enriched-markdown
 react-native-fast-shimmer

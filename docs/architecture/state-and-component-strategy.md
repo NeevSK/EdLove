@@ -83,4 +83,4 @@ With `zeego` (vendored), `@tanstack/react-form` (retained), and `SanctuaryToast`
 ### C. `victory-native` (Formidable Labs)
 * **npm**: [victory-native](https://www.npmjs.com/package/victory-native) | **GitHub**: [FormidableLabs/victory-native](https://github.com/FormidableLabs/victory-native)
 * **Purpose**: Hardware-accelerated Skia charts engine.
-* **Value**: Renders smooth 60–120 FPS analytical charts on mobile using our pre-installed `@shopify/react-native-skia` (`2.6.5`).
+* **Value**: Renders smooth 60–120 FPS analytical charts on mobile using our pre-installed `@shopify/react-native-skia` (`2.11.2`).

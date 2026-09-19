@@ -38,3 +38,4 @@ export {
   LOCAL_ONLY_TABLES,
 } from '@repo/core/adapters/powersync/schema';
 export { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+export { PowerSyncDataAdapter } from '@repo/core/adapters/powersync/syncData.adapter';

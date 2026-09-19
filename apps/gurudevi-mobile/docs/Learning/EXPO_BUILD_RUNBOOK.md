@@ -379,7 +379,7 @@ This app intentionally uses **newer-than-Expo-recommended** versions for several
 | `react-native-worklets` | 0.11.1 | Required by reanimated 4.x |
 | `react-native-mmkv` | 4.3.2 | Nitro modules (v4) |
 | `react-native-nitro-modules` | 0.36.1 | Required by mmkv 4.x |
-| `@shopify/react-native-skia` | 2.6.5 | New architecture support |
+| `@shopify/react-native-skia` | 2.11.2 | New architecture support |
 | `typescript` | 7.0.2 | Latest stable |
 
 These are whitelisted in `package.json` under `expo.doctor` and `expo.install.exclude`. **Do not remove these exclusions.**

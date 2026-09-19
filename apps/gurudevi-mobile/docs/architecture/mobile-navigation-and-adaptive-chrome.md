@@ -2,7 +2,7 @@
 title: "Mobile Navigation Architecture: Active Sub-Tabs, Adaptive Chrome & Intentional Cadence"
 status: "active"
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-15
 author: "Naveen"
 scribe: "Antigravity"
 tags: [navigation, architecture, adaptive-header, active-subtabs, anti-infinite-scroll]
@@ -10,7 +10,27 @@ tags: [navigation, architecture, adaptive-header, active-subtabs, anti-infinite-
 
 # Mobile Navigation Architecture: Active Sub-Tabs, Adaptive Chrome & Intentional Cadence
 
-This document serves as the living source of truth for mobile navigation architecture within Gurudevi Mobile (`apps/gurudevi-mobile`), defining how top headers, multitasking sub-tabs, role-aware feature catalogs, and anti-infinite scroll systems operate.
+This document defines the mobile expression of Gurudevi navigation. The shared
+authority for active tasks, restoration, and time is the cross-platform
+[Domain Workbenches, Active Tasks, and Temporal Horizon ADR](../../../../docs/decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md).
+
+## 0. Authority and current alignment work
+
+The existing active-sub-tab implementation is an important prototype, not a
+finished source of truth. It currently registers Overview as a task, has a
+global temporal store, and cannot fully express resource-specific task
+instances or reliable close-to-Overview behavior. Those are migration defects,
+not approved product behavior.
+
+On mobile, the product model is:
+
+```text
+primary domain → Overview/Catalog → active task strip → focused task
+```
+
+Overview/Catalog is never a task pill. It is the stable return floor when no
+task remains. The active-task strip appears only when there is at least one
+real background or focused task.
 
 ---
 
@@ -29,10 +49,13 @@ The mobile navigation system is governed by three inviolable tenets:
 
 Mobile multitasking is managed by the sovereign, MMKV-persisted store [`useActiveSubTabsStore`](file:///c:/x/packages/core/src/store/useActiveSubTabsStore.ts).
 
-### LRU Memory Budget Cap
-To guarantee safe operation within low-memory devices (respecting the 2GB RAM budget per `AGENTS.md`), the store enforces a hard **LRU (Least Recently Used) cap of 5 tabs per domain**:
-- Opening a 6th tab automatically evicts the oldest inactive tab.
-- Re-opening an existing tab updates its `openedAt` timestamp and brings it to the active slot.
+### Recovery budget, not mounted-screen budget
+
+The mobile workbench retains at most five recoverable task descriptors per
+domain. It does not keep five feature trees mounted. When the budget is reached,
+the least-recently-focused inactive descriptor may be removed only after its
+draft/recovery policy has been checked. The next implementation must refresh
+recency on focus and explicitly return to Overview when the final task closes.
 
 ### Store State Contract
 ```typescript
@@ -56,9 +79,9 @@ export interface NavigationPreferences {
 ```
 
 ### Visual Multitasking Strip (`ActiveSubTabStrip`)
-Mounted beneath the active domain header:
+Mounted beneath the active domain header when at least one real task is open:
 - **Active Pill**: Elevated background with an amber active-indicator dot.
-- **Close Action**: Direct tap on `X` closes the tab and returns to the neighboring active tab or root overview.
+- **Close Action**: Direct tap on `X` closes the task and returns to the most-recently-focused neighboring task or the root overview.
 - **Add Task (`+`)**: Directly opens the bottom catalog sheet for that domain.
 
 ---
@@ -124,13 +147,31 @@ Every domain exposes a typed registry in `src/navigation/registries/`:
   - Features are sorted dynamically by role affinity (`roleWeights[capacity]`).
   - Add a feature to `FEATURE_CATALOG` $\rightarrow$ automatically surfaces in the mobile registry, catalog sheet, and overview hub.
 
-### Query Parameter Serialization
-Instead of un-serialized modal state, every Self capability is addressed via clean URLs:
+### Focused-route serialization
+The focused task is always addressable by a clean URL; the rest of the active
+working set restores from device-local workbench state. This keeps links useful
+without trying to serialize an entire workbench into a query string:
 - Sanctuary Overview Hub: `/self`
 - Voice Journal: `/self?feature=voice_journal`
 - Mood Lotus: `/self?feature=mood_lotus`
 - Decision Journal: `/self?feature=decision_journal`
 - Daily Pulse: `/self?feature=daily_pulse`
+
+Resource-backed tasks must add their stable resource context to their task key
+and route. A classroom task is therefore not merely `attendance`; it is
+attendance for a particular classroom.
+
+## 5A. Mobile temporal horizon
+
+When the domain supports time, place one quiet temporal horizon below the
+domain header and task strip, above the overview or focused task. It contains a
+human date, Today, previous/next, and calendar-on-demand. It is not repeated
+inside every feature and it is not a global app filter.
+
+On portrait it is a full-width orientation line. On short landscape it becomes
+a terse date plus previous/next beside the Overview return control. A task may
+follow the domain horizon, hold a fixed date, or declare itself present-time
+only. See the canonical ADR for the shared rules.
 
 ---
 

@@ -11,7 +11,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "org.edlove.gurudevi",
       "buildNumber": "1",
-      "associatedDomains": ["applinks:platform.gurudevi.edlove.org"]
+      "associatedDomains": [
+        "applinks:gurudevi.app",
+        "applinks:sanctuary.gurudevi.app",
+        "applinks:platform.gurudevi.edlove.org"
+      ]
     },
     "android": {
       "package": "org.edlove.gurudevi",
@@ -48,6 +52,16 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
+            {
+              "scheme": "https",
+              "host": "gurudevi.app",
+              "pathPrefix": "/qr"
+            },
+            {
+              "scheme": "https",
+              "host": "sanctuary.gurudevi.app",
+              "pathPrefix": "/qr"
+            },
             {
               "scheme": "https",
               "host": "platform.gurudevi.edlove.org",

@@ -26,6 +26,11 @@ export interface ClientContext {
   }) => void | ((isSuccess: boolean) => void);
 }
 
+const runtimeDevelopmentFlag = (globalThis as typeof globalThis & {
+  readonly __DEV__?: boolean;
+}).__DEV__;
+const isDevelopmentRuntime = runtimeDevelopmentFlag === true || process.env.NODE_ENV === 'development';
+
 const link = new RPCLink<ClientContext>({
   url: SOVEREIGN_ORPC_URL,
   method: ({ context }) => {
@@ -37,7 +42,7 @@ const link = new RPCLink<ClientContext>({
   plugins: [
     new ClientRetryPlugin({
       default: {
-        retry: typeof __DEV__ !== 'undefined' && __DEV__ ? 0 : 2,
+        retry: isDevelopmentRuntime ? 0 : 2,
         retryDelay: (options) =>
           options.lastEventRetry ?? Math.min(250 * 2 ** options.attemptIndex, 5000),
         shouldRetry: (options) => {

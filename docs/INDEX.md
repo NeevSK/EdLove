@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-08-31
+updated: 2026-09-15
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -34,6 +34,9 @@ These files document core logic, user journeys, developer playbooks, and executi
 
 | Document | Description |
 |---|---|
+| [architecture/2026-09-15-workspace-classroom-domain-authority.md](architecture/2026-09-15-workspace-classroom-domain-authority.md) | Canonical Workspace/Classroom perspective inventory, scope/task semantics, shared plumbing, canvas persistence, Explore rules, and migration sequence |
+| [current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md](current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md) | Canonical Self feature ledger with source/evidence denominators, platform status, and migration actions |
+| [current_progress/2026-09-15-gurudevi-library-domain-authority.md](current_progress/2026-09-15-gurudevi-library-domain-authority.md) | Canonical Library capability ledger with source/evidence denominators and browser/native delivery status |
 | [Core/developer-playbook.md](Core/developer-playbook.md) | Master strategy: project hygiene, quality gates, and code standards |
 | [Core/onboarding.md](Core/onboarding.md) | Onboarding API contracts, route onboarding definitions, and testing |
 | [Core/local-first-architecture-principles.md](Core/local-first-architecture-principles.md) | Event-sourcing as source of truth, Cynefin classification, boundary-condition design |
@@ -104,6 +107,11 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-09-14-sanctuary-explore-access-and-persistence.md](decisions/2026-09-14-sanctuary-explore-access-and-persistence.md) | Public Explore, guest-cloud, durable-account, and developer-sandbox persistence boundaries |
 | [decisions/2026-09-14-gurudevi-browser-unified-canvas-foundation.md](decisions/2026-09-14-gurudevi-browser-unified-canvas-foundation.md) | DRY browser CanvasFrame foundation and real-product-first implementation order |
 | [decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md](decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md) | Canonical shared canvas model, domain-owned floor authority, and rejection of one generic renderer |
+| [decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md](decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md) | Cross-platform authority for domain-local task workbenches, restoration, and temporal context |
+| [decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md](decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md) | Mandatory shared platform contracts and readiness gates before broad domain migration |
+| [decisions/2026-09-15-gurudevi-migration-execution-discipline.md](decisions/2026-09-15-gurudevi-migration-execution-discipline.md) | Evidence coverage, change control, authority, and delegation rules for the migration |
+| [decisions/2026-09-15-community-domain-functional-authority.md](decisions/2026-09-15-community-domain-functional-authority.md) | Canonical Community capability ledger with source/evidence denominators and migration status |
+| [decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md](decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md) | Canonical Profile, Notifications, Settings, and account-lifecycle capability ledger |
 
 ---
 
@@ -128,6 +136,29 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 | [current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md](current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md) | Active restart handoff, hybrid shell-and-slice plan, and multi-agent operating model for the Gurudevi Next.js migration |
 | [current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md](current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md) | Active real-product-first Sanctuary implementation sequence, with Explore as a later reuse adapter |
 | [current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md](current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md) | Evidence-backed map of each domain floor, configurable furniture, and browser migration order |
+| [current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md](current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md) | Canonical Self feature-layer ownership, compatibility inventory, and cross-platform migration gates |
+| [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets |
+| [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
+| [current_progress/2026-08-31-ad-center-phased-implementation-plan.md](current_progress/2026-08-31-ad-center-phased-implementation-plan.md) | 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI) |
+| [current_progress/2026-08-31-editorial-publishing-implementation-plan.md](current_progress/2026-08-31-editorial-publishing-implementation-plan.md) | Phased implementation plan for EdLove and GuruDevi journal foundations, distribution, translations, rights, and contributors |
+
+---
+
+## 🛠️ Infra, Workflows & Logs
+
+CI/CD setups, developer workflow scripts, versioning plans, and build diagnostics.
+
+| Document | Description |
+|---|---|
+| [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md) | General dependency migration playbook (monorepo root) |
+| [infra/version-management.md](infra/version-management.md) | Version management analysis (changesets vs pnpm native) |
+| [infra/developer-workflow-guide.md](infra/developer-workflow-guide.md) | Standard local coding environment runbook and tips |
+| [infra/git-branching-model.md](infra/git-branching-model.md) | Branch naming structures, merge strategies, PR templates |
+| [infra/code-quality-workflow.md](infra/code-quality-workflow.md) | Pre-commit/pre-push hooks setup, commitlint standards |
+| [infra/code-checkers.md](infra/code-checkers.md) | Code quality scripts catalog and run flags |
+| [infra/2026-07-24-physical-device-deployment-log.md](infra/2026-07-24-physical-device-deployment-log.md) | Live runlog for physical hardware builds and USB debugging |
+| [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments, including CLI setup, CI/CD integration, and app-specific configuration patterns. |
+| [infra/production-readiness-program.md](infra/production-readiness-program.md) | Cross-platform production-readiness checklist for mobile, API, web, data, sync, security, and operations |
 | [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets |
 | [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
 | [current_progress/2026-08-31-ad-center-phased-implementation-plan.md](current_progress/2026-08-31-ad-center-phased-implementation-plan.md) | 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI) |
@@ -156,11 +187,22 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/android-local-and-cloud-build-guide.md](infra/android-local-and-cloud-build-guide.md) | Android local/cloud build runbook, zero-quota APK generation, and native C++ compilation explanation |
 | [infra/2026-08-15-android-build-log.md](infra/2026-08-15-android-build-log.md) | Execution chronicle and diagnostics log for local and cloud Android builds |
 | [infra/2026-09-05-wsl-android-build-architecture-sop.md](infra/2026-09-05-wsl-android-build-architecture-sop.md) | WSL2 Android Native Build Architecture SOP: first-principles, low-friction Windows-Linux bridge without duplicate SSD storage |
+| [infra/2026-09-19-custom-domain-cloudflare-vercel-sop.md](infra/2026-09-19-custom-domain-cloudflare-vercel-sop.md) | Standard Operating Procedure (SOP) for configuring custom domains registered via third-party registrars, managed by Cloudflare DNS, and hosted on Vercel's global edge network (`intuituilabs.studio`). |
 | [infra/editorial-operations-guide.md](infra/editorial-operations-guide.md) | Editorial lifecycle, rights, translation, social, and correction guidance |
 
 ---
 
 ## Changelog
+
+### 2026-09-19
+
+- **Added**: `infra/2026-09-19-custom-domain-cloudflare-vercel-sop.md` — Complete runbook & SOP for custom domain wiring, Cloudflare DNS configuration, Vercel edge deployment, SSL/TLS certificate automation, and local dev tooling setup (`intuituilabs.studio`).
+
+### 2026-09-15
+
+- **Added**: `decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md` — canonical active-task, restoration, and temporal-horizon architecture for mobile and web.
+- **Added**: `current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md` — Self feature contract, registry ownership, delivery evidence, and migration control matrix.
+- **Added**: `decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md` and `decisions/2026-09-15-gurudevi-migration-execution-discipline.md` — platform readiness gates and migration execution discipline.
 
 ### 2026-09-14
 

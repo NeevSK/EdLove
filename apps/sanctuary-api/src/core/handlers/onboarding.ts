@@ -1,6 +1,16 @@
 import { onboardingContract } from '@repo/core/api/server';
 import { SovereignError } from '@repo/core/types/Errors';
+import { CapacitySchema } from '@repo/core/api/identity.generated';
 import { assertDatabase } from '../apiErrors';
+import {
+  buildIdentityBootstrap,
+  persistPersonalSanctuaryBondCapacity,
+  resolvePersonalCapacityChange,
+} from '../activeScope';
+import {
+  currentPlatformProvisionConfig,
+  resolveInitialBondAuthority,
+} from '../platformBondProvision';
 import { implement, type ORPCContext } from '../orpc';
 import { sovereignErrorMiddleware } from '../orpcMiddleware';
 
@@ -15,129 +25,183 @@ export const onboardingRouter = impl.router({
       if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
 
       const userId = context.user.id;
-      const { orientation, context: requestContext } = input.body;
-
-      const profile = await context.db.user.findUnique({ where: { id: userId } });
-      if (!profile) throw SovereignError.notFound('User');
-
-      const isSupabaseAnonymous = profile.is_anonymous === true;
-      const citizenship = isSupabaseAnonymous ? 'THIRD_CLASS' : 'SECOND_CLASS';
-
-      let username =
-        typeof requestContext.username === 'string'
-          ? requestContext.username.trim().toLowerCase()
-          : null;
-      if (username && !/^[a-z0-9_-]{3,30}$/.test(username)) {
-        username = null;
+      const {
+        orientation,
+        confirmCapacityChange,
+        context: requestContext,
+      } = input.body;
+      const primaryCapacity = CapacitySchema.safeParse(orientation);
+      if (!primaryCapacity.success) {
+        throw SovereignError.invalidInput('Choose a recognized primary capacity.');
+      }
+      const bondAuthority = resolveInitialBondAuthority(
+        primaryCapacity.data,
+        userId,
+        currentPlatformProvisionConfig(),
+      );
+      if (!bondAuthority) {
+        throw SovereignError.unauthorized(
+          'select',
+          'privileged platform capacity must be server-provisioned',
+        );
       }
 
-      let full_name =
-        typeof requestContext.fullName === 'string' ? requestContext.fullName.trim() : '';
-      if (!full_name) {
-        const first =
-          typeof requestContext.firstName === 'string' ? requestContext.firstName.trim() : '';
-        const last =
-          typeof requestContext.lastName === 'string' ? requestContext.lastName.trim() : '';
-        full_name = [first, last].filter(Boolean).join(' ');
-      }
-      if (!full_name) {
-        full_name =
-          typeof requestContext.displayName === 'string'
-            ? requestContext.displayName.trim()
-            : 'Sanctuary User';
-      }
-      if (!full_name || full_name.length === 0) {
-        full_name = 'Sanctuary User';
-      }
+      const fullNameInput = requestContext.fullName;
+      const displayNameInput = requestContext.displayName;
+      const firstNameInput = requestContext.firstName;
+      const lastNameInput = requestContext.lastName;
+      const fullName =
+        (typeof fullNameInput === 'string' && fullNameInput.trim()) ||
+        [firstNameInput, lastNameInput]
+          .filter((part): part is string => typeof part === 'string' && Boolean(part.trim()))
+          .map((part) => part.trim())
+          .join(' ') ||
+        (typeof displayNameInput === 'string' && displayNameInput.trim()) ||
+        'Sanctuary User';
+      const displayName =
+        (typeof displayNameInput === 'string' && displayNameInput.trim()) || fullName;
+      const usernameInput = requestContext.username;
+      const normalizedUsername =
+        typeof usernameInput === 'string' ? usernameInput.trim().toLowerCase() : '';
+      const username = /^[a-z0-9_-]{3,30}$/.test(normalizedUsername)
+        ? normalizedUsername
+        : null;
+      const now = new Date();
 
-      const display_name =
-        typeof requestContext.displayName === 'string' && requestContext.displayName.trim()
-          ? requestContext.displayName.trim()
-          : full_name || 'Gurudevi User';
+      const result = await context.db.$transaction(async (tx) => {
+        const profile = await tx.user.findUnique({ where: { id: userId } });
+        if (!profile) throw SovereignError.notFound('User');
 
-      let finalPersonalClassroomId: string | null = null;
-      {
         const isTeacherOrPrincipal = [
           'teacher',
           'principal',
-          'section_head',
-          'grade_head',
-          'founder',
-          'assistant_principal',
-          'developer',
+          'sectionHead',
+          'gradeHead',
+          'assistantPrincipal',
         ].includes(orientation);
+        const classroomType = isTeacherOrPrincipal
+          ? 'teacher_classroom'
+          : orientation === 'student'
+            ? 'student_classroom'
+            : 'unrelated_classroom';
+        const classroomName = isTeacherOrPrincipal
+          ? `${displayName}'s Classroom`
+          : orientation === 'student'
+            ? `${displayName}'s Student Workspace`
+            : `${displayName}'s Personal Workspace`;
 
-        let classroomType = 'unrelated_classroom';
-        let classroomName = `${display_name}'s Personal Workspace`;
-
-        if (isTeacherOrPrincipal) {
-          classroomType = 'teacher_classroom';
-          classroomName = `${display_name}'s Classroom`;
-        } else if (orientation === 'student') {
-          classroomType = 'student_classroom';
-          classroomName = `${display_name}'s Student Workspace`;
-        }
-
-        const existingPC = await context.db.personalClassroom.findFirst({
+        const personalClassroom = await tx.personalClassroom.findFirst({
           where: { user_id: userId },
           select: { id: true },
         });
+        const classroom = personalClassroom
+          ? personalClassroom
+          : await tx.personalClassroom.create({
+              data: { name: classroomName, type: classroomType, user_id: userId },
+              select: { id: true },
+            });
 
-        if (existingPC) {
-          finalPersonalClassroomId = existingPC.id;
-        } else {
-          const newPC = await context.db.personalClassroom.create({
-            data: {
-              name: classroomName,
-              type: classroomType,
-              user_id: userId,
-            },
-            select: { id: true },
-          });
-          finalPersonalClassroomId = newPC.id;
-        }
-      }
-
-      await context.db.user.update({
-        where: { id: userId },
-        data: {
-          display_name,
-          full_name,
-          first_name: (requestContext.firstName as string) ?? null,
-          last_name: (requestContext.lastName as string) ?? null,
-          username,
-          identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying',
-          school_id: null,
-          citizenship: citizenship as any,
-          capacity: orientation as any,
-        },
-      });
-
-      const entity_type = 'PERSONAL_CLASSROOM';
-      const entity_id = finalPersonalClassroomId || 'PERSONAL_WORKSPACE';
-
-      const existingBond = await context.db.bond.findFirst({
-        where: { user_id: userId, entity_id, capacity: orientation as any },
-      });
-
-      if (existingBond) {
-        await context.db.bond.update({
-          where: { id: existingBond.id },
-          data: { metadata: (requestContext.metadata as any) || {} },
-        });
-      } else {
-        await context.db.bond.create({
-          data: {
+        const existingBond = await tx.bond.findFirst({
+          where: {
             user_id: userId,
-            entity_id,
-            entity_type,
-            capacity: orientation as any,
-            metadata: (requestContext.metadata as any) || {},
+            entity_id: classroom.id,
+            entity_type: 'PERSONAL_CLASSROOM',
+            status: 'active',
+            valid_from: { lte: now },
+            OR: [{ valid_until: null }, { valid_until: { gt: now } }],
+          },
+          orderBy: { created_at: 'asc' },
+        });
+        const capacityChange = resolvePersonalCapacityChange(
+          existingBond?.capacity ?? null,
+          bondAuthority.personalBondCapacity,
+          confirmCapacityChange,
+        );
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            display_name: displayName,
+            full_name: fullName,
+            first_name: typeof firstNameInput === 'string' ? firstNameInput : null,
+            last_name: typeof lastNameInput === 'string' ? lastNameInput : null,
+            username,
+            identity_state: profile.is_anonymous ? 'anonymous' : 'identifying',
+            citizenship: profile.is_anonymous ? 'THIRD_CLASS' : 'SECOND_CLASS',
+            capacity: capacityChange.capacity,
           },
         });
-      }
 
-      return { success: true };
+        const personalBond = await persistPersonalSanctuaryBondCapacity(
+          {
+            create: (args) => tx.bond.create(args),
+            update: (args) => tx.bond.update(args),
+          },
+          existingBond,
+          userId,
+          classroom.id,
+          capacityChange.capacity,
+          capacityChange.updateBond,
+        );
+
+        for (const capacity of existingBond ? [] : bondAuthority.platformCapacities) {
+          const platformBond = await tx.bond.findFirst({
+            where: {
+              user_id: userId,
+              entity_type: 'PLATFORM',
+              entity_id: 'GLOBAL',
+              capacity,
+            },
+          });
+          if (platformBond) {
+            await tx.bond.update({
+              where: { id: platformBond.id },
+              data: {
+                status: 'active',
+                valid_from: now,
+                valid_until: null,
+                metadata: { source: 'server_subject_allowlist' },
+              },
+            });
+          } else {
+            await tx.bond.create({
+              data: {
+                user_id: userId,
+                entity_id: 'GLOBAL',
+                entity_type: 'PLATFORM',
+                capacity,
+                metadata: { source: 'server_subject_allowlist' },
+              },
+            });
+          }
+        }
+
+        await tx.userPreferences.upsert({
+          where: { user_id: userId },
+          create: {
+            user_id: userId,
+            active_bond_id: personalBond.id,
+            favorite_features: [],
+            hidden_features: [],
+          },
+          update: { active_bond_id: personalBond.id },
+        });
+
+        const user = await tx.user.findUnique({
+          where: { id: userId },
+          include: { bonds: true },
+        });
+        if (!user) throw SovereignError.notFound('User');
+        return { user, personalBond };
+      });
+
+      return {
+        success: true,
+        scopeBootstrap: buildIdentityBootstrap(
+          result.user,
+          result.user.bonds,
+          result.personalBond,
+        ).scopeBootstrap,
+      };
     }),
 
   completeOnboarding: impl.completeOnboarding
@@ -148,51 +212,45 @@ export const onboardingRouter = impl.router({
 
       const userId = context.user.id;
 
-      const userProfile = await context.db.user.findUnique({ where: { id: userId } });
-      if (!userProfile) throw SovereignError.notFound('User');
+      await context.db.$transaction(async (tx) => {
+        const profile = await tx.user.findUnique({
+          where: { id: userId },
+          include: { bonds: true, preferences: true },
+        });
+        if (!profile) throw SovereignError.notFound('User');
 
-      const bonds = await context.db.bond.findMany({ where: { user_id: userId } });
-      if (!bonds || bonds.length === 0) {
-        const capacity = userProfile.capacity;
-        if (!capacity) {
+        const now = new Date();
+        const selectedBondId = profile.preferences?.active_bond_id;
+        const selectedBond = selectedBondId
+          ? profile.bonds.find(
+              (bond) =>
+                bond.id === selectedBondId &&
+                bond.status === 'active' &&
+                bond.valid_from <= now &&
+                (!bond.valid_until || bond.valid_until > now),
+            )
+          : null;
+        const hasPersonalBond = profile.bonds.some(
+          (bond) =>
+            bond.entity_type === 'PERSONAL_CLASSROOM' &&
+            bond.status === 'active' &&
+            bond.valid_from <= now &&
+            (!bond.valid_until || bond.valid_until > now),
+        );
+        if (!selectedBond || !hasPersonalBond) {
           throw SovereignError.invalidInput(
-            'Onboarding cannot complete without an explicit capacity selection.',
+            'A valid selected scope and Personal Sanctuary Bond are required to complete onboarding.',
           );
         }
 
-        const pc = await context.db.personalClassroom.create({
+        await tx.user.update({
+          where: { id: userId },
           data: {
-            name: `${userProfile.display_name || 'Sanctuary'}'s Workspace`,
-            type: capacity === 'student' ? 'student_classroom' : 'teacher_classroom',
-            user_id: userId,
+            onboarding_completed: true,
+            onboarding_completed_at: now,
+            identity_state: 'onboarded',
           },
-          select: { id: true },
         });
-
-        const existingBond = await context.db.bond.findFirst({
-          where: { user_id: userId, entity_id: pc.id, capacity },
-        });
-
-        if (!existingBond) {
-          await context.db.bond.create({
-            data: {
-              user_id: userId,
-              entity_id: pc.id,
-              entity_type: 'PERSONAL_CLASSROOM',
-              capacity,
-              metadata: {},
-            },
-          });
-        }
-      }
-
-      await context.db.user.update({
-        where: { id: userId },
-        data: {
-          onboarding_completed: true,
-          onboarding_completed_at: new Date(),
-          identity_state: 'onboarded',
-        },
       });
 
       return { success: true };

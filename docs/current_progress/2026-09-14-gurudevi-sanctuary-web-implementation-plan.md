@@ -47,6 +47,7 @@ The source decisions are:
 - [functional migration and navigation](../decisions/2026-09-14-gurudevi-web-sanctuary-functional-migration-and-navigation.md)
 - [spatial language and domain transitions](../decisions/2026-09-14-gurudevi-sanctuary-spatial-language-and-domain-transitions.md)
 - [canvas model and domain-floor authority](../decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md)
+- [domain workbenches, active tasks, and temporal horizon](../decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md)
 - [Explore access and persistence](../decisions/2026-09-14-sanctuary-explore-access-and-persistence.md)
 - [guest local-first lease](../decisions/2026-09-10-guest-local-first-lease.md)
 
@@ -63,152 +64,85 @@ The source decisions are:
 Anonymous Supabase guest-cloud access is not in this route map yet. It is a
 separate follow-up decision, not a shortcut around Explore or account policy.
 
-## Phased sequence
+## Five functional implementation chunks
 
-### P0 - Recover the real product and canvas manifest
+The source audit and canvas port map are complete. Build the product in these
+five complete chunks, in order. Each chunk delivers a usable workbench rather
+than a collection of route stubs. The
+[Domain Workbenches ADR](../decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md)
+governs every chunk.
 
-**Goal:** prevent another preview/demo branch from becoming the product.
+### 1. Sanctuary workbench spine
 
-1. For Self, Workspace, Community, Library, Profile, Notifications, and
-   Settings, read the legacy route owner, `.web.tsx` behavior, and domain
-   package surfaces before designing a browser equivalent.
-2. Publish the canvas manifest for every domain: surfaces/zones, layout modes,
-   real task actions, contracts, loading/empty/denied/failure states, and
-   browser-specific gaps.
-3. Classify existing guest stores, demo interception, mock data, guest mutation
-   queues, and developer sandboxes as future adapters, legacy, or unsafe.
-4. Record the exact browser import boundary: no Expo, React Native, React
-   Native Web, PowerSync, native storage, or mobile lifecycle imports.
-4. Correct or mark superseded conflicts in old guest/onboarding documentation
-   as they are encountered; fifteen days is the current guest lease value.
+Build the shared workbench contract for browser and mobile: task descriptors,
+resource-aware task keys, focus/close/recent behavior, restoration, scoped
+temporal horizon, and safe local session storage. Integrate the real Sanctuary
+shell: primary navigation, account island, responsive rail/bottom tabs,
+available bounds, header focus, and compact landscape rules. Mount truthful
+domain Overview floors with their fixed orientation furniture and catalog
+entries; do not make Overview a task.
 
-**Exit:** every domain has an evidence-backed canvas/feature manifest and the
-first real browser slice is selected. No code claims a simulated discarded
-write was saved.
+**Done when:** a person can enter each primary domain, open and close a real
+task, switch domains, return, and recover their active task working set without
+restoring stale or unauthorized data.
 
-### P1 - Build real domain floors on the existing shared canvas model
+### 2. Self: personal workbench
 
-**Goal:** use the existing reusable canvas model without flattening every
-domain into one generic visual renderer.
+Build the complete Self floor: arrival and temporal horizon, pinned/organized
+feature furniture, catalog, active-task strip, and the first meaningful task
+set (Fire Journal, Daily Pulse, and Tomorrow Prep or another audited equivalent).
+Account behavior is real first: authorization, reads/writes, loading, denial,
+retry, and recovery. Then attach Explore-local to the *same* floor and task
+commands with seeded baseline data, reset, and explicit local-only disclosure.
 
-1. Reuse the core surface/layout resolver and rebuild only the browser-native
-   renderer behavior each domain actually needs; do not create a duplicate
-   universal CanvasFrame.
-2. Install the real Sanctuary shell as shared structure/plumbing around the
-   browser route family: navigation, header/account island, safe areas, focus,
-   and available canvas bounds.
-3. Define a small shared browser canvas-model boundary and domain-owned
-   renderer contracts: Workspace zone deck, Self navigator, Library shelves,
-   Community mode hub, and Profile settings groups.
-4. Keep the existing authorized-entry port account-only. Do not teach it to
-   treat a local/anonymous session as an authorized account.
+**Done when:** a person can organize and resume Self practices, work across
+several tasks, use time where a task permits it, and understand whether their
+work is local or durable.
 
-**Exit:** all primary domains can mount a truthful empty/loading/unavailable
-canvas on the shared frame; no shared shell code contains domain feature data.
+### 3. Workspace: operational classroom workbench
 
-### P2 - Build the first real account-backed domain slice
+Build role/capacity resolution, classroom/resource task instances, the
+Workspace-specific zone floor, and real account-backed classroom loops. Start
+with classroom selection plus the actual attendance, planner, and gradebook
+task paths from the audited sources. Keep each classroom/task independently
+recoverable. Explore may expose only explicitly safe seeded/local scenarios;
+institutional writes never pretend to be durable.
 
-**Goal:** prove the product contract before adding sandbox persistence.
+**Done when:** a teacher, learner, or guardian can orient to the right
+workspace, keep several classroom tasks in flight, complete supported work,
+and receive truthful authorization/failure outcomes.
 
-1. Implement the selected first domain behavior from its legacy sources on its
-   own domain floor with its real account/server contract.
-2. Include actual loading, empty, denied, unavailable, validation, and failure
-   behavior; do not substitute fixture-only behavior for the product path.
-3. Establish keyboard order, skip link, focus restoration, visible focus, and
-   reduced-motion behavior in the shared frame and slice.
+### 4. Library: discovery and reading workbench
 
-**Exit:** one real account-backed task is accepted on the shared frame. The
-shell owns no feature-specific data or toolbars.
+Build the Library floor from its real browse behavior: search, filters,
+shelves, continue/bookmark/collection furniture, resource detail, and focused
+reader tasks. Reader/resource instances become active tasks; their local
+reading position and permitted annotations recover honestly. Explore uses
+read-only/public baseline resources and local permitted annotation state;
+private collections and cloud-only tools remain visibly account-bound.
 
-### P3 - Add Explore as the second adapter to the accepted real slice
+**Done when:** someone can discover material, open multiple resources, return
+to their reading context, and distinguish private, local, and durable actions.
 
-**Goal:** prove reuse without inventing an Explore-only product.
+### 5. Community and account sanctuary
 
-1. Add a browser-safe Explore adapter with local persistence, baseline data,
-   reset, and explicit conversion export for the already accepted domain command
-   contract.
-2. Render the **same domain canvas and feature components** through the Explore
-   adapter; route files only acquire the session and compose shared UI.
-3. Prove no authentication, durable mutation, outbox, or sync request occurs
-   in Explore.
+Build Community as its real mode-hub floor—Feed, Circles, Messages, and
+Announcements—not as draggable cards. Complete Profile, Notifications, and
+Settings as the account island, including account/session, privacy, and
+preference behavior. Community Explore supports only the explicitly permitted
+sample/read/local-draft state; publishing, invitations, messages, and live
+presence remain account/server-governed. Finish conversion from Explore to an
+account only after the supported record manifest is tested.
 
-**Exit:** the same component and command contract work locally and durably,
-with real persistence, error states, and no divergent demo UI.
+**Done when:** all four primary domains and the account destinations are usable
+as one Sanctuary, and each action states its real persistence and participation
+boundary.
 
-### P4 - Establish the remaining domain canvases in experience order
+## After the five chunks
 
-**Goal:** make the Sanctuary broadly explorable while keeping task truth.
-
-1. **Library:** browse, collection/resource detail, and reader. Public/sample
-   materials may hydrate Explore; private collections and cloud delivery remain
-   durable-only until their policy is available.
-2. **Workspace:** begin with a safe individual planning/temporary workspace
-   canvas. Classroom selection, attendance, grades, and institutional writes
-   remain durable-account operations with explicit local representations only
-   where the manifest permits them.
-3. **Community:** begin with a read/sample community canvas plus local draft
-   composition. Posts, invitations, messaging, and live presence require a
-   durable participant identity and server policy.
-4. **Profile, Notifications, Settings:** use real account data where needed;
-   Explore shows session-appropriate local preferences and clearly marks
-   unavailable durable/account features.
-
-**Exit:** every primary tab has a differentiated canvas and truthful state.
-No feature masquerades as shared, sent, synced, or paid when it is only local.
-
-### P5 - Account conversion and durable parity
-
-**Goal:** let a person keep work without surprise or loss.
-
-1. Provide one non-blocking “Keep this work” path from meaningful moments.
-2. Authenticate, validate the conversion manifest, migrate supported local
-   records, preserve originals until the server outcome is confirmed, and show
-   a precise outcome for each record class.
-3. Swap session/data adapters only after identity and server authorization are
-   active; clear Explore copies only after confirmed migration policy permits it.
-4. Add durable-only loops in their own slices: sharing, invitations, classroom
-   writes, community publishing, notifications, provider connections, billing,
-   and paid compute.
-
-**Exit:** conversion is recoverable, observable, and never overwrites or leaks
-across accounts. Durable features retain their server authorization boundary.
-
-### P6 - Decide and, only if accepted, build Guest cloud
-
-**Goal:** offer optional continuity without polluting frictionless Explore.
-
-Before code, decide lease length/expiry, identity creation trigger, abuse and
-rate limits, cross-device semantics, migration scope, privacy notice, account
-upgrade behavior, and paid-capability policy. Reuse the accepted local-first
-lease principles only where the review confirms they apply.
-
-**Exit:** Guest cloud is either an explicitly specified, tested session type or
-remains intentionally absent. It is never silently activated.
-
-### P7 - Browser parity, cutover, and retirement
-
-**Goal:** complete the browser product safely.
-
-1. Migrate remaining behavior from legacy `.web.tsx` sources as independently
-   accepted slices, including their loading, empty, denied, retry, keyboard,
-   and responsive states.
-2. Run the documented navigation-variant usability review before freezing the
-   account-island arrangement.
-3. Port public marketing/legal/editorial routes and preserve redirects,
-   metadata, sitemap, consent, and support paths.
-4. Cut over hosts and retire legacy browser routes only after compatibility,
-   browser evidence, operational monitoring, and rollback behavior are accepted.
-
-**Exit:** `apps/gurudevi-web` is the canonical browser product; legacy RNW and
-marketing browser deployments can be retired in separate, reviewable work.
-
-## Build order rule
-
-The sequence is deliberately **spine -> shell -> one real dual-adapter task ->
-remaining domain canvases -> durable integrations**, not “all chrome first” and
-not “all auth first.” The shell can be built early because route structure and
-access plumbing are shared; a domain canvas is only considered built once it
-has real task state and an honest data adapter.
+Guest-cloud remains a separately approved session type. Browser host cutover,
+legacy retirement, public marketing parity, and advanced/internal tooling occur
+only after the five product chunks have browser evidence and rollback plans.
 
 ## Verification gates
 
@@ -227,12 +161,10 @@ the required evidence and redirect policy.
 
 ## Immediate next implementation milestone
 
-The factual port map is complete at
-[2026-09-14-gurudevi-domain-canvas-port-map.md](2026-09-14-gurudevi-domain-canvas-port-map.md).
-The next slice is the **Self overview floor**, starting with one account-backed
-reflection feature. It must use a single Self preference authority and preserve
-Self's `today`, `private`, and `shared` semantics. Explore becomes a local
-adapter only after that task is real in the account path.
+Start **Chunk 1: Sanctuary workbench spine**, then move directly into **Chunk
+2: Self**. The existing Fire Journal account slice is evidence for one task
+command, not a completed Self workbench. It must be integrated under the shared
+task/restoration/temporal contract rather than extended as a parallel route.
 
 ## Delegation policy
 

@@ -86,6 +86,7 @@ export default defineConfig({
       'src/__tests__/Input.test.tsx',
       'src/__tests__/FormField.test.tsx',
       'src/__tests__/Dialog.test.tsx',
+      'src/__tests__/FeatureStateBoundary.test.tsx',
     ],
     exclude: ['src/archive/**', 'dist/**'],
     fsModuleCache: true,

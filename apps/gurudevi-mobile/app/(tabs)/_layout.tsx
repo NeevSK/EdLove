@@ -285,6 +285,16 @@ function TabsLayoutContent() {
   const headerStyle = useActiveSubTabsStore((s) => s.preferences.headerStyle);
   const autoHideChromeOnScroll = useActiveSubTabsStore((s) => s.preferences.autoHideChromeOnScroll);
   const isChromeVisible = useActiveSubTabsStore((s) => s.isChromeVisible);
+  const returnToDomainOverview = useCallback(() => {
+    const overviewRoute: Record<typeof currentDomain, '/workspace' | '/self' | '/library' | '/community' | '/profile'> = {
+      workspace: '/workspace',
+      self: '/self',
+      library: '/library',
+      community: '/community',
+      profile: '/profile',
+    };
+    router.replace(overviewRoute[currentDomain]);
+  }, [currentDomain]);
 
   const globalHeaderRightAction = (
     <Box
@@ -404,6 +414,7 @@ function TabsLayoutContent() {
                     <ActiveSubTabStrip
                       domain={currentDomain}
                       onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                      onReturnToOverview={returnToDomainOverview}
                     />
                   )}
                 </Box>
@@ -443,6 +454,7 @@ function TabsLayoutContent() {
                     <ActiveSubTabStrip
                       domain={currentDomain}
                       onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                      onReturnToOverview={returnToDomainOverview}
                     />
                   )}
                 </Box>
@@ -470,6 +482,7 @@ function TabsLayoutContent() {
                     <ActiveSubTabStrip
                       domain={currentDomain}
                       onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                      onReturnToOverview={returnToDomainOverview}
                     />
                   )}
                 </Box>
@@ -510,6 +523,7 @@ function TabsLayoutContent() {
                     <ActiveSubTabStrip
                       domain={currentDomain}
                       onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                      onReturnToOverview={returnToDomainOverview}
                     />
                   )}
                 </Box>
@@ -537,6 +551,7 @@ function TabsLayoutContent() {
                   <ActiveSubTabStrip
                     domain={currentDomain}
                     onAddTabPress={() => setCatalogSheetTab(currentDomain)}
+                    onReturnToOverview={returnToDomainOverview}
                   />
                 )}
               </Box>

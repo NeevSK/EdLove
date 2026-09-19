@@ -35,6 +35,7 @@ export type {
   AccountLifecycleResult,
 } from '@repo/core/logic/accountLifecycle';
 export * from '@repo/core/logic/apiInterceptor';
+export * from '@repo/core/logic/capabilityDecision';
 export {
   getAuthRouteDecision,
   getAuthRouteTarget,

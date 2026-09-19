@@ -13,9 +13,9 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -205,9 +205,9 @@ export default function OCRScanner({
         <Text style={{ color: colors.accent, fontSize: 20, fontWeight: 'bold' }}>
           {t('ocr.title')}
         </Text>
-        <TouchableOpacity onPress={onCancel}>
+        <Pressable onPress={onCancel}>
           <Text style={{ color: colors.textSecondary, fontSize: 24 }}>✕</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Content */}
@@ -218,7 +218,7 @@ export default function OCRScanner({
               {t('ocr.captureDescription')}
             </Text>
 
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 void handleCaptureImage();
               }}
@@ -232,9 +232,9 @@ export default function OCRScanner({
               <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
                 📷 {t('ocr.takePhoto')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 void handlePickImage();
               }}
@@ -247,7 +247,7 @@ export default function OCRScanner({
               }}
             >
               <Text style={{ color: colors.text, fontSize: 16 }}>{t('ocr.chooseFromGallery')}</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             <View
               style={{
@@ -386,7 +386,7 @@ export default function OCRScanner({
             )}
 
             <View style={{ flexDirection: 'row', gap: 12 }}>
-              <TouchableOpacity
+              <Pressable
                 onPress={handleRetry}
                 style={{
                   flex: 1,
@@ -398,8 +398,8 @@ export default function OCRScanner({
                 }}
               >
                 <Text style={{ color: colors.text }}>{t('ocr.tryAgain')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 onPress={handleConfirm}
                 style={{
                   flex: 1,
@@ -412,7 +412,7 @@ export default function OCRScanner({
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>
                   Confirm ({parsedStudents.length})
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         )}

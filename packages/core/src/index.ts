@@ -11,6 +11,24 @@ export { isDemo } from '@repo/core/api/demo';
 export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 export * from '@repo/core/efficiency';
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
+export {
+  createPersistenceIdentity,
+  derivePersistenceKey,
+  derivePersistenceNamespace,
+  PERSISTENCE_NAMESPACE_VERSION,
+  requestGuestToAccountMigration,
+  resolvePersistenceWriteDecision,
+} from '@repo/core/lib/persistenceBoundary';
+export type {
+  ExplicitGuestToAccountMigration,
+  PersistenceExperience,
+  PersistenceIdentity,
+  PersistenceIdentityInput,
+  PersistencePrincipal,
+  PersistenceWriteDecision,
+  PersistenceWriteTarget,
+  ProductionWriteBlockReason,
+} from '@repo/core/lib/persistenceBoundary';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -91,6 +109,7 @@ export {
 export { default as i18n } from '@repo/core/logic/i18n/config';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
 export { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+export * from '@repo/core/logic/capabilityDecision';
 export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';

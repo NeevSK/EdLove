@@ -2,7 +2,9 @@
  * Persistence Types for Offline Synchronization
  */
 
-export type MutationType = 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM' | 'PATCH';
+import type { MutationType } from '@repo/core/logic/ports/database.port';
+
+export type { MutationType };
 
 export interface QueuedMutation {
   id: string;
@@ -22,7 +24,6 @@ export interface QueuedMutation {
   logicalClock?: number; // Monotonically incrementing vector/logical sequence for clock-skew immunity
   lockLeaseExpiresAt?: number; // Epoch ms lease lock to recover from abrupt OS process suspension
 }
-
 
 export type QueuedMutationDispatchResult = false | 'dispatched';
 

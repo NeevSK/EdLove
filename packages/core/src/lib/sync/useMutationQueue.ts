@@ -18,10 +18,20 @@ export const useMutationQueue = create<MutationQueueState>()(
           mutation.scope,
           mutation.name,
           mutation.variables,
+          mutation.userId,
         );
+        const legacyIdempotencyKey = mutation.userId
+          ? await generateIdempotencyKey(mutation.scope, mutation.name, mutation.variables)
+          : idempotencyKey;
 
-        // Dedup: If mutation with same idempotency key is already in queue, skip
-        const isDuplicate = get().queue.some((m) => m.idempotencyKey === idempotencyKey);
+        // Keep legacy unscoped de-duplication; scoped intents cannot collide across accounts.
+        const isDuplicate = get().queue.some((queued) => {
+          if (queued.userId !== mutation.userId) return false;
+          return (
+            queued.idempotencyKey === idempotencyKey ||
+            queued.idempotencyKey === legacyIdempotencyKey
+          );
+        });
         if (isDuplicate) {
           if (__DEV__) {
             console.log(`[MutationQueue] Skipping duplicate intent: ${mutation.name}`);
@@ -30,7 +40,10 @@ export const useMutationQueue = create<MutationQueueState>()(
         }
 
         const queue = get().queue;
-        const highestLogicalClock = queue.reduce((max, item) => Math.max(max, item.logicalClock ?? 0), 0);
+        const highestLogicalClock = queue.reduce(
+          (max, item) => Math.max(max, item.logicalClock ?? 0),
+          0,
+        );
 
         const newMutation: QueuedMutation = {
           ...mutation,

@@ -2,7 +2,7 @@ import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse } from '@repo/ui';
 import { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View, Pressable } from '@repo/ui/primitives';
 
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import { EntryShell } from '@/entry/EntryShell';
@@ -42,7 +42,7 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
           <Text style={{ color: '#D8C8B8', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
             {error.message}
           </Text>
-          <TouchableOpacity
+          <Pressable
             accessibilityRole="button"
             accessibilityLabel="Retry starting Gurudevi"
             onPress={onRetry}
@@ -55,7 +55,7 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
             }}
           >
             <Text style={{ color: '#20140E', fontWeight: '700' }}>Try again</Text>
-          </TouchableOpacity>
+          </Pressable>
         </>
       ) : null}
     </View>

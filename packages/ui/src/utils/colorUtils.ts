@@ -12,7 +12,7 @@
  */
 
 /** Parse hex (#RGB / #RRGGBB / #RGBA / #RRGGBBAA) \u2192 [r, g, b] in 0-255 */
-export function hexToRgb(hex: string): [number, number, number] {
+function hexToRgb(hex: string): [number, number, number] {
   if (!hex || typeof hex !== 'string') {
     throw new Error(
       `colorUtils.hexToRgb: expected a hex string, got ${typeof hex} (${String(hex)})`,
@@ -114,7 +114,7 @@ export function hexToRgbComponents(hex: string): string {
  * WCAG relative luminance (0 = black, 1 = white).
  * https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
  */
-export function getRelativeLuminance(hex: string): number {
+function getRelativeLuminance(hex: string): number {
   const [r, g, b] = hexToRgb(colorToHex(hex)).map((c) => {
     const s = c / 255;
     return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;

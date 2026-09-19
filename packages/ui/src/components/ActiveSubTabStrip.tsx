@@ -1,4 +1,8 @@
-import { useActiveSubTabsStore, type ActiveSubTabItem } from '@repo/core/store/useActiveSubTabsStore';
+import {
+  type ActiveSubTabDomain,
+  type ActiveSubTabItem,
+  useActiveSubTabsStore,
+} from '@repo/core/store/useActiveSubTabsStore';
 import { Plus, X } from '@repo/ui/icons';
 import { Box, Pressable, ScrollView, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
@@ -7,8 +11,10 @@ import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 
 export interface ActiveSubTabStripProps {
-  domain: 'workspace' | 'self' | 'classroom' | 'library' | 'community' | 'profile';
+  domain: ActiveSubTabDomain;
   onAddTabPress?: () => void;
+  /** The owning domain route decides where its overview floor lives. */
+  onReturnToOverview?: () => void;
 }
 
 /**
@@ -21,6 +27,7 @@ export interface ActiveSubTabStripProps {
 export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
   domain,
   onAddTabPress,
+  onReturnToOverview,
 }) => {
   const router = useRouter();
   const tabs = useActiveSubTabsStore((s) => s.tabsByDomain[domain] || []);
@@ -52,18 +59,18 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
         (e as { stopPropagation: () => void }).stopPropagation();
       }
       hapticLight();
-      closeTab(domain, tabId);
-
-      const remaining = tabs.filter((t) => t.id !== tabId);
-      if (remaining.length > 0 && activeTabId === tabId) {
-        const next = remaining[remaining.length - 1]!;
+      const result = closeTab(domain, tabId);
+      if (result.kind === 'overview') {
+        onReturnToOverview?.();
+      } else if (result.kind === 'focused-task' && activeTabId === tabId) {
+        const next = result.nextTask;
         router.push({
           pathname: next.route,
           params: next.params,
         } as Parameters<typeof router.push>[0]);
       }
     },
-    [activeTabId, closeTab, domain, router, tabs],
+    [activeTabId, closeTab, domain, onReturnToOverview, router],
   );
 
   if (!showActiveSubTabs || (tabs.length === 0 && !onAddTabPress)) {
@@ -125,9 +132,7 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
                 style={{
                   fontSize: tokens.typography.sizes.xs,
                   fontWeight: isActive ? '700' : '500',
-                  color: isActive
-                    ? tokens.semantic.text.primary
-                    : tokens.semantic.text.secondary,
+                  color: isActive ? tokens.semantic.text.primary : tokens.semantic.text.secondary,
                 }}
                 numberOfLines={1}
               >
@@ -146,18 +151,12 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
                   borderRadius: 9,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: isActive
-                    ? tokens.semantic.surface.interactive
-                    : 'transparent',
+                  backgroundColor: isActive ? tokens.semantic.surface.interactive : 'transparent',
                 }}
               >
                 <X
                   size={11}
-                  color={
-                    isActive
-                      ? tokens.semantic.text.primary
-                      : tokens.semantic.text.muted
-                  }
+                  color={isActive ? tokens.semantic.text.primary : tokens.semantic.text.muted}
                 />
               </Pressable>
             </Pressable>

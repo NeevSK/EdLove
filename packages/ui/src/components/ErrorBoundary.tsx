@@ -1,7 +1,7 @@
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { tokens } from '@repo/ui/tokens';
 import { Component, type ErrorInfo, type ReactNode, useCallback, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View, Pressable } from '@repo/ui/primitives';
 
 interface Props {
   children: ReactNode;
@@ -130,26 +130,25 @@ function ErrorCard({
         {/* Actions Suite */}
         <View style={styles.actionsRow}>
           {onReset && (
-            <TouchableOpacity
+            <Pressable
               accessibilityRole="button"
               accessibilityLabel="Restore view"
               onPress={onReset}
-              activeOpacity={0.8}
               style={[styles.primaryButton, { backgroundColor: accent.action }]}
+              className="active:opacity-80"
             >
               <Text style={[styles.primaryButtonText, { color: textOnAccent }]}>
                 Restore Sanctuary
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
 
-          <TouchableOpacity
+          <Pressable
             accessibilityRole="button"
             accessibilityLabel="Copy error details"
             onPress={() => {
               void handleCopy();
             }}
-            activeOpacity={0.7}
             style={[
               styles.secondaryButton,
               {
@@ -158,6 +157,7 @@ function ErrorCard({
               },
               copied && styles.copiedButton,
             ]}
+            className="active:opacity-70"
           >
             <Text
               style={[
@@ -168,21 +168,21 @@ function ErrorCard({
             >
               {copied ? 'Copied to Clipboard ✓' : 'Copy Error Details'}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Collapsible Technical Inspector */}
-        <TouchableOpacity
+        <Pressable
           accessibilityRole="button"
           accessibilityLabel={showDetails ? 'Hide technical details' : 'Show technical details'}
           onPress={() => setShowDetails((prev) => !prev)}
-          activeOpacity={0.6}
           style={styles.detailsToggle}
+          className="active:opacity-60"
         >
           <Text style={[styles.detailsToggleText, { color: accent.action }]}>
             {showDetails ? '▴ Hide Technical Diagnostics' : '▾ View Technical Diagnostics'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {showDetails && (
           <View

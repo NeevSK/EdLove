@@ -1,7 +1,7 @@
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { BrandPulse } from '@repo/ui';
 import React from 'react';
-import { Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 
 /**
  * AppVersionGateOverlay
@@ -44,13 +44,13 @@ export function AppVersionGateOverlay() {
               <Text style={styles.notesText}>{releaseNotes}</Text>
             </View>
           ) : null}
-          <TouchableOpacity
+          <Pressable
             style={styles.primaryButton}
             onPress={handleOpenStore}
-            activeOpacity={0.85}
+            className="active:opacity-85"
           >
             <Text style={styles.primaryButtonText}>Update Gurudevi</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </Modal>
     );
@@ -67,12 +67,12 @@ export function AppVersionGateOverlay() {
           </Text>
         </View>
         <View style={styles.softNudgeActions}>
-          <TouchableOpacity onPress={handleOpenStore} style={styles.updateActionBtn}>
+          <Pressable onPress={handleOpenStore} style={styles.updateActionBtn}>
             <Text style={styles.updateActionText}>Update</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={dismissSoftNudge} style={styles.dismissActionBtn}>
+          </Pressable>
+          <Pressable onPress={dismissSoftNudge} style={styles.dismissActionBtn}>
             <Text style={styles.dismissActionText}>Later</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );

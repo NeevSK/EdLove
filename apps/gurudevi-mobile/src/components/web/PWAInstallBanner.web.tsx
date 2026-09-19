@@ -28,7 +28,7 @@ export function PWAInstallBanner() {
   const theme = useTheme();
 
   const handleInstall = () => {
-    void (async () => {
+    (async () => {
       try {
         await promptInstall();
       } catch {
@@ -37,9 +37,15 @@ export function PWAInstallBanner() {
     })();
   };
 
-  if (isInstalled) return null;
-  if (isDismissed) return null;
-  if (!canInstall && !isIOS) return null;
+  if (isInstalled) {
+    return null;
+  }
+  if (isDismissed) {
+    return null;
+  }
+  if (!canInstall && !isIOS) {
+    return null;
+  }
 
   return (
     <AnimatedView

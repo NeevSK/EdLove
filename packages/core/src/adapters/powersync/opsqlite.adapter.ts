@@ -1,7 +1,6 @@
 import { DrizzleAppSchema } from '@powersync/drizzle-driver';
 import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
-import type { IDatabasePort } from '@repo/core/logic/ports/database.port';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
@@ -112,7 +111,7 @@ async function getOrCreateEncryptionKey(accountId: string): Promise<string> {
   }
 }
 
-export class OPSQLiteAdapter implements IDatabasePort {
+export class OPSQLiteAdapter {
   constructor(private readonly accountId: string) {}
 
   async createDatabaseFactory(accountId: string = this.accountId) {

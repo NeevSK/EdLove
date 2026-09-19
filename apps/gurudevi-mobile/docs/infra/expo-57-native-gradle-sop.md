@@ -150,7 +150,7 @@ These packages are pinned to versions **newer than Expo SDK 57 recommends**:
 | `react-native-worklets` | 0.11.1 | N/A | Required by reanimated 4.x |
 | `react-native-mmkv` | 4.3.2 | 2.x | Nitro modules (v4) |
 | `react-native-nitro-modules` | 0.36.1 | N/A | Required by mmkv 4.x |
-| `@shopify/react-native-skia` | 2.6.5 | 1.x | New architecture |
+| `@shopify/react-native-skia` | 2.11.2 | 1.x | New architecture |
 | `typescript` | 7.0.2 | 5.x | Latest stable |
 | `@react-native-vector-icons/lucide` | 13.1.2 | varies | Custom icon set |
 | `react-native-screens` | 4.25.2 | varies | Latest stable |

@@ -1,0 +1,179 @@
+.floor {
+  min-height: 100%;
+  padding: clamp(1.25rem, 5vw, 5rem);
+  background:
+    radial-gradient(
+      circle at 86% 5%,
+      color-mix(in srgb, var(--lotus) 10%, transparent),
+      transparent 28rem
+    ),
+    var(--paper);
+}
+
+.arrival {
+  max-width: 54rem;
+  padding: clamp(1.5rem, 4vw, 3.5rem) 0 clamp(1.5rem, 5vw, 4rem);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--lotus);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.arrival h1 {
+  margin: 0.65rem 0 0.8rem;
+  font-family: Georgia, serif;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.arrival p:last-child {
+  max-width: 39rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.65;
+}
+
+.directory {
+  display: grid;
+  gap: 1rem;
+  max-width: 54rem;
+}
+
+.searchLabel {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.search {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light) 72%, transparent);
+  color: var(--ink);
+  font: inherit;
+}
+
+.search:focus-visible {
+  outline: 3px solid var(--lotus);
+  outline-offset: 2px;
+}
+
+.groupList {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.group,
+.state {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem 1rem;
+  padding: clamp(1.1rem, 3vw, 1.65rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper-light) 72%, transparent);
+}
+
+.state {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.group p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.groupMark {
+  display: grid;
+  width: 3rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lotus) 10%, transparent);
+  color: var(--lotus);
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+}
+
+.groupCopy h2 {
+  margin: 0 0 0.35rem;
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.groupCopy p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.group .meta {
+  white-space: nowrap;
+}
+
+.state h2 {
+  margin: 0 0 0.5rem;
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.state p {
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  margin-top: 0.6rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.action:focus-visible {
+  outline: 3px solid var(--lotus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 40rem) {
+  .group {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .group .meta {
+    grid-column: 2;
+    margin-top: -0.55rem;
+  }
+}

@@ -18,13 +18,23 @@ export function MarketingHeader() {
         <Link className="font-serif text-xl font-bold tracking-[-0.04em] no-underline" href="/">
           Gurudevi
         </Link>
-        <nav aria-label="Primary navigation" className="flex items-center gap-1 font-sans text-sm font-semibold">
+        <nav
+          aria-label="Primary navigation"
+          className="flex items-center gap-1 font-sans text-sm font-semibold"
+        >
           {navigation.map((item) => (
-            <Link className="rounded-full px-3 py-2 no-underline hover:bg-paper-light focus:outline-3 focus:outline-offset-2 focus:outline-water" href={item.href} key={item.href}>
+            <Link
+              className="rounded-full px-3 py-2 no-underline hover:bg-paper-light focus:outline-3 focus:outline-offset-2 focus:outline-water"
+              href={item.href}
+              key={item.href}
+            >
               {item.label}
             </Link>
           ))}
-          <Link className="ml-1 rounded-full border border-ink px-3 py-2 no-underline hover:bg-ink hover:text-paper focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/explore/self">
+          <Link
+            className="ml-1 rounded-full border border-ink px-3 py-2 no-underline hover:bg-ink hover:text-paper focus:outline-3 focus:outline-offset-2 focus:outline-water"
+            href="/sign-in?returnTo=%2Fself"
+          >
             Enter sanctuary
           </Link>
         </nav>

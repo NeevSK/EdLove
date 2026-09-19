@@ -74,8 +74,8 @@ export default async function ProfilePage() {
             <dd>{entry.displayName}</dd>
           </div>
           <div>
-            <dt>Active capacity</dt>
-            <dd>{entry.activeCapacity}</dd>
+            <dt>Selected sanctuary role</dt>
+            <dd>{entry.primaryScopeRole}</dd>
           </div>
         </dl>
       </section>
@@ -87,13 +87,13 @@ export default async function ProfilePage() {
 }
 
 function onboardingDetail(
-  reason: 'missing-display-name' | 'missing-active-capacity' | 'onboarding-incomplete',
+  reason: 'missing-display-name' | 'missing-active-scope' | 'onboarding-incomplete',
 ) {
   if (reason === 'missing-display-name') {
     return 'Your account needs a display name before your profile identity can be shown.';
   }
-  if (reason === 'missing-active-capacity') {
-    return 'Your account needs an active Gurudevi capacity before your profile identity can be shown.';
+  if (reason === 'missing-active-scope') {
+    return 'Choose your Personal Sanctuary role before your profile identity can be shown.';
   }
   return 'Your verified account has not completed Gurudevi enrollment yet.';
 }

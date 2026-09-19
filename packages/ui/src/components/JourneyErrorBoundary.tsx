@@ -1,6 +1,6 @@
 import { hapticError } from '@repo/ui/utils/haptics';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { Platform, Text as RNText, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, Text as RNText, StyleSheet, View, Pressable } from '@repo/ui/primitives';
 
 let Sentry: {
   setTag?: (k: string, v: string) => void;
@@ -100,14 +100,14 @@ export class JourneyErrorBoundary extends Component<
             {__DEV__ && this.state.error && (
               <RNText style={styles.debug}>{this.state.error.toString()}</RNText>
             )}
-            <TouchableOpacity
+            <Pressable
               accessibilityRole="button"
               style={styles.button}
               onPress={this.handleReset}
-              activeOpacity={0.7}
+              className="active:opacity-70"
             >
               <RNText style={styles.buttonText}>{fallback.action}</RNText>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       );

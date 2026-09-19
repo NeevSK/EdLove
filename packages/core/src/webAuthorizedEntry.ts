@@ -10,11 +10,19 @@ export type AuthorizedEntryResult =
       kind: 'ready';
       authSubjectId: string;
       displayName: string;
+      /** Compatibility label derived from the server-selected scope, never a profile fallback. */
       activeCapacity: string;
+      primaryScopeRole: string;
+      activeScope: Readonly<{
+        bondId: string;
+        entityId: string;
+        entityType: string;
+        roles: readonly string[];
+      }>;
     }>
   | Readonly<{
       kind: 'onboarding-required';
-      reason: 'missing-display-name' | 'missing-active-capacity' | 'onboarding-incomplete';
+      reason: 'missing-display-name' | 'missing-active-scope' | 'onboarding-incomplete';
     }>
   | Readonly<{ kind: 'inactive'; message: string }>
   | Readonly<{
@@ -30,7 +38,15 @@ export type AuthoritativeAuthorizedEntryFacts =
       authSubjectId: string;
       displayName: string | null;
       onboardingCompleted: boolean;
+      /** Compatibility label derived from the selected scope by the server adapter. */
       activeCapacity: string | null;
+      primaryScopeRole: string | null;
+      activeScope: Readonly<{
+        bondId: string;
+        entityId: string;
+        entityType: string;
+        roles: readonly string[];
+      }> | null;
     }>
   | Readonly<{ kind: 'inactive'; message: string }>
   | Readonly<{ kind: 'unavailable'; message: string }>;
@@ -74,8 +90,13 @@ export function mapAuthorizedEntry(
   if (!facts.onboardingCompleted) {
     return { kind: 'onboarding-required', reason: 'onboarding-incomplete' };
   }
-  if (!present(facts.activeCapacity)) {
-    return { kind: 'onboarding-required', reason: 'missing-active-capacity' };
+  if (
+    !present(facts.activeCapacity) ||
+    !present(facts.primaryScopeRole) ||
+    !facts.activeScope ||
+    facts.activeScope.roles.length === 0
+  ) {
+    return { kind: 'onboarding-required', reason: 'missing-active-scope' };
   }
 
   return {
@@ -83,5 +104,7 @@ export function mapAuthorizedEntry(
     authSubjectId: facts.authSubjectId,
     displayName: facts.displayName,
     activeCapacity: facts.activeCapacity,
+    primaryScopeRole: facts.primaryScopeRole,
+    activeScope: facts.activeScope,
   };
 }

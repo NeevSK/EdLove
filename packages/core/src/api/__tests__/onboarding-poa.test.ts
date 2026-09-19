@@ -53,6 +53,6 @@ describe('onboarding POA coverage', () => {
     expect(route.method).toBe('post');
     expect(route.path).toBe('/identity/complete-onboarding');
     expect(route.responses[200]).toBeDefined();
-    expect(route.request).toBeUndefined();
+    expect('request' in route).toBe(false);
   });
 });

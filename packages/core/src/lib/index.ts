@@ -10,6 +10,7 @@ export * from '@repo/core/lib/inviteCodes';
 export * from '@repo/core/lib/mediaUtils';
 export * from '@repo/core/lib/pendingGateAction';
 export * from '@repo/core/lib/permissions';
+export * from '@repo/core/lib/persistenceBoundary';
 export * from '@repo/core/lib/storage';
 export * from '@repo/core/lib/storageWrapper';
 export * from '@repo/core/lib/supabaseAuthStorage';

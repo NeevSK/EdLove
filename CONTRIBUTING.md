@@ -59,7 +59,7 @@ Also required on changed files before merge: `pnpm run check:anti-slop`
 Sacred versions are pinned (`AGENTS.md` table: `react-native-gesture-handler 3.0.2`,
 `react-native-reanimated 4.5.0`, `react-native-worklets 0.11.1`,
 `react-native-mmkv 4.3.2`, `react-native-nitro-modules 0.36.1`,
-`@shopify/react-native-skia 2.6.5`, `typescript 7.0.2`) — don't bump without approval.
+`@shopify/react-native-skia 2.11.2`, `typescript 7.0.2`) — don't bump without approval.
 
 ## Secrets
 

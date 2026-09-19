@@ -14,6 +14,22 @@ export interface AccessibleFeature extends SelfFeatureDefinition {
   isGeneral: boolean;
 }
 
+export type FeatureAccessDenial = 'capability' | 'citizenship';
+
+export function getFeatureAccessStatus(
+  feature: SelfFeatureDefinition,
+  context: UserAccessContext,
+  capabilities = new Set(context.capabilities),
+): { allowed: true } | { allowed: false; reason: FeatureAccessDenial } {
+  if (!feature.requiredCapabilities.every((capability) => capabilities.has(capability))) {
+    return { allowed: false, reason: 'capability' };
+  }
+  if (feature.minCitizenship !== undefined && context.citizenshipLevel > feature.minCitizenship) {
+    return { allowed: false, reason: 'citizenship' };
+  }
+  return { allowed: true };
+}
+
 interface Policy {
   isAllowed(feature: SelfFeatureDefinition, ctx: UserAccessContext, caps: Set<string>): boolean;
 }

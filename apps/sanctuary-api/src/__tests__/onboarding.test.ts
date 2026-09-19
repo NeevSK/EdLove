@@ -89,14 +89,13 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       expect(body.success).toBe(true);
     });
 
-    it('should return 200 and create default sanctuary when bonds are empty', async () => {
+    it('rejects completion when there is no explicit selected active scope', async () => {
       setMockUserData({ ...defaultMockUser, capacity: 'teacher' });
       setMockActiveBond(null);
 
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(
-        {},
-      );
-      expect(body.success).toBe(true);
+      await expect(
+        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({}),
+      ).rejects.toMatchObject({ status: 400 });
     });
 
     it('should return 400 when user has no capacity and no bonds', async () => {
@@ -109,7 +108,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     });
 
     it('does not accept a caller-selected identity in the completion contract', () => {
-      expect(onboardingORPCContract.completeOnboarding.request).toBeUndefined();
+      expect('request' in onboardingORPCContract.completeOnboarding).toBe(false);
     });
   });
 });

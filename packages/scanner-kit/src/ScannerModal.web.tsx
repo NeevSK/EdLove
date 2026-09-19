@@ -17,7 +17,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
 
 interface ScannerModalProps {
   visible: boolean;
@@ -69,13 +69,13 @@ export default function ScannerModal({
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.titleText}>{modalTitle}</Text>
-              <TouchableOpacity
+              <Pressable
                 onPress={onClose}
                 style={styles.closeButton}
                 accessibilityLabel={t('scanner.web.closeScanner')}
               >
                 <Text style={styles.closeText}>\u2715</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
 
             {/* Icon + message */}
@@ -112,13 +112,13 @@ export default function ScannerModal({
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             {/* Submit */}
-            <TouchableOpacity
+            <Pressable
               style={[styles.submitButton, { backgroundColor: accentColor }]}
               onPress={handleSubmit}
-              activeOpacity={0.85}
+              className="active:opacity-85"
             >
               <Text style={styles.submitText}>{t('scanner.web.submitCode')}</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </View>

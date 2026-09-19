@@ -1,0 +1,171 @@
+.taskStrip {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.overview,
+.taskButton,
+.addTask,
+.closeTask,
+.horizonAction {
+  font: inherit;
+}
+
+.overview,
+.taskButton,
+.addTask {
+  display: inline-flex;
+  min-height: 2.35rem;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.overview,
+.addTask {
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  font-weight: 650;
+}
+
+.overview[data-active="true"],
+.taskButton[data-active="true"] {
+  border-color: color-mix(in srgb, var(--lotus) 45%, var(--line));
+  background: color-mix(in srgb, var(--lotus) 9%, var(--paper));
+  color: var(--ink);
+}
+
+.taskItem {
+  display: inline-flex;
+  flex: 0 0 auto;
+  max-width: min(19rem, 70vw);
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+}
+
+.taskItem[data-active="true"] {
+  border-color: color-mix(in srgb, var(--lotus) 45%, var(--line));
+  background: color-mix(in srgb, var(--lotus) 9%, var(--paper));
+}
+
+.taskButton {
+  max-width: min(19rem, 70vw);
+  padding: 0 0 0 0.8rem;
+  border: 0;
+  background: transparent;
+}
+
+.taskLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.taskIcon {
+  color: var(--lotus);
+}
+
+.closeTask {
+  display: inline-grid;
+  width: 2.25rem;
+  min-height: 2.25rem;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.closeTask:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.horizon {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem 1rem;
+  padding: 0.1rem 0 0.45rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.horizonCopy {
+  min-width: 0;
+}
+.horizonDate {
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.horizonOrientation {
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+}
+
+.horizonActions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.25rem;
+}
+.horizonAction {
+  min-height: 2.2rem;
+  padding: 0 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.horizonAction:hover {
+  border-color: var(--line);
+  background: var(--paper-light);
+  color: var(--ink);
+}
+.horizonAction:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.taskStrip button:focus-visible,
+.horizon button:focus-visible {
+  outline: 3px solid var(--gd-border-focus);
+  outline-offset: 2px;
+}
+
+@media (orientation: landscape) and (max-height: 34rem) {
+  .taskStrip {
+    padding: 0;
+  }
+  .overview,
+  .taskButton,
+  .addTask {
+    min-height: 2rem;
+  }
+  .horizon {
+    padding-bottom: 0.25rem;
+  }
+  .horizonOrientation {
+    display: none;
+  }
+  .horizonAction[data-calendar="true"] {
+    display: none;
+  }
+}

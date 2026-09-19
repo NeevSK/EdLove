@@ -48,19 +48,19 @@ export default async function SanctuaryPage() {
 
   return (
     <SanctuaryState
-      detail={`Welcome, ${entry.displayName}. Your verified ${entry.activeCapacity} capacity is ready for the next sanctuary workspace slice.`}
+      detail={`Welcome, ${entry.displayName}. Your verified ${entry.primaryScopeRole} role in the selected sanctuary scope is ready for the next workspace slice.`}
       title="Your sanctuary entry is confirmed"
     />
   );
 }
 
 function onboardingDetail(
-  reason: 'missing-display-name' | 'missing-active-capacity' | 'onboarding-incomplete',
+  reason: 'missing-display-name' | 'missing-active-scope' | 'onboarding-incomplete',
 ) {
   if (reason === 'missing-display-name')
     return 'Your account needs a display name before a sanctuary workspace can open.';
-  if (reason === 'missing-active-capacity')
-    return 'Your account needs an active Gurudevi capacity before a sanctuary workspace can open.';
+  if (reason === 'missing-active-scope')
+    return 'Choose your Personal Sanctuary role before a sanctuary workspace can open.';
   return 'Your verified account has not completed Gurudevi enrollment yet.';
 }
 

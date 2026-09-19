@@ -37,7 +37,7 @@ import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, TextInput, TouchableOpacity } from 'react-native';
+import { Linking, Platform, TextInput } from 'react-native';
 
 interface SettingsNavigation {
   navigate: (route: string, params?: Record<string, unknown>) => void;
@@ -1116,14 +1116,14 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
                   }}
                   className="flex-1 text-phase-primary text-sm h-full"
                 />
-                <TouchableOpacity
+                <Pressable
                   accessibilityRole="button"
                   onPress={() => setShowAiKey(!showAiKey)}
                 >
                   <Box className="text-phase-secondary">
                     {showAiKey ? <EyeOff size={20} /> : <Eye size={20} />}
                   </Box>
-                </TouchableOpacity>
+                </Pressable>
               </HStack>
               <Text className="text-xs text-phase-secondary leading-relaxed">
                 {t(

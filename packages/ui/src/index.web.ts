@@ -31,6 +31,8 @@ export type { CollapseProps } from './components/Collapse';
 export { Collapse } from './components/Collapse';
 export type { ErrorStateProps } from './components/ErrorState';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
+export type { FeatureStateBoundaryProps } from './components/FeatureStateBoundary';
+export { FeatureStateBoundary } from './components/FeatureStateBoundary';
 export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScene';
 export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FocusRingProps } from './components/FocusRing';

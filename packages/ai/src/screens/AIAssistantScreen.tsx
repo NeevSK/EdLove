@@ -6,14 +6,14 @@ import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { ChatProvider, useChatScrollToIndex } from '@repo/ui/context/ChatContext';
 import { ChevronLeft, Sparkles } from '@repo/ui/icons';
-import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Pressable, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import Animated, {
   FadeInUp,
   Layout,
@@ -69,13 +69,13 @@ export default function AIAssistantScreen() {
           <AIThinkingAnchor isThinking={isThinking} messages={messages} />
           {/* Header */}
           <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
-            <TouchableOpacity
+            <Pressable
               accessibilityRole="button"
               onPress={() => safeBack('/self')}
               style={[styles.backButton, { backgroundColor: glass.surface.bg }]}
             >
               <ChevronLeft color={text.primary} size={24} />
-            </TouchableOpacity>
+            </Pressable>
             <VStack style={{ flex: 1 }}>
               <HStack className="justify-between items-center w-full">
                 <HStack className="gap-xs items-center">
@@ -87,7 +87,7 @@ export default function AIAssistantScreen() {
 
                 {/* Billing Mode Selector Pill */}
                 <HStack className="gap-xs">
-                  <TouchableOpacity
+                  <Pressable
                     accessibilityRole="button"
                     onPress={() => {
                       const modes: ('baseline' | 'byok' | 'purchased')[] = [
@@ -110,10 +110,10 @@ export default function AIAssistantScreen() {
                     <Text style={{ fontSize: 10, color: text.primary, fontWeight: 'bold' }}>
                       {billingMode.toUpperCase()}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
 
                   {/* Privacy Mode Selector Pill */}
-                  <TouchableOpacity
+                  <Pressable
                     accessibilityRole="button"
                     onPress={() => {
                       const modes: ('saved' | 'temporary' | 'incognito')[] = [
@@ -142,7 +142,7 @@ export default function AIAssistantScreen() {
                     >
                       {privacyMode === 'incognito' ? 'INCOG' : privacyMode.toUpperCase()}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </HStack>
               </HStack>
               <Text className="text-phaseText-secondary text-xs">{t('aiAssistant.subtitle')}</Text>
@@ -168,14 +168,14 @@ export default function AIAssistantScreen() {
                 <Text className="text-phaseText-secondary text-sm text-center">
                   {t('aiAssistant.loginPrompt')}
                 </Text>
-                <TouchableOpacity
+                <Pressable
                   accessibilityRole="button"
                   onPress={() => router.push('/welcome')}
                 >
                   <Text className="text-phase-accent font-bold text-sm">
                     {t('aiAssistant.continueLogin')}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </VStack>
             ) : (
               <ChatComposer

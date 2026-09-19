@@ -1,13 +1,13 @@
 import { openExternalURL } from '@repo/ui/utils/linking';
 import React from 'react';
-import { Platform, Text, TouchableOpacity } from 'react-native';
+import { Platform, Text, Pressable } from '@repo/ui/primitives';
 
 /**
  * Link Component
  *
  * Hardened primitive for navigational links.
  * Uses native <a> tag on Web to support inline text nesting and browser navigation,
- * and TouchableOpacity on Native.
+ * and Pressable on Native.
  */
 export const Link = ({
   children,
@@ -62,16 +62,15 @@ export const Link = ({
   }
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={handlePress}
       accessibilityRole="link"
-      activeOpacity={0.7}
+      className={`inline active:opacity-70 ${className || ''}`}
       style={style}
-      className={`inline ${className || ''}`}
       {...props}
     >
       {children}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

@@ -34,6 +34,8 @@ export { Collapse } from './components/Collapse';
 export { default as ErrorBoundary, RouteErrorBoundary } from './components/ErrorBoundary';
 export type { ErrorStateProps } from './components/ErrorState';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
+export type { FeatureStateBoundaryProps } from './components/FeatureStateBoundary';
+export { FeatureStateBoundary } from './components/FeatureStateBoundary';
 export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScene';
 export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FireflyMascotProps } from './components/FireflyMascot';

@@ -65,6 +65,8 @@ export async function unregisterStorageEvictionTask(): Promise<void> {
 }
 
 export async function triggerStorageEvictionForTesting(): Promise<void> {
-  if (!__DEV__) return;
+  if (!__DEV__) {
+    return;
+  }
   await coreRuntime.backgroundTask.triggerTaskWorkerForTestingAsync?.(STORAGE_EVICTION_TASK);
 }

@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  transpilePackages: ['@repo/ui'],
+  transpilePackages: ['@repo/self', '@repo/ui'],
   // Doppler already supplies these public values to the native app. Expose the
   // same values under Next's browser-safe names; no second Supabase project or
   // credential copy is introduced for the web application.

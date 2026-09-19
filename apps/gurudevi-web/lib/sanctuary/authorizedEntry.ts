@@ -8,14 +8,32 @@ import type { ServerSupabaseClient } from '../supabase/server';
 export type AuthorizedEntry = AuthorizedEntryResult | Readonly<{ kind: 'signed-out' }>;
 
 type IdentityPayload = Readonly<{
-  activeBond?: unknown;
   display_name?: unknown;
   id?: unknown;
   name?: unknown;
   onboarding_completed?: unknown;
+  scopeBootstrap?: unknown;
 }>;
 
-type ActiveBondPayload = Readonly<{ capacity?: unknown }>;
+type ScopeBootstrapPayload = Readonly<{
+  primaryCapacity?: unknown;
+  selection?: unknown;
+  activeScope?: unknown;
+}>;
+
+type ActiveScopePayload = Readonly<{
+  bondId?: unknown;
+  entityId?: unknown;
+  entityType?: unknown;
+  roles?: unknown;
+}>;
+
+type BrowserActiveScope = Readonly<{
+  bondId: string;
+  entityId: string;
+  entityType: string;
+  roles: readonly string[];
+}>;
 
 function isIdentityPayload(value: unknown): value is IdentityPayload {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -37,10 +55,36 @@ function displayName(payload: IdentityPayload): string | null {
   return null;
 }
 
-function activeCapacity(payload: IdentityPayload): string | null {
-  const bond = payload.activeBond;
-  if (!bond || typeof bond !== 'object' || Array.isArray(bond)) return null;
-  const capacity = (bond as ActiveBondPayload).capacity;
+function activeScope(payload: IdentityPayload): BrowserActiveScope | null {
+  const bootstrap = payload.scopeBootstrap;
+  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return null;
+  const candidate = bootstrap as ScopeBootstrapPayload;
+  if (candidate.selection !== 'selected') return null;
+  const scope = candidate.activeScope;
+  if (!scope || typeof scope !== 'object' || Array.isArray(scope)) return null;
+  const active = scope as ActiveScopePayload;
+  if (
+    typeof active.bondId !== 'string' ||
+    typeof active.entityId !== 'string' ||
+    typeof active.entityType !== 'string' ||
+    !Array.isArray(active.roles) ||
+    active.roles.length === 0 ||
+    active.roles.some((role) => typeof role !== 'string' || !role.trim())
+  ) {
+    return null;
+  }
+  return {
+    bondId: active.bondId,
+    entityId: active.entityId,
+    entityType: active.entityType,
+    roles: active.roles,
+  };
+}
+
+function primaryScopeRole(payload: IdentityPayload): string | null {
+  const bootstrap = payload.scopeBootstrap;
+  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return null;
+  const capacity = (bootstrap as ScopeBootstrapPayload).primaryCapacity;
   return typeof capacity === 'string' && capacity.trim() ? capacity : null;
 }
 
@@ -61,7 +105,9 @@ function authoritativeFacts(
     authSubjectId: subject,
     displayName: displayName(payload),
     onboardingCompleted: payload.onboarding_completed,
-    activeCapacity: activeCapacity(payload),
+    activeCapacity: primaryScopeRole(payload),
+    primaryScopeRole: primaryScopeRole(payload),
+    activeScope: activeScope(payload),
   };
 }
 

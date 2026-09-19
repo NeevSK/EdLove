@@ -31,6 +31,7 @@ export default async function SelfPage() {
   if (entry.kind === 'onboarding-required')
     return (
       <SelfState
+        action={<Link href="/onboarding">Continue enrollment</Link>}
         detail="Complete your Gurudevi enrollment before opening Self."
         title="Complete your enrollment first"
       />

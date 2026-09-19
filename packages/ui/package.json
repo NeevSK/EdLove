@@ -52,6 +52,12 @@
       "import": "./src/components/*.tsx",
       "default": "./src/components/*.tsx"
     },
+    "./components/FeatureStateBoundary": {
+      "types": "./src/components/FeatureStateBoundary.tsx",
+      "browser": "./src/components/FeatureStateBoundary.web.tsx",
+      "react-native": "./src/components/FeatureStateBoundary.tsx",
+      "default": "./src/components/FeatureStateBoundary.tsx"
+    },
     "./components/*": {
       "types": "./src/components/*.tsx",
       "import": "./src/components/*.tsx",
@@ -875,10 +881,9 @@
     "expo-video": "~57.0.4",
     "lucide-react": "^1.45.0",
     "lucide-react-native": "^1.45.0",
-    "nativewind": "5.0.0-preview.4",
+    "nativewind": "5.0.0-rc.0",
     "qrcode": "^1.5.4",
-    "react-native-css": "3.0.7",
-    "react-native-css-interop": "0.1.22",
+    "react-native-css": "3.1.0-rc.0",
     "react-native-external-keyboard": "^1.1.0",
     "react-native-fast-confetti": "^2.0.2",
     "react-native-reanimated": "^4.6.0",
@@ -896,7 +901,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "*",
     "@shopify/flash-list": "2.0.2",
-    "@shopify/react-native-skia": ">=2.6.5",
+    "@shopify/react-native-skia": ">=2.11.2",
     "expo-auth-session": ">=57.0.0",
     "expo-blur": "~57.0.2",
     "expo-checkbox": ">=57.0.0",

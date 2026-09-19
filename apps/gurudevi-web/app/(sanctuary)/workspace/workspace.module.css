@@ -1,0 +1,223 @@
+.floor {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  color: var(--ink, #29251f);
+}
+.workbench {
+  display: grid;
+  gap: 0.65rem;
+}
+.heading {
+  max-width: 52rem;
+}
+.heading h1 {
+  margin: 0.35rem 0 0.7rem;
+  max-width: 14ch;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(2.1rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1.05;
+}
+.heading > p:last-child,
+.overview p,
+.attendanceHeading p {
+  color: var(--ink-ghost, #71695f);
+  line-height: 1.65;
+}
+.eyebrow {
+  margin: 0;
+  color: var(--sanctuary-saffron, #a45d25);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.overview,
+.attendance {
+  display: grid;
+  gap: 1.35rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 1.25rem;
+  background: var(--glass-surface, #fffdf8);
+  box-shadow: 0 1rem 3.5rem #3023150a;
+}
+.overview h2,
+.attendance h2 {
+  margin: 0.4rem 0;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+  font-weight: 500;
+}
+.summary,
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+.summary span,
+.counts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.localTag {
+  color: #6b542c;
+  background: #faf0d9;
+}
+.primary {
+  width: fit-content;
+  min-height: 2.8rem;
+  padding: 0.7rem 1.1rem;
+  border: 0;
+  border-radius: 0.75rem;
+  color: white;
+  background: var(--sanctuary-saffron, #9d5b25);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.attendanceHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+}
+.classPicker {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--ink-ghost, #71695f);
+}
+.classPicker select {
+  max-width: min(20rem, 60vw);
+  min-height: 2.6rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 0.6rem;
+  background: white;
+  color: inherit;
+  font: inherit;
+}
+.roster {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 0.85rem;
+  overflow: hidden;
+}
+.roster li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.75rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border, #ded8cf);
+}
+.roster li:last-child {
+  border-bottom: 0;
+}
+.roll {
+  width: 2rem;
+  color: var(--ink-ghost, #71695f);
+  font-variant-numeric: tabular-nums;
+}
+.studentName {
+  flex: 1;
+  font-weight: 650;
+}
+.status {
+  min-width: 6rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 99px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.status:disabled {
+  min-width: 7rem;
+  color: var(--ink-ghost, #71695f);
+  background: #f2efe9;
+  cursor: not-allowed;
+}
+.present {
+  color: #446d3c;
+  background: #eff6eb;
+}
+.late {
+  color: #8c671b;
+  background: #faf2dc;
+}
+.absent {
+  color: #a24435;
+  background: #fbece8;
+}
+.excused {
+  color: #635d75;
+  background: #f1eff6;
+}
+.bulkActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink-ghost, #71695f);
+  font-size: 0.85rem;
+}
+.bulkActions button {
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.loading,
+.empty,
+.muted {
+  color: var(--ink-ghost, #71695f);
+  line-height: 1.6;
+}
+.error,
+.notice {
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+  line-height: 1.5;
+}
+.error {
+  color: #872f24;
+  background: #fbece8;
+}
+.notice {
+  color: #365c32;
+  background: #edf5e9;
+}
+@media (max-width: 640px) {
+  .attendanceHeading {
+    align-items: start;
+    flex-direction: column;
+  }
+  .roster li {
+    gap: 0.6rem;
+    padding-inline: 0.7rem;
+  }
+  .status {
+    min-width: 5.3rem;
+  }
+}

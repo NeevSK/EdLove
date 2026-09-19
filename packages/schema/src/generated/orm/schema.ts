@@ -659,6 +659,23 @@ export class SchemaType implements SchemaDef {
                     name: "capacity",
                     type: "String"
                 },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                valid_from: {
+                    name: "valid_from",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                valid_until: {
+                    name: "valid_until",
+                    type: "DateTime",
+                    optional: true
+                },
                 metadata: {
                     name: "metadata",
                     type: "Json",
@@ -681,6 +698,13 @@ export class SchemaType implements SchemaDef {
                     type: "User",
                     attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
                     relation: { opposite: "bonds", fields: ["user_id"], references: ["id"] }
+                },
+                selected_by: {
+                    name: "selected_by",
+                    type: "UserPreferences",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SelectedBond") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "active_bond", name: "SelectedBond" }
                 }
             },
             attributes: [
@@ -3869,6 +3893,16 @@ export class SchemaType implements SchemaDef {
                         "user"
                     ] as readonly string[]
                 },
+                active_bond_id: {
+                    name: "active_bond_id",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[],
+                    foreignKeyFor: [
+                        "active_bond"
+                    ] as readonly string[]
+                },
                 favorite_features: {
                     name: "favorite_features",
                     type: "String",
@@ -3928,6 +3962,13 @@ export class SchemaType implements SchemaDef {
                     type: "User",
                     attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
                     relation: { opposite: "preferences", fields: ["user_id"], references: ["id"] }
+                },
+                active_bond: {
+                    name: "active_bond",
+                    type: "Bond",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SelectedBond") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("active_bond_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("SetNull") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "selected_by", name: "SelectedBond", fields: ["active_bond_id"], references: ["id"], onDelete: "SetNull" }
                 }
             },
             attributes: [
@@ -3937,7 +3978,8 @@ export class SchemaType implements SchemaDef {
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" },
-                user_id: { type: "String" }
+                user_id: { type: "String" },
+                active_bond_id: { type: "String" }
             }
         },
         MappingTopology: {

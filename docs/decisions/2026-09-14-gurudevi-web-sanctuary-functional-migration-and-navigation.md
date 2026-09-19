@@ -46,6 +46,8 @@ The Next app must never import those UI implementations, because they depend on 
 
 The domain-specific spatial and transition language is governed by
 `docs/decisions/2026-09-14-gurudevi-sanctuary-spatial-language-and-domain-transitions.md`.
+Domain-local active tasks, restoration, and temporal placement are governed by
+`docs/decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md`.
 
 ## Navigation experiments
 

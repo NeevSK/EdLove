@@ -32,7 +32,7 @@ import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics'
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Modal, Platform, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, Modal, Platform } from 'react-native';
 import type { UserProfile } from '@repo/profile/types';
 
 interface EditProfileModalProps {
@@ -217,8 +217,7 @@ export default function EditProfileModal({
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <Box className="flex-1 justify-end bg-black/40">
+      <Pressable onPress={Keyboard.dismiss} accessible={false} className="flex-1 justify-end bg-black/40">
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="w-full h-full justify-end"
@@ -527,8 +526,7 @@ export default function EditProfileModal({
               </ScrollView>
             </Box>
           </KeyboardAvoidingView>
-        </Box>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </Modal>
   );
 }

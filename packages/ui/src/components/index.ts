@@ -50,6 +50,8 @@ export { default as ErrorMessage } from '@repo/ui/components/ErrorMessage';
 export type { ErrorStateProps } from '@repo/ui/components/ErrorState';
 // New branded state components (renamed to avoid conflicts with existing components)
 export { ErrorState as BrandedErrorState, ErrorState } from '@repo/ui/components/ErrorState';
+export type { FeatureStateBoundaryProps } from '@repo/ui/components/FeatureStateBoundary';
+export { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary';
 export { default as FeatureDiscoveryModal } from '@repo/ui/components/FeatureDiscoveryModal';
 export { default as FeatureInfoIcon } from '@repo/ui/components/FeatureInfoIcon';
 export type { FireflyFeedbackSceneProps } from '@repo/ui/components/FireflyFeedbackScene';

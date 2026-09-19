@@ -29,6 +29,16 @@
       "import": "./src/privacy.ts",
       "default": "./src/privacy.ts"
     },
+    "./features/catalog": {
+      "types": "./src/features/featureManifest.ts",
+      "import": "./src/features/featureManifest.ts",
+      "default": "./src/features/featureManifest.ts"
+    },
+    "./features/*": {
+      "types": "./src/features/*.ts",
+      "import": "./src/features/*.ts",
+      "default": "./src/features/*.ts"
+    },
     "./api": {
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts",
