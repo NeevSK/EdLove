@@ -59,6 +59,9 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
       });
     },
     {
+      mutationKey: 'createClassroomResource',
+      scope: 'classroom',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         showToast('Resource added successfully', 'success');
@@ -74,17 +77,19 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
       return api.resources.togglePin(id, isPinned);
     },
     {
+      mutationKey: 'toggleResourcePin',
+      scope: 'classroom',
+      mutationType: 'UPDATE',
       onMutate: ({ id, isPinned }) => {
-        // Optimistic update
+        const previous = resources;
         setResources((prev) => prev.map((r) => (r.id === id ? { ...r, is_pinned: isPinned } : r)));
         hapticLight();
+        return { previous };
       },
-      onError: (_error: unknown, { id, isPinned }) => {
-        setResources((prev) =>
-          prev.map((resource) =>
-            resource.id === id ? { ...resource, is_pinned: !isPinned } : resource,
-          ),
-        );
+      onError: (_error, _vars, context) => {
+        if (context?.previous) {
+          setResources(context.previous);
+        }
         showToast('Failed to update pin', 'error');
       },
     },
@@ -94,9 +99,22 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
       return api.resources.delete(id);
     },
     {
-      onSuccess: (_result, id) => {
+      mutationKey: 'deleteClassroomResource',
+      scope: 'classroom',
+      mutationType: 'DELETE',
+      onMutate: (id) => {
+        const previous = resources;
         setResources((prev) => prev.filter((r) => r.id !== id));
         hapticSuccess();
+        return { previous };
+      },
+      onError: (_error, _id, context) => {
+        if (context?.previous) {
+          setResources(context.previous);
+        }
+        showToast('Failed to delete resource', 'error');
+      },
+      onSuccess: () => {
         showToast('Resource removed', 'success');
       },
     },

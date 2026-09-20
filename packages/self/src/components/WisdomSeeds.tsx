@@ -49,12 +49,15 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   const [showForm, setShowForm] = useState(false);
   const [insight, setInsight] = useState('');
 
-  const { mutate, isLoading: isSaving } = useSafeMutation(
+  const { mutate, isPending: isSaving } = useSafeMutation(
     async (insightText: string) => {
       if (!activeUserId) throw new Error('User not authenticated');
       await addWisdomNote(insightText);
     },
     {
+      mutationKey: 'addWisdomNote',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         setInsight('');
         setShowForm(false);

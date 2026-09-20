@@ -106,6 +106,7 @@
     "audit:fallow": "pnpm exec fallow review --brief",
     "check:fallow": "pnpm exec fallow audit",
     "check:anti-slop": "pnpm run check:aislop && pnpm run check:fallow",
+    "check:route-intent-slice": "node scripts/check-route-intent-slice.mjs",
     "check:editorial": "node scripts/check-editorial-content.mjs",
     "check:sanctuary-experience": "node scripts/check-sanctuary-experience-contract.mjs",
     "check:ota-safety": "node scripts/ota-safety-check.mjs",

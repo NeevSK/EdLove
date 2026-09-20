@@ -53,7 +53,7 @@ export default function GratitudeGlimmers({
     'student-said',
   );
 
-  const { mutate, isLoading: isSaving } = useSafeMutation(
+  const { mutate, isPending: isSaving } = useSafeMutation(
     async (variables: { content: string; category: string }) => {
       await addGratitudeEntry({
         content: variables.content,
@@ -61,6 +61,9 @@ export default function GratitudeGlimmers({
       });
     },
     {
+      mutationKey: 'addGratitudeEntry',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         setContent('');
@@ -73,14 +76,10 @@ export default function GratitudeGlimmers({
   const handleSave = async () => {
     if (!activeUserId || !content.trim() || isSaving) return;
     hapticLight();
-    try {
-      await mutate({
-        content: content.trim(),
-        category,
-      });
-    } catch {
-      // useSafeMutation owns the visible error feedback; keep the draft open for retry.
-    }
+    await mutate({
+      content: content.trim(),
+      category,
+    });
   };
 
   const categories = [

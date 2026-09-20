@@ -37,11 +37,14 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
     activeUserId ?? undefined,
   );
 
-  const { mutate, isLoading: isSaving } = useSafeMutation(
+  const { mutate, isPending: isSaving } = useSafeMutation(
     async (text: string) => {
       await addDecision(text);
     },
     {
+      mutationKey: 'addDecision',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticLight();
         setDecisionText('');

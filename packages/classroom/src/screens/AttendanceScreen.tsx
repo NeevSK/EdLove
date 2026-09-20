@@ -168,6 +168,9 @@ export default function AttendanceScreen() {
       }
     },
     {
+      mutationKey: 'batchRecordAttendance',
+      scope: 'classroom',
+      mutationType: 'CREATE',
       onSuccess: (data: unknown) => {
         hapticSuccess();
         const isQueued = (data as { queuedOffline?: boolean })?.queuedOffline;

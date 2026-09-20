@@ -132,8 +132,19 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
       });
     },
     {
-      onMutate: async ({ id, condition }) => {
+      mutationKey: 'updateInventoryCondition',
+      scope: 'classroom',
+      mutationType: 'UPDATE',
+      onMutate: ({ id, condition }) => {
+        const previous = items;
         setItems((prev) => prev.map((item) => (item.id === id ? { ...item, condition } : item)));
+        return { previous };
+      },
+      onError: (_error, _vars, context) => {
+        if (context?.previous) {
+          setItems(context.previous);
+        }
+        showToast('Failed to update condition', 'error');
       },
       onSuccess: () => {
         hapticSuccess();
@@ -156,6 +167,9 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
       });
     },
     {
+      mutationKey: 'createInventoryRequest',
+      scope: 'classroom',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         showToast(t('classroom.inventory.requestSent') || 'Request sent', 'success');

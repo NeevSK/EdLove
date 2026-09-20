@@ -38,11 +38,14 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
   const [newGoalText, setNewGoalText] = useState('');
   const [showAddGoal, setShowAddGoal] = useState(false);
 
-  const { mutate: saveGoal, isLoading: isSaving } = useSafeMutation(
+  const { mutate: saveGoal, isPending: isSaving } = useSafeMutation(
     async (text: string) => {
       await addGoal(text);
     },
     {
+      mutationKey: 'createStudentGoal',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         setNewGoalText('');
@@ -63,6 +66,9 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
       await updateGoal(variables.id, { progress: variables.progress });
     },
     {
+      mutationKey: 'updateStudentGoalProgress',
+      scope: 'self',
+      mutationType: 'UPDATE',
       onSuccess: () => {
         hapticLight();
         refreshData();

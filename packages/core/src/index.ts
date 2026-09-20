@@ -229,6 +229,7 @@ export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { useTenantContext } from '@repo/core/hooks/useTenantContext';
 export { useTracking } from '@repo/core/hooks/useTracking';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+export { DeltaResonance, type DeltaMetrics, type ThreeWayMergeResult } from '@repo/core/lib/sync/delta';
 export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 export { default as SyncManager } from '@repo/core/lib/sync/sync/SyncManager';
 export type {

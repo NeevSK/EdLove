@@ -50,7 +50,7 @@ export default function EnergyForecast({
     selectedLevel ?? (currentForecast?.energy_level as 1 | 2 | 3 | 4 | 5 | undefined) ?? null;
   const lastUpdatedAt = currentForecast?.created_at ?? null;
 
-  const { mutate: saveEnergy, isLoading: isSaving } = useSafeMutation(
+  const { mutate: saveEnergy, isPending: isSaving } = useSafeMutation(
     async (level: 1 | 2 | 3 | 4 | 5) => {
       await saveForecast({
         forecastDate: today ?? '',
@@ -58,6 +58,22 @@ export default function EnergyForecast({
       });
     },
     {
+      mutationKey: 'saveEnergyForecast',
+      scope: 'self',
+      mutationType: 'CREATE',
+      onMutate: (level) => {
+        const previousLevel = displayLevel;
+        setSelectedLevel(level);
+        setSaveError(null);
+        return { previousLevel };
+      },
+      onError: (error, _level, context) => {
+        console.error('Failed to save energy forecast:', error);
+        if (context?.previousLevel !== undefined) {
+          setSelectedLevel(context.previousLevel);
+        }
+        setSaveError('Your energy check-in could not be saved. Please try again.');
+      },
       onSuccess: () => {
         hapticSuccess();
         void refreshData();
@@ -68,16 +84,7 @@ export default function EnergyForecast({
   const handleSelectEnergy = async (level: 1 | 2 | 3 | 4 | 5) => {
     if (!activeUserId || componentDisabled) return;
     hapticLight();
-    const previousLevel = displayLevel;
-    setSelectedLevel(level); // optimistic update
-    setSaveError(null);
-    try {
-      await saveEnergy(level);
-    } catch (error) {
-      console.error('Failed to save energy forecast:', error);
-      setSelectedLevel(previousLevel);
-      setSaveError('Your energy check-in could not be saved. Please try again.');
-    }
+    await saveEnergy(level);
   };
 
   const energyLevels = [

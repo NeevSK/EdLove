@@ -53,7 +53,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
     'breakthrough',
   );
 
-  const { mutate, isLoading: isSaving } = useSafeMutation(
+  const { mutate, isPending: isSaving } = useSafeMutation(
     async (variables: { studentName: string | null; description: string; category: string }) => {
       await addJoyMoment({
         student_name: variables.studentName || undefined,
@@ -62,6 +62,9 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
       });
     },
     {
+      mutationKey: 'addJoyMoment',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         setStudentName('');
@@ -76,15 +79,11 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
   const handleSaveMoment = async () => {
     if (!activeUserId || !momentDescription.trim() || isSaving) return;
     hapticLight();
-    try {
-      await mutate({
-        studentName: studentName.trim() || null,
-        description: momentDescription.trim(),
-        category,
-      });
-    } catch {
-      // useSafeMutation owns the visible error feedback; keep the draft open for retry.
-    }
+    await mutate({
+      studentName: studentName.trim() || null,
+      description: momentDescription.trim(),
+      category,
+    });
   };
 
   const categories = [

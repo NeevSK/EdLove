@@ -66,11 +66,14 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const { mutate: saveItem, isLoading: isSaving } = useSafeMutation(
+  const { mutate: saveItem, isPending: isSaving } = useSafeMutation(
     async (text: string) => {
       await addPrepItem(text, tomorrowDate);
     },
     {
+      mutationKey: 'addTomorrowPrepItem',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         setItemText('');
@@ -89,11 +92,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const handleSave = async () => {
     if (!userId || !itemText.trim() || items.length >= 3) return;
     hapticLight();
-    try {
-      await saveItem(itemText.trim());
-    } catch (error) {
-      console.error('Failed to save tomorrow prep item:', error);
-    }
+    await saveItem(itemText.trim());
   };
 
   const handleToggle = async (item: DailyPrepItem) => {

@@ -142,15 +142,18 @@ export default function ContentLibrary() {
     (variables: { id: string; is_pinned: boolean }) =>
       api.resources.togglePin(variables.id, variables.is_pinned),
     {
+      mutationKey: 'toggleResourcePin',
+      scope: 'classroom',
+      mutationType: 'UPDATE',
       onMutate: ({ id, is_pinned }) => {
+        const previous = resources;
         setResources((prev) => prev.map((r) => (r.id === id ? { ...r, is_pinned } : r)));
+        return { previous };
       },
-      onError: (_error, { id, is_pinned }) => {
-        setResources((prev) =>
-          prev.map((resource) =>
-            resource.id === id ? { ...resource, is_pinned: !is_pinned } : resource,
-          ),
-        );
+      onError: (_error, _vars, context) => {
+        if (context?.previous) {
+          setResources(context.previous);
+        }
         showToast({ message: 'Could not update the pin. Please try again.', type: 'error' });
       },
       onSuccess: () => hapticSuccess(),
@@ -158,14 +161,30 @@ export default function ContentLibrary() {
   );
 
   const deleteMutation = useSafeMutation((id: string) => api.resources.delete(id), {
-    onSuccess: (_result, id) => {
+    mutationKey: 'deleteClassroomResource',
+    scope: 'classroom',
+    mutationType: 'DELETE',
+    onMutate: (id) => {
+      const previous = resources;
       setResources((prev) => prev.filter((r) => r.id !== id));
       hapticSuccess();
+      return { previous };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previous) {
+        setResources(context.previous);
+      }
+      showToast({ message: 'Could not delete resource. Please try again.', type: 'error' });
+    },
+    onSuccess: () => {
       showToast({ message: 'Resource deleted', type: 'success' });
     },
   });
 
   const addMutation = useSafeMutation((variables: any) => api.resources.create(variables), {
+    mutationKey: 'createClassroomResource',
+    scope: 'classroom',
+    mutationType: 'CREATE',
     onSuccess: (newResource: any) => {
       hapticSuccess();
       if (newResource) {
@@ -223,6 +242,9 @@ export default function ContentLibrary() {
       );
     },
     {
+      mutationKey: 'publishResourceToGlobalLibrary',
+      scope: 'classroom',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         showToast({ message: 'Published to Global Library', type: 'success' });

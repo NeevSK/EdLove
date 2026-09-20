@@ -62,22 +62,38 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
     mocks.user = { id: 'test-user-1', email: 'test@example.com' };
   });
 
-  it('executes online mutation successfully and executes onSuccess callback', async () => {
+  it('executes online mutation successfully with mutateAsync and executes callbacks with context', async () => {
     vi.spyOn(networkManager, 'isConnected').mockResolvedValue(true);
 
     const mutationFn = vi.fn().mockResolvedValue({ success: true, id: 'post-1' });
+    const onMutate = vi.fn().mockReturnValue({ previousSnapshot: 'snap-1' });
     const onSuccess = vi.fn();
+    const onSettled = vi.fn();
 
-    const { mutate } = useSafeMutation(mutationFn, {
+    const { mutateAsync, isIdle, isLoading } = useSafeMutation(mutationFn, {
       mutationKey: 'createPost',
       scope: 'community',
+      mutationType: 'CREATE',
+      onMutate,
       onSuccess,
+      onSettled,
     });
 
-    const res = await mutate({ title: 'Hello World' });
+    const res = await mutateAsync({ title: 'Hello World' });
 
+    expect(onMutate).toHaveBeenCalledWith({ title: 'Hello World' });
     expect(mutationFn).toHaveBeenCalledWith({ title: 'Hello World' });
-    expect(onSuccess).toHaveBeenCalledWith({ success: true, id: 'post-1' }, { title: 'Hello World' });
+    expect(onSuccess).toHaveBeenCalledWith(
+      { success: true, id: 'post-1' },
+      { title: 'Hello World' },
+      { previousSnapshot: 'snap-1' },
+    );
+    expect(onSettled).toHaveBeenCalledWith(
+      { success: true, id: 'post-1' },
+      null,
+      { title: 'Hello World' },
+      { previousSnapshot: 'snap-1' },
+    );
     expect(res).toEqual({ success: true, id: 'post-1' });
     expect(mocks.addToQueue).not.toHaveBeenCalled();
   });
@@ -87,18 +103,22 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
 
     const mutationFn = vi.fn().mockResolvedValue({ success: true });
     const onSuccess = vi.fn();
+    const onSettled = vi.fn();
 
     const { mutate } = useSafeMutation(mutationFn, {
       mutationKey: 'createPost',
       scope: 'community',
+      mutationType: 'CREATE',
       onSuccess,
+      onSettled,
     });
 
     const res = await mutate({ title: 'Offline Post' });
 
     // When offline and queued, it returns null and triggers onSuccess(null, vars)
     expect(res).toBeNull();
-    expect(onSuccess).toHaveBeenCalledWith(null, { title: 'Offline Post' });
+    expect(onSuccess).toHaveBeenCalledWith(null, { title: 'Offline Post' }, undefined);
+    expect(onSettled).toHaveBeenCalledWith(null, null, { title: 'Offline Post' }, undefined);
 
     // Verify addToQueue arguments with multi-tenant userId attribution
     expect(mocks.addToQueue).toHaveBeenCalledWith({
@@ -120,6 +140,48 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
     expect(mocks.showToast).toHaveBeenCalledWith('Saved to Outbox (Offline)', 'info');
   });
 
+  it('passes rollback context to onError and onSettled on execution failure', async () => {
+    vi.spyOn(networkManager, 'isConnected').mockResolvedValue(true);
+
+    const networkError = new Error('Server 500');
+    const mutationFn = vi.fn().mockRejectedValue(networkError);
+    const onMutate = vi.fn().mockReturnValue({ rollbackState: 'saved-state-123' });
+    const onError = vi.fn();
+    const onSettled = vi.fn();
+
+    const { mutate, mutateAsync, reset } = useSafeMutation(mutationFn, {
+      mutationKey: 'updateItem',
+      scope: 'classroom',
+      mutationType: 'UPDATE',
+      retryCount: 0,
+      onMutate,
+      onError,
+      onSettled,
+    });
+
+    // Test mutate (swallows error and returns null)
+    const result = await mutate({ itemId: 'item-1' });
+    expect(result).toBeNull();
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Server 500' }),
+      { itemId: 'item-1' },
+      { rollbackState: 'saved-state-123' },
+    );
+    expect(onSettled).toHaveBeenCalledWith(
+      undefined,
+      expect.objectContaining({ message: 'Server 500' }),
+      { itemId: 'item-1' },
+      { rollbackState: 'saved-state-123' },
+    );
+
+    // Test mutateAsync (throws error to caller)
+    await expect(mutateAsync({ itemId: 'item-1' })).rejects.toThrow('Server 500');
+
+    // Test reset
+    expect(typeof reset).toBe('function');
+    reset();
+  });
+
   it('debounces identical in-flight rapid taps and prevents duplicate simultaneous calls', async () => {
     vi.spyOn(networkManager, 'isConnected').mockResolvedValue(true);
 
@@ -132,6 +194,7 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
     const { mutate } = useSafeMutation(mutationFn, {
       mutationKey: 'likePost',
       scope: 'community',
+      mutationType: 'CREATE',
     });
 
     // Trigger two rapid simultaneous calls with identical payload

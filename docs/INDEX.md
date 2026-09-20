@@ -55,6 +55,7 @@ These files outline security models, data lifecycle policies, platform topologie
 
 | Document | Description |
 |---|---|
+| [architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md](architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md) | Mutation pipeline optimizations, TanStack DX architecture, zero-thrash state transitions, and low-end device efficiency strategies |
 | [architecture/architecture-guidelines.md](architecture/architecture-guidelines.md) | Layered topology, golden rules of dependencies, workspace boundaries |
 | [architecture/architecture-deep-dive.md](architecture/architecture-deep-dive.md) | Philosophy of restraint, sovereignty rules |
 | [architecture/tech-stack-and-standards.md](architecture/tech-stack-and-standards.md) | Tech stack details, CORS configurations, environment conventions |

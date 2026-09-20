@@ -141,11 +141,14 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
     );
   }, [moonScale, starsOpacity]);
 
-  const { mutate: saveLog, isLoading: isSaving } = useSafeMutation(
+  const { mutate: saveLog, isPending: isSaving } = useSafeMutation(
     async (quality: number) => {
       await addSleepLog(quality as any);
     },
     {
+      mutationKey: 'addSleepLog',
+      scope: 'self',
+      mutationType: 'CREATE',
       onSuccess: () => {
         hapticSuccess();
         setHasLoggedToday(true);
@@ -157,11 +160,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
   const handleSaveSleepLog = async () => {
     if (!activeUserId || componentDisabled) return;
     hapticLight();
-    try {
-      await saveLog(sleepQuality);
-    } catch {
-      // useSafeMutation owns visible feedback; retain the selected quality for retry.
-    }
+    await saveLog(sleepQuality);
   };
 
   const animatedMoonStyle = useAnimatedStyle(() => ({
