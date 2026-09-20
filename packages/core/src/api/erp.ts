@@ -33,6 +33,11 @@ export const accountingAPI = {
   },
 };
 
+import { createSupabasePaymentsRepository } from '@repo/core/adapters/supabase/paymentsRepository';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+
+const paymentsRepo = createSupabasePaymentsRepository(supabaseClient);
+
 export const paymentsAPI = {
   /**
    * Create a payment intent for specified provider
@@ -67,6 +72,14 @@ export const paymentsAPI = {
 
   async getReceipt(id: string) {
     return orpcClient.erp.getReceipt({ params: { id } });
+  },
+
+  async getTransactionById(id: string) {
+    return paymentsRepo.getTransactionById(id);
+  },
+
+  async finalizeTransaction(id: string, ledgerTransactionId: string) {
+    return paymentsRepo.finalizeTransaction(id, ledgerTransactionId);
   },
 };
 

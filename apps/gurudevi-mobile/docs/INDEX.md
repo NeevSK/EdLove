@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-09-12
+updated: 2026-09-20
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -66,7 +66,7 @@ These documents are the current authority for capability inventory, rollout, sta
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
 | **2026-09-12** | [Navigation & Sanctuary Refactor](./current_progress/2026-09-12-navigation-and-sanctuary-refactor.md) + [Mobile Navigation & Adaptive Chrome](./architecture/mobile-navigation-and-adaptive-chrome.md) | Navigation / UI / Architecture / Current Progress | `active` | Active sub-tabs terminology purge, 5-tab LRU cap, role-aware domain feature registries, Sanctuary overview hub with query param serialization, adaptive header hierarchy, collapsible chrome on scroll, and mindful anti-infinite community feed. |
-| **2026-09-07** | [URL and URI Boundary Audit](./architecture/2026-09-07-url-uri-deep-link-audit.md) + [Implementation Plan](./current_progress/2026-09-07-url-uri-deep-link-implementation-plan.md) | Architecture / Security / Current Progress | `active` | Audits auth callbacks, deep-link policy, notification routing, public share URLs, local file URIs, external URI opening, and Android/iOS verified-link configuration; prioritizes credential redaction and a unified dispatcher. |
+| **2026-09-20** | [Route Intent Policy](../../../docs/architecture/route-intent-policy.md) | Architecture / Security / Cross-platform | `active` | Canonical public-link, QR, auth-callback, web/mobile handoff, recovery, refactor, and evidence policy for Expo 57 and Next.js 16. The 2026-09-07 audit and plan remain historical evidence. |
 | **2026-09-05** | [Android Build Chronicle & Performance Savings Report](./infra/2026-09-05-android-build-chronicle-and-savings-report.md) | Infrastructure / Build | `active` | Post-mortem of MLKit blocker removal, ccache CMake launcher activation (905 units cached), Gradle build-cache metrics (77.2% reuse), and successful installation of versionCode 24 APK onto Samsung Galaxy physical device. |
 | **2026-09-04** | [Adopt: Hygiene](./research/2026-09-04-adopt-hygiene.md) + [ADR: Play Hygiene + Pedagogy](./decisions/2026-09-04-play-hygiene-pedagogy.md) | Adopt / ADR | `draft` | Play vitals baseline, Vitest 5 close-out, SRL/mastered/coasting composition. |
 | **2026-09-04** | [Forage Research: RN Performance Patterns](./research/2026-09-04-rn-performance-patterns.md) | Research / React Native | `draft` | Suspense 300ms throttle, RNGH v3 hooks, useEffect, .mjs, Plain Text vs workspace (Expo 57, RNGH 3.2.1). No Suspense+lazy exposure; continue hooks migration. |

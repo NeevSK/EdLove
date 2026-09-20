@@ -1,4 +1,4 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { uiExperience } from '@repo/core/logic/managers/factory';
 import { useEffect, useMemo, useState } from 'react';
 
 export interface StudentGoal {
@@ -23,12 +23,7 @@ export const useStudentGoals = (userId?: string) => {
     const fetchGoals = async () => {
       setIsLoading(true);
       try {
-        const { data } = await supabaseClient
-          .from('student_goals')
-          .select('*')
-          .eq('user_id', userId)
-          .order('target_date', { ascending: true });
-
+        const data = await uiExperience.getStudentGoals(userId);
         if (data) setGoals(data);
       } catch (e) {
         console.error('[useStudentGoals] Error:', e);

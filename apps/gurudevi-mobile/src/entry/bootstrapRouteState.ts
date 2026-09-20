@@ -6,8 +6,8 @@ import {
   useAuth,
   useStore,
 } from '@repo/core/logic';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
-import type { Session } from '@supabase/supabase-js';
 
 import {
   getSessionRouteReadiness,
@@ -22,7 +22,7 @@ export type BootstrapRouteState = {
   onboardingCompleted: boolean;
   pathname: string;
   profileError: string | null;
-  session: Session | null;
+  session: AuthSession | null;
   hasLiveCapacity: boolean;
   hasProfileName: boolean;
   isProfileForSession: boolean;

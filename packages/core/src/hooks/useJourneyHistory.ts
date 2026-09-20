@@ -1,9 +1,6 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type { UserRewardsSnapshot } from '@repo/core/logic/domains/profile/ports';
+import { uiExperience } from '@repo/core/logic/managers/factory';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
-import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
-import type { UserGrowthState } from '@repo/core/types/Growth';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -39,26 +36,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_mood', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-
-      let query = supabaseClient.from('mood_logs').select('*').eq('user_id', userId);
-      query = applyTemporalFilter(query, {
-        column: 'created_at',
-        mode: 'event_time',
-        capability: 'event_stream',
-      });
-
-      const { data } = await query.order('created_at', { ascending: false });
-      return (data || []).map(
-        (item) =>
-          ({
-            id: item.id,
-            timestamp: item.created_at,
-            type: 'mood',
-            title: `Mood: ${item.mood_type}`,
-            description: item.note,
-            accentColor: '#F6BF8C',
-          }) as JourneyEvent,
-      );
+      return uiExperience.getMoodJourneyEvents(userId);
     },
     enabled: !!userId,
   });
@@ -68,25 +46,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_journal', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-      let query = supabaseClient.from('journal_entries').select('*').eq('user_id', userId);
-      query = applyTemporalFilter(query, {
-        column: 'created_at',
-        mode: 'event_time',
-        capability: 'event_stream',
-      });
-
-      const { data } = await query.order('created_at', { ascending: false });
-      return (data || []).map(
-        (item) =>
-          ({
-            id: item.id,
-            timestamp: item.created_at,
-            type: 'journal',
-            title: item.title || 'Untitled Entry',
-            description: item.content?.substring(0, 100),
-            accentColor: '#10B981',
-          }) as JourneyEvent,
-      );
+      return uiExperience.getJournalJourneyEvents(userId);
     },
     enabled: !!userId,
   });
@@ -95,44 +55,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_growth', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-
-      let query = supabaseClient
-        .from('user_growth_state_versions')
-        .select('id, operation, recorded_at, snapshot')
-        .eq('user_id', userId);
-
-      query = applyTemporalFilter(query, {
-        column: 'recorded_at',
-        mode: 'event_time',
-        capability: 'audit_history',
-      });
-
-      const { data } = await query.order('recorded_at', { ascending: false });
-      return (data || []).map(
-        (item) =>
-          ({
-            id: item.id,
-            timestamp: item.recorded_at,
-            type: 'growth',
-            title: `Growth moved through ${(item.snapshot as unknown as UserGrowthState)?.bhumi_stage ?? 'journey'}`,
-            description:
-              [
-                (item.snapshot as unknown as UserGrowthState)?.banyan_stage
-                  ? `Banyan ${(item.snapshot as unknown as UserGrowthState).banyan_stage}`
-                  : null,
-                (item.snapshot as unknown as UserGrowthState)?.river_stage
-                  ? `River ${(item.snapshot as unknown as UserGrowthState).river_stage}`
-                  : null,
-                (item.snapshot as unknown as UserGrowthState)?.crystal_tier
-                  ? `Crystal ${(item.snapshot as unknown as UserGrowthState).crystal_tier}`
-                  : null,
-              ]
-                .filter(Boolean)
-                .join(' " ') || 'Growth state updated',
-            metadata: item.snapshot as Record<string, unknown>,
-            accentColor: '#D97706',
-          }) as JourneyEvent,
-      );
+      return uiExperience.getGrowthJourneyEvents(userId);
     },
     enabled: !!userId,
   });
@@ -141,31 +64,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_rewards', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-
-      let query = supabaseClient
-        .from('user_rewards_versions')
-        .select('id, operation, recorded_at, snapshot')
-        .eq('user_id', userId);
-
-      query = applyTemporalFilter(query, {
-        column: 'recorded_at',
-        mode: 'event_time',
-        capability: 'audit_history',
-      });
-
-      const { data } = await query.order('recorded_at', { ascending: false });
-      return (data || []).map(
-        (item) =>
-          ({
-            id: item.id,
-            timestamp: item.recorded_at,
-            type: 'reward',
-            title: `Rewards ${item.operation}`,
-            description: `${(item.snapshot as unknown as UserRewardsSnapshot)?.points ?? 0} growth points " ${Array.isArray((item.snapshot as unknown as UserRewardsSnapshot)?.badges) ? (item.snapshot as unknown as UserRewardsSnapshot).badges.length : 0} badges`,
-            metadata: item.snapshot as Record<string, unknown>,
-            accentColor: '#7C3AED',
-          }) as JourneyEvent,
-      );
+      return uiExperience.getRewardJourneyEvents(userId);
     },
     enabled: !!userId,
   });
@@ -174,35 +73,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_moments', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-
-      let query = supabaseClient
-        .from('whispered_moments')
-        .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
-        .eq('user_id', userId);
-
-      query = applyTemporalFilter(query, {
-        column: 'awarded_at',
-        mode: 'event_time',
-        capability: 'event_stream',
-      });
-
-      const { data } = await query.order('awarded_at', { ascending: false });
-      return (data || []).map(
-        (item) =>
-          ({
-            id: item.id,
-            timestamp: item.awarded_at,
-            type: 'moment',
-            title: item.moment_name_en || item.moment_key,
-            description: item.moment_name_si,
-            metadata: {
-              key: item.moment_key,
-              name_en: item.moment_name_en,
-              name_si: item.moment_name_si,
-            },
-            accentColor: '#0EA5E9',
-          }) as JourneyEvent,
-      );
+      return uiExperience.getMomentJourneyEvents(userId);
     },
     enabled: !!userId,
   });

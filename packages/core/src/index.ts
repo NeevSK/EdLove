@@ -109,6 +109,11 @@ export {
 export { default as i18n } from '@repo/core/logic/i18n/config';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
 export { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+export {
+  classifyRouteIntent,
+  classifyRouteIntentEffect,
+  type RouteIntent,
+} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
 export * from '@repo/core/logic/capabilityDecision';
 export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';

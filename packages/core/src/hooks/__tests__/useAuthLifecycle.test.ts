@@ -1,8 +1,8 @@
-import type { Session } from '@supabase/supabase-js';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { describe, expect, it } from 'vitest';
 import { getVerifiedDeviceAccountProfile } from '../useAuthLifecycle';
 
-function session(overrides: Record<string, unknown> = {}): Session {
+function session(overrides: Record<string, unknown> = {}): AuthSession {
   return {
     access_token: 'access-token',
     refresh_token: 'refresh-token',
@@ -11,15 +11,13 @@ function session(overrides: Record<string, unknown> = {}): Session {
     token_type: 'bearer',
     user: {
       id: 'account-1',
-      aud: 'authenticated',
-      role: 'authenticated',
       email: 'member@example.com',
       app_metadata: {},
       user_metadata: {},
       created_at: '2026-09-01T00:00:00.000Z',
       ...overrides,
     },
-  } as Session;
+  };
 }
 
 const resolvedIdentity = {
@@ -59,7 +57,7 @@ describe('getVerifiedDeviceAccountProfile', () => {
       ),
     ).toBeNull();
     expect(getVerifiedDeviceAccountProfile(null, resolvedIdentity, null)).toBeNull();
-    expect(getVerifiedDeviceAccountProfile({} as Session, resolvedIdentity, null)).toBeNull();
+    expect(getVerifiedDeviceAccountProfile({} as AuthSession, resolvedIdentity, null)).toBeNull();
     expect(
       getVerifiedDeviceAccountProfile(session(), resolvedIdentity, 'other-subject'),
     ).toBeNull();

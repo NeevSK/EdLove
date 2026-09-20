@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-09-15
+updated: 2026-09-20
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -163,6 +163,8 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
 | [current_progress/2026-08-31-ad-center-phased-implementation-plan.md](current_progress/2026-08-31-ad-center-phased-implementation-plan.md) | 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI) |
 | [current_progress/2026-08-31-editorial-publishing-implementation-plan.md](current_progress/2026-08-31-editorial-publishing-implementation-plan.md) | Phased implementation plan for EdLove and GuruDevi journal foundations, distribution, translations, rights, and contributors |
+| [current_progress/2026-09-20-future-hardening-roadmap.md](current_progress/2026-09-20-future-hardening-roadmap.md) | Future hardening roadmap, completed milestones (OWASP, deep links, outbox, hexagonal decoupling), and remaining verification goals |
+| [current_progress/2026-09-20-offline-mutation-hardening-and-hexagonal-decoupling.md](current_progress/2026-09-20-offline-mutation-hardening-and-hexagonal-decoupling.md) | Architectural report on the completed zero-legacy Hexagonal Supabase migration, multi-tenant outbox hardening, and Effect-TS v4 facade alignment |
 
 ---
 
@@ -172,6 +174,7 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 
 | Document | Description |
 |---|---|
+| [architecture/route-intent-policy.md](architecture/route-intent-policy.md) | Canonical public-link, QR, auth-callback, web/mobile handoff, recovery, refactor, and evidence policy for Expo 57 and Next.js 16 |
 | [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md) | General dependency migration playbook (monorepo root) |
 | [infra/version-management.md](infra/version-management.md) | Version management analysis (changesets vs pnpm native) |
 | [infra/developer-workflow-guide.md](infra/developer-workflow-guide.md) | Standard local coding environment runbook and tips |

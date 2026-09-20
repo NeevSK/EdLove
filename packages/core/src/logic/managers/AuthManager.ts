@@ -2,6 +2,7 @@ import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import type {
   AccountDeletionRequest,
   AccountLifecycleStatus,
+  AuthChangeEvent,
   AuthSession,
   AuthUser,
   IAuthPort,
@@ -36,6 +37,12 @@ export class AuthManager {
 
   async getUser(): Promise<AuthUser | null> {
     return this.authPort.getUser();
+  }
+
+  onAuthStateChange(
+    callback: (event: AuthChangeEvent, session: AuthSession | null) => void | Promise<void>,
+  ) {
+    return this.authPort.onAuthStateChange(callback);
   }
 
   private async recordAuthMethodUsage(
@@ -337,7 +344,7 @@ export class AuthManager {
   /**
    * Sovereign Sign-Out Flow
    */
-  async signOut() {
+  async signOut(options?: { scope?: 'global' | 'local' | 'others' }) {
     // 1. Clear identity cache (usually in identityPort implementation)
     // In this manager pattern, we might need a dedicated clear method or it happens in identityPort.
 
@@ -365,7 +372,7 @@ export class AuthManager {
       outcome: 'success',
     });
 
-    await this.authPort.signOut();
+    await this.authPort.signOut(options);
   }
 
   async setSession(access_token: string, refresh_token: string) {

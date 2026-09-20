@@ -3,8 +3,9 @@ import { SovereignError } from '@repo/core/types/Errors';
 export class APIError extends SovereignError {
   public readonly code: string;
   public readonly reportedToTelemetry: boolean;
+  public override readonly cause?: unknown;
 
-  constructor(message: string, code = 'API_ERROR', details?: unknown, reportedToTelemetry = false) {
+  constructor(message: string, code = 'API_ERROR', details?: unknown, reportedToTelemetry = false, cause?: unknown) {
     const normalizedCode = code;
     super({
       title: message,
@@ -14,6 +15,7 @@ export class APIError extends SovereignError {
     });
     this.code = normalizedCode;
     this.reportedToTelemetry = reportedToTelemetry;
+    this.cause = cause ?? details;
     this.name = 'APIError';
   }
 }

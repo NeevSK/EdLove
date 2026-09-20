@@ -1,6 +1,7 @@
 ---
 title: "Feature Spec — Deep-Link Lifecycle Boundary"
-status: "implemented-code"
+status: "superseded"
+superseded_by: "../../../../docs/architecture/route-intent-policy.md"
 created: 2026-09-07
 updated: 2026-09-07
 author: "Naveen"
@@ -9,6 +10,9 @@ tags: [gurudevi, navigation, deep-links, auth, lifecycle, amber-zone]
 ---
 
 # Feature Spec — Deep-Link Lifecycle Boundary
+
+> Superseded by the cross-platform [Route Intent Policy](../../../../docs/architecture/route-intent-policy.md).
+> This feature specification remains a historical record of the implemented mobile slice.
 
 ## Blast zone
 

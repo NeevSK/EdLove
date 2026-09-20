@@ -1,6 +1,7 @@
 ---
 title: "GuruDevi URL and URI Boundary Implementation Plan"
-status: "active"
+status: "superseded"
+superseded_by: "../../../../docs/architecture/route-intent-policy.md"
 created: 2026-09-07
 updated: 2026-09-07
 author: "Naveen"
@@ -9,6 +10,9 @@ tags: [mobile, implementation-plan, url, uri, deep-links, auth, security]
 ---
 
 # GuruDevi URL and URI Boundary Implementation Plan
+
+> Superseded by the cross-platform [Route Intent Policy](../../../../docs/architecture/route-intent-policy.md).
+> This dated plan remains a record of the completed and pending September work.
 
 ## Purpose
 

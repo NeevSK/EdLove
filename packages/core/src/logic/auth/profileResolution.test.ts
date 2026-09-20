@@ -1,9 +1,9 @@
-import type { Session } from '@supabase/supabase-js';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { describe, expect, it, vi } from 'vitest';
 
 import { resolveAuthProfile } from './profileResolution';
 
-function session(): Session {
+function session(): AuthSession {
   return {
     access_token: 'access-token',
     refresh_token: 'refresh-token',
@@ -12,13 +12,11 @@ function session(): Session {
     token_type: 'bearer',
     user: {
       id: 'account-1',
-      aud: 'authenticated',
-      role: 'authenticated',
       app_metadata: {},
       user_metadata: {},
       created_at: '2026-09-01T00:00:00.000Z',
     },
-  } as Session;
+  };
 }
 
 describe('resolveAuthProfile', () => {

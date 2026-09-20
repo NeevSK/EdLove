@@ -1,6 +1,8 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
 import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
-import { Data, Duration, Effect, Schedule, Schema } from 'effect';
+import { resolveQR } from '@repo/core/logic/utils/QRResolver';
+import type { QRPayload } from '@repo/core/types/QRPayload';
+import { Data, Effect } from 'effect';
 
 export const MAX_DEEP_LINK_LENGTH = 8192;
 const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
@@ -43,6 +45,13 @@ export type DeepLinkValidationError =
   | DeepLinkTraversalError
   | DeepLinkHostOrSchemeError
   | DeepLinkParseError;
+
+export type RouteIntent =
+  | { readonly kind: 'authCallback'; readonly url: string }
+  | { readonly kind: 'classroomInvite'; readonly inviteCode: string; readonly url: string }
+  | { readonly kind: 'qr'; readonly payload: QRPayload; readonly url: string }
+  | { readonly kind: 'unsupported' }
+  | { readonly kind: 'rejected'; readonly reason: DeepLinkValidationError['_tag'] };
 
 function containsTraversal(value: string): boolean {
   try {
@@ -123,6 +132,50 @@ export const validateDeepLinkEffect = (
     );
   });
 
+export const classifyRouteIntentEffect = (
+  url: string,
+): Effect.Effect<Exclude<RouteIntent, { readonly kind: 'rejected' }>, DeepLinkValidationError> =>
+  Effect.gen(function* () {
+    const acceptedUrl = yield* validateDeepLinkEffect(url);
+    const parsed = new URL(acceptedUrl);
+    const qr = resolveQR(acceptedUrl);
+
+    if (qr.ok) {
+      return { kind: 'qr', payload: qr.payload, url: acceptedUrl } as const;
+    }
+
+    if (
+      (parsed.hostname === 'auth' && parsed.pathname === '/callback') ||
+      parsed.pathname === '/auth/callback'
+    ) {
+      return { kind: 'authCallback', url: acceptedUrl } as const;
+    }
+
+    const inviteMatch = parsed.pathname.match(/^\/invite\/classroom\/([^/]+)$/);
+    const encodedInviteCode = inviteMatch?.[1];
+    if (encodedInviteCode) {
+      const inviteCode = yield* Effect.try({
+        try: () => decodeURIComponent(encodedInviteCode),
+        catch: (cause) => new DeepLinkParseError({ url: acceptedUrl, cause }),
+      });
+      return {
+        kind: 'classroomInvite',
+        inviteCode,
+        url: acceptedUrl,
+      } as const;
+    }
+
+    return { kind: 'unsupported' } as const;
+  });
+
+export function classifyRouteIntent(url: string): RouteIntent {
+  return Effect.runSync(
+    classifyRouteIntentEffect(url).pipe(
+      Effect.catchAll((error) => Effect.succeed({ kind: 'rejected', reason: error._tag } as const)),
+    ),
+  );
+}
+
 /**
  * Synchronous bridge for legacy non-Effect consumers.
  */
@@ -136,24 +189,7 @@ export function normalizeAcceptedDeepLink(url: string): string | null {
 }
 
 export function isQRDeepLink(url: string): boolean {
-  if (
-    url.length > MAX_DEEP_LINK_LENGTH ||
-    FORBIDDEN_URL_PATTERN.test(url) ||
-    containsTraversal(url)
-  ) {
-    return false;
-  }
-  try {
-    const parsed = new URL(url);
-    return (
-      (parsed.protocol === 'gurudevi:' && parsed.hostname === 'qr') ||
-      (parsed.protocol === 'https:' &&
-        ALLOWED_WEB_HOSTS.has(parsed.hostname) &&
-        parsed.pathname === '/qr')
-    );
-  } catch {
-    return false;
-  }
+  return classifyRouteIntent(url).kind === 'qr';
 }
 
 export function normalizeAcceptedInternalRoute(path: string): string | null {

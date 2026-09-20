@@ -1,5 +1,6 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {
+  AuthChangeEvent,
   AuthMfaFactor,
   AuthSession,
   AuthUser,
@@ -10,6 +11,23 @@ import { APIError } from '@repo/core/types/API';
 export class SupabaseAuthAdapter implements IAuthPort {
   private get client() {
     return supabaseClient;
+  }
+
+  onAuthStateChange(
+    callback: (event: AuthChangeEvent, session: AuthSession | null) => void | Promise<void>,
+  ) {
+    const { data } = this.client.auth.onAuthStateChange((event, session) => {
+      callback(event as AuthChangeEvent, session as unknown as AuthSession | null);
+    });
+    return {
+      data: {
+        subscription: {
+          unsubscribe: () => {
+            data.subscription.unsubscribe();
+          },
+        },
+      },
+    };
   }
 
   async getSession(): Promise<AuthSession | null> {
@@ -266,8 +284,8 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
-  async signOut() {
-    const { error } = await this.client.auth.signOut();
+  async signOut(options?: { scope?: 'global' | 'local' | 'others' }) {
+    const { error } = await this.client.auth.signOut(options);
     if (error) throw new APIError('Failed to sign out', error.code, error);
   }
 

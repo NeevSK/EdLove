@@ -6,6 +6,7 @@ import {
 import { Effect } from 'effect';
 import { describe, expect, it } from 'vitest';
 import {
+  classifyRouteIntent,
   isQRDeepLink,
   normalizeAcceptedDeepLink,
   normalizeAcceptedInternalRoute,
@@ -120,10 +121,17 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
     });
 
     it('identifies canonical QR links correctly', () => {
-      expect(isQRDeepLink('gurudevi://qr?v=1&action=join_class')).toBe(true);
-      expect(isQRDeepLink('https://gurudevi.app/qr?v=1&action=join_school')).toBe(true);
+      expect(
+        isQRDeepLink('gurudevi://qr?v=1&action=join_class&classroom_id=class-1'),
+      ).toBe(true);
+      expect(
+        isQRDeepLink(
+          'https://gurudevi.app/qr?v=1&action=join_school&school_id=school-1&group_id=group-1',
+        ),
+      ).toBe(true);
       expect(isQRDeepLink('gurudevi://auth/callback')).toBe(false);
       expect(isQRDeepLink('https://evil.com/qr')).toBe(false);
+      expect(isQRDeepLink('gurudevi://qrevil?v=1&action=join_class')).toBe(false);
     });
 
     it('normalizes accepted internal routes strictly against route manifest', () => {
@@ -132,6 +140,36 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
       expect(normalizeAcceptedInternalRoute('/evil/route')).toBeNull();
       expect(normalizeAcceptedInternalRoute('//evil.com')).toBeNull();
       expect(normalizeAcceptedInternalRoute('/self/../admin')).toBeNull();
+    });
+  });
+
+  describe('route intent classification', () => {
+    it('classifies equivalent HTTPS and custom-scheme QR links to the same payload', () => {
+      const customScheme = classifyRouteIntent(
+        'gurudevi://qr?v=1&action=join_class&classroom_id=class-1',
+      );
+      const https = classifyRouteIntent(
+        'https://gurudevi.app/qr?v=1&action=join_class&classroom_id=class-1',
+      );
+
+      expect(customScheme).toMatchObject({
+        kind: 'qr',
+        payload: { action: 'join_class', classroom_id: 'class-1', v: 1 },
+      });
+      expect(https).toMatchObject({
+        kind: 'qr',
+        payload: { action: 'join_class', classroom_id: 'class-1', v: 1 },
+      });
+    });
+
+    it('separates unsupported valid links from rejected hostile input', () => {
+      expect(classifyRouteIntent('https://gurudevi.app/invite')).toEqual({
+        kind: 'unsupported',
+      });
+      expect(classifyRouteIntent('https://evil.example/qr?v=1')).toEqual({
+        kind: 'rejected',
+        reason: 'DeepLinkHostOrSchemeError',
+      });
     });
   });
 });

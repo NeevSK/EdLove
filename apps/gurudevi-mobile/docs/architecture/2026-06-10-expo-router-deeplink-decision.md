@@ -1,6 +1,7 @@
 ---
 title: "Expo Router Deep Link Decision"
-status: "active"
+status: "superseded"
+superseded_by: "../../../../docs/architecture/route-intent-policy.md"
 created: 2026-06-10
 updated: 2026-06-10
 author: "Naween"
@@ -9,6 +10,9 @@ tags: [expo-router, deep-linking, linking, routing, mobile, web]
 ---
 
 # Expo Router Deep Link Decision
+
+> Superseded by the cross-platform [Route Intent Policy](../../../../docs/architecture/route-intent-policy.md).
+> This record remains historical context for the earlier Expo Router decision.
 
 This note decides how `gurudevi-mobile` should handle internal sharing, QR flows, library-item links, and external app handoff while staying aligned with Expo Router.
 

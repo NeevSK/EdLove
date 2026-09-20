@@ -5,10 +5,10 @@
     "skipDefaultLibCheck": true,
     "noEmit": true,
     "lib": [
-      "es2020",
+      "es2022",
       "dom"
     ],
-    "target": "es2020",
+    "target": "es2022",
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",

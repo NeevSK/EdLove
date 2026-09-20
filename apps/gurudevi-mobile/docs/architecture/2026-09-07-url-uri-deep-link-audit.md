@@ -1,6 +1,7 @@
 ---
 title: "GuruDevi URL and URI Boundary Audit"
-status: "active"
+status: "superseded"
+superseded_by: "../../../../docs/architecture/route-intent-policy.md"
 created: 2026-09-07
 updated: 2026-09-07
 author: "Naveen"
@@ -9,6 +10,9 @@ tags: [mobile, architecture, audit, url, uri, deep-links, security]
 ---
 
 # GuruDevi URL and URI Boundary Audit
+
+> Superseded as implementation guidance by the cross-platform [Route Intent Policy](../../../../docs/architecture/route-intent-policy.md).
+> This audit remains historical evidence for the state inspected in September 2026.
 
 ## Scope and outcome
 

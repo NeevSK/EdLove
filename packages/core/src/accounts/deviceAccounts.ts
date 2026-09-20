@@ -1,4 +1,4 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { authAPI } from '@repo/core/api/auth';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
@@ -17,8 +17,8 @@ import {
   completeAccountLifecycleCommand,
 } from '@repo/core/logic/accountLifecycle';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
-import type { Session } from '@supabase/supabase-js';
 import * as Effect from 'effect/Effect';
 import * as Queue from 'effect/Queue';
 
@@ -84,7 +84,7 @@ function normalizeDeviceAccountError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }
 
-function toSessionTokens(session: Session) {
+function toSessionTokens(session: AuthSession) {
   return {
     access_token: session.access_token,
     refresh_token: session.refresh_token,
@@ -162,7 +162,7 @@ export const deviceAccounts = {
     return getActiveAccountId();
   },
 
-  async captureCurrentAccount(session: Session | null, profile?: DeviceAccountProfile | null) {
+  async captureCurrentAccount(session: AuthSession | null, profile?: DeviceAccountProfile | null) {
     if (!session?.user) return null;
 
     const authUserId = session.user.id;
@@ -244,12 +244,9 @@ export const deviceAccounts = {
     resetScopedStores();
     await rehydrateScopedStores();
 
-    const { error } = await supabaseClient.auth.setSession({
-      access_token: storedSession.access_token,
-      refresh_token: storedSession.refresh_token,
-    });
-
-    if (error) {
+    try {
+      await authAPI.setSession(storedSession.access_token, storedSession.refresh_token);
+    } catch (error) {
       // Treat account switching as a transaction. If the cached session is no
       // longer usable offline, restore the previous active account and leave
       // both account-scoped local databases untouched.
@@ -330,7 +327,7 @@ export const deviceAccounts = {
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await supabaseClient.auth.signOut({ scope: 'local' });
+    await authAPI.signOut({ scope: 'local' });
     return completeLocalAccountLifecycle({ kind: 'remove-remembered-account', accountId }, [
       { kind: 'remove-remembered-account', accountId },
     ]);
@@ -339,7 +336,7 @@ export const deviceAccounts = {
   async signOutCurrentAccount() {
     const activeAccountId = getActiveAccountId();
     if (!activeAccountId) {
-      await supabaseClient.auth.signOut({ scope: 'local' });
+      await authAPI.signOut({ scope: 'local' });
       resetScopedStores();
       await rehydrateScopedStores();
       return completeLocalAccountLifecycle({ kind: 'sign-out-current-device' }, [
@@ -399,7 +396,7 @@ export const deviceAccounts = {
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await supabaseClient.auth.signOut({ scope: 'local' });
+    await authAPI.signOut({ scope: 'local' });
     return completeLocalAccountLifecycle({ kind: 'sign-out-all-local-accounts' }, [
       { kind: 'clear-all-remembered-accounts' },
     ]);

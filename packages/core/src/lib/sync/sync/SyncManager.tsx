@@ -46,15 +46,25 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
       return;
     }
 
+    const activeUserId = useStore.getState().user?.id;
+    // Multi-tenant session quarantine: only replay mutations belonging to active user or legacy unassigned
+    const eligibleQueue = queue.filter(
+      (item) => !item.userId || item.userId === activeUserId,
+    );
+
+    if (eligibleQueue.length === 0) {
+      return;
+    }
+
     setSyncing(true);
-    sovereignBus.emit('sync:started', { queueLength: queue.length });
-    leaveBreadcrumb('sync', `Sync started: ${queue.length} items`, 'info');
+    sovereignBus.emit('sync:started', { queueLength: eligibleQueue.length });
+    leaveBreadcrumb('sync', `Sync started: ${eligibleQueue.length} items`, 'info');
     if (__DEV__) {
-      console.log(`[ResonantSync] Analyzing outbox: ${queue.length} items pending.`);
+      console.log(`[ResonantSync] Analyzing outbox: ${eligibleQueue.length} items pending for session.`);
     }
 
     // Monotonic Ordering: Sort by logicalClock (or timestamp fallback) to guarantee FIFO order immune to local clock skew
-    const currentQueue = [...queue].sort((a, b) => {
+    const currentQueue = [...eligibleQueue].sort((a, b) => {
       if (a.logicalClock !== undefined && b.logicalClock !== undefined) {
         return a.logicalClock - b.logicalClock;
       }

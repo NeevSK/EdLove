@@ -1,5 +1,5 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useTracking } from '@repo/core/hooks/useTracking';
+import { uiExperience } from '@repo/core/logic/managers/factory';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useCallback, useMemo, useState } from 'react';
@@ -35,26 +35,12 @@ export function useManualSnapshot() {
 
       setIsSaving(true);
       try {
-        // In a real implementation, we would aggregate current state of all features here.
-        // For now, we capture the core temporal context and label.
-        const { data, error } = await supabaseClient
-          .from('snapshot_moments')
-          .insert([
-            {
-              user_id: userId,
-              // Keep database writes compatible with the current schema.
-              resonance_date: viewDate,
-              label,
-              metadata: {
-                ...additionalMetadata,
-                captured_at: new Date().toISOString(),
-              },
-            },
-          ])
-          .select()
-          .single();
-
-        if (error) throw error;
+        const data = await uiExperience.createSnapshotMoment({
+          userId,
+          resonanceDate: viewDate,
+          label,
+          metadata: additionalMetadata,
+        });
 
         // Analytics
         trackSnapshot(label, viewDate).catch((e) => {

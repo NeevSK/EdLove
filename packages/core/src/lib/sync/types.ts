@@ -25,6 +25,9 @@ export interface QueuedMutation {
   lockLeaseExpiresAt?: number; // Epoch ms lease lock to recover from abrupt OS process suspension
 }
 
+export const MAX_MUTATION_QUEUE_SIZE = 500;
+export const MAX_DEAD_LETTER_QUEUE_SIZE = 100;
+
 export type QueuedMutationDispatchResult = false | 'dispatched';
 
 export interface MutationQueueState {
@@ -40,6 +43,7 @@ export interface MutationQueueState {
   clearQueue: () => void;
   clearDeadLetterQueue: () => void;
   setSyncing: (isSyncing: boolean) => void;
+  getQueueForUser: (userId?: string) => QueuedMutation[];
 }
 
 export type MutationOutcome =

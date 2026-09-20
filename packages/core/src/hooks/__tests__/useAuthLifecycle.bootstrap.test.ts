@@ -1,9 +1,9 @@
-import type { Session } from '@supabase/supabase-js';
+import type { AuthChangeEvent, AuthSession } from '@repo/core/logic/ports/auth.port';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const lifecycleMocks = vi.hoisted(() => ({
   authStateListener: undefined as
-    | ((event: string, session: Session | null) => Promise<void>)
+    | ((event: AuthChangeEvent, session: AuthSession | null) => Promise<void>)
     | undefined,
   getAuthSession: vi.fn(),
   onAuthStateChange: vi.fn(),
@@ -43,20 +43,22 @@ vi.mock('@repo/core/accounts/authenticatedAccountCapture', () => ({
 vi.mock('@repo/core/accounts/deviceAccounts', () => ({
   deviceAccounts: { list: vi.fn().mockResolvedValue([]) },
 }));
-vi.mock('@repo/core/adapters/supabaseClient', () => ({
-  supabaseClient: {
-    auth: { onAuthStateChange: lifecycleMocks.onAuthStateChange, signOut: vi.fn() },
-    channel: vi.fn().mockReturnValue({
-      on: vi.fn().mockReturnThis(),
-      subscribe: vi.fn(),
-    }),
-    removeChannel: vi.fn().mockResolvedValue(undefined),
+vi.mock('@repo/core/logic/managers/factory', () => ({
+  realtime: {
+    subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn().mockResolvedValue(undefined) }),
   },
 }));
 vi.mock('@repo/core/api/auth', () => ({
   authAPI: {
     getAccountLifecycleStatus: vi.fn(),
     getAuthSession: lifecycleMocks.getAuthSession,
+    onAuthStateChange: lifecycleMocks.onAuthStateChange,
+    signOut: vi.fn(),
+  },
+}));
+vi.mock('@repo/core/api/school', () => ({
+  schoolAPI: {
+    getSchool: vi.fn().mockResolvedValue({ type: null }),
   },
 }));
 vi.mock('@repo/core/api/highways', () => ({ assertHighway: vi.fn() }));
@@ -81,7 +83,7 @@ vi.mock('@repo/core/store/useStore', () => {
 
 import { useAuthLifecycle } from '../useAuthLifecycle';
 
-function session(overrides: Record<string, unknown> = {}): Session {
+function session(overrides: Record<string, unknown> = {}): AuthSession {
   return {
     access_token: 'access-token',
     refresh_token: 'refresh-token',
@@ -90,15 +92,13 @@ function session(overrides: Record<string, unknown> = {}): Session {
     token_type: 'bearer',
     user: {
       id: 'account-1',
-      aud: 'authenticated',
-      role: 'authenticated',
       email: 'member@example.com',
       app_metadata: {},
       user_metadata: {},
       created_at: '2026-09-01T00:00:00.000Z',
       ...overrides,
     },
-  } as Session;
+  };
 }
 
 describe('useAuthLifecycle bootstrap ordering', () => {
@@ -117,10 +117,10 @@ describe('useAuthLifecycle bootstrap ordering', () => {
   });
 
   it('keeps a newer auth event when the initial session lookup resolves late', async () => {
-    let resolveInitialSession: (value: Session | null) => void = () => undefined;
+    let resolveInitialSession: (value: AuthSession | null) => void = () => undefined;
     lifecycleMocks.getAuthSession.mockImplementation(
       () =>
-        new Promise<Session | null>((resolve) => {
+        new Promise<AuthSession | null>((resolve) => {
           resolveInitialSession = resolve;
         }),
     );

@@ -1,12 +1,11 @@
 import { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 import type { IdentityAvailability } from '@repo/core/logic/auth/identityState';
-import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
-import type { Session } from '@supabase/supabase-js';
+import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
 import type React from 'react';
 import { createContext, type ReactNode, useContext } from 'react';
 
 interface AuthContextType {
-  session: Session | null;
+  session: AuthSession | null;
   loading: boolean;
   isProfileLoading: boolean;
   isProfileResolving: boolean;

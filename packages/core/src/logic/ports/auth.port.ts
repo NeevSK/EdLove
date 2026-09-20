@@ -1,13 +1,32 @@
+export interface AuthUser {
+  id: string;
+  email?: string | null;
+  user_metadata?: Record<string, any>;
+  app_metadata?: Record<string, any>;
+  is_anonymous?: boolean | null;
+  created_at?: string;
+}
+
 export interface AuthSession {
   access_token: string;
   refresh_token: string;
-  user: any;
+  expires_in?: number;
+  expires_at?: number;
+  token_type?: string;
+  user: AuthUser;
 }
 
-export interface AuthUser {
-  id: string;
-  email?: string;
-  user_metadata?: Record<string, any>;
+export type AuthChangeEvent =
+  | 'SIGNED_IN'
+  | 'SIGNED_OUT'
+  | 'USER_UPDATED'
+  | 'USER_DELETED'
+  | 'PASSWORD_RECOVERY'
+  | 'TOKEN_REFRESHED'
+  | 'MFA_CHALLENGE_VERIFIED';
+
+export interface AuthSubscription {
+  unsubscribe: () => void;
 }
 
 export interface AuthMfaFactor {
@@ -46,6 +65,10 @@ export interface AccountLifecycleStatus {
 export interface IAuthPort {
   getSession(): Promise<AuthSession | null>;
   getUser(): Promise<AuthUser | null>;
+
+  onAuthStateChange(
+    callback: (event: AuthChangeEvent, session: AuthSession | null) => void | Promise<void>,
+  ): { data: { subscription: AuthSubscription } };
 
   signInWithPassword(
     email: string,
@@ -152,7 +175,7 @@ export interface IAuthPort {
     data?: Record<string, any>;
   }): Promise<{ user: AuthUser | null }>;
 
-  signOut(): Promise<void>;
+  signOut(options?: { scope?: 'global' | 'local' | 'others' }): Promise<void>;
 
   executeRpc(fn: string, params?: Record<string, any>): Promise<any>;
 }

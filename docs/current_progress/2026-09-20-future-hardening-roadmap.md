@@ -19,12 +19,14 @@ tags: [roadmap, todo, production-hardening, ratchet, future-work]
 - [x] **OWASP 2026 Threat Defense**: Deep link sanitization, 8192-char length cap, traversal rejection, and forbidden character filtering.
 - [x] **Anti-Replay CSRF Guard**: Cryptographic 32-char hex state tokens with 15-min TTL and single-use validation (`DeepLinkStateGuard`).
 - [x] **Canonical Route Topology**: Centralized `routeManifest.ts` without `/app/` prefixes across mobile and web.
+- [x] **Zero-Legacy Hexagonal Supabase Decoupling**: 100% elimination of direct client imports in UI hooks and payments via `UIExperienceRepository` and `PaymentsRepository`.
+- [x] **J2/J3 Offline Mutation Pipeline Production Hardening**: Multi-tenant outbox partitioning (`userId`), in-flight tap debouncing, bounded capacity (`MAX_MUTATION_QUEUE_SIZE = 500`), and Effect-TS v4 `OfflineMutationError` unwrapping.
 - [x] **Effect-TS v4-Ready Logic**: Parameterless `Effect.gen(function* () { ... })` and `Data.TaggedError` models.
-- [x] **G0 to G3 Multi-Tier Test Suite**: 197 core unit tests, 39 web tests, and 263 mobile tests passing with 0 failures.
+- [x] **G0 to G3 Multi-Tier Test Suite**: 125 core test suites (594 tests), dedicated adapter & hook contract tests passing with 0 failures.
 
 ---
 
-## 2. Near-Term Milestones & Roadmap (TODOs)
+## 2. Near-Term Milestones & Roadmap (Remaining TODOs)
 
 ### Phase 1: Physical Device & Multi-Network Verification (G5)
 - [ ] **G5 Device Runs (iOS & Low-End Android)**:
@@ -32,19 +34,9 @@ tags: [roadmap, todo, production-hardening, ratchet, future-work]
   - Test deep link intent dispatch via ADB: `adb shell am start -W -a android.intent.action.VIEW -d "gurudevi://auth/callback?code=test-code" app.gurudevi.mobile`.
   - Verify app behavior across 3 network conditions: 4G/WiFi (Fast), 3G Throttle (Slow), and Airplane Mode (Offline).
 
-### Phase 2: Journey 2 (Primary Create / Edit) Adversarial Hardening
-- [ ] **J2 Mutation Recovery & Idempotency**:
-  - Implement and test duplicate-tap resilience for classroom post / comment creation.
-  - Test interrupted mutations, local draft persistence in SQLite/MMKV, and optimistic rollback on 5xx server rejection.
-
-### Phase 3: Journey 3 (Return & Synchronization) Adversarial Hardening
-- [ ] **J3 Offline Queue & Sync Replay**:
-  - Test queue replay during offline-to-online transitions under PowerSync.
-  - Test multi-account switching isolation: ensure User A's pending offline mutations are never dispatched under User B's active session.
-
-### Phase 4: CI/CD Ratchet Automation
+### Phase 2: CI/CD Ratchet Automation
 - [ ] **Diff-Scoped Ratchet in GitHub Actions**:
-  - Integrate `audit-test-evidence-levels.mjs` and `check:anti-slop` in CI scoped to PR changed files.
+  - Integrate `audit-test-evidence-levels.mjs`, `check:supabase-boundaries`, and `check:anti-slop` in CI scoped to PR changed files.
   - Enforce machine-readable waivers for temporary waivers with explicit expiry dates.
 
 ---

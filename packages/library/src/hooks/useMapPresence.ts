@@ -1,6 +1,5 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import { realtime } from '@repo/core/logic/managers/factory';
+import type { RealtimePresenceSubscription } from '@repo/core/logic/ports/realtime.port';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface MapPresence {
@@ -21,17 +20,11 @@ export interface MapPresence {
  */
 export function useMapPresence(channelName: string = 'presence:map:global') {
   const [presences, setPresences] = useState<MapPresence[]>([]);
-  const channelRef = useRef<RealtimeChannel | null>(null);
+  const subscriptionRef = useRef<RealtimePresenceSubscription<MapPresence> | null>(null);
 
   useEffect(() => {
-    const channel = supabase.channel(channelName);
-    channelRef.current = channel;
-
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        const flattened: MapPresence[] = Object.values(state).flat() as any;
-
+    const subscription = realtime.subscribePresence<MapPresence>(channelName, {
+      onSync: (flattened) => {
         // Only keep presences that have some coordinate data
         setPresences(
           flattened.filter(
@@ -40,12 +33,14 @@ export function useMapPresence(channelName: string = 'presence:map:global') {
               (p.map_x !== undefined && p.map_y !== undefined),
           ),
         );
-      })
-      .subscribe();
+      },
+    });
+
+    subscriptionRef.current = subscription;
 
     return () => {
-      supabase.removeChannel(channel);
-      channelRef.current = null;
+      void subscription.unsubscribe();
+      subscriptionRef.current = null;
     };
   }, [channelName]);
 
@@ -62,10 +57,10 @@ export function useMapPresence(channelName: string = 'presence:map:global') {
       role: string;
       userId: string;
     }) => {
-      if (!channelRef.current) return;
+      if (!subscriptionRef.current) return;
 
       // Privacy: Round coordinates to protected precisions
-      const payload: Partial<MapPresence> = {
+      const payload: MapPresence = {
         userId: location.userId,
         latitude: location.latitude ? Math.round(location.latitude * 1000) / 1000 : undefined,
         longitude: location.longitude ? Math.round(location.longitude * 1000) / 1000 : undefined,
@@ -77,7 +72,7 @@ export function useMapPresence(channelName: string = 'presence:map:global') {
       };
 
       try {
-        await channelRef.current.track(payload);
+        await subscriptionRef.current.track(payload);
       } catch (error) {
         console.error('Failed to track map presence:', error);
       }

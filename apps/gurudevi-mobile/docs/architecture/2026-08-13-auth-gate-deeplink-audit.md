@@ -1,6 +1,7 @@
 ---
 title: "Auth Gate and Deep Link Audit"
-status: "active"
+status: "superseded"
+superseded_by: "../../../../docs/architecture/route-intent-policy.md"
 created: 2026-08-13
 updated: 2026-08-13
 author: "opencode"
@@ -8,6 +9,9 @@ tags: [auth, deep-linking, expo-router, device-control, audit, automation]
 ---
 
 # Auth Gate and Deep Link Audit
+
+> Superseded as implementation guidance by the cross-platform [Route Intent Policy](../../../../docs/architecture/route-intent-policy.md).
+> This audit remains a point-in-time record of its inspected state.
 
 Readiness audit for the Phase 2 device-control agent: can a headless agent log
 in and drive flows deterministically? Scope: auth gates (route-level) and deep

@@ -1,4 +1,4 @@
-import type { Session } from '@supabase/supabase-js';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetString = vi.fn();
@@ -48,12 +48,10 @@ vi.mock('../../api/identity', () => ({
   },
 }));
 
-vi.mock('@repo/core/adapters/supabaseClient', () => ({
-  supabaseClient: {
-    auth: {
-      setSession: (...args: unknown[]) => mockSetSession(...args),
-      signOut: (...args: unknown[]) => mockSignOut(...args),
-    },
+vi.mock('@repo/core/api/auth', () => ({
+  authAPI: {
+    setSession: (...args: unknown[]) => mockSetSession(...args),
+    signOut: (...args: unknown[]) => mockSignOut(...args),
   },
 }));
 
@@ -137,14 +135,12 @@ describe('deviceAccounts', () => {
       token_type: 'bearer',
       user: {
         id: 'anonymous-1',
-        aud: 'authenticated',
-        role: 'authenticated',
         app_metadata: {},
         user_metadata: {},
         created_at: '2026-09-01T00:00:00.000Z',
         is_anonymous: true,
       },
-    } as Session;
+    } as AuthSession;
     const sandboxSession = {
       access_token: 'sandbox-access-token',
       refresh_token: 'sandbox-refresh-token',
@@ -152,13 +148,11 @@ describe('deviceAccounts', () => {
       token_type: 'bearer',
       user: {
         id: 'sandbox-1',
-        aud: 'authenticated',
-        role: 'authenticated',
         app_metadata: {},
         user_metadata: { experience_mode: 'sandbox' },
         created_at: '2026-09-01T00:00:00.000Z',
       },
-    } as Session;
+    } as AuthSession;
 
     await expect(deviceAccounts.captureCurrentAccount(anonymousSession, null)).resolves.toBeNull();
     await expect(deviceAccounts.captureCurrentAccount(sandboxSession, null)).resolves.toBeNull();
@@ -186,10 +180,10 @@ describe('deviceAccounts', () => {
 
     await deviceAccounts.switchTo('account-1');
 
-    expect(mockSetSession).toHaveBeenCalledWith({
-      access_token: validAccessToken,
-      refresh_token: validRefreshToken,
-    });
+    expect(mockSetSession).toHaveBeenCalledWith(
+      validAccessToken,
+      validRefreshToken,
+    );
     expect(mockTouchCurrentDevice).toHaveBeenCalledWith('account-1');
   });
 
@@ -202,15 +196,17 @@ describe('deviceAccounts', () => {
       }
       return null;
     });
+    mockGetStoredSessionForAccount.mockResolvedValue(null);
+    mockSignOut.mockResolvedValue(undefined);
 
-    await deviceAccounts.signOutCurrentAccount();
+    await deviceAccounts.removeAccount('account-1');
 
-    expect(mockRevokeMyInstallSecuritySessions).toHaveBeenCalled();
     expect(mockSignOut).toHaveBeenCalledWith({ scope: 'local' });
   });
 
   it('falls back to the next stored account when removing the active one', async () => {
     setActiveAccountId('account-1');
+    mockGetInstallId.mockResolvedValue('install-1');
     mockGetStoredSessionForAccount.mockImplementation((accountId: string) =>
       Promise.resolve(
         accountId === 'account-2'
@@ -235,10 +231,10 @@ describe('deviceAccounts', () => {
 
     await deviceAccounts.removeAccount('account-1');
 
-    expect(mockSetSession).toHaveBeenCalledWith({
-      access_token: `${validAccessToken.slice(0, -9)}account2`,
-      refresh_token: 'refresh-token-account-2',
-    });
+    expect(mockSetSession).toHaveBeenCalledWith(
+      `${validAccessToken.slice(0, -9)}account2`,
+      'refresh-token-account-2',
+    );
     expect(mockSignOut).not.toHaveBeenCalled();
   });
 

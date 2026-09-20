@@ -1,7 +1,12 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
-import type { MutationQueueState, QueuedMutation } from '@repo/core/lib/sync/types';
+import {
+  MAX_DEAD_LETTER_QUEUE_SIZE,
+  MAX_MUTATION_QUEUE_SIZE,
+  type MutationQueueState,
+  type QueuedMutation,
+} from '@repo/core/lib/sync/types';
 import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -55,9 +60,14 @@ export const useMutationQueue = create<MutationQueueState>()(
           logicalClock: highestLogicalClock + 1,
         };
 
-        set((state) => ({
-          queue: [...state.queue, newMutation],
-        }));
+        set((state) => {
+          // Bounded capacity: maintain at most MAX_MUTATION_QUEUE_SIZE items, evicting oldest
+          const nextQueue = [...state.queue, newMutation];
+          if (nextQueue.length > MAX_MUTATION_QUEUE_SIZE) {
+            nextQueue.splice(0, nextQueue.length - MAX_MUTATION_QUEUE_SIZE);
+          }
+          return { queue: nextQueue };
+        });
       },
 
       removeFromQueue: (id) => {
@@ -69,10 +79,16 @@ export const useMutationQueue = create<MutationQueueState>()(
       moveToDeadLetter: (id, reason) => {
         const item = get().queue.find((m) => m.id === id);
         if (item) {
-          set((state) => ({
-            queue: state.queue.filter((m) => m.id !== id),
-            deadLetterQueue: [...state.deadLetterQueue, { ...item, lastError: reason }],
-          }));
+          set((state) => {
+            const nextDlq = [...state.deadLetterQueue, { ...item, lastError: reason }];
+            if (nextDlq.length > MAX_DEAD_LETTER_QUEUE_SIZE) {
+              nextDlq.splice(0, nextDlq.length - MAX_DEAD_LETTER_QUEUE_SIZE);
+            }
+            return {
+              queue: state.queue.filter((m) => m.id !== id),
+              deadLetterQueue: nextDlq,
+            };
+          });
         }
       },
 
@@ -93,6 +109,14 @@ export const useMutationQueue = create<MutationQueueState>()(
       setSyncing: (isSyncing) => {
         set({ isSyncing });
       },
+
+      getQueueForUser: (userId?: string) => {
+        const currentQueue = get().queue;
+        if (!userId) {
+          return currentQueue.filter((m) => !m.userId);
+        }
+        return currentQueue.filter((m) => m.userId === userId);
+      },
     }),
     {
       name: 'gurudevi-mutation-queue',
@@ -100,3 +124,4 @@ export const useMutationQueue = create<MutationQueueState>()(
     },
   ),
 );
+

@@ -10,7 +10,7 @@ import * as Data from 'effect/Data';
  */
 
 export class OfflineMutationError extends Data.TaggedError('OfflineMutationError')<{
-  readonly cause: unknown;
+  readonly cause?: unknown;
   readonly operation?: string;
 }> {
   override get message(): string {
@@ -19,6 +19,7 @@ export class OfflineMutationError extends Data.TaggedError('OfflineMutationError
       : 'Offline mutation failed';
   }
 }
+
 
 export class NetworkError extends Data.TaggedError('NetworkError')<{
   readonly cause: unknown;

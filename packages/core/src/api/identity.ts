@@ -1,9 +1,9 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { assertHighway } from '@repo/core/api/highways';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import type { Session } from '@supabase/supabase-js';
 
 /**
  * Simplified bond structure returned by the identity API
@@ -34,7 +34,7 @@ export interface ActiveCitizen {
 
 const inFlightIdentityRequests = new Map<string, Promise<ActiveCitizen | null>>();
 
-export function getIdentityRequestKey(session: Session | null): string | null {
+export function getIdentityRequestKey(session: AuthSession | null): string | null {
   if (!session?.user) return null;
   return `${session.user.id}:${session.access_token}`;
 }

@@ -14,7 +14,9 @@ const storageMocks = vi.hoisted(() => ({
 const payload = { action: 'join_class' as const, classroom_id: 'class-1', v: 1 as const };
 
 vi.mock('@react-native-async-storage/async-storage', () => ({ default: storageMocks }));
-vi.mock('@repo/core/logic', () => ({ resolveQR: vi.fn(() => ({ ok: true, payload })) }));
+const classifyRouteIntent = vi.hoisted(() => vi.fn(() => ({ kind: 'qr' as const, payload })));
+
+vi.mock('@repo/core/logic', () => ({ classifyRouteIntent }));
 vi.mock('react-native', () => ({
   Linking: {
     addEventListener: vi.fn(() => ({ remove: vi.fn() })),
@@ -47,5 +49,13 @@ describe('QR pending-action boundary', () => {
 
     expect(onQRAction).toHaveBeenCalledWith(payload);
     await expect(redeemPendingQRAction()).resolves.toBeNull();
+  });
+
+  it('does not persist or dispatch an unsupported URL', async () => {
+    classifyRouteIntent.mockReturnValueOnce({ kind: 'unsupported' });
+
+    await expect(dispatchQRDeepLink('https://evil.example/qr')).resolves.toBe(false);
+
+    expect(storageMocks.setItem).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,5 @@
 import { Ledger } from '@repo/accounting';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { paymentsAPI } from '@repo/core/api/orchestration/erp';
 
 import type { PaymentStatus } from '@repo/payments/types';
 
@@ -15,14 +15,8 @@ export class PaymentService {
     if (status !== 'succeeded') return;
 
     // 1. Get Payment Details
-    const { data: payment, error: pError } = await supabase
-      .schema('payments')
-      .from('transactions')
-      .select('*')
-      .eq('id', paymentIntentId)
-      .single();
-
-    if (pError) throw pError;
+    const payment = await paymentsAPI.getTransactionById(paymentIntentId);
+    if (!payment) throw new Error(`Payment transaction ${paymentIntentId} not found`);
 
     // 2. Record in Ledger (Double Entry)
     const tx = await Ledger.recordTransaction(
@@ -49,15 +43,6 @@ export class PaymentService {
     );
 
     // 3. Link back to Payment Transaction
-    const { error: updateError } = await supabase
-      .schema('payments')
-      .from('transactions')
-      .update({
-        status: 'succeeded',
-        ledger_transaction_id: tx.id,
-      })
-      .eq('id', paymentIntentId);
-
-    if (updateError) throw updateError;
+    await paymentsAPI.finalizeTransaction(paymentIntentId, tx.id);
   }
 }

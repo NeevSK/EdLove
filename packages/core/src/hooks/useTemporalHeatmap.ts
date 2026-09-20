@@ -1,4 +1,4 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { uiExperience } from '@repo/core/logic/managers/factory';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { useQuery } from '@tanstack/react-query';
@@ -23,41 +23,8 @@ export function useTemporalHeatmap(year: number) {
     queryKey: ['temporal_heatmap', userId, year],
     queryFn: async () => {
       if (!userId) return [];
-
       const range = getTemporalRange(`${year}-01-01`, 'year');
-
-      const [moodRes, journalRes] = await Promise.all([
-        supabaseClient
-          .from('mood_logs')
-          .select('created_at')
-          .eq('user_id', userId)
-          .gte('created_at', range.start)
-          .lte('created_at', range.end),
-        supabaseClient
-          .from('journal_entries')
-          .select('created_at')
-          .eq('user_id', userId)
-          .gte('created_at', range.start)
-          .lte('created_at', range.end),
-      ]);
-
-      const countsByDate: Record<string, number> = {};
-
-      const process = (items: Array<{ created_at: string }>) => {
-        items.forEach((item) => {
-          const day = item.created_at.split('T')[0] || item.created_at;
-          countsByDate[day] = (countsByDate[day] || 0) + 1;
-        });
-      };
-
-      process((moodRes.data || []) as Array<{ created_at: string }>);
-      process((journalRes.data || []) as Array<{ created_at: string }>);
-
-      return Object.entries(countsByDate).map(([date, count]) => ({
-        date,
-        count,
-        intensity: Math.min(Math.ceil(count / 2), 4),
-      }));
+      return uiExperience.getTemporalHeatmap(userId, range);
     },
     enabled: !!userId,
   });

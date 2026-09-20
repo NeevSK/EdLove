@@ -121,6 +121,21 @@ describe('QRResolver (G0 Contract & G1 Boundary Tests)', () => {
         raw: 'random string not a QR format',
       });
     });
+
+    it('rejects lookalike schemes and HTTPS paths rather than prefix-matching them', () => {
+      expect(resolveQR('gurudevi://qrevil?v=1&action=join_class&classroom_id=cls-1')).toEqual({
+        ok: false,
+        error: 'invalid',
+        raw: 'gurudevi://qrevil?v=1&action=join_class&classroom_id=cls-1',
+      });
+      expect(
+        resolveQR('https://gurudevi.app/qr-extra?v=1&action=join_class&classroom_id=cls-1'),
+      ).toEqual({
+        ok: false,
+        error: 'invalid',
+        raw: 'https://gurudevi.app/qr-extra?v=1&action=join_class&classroom_id=cls-1',
+      });
+    });
   });
 
   describe('Legacy QR Formats Support', () => {

@@ -94,6 +94,16 @@
       "import": "./src/logic/events/*.ts",
       "default": "./src/logic/events/*.ts"
     },
+    "./logic/deeplink/deepLinkPolicyPipeline": {
+      "types": "./src/logic/deeplink/deepLinkPolicyPipeline.ts",
+      "import": "./src/logic/deeplink/deepLinkPolicyPipeline.ts",
+      "default": "./src/logic/deeplink/deepLinkPolicyPipeline.ts"
+    },
+    "./routing/routeManifest": {
+      "types": "./src/routing/routeManifest.ts",
+      "import": "./src/routing/routeManifest.ts",
+      "default": "./src/routing/routeManifest.ts"
+    },
     "./logic/reflection": {
       "types": "./src/logic/reflection/index.ts",
       "import": "./src/logic/reflection/index.ts",
@@ -257,6 +267,11 @@
       "types": "./src/constants/*.ts",
       "import": "./src/constants/*.ts",
       "default": "./src/constants/*.ts"
+    },
+    "./config/publicUrls": {
+      "types": "./src/config/publicUrls.ts",
+      "import": "./src/config/publicUrls.ts",
+      "default": "./src/config/publicUrls.ts"
     },
     "./grading": {
       "types": "./src/logic/grading/index.ts",

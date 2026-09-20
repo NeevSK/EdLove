@@ -1,12 +1,12 @@
+import { OfflineMutationError, runToPromise } from '@repo/core/effect';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { networkManager } from '@repo/core/logic/managers/NetworkManager';
-import { useStore } from '@repo/core/store/useStore';
-import { executeMutation$, OfflineMutationError } from '@repo/core/utils/mutation';
-import * as Effect from 'effect/Effect';
-import { useCallback, useState } from 'react';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { executeMutation$ } from '@repo/core/utils/mutation';
+import { useCallback, useRef, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 
 interface SafeMutationOptions<TData, TVariables> {
@@ -27,6 +27,9 @@ interface SafeMutationOptions<TData, TVariables> {
  * Upgraded with:
  * - Resonant Audit Logging (Temporal memory)
  * - Deterministic Idempotency Keys (Spatial dedup)
+ * - Account-isolated Multi-Tenant Outbox Routing
+ * - In-Flight Tap Debouncing
+ * - Effect-TS v4 future-ready error boundaries
  */
 export function useSafeMutation<TData, TVariables>(
   mutationFn: (variables: TVariables) => Promise<TData>,
@@ -34,12 +37,27 @@ export function useSafeMutation<TData, TVariables>(
 ) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const showToast = useStore((state) => state.showToast);
+  const inFlightKeysRef = useRef<Set<string>>(new Set());
+  const showToast = useAuthStore((state) => state.showToast);
   const addToQueue = useMutationQueue((state) => state.addToQueue);
   const logAudit = useMutationAuditLog((state) => state.logEntry);
 
   const mutate = useCallback(
     async (variables: TVariables) => {
+      const scope = options?.scope || 'general';
+      const name = options?.mutationKey || 'mutation';
+      const studentId = useAuthStore.getState().user?.id;
+      const idempotencyKey = await generateIdempotencyKey(scope, name, variables, studentId);
+
+      // In-flight Tap Debounce Protection: Prevent identical rapid taps from kicking off duplicate network calls
+      if (inFlightKeysRef.current.has(idempotencyKey)) {
+        if (__DEV__) {
+          console.log(`[useSafeMutation] In-flight tap suppressed: ${name}`);
+        }
+        return null as TData;
+      }
+      inFlightKeysRef.current.add(idempotencyKey);
+
       setIsLoading(true);
       setError(null);
 
@@ -48,12 +66,13 @@ export function useSafeMutation<TData, TVariables>(
       }
 
       try {
-        const result = await Effect.runPromise(
+        const result = await runToPromise(
           executeMutation$({
             isConnected: () => networkManager.isConnected(),
             mutation: () => mutationFn(variables),
             retryCount: options?.retryCount,
           }),
+          'SAFE_MUTATION_EXECUTION',
         );
 
         if (options?.onSuccess) {
@@ -64,16 +83,16 @@ export function useSafeMutation<TData, TVariables>(
       } catch (err: unknown) {
         const isOffline =
           err instanceof OfflineMutationError ||
-          (err instanceof Error && err.message === 'Network request failed');
+          (err && typeof err === 'object' && '_tag' in err && (err as { _tag: string })._tag === 'OfflineMutationError') ||
+          (err && typeof err === 'object' && 'cause' in err && (err as any).cause?._tag === 'OfflineMutationError') ||
+          (err && typeof err === 'object' && 'cause' in err && (err as any).cause?.name === 'OfflineMutationError') ||
+          (err && typeof err === 'object' && 'details' in err && (err as any).details?.devDetails?._tag === 'OfflineMutationError') ||
+          (err && typeof err === 'object' && 'details' in err && (err as any).details?.devDetails?.name === 'OfflineMutationError') ||
+          (err instanceof Error && (err.message === 'Network request failed' || err.message === 'Offline mutation failed' || err.name === 'OfflineMutationError'));
 
         if (isOffline) {
           if (options?.mutationKey) {
             const mutationId = uuidv7();
-            const scope = options.scope || 'general';
-            const name = options.mutationKey;
-
-            const studentId = useStore.getState().user?.id;
-            const idempotencyKey = await generateIdempotencyKey(scope, name, variables, studentId);
 
             logAudit({
               id: mutationId,
@@ -101,6 +120,7 @@ export function useSafeMutation<TData, TVariables>(
               scope,
               variables: finalVariables,
               type: finalType,
+              userId: studentId,
             });
 
             showToast('Saved to Outbox (Offline)', 'info');
@@ -122,6 +142,7 @@ export function useSafeMutation<TData, TVariables>(
 
         throw err;
       } finally {
+        inFlightKeysRef.current.delete(idempotencyKey);
         setIsLoading(false);
       }
     },
@@ -134,3 +155,4 @@ export function useSafeMutation<TData, TVariables>(
     error,
   };
 }
+

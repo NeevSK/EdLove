@@ -1,10 +1,10 @@
 import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture';
 import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { disconnectPowerSync } from '@repo/core/adapters/powersync/database';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
+import { schoolAPI } from '@repo/core/api/school';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import {
   getSessionIdentityMode,
@@ -13,13 +13,13 @@ import {
   isCurrentIdentityResolutionGeneration,
 } from '@repo/core/logic/auth/identityState';
 import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
-import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import { realtime } from '@repo/core/logic/managers/factory';
+import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
 import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
 import { useStore } from '@repo/core/store/useStore';
 import type { User } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
 import type { Bond } from '@repo/core/types/Identity';
-import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
@@ -35,7 +35,7 @@ const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;
  * Hardened for offline cold start, battery doze mode, and mobile token churn.
  */
 export function useAuthLifecycle() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isProfileResolving, setIsProfileResolving] = useState(false);
@@ -111,7 +111,7 @@ export function useAuthLifecycle() {
   );
 
   const fetchAndSetUserProfile = useCallback(
-    async (sessionToCapture?: Session | null) => {
+    async (sessionToCapture?: AuthSession | null) => {
       // Only block the UI with a loading spinner on the very first boot fetch.
       // All subsequent fetches (tab focus, token refresh) run silently.
       const isFirstLoad = !hasBootstrappedRef.current;
@@ -131,12 +131,12 @@ export function useAuthLifecycle() {
           },
           getAccountLifecycleStatus: () => authAPI.getAccountLifecycleStatus(),
           getSchoolType: async (schoolId) => {
-            const { data: schoolData } = await supabaseClient
-              .from('schools')
-              .select('type')
-              .eq('id', schoolId)
-              .single();
-            return (schoolData?.type as SchoolType | undefined) ?? null;
+            try {
+              const schoolData = await schoolAPI.getSchool(schoolId);
+              return (schoolData?.type as SchoolType | undefined) ?? null;
+            } catch {
+              return null;
+            }
           },
         });
 
@@ -252,7 +252,7 @@ export function useAuthLifecycle() {
   );
 
   const refreshProfile = useCallback(async () => {
-    const currentSession = (await authAPI.getAuthSession()) as Session | null;
+    const currentSession = await authAPI.getAuthSession();
     await fetchAndSetUserProfile(currentSession);
   }, [fetchAndSetUserProfile]);
 
@@ -265,7 +265,7 @@ export function useAuthLifecycle() {
     const checkSession = async () => {
       const bootstrapGeneration = authEventGenerationRef.current;
       try {
-        const initialSession = (await authAPI.getAuthSession()) as Session | null;
+        const initialSession = await authAPI.getAuthSession();
         if (
           !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
         ) {
@@ -287,7 +287,7 @@ export function useAuthLifecycle() {
             error.message?.includes('Refresh Token') ||
             (error as { status?: number }).status === 400
           ) {
-            await supabaseClient.auth.signOut({ scope: 'local' });
+            await authAPI.signOut({ scope: 'local' });
             setSession(null);
             setAuthSession(null);
           }
@@ -303,7 +303,7 @@ export function useAuthLifecycle() {
     // from being lost while the initial request is in flight.
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(async (event, currentSession) => {
+    } = authAPI.onAuthStateChange(async (event, currentSession) => {
       authEventGenerationRef.current += 1;
       setSession(currentSession);
       setAuthSession(currentSession);
@@ -385,26 +385,23 @@ export function useAuthLifecycle() {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const channel = supabaseClient
-      .channel(`user-profile-sync-${currentUser.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'users',
-          filter: `id=eq.${currentUser.id}`,
-        },
-        () => {
-          refreshProfile().catch((e) => {
-            console.error('Auth: Profile refresh failed after remote update', e);
-          });
-        },
-      )
-      .subscribe();
+    const subscription = realtime.subscribe(
+      `user-profile-sync-${currentUser.id}`,
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'users',
+        filter: `id=eq.${currentUser.id}`,
+      },
+      () => {
+        refreshProfile().catch((e) => {
+          console.error('Auth: Profile refresh failed after remote update', e);
+        });
+      },
+    );
 
     return () => {
-      supabaseClient.removeChannel(channel).catch((e) => {
+      subscription.unsubscribe().catch((e: unknown) => {
         console.error('Auth: Failed to remove channel during cleanup', e);
       });
     };

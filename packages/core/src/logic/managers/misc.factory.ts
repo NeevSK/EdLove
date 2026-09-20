@@ -33,6 +33,13 @@ export const realtime = new RealtimeManager(createSupabaseRealtimeAdapter(supaba
  */
 export const audit = new AuditManager(createSupabaseAuditRepository(supabaseClient));
 
+import { createSupabaseUIExperienceRepository } from '@repo/core/adapters/supabase/uiExperienceRepository';
+
+/**
+ * uiExperience: The Global Sovereign UI Experience Repository Instance.
+ */
+export const uiExperience = createSupabaseUIExperienceRepository(supabaseClient);
+
 /**
  * teacher: The Global Sovereign Teacher Instance.
  */

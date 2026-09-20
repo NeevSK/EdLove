@@ -36,35 +36,14 @@ export function resolveQR(raw: string): QRResolveResult {
 
   const trimmed = raw.trim();
 
+  const legacyResult = resolveLegacyQR(trimmed, raw);
+  if (legacyResult) return legacyResult;
+
   // â”€â”€ Legacy: join-class:<uuid> â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  if (trimmed.startsWith('join-class:')) {
-    const classroom_id = trimmed.slice('join-class:'.length).trim();
-    if (!classroom_id) return { ok: false, error: 'invalid', raw };
-    return { ok: true, payload: { v: 1, action: 'join_class', classroom_id } };
-  }
-
   // â”€â”€ Legacy: join-group:<uuid> â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  if (trimmed.startsWith('join-group:')) {
-    const group_id = trimmed.slice('join-group:'.length).trim();
-    if (!group_id) return { ok: false, error: 'invalid', raw };
-    return { ok: true, payload: { v: 1, action: 'join_group', group_id } };
-  }
-
   // â”€â”€ Legacy bare UUID (old user identity card QRs) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  if (UUID_REGEX.test(trimmed)) {
-    return {
-      ok: true,
-      payload: {
-        v: 1,
-        action: 'user_invite',
-        inviter_id: trimmed,
-        inviter_capacity: 'unknown',
-      },
-    };
-  }
-
   // ── Canonical: gurudevi://qr or https://gurudevi.app/qr ──────────────────
-  if (trimmed.startsWith('gurudevi://qr') || trimmed.startsWith(GURUDEVI_QR_URL)) {
+  if (isCanonicalQRUrl(trimmed)) {
     try {
       const queryStart = trimmed.indexOf('?');
       if (queryStart === -1) return { ok: false, error: 'invalid', raw };
@@ -86,6 +65,50 @@ export function resolveQR(raw: string): QRResolveResult {
   }
 
   return { ok: false, error: 'invalid', raw };
+}
+
+function resolveLegacyQR(trimmed: string, raw: string): QRResolveResult | undefined {
+  if (trimmed.startsWith('join-class:')) {
+    const classroom_id = trimmed.slice('join-class:'.length).trim();
+    return classroom_id
+      ? { ok: true, payload: { v: 1, action: 'join_class', classroom_id } }
+      : { ok: false, error: 'invalid', raw };
+  }
+
+  if (trimmed.startsWith('join-group:')) {
+    const group_id = trimmed.slice('join-group:'.length).trim();
+    return group_id
+      ? { ok: true, payload: { v: 1, action: 'join_group', group_id } }
+      : { ok: false, error: 'invalid', raw };
+  }
+
+  if (!UUID_REGEX.test(trimmed)) return undefined;
+
+  return {
+    ok: true,
+    payload: {
+      v: 1,
+      action: 'user_invite',
+      inviter_id: trimmed,
+      inviter_capacity: 'unknown',
+    },
+  };
+}
+
+function isCanonicalQRUrl(raw: string): boolean {
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol === 'gurudevi:') return parsed.hostname === 'qr';
+
+    const canonical = new URL(GURUDEVI_QR_URL);
+    return (
+      parsed.protocol === canonical.protocol &&
+      parsed.hostname === canonical.hostname &&
+      parsed.pathname === canonical.pathname
+    );
+  } catch {
+    return false;
+  }
 }
 
 // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

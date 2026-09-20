@@ -42,6 +42,11 @@ export {
 } from '@repo/core/logic/auth/bootstrapRoutes';
 export { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
 export {
+  classifyRouteIntent,
+  classifyRouteIntentEffect,
+  type RouteIntent,
+} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+export {
   getSessionIdentityMode,
   type IdentityAvailability,
   isActiveIdentityProfile,

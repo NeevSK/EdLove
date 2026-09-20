@@ -1,4 +1,4 @@
-import type { Session } from '@supabase/supabase-js';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const captureCurrentAccount = vi.hoisted(() => vi.fn());
@@ -12,7 +12,7 @@ import {
   getVerifiedDeviceAccountProfile,
 } from '../authenticatedAccountCapture';
 
-function session(accessToken = 'access-token'): Session {
+function session(accessToken = 'access-token'): AuthSession {
   return {
     access_token: accessToken,
     refresh_token: 'refresh-token',
@@ -21,14 +21,12 @@ function session(accessToken = 'access-token'): Session {
     token_type: 'bearer',
     user: {
       id: 'account-1',
-      aud: 'authenticated',
-      role: 'authenticated',
       email: 'member@example.com',
       app_metadata: {},
       user_metadata: {},
       created_at: '2026-09-01T00:00:00.000Z',
     },
-  } as Session;
+  };
 }
 
 const identity = {

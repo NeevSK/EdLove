@@ -49,10 +49,12 @@ export interface ProblemDetails {
 
 export class SovereignError extends Error {
   public readonly details: ProblemDetails;
+  public override readonly cause?: unknown;
 
-  constructor(details: Partial<ProblemDetails>) {
+  constructor(details: Partial<ProblemDetails>, cause?: unknown) {
     super(details.title || 'An unexpected error occurred');
     this.name = 'SovereignError';
+    this.cause = cause ?? details.devDetails;
 
     this.details = {
       type: 'https://polymath.network/errors/unknown',

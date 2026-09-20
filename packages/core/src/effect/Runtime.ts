@@ -78,7 +78,10 @@ export function runToPromise<T, E extends { message?: string }>(
         }).pipe(
           Effect.zipRight(
             Effect.fail(
-              new APIError(e.message ?? 'Unknown error', errorCode ?? 'EFFECT_ERROR', e, true),
+              Object.assign(
+                new APIError(e.message ?? 'Unknown error', errorCode ?? 'EFFECT_ERROR', e, true),
+                { cause: e },
+              ),
             ),
           ),
         ),

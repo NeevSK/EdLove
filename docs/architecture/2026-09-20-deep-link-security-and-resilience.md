@@ -1,6 +1,7 @@
 ---
 title: "Cross-Platform Deep Link, Route Boundary & Threat Mitigation Architecture"
-status: "active"
+status: "superseded"
+superseded_by: "route-intent-policy.md"
 created: 2026-09-20
 updated: 2026-09-20
 author: "Naveen"
@@ -9,6 +10,10 @@ tags: [architecture, security, deeplinks, routes, cross-platform, effect-ts, owa
 ---
 
 # Cross-Platform Deep Link, Route Boundary & Threat Mitigation Architecture
+
+> Superseded by [Route Intent Policy](./route-intent-policy.md). This dated
+> architecture remains historical evidence; use the living policy for future
+> design and implementation.
 
 > **Source of Truth Reference for Mobile (Expo Router 57) & Web (Next.js 16 App Router)**
 > Enforces OWASP 2026 Mobile/Web security defenses, Effect-TS v4-ready validation pipelines, identity mode transitions, and multi-tier (G0–G3) test evidence standards.

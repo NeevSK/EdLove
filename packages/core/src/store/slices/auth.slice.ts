@@ -1,7 +1,7 @@
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { leaveBreadcrumb } from '@repo/core/monitoring';
 import type { User } from '@repo/core/types';
 import type { Bond, Perspective } from '@repo/core/types/Identity';
-import type { Session } from '@supabase/supabase-js';
 import type { StateCreator } from 'zustand';
 
 export interface AuthSlice {
@@ -19,9 +19,9 @@ export interface AuthSlice {
   setUser: (user: User | null) => void;
 
   // Auth Session
-  authSession: Session | null;
+  authSession: AuthSession | null;
   authSessionResolved: boolean;
-  setAuthSession: (session: Session | null) => void;
+  setAuthSession: (session: AuthSession | null) => void;
   setAuthSessionResolved: (resolved: boolean) => void;
 
   // Onboarding

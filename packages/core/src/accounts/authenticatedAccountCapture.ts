@@ -4,7 +4,7 @@ import {
   getSessionIdentityMode,
   isResolvedAuthSubjectCurrent,
 } from '@repo/core/logic/auth/identityState';
-import type { Session } from '@supabase/supabase-js';
+import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 
 /**
  * A device account becomes durable only when the authenticated Supabase
@@ -13,7 +13,7 @@ import type { Session } from '@supabase/supabase-js';
  * mapped account ID can differ from its Supabase auth subject.
  */
 export function getVerifiedDeviceAccountProfile(
-  session: Session | null,
+  session: AuthSession | null,
   identity: ActiveCitizen | null,
   resolvedAuthSubjectId: string | null,
 ): DeviceAccountProfile | null {
@@ -51,7 +51,7 @@ export async function captureAuthenticatedDeviceAccount({
   capturingSessionKeys: Set<string>;
   identity: ActiveCitizen;
   resolvedAuthSubjectId: string | null;
-  session: Session | null;
+  session: AuthSession | null;
 }): Promise<void> {
   const profile = getVerifiedDeviceAccountProfile(session, identity, resolvedAuthSubjectId);
   const captureKey = session ? `${session.user.id}:${session.access_token}` : null;

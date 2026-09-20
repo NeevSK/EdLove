@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { resolveQR } from '@repo/core/logic';
+import { classifyRouteIntent } from '@repo/core/logic';
 import type { QRPayload } from '@repo/core/types';
 
 import { useCallback, useEffect, useRef } from 'react';
@@ -13,15 +13,13 @@ export async function dispatchQRDeepLink(
   url: string,
   onQRAction?: QRDeepLinkHandler,
 ): Promise<boolean> {
-  if (!url || typeof url !== 'string' || !url.startsWith('gurudevi://qr')) return false;
-
-  const result = resolveQR(url);
-  if (!result.ok) return false;
+  const intent = classifyRouteIntent(url);
+  if (intent.kind !== 'qr') return false;
 
   if (onQRAction) {
-    onQRAction(result.payload);
+    onQRAction(intent.payload);
   } else {
-    await AsyncStorage.setItem(PENDING_QR_KEY, JSON.stringify(result.payload));
+    await AsyncStorage.setItem(PENDING_QR_KEY, JSON.stringify(intent.payload));
   }
   return true;
 }

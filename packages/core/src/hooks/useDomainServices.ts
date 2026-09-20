@@ -1,29 +1,13 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { createDomainServices } from '@repo/core/logic/domains/factory';
-import { useStore } from '@repo/core/store/useStore';
+import { getClientDomainServices } from '@repo/core/adapters/clientDomainServices';
 import { useMemo } from 'react';
 
 /**
  * useDomainServices Hook
  *
- * Provides initialized domain services using the standard Supabase client.
- * This ensures that all mobile-side operations respect Row Level Security (RLS).
+ * Provides initialized domain services.
  */
 export function useDomainServices() {
-  return useMemo(
-    () =>
-      createDomainServices(supabaseClient, {
-        educationalSideEffects: {
-          getCurrentUserId: async () => useStore.getState().user?.id || null,
-          emitGrowthSignal: async (userId, signal, payload) => {
-            if (typeof __DEV__ !== 'undefined' && __DEV__) {
-              console.log(`[GrowthSignal] ${signal} for ${userId}`, payload);
-            }
-          },
-        },
-      }),
-    [],
-  );
+  return useMemo(() => getClientDomainServices(), []);
 }
 
 /**

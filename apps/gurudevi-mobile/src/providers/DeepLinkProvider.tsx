@@ -16,14 +16,13 @@ export function DeepLinkProvider({ children }: { children: ReactNode }) {
     async (url: string): Promise<boolean> => {
       try {
         if (isQRDeepLink(url)) {
-          await dispatchQRDeepLink(
+          return dispatchQRDeepLink(
             url,
             session
               ? (payload) =>
                   router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } })
               : undefined,
           );
-          return true;
         }
 
         return await dispatchDeepLink(url, {

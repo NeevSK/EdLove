@@ -1,8 +1,7 @@
 import type { ActiveCitizen } from '@repo/core/api/identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
-import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
-import type { Session } from '@supabase/supabase-js';
+import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
 
 export type AuthProfileResolution =
   | { kind: 'active'; identity: ActiveCitizen; schoolType: SchoolType | null }
@@ -17,7 +16,7 @@ export interface AuthProfileResolutionDependencies {
 
 /** Resolves remote identity facts without applying React or store state. */
 export async function resolveAuthProfile(
-  session: Session | null,
+  session: AuthSession | null,
   {
     getAccountLifecycleStatus,
     getSchoolType,

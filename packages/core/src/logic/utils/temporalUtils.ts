@@ -3,7 +3,6 @@ import {
   type TemporalScale,
   useTemporalStore,
 } from '@repo/core/store/useTemporalStore';
-import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import {
   endOfDay,
   endOfMonth,
@@ -64,16 +63,22 @@ export const getTemporalRange = (dateStr: string, scale: TemporalScale = 'day'):
   };
 };
 
+export interface FilterableQuery {
+  gte(column: string, value: any): this;
+  lte(column: string, value: any): this;
+  [key: string]: any;
+}
+
 /**
  * Higher-order utility to apply temporal filtering to a query builder.
  *
  * Important guardrail: timestamps alone are not equivalent to historical truth.
  * Only event streams, business facts, and audit histories should be filtered here.
  */
-export function applyTemporalFilter<_Schema = any, _Table = any, _Result = any>(
-  query: PostgrestFilterBuilder<any, any, any, any, any>,
+export function applyTemporalFilter<Q extends FilterableQuery>(
+  query: Q,
   spec: TemporalFilterSpec,
-) {
+): Q {
   const { viewDate, phase, viewScale } = useTemporalStore.getState();
 
   if (phase === 'present' && spec.capability === 'snapshot') {

@@ -84,12 +84,21 @@ export const authAPI = {
     return auth.linkAnonymousToEmail(email, password, fullName, capacity);
   },
 
-  async isAnonymous(): Promise<boolean> {
+  async isAnonymous() {
     return auth.isAnonymous();
   },
 
-  async signOut() {
-    return auth.signOut();
+  onAuthStateChange(
+    callback: (
+      event: import('@repo/core/logic/ports/auth.port').AuthChangeEvent,
+      session: import('@repo/core/logic/ports/auth.port').AuthSession | null,
+    ) => void | Promise<void>,
+  ) {
+    return auth.onAuthStateChange(callback);
+  },
+
+  async signOut(options?: { scope?: 'global' | 'local' | 'others' }) {
+    return auth.signOut(options);
   },
 
   async requestAccountDeletion() {
