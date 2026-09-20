@@ -1,5 +1,7 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
+import { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
 import type { AuthManager } from '@repo/core/logic/managers/AuthManager';
+import { Duration, Effect, Schedule } from 'effect';
 
 /**
  * DeepLinkType
@@ -86,6 +88,19 @@ export class DeepLinkManager {
     const refresh_token = params.refresh_token;
     const authCode = params.code;
 
+    const state = params.state;
+    if (state && !DeepLinkStateGuard.verifyAndConsumeState(state)) {
+      console.warn(
+        '[DeepLinkManager] Rejected auth callback with invalid/replayed state parameter',
+      );
+      return {
+        type: DeepLinkType.AUTH_CALLBACK,
+        params,
+        isHandled: false,
+        message: 'Invalid or replayed state parameter (CSRF detected)',
+      };
+    }
+
     if (access_token && refresh_token) {
       try {
         await this.authManager.setSession(access_token, refresh_token);
@@ -105,25 +120,34 @@ export class DeepLinkManager {
       }
     }
 
-    // Magic-link / PKCE code exchange — Supabase emails a `code` query param
-    // that must be exchanged server-side for an access/refresh token pair.
+    // Magic-link / PKCE code exchange with Effect-TS resilient exponential backoff retry
     if (authCode) {
-      try {
-        await this.authManager.exchangeCodeForSession(authCode);
-        return {
+      const retrySchedule = Schedule.exponential(Duration.millis(50)).pipe(
+        Schedule.intersect(Schedule.recurs(2)),
+      );
+
+      const exchangeEffect = Effect.tryPromise({
+        try: () => this.authManager.exchangeCodeForSession(authCode),
+        catch: (cause) => cause,
+      }).pipe(
+        Effect.retry(retrySchedule),
+        Effect.map(() => ({
           type: DeepLinkType.AUTH_CALLBACK,
           params,
           isHandled: true,
-        };
-      } catch (error) {
-        console.error('[DeepLinkManager] Magic-link code exchange failed:', error);
-        return {
-          type: DeepLinkType.AUTH_CALLBACK,
-          params,
-          isHandled: false,
-          message: 'Failed to exchange magic-link code',
-        };
-      }
+        })),
+        Effect.catchAll((error) => {
+          console.error('[DeepLinkManager] Magic-link code exchange failed after retries:', error);
+          return Effect.succeed({
+            type: DeepLinkType.AUTH_CALLBACK,
+            params,
+            isHandled: false,
+            message: 'Failed to exchange magic-link code',
+          });
+        }),
+      );
+
+      return Effect.runPromise(exchangeEffect);
     }
 
     return {
@@ -146,7 +170,7 @@ export class DeepLinkManager {
 
   /**
    * Returns the React Navigation linking configuration.
-   * This centralizes the screen mapping in the core domain.
+   * Centralizes the screen mapping across mobile and web shells.
    */
   getNavigationConfig() {
     return {
@@ -154,29 +178,18 @@ export class DeepLinkManager {
         Welcome: '',
         Onboarding: 'onboarding',
         Auth: 'auth',
-        AIAssistant: 'ai',
+        Self: 'self',
+        Profile: 'profile',
+        Classroom: 'workspace',
+        Workspace: 'workspace',
+        Community: 'community',
+        Library: 'library',
+        NotificationsPanel: 'notifications',
+        SettingsPanel: 'settings',
         QRHandler: 'qr',
-        ThuthimalClaim: 'thuthimal',
+        ThuthimalClaim: 'thuthimal-claim',
+        AIAssistant: 'a-i-assistant',
         InvitationWelcome: 'invite',
-        AdminDashboard: 'admin',
-        AdminIncidentQueue: 'admin/incidents',
-        AdminTenantDetail: 'admin/tenants',
-        AdminPolicyRepair: 'admin/policy',
-        AdminJobControl: 'admin/actions',
-        AdminAuditLog: 'admin/audit',
-        AdminReleaseControl: 'admin/release',
-        Main: {
-          path: 'app',
-          screens: {
-            Self: 'self',
-            Profile: 'profile',
-            Classroom: 'classroom',
-            Community: 'community',
-            Library: 'library',
-            NotificationsPanel: 'notifications',
-            SettingsPanel: 'settings',
-          },
-        },
         PublicForm: 'f/:slug',
       },
     };

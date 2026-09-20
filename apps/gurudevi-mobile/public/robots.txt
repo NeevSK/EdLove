@@ -19,6 +19,7 @@ User-agent: PerplexityBot
 Allow: /
 
 # Agentic Discovery
-Sitemap: https://platform.gurudevi.edlove.org/sitemap-index.xml
-LLMS: https://platform.gurudevi.edlove.org/llms.txt
-Knowledge: https://platform.gurudevi.edlove.org/knowledge.json
+Sitemap: https://gurudevi.app/sitemap-index.xml
+LLMS: https://gurudevi.app/llms.txt
+Knowledge: https://gurudevi.app/knowledge.json
+

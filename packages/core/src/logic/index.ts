@@ -35,12 +35,12 @@ export type {
   AccountLifecycleResult,
 } from '@repo/core/logic/accountLifecycle';
 export * from '@repo/core/logic/apiInterceptor';
-export * from '@repo/core/logic/capabilityDecision';
 export {
   getAuthRouteDecision,
   getAuthRouteTarget,
   isPublicBootstrapRoute,
 } from '@repo/core/logic/auth/bootstrapRoutes';
+export { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
 export {
   getSessionIdentityMode,
   type IdentityAvailability,
@@ -53,6 +53,7 @@ export {
   isSandboxSession,
   suggestDisplayName,
 } from '@repo/core/logic/auth/identityState';
+export * from '@repo/core/logic/capabilityDecision';
 export * from '@repo/core/logic/domains';
 export * from '@repo/core/logic/entities';
 export * from '@repo/core/logic/events/bus';
@@ -137,19 +138,19 @@ export {
   useCapabilityHydration,
 } from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
+export {
+  type ActiveSubTabItem,
+  type ActiveSubTabsState,
+  type NavigationPreferences,
+  useActiveSubTabsStore,
+} from '@repo/core/store/useActiveSubTabsStore';
 export { useAuthStore } from '@repo/core/store/useAuthStore';
 export { useConsentStore } from '@repo/core/store/useConsentStore';
+export { type DraftEntry, type DraftsState, useDraftsStore } from '@repo/core/store/useDraftsStore';
 export { useFeatureStore } from '@repo/core/store/useFeatureStore';
 export { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
-export { useDraftsStore, type DraftEntry, type DraftsState } from '@repo/core/store/useDraftsStore';
-export {
-  useActiveSubTabsStore,
-  type ActiveSubTabItem,
-  type ActiveSubTabsState,
-  type NavigationPreferences,
-} from '@repo/core/store/useActiveSubTabsStore';
 
 // Types (Agnostic / logic-layer)
 export type { Bond } from '@repo/core/types';

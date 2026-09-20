@@ -2,20 +2,20 @@
 import { OpenAPIGenerator } from '@orpc/openapi';
 import { unlazyRouter } from '@orpc/server';
 import { writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function generateOpenAPISpec() {
   // Import the router dynamically
   const { router } = await import('../src/core/router.ts');
-  
+
   // Unlazy the router to resolve all lazy procedures
   const unlaziedRouter = await unlazyRouter(router);
-  
+
   const generator = new OpenAPIGenerator();
-  
+
   const spec = await generator.generate(unlaziedRouter, {
     info: {
       title: 'Sanctuary API',
@@ -24,7 +24,8 @@ async function generateOpenAPISpec() {
     },
     servers: [
       { url: 'http://localhost:3000', description: 'Local development' },
-      { url: 'https://api.gurudevi.edlove.org', description: 'Production' },
+      { url: 'https://api.gurudevi.app', description: 'Production' },
+      { url: 'https://api.sanctuary.gurudevi.app', description: 'Production Sanctuary' },
     ],
     tags: [
       { name: 'self', description: 'Personal wellbeing & profile' },
@@ -48,15 +49,15 @@ async function generateOpenAPISpec() {
     // Include all procedures
     filter: () => true,
   });
-  
+
   // Write to docs folder
   const outputPath = __dirname.replace('scripts', 'docs/api/openapi.json');
   writeFileSync(outputPath, JSON.stringify(spec, null, 2));
-  
+
   console.log(`✅ OpenAPI spec generated at: ${outputPath}`);
   console.log(`📊 Paths: ${Object.keys(spec.paths || {}).length}`);
-  console.log(`🏷️  Tags: ${spec.tags?.map(t => t.name).join(', ')}`);
-  
+  console.log(`🏷️  Tags: ${spec.tags?.map((t) => t.name).join(', ')}`);
+
   return spec;
 }
 

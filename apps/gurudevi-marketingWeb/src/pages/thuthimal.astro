@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ProvenanceColophon from '../components/ProvenanceColophon.astro';
 import GratitudeGarden from '../components/GratitudeGarden.svelte';
-import { CONTACT_EMAILS } from '../lib/site';
+import { canonicalUrl, CONTACT_EMAILS } from '../lib/site';
 ---
 
 <Layout title="Thuthimal (තුතිමල්) | Reciprocal Care for Teachers">
@@ -29,7 +29,7 @@ import { CONTACT_EMAILS } from '../lib/site';
 						publishDate={new Date('2026-07-01')}
 						updatedDate={new Date('2026-09-01')}
 						version="Alpha Protocol v1.0"
-						canonicalUrl="https://gurudevi.edlove.org/thuthimal"
+						canonicalUrl={canonicalUrl('/thuthimal')}
 						readingTime={3}
 						customNote="Living specification defining the Thuthimal reciprocal patronage protocol for Sri Lankan teachers."
 					/>

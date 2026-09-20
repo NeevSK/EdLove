@@ -163,14 +163,14 @@ describe('SupabaseAuthAdapter', () => {
   });
 
   it('uses the web auth callback for magic links', async () => {
-    vi.stubGlobal('window', { location: { origin: 'https://platform.gurudevi.edlove.org' } });
+    vi.stubGlobal('window', { location: { origin: 'https://gurudevi.app' } });
     mockAuth.signInWithOtp.mockResolvedValue({ data: { user: null, session: null }, error: null });
 
     await adapter.signInWithMagicLink('member@example.com');
 
     expect(mockAuth.signInWithOtp).toHaveBeenCalledWith({
       email: 'member@example.com',
-      options: { emailRedirectTo: 'https://platform.gurudevi.edlove.org/auth/callback' },
+      options: { emailRedirectTo: 'https://gurudevi.app/auth/callback' },
     });
   });
 });

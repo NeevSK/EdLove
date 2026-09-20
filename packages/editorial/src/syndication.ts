@@ -91,7 +91,7 @@ export const sharedSyndicationManifests: ReadonlyArray<SharedSyndicationManifest
   {
     workId: 'architecture-of-gratitude',
     slug: 'architecture-of-gratitude',
-    canonicalUrl: 'https://gurudevi.edlove.org/journal/architecture-of-gratitude',
+    canonicalUrl: 'https://gurudevi.app/journal/architecture-of-gratitude',
     originPublication: 'gurudevi',
     syndicatedTo: ['edlove'],
     pedagogicalTakeaways: {

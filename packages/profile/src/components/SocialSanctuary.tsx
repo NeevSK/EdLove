@@ -1,4 +1,5 @@
 import type { SocialLink, SocialPlatform } from '@repo/core/types';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 import {
   ExternalLink,
   Globe,
@@ -10,12 +11,11 @@ import {
   Phone as WhatsApp,
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { GURUDEVI_APP, openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import * as Clipboard from 'expo-clipboard';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Share } from 'react-native';
-import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 
 interface SocialSanctuaryProps {
   userId: string;
@@ -83,7 +83,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
   };
 
   const shareProfile = async () => {
-    const profileUrl = `https://platform.gurudevi.edlove.org/app`;
+    const profileUrl = `${GURUDEVI_APP}/profile`;
     if (Platform.OS === 'web') {
       if (typeof navigator !== 'undefined' && navigator.share) {
         try {
@@ -119,6 +119,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
         </Text>
         {isOwnProfile && (
           <Pressable
+            accessibilityRole="button"
             onPress={shareProfile}
             className="w-10 h-10 rounded-full bg-phase-surface items-center justify-center hover:bg-phase-interactive/10 transition-colors"
           >
@@ -135,6 +136,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
 
           return (
             <Pressable
+              accessibilityRole="button"
               key={link.id}
               onPress={() => handlePress(link)}
               onLongPress={() => handleOpenOptions(link)}

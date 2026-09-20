@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@repo/core/logic', () => ({
-  DeepLinkType: { CLASSROOM_INVITE: 'classroom_invite' },
+  DeepLinkType: { CLASSROOM_INVITE: 'CLASSROOM_INVITE', AUTH_CALLBACK: 'AUTH_CALLBACK' },
   coreRuntime: {
     linking: {
       addEventListener: mocks.addEventListener,
@@ -50,12 +50,12 @@ async function renderProvider() {
   });
 }
 
-describe('DeepLinkProvider', () => {
+describe('DeepLinkProvider (G3 Component & Runtime Provider Tests)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.addEventListener.mockReturnValue({ remove: mocks.remove });
     mocks.getInitialURL.mockResolvedValue(null);
-    mocks.handleURL.mockResolvedValue({ isHandled: true, params: {}, type: 'magic_link' });
+    mocks.handleURL.mockResolvedValue({ isHandled: true, params: {}, type: 'AUTH_CALLBACK' });
     mocks.storageGetItem.mockResolvedValue(null);
     mocks.useAuth.mockReturnValue({ session: null });
   });
@@ -94,5 +94,35 @@ describe('DeepLinkProvider', () => {
     expect(mocks.addEventListener).toHaveBeenCalledOnce();
     expect(mocks.dispatchQRDeepLink).toHaveBeenCalledWith('gurudevi://qr?token=one', undefined);
     expect(mocks.handleURL).not.toHaveBeenCalled();
+  });
+
+  it('navigates to community tab with inviteCode when a classroom invite deep link is received', async () => {
+    mocks.handleURL.mockResolvedValue({
+      isHandled: false,
+      params: { inviteCode: 'INVITE-999' },
+      type: 'CLASSROOM_INVITE',
+    });
+
+    await renderProvider();
+    const listener = mocks.addEventListener.mock.calls[0]?.[1] as (event: { url: string }) => void;
+
+    await act(async () => {
+      listener({ url: 'gurudevi://invite/classroom/INVITE-999' });
+      await Promise.resolve();
+    });
+
+    expect(mocks.push).toHaveBeenCalledWith({
+      pathname: '/community',
+      params: { inviteCode: 'INVITE-999' },
+    });
+  });
+
+  it('consumes and removes deferred deep links from storage on app launch', async () => {
+    mocks.storageGetItem.mockResolvedValue('gurudevi://auth/callback?code=def-123');
+
+    await renderProvider();
+
+    expect(mocks.handleURL).toHaveBeenCalledWith('gurudevi://auth/callback?code=def-123');
+    expect(mocks.storageRemoveItem).toHaveBeenCalledWith('deferred_deep_link');
   });
 });

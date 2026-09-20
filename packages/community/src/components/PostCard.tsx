@@ -1,13 +1,12 @@
+import { communityAPI } from '@repo/community/api/community';
 import { usePollLogic, usePostLogic, useSocialShieldHooks } from '@repo/core/api/hooks';
 import { usePermissions } from '@repo/core/logic';
 import type { CommunityPost } from '@repo/core/types';
 import { PostCard as UIPostCard } from '@repo/ui/components/PostCard';
 import { useLotusToast } from '@repo/ui/hooks';
 import { hapticError, hapticSuccess } from '@repo/ui/primitives';
-import { confirmAction, shareAction } from '@repo/ui/utils';
-
+import { confirmAction, GURUDEVI_APP, shareAction } from '@repo/ui/utils';
 import React from 'react';
-import { communityAPI } from '@repo/community/api/community';
 
 const EMPTY_HANDLER = () => {};
 
@@ -67,7 +66,7 @@ export const PostCard = React.memo(function PostCard(props: PostCardProps) {
   };
 
   const handleNativeShare = React.useCallback(async () => {
-    const shareUrl = `https://platform.gurudevi.edlove.org/app?post=${post.id}`;
+    const shareUrl = `${GURUDEVI_APP}/community?post=${post.id}`;
     await shareAction({
       title: `Post by ${post.is_anonymous ? 'Anonymous' : post.author_name}`,
       url: shareUrl,

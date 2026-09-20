@@ -1,91 +1,15 @@
-import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
+/**
+ * URL Policy & Sanitization
+ * Re-exports the Effect-driven deep link policy pipeline from @repo/core.
+ */
 
-const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
-export const MAX_DEEP_LINK_LENGTH = 8192;
-const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite']);
-const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/qr', '/invite', '/app'];
-const ALLOWED_INTERNAL_ROUTE_PREFIXES = [
-  '/a-i-assistant',
-  '/community',
-  '/invitation-welcome',
-  '/library',
-  '/notifications',
-  '/profile',
-  '/qr',
-  '/self',
-  '/settings',
-  '/thuthimal-claim',
-  '/workspace',
-  '/welcome',
-];
-
-function startsWithPathPrefix(pathname: string, prefixes: string[]): boolean {
-  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-}
-
-function containsTraversal(value: string): boolean {
-  try {
-    const path = decodeURIComponent(value).split(/[?#]/, 1)[0] ?? '';
-    return path.split('/').some((segment) => segment === '.' || segment === '..');
-  } catch {
-    return true;
-  }
-}
-
-export function normalizeAcceptedDeepLink(url: string): string | null {
-  if (url.length > MAX_DEEP_LINK_LENGTH || containsTraversal(url)) return null;
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol === 'gurudevi:') {
-      return ALLOWED_NATIVE_HOSTS.has(parsed.hostname) ? url : null;
-    }
-
-    if (parsed.protocol === 'https:') {
-      return parsed.hostname === PLATFORM_HOST &&
-        startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
-        ? url
-        : null;
-    }
-
-    if (
-      parsed.protocol === 'http:' &&
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')
-    ) {
-      return startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES) ? url : null;
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function isQRDeepLink(url: string): boolean {
-  if (url.length > MAX_DEEP_LINK_LENGTH || containsTraversal(url)) return false;
-  try {
-    const parsed = new URL(url);
-    return (
-      (parsed.protocol === 'gurudevi:' && parsed.hostname === 'qr') ||
-      (parsed.protocol === 'https:' &&
-        parsed.hostname === PLATFORM_HOST &&
-        parsed.pathname === '/qr')
-    );
-  } catch {
-    return false;
-  }
-}
-
-export function normalizeAcceptedInternalRoute(path: string): string | null {
-  if (
-    path.length > MAX_DEEP_LINK_LENGTH ||
-    !path.startsWith('/') ||
-    path.startsWith('//') ||
-    /[\r\n]/.test(path) ||
-    containsTraversal(path)
-  ) {
-    return null;
-  }
-  return startsWithPathPrefix(path.split(/[?#]/)[0] ?? '', ALLOWED_INTERNAL_ROUTE_PREFIXES)
-    ? path
-    : null;
-}
+export {
+  ALLOWED_NATIVE_HOSTS,
+  ALLOWED_WEB_HOSTS,
+  ALLOWED_WEB_PATH_PREFIXES,
+  isQRDeepLink,
+  MAX_DEEP_LINK_LENGTH,
+  normalizeAcceptedDeepLink,
+  normalizeAcceptedInternalRoute,
+  validateDeepLinkEffect,
+} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';

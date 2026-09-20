@@ -1,3 +1,5 @@
+import { normalizeAcceptedInternalRoute } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+
 const sanctuaryPath = '/self';
 
 export function safeReturnPath(candidate: string | null): string {
@@ -5,9 +7,13 @@ export function safeReturnPath(candidate: string | null): string {
   try {
     const origin = 'https://gurudevi.invalid';
     const destination = new URL(candidate, origin);
-    if (destination.origin !== origin || !destination.pathname.startsWith('/'))
+    if (destination.origin !== origin || !destination.pathname.startsWith('/')) {
       return sanctuaryPath;
-    return `${destination.pathname}${destination.search}${destination.hash}`;
+    }
+    const fullPath = `${destination.pathname}${destination.search}${destination.hash}`;
+    const normalized = normalizeAcceptedInternalRoute(destination.pathname);
+    if (!normalized) return sanctuaryPath;
+    return fullPath;
   } catch {
     return sanctuaryPath;
   }

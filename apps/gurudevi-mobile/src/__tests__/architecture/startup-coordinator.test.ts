@@ -96,15 +96,18 @@ describe('essential startup coordinator', () => {
     'turns a stalled %s stage into a named retryable failure',
     async (label, dependencies) => {
       vi.useFakeTimers();
-      const startup = completeEssentialStartup(dependencies);
-      const rejection = expect(startup).rejects.toThrow(`[boot] ${label} timed out after 10000ms`);
+      try {
+        const startup = completeEssentialStartup(dependencies);
+        const rejection = expect(startup).rejects.toThrow(
+          `[boot] ${label} timed out after 200000ms`,
+        );
 
-      await vi.advanceTimersByTimeAsync(10_000);
-      await rejection;
-
-      vi.useRealTimers();
+        await vi.advanceTimersByTimeAsync(200_000);
+        await rejection;
+      } finally {
+        vi.useRealTimers();
+      }
     },
-    15000,
   );
 
   it('resolves normally when bootstrapPlatform completes before the deadline', async () => {

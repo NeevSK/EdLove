@@ -10,10 +10,10 @@
     <meta name="description" content="A sanctuary and education ecology support system for Sri Lanka — connecting teachers, students, schools, and communities through care and practical support." />
     <meta name="theme-color" content="#D4843A" />
 
-    <!-- \u2500\u2500 Open Graph \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <!-- ── Open Graph ───────────────────────────────────────────────────── -->
     <meta property="og:image" content="/og-image.png" />
 
-    <!-- \u2500\u2500 Agentic & Machine-Readable Discovery \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <!-- ── Agentic & Machine-Readable Discovery ─────────────────────────── -->
     <link rel="alternate" type="application/json" href="/knowledge.json" title="Machine-Readable Knowledge Index" />
     <link rel="author" type="text/plain" href="/llms.txt" title="LLM-Friendly Overview" />
     
@@ -23,11 +23,11 @@
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "Gurudevi Education Ecology Platform",
-        "url": "https://platform.gurudevi.edlove.org",
+        "url": "https://gurudevi.app",
         "description": "A sanctuary and education ecology support system for Sri Lanka — connecting teachers, students, schools, and communities through care and practical support.",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://platform.gurudevi.edlove.org/app/library?q={search_term_string}",
+          "target": "https://gurudevi.app/library?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }
@@ -37,58 +37,50 @@
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "NeevSK",
-        "url": "https://gurudevi.edlove.org",
-        "logo": "https://gurudevi.edlove.org/favicon.ico",
+        "url": "https://gurudevi.app",
+        "logo": "https://gurudevi.app/favicon.ico",
         "sameAs": [
           "https://github.com/edlove-org",
-          "https://platform.gurudevi.edlove.org"
+          "https://gurudevi.app",
+          "https://sanctuary.gurudevi.app"
         ]
       }
     </script>
 
-    <!-- \u2500\u2500 Zero-Flash Theme Init \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <!-- ── Zero-Flash Theme Init ─────────────────────────────────────────── -->
     <script>
-      (() => {
+      (function() {
         try {
-          var raw = localStorage.getItem('gurudevi-storage');
-          var theme = 'sanctuary';
-          if (raw) {
-            var state = JSON.parse(raw);
-            theme = (state?.state?.themeMode) || 'sanctuary';
-          }
+          var stored = localStorage.getItem('gurudevi-theme-preference');
+          var theme = stored || 'system';
+          var resolved = theme;
           if (theme === 'system') {
-            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'sanctuary';
+            resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
           }
-          document.documentElement.setAttribute('data-theme', theme);
-          
-          // Apply critical variables to prevent flash
-          var isDark = theme === 'midnight' || theme === 'dark';
-          var background = isDark ? '#0F0F12' : '#FFF8E7';
-          var ink = isDark ? '#E6E6E6' : '#2C3E50';
-          
-          document.documentElement.style.setProperty('--color-background', background);
-          document.documentElement.style.setProperty('--ink', ink);
+          document.documentElement.setAttribute('data-theme', resolved);
+          document.documentElement.style.colorScheme = resolved;
+          document.documentElement.classList.toggle('dark', resolved === 'dark');
 
-          // \u2500\u2500 Agentic Context Initialization \u2500\u2500
-          window.GURUDEVI_CONTEXT = {
-            ecology: 'edlove',
-            purpose: 'educational-support-platform',
-            environment: 'production',
+          // Semantic Web & Machine Discovery Engine
+          window.__GURUDEVI_ECOSYSTEM__ = {
+            version: '2026.1.0',
+            domain: 'education-ecology',
+            sovereignty: 'zero-telemetry-default',
             capabilities: [
-              'classroom-orchestration',
-              'teacher-wellbeing',
+              'local-first-storage',
+              'offline-resilience',
               'community-resonance',
               'knowledge-sanctuary',
               'ai-pedagogical-assistance'
             ],
-            manifesto: 'https://gurudevi.edlove.org/about',
+            manifesto: 'https://gurudevi.app/about',
             agent_policy: 'empower'
           };
         } catch (e) {}
       })();
     </script>
 
-    <!-- Google Fonts \u2014 loaded here (not inside React) to prevent FOUC on theme change -->
+    <!-- Google Fonts — loaded here (not inside React) to prevent FOUC on theme change -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" />

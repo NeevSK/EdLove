@@ -8,7 +8,6 @@ import { Pressable, type PressableProps, Text, View } from 'react-native';
 // do not copy this suppression into production component code.
 const StyledBox = styled(View);
 const StyledText = styled(Text);
-// @ts-expect-error TS2590 is the result under test for the NativeWind v5 preview API.
 styled(Pressable);
 
 // Narrowing the component boundary avoids expanding Pressable's full

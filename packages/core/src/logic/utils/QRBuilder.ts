@@ -2,10 +2,10 @@
  * QRBuilder — Factory for canonical gurudevi:// QR payload strings
  *
  * Usage:
- *   QRBuilder.school(schoolId, groupId)       → 'https://platform.gurudevi.edlove.org/qr?v=1&action=join_school&...'
- *   QRBuilder.classroom(classroomId)          → 'https://platform.gurudevi.edlove.org/qr...?'
- *   QRBuilder.invite(code, schoolId, capacity)    → 'https://platform.gurudevi.edlove.org/qr...?'
- *   QRBuilder.thuthimal(token, gifterName)    → 'https://platform.gurudevi.edlove.org/qr...?'
+ *   QRBuilder.school(schoolId, groupId)       → 'https://gurudevi.app/qr?v=1&action=join_school&...'
+ *   QRBuilder.classroom(classroomId)          → 'https://gurudevi.app/qr...?'
+ *   QRBuilder.invite(code, schoolId, capacity)    → 'https://gurudevi.app/qr...?'
+ *   QRBuilder.thuthimal(token, gifterName)    → 'https://gurudevi.app/qr...?'
  */
 
 import { GURUDEVI_QR_URL } from '@repo/core/config/publicUrls';

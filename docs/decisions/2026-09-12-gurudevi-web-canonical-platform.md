@@ -24,6 +24,13 @@ React Native Web is not the target runtime for new Gurudevi web work. The existi
 
 `gurudevi.edlove.org` and `platform.gurudevi.edlove.org` become redirect-only legacy entrances once the appropriate destinations are live. `apps/edlove-web` remains separate because it is the wider EdLove editorial and ecosystem site.
 
+### Domain Consolidation & Country-Code TLD (.lk) Strategy
+
+- **Active Canonical Runtime (Production)**: 100% standardized on `gurudevi.app` (`https://gurudevi.app` for public marketing & content, `https://sanctuary.gurudevi.app` for authenticated web workspace).
+- **Official Contact Emails**: Standardized as `support@gurudevi.app`, `gratitude@gurudevi.app`, `institutional@gurudevi.app`.
+- **Future Country-Code TLD Milestone (`gurudevi.lk`)**: Sri Lanka country-code domain (`gurudevi.lk`) is preserved as an archived future institutional milestone when local entity incorporation and funding allow. There are zero active runtime dependencies on `.lk`. All active code and configuration strictly target `gurudevi.app`.
+
+
 ## Why
 
 The existing web target already contains a substantial platform-specific renderer: 155 `.web.*` source files, direct DOM screens, browser storage adapters, and browser-specific interaction work. Continuing to add compatibility layers would preserve two renderers without giving the browser renderer full ownership of browser semantics.

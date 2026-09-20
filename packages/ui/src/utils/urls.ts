@@ -6,22 +6,42 @@ function configuredUrl(name: string, fallback: string): string {
   return parsed.toString().replace(/\/$/, '');
 }
 
-export const GURUDEVI_WEB = configuredUrl(
+export const GURUDEVI_MARKETING_URL = configuredUrl(
   'EXPO_PUBLIC_GURUDEVI_MARKETING_URL',
   'https://gurudevi.app',
 );
-export const GURUDEVI_APP = configuredUrl(
-  'EXPO_PUBLIC_GURUDEVI_APP_URL',
-  'https://gurudevi.app',
+export const GURUDEVI_WEB = GURUDEVI_MARKETING_URL;
+
+export const GURUDEVI_APP = configuredUrl('EXPO_PUBLIC_GURUDEVI_APP_URL', 'https://gurudevi.app');
+
+export const GURUDEVI_SANCTUARY_URL = configuredUrl(
+  'EXPO_PUBLIC_GURUDEVI_SANCTUARY_URL',
+  'https://sanctuary.gurudevi.app',
 );
+
 export const GURUDEVI_SUPPORT_EMAIL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_SUPPORT_EMAIL) ||
-  'support@gurudevi.lk';
+  'support@gurudevi.app';
+
+export const GURUDEVI_GRATITUDE_EMAIL =
+  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_GRATITUDE_EMAIL) ||
+  'gratitude@gurudevi.app';
+
+export const GURUDEVI_INSTITUTIONAL_EMAIL =
+  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL) ||
+  'institutional@gurudevi.app';
 
 export const EXTERNAL_URLS = {
-  privacy: `${GURUDEVI_WEB}/privacy`,
-  terms: `${GURUDEVI_WEB}/terms`,
-  guidelines: `${GURUDEVI_WEB}/faq#community-boundaries`,
-  support: `${GURUDEVI_WEB}/support`,
-  deleteAccount: `${GURUDEVI_WEB}/delete-account`,
+  marketing: GURUDEVI_MARKETING_URL,
+  app: GURUDEVI_APP,
+  sanctuary: GURUDEVI_SANCTUARY_URL,
+  privacy: `${GURUDEVI_MARKETING_URL}/privacy`,
+  terms: `${GURUDEVI_MARKETING_URL}/terms`,
+  guidelines: `${GURUDEVI_MARKETING_URL}/faq#community-boundaries`,
+  support: `${GURUDEVI_MARKETING_URL}/support`,
+  deleteAccount: `${GURUDEVI_MARKETING_URL}/delete-account`,
+  about: `${GURUDEVI_MARKETING_URL}/about`,
+  faq: `${GURUDEVI_MARKETING_URL}/faq`,
+  thuthimal: `${GURUDEVI_MARKETING_URL}/thuthimal`,
+  journal: `${GURUDEVI_MARKETING_URL}/journal`,
 } as const;

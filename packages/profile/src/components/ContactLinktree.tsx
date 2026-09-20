@@ -6,10 +6,13 @@
  */
 
 import type { SocialLink } from '@repo/core/types';
+import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
+import { InlineSocialLinkEditor } from '@repo/profile/components/InlineSocialLinkEditor';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { ExternalLink, Globe, Link, Mail, MessagesSquare, Pen, Plus, Trash2 } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { GURUDEVI_APP, openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { hapticHeavy, hapticLight } from '@repo/ui/utils/haptics';
 import * as Clipboard from 'expo-clipboard';
 import type React from 'react';
@@ -17,9 +20,6 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
-import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
-import { InlineSocialLinkEditor } from '@repo/profile/components/InlineSocialLinkEditor';
 
 interface ContactLinktreeProps {
   links: SocialLink[];
@@ -103,77 +103,82 @@ export function ContactLinktree({
         (l) => l.privacy_level === 'public' || (l.is_public && l.privacy_level !== 'private'),
       );
 
-  const handlePress = useCallback(async (provider: string, value: string) => {
-    const config = PROVIDER_CONFIG[provider];
-    if (!config) return;
+  const handlePress = useCallback(
+    async (provider: string, value: string) => {
+      const config = PROVIDER_CONFIG[provider];
+      if (!config) return;
 
-    const uri = config.getUri(value);
+      const uri = config.getUri(value);
 
-    const webUrl = uri.startsWith('http')
-      ? uri
-      : uri.startsWith('whatsapp://')
-        ? `https://wa.me/${value.replace(/\D/g, '')}`
-        : null;
+      const webUrl = uri.startsWith('http')
+        ? uri
+        : uri.startsWith('whatsapp://')
+          ? `https://wa.me/${value.replace(/\D/g, '')}`
+          : null;
 
-    if (Platform.OS === 'web') {
-      if (webUrl) {
-        openExternalURL(webUrl, {
+      if (Platform.OS === 'web') {
+        if (webUrl) {
+          openExternalURL(webUrl, {
+            title: config.label,
+            sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
+            sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
+            trustLevel: 'external',
+          });
+        } else {
+          openExternalURL(uri);
+        }
+        return;
+      }
+
+      try {
+        await openExternalURL(uri, {
           title: config.label,
           sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
           sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
-          trustLevel: 'external',
+          trustLevel: uri.startsWith('http') ? 'external' : undefined,
         });
-      } else {
-        openExternalURL(uri);
+      } catch {
+        if (uri.startsWith('whatsapp://')) {
+          await openExternalURL(`https://wa.me/${value.replace(/\D/g, '')}`, {
+            title: config.label,
+            sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
+            sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
+            trustLevel: 'external',
+          });
+        } else if (!uri.startsWith('http')) {
+          console.warn('Unhandled URI scheme:', uri);
+        }
       }
-      return;
-    }
+    },
+    [t],
+  );
 
-    try {
-      await openExternalURL(uri, {
+  const handleLinkOptions = useCallback(
+    async (provider: string, value: string) => {
+      const config = PROVIDER_CONFIG[provider];
+      if (!config) return;
+
+      const uri = config.getUri(value);
+      const webUrl = uri.startsWith('http')
+        ? uri
+        : uri.startsWith('whatsapp://')
+          ? `https://wa.me/${value.replace(/\D/g, '')}`
+          : null;
+
+      if (!webUrl) return;
+
+      await showExternalLinkOptions(webUrl, {
         title: config.label,
         sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
         sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
-        trustLevel: uri.startsWith('http') ? 'external' : undefined,
+        trustLevel: 'external',
       });
-    } catch {
-      if (uri.startsWith('whatsapp://')) {
-        await openExternalURL(`https://wa.me/${value.replace(/\D/g, '')}`, {
-          title: config.label,
-          sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
-          sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
-          trustLevel: 'external',
-        });
-      } else if (!uri.startsWith('http')) {
-        console.warn('Unhandled URI scheme:', uri);
-      }
-    }
-  }, [t]);
-
-  const handleLinkOptions = useCallback(async (provider: string, value: string) => {
-    const config = PROVIDER_CONFIG[provider];
-    if (!config) return;
-
-    const uri = config.getUri(value);
-    const webUrl = uri.startsWith('http')
-      ? uri
-      : uri.startsWith('whatsapp://')
-        ? `https://wa.me/${value.replace(/\D/g, '')}`
-        : null;
-
-    if (!webUrl) return;
-
-    await showExternalLinkOptions(webUrl, {
-      title: config.label,
-      sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
-      sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
-      trustLevel: 'external',
-    });
-  }, [t]);
+    },
+    [t],
+  );
 
   const handleCopyProfileLink = useCallback(async () => {
-    const url =
-      typeof window !== 'undefined' ? window.location.href : `https://platform.gurudevi.edlove.org`;
+    const url = typeof window !== 'undefined' ? window.location.href : GURUDEVI_APP;
     if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
@@ -309,6 +314,7 @@ export function ContactLinktree({
               entering={FadeInDown.delay(index * 100).springify()}
             >
               <Pressable
+                accessibilityRole="button"
                 onPress={() =>
                   isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)
                 }
@@ -338,12 +344,14 @@ export function ContactLinktree({
                   {isEditing ? (
                     <HStack space="md">
                       <Pressable
+                        accessibilityRole="button"
                         onPress={() => handleEditLink(link)}
                         className="p-2 rounded-lg bg-phase-surface"
                       >
                         <Pen size={18} color="#4A90E2" />
                       </Pressable>
                       <Pressable
+                        accessibilityRole="button"
                         onPress={() => handleDeleteLink(link.id)}
                         className="p-2 rounded-lg bg-phase-surface"
                       >
@@ -377,6 +385,7 @@ export function ContactLinktree({
             )}
             <Animated.View entering={FadeInDown.springify()}>
               <Pressable
+                accessibilityRole="button"
                 onPress={handleAddLink}
                 className="bg-phase-canvas border-2 border-dashed border-phase-surface rounded-3xl p-5 items-center justify-center"
               >

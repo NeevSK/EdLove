@@ -292,7 +292,11 @@ app.use(
       if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) {
         return origin;
       }
-      const allowedOrigins = ['https://platform.gurudevi.edlove.org'];
+      const allowedOrigins = [
+        'https://gurudevi.app',
+        'https://sanctuary.gurudevi.app',
+        'https://platform.gurudevi.edlove.org',
+      ];
       return allowedOrigins.includes(origin) ? origin : null;
     },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],

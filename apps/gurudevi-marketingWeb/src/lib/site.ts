@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://gurudevi.edlove.org';
+export const SITE_URL = 'https://gurudevi.app';
 export const SITE_NAME = 'Gurudevi';
 export const SITE_TITLE = 'Gurudevi | Education Ecology Support System';
 export const SITE_DESCRIPTION =
@@ -80,26 +80,22 @@ export const ROADMAP_MILESTONES: RoadmapMilestone[] = [
 export const HEVNER_RESEARCH_GROUNDING = {
   title: 'Methodological Grounding',
   lead: 'Design Science Research (Hevner 3-Cycle)',
-  body:
-    'Gurudevi progresses through the Hevner Design Science Research cadence, connecting classroom realities with pedagogical science.',
+  body: 'Gurudevi progresses through the Hevner Design Science Research cadence, connecting classroom realities with pedagogical science.',
   cycles: [
     {
       name: 'Relevance Cycle',
       phase: 'Field Realities',
-      description:
-        'Sensing classroom realities and educator burdens across Sri Lanka.',
+      description: 'Sensing classroom realities and educator burdens across Sri Lanka.',
     },
     {
       name: 'Design Cycle',
       phase: 'Alpha 2026 Genesis',
-      description:
-        'Calibrating tactile, local-first sanctuary tools with early teachers.',
+      description: 'Calibrating tactile, local-first sanctuary tools with early teachers.',
     },
     {
       name: 'Rigor Cycle',
       phase: 'Foundational Commons',
-      description:
-        'Grounding system architecture in pedagogical science and open protocols.',
+      description: 'Grounding system architecture in pedagogical science and open protocols.',
     },
   ],
 };
@@ -107,8 +103,7 @@ export const HEVNER_RESEARCH_GROUNDING = {
 export const ROADMAP_CAVEAT = {
   title: 'Sustainable Cadence',
   lead: 'Calibrated by care, capacity, and stewardship.',
-  body:
-    'While October 6 anchors our annual milestones, progress moves in harmony with research stewardship and the sustainable capacity of our team and community.',
+  body: 'While October 6 anchors our annual milestones, progress moves in harmony with research stewardship and the sustainable capacity of our team and community.',
 };
 
 // Keep public language in a locale-shaped object so Sinhala/Tamil translations
@@ -123,10 +118,26 @@ export const MARKETING_COPY = {
       secondaryCta: 'Explore Workspaces',
     },
     roles: [
-      { label: 'Teachers', title: 'More room to teach.', body: 'Prepare and reflect without administrative exhaustion.' },
-      { label: 'Leaders', title: 'Visibility without surveillance.', body: 'Coordinate the school while respecting teacher privacy.' },
-      { label: 'Students', title: 'Agency and curiosity.', body: 'Participate actively with dignity and consent.' },
-      { label: 'Families', title: 'Connection with care.', body: 'Stay close to learning without turning care into control.' },
+      {
+        label: 'Teachers',
+        title: 'More room to teach.',
+        body: 'Prepare and reflect without administrative exhaustion.',
+      },
+      {
+        label: 'Leaders',
+        title: 'Visibility without surveillance.',
+        body: 'Coordinate the school while respecting teacher privacy.',
+      },
+      {
+        label: 'Students',
+        title: 'Agency and curiosity.',
+        body: 'Participate actively with dignity and consent.',
+      },
+      {
+        label: 'Families',
+        title: 'Connection with care.',
+        body: 'Stay close to learning without turning care into control.',
+      },
     ],
     workspaces: [
       {
@@ -173,7 +184,7 @@ function publicUrl(name: string, fallback: string): string {
 
 export const WEB_LINKS = {
   marketing: SITE_URL,
-  app: publicUrl('PUBLIC_GURUDEVI_APP_URL', 'https://platform.gurudevi.edlove.org'),
+  app: publicUrl('PUBLIC_GURUDEVI_APP_URL', 'https://sanctuary.gurudevi.app'),
   edlove: publicUrl('PUBLIC_EDLOVE_URL', 'https://edlove.org'),
   intuitui: publicUrl('PUBLIC_INTUITUI_URL', 'https://intuituilabs.edlove.org'),
   founder: publicUrl('PUBLIC_FOUNDER_URL', 'https://neevsk.edlove.org'),
@@ -191,19 +202,21 @@ export const SOCIAL_LINKS = {
 } as const;
 
 export const CONTACT_EMAILS = {
-  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', 'support@gurudevi.lk'),
-  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', 'gratitude@gurudevi.lk'),
-  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', 'institutional@gurudevi.lk'),
+  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', 'support@gurudevi.app'),
+  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', 'gratitude@gurudevi.app'),
+  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', 'institutional@gurudevi.app'),
 } as const;
 
 function publicEmail(name: string, fallback: string): string {
   const value = (import.meta.env[name] as string | undefined)?.trim() || fallback;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) throw new Error(`${name} must be an email address`);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+    throw new Error(`${name} must be an email address`);
   return value;
 }
 
 for (const [name, value] of Object.entries(WEB_LINKS)) validateUrl(`WEB_LINKS.${name}`, value);
-for (const [name, value] of Object.entries(SOCIAL_LINKS)) validateUrl(`SOCIAL_LINKS.${name}`, value);
+for (const [name, value] of Object.entries(SOCIAL_LINKS))
+  validateUrl(`SOCIAL_LINKS.${name}`, value);
 
 export const MARKETING_STATS = {
   teachers: 0,

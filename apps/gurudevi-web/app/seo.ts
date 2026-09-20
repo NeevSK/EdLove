@@ -5,6 +5,10 @@ export const SITE_NAME = 'Gurudevi';
 export const SITE_DESCRIPTION =
   'A sanctuary and education ecology support system for teachers, students, schools, families, and communities.';
 
+export const SUPPORT_EMAIL = 'support@gurudevi.app';
+export const INSTITUTIONAL_EMAIL = 'institutional@gurudevi.app';
+export const GRATITUDE_EMAIL = 'gratitude@gurudevi.app';
+
 export const publicPaths = [
   '/',
   '/about',

@@ -63,7 +63,7 @@ export function resolveQR(raw: string): QRResolveResult {
     };
   }
 
-  // â”€â”€ Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Canonical: gurudevi://qr or https://gurudevi.app/qr ──────────────────
   if (trimmed.startsWith('gurudevi://qr') || trimmed.startsWith(GURUDEVI_QR_URL)) {
     try {
       const queryStart = trimmed.indexOf('?');
