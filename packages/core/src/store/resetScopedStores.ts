@@ -8,7 +8,6 @@ import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { useUIStore } from '@repo/core/store/useUIStore';
 
-
 const authScopedDefaults = {
   userName: 'Gurudevi',
   user: null,
@@ -57,13 +56,11 @@ export const resetScopedStores = () => {
     flags: featureScopedDefaults,
     snapshot: null,
   }));
-  useMutationQueue.setState({
-    queue: [],
-    deadLetterQueue: [],
-    isSyncing: false,
-  });
+  // Commands are partitioned by their original principal. Account lifecycle
+  // owns an explicit preserve/quarantine/discard transition; a UI-store reset
+  // must never silently destroy work that still needs reconciliation.
+  useMutationQueue.setState({ isSyncing: false });
 };
-
 
 export const rehydrateScopedStores = async () => {
   await Promise.all([

@@ -277,6 +277,29 @@ and must be treated as unimplemented until verified.
 - Verify the Supabase redirect allow-list and callback behavior in the target
   environment.
 
+### Observed deployment state — 2026-09-20
+
+This is evidence, not a configuration recommendation:
+
+- The checked-in mobile configuration declares the `gurudevi` custom scheme,
+  iOS associated domains for `gurudevi.app`, `sanctuary.gurudevi.app`, and
+  `platform.gurudevi.edlove.org`, plus Android auto-verified HTTPS `/qr`
+  filters for those hosts.
+- Live anonymous requests found `gurudevi.app/.well-known/assetlinks.json`
+  and `gurudevi.app/.well-known/apple-app-site-association` returning HTTP
+  404. `sanctuary.gurudevi.app` did not complete TLS validation from the
+  verification environment.
+- No Android device was attached through ADB at the time of verification.
+
+Consequently, verified HTTPS app opening is unproven and must not be claimed.
+The app configuration cannot substitute for the domain-hosted association
+files: Android requires the package's actual signing-certificate fingerprint,
+and Apple requires the actual developer Team ID/app identifier. Those values
+must be obtained from the release signing and Apple developer authorities, not
+guessed or copied from a placeholder. The third `platform.gurudevi.edlove.org`
+host is a compatibility decision still requiring explicit ownership alignment
+with the public-host policy.
+
 ### Phase 5: Ratchet and release evidence
 
 - Apply the diff-scoped test-evidence and adversarial-review ratchet to this

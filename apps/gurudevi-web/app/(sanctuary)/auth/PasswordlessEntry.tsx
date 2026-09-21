@@ -16,7 +16,7 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
   const [error, setError] = useState('');
 
   function callbackUrl() {
-    const url = new URL('/auth/callback', window.location.origin);
+    const url = new URL('/auth/complete', window.location.origin);
     const next = safeReturnPath(returnTo);
     url.searchParams.set('next', next);
     url.searchParams.set('returnTo', next);

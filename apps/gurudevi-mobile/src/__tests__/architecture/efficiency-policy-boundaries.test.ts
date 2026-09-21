@@ -12,6 +12,9 @@ describe('efficiency policy boundaries', () => {
     // Accept either single or double quotes for the import
     expect(backgroundSync).toMatch(/from\s+["']@repo\/core\/efficiency["']/);
     expect(retentionScheduler).toMatch(/from\s+["']@repo\/core\/efficiency["']/);
+    expect(backgroundSync).toMatch(/getActiveAccountId/);
+    expect(backgroundSync).toMatch(/item\.userId\s*===\s*activeUserId/);
+    expect(backgroundSync).toMatch(/tryAcquireMutationLease/);
   });
 
   it('does not retain retired device heuristics or component-level PixelRatio policy', () => {

@@ -27,6 +27,7 @@ before code generation by the Gurudevi quality gate.
 - `apps/gurudevi-mobile/src/providers/DeepLinkProvider.tsx`
 - `apps/gurudevi-mobile/src/__tests__/providers/DeepLinkProvider.test.tsx`
 - `apps/gurudevi-web/app/(sanctuary)/qr/page.tsx`
+- `scripts/check-route-intent-slice.mjs`
 
 `PushNotificationProvider.tsx` is deliberately out of this patch unless
 the shared dispatcher introduced by this slice makes its conversion both small

@@ -162,7 +162,7 @@ export interface IAuthPort {
   signUp(params: {
     email: string;
     password: string;
-    options?: { data?: Record<string, any> };
+    options?: { data?: Record<string, any>; emailRedirectTo?: string };
   }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
   signInAnonymously(options?: {

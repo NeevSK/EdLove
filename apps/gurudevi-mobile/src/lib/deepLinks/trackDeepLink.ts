@@ -7,8 +7,11 @@ const SENSITIVE_PARAM_NAMES = new Set([
   'access_token',
   'refresh_token',
   'code',
+  'error',
+  'error_code',
   'error_description',
   'id_token',
+  'state',
   'token',
 ]);
 

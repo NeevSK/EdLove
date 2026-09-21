@@ -191,25 +191,33 @@ merges. **They apply with extra force to agent-authored changes.**
 
 1. **No restating comments.** `// gets the user` above `getUser()` is noise.
    A comment must say something the code cannot.
-2. **No dead abstractions.** An interface used once, a factory with one
+2. **No unapproved behavior replacement or deletion.** Before changing an
+   existing flow, read its callers, platform variants, error/recovery paths,
+   and tests. Preserve working behavior through an additive/integrated path
+   until the replacement has an explicit compatibility decision and evidence.
+   Never delete a fallback, handler, route, storage path, or user-visible flow
+   merely because it appears insecure, redundant, or inconvenient. If its
+   security/correctness trade-off is not already specified, stop and ask the
+   user; do not make that product decision alone.
+3. **No dead abstractions.** An interface used once, a factory with one
    implementation, a wrapper that only forwards arguments — inline them.
-3. **No duplicate utilities.** Before adding any helper, search the workspace
+4. **No duplicate utilities.** Before adding any helper, search the workspace
    (`@repo/core`, `@repo/ui`, `packages/*`). If an equivalent exists,
    consolidate — never add a near-copy with a different name.
-4. **No defensive noise.** No try/catch that swallows errors silently; no
+5. **No defensive noise.** No try/catch that swallows errors silently; no
    checks for states that cannot occur; no optional chaining on non-optional
    values.
-5. **No happy-path-only code.** Every network call, parse, or external
+6. **No happy-path-only code.** Every network call, parse, or external
    boundary must answer "what happens when this fails?" — and the answer may
    not be "the app crashes".
-6. **Never weaken a test to make it pass.** Assertions get looser only with a
+7. **Never weaken a test to make it pass.** Assertions get looser only with a
    written justification in the commit message. Deleting/skipping a test
    requires stating why the behavior no longer exists.
-7. **Never weaken quality gates.** No lint suppressions, skipped CI steps,
+8. **Never weaken quality gates.** No lint suppressions, skipped CI steps,
    raised budgets, or `|| true` without an explicit, reviewed reason.
-8. **No scope creep.** A task touching 2 files should not touch 9. Unrelated
+9. **No scope creep.** A task touching 2 files should not touch 9. Unrelated
    cleanups go in their own commit (or don't happen).
-9. **Types over assertions.** No `any`, no `as unknown as X`. Model the domain
+10. **Types over assertions.** No `any`, no `as unknown as X`. Model the domain
    (`UserId`, not `string`) and let signatures be honest.
 
 ### Verification discipline (before any change is "done")

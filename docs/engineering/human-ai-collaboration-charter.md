@@ -128,3 +128,16 @@ Good collaboration means Naveen can always answer:
 
 If those answers are absent, the work pauses long enough to restore shared
 understanding. Technical sophistication without shared direction is not progress.
+
+## Cross-Chat Continuity
+
+Chat context is temporary; canonical documents and evidence records are the
+project memory. The [Foundation Hardening Ledger](../current_progress/foundation-hardening-ledger.md)
+is the control panel across chats. A work chat begins from the applicable
+ledger row and canonical policy, then ends by updating the row or linking its
+feature-spec handoff.
+
+This avoids two opposite failures: expecting Naveen to reconstruct technical
+history from memory, or treating a previous agent's confident prose as proof.
+The durable record must preserve both intent and the limits of achieved
+evidence.

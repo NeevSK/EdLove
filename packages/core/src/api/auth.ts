@@ -72,8 +72,8 @@ export const authAPI = {
     return auth.setSession(access_token, refresh_token);
   },
 
-  async signUp(email: string, password: string, fullName?: string) {
-    return auth.signUp(email, password, fullName);
+  async signUp(email: string, password: string, fullName?: string, emailRedirectTo?: string) {
+    return auth.signUp(email, password, fullName, emailRedirectTo);
   },
 
   async signInAnonymously() {

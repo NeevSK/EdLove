@@ -1,7 +1,6 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
-import { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
+import { classifyAuthCallback } from '@repo/core/logic/auth/authCallbackPolicy';
 import type { AuthManager } from '@repo/core/logic/managers/AuthManager';
-import { Duration, Effect, Schedule } from 'effect';
 
 /**
  * DeepLinkType
@@ -52,7 +51,7 @@ export class DeepLinkManager {
         (parsedUrl.hostname === 'auth' && parsedUrl.pathname === '/callback') ||
         parsedUrl.pathname === '/auth/callback'
       ) {
-        return this.handleAuthCallback(params);
+        return this.handleAuthCallback(url, params);
       }
 
       // 2. Classroom Invite Check
@@ -83,79 +82,23 @@ export class DeepLinkManager {
     }
   }
 
-  private async handleAuthCallback(params: Record<string, string>): Promise<DeepLinkResult> {
-    const access_token = params.access_token;
-    const refresh_token = params.refresh_token;
-    const authCode = params.code;
-
-    const state = params.state;
-    if (state && !DeepLinkStateGuard.verifyAndConsumeState(state)) {
-      console.warn(
-        '[DeepLinkManager] Rejected auth callback with invalid/replayed state parameter',
-      );
+  private async handleAuthCallback(url: string, params: Record<string, string>): Promise<DeepLinkResult> {
+    const callback = classifyAuthCallback(url);
+    if (callback.kind !== 'code') {
       return {
         type: DeepLinkType.AUTH_CALLBACK,
         params,
         isHandled: false,
-        message: 'Invalid or replayed state parameter (CSRF detected)',
+        message: callback.kind === 'providerError' ? 'Sign-in was cancelled or denied' : 'This secure link cannot be used. Request a new link and try again.',
       };
     }
 
-    if (access_token && refresh_token) {
-      try {
-        await this.authManager.setSession(access_token, refresh_token);
-        return {
-          type: DeepLinkType.AUTH_CALLBACK,
-          params,
-          isHandled: true,
-        };
-      } catch (error) {
-        console.error('[DeepLinkManager] Auth session set failed:', error);
-        return {
-          type: DeepLinkType.AUTH_CALLBACK,
-          params,
-          isHandled: false,
-          message: 'Failed to establish session',
-        };
-      }
+    try {
+      await this.authManager.exchangeCodeForSession(callback.code);
+      return { type: DeepLinkType.AUTH_CALLBACK, params, isHandled: true };
+    } catch {
+      return { type: DeepLinkType.AUTH_CALLBACK, params, isHandled: false, message: 'This secure link has expired or was already used. Request a new link and try again.' };
     }
-
-    // Magic-link / PKCE code exchange with Effect-TS resilient exponential backoff retry
-    if (authCode) {
-      const retrySchedule = Schedule.exponential(Duration.millis(50)).pipe(
-        Schedule.intersect(Schedule.recurs(2)),
-      );
-
-      const exchangeEffect = Effect.tryPromise({
-        try: () => this.authManager.exchangeCodeForSession(authCode),
-        catch: (cause) => cause,
-      }).pipe(
-        Effect.retry(retrySchedule),
-        Effect.map(() => ({
-          type: DeepLinkType.AUTH_CALLBACK,
-          params,
-          isHandled: true,
-        })),
-        Effect.catchAll((error) => {
-          console.error('[DeepLinkManager] Magic-link code exchange failed after retries:', error);
-          return Effect.succeed({
-            type: DeepLinkType.AUTH_CALLBACK,
-            params,
-            isHandled: false,
-            message: 'Failed to exchange magic-link code',
-          });
-        }),
-      );
-
-      return Effect.runPromise(exchangeEffect);
-    }
-
-    return {
-      type: DeepLinkType.AUTH_CALLBACK,
-      params,
-      isHandled: false,
-      message: 'Missing tokens',
-    };
   }
 
   /**

@@ -1,7 +1,7 @@
 import { authAPI, identityAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
-import { getSessionIdentityMode } from '@repo/core/logic';
+import { deepLink, getSessionIdentityMode } from '@repo/core/logic';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
@@ -303,22 +303,14 @@ const AuthScreen = memo(
 
         const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
         if (authResponse.type === 'success' && (authResponse as any).url) {
-          const url = new URL((authResponse as any).url);
-          const params = Object.fromEntries(url.searchParams.entries());
-          const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
-          const refresh_token =
-            params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
-
-          if (!access_token || !refresh_token) {
-            console.error('Missing tokens in auth response');
+          const result = await deepLink.handleURL((authResponse as { url: string }).url);
+          if (!result.isHandled) {
             showToast({
-              message: 'Authentication failed: Could not retrieve secure tokens. Please try again.',
+              message: 'Authentication could not be completed. Please start sign-in again.',
               type: 'error',
             });
             return;
           }
-
-          await authAPI.setSession(access_token, refresh_token);
           hapticSuccess();
           await finishSignIn({ isAnon, guestUserId: session?.user?.id });
         }
@@ -395,7 +387,7 @@ const AuthScreen = memo(
             if (onSuccess) onSuccess();
           }
         } else {
-          await authAPI.signUp(email, password);
+          await authAPI.signUp(email, password, undefined, getRedirectUrl());
           hapticSuccess();
           showToast({
             message:
@@ -404,7 +396,7 @@ const AuthScreen = memo(
           });
         }
       },
-      [currentUser, email, password, showToast, t, onSuccess],
+      [currentUser, email, password, showToast, t, onSuccess, getRedirectUrl],
     );
 
     const completeLogin = useCallback(async () => {
@@ -537,21 +529,14 @@ const AuthScreen = memo(
 
         const authResponse = await WebBrowser.openAuthSessionAsync(passkeyUrl, redirectUrl);
         if (authResponse.type === 'success' && (authResponse as any).url) {
-          const url = new URL((authResponse as any).url);
-          const params = Object.fromEntries(url.searchParams.entries());
-          const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
-          const refresh_token =
-            params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
-
-          if (!access_token || !refresh_token) {
+          const result = await deepLink.handleURL((authResponse as { url: string }).url);
+          if (!result.isHandled) {
             showToast({
-              message: 'Passkey sign-in finished but no session was returned.',
+              message: 'Passkey sign-in could not be completed. Please try again.',
               type: 'error',
             });
             return;
           }
-
-          await authAPI.setSession(access_token, refresh_token);
           hapticSuccess();
           onSuccess?.();
         }
@@ -585,14 +570,8 @@ const AuthScreen = memo(
 
         const authResponse = await WebBrowser.openAuthSessionAsync(passkeyUrl, redirectUrl);
         if (authResponse.type === 'success' && (authResponse as any).url) {
-          const url = new URL((authResponse as any).url);
-          const params = Object.fromEntries(url.searchParams.entries());
-          const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
-          const refresh_token =
-            params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
-
-          if (access_token && refresh_token) {
-            await authAPI.setSession(access_token, refresh_token);
+          const result = await deepLink.handleURL((authResponse as { url: string }).url);
+          if (result.isHandled) {
             hapticSuccess();
             onSuccess?.();
             return;

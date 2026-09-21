@@ -5,7 +5,7 @@ import type { QRPayload } from '@repo/core/types';
 import { useCallback, useEffect, useRef } from 'react';
 import { Linking } from 'react-native';
 
-export const PENDING_QR_KEY = 'pending_qr_action';
+const PENDING_QR_KEY = 'pending_qr_action';
 
 export type QRDeepLinkHandler = (payload: QRPayload) => void;
 

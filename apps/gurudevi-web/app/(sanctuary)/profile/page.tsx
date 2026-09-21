@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
+import { AccountDeletionControl } from './AccountDeletionControl';
 import styles from './profile.module.css';
 
 export const metadata = { title: 'Profile | Gurudevi Sanctuary' };
@@ -82,6 +83,7 @@ export default async function ProfilePage() {
       <p className={styles.readOnly} role="note">
         Read-only profile identity
       </p>
+      <AccountDeletionControl />
     </article>
   );
 }

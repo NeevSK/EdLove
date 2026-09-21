@@ -3,6 +3,7 @@ import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
 import { accountPin } from '@repo/core/lib/accountPin';
+import { accountTransition } from '@repo/core/accounts/accountTransition';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';
 import {
@@ -101,11 +102,6 @@ function completeLocalAccountLifecycle<C extends AccountLifecycleCommand>(
   };
 
   return completeAccountLifecycleCommand(capability, command, effects);
-}
-
-async function clearActivePowerSyncAccount() {
-  const { clearPowerSyncAccount } = await import('../adapters/powersync/database');
-  await clearPowerSyncAccount();
 }
 
 /**
@@ -240,6 +236,13 @@ export const deviceAccounts = {
       throw new DeviceAccountError('This account is no longer available on this device.');
     }
 
+    await accountTransition.transition({
+      outgoingPrincipalId: previousAccountId,
+      incomingPrincipalId: accountId,
+      disposition: 'preserve-and-quarantine',
+      clearReplicatedData: true,
+    });
+
     await setActiveAccount(accountId);
     resetScopedStores();
     await rehydrateScopedStores();
@@ -288,10 +291,6 @@ export const deviceAccounts = {
   async removeAccount(accountId: string) {
     const isActiveAccount = getActiveAccountId() === accountId;
     if (isActiveAccount) {
-      // Account removal is destructive: close and clear only the removed
-      // account's active PowerSync database before another account is opened.
-      await clearActivePowerSyncAccount();
-
       void deviceTrustAPI.getInstallId().then((installId) => {
         if (installId) {
           queueAuditOp(() =>
@@ -306,6 +305,16 @@ export const deviceAccounts = {
 
     const accounts = await readRegistry();
     const nextAccounts = accounts.filter((entry) => entry.accountId !== accountId);
+    const fallback = nextAccounts[0]?.accountId ?? null;
+
+    if (isActiveAccount) {
+      await accountTransition.transition({
+        outgoingPrincipalId: accountId,
+        incomingPrincipalId: fallback,
+        disposition: 'discard',
+        clearReplicatedData: true,
+      });
+    }
 
     await Promise.all([removeStoredSessionForAccount(accountId), accountPin.removePin(accountId)]);
     await writeRegistry(nextAccounts);
@@ -316,8 +325,8 @@ export const deviceAccounts = {
       ]);
     }
 
-    const fallback = nextAccounts[0]?.accountId ?? null;
     if (fallback) {
+      await setActiveAccount(null);
       await this.switchTo(fallback);
       return completeLocalAccountLifecycle({ kind: 'remove-remembered-account', accountId }, [
         { kind: 'remove-remembered-account', accountId },
@@ -372,8 +381,13 @@ export const deviceAccounts = {
       deviceTrustAPI.getInstallId(),
     ]);
     const activeAccountId = getActiveAccountId();
-    if (activeAccountId) {
-      await clearActivePowerSyncAccount();
+    for (const entry of accounts) {
+      await accountTransition.transition({
+        outgoingPrincipalId: entry.accountId,
+        incomingPrincipalId: null,
+        disposition: 'discard',
+        clearReplicatedData: entry.accountId === activeAccountId,
+      });
     }
     for (const entry of accounts) {
       queueAccountSignOutAudit(entry.accountId);

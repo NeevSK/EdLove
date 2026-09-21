@@ -66,6 +66,26 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
     expect(result).toEqual({ url: 'https://example.com/passkey' });
   });
 
+  it('forwards a native confirmation callback without accepting URL session tokens', async () => {
+    authPort.signUp.mockResolvedValue({ user: { id: 'user-1' }, session: null });
+
+    await manager.signUp(
+      'person@example.com',
+      'secure-password',
+      undefined,
+      'gurudevi://auth/callback',
+    );
+
+    expect(authPort.signUp).toHaveBeenCalledWith({
+      email: 'person@example.com',
+      password: 'secure-password',
+      options: {
+        data: { display_name: undefined },
+        emailRedirectTo: 'gurudevi://auth/callback',
+      },
+    });
+  });
+
   it('logs TOTP enrollments and returns the adapter result', async () => {
     authPort.enrollTotp.mockResolvedValue({ factorId: 'factor-1', qrCode: 'otpauth://totp/test' });
 

@@ -73,4 +73,67 @@ describe('PowerSync upload idempotency', { tags: ['storage', 'fast'] }, () => {
 
     expect(writes).toHaveLength(2);
   });
+
+  it('settles concurrent retries through the durable principal-scoped ledger only once', async () => {
+    const writes: unknown[] = [];
+    let ledger:
+      | { payloadHash: string; status: 'processing' | 'completed'; processedCount: number }
+      | undefined;
+    let transactionTail = Promise.resolve();
+
+    const tx = {
+      bond: { upsert: async (input: unknown) => writes.push(input) },
+      $executeRaw: async (strings: TemplateStringsArray, ...values: unknown[]) => {
+        const sql = strings.join('?');
+        if (sql.includes('INSERT INTO powersync_idempotency_keys') && !ledger) {
+          ledger = {
+            payloadHash: String(values[2]),
+            status: 'processing',
+            processedCount: 0,
+          };
+        }
+        if (sql.includes('UPDATE powersync_idempotency_keys') && ledger) {
+          ledger.status = 'completed';
+          ledger.processedCount = Number(values[0]);
+        }
+      },
+      $queryRaw: async () =>
+        ledger
+          ? [
+              {
+                payload_hash: ledger.payloadHash,
+                status: ledger.status,
+                processed_count: ledger.processedCount,
+              },
+            ]
+          : [],
+    };
+    const db = {
+      $transaction: async (operation: (transaction: typeof tx) => Promise<void>) => {
+        const previous = transactionTail;
+        let releaseTransaction: (() => void) | undefined;
+        transactionTail = new Promise<void>((resolve) => {
+          releaseTransaction = resolve;
+        });
+        await previous;
+        try {
+          await operation(tx);
+        } finally {
+          releaseTransaction?.();
+        }
+      },
+    };
+    const crud = [{ id: 'row-1', op: 'PUT', table: 'bonds', opData: { capacity: 'teacher' } }];
+
+    const outcomes = await Promise.all([
+      applyPowerSyncBatch(db, crud, 'durable-concurrent-key', 'user-durable'),
+      applyPowerSyncBatch(db, crud, 'durable-concurrent-key', 'user-durable'),
+    ]);
+
+    expect(outcomes).toEqual([
+      { success: true, processedCount: 1 },
+      { success: true, processedCount: 1, idempotent: true },
+    ]);
+    expect(writes).toHaveLength(1);
+  });
 });

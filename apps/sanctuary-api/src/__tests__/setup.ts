@@ -8,6 +8,7 @@ let mockActiveBond: any = null;
 let mockUserData: any = null;
 let mockUsers: any[] = [];
 let mockDailyContentRows: any[] = [];
+let mockLastQueryRawArgs: unknown[] | null = null;
 let mockQueryRowsQueue: any[][] = [];
 let mockLibraryCollectionRead: any = null;
 let mockLibraryCollections: any[] = [];
@@ -51,6 +52,11 @@ export function setMockUsers(rows: any[]) {
 
 export function setMockDailyContentRows(rows: any[]) {
   mockDailyContentRows = rows;
+  mockLastQueryRawArgs = null;
+}
+
+export function getMockLastQueryRawArgs(): unknown[] | null {
+  return mockLastQueryRawArgs;
 }
 
 export function setMockQueryRowsQueue(rows: any[][]) {
@@ -943,7 +949,10 @@ function createMockDelegate(name: string): any {
           return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
         }
         if (prop === '$queryRaw') {
-          return async () => mockDailyContentRows;
+          return async (...args: unknown[]) => {
+            mockLastQueryRawArgs = args;
+            return mockDailyContentRows;
+          };
         }
 
         return createMockDelegate(`${name}.${String(prop)}`);
@@ -960,7 +969,10 @@ const mockDb = new Proxy(
         return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
       }
       if (prop === '$queryRaw') {
-        return async () => mockDailyContentRows;
+        return async (...args: unknown[]) => {
+          mockLastQueryRawArgs = args;
+          return mockDailyContentRows;
+        };
       }
       if (prop === '$queryRawUnsafe') {
         return async () => [];

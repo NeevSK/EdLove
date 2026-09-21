@@ -11,7 +11,7 @@ describe('deep-link telemetry', () => {
     Object.assign(globalThis, { posthog: { capture } });
   });
 
-  it('redacts auth credentials and one-time codes', () => {
+  it('redacts auth credentials, callback state, and provider errors', () => {
     trackDeepLink(
       'gurudevi://auth/callback#access_token=secret&refresh_token=refresh',
       DeepLinkType.AUTH_CALLBACK,
@@ -19,6 +19,10 @@ describe('deep-link telemetry', () => {
         access_token: 'secret',
         refresh_token: 'refresh',
         code: 'one-time-code',
+        state: 'correlation-secret',
+        error: 'access_denied',
+        error_code: 'provider-detail',
+        error_description: 'sensitive provider text',
         inviteCode: 'safe-invite',
       },
     );
@@ -29,6 +33,10 @@ describe('deep-link telemetry', () => {
     expect(JSON.stringify(properties)).not.toContain('secret');
     expect(JSON.stringify(properties)).not.toContain('refresh');
     expect(JSON.stringify(properties)).not.toContain('one-time-code');
+    expect(JSON.stringify(properties)).not.toContain('correlation-secret');
+    expect(JSON.stringify(properties)).not.toContain('access_denied');
+    expect(JSON.stringify(properties)).not.toContain('provider-detail');
+    expect(JSON.stringify(properties)).not.toContain('sensitive provider text');
     expect(properties).toMatchObject({
       hasAccessToken: true,
       hasAuthCode: true,

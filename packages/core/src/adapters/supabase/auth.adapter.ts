@@ -263,7 +263,7 @@ export class SupabaseAuthAdapter implements IAuthPort {
   async signUp(params: {
     email: string;
     password: string;
-    options?: { data?: Record<string, any> };
+    options?: { data?: Record<string, any>; emailRedirectTo?: string };
   }) {
     const { data, error } = await this.client.auth.signUp(params);
     if (error) throw new APIError('Failed to sign up', error.code, error);

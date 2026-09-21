@@ -9,6 +9,7 @@ import type { Inngest } from 'inngest';
 export const createInngestEventBusAdapter = (client: Inngest<any>): IEventBusPort => ({
   async publish(event: DomainEvent) {
     await client.send({
+      id: event.metadata?.eventId,
       name: event.name as any,
       data: {
         ...event.data,

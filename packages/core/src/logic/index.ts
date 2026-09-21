@@ -41,6 +41,13 @@ export {
   isPublicBootstrapRoute,
 } from '@repo/core/logic/auth/bootstrapRoutes';
 export { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
+export { classifyAuthCallback, type AuthCallbackIntent } from '@repo/core/logic/auth/authCallbackPolicy';
+export {
+  consumeAuthCallbackAttempt,
+  issueAuthCallbackAttempt,
+  type AuthCallbackAttempt,
+  type AuthCallbackPurpose,
+} from '@repo/core/logic/auth/authCallbackAttempt';
 export {
   classifyRouteIntent,
   classifyRouteIntentEffect,
@@ -110,6 +117,12 @@ export {
   satisfiesEntitlementRequirement,
 } from '@repo/core/logic/ports/entitlement.port';
 export type { IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
+export type {
+  AccountTransitionDisposition,
+  AccountTransitionOutcome,
+  AccountTransitionPort,
+  AccountTransitionRequest,
+} from '@repo/core/logic/ports/accountTransition.port';
 export type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,

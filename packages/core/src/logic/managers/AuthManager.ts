@@ -240,17 +240,23 @@ export class AuthManager {
     return result;
   }
 
-  async signUp(email: string, password: string, fullName?: string) {
+  async signUp(
+    email: string,
+    password: string,
+    fullName?: string,
+    emailRedirectTo?: string,
+  ) {
     const result = await this.authPort.signUp({
       email,
       password,
-      options: { data: { display_name: fullName } },
+      options: { data: { display_name: fullName }, emailRedirectTo },
     });
 
     await this.recordAuthMethodUsage('AUTH_SIGN_UP_PASSWORD', {
       method: 'password',
       outcome: 'success',
       displayName: fullName ?? null,
+      emailRedirectTo: emailRedirectTo ?? null,
       hasSession: !!result.session,
     });
 

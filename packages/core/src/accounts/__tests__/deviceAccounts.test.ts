@@ -86,6 +86,7 @@ vi.mock('../../adapters/powersync/database', () => ({
 }));
 
 import { setActiveAccountId } from '../../lib/accountScope';
+import { useMutationQueue } from '../../lib/sync/useMutationQueue';
 import { deviceAccounts } from '../deviceAccounts';
 
 const validAccessToken =
@@ -94,8 +95,12 @@ const validRefreshToken = 'refresh-token-for-test';
 
 describe('deviceAccounts', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     setActiveAccountId(null);
+    // Resetting persisted queue state may write an empty snapshot. Clear mocks
+    // after that fixture work so account-capture assertions observe only calls
+    // made by the operation under test.
+    useMutationQueue.setState({ queue: [], deadLetterQueue: [], isSyncing: false });
+    vi.clearAllMocks();
     mockLogAuditEvent.mockResolvedValue(undefined);
     mockSyncCurrentAccountDevice.mockResolvedValue(null);
     mockTouchCurrentDevice.mockResolvedValue(null);
@@ -185,6 +190,67 @@ describe('deviceAccounts', () => {
       validRefreshToken,
     );
     expect(mockTouchCurrentDevice).toHaveBeenCalledWith('account-1');
+  });
+
+  it('quarantines outgoing work without replaying another account or legacy work during a switch', async () => {
+    setActiveAccountId('account-1');
+    useMutationQueue.setState({
+      queue: [
+        {
+          id: 'account-1-command',
+          idempotencyKey: 'account-1-key',
+          type: 'CUSTOM',
+          scope: 'self',
+          name: 'save',
+          variables: {},
+          timestamp: 1,
+          retryCount: 0,
+          userId: 'account-1',
+          commandState: 'queued',
+        },
+        {
+          id: 'account-2-command',
+          idempotencyKey: 'account-2-key',
+          type: 'CUSTOM',
+          scope: 'self',
+          name: 'save',
+          variables: {},
+          timestamp: 2,
+          retryCount: 0,
+          userId: 'account-2',
+          commandState: 'queued',
+        },
+        {
+          id: 'legacy-command',
+          idempotencyKey: 'legacy-key',
+          type: 'CUSTOM',
+          scope: 'self',
+          name: 'save',
+          variables: {},
+          timestamp: 3,
+          retryCount: 0,
+          commandState: 'queued',
+        },
+      ],
+    });
+    mockGetStoredSessionForAccount.mockResolvedValue({
+      access_token: validAccessToken,
+      refresh_token: validRefreshToken,
+    });
+    mockSetSession.mockResolvedValue({ error: null });
+    mockGetString.mockReturnValue(JSON.stringify([
+      { accountId: 'account-1', lastUsedAt: '2026-01-01T00:00:00.000Z' },
+      { accountId: 'account-2', lastUsedAt: '2026-01-02T00:00:00.000Z' },
+    ]));
+
+    await deviceAccounts.switchTo('account-2');
+
+    expect(mockClearPowerSyncAccount).toHaveBeenCalledOnce();
+    expect(useMutationQueue.getState().queue).toEqual([
+      expect.objectContaining({ id: 'account-1-command', commandState: 'auth_paused' }),
+      expect.objectContaining({ id: 'account-2-command', commandState: 'queued' }),
+      expect.objectContaining({ id: 'legacy-command', commandState: 'queued' }),
+    ]);
   });
 
   it('signs out the current account and clears local state', async () => {

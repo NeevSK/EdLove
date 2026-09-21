@@ -10,7 +10,8 @@
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "node ../../scripts/scoped-biome.mjs",
     "lint:eslint": "eslint .",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test:g1:auth-callback": "node ../../scripts/run-and-report.mjs --cmd \"vitest run app/auth/complete/route.test.ts app/auth/signout/route.test.ts app/auth/deletion/route.test.ts\" --name \"apps_gurudevi-web-test_g1_auth_callback\" --evidence-level G1"
   },
   "dependencies": {
     "@orpc/client": "1.15.0",

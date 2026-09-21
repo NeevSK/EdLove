@@ -10,10 +10,12 @@
  */
 
 import { evaluateEfficiency, normalizeNetworkConditions } from '@repo/core/efficiency';
+import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
-import { MUTATION_REGISTRY, sovereignBus } from '@repo/core/sync';
+import { MUTATION_REGISTRY, sovereignBus, type QueuedMutation } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
 import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
+import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
 
 export { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 
@@ -24,12 +26,12 @@ const SYNC_CONFIG = {
   baseBackoffMs: 1000,
   maxBackoffMs: 30000,
   jitterFactor: 0.3,
-  deadLetterMaxSize: 100,
 } as const;
 
 // ─── Dead Letter Queue Storage ────────────────────────────────────────────────
 
-const DEAD_LETTER_KEY = 'gurudevi:dead-letter-queue';
+const LEGACY_DEAD_LETTER_KEY = 'gurudevi:dead-letter-queue';
+let legacyDeadLetterMigration: Promise<void> | undefined;
 
 async function getBackgroundSyncDecision() {
   try {
@@ -57,51 +59,67 @@ async function getBackgroundSyncDecision() {
   }
 }
 
-async function getDeadLetterQueue(): Promise<any[]> {
-  try {
-    const stored = await coreRuntime.storage.getItem(DEAD_LETTER_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
+function isQueuedMutation(value: unknown): value is QueuedMutation {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<QueuedMutation>;
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.name === 'string' &&
+    typeof candidate.scope === 'string' &&
+    typeof candidate.timestamp === 'number' &&
+    typeof candidate.retryCount === 'number' &&
+    typeof candidate.idempotencyKey === 'string'
+  );
+}
+
+async function migrateLegacyDeadLetterQueue(): Promise<void> {
+  if (!legacyDeadLetterMigration) {
+    legacyDeadLetterMigration = (async () => {
+      const stored = await coreRuntime.storage.getItem(LEGACY_DEAD_LETTER_KEY);
+      if (!stored) return;
+
+      try {
+        const parsed: unknown = JSON.parse(stored);
+        if (!Array.isArray(parsed)) return;
+        const mutations = parsed.filter(isQueuedMutation);
+        // The legacy queue was newest-first. Retain every record or leave the
+        // source untouched for manual recovery; never silently drop malformed
+        // historical entries while clearing the only copy.
+        if (mutations.length !== parsed.length) return;
+        useMutationQueue.getState().importDeadLetterMutations(mutations);
+        await coreRuntime.storage.removeItem(LEGACY_DEAD_LETTER_KEY);
+      } catch {
+        // Preserve the source store if it cannot be safely parsed and imported.
+      }
+    })();
   }
+  await legacyDeadLetterMigration;
 }
 
-async function saveDeadLetterQueue(queue: any[]): Promise<void> {
-  await coreRuntime.storage.setItem(DEAD_LETTER_KEY, JSON.stringify(queue));
-}
-
-async function addToDeadLetterQueue(item: any): Promise<void> {
-  const queue = await getDeadLetterQueue();
-  const newQueue = [item, ...queue].slice(0, SYNC_CONFIG.deadLetterMaxSize);
-  await saveDeadLetterQueue(newQueue);
-}
-
-export async function getDeadLetterQueueItems(): Promise<any[]> {
-  return getDeadLetterQueue();
+export async function getDeadLetterQueueItems(): Promise<QueuedMutation[]> {
+  await migrateLegacyDeadLetterQueue();
+  return useMutationQueue.getState().deadLetterQueue;
 }
 
 export async function retryDeadLetterItem(id: string): Promise<boolean> {
-  const queue = await getDeadLetterQueue();
+  await migrateLegacyDeadLetterQueue();
+  const queue = useMutationQueue.getState().deadLetterQueue;
   const index = queue.findIndex((item) => item.id === id);
   if (index === -1) return false;
 
   const item = queue[index];
-  queue.splice(index, 1);
-  await saveDeadLetterQueue(queue);
+  if (!item) return false;
+  const activeUserId = getActiveAccountId();
+  // Legacy/unbound DLQ entries require an explicit migration decision; never
+  // attach them to whichever account happens to be active during recovery.
+  if (!activeUserId || item.userId !== activeUserId) return false;
 
-  // Re-add to mutation queue for retry
-  const { addToQueue } = useMutationQueue.getState();
-  await addToQueue({
-    type: item.type,
-    scope: item.scope,
-    name: item.name,
-    variables: item.variables,
-  });
-  return true;
+  return useMutationQueue.getState().restoreDeadLetterMutation(id);
 }
 
 export async function clearDeadLetterQueue(): Promise<void> {
-  await coreRuntime.storage.removeItem(DEAD_LETTER_KEY);
+  useMutationQueue.getState().clearDeadLetterQueue();
+  await coreRuntime.storage.removeItem(LEGACY_DEAD_LETTER_KEY);
 }
 
 // ─── Exponential Backoff with Jitter ──────────────────────────────────────────
@@ -121,67 +139,104 @@ export async function runBackgroundSyncTask() {
     return BackgroundTaskResult.NoData;
   }
 
-  const { queue, removeFromQueue, setSyncing, updateMutation } = useMutationQueue.getState();
+  const {
+    queue,
+    moveToDeadLetter,
+    removeFromQueue,
+    setSyncing,
+    updateMutation,
+    tryAcquireMutationLease,
+  } =
+    useMutationQueue.getState();
+  const activeUserId = getActiveAccountId();
 
-  if (queue.length === 0) {
+  if (!activeUserId || queue.length === 0) {
     return BackgroundTaskResult.NoData;
   }
 
   console.log(`[BackgroundSync] Pulse: draining ${queue.length} items`);
   setSyncing(true);
-
-  // Filter items ready for retry (backoff expired)
-  const now = Date.now();
-  const readyItems = queue
-    .filter((item) => !item.backoffUntil || now >= item.backoffUntil)
-    .slice(0, SYNC_CONFIG.maxBatchSize);
-
   let drained = 0;
   let failed = 0;
 
-  for (const item of readyItems) {
-    try {
-      const mutationFn = MUTATION_REGISTRY[item.name];
-      if (!mutationFn) continue;
+  try {
+    // Filter items ready for retry (backoff expired)
+    const now = Date.now();
+    const readyItems = queue
+      .filter(
+        (item) =>
+          item.userId === activeUserId &&
+          item.commandState !== 'auth_paused' &&
+          item.commandState !== 'conflict' &&
+          item.commandState !== 'rejected' &&
+          (!item.lockLeaseExpiresAt || now >= item.lockLeaseExpiresAt) &&
+          (!item.backoffUntil || now >= item.backoffUntil),
+      )
+      .slice(0, SYNC_CONFIG.maxBatchSize);
 
-      await mutationFn(item.variables);
-      removeFromQueue(item.id);
-      drained++;
-    } catch (error) {
-      failed++;
-      const retryCount = (item.retryCount || 0) + 1;
+    for (const item of readyItems) {
+      try {
+        if (!tryAcquireMutationLease(item.id, 15000)) continue;
+        const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
+        if (workflowResult === 'pending') {
+          updateMutation(item.id, {
+            commandState: 'retry_scheduled',
+            backoffUntil: Date.now() + 5000,
+            lastError: 'Workflow receipt pending',
+            lastErrorCode: 'WORKFLOW_RECEIPT_PENDING',
+            lockLeaseExpiresAt: undefined,
+          });
+          continue;
+        }
+        if (workflowResult === 'dispatched') {
+          removeFromQueue(item.id);
+          drained++;
+          continue;
+        }
+        const mutationFn = MUTATION_REGISTRY[item.name];
+        if (!mutationFn) {
+          moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
+          failed++;
+          continue;
+        }
 
-      if (retryCount >= SYNC_CONFIG.maxRetries) {
-        // Move to dead letter queue
-        console.warn(
-          `[BackgroundSync] Item ${item.id} exceeded max retries, moving to dead letter queue`,
-        );
-        await addToDeadLetterQueue({
-          ...item,
-          retryCount,
-          lastError: String(error),
-          failedAt: Date.now(),
-        });
+        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
         removeFromQueue(item.id);
-      } else {
-        // Schedule retry with exponential backoff
-        const backoffMs = calculateBackoff(retryCount);
-        updateMutation(item.id, {
-          retryCount,
-          backoffUntil: Date.now() + backoffMs,
-        });
+        drained++;
+      } catch (error) {
+        failed++;
+        const retryCount = (item.retryCount || 0) + 1;
+
+        if (retryCount >= SYNC_CONFIG.maxRetries) {
+          // Move to dead letter queue
+          console.warn(
+            `[BackgroundSync] Item ${item.id} exceeded max retries, moving to dead letter queue`,
+          );
+          updateMutation(item.id, { retryCount });
+          moveToDeadLetter(item.id, String(error));
+        } else {
+          // Schedule retry with exponential backoff
+          const backoffMs = calculateBackoff(retryCount);
+          updateMutation(item.id, {
+            retryCount,
+            backoffUntil: Date.now() + backoffMs,
+            commandState: 'retry_scheduled',
+            lastError: String(error),
+            lockLeaseExpiresAt: undefined,
+          });
+        }
       }
     }
+  } finally {
+    setSyncing(false);
   }
-
-  setSyncing(false);
 
   // Emit sync status for UI
   sovereignBus.emit('background:pulse', {
     itemsDrained: drained,
     itemsFailed: failed,
     queueLength: useMutationQueue.getState().queue.length,
-    deadLetterLength: (await getDeadLetterQueue()).length,
+    deadLetterLength: (await getDeadLetterQueueItems()).length,
   });
 
   return drained > 0 || failed > 0 ? BackgroundTaskResult.NewData : BackgroundTaskResult.NoData;
@@ -232,51 +287,88 @@ export async function triggerBackgroundSyncForTesting(): Promise<void> {
  * Trigger an immediate foreground sync
  */
 export async function triggerForegroundSync(): Promise<{ drained: number; failed: number }> {
-  const { queue, removeFromQueue, setSyncing, updateMutation } = useMutationQueue.getState();
+  const {
+    queue,
+    moveToDeadLetter,
+    removeFromQueue,
+    setSyncing,
+    updateMutation,
+    tryAcquireMutationLease,
+  } =
+    useMutationQueue.getState();
+  const activeUserId = getActiveAccountId();
 
-  if (queue.length === 0) return { drained: 0, failed: 0 };
+  if (!activeUserId || queue.length === 0) return { drained: 0, failed: 0 };
 
   setSyncing(true);
-
-  const now = Date.now();
-  const readyItems = queue
-    .filter((item) => !item.backoffUntil || Date.now() >= item.backoffUntil)
-    .slice(0, SYNC_CONFIG.maxBatchSize);
-
   let drained = 0;
   let failed = 0;
 
-  for (const item of readyItems) {
-    try {
-      const mutationFn = MUTATION_REGISTRY[item.name];
-      if (!mutationFn) continue;
+  try {
+    const now = Date.now();
+    const readyItems = queue
+      .filter(
+        (item) =>
+          item.userId === activeUserId &&
+          item.commandState !== 'auth_paused' &&
+          item.commandState !== 'conflict' &&
+          item.commandState !== 'rejected' &&
+          (!item.lockLeaseExpiresAt || now >= item.lockLeaseExpiresAt) &&
+          (!item.backoffUntil || now >= item.backoffUntil),
+      )
+      .slice(0, SYNC_CONFIG.maxBatchSize);
 
-      await mutationFn(item.variables);
-      removeFromQueue(item.id);
-      drained++;
-    } catch (error) {
-      failed++;
-      const retryCount = (item.retryCount || 0) + 1;
+    for (const item of readyItems) {
+      try {
+        if (!tryAcquireMutationLease(item.id, 15000)) continue;
+        const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
+        if (workflowResult === 'pending') {
+          updateMutation(item.id, {
+            commandState: 'retry_scheduled',
+            backoffUntil: Date.now() + 5000,
+            lastError: 'Workflow receipt pending',
+            lastErrorCode: 'WORKFLOW_RECEIPT_PENDING',
+            lockLeaseExpiresAt: undefined,
+          });
+          continue;
+        }
+        if (workflowResult === 'dispatched') {
+          removeFromQueue(item.id);
+          drained++;
+          continue;
+        }
+        const mutationFn = MUTATION_REGISTRY[item.name];
+        if (!mutationFn) {
+          moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
+          failed++;
+          continue;
+        }
 
-      if (retryCount >= SYNC_CONFIG.maxRetries) {
-        await addToDeadLetterQueue({
-          ...item,
-          retryCount,
-          lastError: String(error),
-          failedAt: Date.now(),
-        });
+        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
         removeFromQueue(item.id);
-      } else {
-        const backoffMs = calculateBackoff(retryCount);
-        updateMutation(item.id, {
-          retryCount,
-          backoffUntil: Date.now() + backoffMs,
-        });
+        drained++;
+      } catch (error) {
+        failed++;
+        const retryCount = (item.retryCount || 0) + 1;
+
+        if (retryCount >= SYNC_CONFIG.maxRetries) {
+          updateMutation(item.id, { retryCount });
+          moveToDeadLetter(item.id, String(error));
+        } else {
+          const backoffMs = calculateBackoff(retryCount);
+          updateMutation(item.id, {
+            retryCount,
+            backoffUntil: Date.now() + backoffMs,
+            commandState: 'retry_scheduled',
+            lastError: String(error),
+            lockLeaseExpiresAt: undefined,
+          });
+        }
       }
     }
+  } finally {
+    setSyncing(false);
   }
-
-  setSyncing(false);
 
   sovereignBus.emit('foreground:sync', {
     itemsDrained: drained,
@@ -295,7 +387,7 @@ export async function getSyncStatus(): Promise<{
   isSyncing: boolean;
 }> {
   const state = useMutationQueue.getState();
-  const deadLetter = await getDeadLetterQueue();
+  const deadLetter = await getDeadLetterQueueItems();
   return {
     queueLength: state.queue.length,
     deadLetterLength: deadLetter.length,

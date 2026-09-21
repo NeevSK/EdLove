@@ -378,6 +378,7 @@ export const ProfileScreen = () => {
 
   const {
     deleteAccount,
+    cancelDeletion,
     isDeleting,
     request: deletionRequest,
     unavailableReason: deletionUnavailableReason,
@@ -452,6 +453,23 @@ export const ProfileScreen = () => {
       console.error('[ProfileScreen] account deletion failed', error);
       hapticError();
       showToast(t('profile.deleteFailedMessage'), 'error');
+    }
+  };
+
+  const cancelDeletionRequest = async () => {
+    try {
+      const request = await cancelDeletion();
+      hapticSuccess();
+      showToast(
+        request.status === 'cancelled'
+          ? 'Your account deletion request was cancelled.'
+          : `Deletion request status: ${request.status}.`,
+        'success',
+      );
+    } catch (error) {
+      console.error('[ProfileScreen] account deletion cancellation failed', error);
+      hapticError();
+      showToast('Could not cancel your deletion request. Please try again.', 'error');
     }
   };
 
@@ -759,16 +777,35 @@ export const ProfileScreen = () => {
                           <Text className="text-phase-error font-bold">{t('profile.logout')}</Text>
                         </Pressable>
                         <Pressable
-                          onPress={handleDeleteAccount}
+                          onPress={
+                            deletionRequest?.status === 'pending_verification' ||
+                            deletionRequest?.status === 'scheduled'
+                              ? () => void cancelDeletionRequest()
+                              : handleDeleteAccount
+                          }
                           accessible={true}
                           accessibilityRole="button"
-                          accessibilityLabel={t('profile.deleteAccount')}
-                          accessibilityHint="Opens the account deletion modal"
+                          accessibilityLabel={
+                            deletionRequest?.status === 'pending_verification' ||
+                            deletionRequest?.status === 'scheduled'
+                              ? 'Cancel account deletion request'
+                              : t('profile.deleteAccount')
+                          }
+                          accessibilityHint={
+                            deletionRequest?.status === 'pending_verification' ||
+                            deletionRequest?.status === 'scheduled'
+                              ? 'Cancels your pending account deletion request'
+                              : 'Opens the account deletion modal'
+                          }
+                          disabled={isDeleting}
                           className="flex-row items-center justify-center p-1"
                         >
                           <Icon as={Trash2} size={16} className="mr-1.5 text-phase-text-tertiary" />
                           <Text className="text-phase-text-tertiary text-xs">
-                            {t('profile.deleteAccount')}
+                            {deletionRequest?.status === 'pending_verification' ||
+                            deletionRequest?.status === 'scheduled'
+                              ? 'Cancel deletion request'
+                              : t('profile.deleteAccount')}
                           </Text>
                         </Pressable>
                       </VStack>

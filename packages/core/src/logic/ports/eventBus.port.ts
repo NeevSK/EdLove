@@ -8,6 +8,8 @@ import { z } from 'zod';
  */
 
 export interface EventMetadata {
+  /** Stable transport identity used by brokers to deduplicate a publication. */
+  eventId?: string;
   correlationId?: string;
   causationId?: string;
   tenantId?: string;

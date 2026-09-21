@@ -1,11 +1,13 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
+import { assertMutationCommandTransition } from '@repo/core/lib/sync/commandLifecycle';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
+  MutationQueueCapacityError,
   type MutationQueueState,
-  type QueuedMutation,
 } from '@repo/core/lib/sync/types';
 import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
@@ -19,19 +21,20 @@ export const useMutationQueue = create<MutationQueueState>()(
       isSyncing: false,
 
       addToQueue: async (mutation) => {
+        const userId = mutation.userId ?? getActiveAccountId() ?? undefined;
         const idempotencyKey = await generateIdempotencyKey(
           mutation.scope,
           mutation.name,
           mutation.variables,
-          mutation.userId,
+          userId,
         );
-        const legacyIdempotencyKey = mutation.userId
+        const legacyIdempotencyKey = userId
           ? await generateIdempotencyKey(mutation.scope, mutation.name, mutation.variables)
           : idempotencyKey;
 
         // Keep legacy unscoped de-duplication; scoped intents cannot collide across accounts.
         const isDuplicate = get().queue.some((queued) => {
-          if (queued.userId !== mutation.userId) return false;
+          if (queued.userId !== userId) return false;
           return (
             queued.idempotencyKey === idempotencyKey ||
             queued.idempotencyKey === legacyIdempotencyKey
@@ -44,30 +47,32 @@ export const useMutationQueue = create<MutationQueueState>()(
           return;
         }
 
-        const queue = get().queue;
-        const highestLogicalClock = queue.reduce(
-          (max, item) => Math.max(max, item.logicalClock ?? 0),
-          0,
-        );
-
-        const newMutation: QueuedMutation = {
-          ...mutation,
-          id: uuidv7(),
-          idempotencyKey,
-          timestamp: Date.now(),
-          retryCount: 0,
-          schemaVersion: CURRENT_OUTBOX_SCHEMA_VERSION,
-          logicalClock: highestLogicalClock + 1,
-        };
-
+        let accepted = false;
         set((state) => {
-          // Bounded capacity: maintain at most MAX_MUTATION_QUEUE_SIZE items, evicting oldest
-          const nextQueue = [...state.queue, newMutation];
-          if (nextQueue.length > MAX_MUTATION_QUEUE_SIZE) {
-            nextQueue.splice(0, nextQueue.length - MAX_MUTATION_QUEUE_SIZE);
-          }
-          return { queue: nextQueue };
+          if (state.queue.length >= MAX_MUTATION_QUEUE_SIZE) return state;
+          const highestLogicalClock = state.queue.reduce(
+            (max, item) => Math.max(max, item.logicalClock ?? 0),
+            0,
+          );
+          accepted = true;
+          return {
+            queue: [
+              ...state.queue,
+              {
+                ...mutation,
+                userId,
+                id: uuidv7(),
+                idempotencyKey,
+                timestamp: Date.now(),
+                retryCount: 0,
+                schemaVersion: CURRENT_OUTBOX_SCHEMA_VERSION,
+                logicalClock: highestLogicalClock + 1,
+                commandState: 'queued',
+              },
+            ],
+          };
         });
+        if (!accepted) throw new MutationQueueCapacityError();
       },
 
       removeFromQueue: (id) => {
@@ -80,16 +85,99 @@ export const useMutationQueue = create<MutationQueueState>()(
         const item = get().queue.find((m) => m.id === id);
         if (item) {
           set((state) => {
-            const nextDlq = [...state.deadLetterQueue, { ...item, lastError: reason }];
-            if (nextDlq.length > MAX_DEAD_LETTER_QUEUE_SIZE) {
-              nextDlq.splice(0, nextDlq.length - MAX_DEAD_LETTER_QUEUE_SIZE);
-            }
+            const nextDlq = [
+              ...state.deadLetterQueue,
+              {
+                ...item,
+                commandState: 'rejected' as const,
+                lastError: reason,
+                failedAt: Date.now(),
+              },
+            ]
+              .sort((a, b) => (b.failedAt ?? b.timestamp) - (a.failedAt ?? a.timestamp))
+              .slice(0, MAX_DEAD_LETTER_QUEUE_SIZE);
             return {
               queue: state.queue.filter((m) => m.id !== id),
               deadLetterQueue: nextDlq,
             };
           });
         }
+      },
+
+      importDeadLetterMutations: (mutations) => {
+        if (mutations.length === 0) return;
+        set((state) => {
+          const knownIds = new Set(state.deadLetterQueue.map((mutation) => mutation.id));
+          const imported = mutations.filter((mutation) => !knownIds.has(mutation.id));
+          if (imported.length === 0) return state;
+          return {
+            deadLetterQueue: [...state.deadLetterQueue, ...imported]
+              .map((mutation) => ({ ...mutation, commandState: 'rejected' as const }))
+              .sort((a, b) => (b.failedAt ?? b.timestamp) - (a.failedAt ?? a.timestamp))
+              .slice(0, MAX_DEAD_LETTER_QUEUE_SIZE),
+          };
+        });
+      },
+
+      restoreDeadLetterMutation: (id) => {
+        const item = get().deadLetterQueue.find((mutation) => mutation.id === id);
+        if (!item || get().queue.length >= MAX_MUTATION_QUEUE_SIZE) return false;
+
+        set((state) => ({
+          deadLetterQueue: state.deadLetterQueue.filter((mutation) => mutation.id !== id),
+          queue: [
+            ...state.queue,
+            {
+              ...item,
+              commandState: 'queued',
+              retryCount: 0,
+              backoffUntil: undefined,
+              lockLeaseExpiresAt: undefined,
+              lastError: undefined,
+              lastErrorCode: undefined,
+              failedAt: undefined,
+            },
+          ],
+        }));
+        return true;
+      },
+
+      tryAcquireMutationLease: (id, leaseDurationMs, now = Date.now()) => {
+        if (!Number.isFinite(leaseDurationMs) || leaseDurationMs <= 0) return false;
+
+        let acquired = false;
+        set((state) => {
+          const mutation = state.queue.find((item) => item.id === id);
+          if (!mutation || (mutation.lockLeaseExpiresAt && mutation.lockLeaseExpiresAt > now)) {
+            return state;
+          }
+
+          const commandState = mutation.commandState ?? 'queued';
+          if (
+            commandState === 'auth_paused' ||
+            commandState === 'conflict' ||
+            commandState === 'rejected' ||
+            commandState === 'reconciled' ||
+            commandState === 'discarded'
+          ) {
+            return state;
+          }
+
+          assertMutationCommandTransition(commandState, 'dispatching');
+          acquired = true;
+          return {
+            queue: state.queue.map((item) =>
+              item.id === id
+                ? {
+                    ...item,
+                    commandState: 'dispatching' as const,
+                    lockLeaseExpiresAt: now + leaseDurationMs,
+                  }
+                : item,
+            ),
+          };
+        });
+        return acquired;
       },
 
       updateMutation: (id, updates) => {
@@ -104,6 +192,21 @@ export const useMutationQueue = create<MutationQueueState>()(
 
       clearDeadLetterQueue: () => {
         set({ deadLetterQueue: [] });
+      },
+
+      resumePausedMutationsForUser: (userId) => {
+        set((state) => ({
+          queue: state.queue.map((mutation) =>
+            mutation.userId === userId && mutation.commandState === 'auth_paused'
+              ? {
+                  ...mutation,
+                  commandState: 'queued',
+                  backoffUntil: undefined,
+                  lockLeaseExpiresAt: undefined,
+                }
+              : mutation,
+          ),
+        }));
       },
 
       setSyncing: (isSyncing) => {
@@ -124,4 +227,3 @@ export const useMutationQueue = create<MutationQueueState>()(
     },
   ),
 );
-

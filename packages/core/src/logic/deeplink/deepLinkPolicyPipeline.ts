@@ -10,7 +10,7 @@ const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
 export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
 export const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite']);
-export const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/qr', '/invite'];
+export const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/auth/complete', '/qr', '/invite'];
 
 /**
  * Tagged Error Types for Deep Link Failures (Effect v4 compatible)
@@ -146,7 +146,7 @@ export const classifyRouteIntentEffect = (
 
     if (
       (parsed.hostname === 'auth' && parsed.pathname === '/callback') ||
-      parsed.pathname === '/auth/callback'
+      (parsed.pathname === '/auth/callback' || parsed.pathname === '/auth/complete')
     ) {
       return { kind: 'authCallback', url: acceptedUrl } as const;
     }

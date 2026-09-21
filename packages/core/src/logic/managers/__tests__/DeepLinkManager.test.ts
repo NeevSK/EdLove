@@ -1,10 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { DeepLinkStateGuard } from '../../auth/deepLinkStateGuard';
 import { DeepLinkManager, DeepLinkType } from '../DeepLinkManager';
 
-describe('DeepLinkManager & DeepLinkStateGuard (G0 Contract & G1 Boundary Tests)', () => {
-  it('merges query and hash callback parameters without exposing parser ambiguity', async () => {
+describe('DeepLinkManager (G0 contract)', () => {
+  it('rejects URL bearer tokens without establishing a session', async () => {
     const authManager = {
       exchangeCodeForSession: vi.fn(),
       setSession: vi.fn().mockResolvedValue(undefined),
@@ -15,9 +14,9 @@ describe('DeepLinkManager & DeepLinkStateGuard (G0 Contract & G1 Boundary Tests)
       'gurudevi://auth/callback?source=oauth#access_token=access&refresh_token=refresh',
     );
 
-    expect(authManager.setSession).toHaveBeenCalledWith('access', 'refresh');
-    expect(result).toMatchObject({ type: DeepLinkType.AUTH_CALLBACK, isHandled: true });
-    expect(result.params).toMatchObject({ source: 'oauth', access_token: 'access' });
+    expect(authManager.setSession).not.toHaveBeenCalled();
+    expect(authManager.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(result).toMatchObject({ type: DeepLinkType.AUTH_CALLBACK, isHandled: false });
   });
 
   it.each([
@@ -103,26 +102,6 @@ describe('DeepLinkManager & DeepLinkStateGuard (G0 Contract & G1 Boundary Tests)
       isHandled: false,
       message: 'Malformed URL',
       params: {},
-    });
-  });
-
-  describe('DeepLinkStateGuard (CSRF & Anti-Replay)', () => {
-    it('generates a 32-character hex state token and validates it on first consumption', () => {
-      DeepLinkStateGuard.resetForTesting();
-      const state = DeepLinkStateGuard.generateState('test-nonce-1');
-      expect(state).toHaveLength(32);
-      expect(/^[0-9a-f]{32}$/.test(state)).toBe(true);
-
-      // First verification succeeds
-      expect(DeepLinkStateGuard.verifyAndConsumeState(state)).toBe(true);
-      // Replay fails (single-use token)
-      expect(DeepLinkStateGuard.verifyAndConsumeState(state)).toBe(false);
-    });
-
-    it('rejects nonexistent or unissued state tokens', () => {
-      DeepLinkStateGuard.resetForTesting();
-      expect(DeepLinkStateGuard.verifyAndConsumeState('unissued-random-state')).toBe(false);
-      expect(DeepLinkStateGuard.verifyAndConsumeState(undefined)).toBe(false);
     });
   });
 });

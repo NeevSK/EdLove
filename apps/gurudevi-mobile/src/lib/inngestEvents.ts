@@ -11,6 +11,7 @@ import {
 } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/sync';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { getInngest } from '@/lib/inngest';
 
 const REMOTE_SYNC_MUTATIONS = new Set(['saveJournalEntry', 'saveDecision', 'updateAttendance']);
@@ -65,5 +66,16 @@ export async function dispatchQueuedMutationToSovereignBus(
     causationId: mutation.id,
   });
 
-  return 'dispatched';
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const receipt = await orpcClient.sync.getMutationReceipt({
+      params: { mutationId: mutation.id },
+    });
+    if (receipt.status === 'completed') return 'dispatched';
+    if (receipt.status === 'failed') {
+      throw new Error(receipt.error || 'Queued mutation workflow failed.');
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  return 'pending';
 }

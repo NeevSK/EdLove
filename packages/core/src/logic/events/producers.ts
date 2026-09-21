@@ -92,6 +92,7 @@ export async function sendWellbeingMoodLogged(
       loggedAt: input.loggedAt,
     },
     metadata: {
+      eventId: input.eventId,
       correlationId: input.correlationId,
       causationId: input.causationId,
       tenantId: input.tenantId,
@@ -193,6 +194,7 @@ export async function sendSyncMutationQueued(bus: IEventBusPort, input: SyncMuta
       tenantId: input.tenantId,
     },
     metadata: {
+      eventId: input.eventId,
       correlationId: input.correlationId,
       causationId: input.causationId,
       tenantId: input.tenantId,

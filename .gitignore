@@ -148,3 +148,6 @@ scripts/*.js
 
 # Local VSCode / Cursor multi-root workspace
 *.code-workspace
+
+# research works 
+docs/research

@@ -1,6 +1,7 @@
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { api } from '@repo/core/api/client';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { orpcClient } from '@repo/core/api/orpcClient';
 
 const client = createSovereignClient(SOVEREIGN_API_URL);
 
@@ -11,7 +12,15 @@ const client = createSovereignClient(SOVEREIGN_API_URL);
  * Born in the apps/gurudevi-mobile, now healed and moved to @repo/core.
  */
 
-type MutationFunction = (variables: any) => Promise<any>;
+type MutationExecutionContext = Readonly<{ idempotencyKey: string }>;
+type MutationFunction = (variables: any, context?: MutationExecutionContext) => Promise<any>;
+
+function requireIdempotencyKey(context: MutationExecutionContext | undefined): string {
+  if (!context?.idempotencyKey) {
+    throw new Error('Queued mutation execution requires an idempotency key.');
+  }
+  return context.idempotencyKey;
+}
 
 export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   // Community
@@ -39,10 +48,12 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   },
 
   // Self/Wellbeing (Outbox mutations routed securely via Hono Gateway)
-  saveJournalEntry: async (vars) => {
+  saveJournalEntry: async (vars, context) => {
     // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
-    const res = await (client.api as any).powersync.upload.$post({
-      json: {
+    try {
+      await orpcClient.sync.uploadBatch({
+        body: {
+          idempotencyKey: requireIdempotencyKey(context),
         crud: [
           {
             id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
@@ -51,18 +62,19 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
             opData: vars,
           },
         ],
-      },
-    });
-    if (!res.ok) {
-      const err = (await res.json()) as any;
-      throw new Error(err.message || 'Failed to sync outbox journal entry');
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed to sync outbox journal entry', { cause: error });
     }
     return true;
   },
-  saveDecision: async (vars) => {
+  saveDecision: async (vars, context) => {
     // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
-    const res = await (client.api as any).powersync.upload.$post({
-      json: {
+    try {
+      await orpcClient.sync.uploadBatch({
+        body: {
+        idempotencyKey: requireIdempotencyKey(context),
         crud: [
           {
             id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
@@ -71,11 +83,10 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
             opData: vars,
           },
         ],
-      },
-    });
-    if (!res.ok) {
-      const err = (await res.json()) as any;
-      throw new Error(err.message || 'Failed to sync outbox decision journal');
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed to sync outbox decision journal', { cause: error });
     }
     return true;
   },

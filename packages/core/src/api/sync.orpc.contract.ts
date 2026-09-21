@@ -6,6 +6,24 @@ const syncAuthority = (action: 'update') =>
   }) as const;
 
 export const syncORPCContract = {
+  getMutationReceipt: {
+    method: 'get',
+    path: '/powersync/mutation/:mutationId',
+    request: {
+      params: z.object({ mutationId: z.string().min(1) }),
+    },
+    responses: {
+      200: {
+        schema: z.object({
+          mutationId: z.string(),
+          status: z.enum(['pending', 'completed', 'failed']),
+          error: z.string().nullable().optional(),
+        }),
+        description: 'Receipt state for an Inngest-backed queued mutation',
+      },
+    },
+    metadata: syncAuthority('update'),
+  },
   uploadBatch: {
     method: 'post',
     path: '/powersync/upload',

@@ -2,13 +2,16 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
+  MutationQueueCapacityError,
 } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { setActiveAccountId } from '@repo/core/lib/accountScope';
 
 describe('useMutationQueue (G0 Unit / G1 State)', () => {
   beforeEach(() => {
     useMutationQueue.getState().clearQueue();
     useMutationQueue.getState().clearDeadLetterQueue();
+    setActiveAccountId(null);
   });
 
   it('isolates queued mutations by user account (Multi-tenant partition)', async () => {
@@ -88,30 +91,87 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
     expect(queue[1]?.userId).toBe('user-456');
   });
 
-  it('maintains bounded capacity on the main queue and evicts oldest items', async () => {
+  it('rejects capacity overflow without discarding accepted commands', async () => {
     const { addToQueue } = useMutationQueue.getState();
 
-    // Fill queue to MAX_MUTATION_QUEUE_SIZE
-    const promises = [];
-    for (let i = 0; i < MAX_MUTATION_QUEUE_SIZE + 5; i++) {
-      promises.push(
-        addToQueue({
-          name: `mutation-${i}`,
-          scope: 'stress',
-          type: 'CREATE',
-          variables: { index: i },
-          userId: 'stress-user',
-        }),
-      );
+    for (let i = 0; i < MAX_MUTATION_QUEUE_SIZE; i++) {
+      await addToQueue({
+        name: `mutation-${i}`,
+        scope: 'stress',
+        type: 'CREATE',
+        variables: { index: i },
+        userId: 'stress-user',
+      });
     }
-    await Promise.all(promises);
+
+    await expect(
+      addToQueue({
+        name: 'overflow-mutation',
+        scope: 'stress',
+        type: 'CREATE',
+        variables: { index: MAX_MUTATION_QUEUE_SIZE },
+        userId: 'stress-user',
+      }),
+    ).rejects.toBeInstanceOf(MutationQueueCapacityError);
 
     const queue = useMutationQueue.getState().queue;
-    expect(queue.length).toBeLessThanOrEqual(MAX_MUTATION_QUEUE_SIZE);
     expect(queue.length).toBe(MAX_MUTATION_QUEUE_SIZE);
-    // The earliest 5 items should have been evicted to prevent memory bloat
-    expect(queue[0]?.name).not.toBe('mutation-0');
-    expect(queue[queue.length - 1]?.name).toBe(`mutation-${MAX_MUTATION_QUEUE_SIZE + 4}`);
+    expect(queue[0]?.name).toBe('mutation-0');
+    expect(queue[queue.length - 1]?.name).toBe(`mutation-${MAX_MUTATION_QUEUE_SIZE - 1}`);
+  });
+
+  it('enforces the capacity boundary when asynchronous submissions complete together', async () => {
+    const { addToQueue } = useMutationQueue.getState();
+    const submissions = Array.from({ length: MAX_MUTATION_QUEUE_SIZE + 5 }, (_, index) =>
+      addToQueue({
+        name: `concurrent-mutation-${index}`,
+        scope: 'stress',
+        type: 'CREATE',
+        variables: { index },
+        userId: 'stress-user',
+      }),
+    );
+
+    const outcomes = await Promise.allSettled(submissions);
+    expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(
+      MAX_MUTATION_QUEUE_SIZE,
+    );
+    expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(5);
+    expect(useMutationQueue.getState().queue).toHaveLength(MAX_MUTATION_QUEUE_SIZE);
+  });
+
+  it('binds new commands to the active account and only resumes that account after auth recovery', async () => {
+    setActiveAccountId('account-a');
+    const { addToQueue, resumePausedMutationsForUser, updateMutation } =
+      useMutationQueue.getState();
+
+    await addToQueue({
+      name: 'saveProfile',
+      scope: 'self',
+      type: 'UPDATE',
+      variables: { displayName: 'A' },
+    });
+    await addToQueue({
+      name: 'saveProfile',
+      scope: 'self',
+      type: 'UPDATE',
+      variables: { displayName: 'B' },
+      userId: 'account-b',
+    });
+
+    const [accountA, accountB] = useMutationQueue.getState().queue;
+    expect(accountA?.userId).toBe('account-a');
+    expect(accountB?.userId).toBe('account-b');
+
+    if (!accountA || !accountB) throw new Error('Expected queued commands');
+    updateMutation(accountA.id, { commandState: 'auth_paused', backoffUntil: Date.now() + 1_000 });
+    updateMutation(accountB.id, { commandState: 'auth_paused', backoffUntil: Date.now() + 1_000 });
+    resumePausedMutationsForUser('account-a');
+
+    const resumed = useMutationQueue.getState().queue;
+    expect(resumed[0]?.commandState).toBe('queued');
+    expect(resumed[0]?.backoffUntil).toBeUndefined();
+    expect(resumed[1]?.commandState).toBe('auth_paused');
   });
 
   it('bounds dead letter queue (DLQ) capacity', async () => {
@@ -135,5 +195,80 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
 
     const dlq = useMutationQueue.getState().deadLetterQueue;
     expect(dlq.length).toBe(MAX_DEAD_LETTER_QUEUE_SIZE);
+  });
+
+  it('allows only one coordinator to claim a command lease from the same snapshot', async () => {
+    const { addToQueue, tryAcquireMutationLease } = useMutationQueue.getState();
+    await addToQueue({
+      name: 'saveProfile',
+      scope: 'self',
+      type: 'UPDATE',
+      variables: { displayName: 'Lease owner' },
+      userId: 'account-a',
+    });
+
+    const mutation = useMutationQueue.getState().queue[0];
+    if (!mutation) throw new Error('Expected queued command');
+
+    expect(tryAcquireMutationLease(mutation.id, 15_000, 1_000)).toBe(true);
+    expect(tryAcquireMutationLease(mutation.id, 15_000, 1_000)).toBe(false);
+    expect(useMutationQueue.getState().queue[0]).toMatchObject({
+      commandState: 'dispatching',
+      lockLeaseExpiresAt: 16_000,
+    });
+    expect(tryAcquireMutationLease(mutation.id, 15_000, 16_000)).toBe(true);
+  });
+
+  it('imports legacy dead letters without rebinding the original principal', async () => {
+    const { importDeadLetterMutations, restoreDeadLetterMutation } = useMutationQueue.getState();
+    importDeadLetterMutations([
+      {
+        id: 'legacy-command',
+        idempotencyKey: 'legacy-key',
+        name: 'saveProfile',
+        scope: 'self',
+        type: 'UPDATE',
+        variables: { displayName: 'Original owner' },
+        timestamp: 1,
+        failedAt: 2,
+        retryCount: 3,
+        userId: 'original-account',
+      },
+    ]);
+
+    expect(useMutationQueue.getState().deadLetterQueue).toMatchObject([
+      { id: 'legacy-command', userId: 'original-account', commandState: 'rejected' },
+    ]);
+    expect(restoreDeadLetterMutation('legacy-command')).toBe(true);
+    expect(useMutationQueue.getState().queue).toMatchObject([
+      { id: 'legacy-command', userId: 'original-account', commandState: 'queued' },
+    ]);
+    expect(useMutationQueue.getState().queue[0]?.failedAt).toBeUndefined();
+  });
+
+  it('retains the newest dead-letter records and terminal failure time at capacity', async () => {
+    const { importDeadLetterMutations } = useMutationQueue.getState();
+    importDeadLetterMutations(
+      Array.from({ length: MAX_DEAD_LETTER_QUEUE_SIZE + 1 }, (_, index) => ({
+        id: `dead-${index}`,
+        idempotencyKey: `key-${index}`,
+        name: 'saveProfile',
+        scope: 'self',
+        type: 'UPDATE' as const,
+        variables: { index },
+        timestamp: index,
+        failedAt: index,
+        retryCount: 3,
+        userId: 'account-a',
+      })),
+    );
+
+    const deadLetters = useMutationQueue.getState().deadLetterQueue;
+    expect(deadLetters).toHaveLength(MAX_DEAD_LETTER_QUEUE_SIZE);
+    expect(deadLetters[0]).toMatchObject({
+      id: `dead-${MAX_DEAD_LETTER_QUEUE_SIZE}`,
+      failedAt: MAX_DEAD_LETTER_QUEUE_SIZE,
+    });
+    expect(deadLetters.at(-1)).toMatchObject({ id: 'dead-1', failedAt: 1 });
   });
 });

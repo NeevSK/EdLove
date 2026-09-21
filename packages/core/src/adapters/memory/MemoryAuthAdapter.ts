@@ -234,7 +234,7 @@ export class MemoryAuthAdapter implements IAuthPort {
   async signUp(params: {
     email: string;
     password: string;
-    options?: { data?: Record<string, any> };
+    options?: { data?: Record<string, any>; emailRedirectTo?: string };
   }): Promise<{ user: AuthUser | null; session: AuthSession | null }> {
     const user: AuthUser = {
       id: `new-user-${Date.now()}`,

@@ -22,7 +22,7 @@ export function SignUpForm({ returnTo }: Readonly<{ returnTo: string }>) {
     const form = new FormData(event.currentTarget);
     const email = String(form.get('email') ?? '').trim();
     const password = String(form.get('password') ?? '');
-    const redirectTo = new URL('/auth/callback', window.location.origin);
+    const redirectTo = new URL('/auth/complete', window.location.origin);
     redirectTo.searchParams.set('next', safeReturnPath(returnTo));
     redirectTo.searchParams.set('returnTo', safeReturnPath(returnTo));
 

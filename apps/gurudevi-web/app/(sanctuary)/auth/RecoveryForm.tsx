@@ -19,7 +19,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
       return;
     }
     const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
-    const redirectTo = new URL('/auth/callback', window.location.origin);
+    const redirectTo = new URL('/auth/complete', window.location.origin);
     redirectTo.searchParams.set('next', '/reset-password');
     redirectTo.searchParams.set('returnTo', safeReturnPath(returnTo));
 

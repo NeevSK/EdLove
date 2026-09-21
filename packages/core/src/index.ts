@@ -6,6 +6,13 @@ export {
   type DeviceAccountRecord,
   deviceAccounts,
 } from '@repo/core/accounts/deviceAccounts';
+export { accountTransition } from '@repo/core/accounts/accountTransition';
+export type {
+  AccountTransitionDisposition,
+  AccountTransitionOutcome,
+  AccountTransitionPort,
+  AccountTransitionRequest,
+} from '@repo/core/logic/ports/accountTransition.port';
 export { isDemo } from '@repo/core/api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
