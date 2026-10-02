@@ -369,11 +369,11 @@
     "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_core-check-types\"",
     "test:logic": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/logic\" --name \"packages_core-test_logic\" --evidence-level G0",
     "test:g1:account-transition": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/accounts/__tests__/accountTransition.test.ts -t 'does not change command ownership'\" --name \"packages_core-test_g1_account_transition\" --evidence-level G1",
-    "test:g2:account-switch": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/accounts/__tests__/deviceAccounts.test.ts -t 'quarantines outgoing work'\" --name \"packages_core-test_g2_account_switch\" --evidence-level G2",
+    "test:g1:account-switch": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/accounts/__tests__/deviceAccounts.test.ts -t 'quarantines outgoing work'\" --name \"packages_core-test_g1_account_switch\" --evidence-level G1",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_core-clean\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_core-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_core-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_core-test_ui\""
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_core-test\" --evidence-level G1",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_core-test_watch\" --evidence-level G1",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_core-test_ui\" --evidence-level G1"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -426,7 +426,7 @@
   "dependencies": {
     "@growthbook/growthbook": "^1.7.0",
     "@hono/zod-openapi": "^1.6.3",
-    "@intuitui-labs/form-builder-engine": "workspace:*",
+    "@intuitui-labs/form-builder-engine": "^0.1.0",
     "@orpc/client": "1.15.0",
     "@orpc/contract": "1.15.0",
     "@orpc/server": "1.15.0",
