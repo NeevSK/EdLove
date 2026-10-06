@@ -206,7 +206,7 @@ adb logcat -d -v threadtime | Select-String 'FATAL EXCEPTION|ReactNativeJS: .*Er
 An alive process with a black screen is not a pass. Check the focused window,
 device unlock state, splash-screen logs, and the first JavaScript exception.
 
-### Startup visual contract: native splash → app splash → welcome
+### Startup visual contract: native splash → mounted startup surface → route decision
 
 These are three different layers and must be verified separately:
 
@@ -215,26 +215,26 @@ These are three different layers and must be verified separately:
    `assets/splash-icon.png`; changing the JavaScript route does not change this
    image. If that asset is not the approved Gurudevi artwork, the APK will show
    the wrong artwork before JavaScript starts.
-2. **App splash:** `app/index.tsx` renders `assets/splash-animation.json`. It is
-   finite and must navigate to `/welcome`; it must never be an infinite loop.
-3. **Welcome route:** `app/welcome.tsx` renders the real welcome screen. A
-   device test is not complete until the native splash disappears and the
-   welcome route is visible.
+2. **JavaScript startup surface:** `src/entry/EntryStartupBoundary.tsx` mounts
+   the visible startup surface while essential runtime registration completes.
+   It owns a retryable failure state and does not navigate.
+3. **Route decision and destination:** `SessionRouteGate` owns automatic route
+   resolution. `app/index.tsx` intentionally renders nothing while the gate
+   resolves `/`; `app/welcome.tsx` renders the public welcome screen.
 
 The post-bootstrap handoff is deliberate and must remain in this order:
 
 ```text
-native splash (Expo) → React shell commits → next animation frame hides native splash
-→ finite Lottie index route → /welcome for a public session
-→ /onboarding or /self when the session route guard resolves otherwise
+native splash (Expo) → JavaScript startup surface commits
+→ next animation frame hides native splash → route gate resolves
+→ /welcome, /onboarding, or /self according to the route contract
 ```
 
 Native splash must not wait for remote auth/profile calls or fonts. Those can be
 slow, unavailable, or cancelled, and delaying the native splash until they
-finish makes the visual sequence nondeterministic. `AppContent` schedules the
-handoff after its first committed frame; the index route then owns the finite
-Lottie transition and has one guarded completion path shared by the animation
-callback and timeout fallback.
+finish makes the visual sequence nondeterministic. `EntryStartupBoundary`
+schedules the handoff after its visible surface commits; session and route work
+continue behind that surface and have no independent navigation path.
 
 Google One-Tap is configured only after critical boot succeeds. Configuration
 does not show a prompt; it only prepares Credential Manager. The actual Google

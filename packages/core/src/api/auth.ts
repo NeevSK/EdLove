@@ -1,4 +1,5 @@
 import { auth } from '@repo/core/logic/managers/factory';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 
 export const authAPI = {
   async getAuthSession() {
@@ -72,15 +73,15 @@ export const authAPI = {
     return auth.setSession(access_token, refresh_token);
   },
 
-  async signUp(email: string, password: string, fullName?: string, emailRedirectTo?: string) {
-    return auth.signUp(email, password, fullName, emailRedirectTo);
+  async signUp(email: string, password: string, fullName?: string) {
+    return auth.signUp(email, password, fullName);
   },
 
   async signInAnonymously() {
     return auth.signInAnonymously();
   },
 
-  async linkAnonymousToEmail(email: string, password: string, fullName: string, capacity: any) {
+  async linkAnonymousToEmail(email: string, password: string, fullName: string, capacity: Capacity) {
     return auth.linkAnonymousToEmail(email, password, fullName, capacity);
   },
 

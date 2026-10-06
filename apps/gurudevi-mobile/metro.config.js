@@ -228,19 +228,6 @@ if (fs.existsSync(workspacePackagesDir)) {
   }
 }
 
-const candidateA11yPaths = [
-  path.resolve('/home/nsk/projects/packages/a11y-gate'),
-  path.resolve('C:/projects/packages/a11y-gate'),
-  path.resolve(workspaceRoot, '../packages/a11y-gate'),
-];
-const a11yGateExternalPath = candidateA11yPaths.find((p) => fs.existsSync(p));
-if (a11yGateExternalPath) {
-  SINGLETON_OVERRIDES['@intuitui-labs/a11y-gate'] = a11yGateExternalPath;
-  if (!config.watchFolders.includes(a11yGateExternalPath)) {
-    config.watchFolders.push(a11yGateExternalPath);
-  }
-}
-
 const pnpmStoreRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
 const pnpmFallbackPackageRoots = new Map();
 

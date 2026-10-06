@@ -24,15 +24,17 @@ export function OnboardingWrapper({
     (_name: string, _capacity: any) => {
       void (async () => {
         try {
-          showToast('Syncing your sanctuary profile...', 'info', 2000);
-          await refreshProfile();
-
           const state = useStore.getState();
-          if (!state.onboardingCompleted) {
-            console.log('⚠️ [Onboarding] Store did not auto-update, forcing completion flag.');
+          const isAnonymous =
+            storeUser?.is_anonymous === true || session?.user?.is_anonymous === true;
+          if (isAnonymous) {
+            // Local guest admission is persisted by onboardingAPI. Updating the
+            // observable bootstrap input lets SessionRouteGate own the entry.
             state.setOnboardingCompleted(true);
+          } else {
+            showToast('Syncing your sanctuary profile...', 'info', 2000);
+            await refreshProfile();
           }
-
           setCelebrate(true);
         } catch (err) {
           console.error('Failed to refresh profile after onboarding:', err);
@@ -43,7 +45,7 @@ export function OnboardingWrapper({
         }
       })();
     },
-    [refreshProfile, showToast],
+    [refreshProfile, session?.user?.is_anonymous, showToast, storeUser?.is_anonymous],
   );
 
   return (

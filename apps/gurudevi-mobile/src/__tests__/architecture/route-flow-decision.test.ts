@@ -99,7 +99,7 @@ describe('route flow decision helper', () => {
     ).toMatchObject({ decision: 'public', redirectTo: null });
   });
 
-  it('keeps the explicit guest handoff on onboarding while the old account snapshot drains', () => {
+  it('returns a guest handoff to welcome while a non-anonymous session remains active', () => {
     expect(
       getAuthRouteTarget({
         pathname: '/onboarding',
@@ -111,7 +111,7 @@ describe('route flow decision helper', () => {
         hasSession: true,
         guestOnboardingIntent: true,
       }),
-    ).toMatchObject({ decision: 'public', redirectTo: null });
+    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
   });
 
   it('does not treat a completed anonymous session as a returning account at root', () => {

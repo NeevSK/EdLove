@@ -9,7 +9,7 @@ import { runEffect, strictRetryPolicy, tryPromise } from '@repo/core/effect';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-import * as Effect from 'effect/Effect';
+import { Effect } from 'effect';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 
@@ -60,7 +60,6 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
   async uploadData(database: CommonPowerSyncDatabase): Promise<void> {
     const accountId = this.accountId;
-    const startTime = 0;
 
     return runEffect(
       Effect.gen(function* () {
@@ -84,11 +83,18 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           idempotencyKey,
         };
 
-        const startTime = Date.now();
-        const uploadCount = batch.crud.length;
-
-        yield* tryPromise(() =>
-          (client.api as any).powersync.upload.$post(
+        yield* tryPromise(() => {
+          const api = client.api as unknown as {
+            powersync: {
+              upload: {
+                $post: (
+                  req: { json: typeof body },
+                  options: { headers: Record<string, string> },
+                ) => Promise<Response>;
+              };
+            };
+          };
+          return api.powersync.upload.$post(
             { json: body },
             {
               headers: {
@@ -96,12 +102,12 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
                 'X-Idempotency-Key': idempotencyKey,
               },
             },
-          ),
-        ).pipe(
-          Effect.flatMap((res: any) => {
+          );
+        }).pipe(
+          Effect.flatMap((res) => {
             if (!res.ok) {
-              return tryPromise(() => res.json()).pipe(
-                Effect.flatMap((errorData: any) =>
+              return tryPromise(() => res.json() as Promise<{ message?: string }>).pipe(
+                Effect.flatMap((errorData) =>
                   Effect.fail(
                     new PowerSyncUploadError(
                       res.status,
@@ -120,7 +126,6 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           }),
         );
 
-        const latencyMs = Date.now() - startTime;
         const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
 
         yield* tryPromise(() => batch.complete());

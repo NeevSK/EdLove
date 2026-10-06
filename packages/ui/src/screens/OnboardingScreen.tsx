@@ -23,7 +23,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import {} from '@repo/ui/screens/devOnboardingFastTrack';
 import {
   getDevOnboardingTemplateLabel,
   resolveOnboardingDevIntent,
@@ -47,7 +46,7 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
@@ -632,6 +631,18 @@ const OnboardingScreen = memo(function OnboardingScreen({
   > | null>(null);
   const anonymousBootstrapRequestedRef = useRef(false);
 
+  const resolveOnboardingSubject = useCallback(async () => {
+    if (isAnonymous) {
+      if (!userId) throw new Error('Guest session is not ready. Please try again.');
+      return { internalId: userId, isAnonymous: true };
+    }
+
+    const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+    resolvedCitizenRef.current = citizen;
+    if (!citizen?.id) throw new Error('Identity not resolved. Please try again.');
+    return { internalId: citizen.id, isAnonymous: false };
+  }, [isAnonymous, userId]);
+
   // ── Restore saved progress or pre-fill from existing auth & invites ──
   useEffect(() => {
     const initOnboarding = async () => {
@@ -642,35 +653,38 @@ const OnboardingScreen = memo(function OnboardingScreen({
       const internalId = userId;
       resolvedInternalIdRef.current = internalId;
 
-      try {
-        const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
-        resolvedCitizenRef.current = citizen;
-      } catch (err) {
-        console.warn('[Onboarding] Failed to pre-identify active citizen:', err);
-      }
+      if (!isAnonymous) {
+        try {
+          const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
+          resolvedCitizenRef.current = citizen;
+        } catch (err) {
+          console.warn('[Onboarding] Failed to pre-identify active citizen:', err);
+        }
 
-      // Check for pending invite code (e.g. from QR scan or invite link)
-      try {
-        const pendingInvite = await storage.getStringAsync('pending_invite');
-        if (pendingInvite) {
-          const res = await resolveStoredInvite(pendingInvite);
-          if (res.valid && res.data) {
-            console.log(
-              '🎟️ [Onboarding] Resolved stored invite:',
-              res.data.code,
-              res.data.school_name,
-            );
-            dispatch({ type: 'SET_SCHOOL_ID', schoolId: res.data.school_id });
-            dispatch({ type: 'SET_CAPACITY', capacity: res.data.capacity });
-            dispatch({ type: 'SET_PRICING', pricing: 'INSTITUTIONAL' });
-            dispatch({ type: 'SET_CITIZENSHIP', citizenship: 'INSTITUTIONAL' });
-            if (res.data.school_name) {
-              setResolvedSchoolName(res.data.school_name);
+        // Stored invitations are account-scoped. A guest must create an account
+        // before joining a shared institution, so never resolve one during guest onboarding.
+        try {
+          const pendingInvite = await storage.getStringAsync('pending_invite');
+          if (pendingInvite) {
+            const res = await resolveStoredInvite(pendingInvite);
+            if (res.valid && res.data) {
+              console.log(
+                '🎟️ [Onboarding] Resolved stored invite:',
+                res.data.code,
+                res.data.school_name,
+              );
+              dispatch({ type: 'SET_SCHOOL_ID', schoolId: res.data.school_id });
+              dispatch({ type: 'SET_CAPACITY', capacity: res.data.capacity });
+              dispatch({ type: 'SET_PRICING', pricing: 'INSTITUTIONAL' });
+              dispatch({ type: 'SET_CITIZENSHIP', citizenship: 'INSTITUTIONAL' });
+              if (res.data.school_name) {
+                setResolvedSchoolName(res.data.school_name);
+              }
             }
           }
+        } catch (err) {
+          console.warn('[Onboarding] Failed to resolve stored invite:', err);
         }
-      } catch (err) {
-        console.warn('[Onboarding] Failed to resolve stored invite:', err);
       }
 
       try {
@@ -694,6 +708,14 @@ const OnboardingScreen = memo(function OnboardingScreen({
         }
       } catch (err) {
         console.warn('[Onboarding] Failed to restore progress:', err);
+      }
+
+      if (isAnonymous) {
+        if (suggestedName) {
+          dispatch({ type: 'SET_NAME', name: suggestedName });
+        }
+        dispatch({ type: 'SET_STEP', step: 0 });
+        return;
       }
 
       try {
@@ -834,10 +856,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     dispatch({ type: 'BEGIN_COMPLETION' });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
-      const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
-      resolvedCitizenRef.current = citizen;
-      const internalId = citizen?.id;
-      if (!internalId) throw new Error('Identity not resolved. Please try again.');
+      const { internalId } = await resolveOnboardingSubject();
 
       // 1. Mark journey as completed in DB
       await onboardingAPI.completeOnboarding(internalId);
@@ -864,6 +883,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     isAnonymous,
     isProcessing,
     clearSavedProgress,
+    resolveOnboardingSubject,
   ]);
 
   const handleDevFastTrack = useCallback(
@@ -877,10 +897,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       dispatch({ type: 'SET_PROCESSING', isProcessing: true });
       showToast('Applying sandbox settings...', 'info', 2000);
       try {
-        const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
-        resolvedCitizenRef.current = citizen;
-        const internalId = citizen?.id;
-        if (!internalId) throw new Error('Identity not resolved. Please try again.');
+        const { internalId, isAnonymous: isAnonymousSubject } = await resolveOnboardingSubject();
 
         await onboardingAPI.createInitialBond(devRole, {
           userId: internalId,
@@ -889,13 +906,15 @@ const OnboardingScreen = memo(function OnboardingScreen({
           schoolId: devSchoolId || null,
         });
 
-        await identityAPI.modifyUserProfile(internalId, {
-          display_name: devName,
-          pricing_tier: devPricing,
-          citizenship: devCitizenship,
-          school_id: devSchoolId || null,
-          profile_completed: true,
-        });
+        if (!isAnonymousSubject) {
+          await identityAPI.modifyUserProfile(internalId, {
+            display_name: devName,
+            pricing_tier: devPricing,
+            citizenship: devCitizenship,
+            school_id: devSchoolId || null,
+            profile_completed: true,
+          });
+        }
 
         await onboardingAPI.completeOnboarding(internalId);
         await clearSavedProgress();
@@ -913,7 +932,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
         dispatch({ type: 'SET_PROCESSING', isProcessing: false });
       }
     },
-    [onComplete, showToast, isAnonymous, clearSavedProgress],
+    [onComplete, showToast, isAnonymous, clearSavedProgress, resolveOnboardingSubject],
   );
 
   const handleNext = useCallback(async () => {
@@ -933,10 +952,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
 
     try {
-      const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
-      resolvedCitizenRef.current = citizen;
-      const internalId = citizen?.id;
-      if (!internalId) throw new Error('Identity not resolved. Please try again.');
+      const { internalId, isAnonymous: isAnonymousSubject } = await resolveOnboardingSubject();
 
       if (currentPhase === 'arrival') {
         const devIntent = resolveOnboardingDevIntent({
@@ -960,13 +976,15 @@ const OnboardingScreen = memo(function OnboardingScreen({
             schoolId: template.schoolId,
           });
 
-          await identityAPI.modifyUserProfile(internalId, {
-            display_name: template.name,
-            pricing_tier: template.pricing,
-            citizenship: template.citizenship,
-            school_id: template.schoolId,
-            profile_completed: true,
-          });
+          if (!isAnonymousSubject) {
+            await identityAPI.modifyUserProfile(internalId, {
+              display_name: template.name,
+              pricing_tier: template.pricing,
+              citizenship: template.citizenship,
+              school_id: template.schoolId,
+              profile_completed: true,
+            });
+          }
 
           await onboardingAPI.completeOnboarding(internalId);
           await clearSavedProgress();
@@ -977,7 +995,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
           return;
         }
 
-        const isAnonymousIdentity = !citizen?.email;
+        const isAnonymousIdentity = isAnonymousSubject;
         if (isAnonymousIdentity) {
           showToast('Name saved locally. Choose your capacity next.', 'info', 1000);
           console.log('📝 [Onboarding] Anonymous name kept local until capacity step.');
@@ -1035,6 +1053,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     onComplete,
     isAnonymous,
     clearSavedProgress,
+    resolveOnboardingSubject,
   ]);
 
   const handleBack = useCallback(() => {
@@ -1065,18 +1084,34 @@ const OnboardingScreen = memo(function OnboardingScreen({
     return tourScreens[Math.max(0, currentStep - 2)];
   }, [currentPhase, currentStep, tourScreens]);
 
+  // On Android, resizing the viewport alone does not reliably scroll a focused
+  // field above the keyboard. Keep a single scroll owner and move its end into
+  // view once the keyboard has finished opening.
+  const scrollViewRef = useRef<ScrollView>(null);
+  useEffect(() => {
+    const eventName = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const subscription = Keyboard.addListener(eventName, () => {
+      requestAnimationFrame(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      });
+    });
+
+    return () => subscription.remove();
+  }, []);
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scroll={false}>
       <Box className="flex-1 bg-phase-world">
         {/* Decorative Elements */}
         <Box className="absolute -top-12 -right-10 w-44 h-44 rounded-full bg-phase-accent/10" />
         <Box className="absolute -left-5 bottom-24 w-40 h-40 rounded-full bg-gurudeviBlue/10" />
 
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
         >
           <ScrollView
+            ref={scrollViewRef}
             contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}

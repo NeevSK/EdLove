@@ -1,0 +1,45 @@
+name: DCO Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main-dev]
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    name: DCO Sign-off Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Verify DCO sign-off
+        run: |
+          # Get commits in PR or push
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            COMMITS=$(git log --format="%H" $BASE_SHA..$HEAD_SHA)
+          else
+            COMMITS=$(git log --format="%H" -1)
+          fi
+
+          FAILED=0
+          for SHA in $COMMITS; do
+            if ! git log --format="%s%n%b" -1 $SHA | grep -q "Signed-off-by:"; then
+              echo "::error file=commit $SHA::Missing DCO sign-off in commit $SHA"
+              FAILED=1
+            fi
+          done
+
+          if [ $FAILED -ne 0 ]; then
+            echo "❌ Some commits are missing DCO sign-off. Use 'git commit -s' to sign off."
+            exit 1
+          fi
+          echo "✅ All commits have valid DCO sign-off."

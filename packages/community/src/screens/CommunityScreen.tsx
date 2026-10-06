@@ -22,7 +22,11 @@ import {
   usePostsInfiniteQuery,
 } from '@repo/core/api/hooks';
 import { useDomainRollout, useTracking } from '@repo/core/hooks';
-import { setPendingGateAction, usePermissions } from '@repo/core/logic';
+import {
+  resolveWorkspaceAppearanceColor,
+  setPendingGateAction,
+  usePermissions,
+} from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import { useAuthStore, useFeatureStore, useTemporalStore } from '@repo/core/store';
 import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
@@ -195,7 +199,7 @@ export default function CommunityScreen() {
 
   // Lightweight canvas: reorder/hide modes, isDefault fast path, cross-device sync
   const communitySurfaces = useCommunityWorkspaceSurfaces();
-  const { surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
+  const { layout: communityLayout, surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
     workspaceId: 'community',
     userId: user?.id ?? null,
     surfaces: communitySurfaces,
@@ -804,7 +808,12 @@ export default function CommunityScreen() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset className="bg-phase-canvas">
+    <ScreenWrapper
+      backgroundColor={resolveWorkspaceAppearanceColor(communityLayout?.appearance?.preset)}
+      scroll={false}
+      noTopInset
+      className="bg-phase-canvas"
+    >
       <Box className="flex-1">
         <GlobalHeader title="Community" />
         {isOffline ? (

@@ -19,7 +19,8 @@ const rule = {
     /** @type {RuleListener} */
     const listener = {
       ImportDeclaration(node) {
-        if (node.source.value === 'zustand') {
+        const source = String(node.source.value ?? '');
+        if (source === 'zustand' || source === '@repo/core/store' || source.endsWith('/store')) {
           for (const spec of node.specifiers) {
             if (
               spec.type === 'ImportSpecifier' &&

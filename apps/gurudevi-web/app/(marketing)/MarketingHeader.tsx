@@ -1,42 +1,121 @@
-import Link from 'next/link';
+'use client';
 
-const navigation = [
-  { href: '/about', label: 'The ecology' },
-  { href: '/explore/self', label: 'Explore' },
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+const navItems = [
+  { name: 'The Ecology', href: '/about' },
+  { name: 'Workspaces', href: '/#workspaces' },
+  { name: 'Roadmap', href: '/#roadmap' },
+  { name: 'Journal', href: '/journal' },
+  { name: 'FAQ', href: '/faq' },
+  { name: 'Support', href: '/support' },
 ];
 
 export function MarketingHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className="border-b border-line">
+    <header className="site-header">
       <a
-        className="sr-only absolute left-4 top-4 z-10 rounded bg-ink px-4 py-3 font-sans text-sm font-bold text-paper focus:not-sr-only focus:outline-3 focus:outline-offset-4 focus:outline-water"
+        className="sr-only absolute left-4 top-4 z-50 rounded bg-charcoal-truth px-4 py-3 font-ui-grotesque text-sm font-bold text-sacred-white focus:not-sr-only focus:outline-3 focus:outline-offset-4 focus:outline-teal-water"
         href="#main-content"
       >
         Skip to content
       </a>
-      <div className="mx-auto flex min-h-18 w-full max-w-6xl flex-wrap items-center justify-between gap-x-5 gap-y-2 px-4 py-3">
-        <Link className="font-serif text-xl font-bold tracking-[-0.04em] no-underline" href="/">
-          Gurudevi
+
+      <div className="site-header__inner">
+        <Link className="brand" href="/" aria-label="Gurudevi home">
+          <Image src="/gurudevi-mark.svg" alt="" width={28} height={28} priority />
+          <span>Gurudevi</span>
         </Link>
-        <nav
-          aria-label="Primary navigation"
-          className="flex items-center gap-1 font-sans text-sm font-semibold"
-        >
-          {navigation.map((item) => (
+
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {navItems.map((item) => (
+            <Link href={item.href} key={item.name}>
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="header-actions">
+          <nav aria-label="Choose language" className="hidden gap-2 font-sans text-xs sm:flex">
+            <Link href="/" aria-label="English">EN</Link>
+            <Link href="/si" lang="si" aria-label="සිංහල">සි</Link>
+            <Link href="/ta" lang="ta" aria-label="தமிழ்">த</Link>
+          </nav>
+          <Link className="header-platform" href="/explore/self">
+            Open platform <span aria-hidden="true">↗</span>
+          </Link>
+          <button
+            className="menu-toggle"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-controls="mobile-menu"
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen(true)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="mobile-menu"
+        className={`mobile-menu ${isMenuOpen ? 'is-open' : ''}`}
+        aria-hidden={!isMenuOpen}
+      >
+        <div className="mobile-menu__top">
+          <span className="eyebrow">Gurudevi</span>
+          <button
+            id="menu-close"
+            type="button"
+            aria-label="Close navigation menu"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Close
+          </button>
+        </div>
+        <nav aria-label="Mobile navigation">
+          {navItems.map((item) => (
             <Link
-              className="rounded-full px-3 py-2 no-underline hover:bg-paper-light focus:outline-3 focus:outline-offset-2 focus:outline-water"
               href={item.href}
-              key={item.href}
+              key={item.name}
+              onClick={() => setIsMenuOpen(false)}
             >
-              {item.label}
+              {item.name}
             </Link>
           ))}
           <Link
-            className="ml-1 rounded-full border border-ink px-3 py-2 no-underline hover:bg-ink hover:text-paper focus:outline-3 focus:outline-offset-2 focus:outline-water"
-            href="/sign-in?returnTo=%2Fself"
+            href="/explore/self"
+            onClick={() => setIsMenuOpen(false)}
           >
-            Enter sanctuary
+            Open platform ↗
           </Link>
+          <div className="mt-6 flex gap-5 border-t border-line pt-5 font-sans text-sm" aria-label="Choose language">
+            <Link href="/" onClick={() => setIsMenuOpen(false)}>English</Link>
+            <Link href="/si" lang="si" onClick={() => setIsMenuOpen(false)}>සිංහල</Link>
+            <Link href="/ta" lang="ta" onClick={() => setIsMenuOpen(false)}>தமிழ்</Link>
+          </div>
         </nav>
       </div>
     </header>

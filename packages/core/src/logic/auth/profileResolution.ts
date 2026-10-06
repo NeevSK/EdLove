@@ -23,6 +23,10 @@ export async function resolveAuthProfile(
     identifyActiveCitizen,
   }: AuthProfileResolutionDependencies,
 ): Promise<AuthProfileResolution> {
+  if (getSessionIdentityMode(session) === 'anonymous') {
+    return { kind: 'unavailable', profileError: null };
+  }
+
   const identity = await identifyActiveCitizen();
 
   if (identity) {

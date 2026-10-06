@@ -1,25 +1,23 @@
 {
   "expo": {
-    "name": "gurudevi-mobile",
-    "slug": "gurudevi-mobile",
-    "version": "1.5.0",
+    "name": "Gurudevi Sanctuary",
+    "slug": "gurudevi-sanctuary",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "gurudevi",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "org.edlove.gurudevi",
+      "bundleIdentifier": "app.gurudevi.sanctuary",
       "buildNumber": "1",
       "associatedDomains": [
-        "applinks:gurudevi.app",
-        "applinks:sanctuary.gurudevi.app",
-        "applinks:platform.gurudevi.edlove.org"
+        "applinks:sanctuary.gurudevi.app"
       ]
     },
     "android": {
-      "package": "org.edlove.gurudevi",
-      "versionCode": 24,
+      "package": "app.gurudevi.sanctuary",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -36,7 +34,10 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         },
         {
           "action": "VIEW",
@@ -46,7 +47,10 @@
               "host": "qr"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         },
         {
           "action": "VIEW",
@@ -54,21 +58,14 @@
           "data": [
             {
               "scheme": "https",
-              "host": "gurudevi.app",
-              "pathPrefix": "/qr"
-            },
-            {
-              "scheme": "https",
               "host": "sanctuary.gurudevi.app",
-              "pathPrefix": "/qr"
-            },
-            {
-              "scheme": "https",
-              "host": "platform.gurudevi.edlove.org",
               "pathPrefix": "/qr"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -87,33 +84,40 @@
       "baseUrl": "/"
     },
     "extra": {
+      "googleIosUrlScheme": "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID",
+      "publicRuntime": {},
       "eas": {
-        "projectId": "1701dfb9-c59e-45c6-a391-58c061a0b8ce"
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ExpoWidgetsTarget",
+                  "bundleIdentifier": "app.gurudevi.sanctuary.ExpoWidgetsTarget",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.app.gurudevi.sanctuary"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "7f9c7064-14ee-49d2-9caf-32ebdc904ce9"
       },
-      "googleIosUrlScheme": "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
+      "router": {}
     },
     "plugins": [
       "expo-font",
       "./plugins/withNdkVersion",
-      // "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
+      "./plugins/withGradleWrapperVersion",
+      "./plugins/withSubprojectsBuildConfig",
       "expo-localization",
       "expo-asset",
       "expo-audio",
       "expo-secure-store",
-      [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io/",
-          "project": "gurudevi-mobile",
-          "organization": "intuitui-labs",
-          "uploadNativeSymbols": false,
-          "autoUploadNativeSymbols": false,
-          "autoUpload": true,
-          "uploadSourceMaps": true,
-          "disableAutoUpload": false
-        }
-      ],
       "expo-web-browser",
       "expo-image",
       "expo-sharing",
@@ -122,17 +126,12 @@
       "expo-notifications",
       "@react-native-community/datetimepicker",
       [
-        "@stripe/stripe-react-native",
-        {
-          "merchantIdentifier": "merchant.org.edlove.gurudevi",
-          "enableGooglePay": false
-        }
-      ],
-      [
         "expo-build-properties",
         {
           "android": {
             "minSdkVersion": 28,
+            "compileSdkVersion": 37,
+            "targetSdkVersion": 37,
             "extraMavenRepos": []
           }
         }
@@ -155,7 +154,6 @@
       "expo-router",
       "react-native-enriched-markdown",
       "react-native-nano-icons",
-      "@sentry/react-native",
       "expo-background-task",
       "expo-status-bar",
       "@react-native-vector-icons/lucide",
@@ -169,9 +167,6 @@
     "owner": "neevsk",
     "runtimeVersion": {
       "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/1701dfb9-c59e-45c6-a391-58c061a0b8ce"
     }
   }
 }

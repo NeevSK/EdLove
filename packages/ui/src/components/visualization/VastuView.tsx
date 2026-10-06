@@ -2,7 +2,7 @@ import type { PerspectiveViewProps } from '@repo/core/types';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Box } from '@repo/ui/primitives';
-import { Canvas, Circle, Line } from '@shopify/react-native-skia';
+import { Canvas, Circle, Line } from 'react-native-skia';
 import type React from 'react';
 
 /**

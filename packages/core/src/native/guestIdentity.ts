@@ -1,4 +1,5 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { CapacitySchema, type Capacity } from '@repo/core/logic/schemas/capacity.schema';
 
 const GUEST_IDENTITY_PREFIX = 'gurudevi:guest-identity:';
 
@@ -19,6 +20,11 @@ export interface LocalGuestIdentity {
   activeBond: LocalGuestBond | null;
   onboarding_completed: boolean;
   citizenship: 'THIRD_CLASS';
+}
+
+export interface GuestClaimIdentity {
+  displayName: string;
+  capacity: Capacity | null;
 }
 
 function key(userId: string) {
@@ -48,6 +54,14 @@ export async function getLocalGuestIdentity(userId: string): Promise<LocalGuestI
   }
 }
 
+/** Extracts the claimable identity facts from the local guest record only. */
+export function getGuestClaimIdentity(identity: LocalGuestIdentity): GuestClaimIdentity {
+  return {
+    displayName: identity.display_name.trim() || 'Sanctuary User',
+    capacity: CapacitySchema.safeParse(identity.activeBond?.capacity).data ?? null,
+  };
+}
+
 export async function updateLocalGuestIdentity(
   userId: string,
   updates: Partial<LocalGuestIdentity>,
@@ -74,16 +88,20 @@ export async function migrateGuestDataToAuthenticatedUser(
   const guestData = await getLocalGuestIdentity(guestUserId);
   const targetData = await getLocalGuestIdentity(authenticatedUserId);
 
+  const existingEntityIds = new Set(targetData.availableBonds.map((b) => b.entity_id || b.id));
+  const newBonds = guestData.availableBonds
+    .filter((b) => !existingEntityIds.has(b.entity_id || b.id))
+    .map((b) => ({ ...b, user_id: authenticatedUserId }));
+
   const merged = await updateLocalGuestIdentity(authenticatedUserId, {
     display_name: targetData.display_name || guestData.display_name,
     onboarding_completed: targetData.onboarding_completed || guestData.onboarding_completed,
-    availableBonds: [
-      ...targetData.availableBonds,
-      ...guestData.availableBonds.map((b) => ({ ...b, user_id: authenticatedUserId })),
-    ],
+    availableBonds: [...targetData.availableBonds, ...newBonds],
+    activeBond:
+      targetData.activeBond ??
+      (guestData.activeBond ? { ...guestData.activeBond, user_id: authenticatedUserId } : null),
   });
 
   await clearLocalGuestIdentity(guestUserId);
   return merged;
 }
-

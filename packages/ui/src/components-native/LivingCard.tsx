@@ -9,7 +9,7 @@ import {
   RoundedRect,
   Turbulence,
   vec,
-} from '@shopify/react-native-skia';
+} from 'react-native-skia';
 import type React from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
 

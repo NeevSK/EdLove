@@ -1,7 +1,5 @@
 import { OfflineMutationError } from '@repo/core/effect/Errors';
-import * as Duration from 'effect/Duration';
-import * as Effect from 'effect/Effect';
-import * as Schedule from 'effect/Schedule';
+import { Duration, Effect, Schedule } from 'effect';
 
 export { OfflineMutationError };
 

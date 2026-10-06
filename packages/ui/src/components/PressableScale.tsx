@@ -9,8 +9,6 @@ import { useAccessibility } from '../hooks/useAccessibility';
 import { type HapticImpact, hapticImpact } from '../utils/haptics';
 import { duration, easingPoints, scale } from './motion';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 const standardEasing = Easing.bezier(
   easingPoints.standard[0],
   easingPoints.standard[1],
@@ -76,50 +74,42 @@ export function PressableScale({
 
   const handlePressIn = () => {
     if (isReduceMotionEnabled) {
-      opacityValue.value = withTiming(0.7, {
-        duration: pressInDuration,
-        easing: standardEasing,
-      });
+      opacityValue.value = withTiming(0.7, { duration: pressInDuration, easing: standardEasing });
     } else {
-      scaleValue.value = withTiming(activeScale, {
-        duration: pressInDuration,
-        easing: standardEasing,
-      });
+      scaleValue.value = withTiming(activeScale, { duration: pressInDuration, easing: standardEasing });
     }
-    if (haptic !== false) {
-      hapticImpact(haptic);
-    }
+    if (haptic !== false) hapticImpact(haptic);
   };
 
   const handlePressOut = () => {
     if (isReduceMotionEnabled) {
-      opacityValue.value = withTiming(1, {
-        duration: pressOutDuration,
-        easing: standardEasing,
-      });
+      opacityValue.value = withTiming(1, { duration: pressOutDuration, easing: standardEasing });
     } else {
-      scaleValue.value = withTiming(scale.rest, {
-        duration: pressOutDuration,
-        easing: standardEasing,
-      });
+      scaleValue.value = withTiming(scale.rest, { duration: pressOutDuration, easing: standardEasing });
     }
   };
 
   return (
-    <AnimatedPressable
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      onPress={onPress}
-      onLongPress={onLongPress}
-      disabled={disabled}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityHint={accessibilityHint}
-      accessibilityRole={accessibilityRole}
-      accessibilityState={{ disabled, ...accessibilityState }}
-      testID={testID}
-      style={[{ opacity: disabled ? 0.5 : 1 }, animatedStyle, style]}
-    >
-      {children}
-    </AnimatedPressable>
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={() => {
+          if (!disabled) onPress?.();
+        }}
+        onLongPress={() => {
+          if (!disabled) onLongPress?.();
+        }}
+        disabled={disabled}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
+        accessibilityRole={accessibilityRole}
+        accessibilityState={{ disabled, ...accessibilityState }}
+        testID={testID}
+        style={[{ opacity: disabled ? 0.5 : 1 }, style]}
+      >
+        {children}
+      </Pressable>
+    </Animated.View>
   );
 }

@@ -1,10 +1,14 @@
 version: 2
 updates:
+  # Main dependencies — weekly batch for minor/patch
   - package-ecosystem: pnpm
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+      day: monday
+      time: "03:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
     groups:
       non-expo-patch-and-minor:
         update-types:
@@ -18,4 +22,59 @@ updates:
           - '@expo/*'
           - '@sentry/react-native'
           - '@shopify/react-native-skia'
+      expo-ecosystem:
+        patterns:
+          - expo
+          - expo-*
+          - react-native
+          - react-native-*
+          - '@expo/*'
+          - '@sentry/react-native'
+          - '@shopify/react-native-skia'
+        update-types:
+          - patch
     versioning-strategy: increase
+    labels:
+      - dependencies
+      - automated
+
+  # Security updates — daily, high priority
+  - package-ecosystem: pnpm
+    directory: /
+    schedule:
+      interval: daily
+      time: "06:00"
+      timezone: UTC
+    open-pull-requests-limit: 5
+    groups:
+      security-patches:
+        update-types:
+          - patch
+        applies-to:
+          - security-updates
+    versioning-strategy: increase
+    labels:
+      - security
+      - dependencies
+      - automated
+    allow:
+      - dependency-type: direct
+      - dependency-type: indirect
+
+  # GitHub Actions — weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
+    labels:
+      - github-actions
+      - dependencies
+      - automated
+
+# Auto-merge configuration for Dependabot PRs
+# Requires: "Allow auto-merge" enabled in repo settings
+# and branch protection allowing auto-merge

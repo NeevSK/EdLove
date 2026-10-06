@@ -51,9 +51,9 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_ai-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_ai-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_ai-check-cycles\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_ai-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_ai-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_ai-test_ui\""
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_ai-test\" --evidence-level G1",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_ai-test_watch\" --evidence-level G1",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_ai-test_ui\" --evidence-level G1"
   },
   "dependencies": {
     "@repo/core": "workspace:*",
@@ -62,7 +62,7 @@
     "@tanstack/ai-client": "^0.23.3",
     "@tanstack/ai-react": "^0.19.3",
     "@tanstack/react-query": "^5.102.8",
-    "expo-router": "~57.0.21",
+    "expo-router": "~58.0.13",
     "react-i18next": "^17.0.13",
     "react-native-reanimated": "4.3.1"
   },

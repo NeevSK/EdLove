@@ -86,6 +86,18 @@
   cursor: not-allowed;
   opacity: 0.55;
 }
+.secondary {
+  width: fit-content;
+  min-height: 2.8rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--sanctuary-saffron, #9d5b25);
+  border-radius: 0.75rem;
+  color: var(--sanctuary-saffron, #9d5b25);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
 .attendanceHeading {
   display: flex;
   justify-content: space-between;

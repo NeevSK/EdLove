@@ -1,0 +1,242 @@
+export const SITE_URL = 'https://gurudevi.app';
+export const SITE_NAME = 'Gurudevi';
+export const SITE_TITLE = 'Gurudevi | Education Ecology Support System and Sanctuary for Education';
+export const SITE_DESCRIPTION =
+  'Gurudevi is an education ecology support system and sanctuary for education in Sri Lanka, connecting teachers, students, schools, families, and communities through care and practical support.';
+export const SITE_KEYWORDS = [
+  'Gurudevi',
+  'education ecology',
+  'teacher support',
+  'Sri Lanka',
+  'school support',
+  'EdLove',
+];
+
+export const LAUNCH = {
+  iso: '2026-10-06T09:00:00+05:30',
+  label: 'Alpha Genesis',
+  phase: 'Alpha Opening',
+  timezone: 'Asia/Colombo',
+  timezoneLabel: 'Sri Lanka time',
+  status: 'in-development' as const,
+  ctaTarget: '#roadmap',
+} as const;
+
+export interface RoadmapMilestone {
+  year: string;
+  date: string;
+  phase: string;
+  badge: string;
+  status: 'active' | 'upcoming' | 'vision';
+  summary: string;
+  deliverables: string[];
+}
+
+export const ROADMAP_MILESTONES: RoadmapMilestone[] = [
+  {
+    year: '2026',
+    date: 'Alpha Genesis',
+    phase: 'Alpha Release',
+    badge: 'Opening Cohort',
+    status: 'active',
+    summary:
+      'The genesis of the Gurudevi sanctuary. Foundational reflection and preparation tools for invited Sri Lankan pilot schools.',
+    deliverables: [
+      'Teacher Sanctuary & reflection spaces',
+      'Local-first offline storage & privacy',
+      'Invited school pilot cohorts',
+    ],
+  },
+  {
+    year: '2027',
+    date: 'Ecology Expansion',
+    phase: 'Beta Release',
+    badge: 'Multi-Workspace',
+    status: 'upcoming',
+    summary:
+      'Extending the sanctuary across students, families, and school leaders with shared reality and clear privacy boundaries.',
+    deliverables: [
+      'Classroom, School, Family, and Studio spaces',
+      'Federated coordination without surveillance',
+      'Bilingual Sinhala & Tamil trials',
+    ],
+  },
+  {
+    year: '2028',
+    date: 'Nationwide Opening',
+    phase: 'GA Sanctuary',
+    badge: 'Public Commons',
+    status: 'vision',
+    summary:
+      'Nationwide availability of the open educational sanctuary, delivering lasting institutional harmony and digital sovereignty.',
+    deliverables: [
+      'Open access for all Sri Lankan schools',
+      'Sovereign open infrastructure & data protocols',
+      'Community-led pedagogical stewardship',
+    ],
+  },
+];
+
+export const HEVNER_RESEARCH_GROUNDING = {
+  title: 'Methodological Grounding',
+  lead: 'Design Science Research (Hevner 3-Cycle)',
+  body: 'Gurudevi progresses through the Hevner Design Science Research cadence, connecting classroom realities with pedagogical science.',
+  cycles: [
+    {
+      name: 'Relevance Cycle',
+      phase: 'Field Realities',
+      description: 'Sensing classroom realities and educator burdens across Sri Lanka.',
+    },
+    {
+      name: 'Design Cycle',
+      phase: 'Alpha Genesis',
+      description: 'Calibrating tactile, local-first sanctuary tools with early teachers.',
+    },
+    {
+      name: 'Rigor Cycle',
+      phase: 'Foundational Commons',
+      description: 'Grounding system architecture in pedagogical science and open protocols.',
+    },
+  ],
+};
+
+export const ROADMAP_CAVEAT = {
+  title: 'Sustainable Cadence',
+  lead: 'Calibrated by care, capacity, and stewardship.',
+  body: 'While annual horizons anchor our milestones, progress moves in harmony with research stewardship and the sustainable capacity of our team and community.',
+};
+
+export const MARKETING_COPY = {
+  en: {
+    hero: {
+      eyebrow: 'Gurudevi · Education Ecology',
+      title: 'Technology that gives energy back to education.',
+      lede: 'A sovereign, respectful sanctuary for teachers, students, schools, and families in Sri Lanka.',
+      primaryCta: 'Follow the Multi-Year Horizon',
+      secondaryCta: 'Explore Workspaces',
+    },
+    roles: [
+      {
+        label: 'Teachers',
+        title: 'More room to teach.',
+        body: 'Prepare and reflect without administrative exhaustion.',
+      },
+      {
+        label: 'Leaders',
+        title: 'Visibility without surveillance.',
+        body: 'Coordinate the school while respecting teacher privacy.',
+      },
+      {
+        label: 'Students',
+        title: 'Agency and curiosity.',
+        body: 'Participate actively with dignity and consent.',
+      },
+      {
+        label: 'Families',
+        title: 'Connection with care.',
+        body: 'Stay close to learning without turning care into control.',
+      },
+    ],
+    workspaces: [
+      {
+        number: '01',
+        roleLabel: 'Teachers & Students',
+        name: 'Classroom Sanctuary',
+        body: 'Lesson preparation, reflection, and teaching—grounded in pedagogical care.',
+      },
+      {
+        number: '02',
+        roleLabel: 'School Leaders',
+        name: 'School Coordination',
+        body: 'Institutional patterns and resource stewardship without surveillance.',
+      },
+      {
+        number: '03',
+        roleLabel: 'Families & Guardians',
+        name: 'Family Space',
+        body: 'A transparent bridge between school and home with mutual respect.',
+      },
+      {
+        number: '04',
+        roleLabel: 'Young Learners',
+        name: 'Learning Studio',
+        body: 'A quiet space for self-directed practice, learning commons, and agency.',
+      },
+    ],
+  },
+} as const;
+
+function validateUrl(name: string, value: string): string {
+  const parsed = new URL(value);
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'mailto:') {
+    throw new Error(`${name} must use https:// or mailto:`);
+  }
+  return value;
+}
+
+function publicUrl(name: string, fallback: string): string {
+  const envVal = process.env[name] ?? process.env[`NEXT_PUBLIC_${name}`];
+  const value = envVal?.trim() || fallback;
+  const parsed = new URL(validateUrl(name, value));
+  return parsed.toString().replace(/\/$/, '');
+}
+
+export const WEB_LINKS = {
+  marketing: SITE_URL,
+  app: publicUrl('PUBLIC_GURUDEVI_APP_URL', 'https://sanctuary.gurudevi.app'),
+  edlove: publicUrl('PUBLIC_EDLOVE_URL', 'https://edlove.org'),
+  intuitui: publicUrl('PUBLIC_INTUITUI_URL', 'https://intuituilabs.edlove.org'),
+  founder: publicUrl('PUBLIC_FOUNDER_URL', 'https://neevsk.edlove.org'),
+  beacons: 'https://beacons.ai/gurudevi',
+} as const;
+
+export const SOCIAL_LINKS = {
+  email: 'https://beacons.ai/gurudevi#email',
+  tiktok: 'https://www.tiktok.com/@gurudevi_app',
+  x: 'https://x.com/gurudevi_app',
+  youtube: 'https://youtube.com/@Gurudevi_App',
+  facebook: 'https://www.facebook.com/GurudeviApp',
+  linkedin: 'https://www.linkedin.com/company/gurudevi',
+  beacons: WEB_LINKS.beacons,
+} as const;
+
+export const CONTACT_EMAILS = {
+  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', 'support@gurudevi.app'),
+  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', 'gratitude@gurudevi.app'),
+  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', 'institutional@gurudevi.app'),
+} as const;
+
+function publicEmail(name: string, fallback: string): string {
+  const envVal = process.env[name] ?? process.env[`NEXT_PUBLIC_${name}`];
+  const value = envVal?.trim() || fallback;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+    throw new Error(`${name} must be an email address`);
+  return value;
+}
+
+export const MARKETING_STATS = {
+  teachers: 0,
+  students: 0,
+  schools: 0,
+  lessonsShared: 0,
+  status: 'coming-soon' as const,
+};
+
+export const ORGANIZATION = {
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+};
+
+export function absoluteUrl(pathname: string) {
+  return new URL(pathname, SITE_URL).toString();
+}
+
+export function canonicalUrl(pathname: string) {
+  const normalizedPath = pathname === '/' ? '/' : `/${pathname.replace(/^\/+|\/+$/g, '')}`;
+  return absoluteUrl(normalizedPath);
+}
+
+export function defaultOgImage(pathname = '/') {
+  return absoluteUrl('/hero-teacher-editorial.png');
+}

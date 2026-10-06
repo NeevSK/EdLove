@@ -3,12 +3,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   dispatchQueuedMutationToSovereignBus: vi.fn(),
+  getSessionIdentityMode: vi.fn((session: { user?: { is_anonymous?: boolean } }) =>
+    session.user?.is_anonymous ? 'anonymous' : 'authenticated',
+  ),
   syncManager: vi.fn(() => null),
   useAuth: vi.fn(),
   useStore: vi.fn(),
 }));
 
 vi.mock('@repo/core/logic', () => ({
+  getSessionIdentityMode: mocks.getSessionIdentityMode,
   useAuth: mocks.useAuth,
   useStore: mocks.useStore,
 }));
@@ -63,5 +67,15 @@ describe('AuthenticatedSyncService', () => {
       { dispatchQueuedMutation: mocks.dispatchQueuedMutationToSovereignBus },
       undefined,
     );
+  });
+
+  it('never starts cloud queue draining for an admitted anonymous guest', () => {
+    renderService({
+      hasActiveIdentity: true,
+      identityAvailability: 'active',
+      session: { user: { is_anonymous: true } },
+    });
+
+    expect(mocks.syncManager).not.toHaveBeenCalled();
   });
 });

@@ -2,7 +2,7 @@
 title: "Polymath Platform (EdLove / Gurudevi)"
 status: "active"
 created: 2025-11-03
-updated: 2026-08-24
+updated: 2026-10-04
 author: "Naveen"
 scribe: "opencode"
 tags: [platform, monorepo]
@@ -10,37 +10,107 @@ tags: [platform, monorepo]
 
 # Polymath Platform (EdLove / Gurudevi)
 
-> **Transparent Hosted — MIT open source, hosted production.** Code is public for audit at this repo (`LICENSE` MIT). Production runs hosted at `platform.gurudevi.edlove.org` (Expo 57 + Supabase Cloud + PowerSync Cloud + EAS `1701dfb9…`). Self-host is dev-only/edge-case — you get community + curated library network benefits on our hosted stack. See ADR [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.0.2-blue)](https://www.typescriptlang.org/)
+[![Expo](https://img.shields.io/badge/Expo-57.0.24-000020?logo=expo)](https://expo.dev/)
+[![React Native](https://img.shields.io/badge/React_Native-0.86.2-61DAFB?logo=react)](https://reactnative.dev/)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor_Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+
+> **Transparent Hosted — MIT open source, hosted production.** Code is public for audit at this repo (`LICENSE` MIT). Production runs hosted at `platform.gurudevi.edlove.org` (Expo 57 + Supabase Cloud + PowerSync Cloud + EAS). Self-host is dev-only/edge-case — you get community + curated library network benefits on our hosted stack. See ADR [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md).
 
 A single monorepo for the EdLove education ecosystem:
 
 - **EdLove**: the umbrella foundation/house for education philosophy + ecosystem coordination.
 - **Gurudevi**: the flagship "Education Ecology Support System" product (mobile-first).
 
+## Architecture — Current (Source of Truth)
 
-## Where to start (internal/dev)
+### Apps (What to Build In)
+
+| App | Purpose | Framework | Status |
+|-----|---------|-----------|--------|
+| **`apps/gurudevi-mobile`** | **Native iOS/Android** — the flagship mobile app | Expo 57 (React Native 0.86, New Architecture) | ✅ Active |
+| **`apps/gurudevi-web`** | **Unified Web Platform** — Marketing + Sanctuary (Next.js 16) | Next.js 16 (App Router, Tailwind v4) | ✅ **Primary web target** |
+| `apps/gurudevi-marketingWeb` | Legacy marketing site (Astro) | Astro/Svelte | ⚠️ **Migrating → gurudevi-web** |
+| `apps/edlove-web` | EdLove foundation web (Astro) | Astro | ✅ Active |
+| `apps/sanctuary-api` | Sanctuary API (Hono) | Node.js/Hono | ✅ Active |
+
+### Domain Packages (Shared Logic)
+
+| Package | Purpose |
+|---------|---------|
+| `@repo/core` | Platform spine: auth, tenancy, permissions, contracts, API clients |
+| `@repo/classroom` | Classroom domain: attendance, gradebook, reflect, workspace |
+| `@repo/ui` | React Native / NativeWind primitives (tokens, not web components) |
+| `@repo/ui/tokens` | Design tokens (colors, spacing, motion) — platform-neutral |
+| `@repo/ui/web` | **Web-only components** (built in gurudevi-web, extracted after proven) |
+
+### Key Boundaries (Non-Negotiable)
+
+| Rule | Enforcement |
+|------|-------------|
+| **No RN Web imports in `gurudevi-web`** | Build browser-native components in `apps/gurudevi-web` |
+| **No `@repo/ui` web components in Next.js** | Use `@repo/ui/tokens` for design values; build web components in `gurudevi-web` |
+| **No Expo/React Native/PowerSync in `gurudevi-web`** | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` for auth |
+| **Shared logic only via `@repo/*` packages** | Hooks, schemas, API clients, pure logic in `@repo/core`, `@repo/classroom` |
+| **RN Web (`*.web.tsx`) is migration source only** | Being retired — see [implementation plan](./docs/current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md) |
+
+### Deployment Targets
+
+| Target | URL | App |
+|--------|-----|-----|
+| **Production Web** | `gurudevi.app` / `platform.gurudevi.edlove.org` | `gurudevi-web` (Next.js) |
+| **Production Mobile** | App Store / Play Store | `gurudevi-mobile` (Expo + EAS) |
+| **Marketing** | `gurudevi.edlove.org` | `gurudevi-web` (unified) |
+| **API** | `api.gurudevi.edlove.org` | `sanctuary-api` |
+
+---
+
+## Where to Start (Internal/Dev)
 
 - Ecosystem navigator: [apps/00_ECOSYSTEM_INDEX.md](./apps/00_ECOSYSTEM_INDEX.md)
-- Openness/licensing decision: [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md) (supersedes [2026-08-24-openness](./docs/decisions/2026-08-24-openness-and-reuse-strategy.md)) + [license-tradeoffs](./docs/decisions/2026-08-24-license-tradeoffs.md)
-- Branch pipeline (solo, scalable): [docs/infra/git-branching-model.md](./docs/infra/git-branching-model.md)
-- Root configuration map (what every root config file does): [docs/engineering/root-configuration-map.md](./docs/engineering/root-configuration-map.md)
-- Documentation SOP (frontmatter contract, doc tiers): [apps/gurudevi-mobile/docs/docs-sop.md](./apps/gurudevi-mobile/docs/docs-sop.md)
-- Doppler-centered engineering toolchain: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md)
+- Openness/licensing: [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md)
+- Branch pipeline: [docs/infra/git-branching-model.md](./docs/infra/git-branching-model.md)
+- Root config map: [docs/engineering/root-configuration-map.md](./docs/engineering/root-configuration-map.md)
+- Documentation SOP: [apps/gurudevi-mobile/docs/docs-sop.md](./apps/gurudevi-mobile/docs/docs-sop.md)
+- Doppler toolchain: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md)
 
-App contexts (read before working in an app):
+### App Contexts (Read Before Working)
 
-- [apps/edlove-web/CONTEXT.md](./apps/edlove-web/CONTEXT.md)
-- [apps/gurudevi-mobile/README.md](./apps/gurudevi-mobile/README.md)
-- [apps/gurudevi-marketingWeb/CONTEXT.md](./apps/gurudevi-marketingWeb/CONTEXT.md)
+- [apps/gurudevi-web/CONTEXT.md](./apps/gurudevi-web/CONTEXT.md) — **Primary web app**
+- [apps/gurudevi-mobile/README.md](./apps/gurudevi-mobile/README.md) — Native mobile
+- [apps/edlove-web/CONTEXT.md](./apps/edlove-web/CONTEXT.md) — EdLove foundation
+- [apps/sanctuary-api/CONTEXT.md](./apps/sanctuary-api/CONTEXT.md) — API
 
-## Gurudevi: two web environments
+## Project Status
 
-- Public marketing site (Astro): `apps/gurudevi-marketingWeb` (domain: `gurudevi.edlove.org`, eventually `gurudevi.lk`)
-- Platform web app (React Native Web via Expo/Metro): `apps/gurudevi-mobile` (domain: `platform.gurudevi.edlove.org`, GitHub Pages)
+**Gurudevi** is in active development toward v1.0. The platform is feature-complete for core classroom workflows (attendance, assignments, wellbeing, community, library) but production deployment and operational hardening are ongoing.
+
+### What's Working
+- ✅ Mobile app (React Native/Expo 57) with native new-architecture support
+- ✅ **Web platform (Next.js 15) — unified marketing + sanctuary at `gurudevi.app`**
+- ✅ Sanctuary API (Node.js/Hono) with OpenAPI spec
+- ✅ Local-first sync via PowerSync (offline support)
+- ✅ Multi-tenant authorization via ZenStack + Cedar policies
+- ✅ Cross-school community and curated library
+
+### What's In Progress
+- 🚧 Production deployment to `platform.gurudevi.edlove.org`
+- 🚧 Web migration: Classroom workspace canvas, Reflect, Guardian (see [implementation plan](./docs/current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md))
+- 🚧 Staging/production environment isolation
+- 🚧 Operational hardening (monitoring, alerts, rollback procedures)
+
+### What's Planned
+- 📋 iOS support (currently Android-first)
+- 📋 Docker-based self-hosting option (roadmap, not v1)
+- 📋 Federated library federation (Tier 1 Hub Pull, Tier 2 Curated Publish)
+
+### Contributing Areas
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions and contribution guidelines.
 - Toolchain authority and CI/free-first integrations: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md) and [docs/infra/github-student-pack-toolchain.md](./docs/infra/github-student-pack-toolchain.md)
 - Testing and performance lanes: [docs/infra/testing-and-performance-toolchain.md](./docs/infra/testing-and-performance-toolchain.md)
 
-Web guide: [apps/gurudevi-mobile/docs/web/WEB_GUIDE.md](./apps/gurudevi-mobile/docs/web/WEB_GUIDE.md)
+Web migration plan: [docs/current_progress/2026-09-26-gurudevi-web-implementation-plan.md](./docs/current_progress/2026-09-26-gurudevi-web-implementation-plan.md)
 
 ## Repo layout
 

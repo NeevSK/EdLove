@@ -18,7 +18,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Canvas, Path, Skia } from '@shopify/react-native-skia';
+import { Canvas, Path, Skia } from 'react-native-skia';
 import { Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
@@ -78,14 +78,14 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
       const min = Math.min(...points);
       const max = Math.max(...points);
       const range = max - min || 1;
-      const path = Skia.Path.Make();
+      const builder = Skia.PathBuilder.Make();
       points.forEach((m, i) => {
         const x = pad + (i / (points.length - 1)) * (w - pad * 2);
         const y = h - pad - ((m - min) / range) * (h - pad * 2);
-        if (i === 0) path.moveTo(x, y);
-        else path.lineTo(x, y);
+        if (i === 0) builder.moveTo(x, y);
+        else builder.lineTo(x, y);
       });
-      return path;
+      return builder.build();
     } catch {
       return null;
     }

@@ -23,9 +23,9 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_accounting-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_accounting-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_accounting-check-cycles\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_accounting-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_accounting-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_accounting-test_ui\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_accounting-test\" --evidence-level G1",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_accounting-test_watch\" --evidence-level G1",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_accounting-test_ui\" --evidence-level G1",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_accounting-clean\""
   },
   "dependencies": {

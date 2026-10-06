@@ -24,7 +24,7 @@ async function generateOpenAPISpec() {
     },
     servers: [
       { url: 'http://localhost:3000', description: 'Local development' },
-      { url: 'https://api.sanctuary.gurudevi.edlove.org', description: 'Production' },
+      { url: 'https://api.gurudevi.app', description: 'Production' },
     ],
     tags: [
       { name: 'self', description: 'Personal wellbeing & profile' },

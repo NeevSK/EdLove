@@ -7,10 +7,7 @@ import { APIError } from '@repo/core/types/API';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
 import { strictRetryPolicy, tryPromise } from '@repo/core/utils/effect';
-import * as Data from 'effect/Data';
-import * as Duration from 'effect/Duration';
-import * as Effect from 'effect/Effect';
-import { pipe } from 'effect/Function';
+import { Data, Duration, Effect, pipe } from 'effect';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
 

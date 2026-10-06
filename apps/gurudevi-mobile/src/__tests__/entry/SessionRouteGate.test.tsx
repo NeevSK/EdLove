@@ -159,6 +159,7 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(tree!.toJSON()).not.toBe('protected-shell');
+    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
     expect(mocks.replace).toHaveBeenCalledTimes(1);
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
 

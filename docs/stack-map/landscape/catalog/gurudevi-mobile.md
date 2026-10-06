@@ -25,7 +25,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
 
-## External deps (178 direct)
+## External deps (177 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
@@ -53,7 +53,6 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @react-native-vector-icons/lucide
 @sentry/react-native
 @shopify/flash-list
-@shopify/react-native-skia
 @stripe/stripe-react-native
 @supabase/postgrest-js
 @supabase/supabase-js
@@ -188,6 +187,7 @@ react-native-redash
 react-native-safe-area-context
 react-native-screens
 react-native-shared-hero
+react-native-skia
 react-native-ssl-public-key-pinning
 react-native-streamdown
 react-native-svg
@@ -202,7 +202,6 @@ use-latest-callback
 use-sync-external-store
 uuid
 victory-native
-voltra
 xstate
 zod
 zustand

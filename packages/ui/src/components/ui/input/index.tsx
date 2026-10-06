@@ -101,7 +101,7 @@ export const InputField = React.forwardRef<
       aria-invalid={isInvalid || undefined}
       aria-describedby={describedBy}
       accessibilityLabelledBy={id ? `${id}-label` : undefined}
-      secureTextEntry={type === 'password'}
+      secureTextEntry={type === 'password' || props.secureTextEntry}
       keyboardType={type === 'number' ? 'numeric' : props.keyboardType}
       placeholderTextColor={props.placeholderTextColor ?? CLASSIC_TOKENS.text.muted}
       onFocus={(e) => {

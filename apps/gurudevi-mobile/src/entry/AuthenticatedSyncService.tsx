@@ -1,4 +1,5 @@
 import { SyncManager, useAuth, useStore } from '@repo/core';
+import { getSessionIdentityMode } from '@repo/core/logic';
 
 import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
 
@@ -7,7 +8,12 @@ export function AuthenticatedSyncService() {
   const { identityAvailability, session } = useAuth();
   const hasActiveIdentity = useStore((state) => state.user !== null);
 
-  if (!session || identityAvailability !== 'active' || !hasActiveIdentity) {
+  if (
+    !session ||
+    getSessionIdentityMode(session) !== 'authenticated' ||
+    identityAvailability !== 'active' ||
+    !hasActiveIdentity
+  ) {
     return null;
   }
 

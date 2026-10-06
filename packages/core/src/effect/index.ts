@@ -1,5 +1,4 @@
-import * as Effect from 'effect/Effect';
-import { pipe } from 'effect/Function';
+import { Effect, pipe } from 'effect';
 import { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
 
 /**

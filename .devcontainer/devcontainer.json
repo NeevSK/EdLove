@@ -1,0 +1,106 @@
+// .devcontainer/devcontainer.json
+// GitHub Codespaces / VS Code Remote-Containers configuration
+// Provides a consistent development environment for Polymath Platform
+// 
+// Usage: 
+//   1. Open repo in GitHub Codespaces (green "Code" button → Codespaces → Create codespace)
+//   2. Or: VS Code → "Remote-Containers: Reopen in Container"
+//   3. Or: `gh codespace create -r NeevSK/EdLove`
+//
+// After container starts: `pnpm install && pnpm dev`
+
+{
+  "name": "Polymath Platform (EdLove / Gurudevi)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "NODE_VERSION": "22",
+      "PNPM_VERSION": "12.4.2"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "biomejs.biome",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "ms-playwright.playwright"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        "biome.enabled": true,
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.turbo": true,
+          "**/dist": true,
+          "**/build": true
+        }
+      }
+    }
+  },
+  "forwardPorts": [
+    8081,
+    19000,
+    19001,
+    19002,
+    19006,
+    54321,
+    54322,
+    54323,
+    54324,
+    54325,
+    54326,
+    54327
+  ],
+  "portsAttributes": {
+    "8081": {
+      "label": "Metro Bundler",
+      "onAutoForward": "notify"
+    },
+    "19000": {
+      "label": "Expo Dev Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "remoteUser": "node",
+  "containerEnv": {
+    "PNPM_HOME": "/home/node/.local/share/pnpm",
+    "PATH": "/home/node/.local/share/pnpm:${PATH}",
+    "NODE_OPTIONS": "--max-old-space-size=8192",
+    "EXPO_NO_DOCTOR": "1"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "enableRootDockerAccess": "true"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22",
+      "installPnpm": "false"
+    }
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/node_modules,target=/workspaces/EdLove/node_modules,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/.turbo,target=/workspaces/EdLove/.turbo,type=bind,consistency=cached"
+  ]
+}

@@ -126,7 +126,9 @@ export async function resolveAuthorizedEntry(
   if (typeof subject !== 'string' || !subject) return { kind: 'signed-out' };
 
   const origin = apiOrigin();
-  if (!origin) return unavailable('Sanctuary access is not configured in this environment.');
+  // If sanctuary API is not configured, treat as signed-out to show sign-in prompt
+  // instead of "unavailable" which blocks access entirely.
+  if (!origin) return { kind: 'signed-out' };
 
   // getSession is intentionally used only after cryptographic claim verification
   // and only to forward the API's required bearer credential.

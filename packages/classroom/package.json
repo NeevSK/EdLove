@@ -59,9 +59,9 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_classroom-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_classroom-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_classroom-check-cycles\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_classroom-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_classroom-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_classroom-test_ui\""
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_classroom-test\" --evidence-level G1",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_classroom-test_watch\" --evidence-level G1",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_classroom-test_ui\" --evidence-level G1"
   },
   "dependencies": {
     "@repo/admin": "workspace:*",
@@ -78,9 +78,9 @@
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.102.8",
     "date-fns": "^4.4.0",
-    "expo-clipboard": "~57.0.2",
-    "expo-image-picker": "~57.0.17",
-    "expo-router": "~57.0.21",
+    "expo-clipboard": "~58.0.3",
+    "expo-image-picker": "~58.0.10",
+    "expo-router": "~58.0.13",
     "react-i18next": "^17.0.13"
   },
   "devDependencies": {
@@ -94,12 +94,12 @@
     "vitest": "^5.0.0"
   },
   "peerDependencies": {
-    "@shopify/react-native-skia": ">=2.11.2",
-    "expo-observe": ">=57.0.0",
+    "expo-observe": ">=58.0.13",
     "react": "*",
     "react-i18next": "*",
     "react-native": "*",
-    "react-native-reanimated": ">=4.6.0"
+    "react-native-reanimated": ">=4.6.0",
+    "react-native-skia": ">=3.0.0"
   },
   "_originalScripts": {
     "check-types": "pnpm exec tsc --build --noEmit",

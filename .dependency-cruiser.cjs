@@ -100,15 +100,6 @@ module.exports = {
       },
     },
     {
-      name: 'standalone-isolation',
-      severity: 'error',
-      comment: 'Standalone packages should have ZERO dependencies on Layer 3 or 4.',
-      from: { path: '^packages/lk-edu-geo/' },
-      to: {
-        path: '^packages/(classroom|people|self|admin|community|profile|workforce|library|payments|accounting)/',
-      },
-    },
-    {
       name: 'no-cross-domain-feature-imports',
       severity: 'error',
       comment:

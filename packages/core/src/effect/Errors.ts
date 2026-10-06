@@ -1,4 +1,4 @@
-import * as Data from 'effect/Data';
+import { Data } from 'effect';
 
 /**
  * Common typed domain errors for @repo/core.

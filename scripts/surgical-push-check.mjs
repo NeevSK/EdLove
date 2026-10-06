@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 
 // Get changed files compared to remote tracking branch
@@ -37,7 +38,10 @@ const affectedPackages = new Set();
 for (const file of changedFiles) {
   const parts = file.split(path.sep === '\\' ? /\\|\// : '/');
   if (parts[0] === 'packages' || parts[0] === 'apps') {
-    affectedPackages.add(`${parts[0]}/${parts[1]}`);
+    const pkgRelPath = `${parts[0]}/${parts[1]}`;
+    if (fs.existsSync(pkgRelPath)) {
+      affectedPackages.add(pkgRelPath);
+    }
   }
 }
 
@@ -55,12 +59,16 @@ console.log(
 );
 
 try {
+  console.log('>>> 🛡️  Surgical Push Sentinel: Verifying architectural & evidence gates...');
+  execSync('node scripts/audit-test-evidence-levels.mjs --changed', { stdio: 'inherit' });
+  execSync('node scripts/check-effect-boundaries.mjs', { stdio: 'inherit' });
+
   const cmd = `pnpm exec turbo run lint check-types ${filterArgs} --continue --concurrency=1`;
   console.log(`>>> Executing: ${cmd}`);
   execSync(cmd, { stdio: ['ignore', 'inherit', 'inherit'] });
   console.log('\n✅ Surgical Push Sentinel: Affected packages integrity verified.');
   process.exit(0);
 } catch (error) {
-  console.error('\n❌ Surgical Push Sentinel: Impurities detected in affected packages.');
+  console.error('\n❌ Surgical Push Sentinel: Impurities detected in affected packages or verification gates.');
   process.exit(1);
 }

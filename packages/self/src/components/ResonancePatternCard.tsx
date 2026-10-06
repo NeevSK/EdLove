@@ -10,7 +10,7 @@ import { useOrientationInference } from '@repo/self/hooks/useOrientationInferenc
 import type { EnergyForecast, MoodLog } from '@repo/self/types/Wellbeing';
 import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Canvas, Circle, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, Group, Line, Path, Skia, vec } from 'react-native-skia';
 import { useMemo } from 'react';
 import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
 
@@ -57,16 +57,16 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
   const gridRadii = [MAX_RADIUS * 0.33, MAX_RADIUS * 0.66, MAX_RADIUS];
 
   const polygonPath = useMemo(() => {
-    const path = Skia.Path.Make();
-    if (!points || points.length === 0 || !points[0]) return path;
+    const builder = Skia.PathBuilder.Make();
+    if (!points || points.length === 0 || !points[0]) return builder.build();
 
-    path.moveTo(points[0].x, points[0].y);
+    builder.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) {
       const pt = points[i];
-      if (pt) path.lineTo(pt.x, pt.y);
+      if (pt) builder.lineTo(pt.x, pt.y);
     }
-    path.close();
-    return path;
+    builder.close();
+    return builder.build();
   }, [points]);
 
   const centerVec = vec(CENTER, CENTER);

@@ -1,3 +1,4 @@
+export { resolveWorkspaceAppearanceColor } from '@repo/core/logic/workspace/appearance';
 export {
   createDefaultWorkspaceLayout,
   getMaxPinnedForWorkspace,
@@ -17,6 +18,7 @@ export {
   resolveWorkspaceLayoutTarget,
   toWorkspaceLayoutRecord,
   toWorkspaceLayoutUpsert,
+  WORKSPACE_COMPACT_BREAKPOINT,
 } from '@repo/core/logic/workspace/layoutSync';
 export {
   createWorkspaceRendererConfig,

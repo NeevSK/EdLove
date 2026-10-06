@@ -81,9 +81,9 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_self-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_self-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_self-check-cycles\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_self-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_self-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_self-test_ui\""
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_self-test\" --evidence-level G1",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_self-test_watch\" --evidence-level G1",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_self-test_ui\" --evidence-level G1"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -95,12 +95,12 @@
     "@tanstack/react-query": "^5.102.8",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
-    "expo-audio": "~57.0.5",
-    "expo-file-system": "~57.0.7",
-    "expo-haptics": "~57.0.3",
-    "expo-notifications": "~57.0.18",
-    "expo-router": "~57.0.21",
-    "expo-sqlite": "~57.0.3",
+    "expo-audio": "~58.0.5",
+    "expo-file-system": "~58.0.5",
+    "expo-haptics": "~58.0.4",
+    "expo-notifications": "~58.1.0",
+    "expo-router": "~58.0.13",
+    "expo-sqlite": "~58.0.9",
     "react-native-reanimated": "^4.6.0",
     "zustand": "^5.0.15"
   },
@@ -118,7 +118,8 @@
     "@repo/ui": "*",
     "react": "*",
     "react-i18next": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-skia": ">=3.0.0"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

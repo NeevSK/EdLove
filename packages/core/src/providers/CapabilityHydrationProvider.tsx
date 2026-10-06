@@ -1,4 +1,5 @@
 import { useAuth } from '@repo/core/providers/AuthProvider';
+import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
@@ -61,6 +62,7 @@ export function CapabilityHydrationProvider({ children }: CapabilityHydrationPro
   const clearEntitlements = useEntitlementStore((state) => state.clearEntitlements);
   const error = useEntitlementStore((state) => state.error);
   const isLoading = useEntitlementStore((state) => state.isLoading);
+  const isCloudAccount = getSessionIdentityMode(session) === 'authenticated';
 
   const retry = useCallback(() => {
     if (
@@ -68,7 +70,8 @@ export function CapabilityHydrationProvider({ children }: CapabilityHydrationPro
       !session?.user.id ||
       !user?.id ||
       session.user.id !== user.id ||
-      identityAvailability !== 'active'
+      identityAvailability !== 'active' ||
+      !isCloudAccount
     ) {
       return;
     }
@@ -77,6 +80,7 @@ export function CapabilityHydrationProvider({ children }: CapabilityHydrationPro
   }, [
     activePerspective,
     identityAvailability,
+    isCloudAccount,
     loadEntitlements,
     loading,
     session?.user.id,
@@ -96,7 +100,8 @@ export function CapabilityHydrationProvider({ children }: CapabilityHydrationPro
       !session?.user.id ||
       !user?.id ||
       session.user.id !== user.id ||
-      identityAvailability !== 'active'
+      identityAvailability !== 'active' ||
+      !isCloudAccount
     ) {
       return;
     }
@@ -106,6 +111,7 @@ export function CapabilityHydrationProvider({ children }: CapabilityHydrationPro
     activePerspective,
     clearEntitlements,
     identityAvailability,
+    isCloudAccount,
     loading,
     loadEntitlements,
     session?.user.id,

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
-import { AccountDeletionControl } from './AccountDeletionControl';
+import { ProfileFloor } from './ProfileFloor';
 import styles from './profile.module.css';
 
 export const metadata = { title: 'Profile | Gurudevi Sanctuary' };
@@ -59,32 +59,11 @@ export default async function ProfilePage() {
   }
 
   return (
-    <article className={styles.profile} aria-labelledby="profile-title">
-      <header className={styles.intro}>
-        <p className={styles.eyebrow}>Profile</p>
-        <h1 id="profile-title">Your identity</h1>
-        <p>
-          This is the verified identity currently available to Sanctuary. Profile editing and
-          additional details will appear here once their browser contracts are ready.
-        </p>
-      </header>
-      <section className={styles.identity} aria-label="Verified profile identity">
-        <dl>
-          <div>
-            <dt>Display name</dt>
-            <dd>{entry.displayName}</dd>
-          </div>
-          <div>
-            <dt>Selected sanctuary role</dt>
-            <dd>{entry.primaryScopeRole}</dd>
-          </div>
-        </dl>
-      </section>
-      <p className={styles.readOnly} role="note">
-        Read-only profile identity
-      </p>
-      <AccountDeletionControl />
-    </article>
+    <ProfileFloor
+      accountId={entry.authSubjectId}
+      displayName={entry.displayName}
+      primaryScopeRole={entry.primaryScopeRole}
+    />
   );
 }
 

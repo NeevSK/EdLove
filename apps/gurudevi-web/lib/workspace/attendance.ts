@@ -4,6 +4,11 @@ import {
   createPersistenceIdentity,
   derivePersistenceKey,
 } from '@repo/core/lib/persistenceBoundary';
+import {
+  createAccountPracticeScope,
+  deriveAccountPracticeKey,
+  resolveAccountPracticeWriteDecision,
+} from '@repo/core/lib/practiceBoundary';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'excused';
@@ -32,6 +37,7 @@ export type AccountAttendanceDraft = Readonly<{
 
 type AttendanceRow = Readonly<{ student_id: string; status: string }>;
 const demoKey = 'gurudevi.explore.workspace.attendance.v1';
+const practiceVersion = 1 as const;
 const accountDraftVersion = 1 as const;
 const demoClassroom: WorkspaceClassroom = {
   id: 'explore-classroom',
@@ -43,6 +49,101 @@ const demoStudents = [
   { id: 'explore-student-2', studentId: 'explore-student-2', name: 'Kavi Fernando', rollNumber: 2 },
   { id: 'explore-student-3', studentId: 'explore-student-3', name: 'Mihiri Silva', rollNumber: 3 },
 ];
+const practiceClassroom: WorkspaceClassroom = {
+  id: 'practice-classroom',
+  name: 'Practice Learning Circle',
+  subject: 'Integrated learning',
+};
+const practiceStudents = [
+  { id: 'practice-student-1', studentId: 'practice-student-1', name: 'Nila Sen', rollNumber: 1 },
+  { id: 'practice-student-2', studentId: 'practice-student-2', name: 'Ravi Das', rollNumber: 2 },
+  { id: 'practice-student-3', studentId: 'practice-student-3', name: 'Mira Anand', rollNumber: 3 },
+];
+
+function practiceStorageKey(accountId: string): string {
+  const scope = createAccountPracticeScope({
+    accountId,
+    featureId: 'attendance',
+    workspaceId: 'daily-roll-call',
+  });
+  return deriveAccountPracticeKey(scope, 'marks-by-date');
+}
+
+function readPracticeMarks(accountId: string): Record<string, Record<string, AttendanceStatus>> {
+  const key = practiceStorageKey(accountId);
+  try {
+    const value: unknown = JSON.parse(window.localStorage.getItem(key) ?? '{"version":1,"dates":{}}');
+    if (!isRecord(value) || value.version !== practiceVersion || !isRecord(value.dates))
+      throw new Error('The saved attendance practice workspace is unreadable. It has not been removed.');
+    const dates = Object.entries(value.dates).map(([date, marks]) => {
+      if (!isRecord(marks))
+        throw new Error('The saved attendance practice workspace is unreadable. It has not been removed.');
+      const validMarks = statusMap(marks);
+      if (Object.keys(validMarks).length !== Object.keys(marks).length)
+        throw new Error('The saved attendance practice workspace has invalid marks. It has not been removed.');
+      return [date, validMarks] as const;
+    });
+    return Object.fromEntries(dates);
+  } catch (cause) {
+    if (cause instanceof Error && cause.message.includes('practice workspace')) throw cause;
+    throw new Error('This browser could not read the local attendance practice workspace.');
+  }
+}
+
+export function loadAccountPracticeAttendance(accountId: string, date: string): Readonly<{
+  classroom: WorkspaceClassroom;
+  students: readonly WorkspaceStudent[];
+}> {
+  const saved = readPracticeMarks(accountId)[date] ?? {};
+  return {
+    classroom: practiceClassroom,
+    students: practiceStudents.map((student) => ({
+      ...student,
+      status: saved[student.studentId] ?? 'present',
+    })),
+  };
+}
+
+export function saveAccountPracticeAttendance(
+  accountId: string,
+  date: string,
+  students: readonly WorkspaceStudent[],
+): void {
+  const scope = createAccountPracticeScope({
+    accountId,
+    featureId: 'attendance',
+    workspaceId: 'daily-roll-call',
+  });
+  if (!resolveAccountPracticeWriteDecision(scope, 'local').allowed)
+    throw new Error('Local attendance practice is unavailable for this account.');
+  const allDates = readPracticeMarks(accountId);
+  const marks = Object.fromEntries(
+    students.flatMap((student) => (student.studentId ? [[student.studentId, student.status]] : [])),
+  );
+  try {
+    window.localStorage.setItem(
+      practiceStorageKey(accountId),
+      JSON.stringify({ version: practiceVersion, dates: { ...allDates, [date]: marks } }),
+    );
+  } catch {
+    throw new Error('The browser could not keep this local attendance practice. Free storage and retry.');
+  }
+}
+
+export function discardAccountPracticeAttendance(accountId: string): void {
+  const scope = createAccountPracticeScope({
+    accountId,
+    featureId: 'attendance',
+    workspaceId: 'daily-roll-call',
+  });
+  if (!resolveAccountPracticeWriteDecision(scope, 'local').allowed)
+    throw new Error('Local attendance practice is unavailable for this account.');
+  try {
+    window.localStorage.removeItem(practiceStorageKey(accountId));
+  } catch {
+    throw new Error('The attendance practice workspace could not be discarded from this browser.');
+  }
+}
 
 function accountDraftKey(scope: AccountAttendanceDraftScope): string {
   const identity = createPersistenceIdentity({

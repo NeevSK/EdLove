@@ -4,7 +4,12 @@
 
 This repository (`c:\x` / Polymath Platform) operates in tandem with external packages developed under the `@intuitui-labs/` namespace located in `c:\projects\packages\`.
 
-Instead of duplicating code or publishing prematurely to public npm, all 4 shared domain packages are canonically maintained under `C:\projects\packages\`:
+> **Status update (2026-10-02).** All four packages are now **published to npm**
+> and this repository declares registry semver ranges — no `link:` specifiers
+> remain. The canonical authoring path below is still valid (source lives in
+> `C:\projects\packages\`), but this repo consumes the **published** packages.
+> See [§4C](#c-public-open-source-release--done-2026-10-02) for the resolved
+> state and the local-edit consequences.
 
 | Package Name | Canonical Path | Description | Consumers |
 | :--- | :--- | :--- | :--- |
@@ -125,14 +130,38 @@ pnpm --dir "C:\projects\packages\form-builder-engine" exec tsc --watch
 pnpm --dir "C:\projects\packages\lk-edu-geo" exec tsc --watch
 ```
 
-### C. Future Public Open-Source Release
-When `EdLove` is published to public GitHub:
-1. Publish the 4 canonical packages to npm under `@intuitui-labs/*`.
-2. In `c:\x`, replace `"link:C:/projects/..."` with semantic versions:
-   ```json
-   "@intuitui-labs/a11y-gate": "^1.0.0",
-   "@intuitui-labs/editorial": "^1.0.0",
-   "@intuitui-labs/form-builder-engine": "^1.0.0",
-   "@intuitui-labs/lk-edu-geo": "^1.0.0"
-   ```
-3. Any open-source stranger anywhere in the world can run `git clone`, `pnpm install`, and `pnpm dev` without needing local folders or proprietary links.
+### C. Public Open-Source Release — DONE (2026-10-02)
+
+All four packages are published to npm under `@intuitui-labs/*` (all MIT), and
+`c:\x` no longer contains a single `link:` specifier. This repository is now a
+**pure consumer**:
+
+```json
+"@intuitui-labs/a11y-gate": "^0.2.0",
+"@intuitui-labs/editorial": "^0.1.1",
+"@intuitui-labs/form-builder-engine": "^0.1.0",
+"@intuitui-labs/lk-edu-geo": "^1.0.1"
+```
+
+Verified: a clean clone on WSL2 (Linux ext4) completes
+`pnpm install --frozen-lockfile` with exit 0, and all four resolve from the pnpm
+store. Any contributor anywhere can `git clone`, `pnpm install`, and `pnpm dev`
+with no local sibling folders. Full evidence:
+[`developer-environment-and-distribution-plan.md` §11](../infra/developer-environment-and-distribution-plan.md).
+
+**Two consequences for the local workflow above.**
+
+1. **`link:` is gone, so watch mode is no longer wired.** The `pnpm --dir
+   "C:\projects\packages\<pkg>" exec tsc --watch` commands still work for editing
+   the packages, but the consuming app will not see local edits until you
+   `pnpm build && pnpm publish` (or point the app at a local tarball). For fast
+   iteration, use `pnpm pack` and install the tarball rather than reintroducing
+   `link:` — a `link:` in a committed manifest breaks every other contributor.
+2. **Do not reintroduce `link:` to solve a version-mismatch problem.** Publishing a
+   `link:` bakes the path into the tarball: npm consumers fail
+   `EUNSUPPORTEDPROTOCOL`, and pnpm can exit `0` while omitting the package, then
+   fail at runtime with `MODULE_NOT_FOUND`.
+
+`packages/editorial` remains as `@repo/editorial`, a facade re-exporting the
+published `@intuitui-labs/editorial`. It is consumed by two apps, so it stays —
+but it adds no behaviour upstream lacks and needs no bidirectional sync.

@@ -113,9 +113,11 @@ export default function ScannerModal({
 
             {/* Submit */}
             <Pressable
-              style={[styles.submitButton, { backgroundColor: accentColor }]}
+              style={({ pressed }) => [
+                styles.submitButton,
+                { backgroundColor: accentColor, opacity: pressed ? 0.85 : 1 },
+              ]}
               onPress={handleSubmit}
-              className="active:opacity-85"
             >
               <Text style={styles.submitText}>{t('scanner.web.submitCode')}</Text>
             </Pressable>

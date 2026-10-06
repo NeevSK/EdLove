@@ -58,7 +58,7 @@ export default async function CommunityPage() {
   const result = await loadCommunityGroups(session.access_token);
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
-      <CommunityFeedFloor result={result} />
+      <CommunityFeedFloor accountId={entry.authSubjectId} result={result} />
     </SanctuaryShell>
   );
 }

@@ -198,6 +198,9 @@ export type {
 export type {
   DomainFeature,
   ResolvedWorkspaceSurface,
+  WorkspaceAppearance,
+  WorkspaceAppearanceMotion,
+  WorkspaceAppearancePreset,
   WorkspaceLayout,
   WorkspaceOwnerPackage,
   WorkspaceRendererConfig,

@@ -1,0 +1,94 @@
+# CODEOWNERS — Required reviewers for changes
+# 
+# These individuals/teams will be automatically requested for review
+# when a PR modifies files matching these patterns.
+# 
+# Order matters: the last matching pattern wins.
+# 
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global fallback — maintainer reviews everything
+* @NeevSK
+
+# CI/CD workflows — security-critical
+.github/workflows/ @NeevSK
+.github/actions/ @NeevSK
+
+# Security configuration
+.gitleaks.toml @NeevSK
+DCO.md @NeevSK
+CODEOWNERS @NeevSK
+
+# Root configuration — affects all packages
+package.json @NeevSK
+pnpm-lock.yaml @NeevSK
+pnpm-workspace.yaml @NeevSK
+tsconfig.json @NeevSK
+turbo.json @NeevSK
+.biomeignore @NeevSK
+.oxlintrc.json @NeevSK
+eslint.config.js @NeevSK
+commitlint.config.cjs @NeevSK
+renovate.json @NeevSK
+.dependency-cruiser.cjs @NeevSK
+.fallowrc.json @NeevSK
+.size-limit.json @NeevSK
+.syncpackrc @NeevSK
+
+# Core packages — platform infrastructure
+packages/core/ @NeevSK
+packages/schema/ @NeevSK
+packages/types-shim/ @NeevSK
+packages/typescript-config/ @NeevSK
+packages/ui/ @NeevSK
+packages/graphics/ @NeevSK
+packages/editorial/ @NeevSK
+packages/form-builder/ @NeevSK
+packages/form-builder-engine/ @NeevSK
+packages/policies/ @NeevSK
+
+# Apps — product surfaces
+apps/gurudevi-mobile/ @NeevSK
+apps/edlove-web/ @NeevSK
+apps/gurudevi-marketingWeb/ @NeevSK
+apps/sanctuary-api/ @NeevSK
+apps/neevsk-web/ @NeevSK
+apps/intuitui-web/ @NeevSK
+
+# Scripts — build, sync, audit, security
+scripts/ @NeevSK
+
+# Supabase — database & auth
+supabase/ @NeevSK
+
+# Documentation — architecture, decisions, infra
+docs/architecture/ @NeevSK
+docs/decisions/ @NeevSK
+docs/infra/ @NeevSK
+docs/engineering/ @NeevSK
+
+# Security-sensitive configs
+.env* @NeevSK
+doppler.yaml @NeevSK
+.doctor.config.json @NeevSK
+
+# Dependency management
+.pnpmfile.cjs @NeevSK
+.npmrc @NeevSK
+.pnpmrc @NeevSK
+
+# Exceptions — no review needed for these generated/ephemeral files
+*.log 
+*.err.log
+coverage/
+*.png
+reports/
+output/
+scratch/
+node_modules/
+.pnpm-store/
+.turbo/
+.tmp/
+.tmp-*/
+dist/
+build/

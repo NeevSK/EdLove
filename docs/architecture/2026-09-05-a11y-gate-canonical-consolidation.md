@@ -111,10 +111,23 @@ To make `@intuitui-labs/a11y-gate` an unbeatable mobile powerhouse, we define th
 
 ## 5. Phased Consolidation Roadmap
 
-### Phase 1: Link & Bridge (Immediate)
-1. Add `"@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate"` to `packages/ui/package.json` and `packages/core/package.json`.
-2. Refactor `packages/ui/src/utils/a11yUtils.ts` to be a clean re-export and React Native bridge for `@intuitui-labs/a11y-gate`.
-3. Deprecate and remove redundant `culori` and `apca-w3` direct monorepo dependencies.
+### Phase 1: Link & Bridge — DONE (2026-10-02)
+
+1. ~~Add `"@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate"`~~
+   → Replaced with the published registry range `"^0.2.0"` in `packages/ui`,
+   `apps/edlove-web`, and `apps/gurudevi-marketingWeb`. **Do not reintroduce
+   `link:`** — it is not portable and breaks every contributor who does not have
+   a `C:\projects\packages\a11y-gate` checkout.
+2. Refactor `packages/ui/src/utils/a11yUtils.ts` to be a clean re-export and
+   React Native bridge for `@intuitui-labs/a11y-gate`. ✅ done.
+3. Deprecate and remove redundant `culori` and `apca-w3` direct monorepo
+   dependencies.
+
+> **Metro note.** `apps/gurudevi-mobile/metro.config.js` previously carried a
+> `candidateA11yPaths` / `extraNodeModules` override pointing at
+> `C:/projects/packages/a11y-gate`. That override is **removed**. Do not re-add it:
+> it was silently shadowing the real package with a local checkout, so Metro and
+> CI could resolve different files for the same import.
 
 ### Phase 2: Native Test Gate Integration
 1. Extend `apps/gurudevi-mobile/src/__tests__/contrastAudit.test.ts` to consume `evaluateApca` and `evaluateWcag` directly from `@intuitui-labs/a11y-gate`.

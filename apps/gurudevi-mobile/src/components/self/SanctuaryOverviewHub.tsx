@@ -1,6 +1,12 @@
-import { usePerspectiveSwitch } from '@repo/core/logic';
+import {
+  resolveWorkspaceAppearanceColor,
+  resolveWorkspaceGroupOrder,
+  usePerspectiveSwitch,
+} from '@repo/core/logic';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useStore } from '@repo/core/store/useStore';
+import type { WorkspaceAppearance } from '@repo/core/types';
 import { useResponsiveGrid, useScrollChromeCollapser } from '@repo/ui';
 import { ArrowRight, Bookmark, Compass, Pin, Sparkles } from '@repo/ui/icons';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
@@ -28,6 +34,15 @@ export function SanctuaryOverviewHub() {
   const { activePerspective } = usePerspectiveSwitch();
   const user = useStore((state) => state.user);
   const displayName = user?.display_name?.split(' ')[0] || 'Seeker';
+  const appearanceSync = useWorkspaceLayoutSync({
+    workspaceId: 'self',
+    userId: user?.id,
+    surfaces: [],
+  });
+  const appearance: WorkspaceAppearance = appearanceSync.layout?.appearance ?? {
+    preset: 'default',
+    motion: 'off',
+  };
   const [selectedCategory, setSelectedCategory] = useState<CatalogCategory>('all');
   const openTab = useActiveSubTabsStore((state) => state.openTab);
   const pinnedIds = useActiveSubTabsStore((state) => state.pinnedFeatureIdsByDomain.self || []);
@@ -62,6 +77,23 @@ export function SanctuaryOverviewHub() {
         .map(([id, label]) => ({ id: id as CatalogCategory, label })),
     ];
   }, [features]);
+  const orderedCategoryIds = useMemo(() => {
+    const defaults = categories
+      .map((category) => category.id)
+      .filter((id): id is Exclude<CatalogCategory, 'all'> => id !== 'all');
+    const stored = appearanceSync.layout?.groupOrder ?? [];
+    return resolveWorkspaceGroupOrder(stored, defaults);
+  }, [appearanceSync.layout?.groupOrder, categories]);
+  const orderedCategories = useMemo(
+    () => [
+      categories.find((category) => category.id === 'all')!,
+      ...orderedCategoryIds.flatMap((id) => {
+        const category = categories.find((candidate) => candidate.id === id);
+        return category ? [category] : [];
+      }),
+    ],
+    [categories, orderedCategoryIds],
+  );
   const visibleFeatures = useMemo(
     () =>
       selectedCategory === 'all'
@@ -92,6 +124,7 @@ export function SanctuaryOverviewHub() {
     <ScrollView
       onScroll={onScroll}
       scrollEventThrottle={16}
+      style={{ backgroundColor: mobileAppearanceColor(appearance.preset) }}
       contentContainerStyle={{
         paddingHorizontal: gutter,
         paddingTop: tokens.spacing.sm,
@@ -147,7 +180,7 @@ export function SanctuaryOverviewHub() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ gap: tokens.spacing.xs, paddingRight: gutter }}
         >
-          {categories.map((category) => {
+          {orderedCategories.map((category) => {
             const selected = selectedCategory === category.id;
             return (
               <Pressable
@@ -180,6 +213,10 @@ export function SanctuaryOverviewHub() {
       </FloorSection>
     </ScrollView>
   );
+}
+
+function mobileAppearanceColor(preset: WorkspaceAppearance['preset']): string {
+  return resolveWorkspaceAppearanceColor(preset);
 }
 
 function FloorSection({

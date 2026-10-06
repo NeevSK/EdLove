@@ -3,7 +3,7 @@
 # Fields: category (override heuristic), purpose, notes, sacred (pinned version string)
 
 metadata:
-  updated: 2026-08-09
+  updated: 2026-10-05
 
 global_tools:
   node:
@@ -50,24 +50,24 @@ global_tools:
 dependency_entries:
   react:
     category: native
-    purpose: "UI runtime — pinned 19.2.8 via workspace override"
-    notes: "Do not bump independently of React Native 0.86."
+    purpose: "UI runtime — pinned 19.3.0 via workspace override"
+    notes: "Do not bump independently of React Native 0.88."
   react-native:
     category: native
-    purpose: "Mobile platform runtime (~0.86.3, new arch)"
-    notes: "Sacred platform — upgrades gated on Expo SDK 57 compatibility."
+    purpose: "Mobile platform runtime (0.88.0-rc.3, new arch)"
+    notes: "Sacred platform — upgrades gated on Expo SDK 58 compatibility."
   expo:
     category: native
-    purpose: "Expo SDK 57 framework"
+    purpose: "Expo SDK 58 framework"
     notes: "Never `expo install --fix`; use expo-doctor for diagnostics."
   react-native-reanimated:
     category: animation
     purpose: "Animation engine (v4, new arch)"
-    sacred: "4.6.0"
+    sacred: "4.7.1"
   react-native-worklets:
     category: animation
-    purpose: "Worklet thread runtime required by Reanimated 4"
-    sacred: "0.12.2"
+    purpose: "Worklet thread runtime required by Reanimated 4.7"
+    sacred: "0.13.0"
   react-native-gesture-handler:
     category: ui-kit
     purpose: "Gesture system (v3, new arch)"
@@ -80,10 +80,14 @@ dependency_entries:
     category: native
     purpose: "Nitro module bridge (new arch native modules)"
     sacred: "0.37.1"
+  react-native-skia:
+    category: graphics
+    purpose: "GPU graphics engine for RN (new arch Graphite/WebGPU fork by William Candillon)"
+    sacred: "3.0.2"
   "@shopify/react-native-skia":
     category: graphics
-    purpose: "GPU graphics engine for RN (new arch)"
-    sacred: "2.11.2"
+    purpose: "RN Skia alias pointing to react-native-skia 3.0.2"
+    sacred: "3.0.2"
   typescript:
     category: tooling
     purpose: "Compiler — sacred 7.0.2 (latest stable)"
@@ -282,6 +286,12 @@ dependency_entries:
   nativewind:
     category: styling
     purpose: "Tailwind for React Native"
+  tailwindcss:
+    category: styling
+    purpose: "Tailwind CSS v4 engine"
+  "@tailwindcss/postcss":
+    category: styling
+    purpose: "Tailwind CSS v4 PostCSS plugin"
   react-native-css-interop:
     category: styling
     purpose: "CSS→RN bridge powering NativeWind"
@@ -417,6 +427,9 @@ dependency_entries:
   "@tailwindcss/vite":
     category: build
     purpose: "Tailwind v4 Vite plugin"
+  next:
+    category: build
+    purpose: "Next.js 16 web framework (App Router) for gurudevi-web"
   astro:
     category: build
     purpose: "Site framework (4 site apps)"
@@ -450,9 +463,15 @@ dependency_entries:
   "@testing-library/react":
     category: testing
     purpose: "React component testing"
+  "@testing-library/user-event":
+    category: testing
+    purpose: "Simulating user interactions in component tests"
   "@testing-library/jest-dom":
     category: testing
     purpose: "jest-dom matchers"
+  msw:
+    category: testing
+    purpose: "Mock Service Worker for API mocking in web tests"
   "@playwright/test":
     category: testing
     purpose: "E2E browser tests"
@@ -513,3 +532,15 @@ dependency_entries:
   "@types/vscode":
     category: types
     purpose: "VS Code extension types (rn-terrain-vscode)"
+  "@intuitui-labs/a11y-gate":
+    category: testing
+    purpose: "Accessibility gate assertions for components and web pages"
+  "@intuitui-labs/editorial":
+    category: utility
+    purpose: "Editorial domain contracts and distribution ledger"
+  "@intuitui-labs/form-builder-engine":
+    category: utility
+    purpose: "Headless, offline-first form engine (npm published)"
+  "@intuitui-labs/lk-edu-geo":
+    category: maps
+    purpose: "Type-safe geographical and educational jurisdictions for Sri Lanka"

@@ -41,7 +41,11 @@ export default async function SelfPage() {
 
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
-      <SelfJournalFloor displayName={entry.displayName} />
+      <SelfJournalFloor
+        accountId={entry.authSubjectId}
+        displayName={entry.displayName}
+        key={entry.authSubjectId}
+      />
     </SanctuaryShell>
   );
 }

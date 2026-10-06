@@ -1,6 +1,13 @@
 import { useAccountDeletion, useAccountLifecycle, useTracking } from '@repo/core/hooks';
-import { type AccountLifecycleCommand, usePermissions, useStore } from '@repo/core/logic';
+import {
+  type AccountLifecycleCommand,
+  resolveWorkspaceAppearanceColor,
+  usePermissions,
+  useStore,
+} from '@repo/core/logic';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
 import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
+import NegentropyHubModal from '@repo/profile/components/NegentropyHubModal';
 import ProfileListItem from '@repo/profile/components/ProfileListItem';
 // Local Package Imports
 import ProfileSkeleton from '@repo/profile/components/ProfileSkeleton';
@@ -15,9 +22,9 @@ import {
   toFullProfileParams,
   useProfileNavigation,
 } from '@repo/profile/navigation';
-import type { UserProfile } from '@repo/profile/types';
 import { toProfileCapacity } from '@repo/profile/screens/profileCapacity';
-import NegentropyHubModal from '@repo/profile/components/NegentropyHubModal';
+import type { UserProfile } from '@repo/profile/types';
+import { useProfileWorkspaceSurfaces } from '@repo/profile/workspace/useProfileWorkspaceSurfaces';
 import DeleteAccountModal from '@repo/ui/components/DeleteAccountModal';
 import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -25,8 +32,6 @@ import IdentityCard from '@repo/ui/components/IdentityCard';
 import LogoutModal from '@repo/ui/components/LogoutModal';
 import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
-import { useProfileWorkspaceSurfaces } from '@repo/profile/workspace/useProfileWorkspaceSurfaces';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
@@ -193,7 +198,10 @@ const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
     try {
       await Linking.openURL(url);
     } catch {
-      showToast(t('profile.supportOpenFailed', 'Could not open that support destination.'), 'error');
+      showToast(
+        t('profile.supportOpenFailed', 'Could not open that support destination.'),
+        'error',
+      );
     }
   };
 
@@ -342,7 +350,7 @@ export const ProfileScreen = () => {
   const { profile, error, loading, refreshing, refresh, logout } = useProfile();
   const user = useStore((state) => state.user);
   const profileSurfaces = useProfileWorkspaceSurfaces();
-  const { surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
+  const { layout: profileLayout, surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
     workspaceId: 'profile',
     userId: user?.id ?? null,
     surfaces: profileSurfaces,
@@ -425,7 +433,10 @@ export const ProfileScreen = () => {
       showToast(deletionUnavailableReason, 'info');
       return;
     }
-    if (deletionRequest?.status === 'pending_verification' || deletionRequest?.status === 'scheduled') {
+    if (
+      deletionRequest?.status === 'pending_verification' ||
+      deletionRequest?.status === 'scheduled'
+    ) {
       showToast(
         deletionRequest.status === 'scheduled'
           ? 'Your deletion request is already scheduled.'
@@ -518,7 +529,11 @@ export const ProfileScreen = () => {
   }
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <ScreenWrapper
+      backgroundColor={resolveWorkspaceAppearanceColor(profileLayout?.appearance?.preset)}
+      scroll={false}
+      noTopInset={true}
+    >
       <GlobalHeader
         title={t('profile.title')}
         subtitle={t('profile.subtitle')}

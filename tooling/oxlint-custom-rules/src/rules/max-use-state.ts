@@ -31,71 +31,42 @@ const rule = {
     const options = context.options[0] || {};
     const max = options.max ?? 3;
 
-    let useStateCount = 0;
-    let inComponent = false;
+    interface FunctionScope {
+      isComp: boolean;
+      useStateCount: number;
+    }
+    const stack: FunctionScope[] = [];
+
+    function handleEnter(node: any) {
+      stack.push({
+        isComp: isComponent(node),
+        useStateCount: 0,
+      });
+    }
+
+    function handleExit(node: any) {
+      const scope = stack.pop();
+      if (scope?.isComp && scope.useStateCount > max) {
+        context.report({
+          node,
+          messageId: 'maxExceeded',
+          data: { count: scope.useStateCount, max },
+        });
+      }
+    }
 
     /** @type {RuleListener} */
     const listener = {
-      FunctionDeclaration(node) {
-        if (isComponent(node)) {
-          inComponent = true;
-          useStateCount = 0;
-        }
-      },
-      FunctionExpression(node) {
-        if (isComponent(node)) {
-          inComponent = true;
-          useStateCount = 0;
-        }
-      },
-      ArrowFunctionExpression(node) {
-        if (isComponent(node)) {
-          inComponent = true;
-          useStateCount = 0;
-        }
-      },
-      'FunctionDeclaration:exit'(node) {
-        if (inComponent && isComponent(node)) {
-          if (useStateCount > max) {
-            context.report({
-              node,
-              messageId: 'maxExceeded',
-              data: { count: useStateCount, max },
-            });
-          }
-          inComponent = false;
-          useStateCount = 0;
-        }
-      },
-      'FunctionExpression:exit'(node) {
-        if (inComponent && isComponent(node)) {
-          if (useStateCount > max) {
-            context.report({
-              node,
-              messageId: 'maxExceeded',
-              data: { count: useStateCount, max },
-            });
-          }
-          inComponent = false;
-          useStateCount = 0;
-        }
-      },
-      'ArrowFunctionExpression:exit'(node) {
-        if (inComponent && isComponent(node)) {
-          if (useStateCount > max) {
-            context.report({
-              node,
-              messageId: 'maxExceeded',
-              data: { count: useStateCount, max },
-            });
-          }
-          inComponent = false;
-          useStateCount = 0;
-        }
-      },
-      CallExpression(node) {
-        if (inComponent && node.callee.type === 'Identifier' && node.callee.name === 'useState') {
-          useStateCount++;
+      FunctionDeclaration: handleEnter,
+      FunctionExpression: handleEnter,
+      ArrowFunctionExpression: handleEnter,
+      'FunctionDeclaration:exit': handleExit,
+      'FunctionExpression:exit': handleExit,
+      'ArrowFunctionExpression:exit': handleExit,
+      CallExpression(node: any) {
+        const current = stack[stack.length - 1];
+        if (current && current.isComp && node.callee.type === 'Identifier' && node.callee.name === 'useState') {
+          current.useStateCount++;
         }
       },
     };

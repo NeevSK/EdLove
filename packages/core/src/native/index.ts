@@ -22,6 +22,7 @@ export {
 export type { GuestLeaseStatus } from '@repo/core/native/guestLease';
 export {
   clearLocalGuestIdentity,
+  getGuestClaimIdentity,
   getLocalGuestIdentity,
   updateLocalGuestIdentity,
 } from '@repo/core/native/guestIdentity';

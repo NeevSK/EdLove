@@ -7,7 +7,7 @@
 import { useFeedbackOptional } from '@repo/ui/context';
 import { Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Blur, Canvas, Circle } from '@shopify/react-native-skia';
+import { Blur, Canvas, Circle } from 'react-native-skia';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';

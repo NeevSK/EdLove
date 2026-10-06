@@ -19,10 +19,10 @@ jobs:
       DOPPLER_CONFIG: dev
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Install Doppler CLI
-        uses: dopplerhq/cli-action@v3
+        uses: dopplerhq/cli-action@014df23b1329b615816a38eb5f473bb9000700b1
 
       - name: Verify all CI environment contracts without printing values
         run: node scripts/verify-doppler-config.mjs --scope ci --all-ci --require-token

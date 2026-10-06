@@ -14,7 +14,7 @@ const storageMocks = vi.hoisted(() => ({
 const payload = { action: 'join_class' as const, classroom_id: 'class-1', v: 1 as const };
 
 vi.mock('@react-native-async-storage/async-storage', () => ({ default: storageMocks }));
-const classifyRouteIntent = vi.hoisted(() => vi.fn(() => ({ kind: 'qr' as const, payload })));
+const classifyRouteIntent = vi.hoisted(() => vi.fn<any>(() => ({ kind: 'qr' as const, payload })));
 
 vi.mock('@repo/core/logic', () => ({ classifyRouteIntent }));
 vi.mock('react-native', () => ({

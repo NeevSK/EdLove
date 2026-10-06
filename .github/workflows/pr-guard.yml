@@ -2,32 +2,41 @@ name: Monorepo Clockwork Guard 🦅
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main-dev ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main-dev ]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   guard:
     name: Lint & Typecheck
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node-version: ['22']
+      fail-fast: false
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.1.0
+          version: 12.4.2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install Doppler CLI
-        uses: dopplerhq/cli-action@v3
+        uses: dopplerhq/cli-action@014df23b1329b615816a38eb5f473bb9000700b1
 
       - name: Verify runner toolchain
         run: node scripts/check-toolchain.mjs
@@ -35,18 +44,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --fetch-timeout 100000
 
+      - name: Verify evidence claims for changed test commands
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: pnpm run check:test-evidence -- --changed
+
+      - name: Verify test evidence claims (push)
+        if: github.event_name == 'push'
+        run: pnpm run check:test-evidence
+
       - name: Check Icon Bridge Contract
         run: pnpm check:icons
 
       - name: Run Linter
         run: pnpm lint
 
-      - name: Anti-slop scan (informational)
-        if: always()
-        continue-on-error: true
-        run: |
-          pnpm run audit:aislop || true
-          pnpm run audit:fallow || true
+      - name: Anti-slop gate (required)
+        run: pnpm run check:anti-slop
 
       - name: Observability ownership boundaries
         run: pnpm run check:observability-boundaries
@@ -65,3 +80,22 @@ jobs:
         run: |
           echo "Checking OTA safety..."
           pnpm run check:ota-safety || echo "⚠️ OTA fingerprint drift detected — binary build required before OTA"
+
+      - name: Security scan (Snyk + Semgrep)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          echo "🔍 Running Snyk vulnerability scan..."
+          pnpm dlx snyk test --all-projects --severity-threshold=high || true
+          echo "🔍 Running Semgrep static analysis..."
+          pnpm dlx semgrep scan --config auto --sarif --output semgrep.sarif || true
+          if [ -f semgrep.sarif ]; then
+            echo "Uploading Semgrep SARIF..."
+            gh api --method POST /repos/${{ github.repository }}/code-scanning/sarifs \
+              -H "Accept: application/vnd.github+json" \
+              -F commit_sha=${{ github.sha }} \
+              -F ref=${{ github.ref }} \
+              -F sarif=@semgrep.sarif || true
+          fi

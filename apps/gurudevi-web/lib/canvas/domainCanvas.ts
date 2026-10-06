@@ -1,5 +1,6 @@
 import {
   normalizeWorkspaceLayout,
+  resolveWorkspaceGroupOrder,
   resolveWorkspaceSurfaceLayout,
 } from '@repo/core/logic/workspace/canvas';
 import type {
@@ -64,14 +65,16 @@ export function resolveDomainCanvasState<
   semantics: DomainCanvasSemantics<TSurfaceId, TCapabilityKey, TGroupId>;
 }): DomainCanvasState<TSurfaceId, TCapabilityKey, TGroupId> {
   const normalizedLayout = normalizeWorkspaceLayout(layout, definitions);
+  const groupOrder = resolveWorkspaceGroupOrder(normalizedLayout.groupOrder, semantics.groupOrder);
+  const domainLayout = { ...normalizedLayout, groupOrder };
   const surfaces = resolveWorkspaceSurfaceLayout(definitions, normalizedLayout);
   const includedSurfaces = semantics.includeHidden
     ? surfaces
     : surfaces.filter((surface) => !surface.hidden);
-  const groups = createDomainCanvasGroups(includedSurfaces, semantics);
+  const groups = createDomainCanvasGroups(includedSurfaces, { ...semantics, groupOrder });
 
   return {
-    layout: normalizedLayout,
+    layout: domainLayout,
     surfaces,
     groups,
     visibleSurfaceCount: surfaces.filter((surface) => !surface.hidden).length,

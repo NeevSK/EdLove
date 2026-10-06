@@ -2,6 +2,7 @@
 title: "Guest Local-First Lease and Cloud-Save Boundary"
 status: "accepted"
 created: 2026-09-10
+updated: 2026-10-04
 decision_owner: "Gurudevi mobile architecture"
 tags: [adr, guest, local-first, retention, identity]
 ---
@@ -78,9 +79,31 @@ Small independently tested changes; each function under the workspace
 complexity threshold. Each migrated feature must add a guest-local and
 authenticated-cloud scenario test.
 
-## Current gap
+## Implementation checkpoint (2026-10-04)
 
-The current global guest banner is intrusive, guest persistence has no shared
-fifteen-day lease, and at least the Self canvas schedules a Supabase
-`user_preferences` upsert for an anonymous guest. That is incompatible with
-this decision and must be corrected before calling guest mode complete.
+The original gap statement below records the September 10 baseline; it is not a
+current-state claim. The code now contains a canonical fifteen-day lease in
+`packages/core/src/native/guestLease.ts`, lease cleanup/reminders in
+`apps/gurudevi-mobile/src/entry/GuestLeaseBoundary.tsx` and
+`GuestPersistenceNotice.tsx`, and anonymous-session guards around PowerSync.
+`GuestDataManager` provides device-local feature stores. Those foundations
+support the accepted mobile-only Guest model.
+
+Guest is the mobile visitor path and is named **Continue as Guest**. “Explore”
+is reserved for public web `/explore/*`; web has no Guest mode. Safe Try for an
+already authenticated mobile account is a separate per-feature capability and
+does not use the Guest lease or identity.
+
+The feature-record transfer remains incomplete as a general guarantee. The
+legacy `GuestDataSync` covers a limited record list; the claim operation and
+feature-data migration must be treated as separate steps. The canonical ordered
+implementation plan is
+[`safe-exploration-and-reversible-work-model.md`](../architecture/safe-exploration-and-reversible-work-model.md).
+
+### Historical gap at decision time
+
+At decision time, the global guest banner was intrusive, guest persistence had
+no shared fifteen-day lease, and the Self canvas scheduled a Supabase
+`user_preferences` upsert for an anonymous guest. Those were implementation
+defects against this decision and are retained here as historical context, not
+as a current audit result.

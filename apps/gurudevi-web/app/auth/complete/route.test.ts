@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   exchangeCodeForSession: vi.fn(),
@@ -23,17 +23,19 @@ describe('GET /auth/complete', () => {
 
   it('exchanges only a code callback on the server and redirects without caching', async () => {
     const response = await GET(
-      new NextRequest('https://gurudevi.app/auth/complete?code=one-time-code&next=%2Fself'),
+      new NextRequest(
+        'https://sanctuary.gurudevi.app/auth/complete?code=one-time-code&next=%2Fself',
+      ),
     );
 
     expect(mocks.exchangeCodeForSession).toHaveBeenCalledWith('one-time-code');
-    expect(response.headers.get('location')).toBe('https://gurudevi.app/self');
+    expect(response.headers.get('location')).toBe('https://sanctuary.gurudevi.app/self');
     expect(response.headers.get('cache-control')).toBe('private, no-store');
   });
 
   it('rejects malformed callbacks without calling Supabase', async () => {
     const response = await GET(
-      new NextRequest('https://gurudevi.app/auth/complete?access_token=exposed-token'),
+      new NextRequest('https://sanctuary.gurudevi.app/auth/complete?access_token=exposed-token'),
     );
 
     expect(mocks.exchangeCodeForSession).not.toHaveBeenCalled();
@@ -44,7 +46,9 @@ describe('GET /auth/complete', () => {
     mocks.exchangeCodeForSession.mockResolvedValue({ error: new Error('expired') });
 
     const response = await GET(
-      new NextRequest('https://gurudevi.app/auth/complete?code=expired-code&returnTo=%2Fworkspace'),
+      new NextRequest(
+        'https://sanctuary.gurudevi.app/auth/complete?code=expired-code&returnTo=%2Fworkspace',
+      ),
     );
 
     expect(response.headers.get('location')).toContain('/sign-in?returnTo=%2Fworkspace&auth=retry');

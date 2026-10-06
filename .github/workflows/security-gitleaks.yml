@@ -1,0 +1,62 @@
+name: Security — Gitleaks Secret Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main-dev]
+  schedule:
+    - cron: '0 3 * * 0'  # Weekly Sunday 03:00 UTC — full history scan
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  gitleaks:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0  # Required for full history scan on schedule
+
+      - name: Setup Gitleaks
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7
+        with:
+          config: .gitleaks.toml
+          args: '--verbose --redact --no-banner'
+
+      - name: Upload SARIF results
+        if: always()
+        uses: github/codeql-action@1190a975f95ce23525efb6a3fc21ea29567c1b52
+        with:
+          sarif_file: gitleaks.sarif
+          category: gitleaks
+
+      - name: Comment PR with findings
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const sarifPath = path.join(process.env.GITHUB_WORKSPACE, 'gitleaks.sarif');
+            if (fs.existsSync(sarifPath)) {
+              const sarif = JSON.parse(fs.readFileSync(sarifPath, 'utf8'));
+              const findings = sarif.runs?.[0]?.results?.length || 0;
+              if (findings > 0) {
+                const body = `## 🔐 Gitleaks found ${findings} potential secret(s)\n\n` +
+                  'Please review the **Security** tab for details. ' +
+                  'If these are false positives, add them to `.gitleaks.toml` allowlist.\n\n' +
+                  '*This comment will update automatically on subsequent pushes.*';
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body
+                });
+              }
+            }

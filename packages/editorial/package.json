@@ -25,7 +25,7 @@
     "lint:eslint": "eslint src"
   },
   "dependencies": {
-    "@intuitui-labs/editorial": "link:C:/projects/packages/editorial"
+    "@intuitui-labs/editorial": "^0.1.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.13",

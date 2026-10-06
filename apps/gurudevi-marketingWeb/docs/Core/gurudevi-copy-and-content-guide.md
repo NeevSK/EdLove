@@ -12,7 +12,7 @@ tags: [gurudevi, copy, content, sri-lanka, education, localization]
 
 ## Positioning
 
-Gurudevi is an **education ecology support system** and a **sanctuary for education in Sri Lanka**. It is not only an LMS and not only a teacher wellbeing app. It supports the relationships between people, roles, workspaces, resources, and communities that make education possible.
+Gurudevi is an **education ecology support system** and a **sanctuary for education in Sri Lanka**. Use these as complementary descriptions: the first names what the system does; the second expresses the care and safety it should offer. Do not force them into the possessive tagline “A Sanctuary for Education’s Ecology.” It is not only an LMS and not only a teacher wellbeing app. It supports the relationships between people, roles, workspaces, resources, and communities that make education possible.
 
 Teachers remain the first-class design beneficiary because they carry a disproportionate operational and emotional load. The system is still polycentric: students, school leaders, administrators, and communities each have legitimate centers of work and agency.
 
@@ -44,7 +44,7 @@ Use “teaning” only after explaining it as the relational space where teachin
 
 ## Localization
 
-Prepare English copy as translation-ready keys for Sinhala and Tamil. Avoid placing important meaning only inside images. Test mixed-script headings, line height, button widths, and long translated labels on low-width devices.
+Keep **Gurudevi** as the product name in every language; local scripts may show its pronunciation alongside the Latin spelling. Keep established workspace, feature, and operational settings names stable unless a separate localization decision is made. Localize public explanations and SEO titles/descriptions. The current public taglines are the Sinhala phrase supplied by the product owner (“සමෝධානික අධ්‍යාපනයේ සුරක්ෂිත කෙම්බිම”) and Tamil phrase “கல்வியின் உயிரோட்டமான அமைதிச் சோலை.” Treat the translated explanatory copy as a draft for fluent Sri Lankan language review. Avoid placing important meaning only inside images. Test mixed-script headings, line height, button widths, and long translated labels on low-width devices.
 
 ## Initial page responsibilities
 

@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { resolveFdCommand } from './lib/fd-resolver.mjs';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 
@@ -12,26 +14,21 @@ const absoluteTargetDir = path.isAbsolute(targetDir) ? targetDir : path.join(roo
 function getFiles(dir) {
   // Try to use fd first
   try {
-    let fdCmd = 'fd';
-    try {
-      execSync('fd --version', { stdio: 'ignore' });
-    } catch (_e) {
-      // Check common WinGet portable path as extreme fallback
-      const wingetPath =
-        'C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe';
-      if (fs.existsSync(wingetPath)) {
-        fdCmd = `"${wingetPath}"`;
-      } else {
-        throw new Error('fd not found');
-      }
-    }
+    const fdCmd = resolveFdCommand();
+    if (!fdCmd) throw new Error('fd not available');
 
     const cmd = `${fdCmd} -t f -e ts -e tsx -e js -e jsx -E node_modules -E dist -E .turbo -E __tests__ -E generated . "${dir}"`;
     const output = execSync(cmd, { encoding: 'utf-8' });
     return output
       .split('\n')
-      .filter((f) => f.trim())
-      .map((f) => path.join(dir, f)); // Map to absolute if fd returned relative
+      .map((f) => f.trim())
+      .filter(Boolean)
+      .map((f) => {
+        if (path.isAbsolute(f)) return f;
+        const fromRoot = path.resolve(rootDir, f);
+        if (fs.existsSync(fromRoot)) return fromRoot;
+        return path.resolve(dir, f);
+      });
   } catch (_e) {
     // Fallback: Native Node.js recursive walker
     console.log('>>> fd not found, falling back to native file walker...');
@@ -60,6 +57,10 @@ function getFiles(dir) {
 
 function analyzeFile(filePath) {
   try {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`[report-cognitive-load] File not found: ${filePath}`);
+      return null;
+    }
     const content = fs.readFileSync(filePath, 'utf8');
     const lines = content.split('\n');
 
@@ -88,7 +89,8 @@ function analyzeFile(filePath) {
       maxDepth,
       score: Math.round(score),
     };
-  } catch (_e) {
+  } catch (err) {
+    console.warn(`[report-cognitive-load] Error reading ${filePath}: ${err.message}`);
     return null;
   }
 }

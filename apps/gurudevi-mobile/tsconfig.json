@@ -85,14 +85,8 @@
       "@repo/database/*": [
         "../../packages/database/src/*"
       ],
-      "@intuitui-labs/form-builder-engine/*": [
-        "../../packages/form-builder-engine/src/*"
-      ],
       "@repo/graphics/*": [
         "../../packages/graphics/src/*"
-      ],
-      "@intuitui-labs/lk-edu-geo/*": [
-        "../../packages/lk-edu-geo/src/*"
       ],
       "@repo/payments/*": [
         "../../packages/payments/src/*"
@@ -125,6 +119,7 @@
     "types": [
       "react",
       "react-native",
+      "nativewind/types",
       "jest",
       "vitest/globals",
       "@tanstack/react-query",

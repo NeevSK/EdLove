@@ -14,6 +14,8 @@ import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { resolveWslWorkspace, toWslPath, repoRoot } from './lib/wsl-workspace.mjs';
+
 const START_TIME = Date.now();
 const getElapsed = () => {
   const sec = Math.floor((Date.now() - START_TIME) / 1000);
@@ -32,9 +34,14 @@ const args = process.argv.slice(2);
 const isRelease = args.some((arg) => arg.includes('release'));
 const buildType = isRelease ? 'release' : 'debug';
 const gradleTask = isRelease ? ':app:assembleRelease' : ':app:assembleDebug';
-const targetPkg = isRelease ? 'org.edlove.gurudevi' : 'org.edlove.gurudevi.dev';
+const basePackage = 'app.gurudevi.sanctuary';
+const targetPkg = isRelease ? basePackage : `${basePackage}.dev`;
 const appName = isRelease ? 'Gurudevi' : 'Gurudevi (Dev)';
 const abi = args.find((arg) => arg.startsWith('--abi='))?.split('=')[1] || 'arm64-v8a';
+
+// Linux-ext4 workspace inside WSL2; overridable per contributor via
+// POLYMATH_WSL_DIR. Interpolation happens inside bash so "$HOME" expands there.
+const WSL_WORKSPACE = resolveWslWorkspace();
 
 console.log(`\x1b[1;35m`);
 console.log(`========================================================================`);
@@ -53,10 +60,12 @@ logStep('Stage 1: Pre-flight toolchain validation & lock hygiene in WSL2');
 
 const preflightScript = `
 set -e
-if ! command -v wsl >/dev/null 2>&1 && [ ! -d "/home/nsk" ]; then
-  echo "ERROR: WSL environment not detected" >&2
+if [ -z "\${HOME:-}" ] || [ ! -d "\$HOME" ]; then
+  echo "ERROR: WSL environment not detected (no HOME inside the distro)" >&2
   exit 1
 fi
+
+WSL_WORKSPACE="${WSL_WORKSPACE}"
 
 ANDROID_SDK="\${ANDROID_SDK_ROOT:-\$HOME/Android/Sdk}"
 if [ ! -d "\$ANDROID_SDK" ]; then
@@ -64,12 +73,15 @@ if [ ! -d "\$ANDROID_SDK" ]; then
   exit 1
 fi
 
-# Pre-flight hygiene: clear stale Kotlin daemon sockets and Gradle cache locks
+# Pre-flight hygiene: clear stale Kotlin daemon sockets, Gradle binary tmp, and Gradle cache locks
 rm -rf "$HOME/.local/share/kotlin/daemon/"* "/tmp/kotlin"* 2>/dev/null || true
+rm -rf "$HOME/.gradle/.tmp" 2>/dev/null || true
 rm -f "$HOME/.gradle/caches/modules-2/modules-2.lock" 2>/dev/null || true
+rm -rf "$WSL_WORKSPACE/apps/gurudevi-mobile/android/.gradle" 2>/dev/null || true
 
 # Ensure target workspace exists
-mkdir -p /home/nsk/projects/polymath-platform
+mkdir -p "\$WSL_WORKSPACE"
+echo "  workspace: \$WSL_WORKSPACE"
 `;
 
 const preflightRes = spawnSync('wsl', ['-e', 'bash', '-c', preflightScript], { stdio: 'inherit' });
@@ -92,12 +104,38 @@ if (syncRes.status !== 0) {
 }
 
 // -----------------------------------------------------------------------------
-// STAGE 3: Multi-Tier Caching & Environment Pre-Warm
+// STAGE 3: Managed native configuration regeneration
 // -----------------------------------------------------------------------------
-logStep('Stage 3: Initializing CCACHE, Gradle Build Cache & JVM limits');
+logStep('Stage 3: Regenerating managed Android configuration in WSL2');
+
+const prebuildScript = `
+set -e
+cd "${WSL_WORKSPACE}"
+pnpm --filter gurudevi-mobile exec expo prebuild --no-install --platform android
+
+# Ensure local.properties points to Linux SDK and NDK
+ANDROID_SDK="\${ANDROID_SDK_ROOT:-\$HOME/Android/Sdk}"
+NDK_DIR="\$ANDROID_SDK/ndk/27.1.12297006"
+echo "sdk.dir=\$ANDROID_SDK" > "${WSL_WORKSPACE}/apps/gurudevi-mobile/android/local.properties"
+echo "ndk.dir=\$NDK_DIR" >> "${WSL_WORKSPACE}/apps/gurudevi-mobile/android/local.properties"
+`;
+
+const prebuildRes = spawnSync('wsl', ['-e', 'bash', '-c', prebuildScript], { stdio: 'inherit' });
+if (prebuildRes.status !== 0) {
+  logError('❌ Managed Android configuration regeneration failed.');
+  process.exit(1);
+}
+
+// -----------------------------------------------------------------------------
+// STAGE 4: Multi-Tier Caching & Environment Pre-Warm
+// -----------------------------------------------------------------------------
+logStep('Stage 4: Initializing CCACHE, Gradle Build Cache & JVM limits');
 
 const buildScript = `
 set -e
+
+WSL_WORKSPACE="${WSL_WORKSPACE}"
+cd "\$WSL_WORKSPACE"
 
 # Toolchain paths
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
@@ -123,7 +161,7 @@ if command -v ccache >/dev/null 2>&1; then
   export CCACHE_SLOPPINESS="include_file_ctime,include_file_mtime,time_macros"
 fi
 
-cd /home/nsk/projects/polymath-platform/apps/gurudevi-mobile/android
+cd "\$WSL_WORKSPACE/apps/gurudevi-mobile/android"
 
 # Check Doppler authentication for Release builds
 RUN_CMD="./gradlew ${gradleTask} --build-cache --no-daemon --max-workers=2 -PreactNativeArchitectures=${abi} --console=plain"
@@ -144,9 +182,9 @@ fi
 `;
 
 // -----------------------------------------------------------------------------
-// STAGE 4: Build Execution
+// STAGE 5: Build Execution
 // -----------------------------------------------------------------------------
-logStep(`Stage 4: Executing Gradle ${gradleTask}`);
+logStep(`Stage 5: Executing Gradle ${gradleTask}`);
 console.log(`  • CCACHE: Enabled (10GB Pool)`);
 console.log(`  • Gradle Cache: Enabled (--build-cache)`);
 console.log(`  • Architectures: ${abi}\n`);
@@ -159,14 +197,15 @@ if (buildRes.status !== 0) {
 }
 
 // -----------------------------------------------------------------------------
-// STAGE 5: Post-Build Telemetry, Diagnostics & Deployment Guide
+// STAGE 6: Post-Build Telemetry, Diagnostics & Deployment Guide
 // -----------------------------------------------------------------------------
-logStep('Stage 5: Post-build diagnostics and artifact verification');
+logStep('Stage 6: Post-build diagnostics and artifact verification');
 
 const apkRelPath = `apps/gurudevi-mobile/android/app/build/outputs/apk/${buildType}/app-${buildType}.apk`;
-const wslApkPath = `/home/nsk/projects/polymath-platform/${apkRelPath}`;
-
-const apkStat = spawnSync('wsl', ['-e', 'bash', '-c', `ls -lh ${wslApkPath}`], { encoding: 'utf-8' });
+const wslApkPath = `\${WSL_WORKSPACE}/${apkRelPath}`;
+const apkStat = spawnSync('wsl', ['-e', 'bash', '-c', `ls -lh ${wslApkPath}`], {
+  encoding: 'utf-8',
+});
 
 console.log(`\n\x1b[1;32m========================================================================`);
 console.log(`  ✅ ${buildType.toUpperCase()} BUILD COMPLETED SUCCESSFULLY! ${getElapsed()}`);
@@ -175,6 +214,16 @@ console.log(`===================================================================
 if (apkStat.stdout && apkStat.stdout.trim()) {
   console.log(`  📦 APK Artifact:  ${apkRelPath}`);
   console.log(`  📊 Details:       ${apkStat.stdout.trim()}`);
+
+  try {
+    const winApkPath = path.resolve(repoRoot, apkRelPath);
+    fs.mkdirSync(path.dirname(winApkPath), { recursive: true });
+    const winWslPath = toWslPath(winApkPath);
+    spawnSync('wsl', ['-e', 'bash', '-c', `cp "${wslApkPath}" "${winWslPath}" 2>/dev/null || true`]);
+    console.log(`  🔄 Synced to:     ${winApkPath}`);
+  } catch (err) {
+    // Non-fatal if Windows sync fails
+  }
 }
 
 // CCACHE Statistics
@@ -190,7 +239,7 @@ console.log(`===================================================================
 console.log(`  1. Install APK to connected device:`);
 console.log(`     \x1b[33madb install -r ${apkRelPath}\x1b[0m`);
 console.log(`  2. Launch Application:`);
-console.log(`     \x1b[33madb shell am start -n ${targetPkg}/org.edlove.gurudevi.MainActivity\x1b[0m`);
+console.log(`     \x1b[33madb shell am start -n ${targetPkg}/${basePackage}.MainActivity\x1b[0m`);
 if (!isRelease) {
   console.log(`  3. Reverse Metro port for development:`);
   console.log(`     \x1b[33madb reverse tcp:8081 tcp:8081\x1b[0m`);

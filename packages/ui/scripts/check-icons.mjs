@@ -18,14 +18,15 @@ while ((match = regex.exec(iconsFileContent)) !== null) {
   iconSubpaths.push(match[1]);
 }
 
+const lucideEntryPath = fileURLToPath(import.meta.resolve('lucide-react-native'));
+const lucideIconsDir = path.join(path.dirname(lucideEntryPath), 'icons');
+
 console.log(`Validating ${iconSubpaths.length} icon subpaths from icons.native.ts...`);
 
 let missingCount = 0;
 for (const subpath of iconSubpaths) {
-  try {
-    // Attempt node resolution
-    import.meta.resolve(subpath);
-  } catch (err) {
+  const iconName = subpath.slice('lucide-react-native/icons/'.length);
+  if (!fs.existsSync(path.join(lucideIconsDir, `${iconName}.mjs`))) {
     console.error(`❌ Icon subpath failed to resolve: "${subpath}"`);
     missingCount++;
   }

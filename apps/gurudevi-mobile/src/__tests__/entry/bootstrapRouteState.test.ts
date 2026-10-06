@@ -8,6 +8,12 @@ const authenticatedSession = {
   user: { id: 'account-a' },
 } as BootstrapRouteState['session'];
 
+const anonymousSession = {
+  access_token: 'anonymous-access-token',
+  expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
+  user: { id: 'guest-a', is_anonymous: true },
+} as BootstrapRouteState['session'];
+
 function routeState(overrides: Partial<BootstrapRouteState> = {}): BootstrapRouteState {
   return {
     entitlement: {
@@ -155,6 +161,35 @@ describe('bootstrap route-state adapter', () => {
       routeState({
         hasActiveAccessToken: false,
         pathname: '/self',
+      }),
+    );
+
+    expect(target).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+  });
+
+  it('admits a completed anonymous guest only from its local guest route state', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({
+        hasLiveCapacity: false,
+        hasProfileName: false,
+        isLocalGuestReady: true,
+        onboardingCompleted: true,
+        pathname: '/self',
+        session: anonymousSession,
+      }),
+    );
+
+    expect(target).toMatchObject({ decision: 'app', redirectTo: null });
+  });
+
+  it('keeps an anonymous guest without completed local admission out of protected routes', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({
+        hasLiveCapacity: false,
+        hasProfileName: false,
+        onboardingCompleted: false,
+        pathname: '/self',
+        session: anonymousSession,
       }),
     );
 

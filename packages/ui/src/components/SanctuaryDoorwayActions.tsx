@@ -36,9 +36,8 @@ export const SanctuaryDoorwayActions = memo(
             void onExploreGuest();
           }}
           disabled={isConnecting}
-          accessibilityRole="button"
           accessibilityLabel={resolvedGuestLabel}
-          accessibilityState={{ busy: isConnecting, disabled: isConnecting }}
+          accessibilityHint="Creates or resumes your guest journey"
         >
           <Box className="h-[56px] w-full rounded-2xl bg-phase-accent justify-center items-center shadow-md">
             {isConnecting ? (
@@ -54,8 +53,8 @@ export const SanctuaryDoorwayActions = memo(
         {/* Secondary Action Button: 50dp height, clear contrast, first-class account doorway */}
         <PressableScale
           onPress={onSignIn}
-          accessibilityRole="button"
           accessibilityLabel={resolvedSignInLabel}
+          accessibilityHint="Opens account sign-in"
         >
           <Box className="h-[50px] w-full rounded-2xl border border-phase-border bg-phase-surface/60 justify-center items-center">
             <Text className="text-phase-text-primary font-semibold text-base">

@@ -28,9 +28,6 @@
       "path": "./packages/self"
     },
     {
-      "path": "./packages/form-builder-engine"
-    },
-    {
       "path": "./packages/form-builder"
     }
   ],
@@ -48,7 +45,6 @@
       "@repo/schema": ["./packages/schema/src"],
       "@repo/database": ["./packages/database/src"],
       "@repo/self": ["./packages/self/src"],
-      "@intuitui-labs/form-builder-engine": ["./packages/form-builder-engine/src"],
       "@repo/form-builder": ["./packages/form-builder/src"],
       "@repo/policies": ["./packages/policies/src"],
       "@repo/sanctuary-api": ["./apps/sanctuary-api/src/index.ts"],
@@ -67,10 +63,8 @@
       "@repo/core/*": ["./packages/core/src/*"],
       "@repo/database/*": ["./packages/database/src/*"],
       "@repo/form-builder/*": ["./packages/form-builder/src/*"],
-      "@intuitui-labs/form-builder-engine/*": ["./packages/form-builder-engine/src/*"],
       "@repo/graphics/*": ["./packages/graphics/src/*"],
       "@repo/library/*": ["./packages/library/src/*"],
-      "@intuitui-labs/lk-edu-geo/*": ["./packages/lk-edu-geo/src/*"],
       "@repo/payments/*": ["./packages/payments/src/*"],
       "@repo/people/*": ["./packages/people/src/*"],
       "@repo/platform-mcp/*": ["./packages/platform-mcp/src/*"],

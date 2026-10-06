@@ -432,6 +432,8 @@ function guessDepCategory(name) {
       return 'animation';
     if (/(svg|css-interop|linear-gradient|masked|style)$|^react-native-css/.test(n))
       return 'styling';
+    if (/(skia)/.test(n))
+      return 'graphics';
     if (
       /(pager|bottom|segmented|slider|picker|datetime|keyboard|pull|blur|glass|sheet|flash|custom)/.test(
         n,
@@ -483,8 +485,9 @@ function guessDepCategory(name) {
     if (/^expo-(sqlite|file-system|clipboard|blob)/.test(n)) return 'storage';
     return 'native';
   }
-  if (scoped('@astrojs') || scoped('@sveltejs') || oneOf('astro') || oneOf('svelte'))
+  if (scoped('@astrojs') || scoped('@sveltejs') || oneOf('astro') || oneOf('svelte') || oneOf('next'))
     return 'build';
+  if (oneOf('msw')) return 'testing';
   if (
     oneOf('vite') ||
     scoped('@vitejs') ||

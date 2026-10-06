@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   auth: {
     identityAvailability: 'active',
     loading: false,
-    session: null as { user: { id: string } } | null,
+    session: null as { user: { id: string; is_anonymous?: boolean } } | null,
   },
   user: { id: 'user-1' },
   perspective: { kind: 'personal' as const },
@@ -109,5 +109,22 @@ describe('CapabilityHydrationProvider (component-real scenarios)', () => {
 
     expect(mocks.clearEntitlements).toHaveBeenCalledTimes(1);
     expect(mocks.loadEntitlements).not.toHaveBeenCalled();
+  });
+
+  it('does not hydrate cloud capabilities for an admitted anonymous guest', async () => {
+    mocks.auth.session = { user: { id: 'guest-1', is_anonymous: true } };
+    mocks.user = { id: 'guest-1' };
+
+    await act(async () => {
+      create(
+        <CapabilityHydrationProvider>
+          <>{'guest shell'}</>
+        </CapabilityHydrationProvider>,
+      );
+      await Promise.resolve();
+    });
+
+    expect(mocks.loadEntitlements).not.toHaveBeenCalled();
+    expect(mocks.clearEntitlements).not.toHaveBeenCalled();
   });
 });

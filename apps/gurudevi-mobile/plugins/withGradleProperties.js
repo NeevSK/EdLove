@@ -51,6 +51,7 @@ const withCustomGradleProperties = (config) => {
     updateProperty('org.gradle.caching', 'true');
     updateProperty('kotlin.compiler.execution.strategy', 'in-process');
     updateProperty('reactNativeArchitectures', arch);
+    updateProperty('android.suppressUnsupportedCompileSdk', '37');
 
     return cfg;
   });

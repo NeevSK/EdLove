@@ -1,25 +1,38 @@
-const { withAppBuildGradle, createRunOncePlugin } = require('expo/config-plugins');
+const { withDangerousMod, withAppBuildGradle, createRunOncePlugin } = require('expo/config-plugins');
+const fs = require('fs');
+const path = require('path');
+
+function stripSentryGradle(contents) {
+  return contents
+    .split('\n')
+    .filter((line) => !line.includes('@sentry/react-native') && !line.includes('sentry.gradle'))
+    .join('\n');
+}
 
 const withSentryGradleDisabled = (config) => {
-  return withAppBuildGradle(config, (config) => {
-    if (config.modResults.language === 'groovy') {
-      const contents = config.modResults.contents;
-      // The line we're looking for is usually:
-      // apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-      // We'll use a regex to find it and comment it out or remove it.
-      const sentryApplyRegex = /apply from:.*sentry\.gradle.*/g;
-
-      if (sentryApplyRegex.test(contents)) {
-        console.log('[withSentryGradleDisabled] Detected sentry.gradle application. Removing it.');
-        config.modResults.contents = contents.replace(sentryApplyRegex, (match) => {
-          return `// Removed by withSentryGradleDisabled: ${match}`;
-        });
-      } else {
-        console.log('[withSentryGradleDisabled] No sentry.gradle application found to remove.');
-      }
+  config = withAppBuildGradle(config, (cfg) => {
+    if (cfg.modResults.language === 'groovy') {
+      cfg.modResults.contents = stripSentryGradle(cfg.modResults.contents);
     }
-    return config;
+    return cfg;
   });
+
+  return withDangerousMod(config, [
+    'android',
+    async (cfg) => {
+      const appBuildGradlePath = path.join(
+        cfg.modRequest.platformProjectRoot,
+        'app',
+        'build.gradle'
+      );
+      if (fs.existsSync(appBuildGradlePath)) {
+        let content = fs.readFileSync(appBuildGradlePath, 'utf8');
+        content = stripSentryGradle(content);
+        fs.writeFileSync(appBuildGradlePath, content, 'utf8');
+      }
+      return cfg;
+    },
+  ]);
 };
 
 module.exports = createRunOncePlugin(withSentryGradleDisabled, 'withSentryGradleDisabled', '1.0.0');

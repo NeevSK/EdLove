@@ -1,6 +1,12 @@
+import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '@repo/classroom/components';
+import CreateSchoolModal from '@repo/classroom/components/CreateSchoolModal';
+import { useClassroomRoleData } from '@repo/classroom/hooks';
+import { ClassroomWorkspaceCanvas } from '@repo/classroom/workspace/ClassroomWorkspaceCanvas';
+import { useClassroomWorkspaceInsights } from '@repo/classroom/workspace/useClassroomWorkspaceInsights';
+import { useClassroomWorkspaceLayout } from '@repo/classroom/workspace/useClassroomWorkspaceLayout';
+import { useClassroomWorkspaceSurfaces } from '@repo/classroom/workspace/useClassroomWorkspaceSurfaces';
 import { useIsGuest } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
-
+import { resolveWorkspaceAppearanceColor, usePermissions, useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -10,13 +16,6 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '@repo/classroom/components';
-import CreateSchoolModal from '@repo/classroom/components/CreateSchoolModal';
-import { useClassroomRoleData } from '@repo/classroom/hooks';
-import { ClassroomWorkspaceCanvas } from '@repo/classroom/workspace/ClassroomWorkspaceCanvas';
-import { useClassroomWorkspaceInsights } from '@repo/classroom/workspace/useClassroomWorkspaceInsights';
-import { useClassroomWorkspaceLayout } from '@repo/classroom/workspace/useClassroomWorkspaceLayout';
-import { useClassroomWorkspaceSurfaces } from '@repo/classroom/workspace/useClassroomWorkspaceSurfaces';
 
 export default function ClassroomScreen() {
   const { t } = useTranslation();
@@ -80,7 +79,11 @@ export default function ClassroomScreen() {
   const renderContent = () => {
     if (loading && !classroomData) {
       return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper
+          backgroundColor={resolveWorkspaceAppearanceColor(layout?.appearance?.preset)}
+          scroll={false}
+          noTopInset={true}
+        >
           <VStack className="gap-4 p-4">
             <SkeletonCard height={60} />
             <SkeletonCard height={200} />
@@ -93,7 +96,11 @@ export default function ClassroomScreen() {
     if (classroomData && arrangedWorkspaceSurfaces.length > 0) {
       return (
         <Box className="flex-1">
-          <ScreenWrapper scroll={false} noTopInset={true}>
+          <ScreenWrapper
+            backgroundColor={resolveWorkspaceAppearanceColor(layout?.appearance?.preset)}
+            scroll={false}
+            noTopInset={true}
+          >
             <Box className="flex-1 p-4">
               <ClassroomWorkspaceCanvas
                 layout={layout}
@@ -146,7 +153,11 @@ export default function ClassroomScreen() {
 
     if (!can('read', 'ClassroomList')) {
       return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper
+          backgroundColor={resolveWorkspaceAppearanceColor(layout?.appearance?.preset)}
+          scroll={false}
+          noTopInset={true}
+        >
           <Box className="flex-1 p-4 gap-6">
             <GlobalHeader
               title={t('classroom.welcome') || 'Welcome to Sanctuary'}
@@ -165,7 +176,11 @@ export default function ClassroomScreen() {
     }
 
     return (
-      <ScreenWrapper scroll={false} noTopInset={true}>
+      <ScreenWrapper
+        backgroundColor={resolveWorkspaceAppearanceColor(layout?.appearance?.preset)}
+        scroll={false}
+        noTopInset={true}
+      >
         <Box className="flex-1 p-4 gap-6">
           <GlobalHeader
             title={t('classroom.journeyTitle') || 'Learning Journey'}

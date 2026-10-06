@@ -77,12 +77,6 @@
       "@repo/schema/*": [
         "../schema/dist/*"
       ],
-      "@repo/form-builder-engine": [
-        "../form-builder-engine/dist/index.d.ts"
-      ],
-      "@repo/form-builder-engine/*": [
-        "../form-builder-engine/dist/*"
-      ],
       "@repo/ai": [
         "../ai/dist/index.d.ts"
       ],

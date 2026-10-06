@@ -26,7 +26,7 @@ describe('account deletion route', () => {
   });
 
   it('reads deletion status only for an authenticated server session', async () => {
-    const response = await GET(new NextRequest('https://gurudevi.app/auth/deletion'));
+    const response = await GET(new NextRequest('https://sanctuary.gurudevi.app/auth/deletion'));
 
     expect(mocks.rpc).toHaveBeenCalledWith('get_account_deletion_request_status');
     expect(await response.json()).toMatchObject({ status: 'pending_verification' });
@@ -34,8 +34,10 @@ describe('account deletion route', () => {
   });
 
   it('submits and cancels the server-authoritative request through the existing RPCs', async () => {
-    await POST(new NextRequest('https://gurudevi.app/auth/deletion', { method: 'POST' }));
-    await DELETE(new NextRequest('https://gurudevi.app/auth/deletion', { method: 'DELETE' }));
+    await POST(new NextRequest('https://sanctuary.gurudevi.app/auth/deletion', { method: 'POST' }));
+    await DELETE(
+      new NextRequest('https://sanctuary.gurudevi.app/auth/deletion', { method: 'DELETE' }),
+    );
 
     expect(mocks.rpc).toHaveBeenNthCalledWith(1, 'request_account_deletion');
     expect(mocks.rpc).toHaveBeenNthCalledWith(2, 'cancel_account_deletion_request');
@@ -45,7 +47,7 @@ describe('account deletion route', () => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
 
     const response = await POST(
-      new NextRequest('https://gurudevi.app/auth/deletion', { method: 'POST' }),
+      new NextRequest('https://sanctuary.gurudevi.app/auth/deletion', { method: 'POST' }),
     );
 
     expect(response.status).toBe(401);

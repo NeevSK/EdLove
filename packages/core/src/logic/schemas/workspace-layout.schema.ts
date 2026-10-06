@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 export const WorkspaceLayoutVersionSchema = z.union([z.literal(1), z.literal(2)]);
 
+export const WorkspaceAppearanceSchema = z.object({
+  preset: z.enum(['default', 'dawn', 'garden', 'night']).default('default'),
+  motion: z.enum(['off', 'subtle']).default('off'),
+});
+
 export const WorkspaceLayoutTargetSchema = z.enum(['shared', 'web', 'mobile']);
 
 export const WorkspaceLayoutZoneSchema = z.enum([

@@ -66,24 +66,53 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
     expect(result).toEqual({ url: 'https://example.com/passkey' });
   });
 
-  it('forwards a native confirmation callback without accepting URL session tokens', async () => {
+  it('requires password sign-up to return an active session', async () => {
     authPort.signUp.mockResolvedValue({ user: { id: 'user-1' }, session: null });
 
-    await manager.signUp(
-      'person@example.com',
-      'secure-password',
-      undefined,
-      'gurudevi://auth/callback',
-    );
+    await expect(manager.signUp('person@example.com', 'secure-password')).rejects.toMatchObject({
+      code: 'AUTH_SIGN_UP_SESSION_MISSING',
+    });
 
     expect(authPort.signUp).toHaveBeenCalledWith({
       email: 'person@example.com',
       password: 'secure-password',
       options: {
         data: { display_name: undefined },
-        emailRedirectTo: 'gurudevi://auth/callback',
       },
     });
+    expect(mockLogAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it('records a password sign-up only after Supabase returns an active session', async () => {
+    const result = { user: { id: 'user-1' }, session: { access_token: 'access-token' } };
+    authPort.signUp.mockResolvedValue(result);
+
+    await expect(manager.signUp('person@example.com', 'secure-password', 'Person')).resolves.toBe(
+      result,
+    );
+
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      'AUTH_SIGN_UP_PASSWORD',
+      expect.objectContaining({ outcome: 'success', hasSession: true }),
+      undefined,
+    );
+  });
+
+  it('preserves the claimed guest capacity in the authenticated profile', async () => {
+    authPort.updateUser.mockResolvedValue({ user: { id: 'supabase-user-1' } });
+    identityPort.identifyActiveCitizen.mockResolvedValue({ id: 'internal-user-1' });
+
+    await manager.linkAnonymousToEmail('person@example.com', 'secure-password', 'Person', 'guardian');
+
+    expect(identityPort.updateProfile).toHaveBeenCalledWith(
+      'internal-user-1',
+      expect.objectContaining({ capacity: 'guardian', onboarding_completed: true }),
+    );
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      'AUTH_LINK_ANONYMOUS_TO_EMAIL',
+      expect.objectContaining({ capacity: 'guardian' }),
+      'internal-user-1',
+    );
   });
 
   it('logs TOTP enrollments and returns the adapter result', async () => {

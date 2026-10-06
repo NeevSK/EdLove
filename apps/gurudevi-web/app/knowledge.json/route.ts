@@ -6,6 +6,8 @@ export const dynamic = 'force-static';
 export function GET() {
   const entries = [
     { id: 'home', title: 'Home', category: 'page', url: absoluteUrl('/') },
+    { id: 'home-si', title: 'ගුරුදේවි | සමෝධානික අධ්‍යාපනයේ සුරක්ෂිත කෙම්බිම', category: 'page', language: 'si', url: absoluteUrl('/si') },
+    { id: 'home-ta', title: 'குருதேவி | கல்வியின் உயிரோட்டமான அமைதிச் சோலை', category: 'page', language: 'ta', url: absoluteUrl('/ta') },
     { id: 'about', title: 'About the Ecology', category: 'page', url: absoluteUrl('/about') },
     { id: 'faq', title: 'FAQ', category: 'page', url: absoluteUrl('/faq') },
     { id: 'thuthimal', title: 'Thuthimal', category: 'page', url: absoluteUrl('/thuthimal') },

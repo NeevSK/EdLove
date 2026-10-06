@@ -1,5 +1,5 @@
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
-import { Blur, Canvas, RadialGradient, Rect } from '@shopify/react-native-skia';
+import { Blur, Canvas, RadialGradient, Rect } from 'react-native-skia';
 import React, { useEffect } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {

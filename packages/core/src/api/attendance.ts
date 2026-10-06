@@ -2,10 +2,7 @@ import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
 import { defaultRetryPolicy } from '@repo/core/utils/effect';
-import * as Data from 'effect/Data';
-import * as Duration from 'effect/Duration';
-import * as Effect from 'effect/Effect';
-import { pipe } from 'effect/Function';
+import { Data, Duration, Effect, pipe } from 'effect';
 
 class AttendanceHttpError extends Data.TaggedError('AttendanceHttpError')<{
   readonly message: string;

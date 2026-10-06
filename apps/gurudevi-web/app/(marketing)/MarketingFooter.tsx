@@ -1,19 +1,49 @@
+import Image from 'next/image';
 import Link from 'next/link';
+import { SOCIAL_LINKS, WEB_LINKS } from '../../lib/site';
 
 export function MarketingFooter() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-line font-sans text-sm text-ink-soft">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-        <div>
-          <p className="mb-2 font-serif text-xl font-bold tracking-[-0.04em] text-ink">Gurudevi</p>
-          <p className="m-0 max-w-sm leading-6">Technology that gives energy back to education.</p>
+    <footer className="site-footer">
+      <div className="site-footer__grid">
+        <div className="site-footer__brand">
+          <div className="brand brand--footer">
+            <Image src="/gurudevi-mark.svg" alt="" width={28} height={28} />
+            <span>Gurudevi</span>
+          </div>
+          <p>Technology that gives energy back to education.</p>
         </div>
-        <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-4 gap-y-3">
-          <Link className="underline decoration-line underline-offset-4 hover:decoration-ink focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/about">About</Link>
-          <Link className="underline decoration-line underline-offset-4 hover:decoration-ink focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/privacy">Privacy</Link>
-          <Link className="underline decoration-line underline-offset-4 hover:decoration-ink focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/terms">Terms</Link>
-          <Link className="underline decoration-line underline-offset-4 hover:decoration-ink focus:outline-3 focus:outline-offset-2 focus:outline-water" href="/delete-account">Delete account</Link>
-        </nav>
+        <div>
+          <p className="eyebrow footer-label">Explore</p>
+          <div className="footer-links">
+            <Link href="/about">The ecology</Link>
+            <Link href="/journal">Journal</Link>
+            <Link href="/faq">FAQ</Link>
+            <Link href="/support">Support</Link>
+            <Link href="/thuthimal">Thuthimal</Link>
+          </div>
+        </div>
+        <div>
+          <p className="eyebrow footer-label">Elsewhere</p>
+          <div className="footer-links">
+            <Link href="/explore/self">Open platform ↗</Link>
+            <a href={WEB_LINKS.edlove} target="_blank" rel="noopener noreferrer">
+              EdLove ↗
+            </a>
+            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
+              LinkedIn ↗
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="site-footer__bottom">
+        <span>© {currentYear} Gurudevi · Part of EdLove</span>
+        <span>
+          <Link href="/privacy">Privacy</Link> · <Link href="/terms">Terms</Link> ·{' '}
+          <Link href="/delete-account">Delete account</Link>
+        </span>
       </div>
     </footer>
   );

@@ -4,6 +4,7 @@ import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supaba
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useNotifications, useRewards } from '@repo/core/hooks';
 import {
+  isLocalOnlyIdentity,
   resolveWorkspaceSwitcherTargets,
   usePermissions,
   usePerspectiveSwitch,
@@ -20,7 +21,7 @@ import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalo
 import { LinkWardModal } from '@repo/ui/components/LinkWardModal';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
-import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
+import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { router, Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
@@ -30,6 +31,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
+
+const EMPTY_DOMAIN_TABS: readonly string[] = [];
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -53,9 +56,11 @@ function TabsLayoutContent() {
   );
   const { context, can } = usePermissions();
   const userId = context.userId;
-  const { newAchievements } = useRewards();
-  const { unreadCount } = useNotifications(userId);
   const user = useStore((state) => state.user);
+  const isLocalGuest = isLocalOnlyIdentity(user);
+  const { newAchievements } = useRewards();
+  const { unreadCount } = useNotifications(isLocalGuest ? null : userId);
+  const showToast = useStore((state) => state.showToast);
   const displayName = user?.display_name?.split(' ')[0] || user?.email || 'Gurudevi';
   const [showCelebration, setShowCelebration] = useState(false);
   const [currentAchievement, setCurrentAchievement] = useState('');
@@ -79,7 +84,7 @@ function TabsLayoutContent() {
 
   // Auto-reconcile perspective entities from Postgres / PowerSync SQLite on boot
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || isLocalGuest) return;
 
     void hydratePerspectivesFromDatabase(user.id, {
       getCommercialBatches: async () => {
@@ -110,7 +115,7 @@ function TabsLayoutContent() {
         }
       },
     });
-  }, [hydratePerspectivesFromDatabase, user?.id]);
+  }, [hydratePerspectivesFromDatabase, isLocalGuest, user?.id]);
 
   const workspaceTargets = useMemo(
     () =>
@@ -159,6 +164,10 @@ function TabsLayoutContent() {
 
   const handleSelectWorkspaceTarget = useCallback(
     (target: any) => {
+      if (isLocalGuest) {
+        showToast('Create an account to access shared workspaces.', 'info');
+        return;
+      }
       setPerspectiveSwitcherOpen(false);
       if (target.perspectiveId) {
         switchPerspective(target.perspectiveId);
@@ -169,7 +178,7 @@ function TabsLayoutContent() {
         router.push(`/(tabs)/${target.destination.name}` as any);
       }
     },
-    [switchPerspective],
+    [isLocalGuest, showToast, switchPerspective],
   );
 
   const handleRedeemInviteCode = useCallback(
@@ -180,6 +189,10 @@ function TabsLayoutContent() {
       capacity: 'teacher' | 'student' | 'principal' | 'admin';
       roles: Array<'teacher' | 'student' | 'principal' | 'admin'>;
     }) => {
+      if (isLocalGuest) {
+        showToast('Create an account before joining a school.', 'info');
+        return;
+      }
       const newId = `bond_${payload.schoolId}_${Date.now().toString(36)}`;
       const newPerspective = {
         id: newId,
@@ -205,11 +218,15 @@ function TabsLayoutContent() {
         }
       }
     },
-    [addPerspective, switchPerspective, user?.id],
+    [addPerspective, isLocalGuest, showToast, switchPerspective, user?.id],
   );
 
   const handleCreateCommercialBatch = useCallback(
     async (batch: any) => {
+      if (isLocalGuest) {
+        showToast('Create an account before creating a shared batch.', 'info');
+        return;
+      }
       addPerspective(batch);
       setCommercialModalOpen(false);
       switchPerspective(batch.id);
@@ -233,11 +250,15 @@ function TabsLayoutContent() {
         }
       }
     },
-    [addPerspective, switchPerspective, user?.id],
+    [addPerspective, isLocalGuest, showToast, switchPerspective, user?.id],
   );
 
   const handleLinkWard = useCallback(
     async (wardPerspective: any) => {
+      if (isLocalGuest) {
+        showToast('Create an account before linking a ward.', 'info');
+        return;
+      }
       addPerspective(wardPerspective);
       setLinkWardModalOpen(false);
       switchPerspective(wardPerspective.id);
@@ -257,7 +278,7 @@ function TabsLayoutContent() {
         }
       }
     },
-    [addPerspective, switchPerspective, user?.id],
+    [addPerspective, isLocalGuest, showToast, switchPerspective, user?.id],
   );
 
   const currentDomain = useMemo<'workspace' | 'self' | 'library' | 'community' | 'profile'>(() => {
@@ -280,7 +301,9 @@ function TabsLayoutContent() {
     return pathname === `/${currentDomain}` || pathname === `/${currentDomain}/`;
   }, [currentDomain, globalParams.feature, pathname]);
 
-  const domainTabs = useActiveSubTabsStore((s) => s.tabsByDomain[currentDomain] || []);
+  const domainTabs = useActiveSubTabsStore(
+    (s) => s.tabsByDomain[currentDomain] ?? EMPTY_DOMAIN_TABS,
+  );
   const showActiveSubTabs = useActiveSubTabsStore((s) => s.preferences.showActiveSubTabs);
   const headerStyle = useActiveSubTabsStore((s) => s.preferences.headerStyle);
   const autoHideChromeOnScroll = useActiveSubTabsStore((s) => s.preferences.autoHideChromeOnScroll);

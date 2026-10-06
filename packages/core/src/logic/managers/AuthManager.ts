@@ -244,20 +244,25 @@ export class AuthManager {
     email: string,
     password: string,
     fullName?: string,
-    emailRedirectTo?: string,
   ) {
     const result = await this.authPort.signUp({
       email,
       password,
-      options: { data: { display_name: fullName }, emailRedirectTo },
+      options: { data: { display_name: fullName } },
     });
+
+    if (!result.session) {
+      throw new APIError(
+        'Your account was created without an active session. Please contact support before trying again.',
+        'AUTH_SIGN_UP_SESSION_MISSING',
+      );
+    }
 
     await this.recordAuthMethodUsage('AUTH_SIGN_UP_PASSWORD', {
       method: 'password',
       outcome: 'success',
       displayName: fullName ?? null,
-      emailRedirectTo: emailRedirectTo ?? null,
-      hasSession: !!result.session,
+      hasSession: true,
     });
 
     return result;
@@ -316,6 +321,7 @@ export class AuthManager {
       display_name: fullName,
       is_anonymous: false,
       citizenship: 'SECOND_CLASS',
+      capacity,
       onboarding_completed: true,
       onboarding_completed_at: new Date().toISOString(),
     });

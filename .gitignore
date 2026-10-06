@@ -113,7 +113,7 @@ reports/playwright/
 
 # Backup and one-off artifacts
 *.bak
-profile.*
+/profile.*
 scan.json
 scan-viewer.html
 .viewer.html
@@ -151,3 +151,13 @@ scripts/*.js
 
 # research works 
 docs/research
+
+# Multi-agent teamwork scratch & ephemeral orchestration state
+.agents/teamwork/
+.tmp/
+.tmp-*/
+PROJECT.md
+TEST_INFRA.md
+TEST_READY.md
+DEAD_ENDS.md
+reports/*.png

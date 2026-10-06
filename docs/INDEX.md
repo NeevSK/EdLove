@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-09-20
+updated: 2026-10-04
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -55,6 +55,8 @@ These files outline security models, data lifecycle policies, platform topologie
 
 | Document | Description |
 |---|---|
+| [architecture/safe-exploration-and-reversible-work-model.md](architecture/safe-exploration-and-reversible-work-model.md) | Canonical platform and safety plan: web Explore, mobile Guest, account Safe Try, independent rollout and presentation controls, and selected-record Keep |
+| [architecture/dependency-intelligence-graph.md](architecture/dependency-intelligence-graph.md) | Living specification for the Supabase-backed mobile dependency release-history, compatibility, evidence, query, and operational system. |
 | [architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md](architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md) | Mutation pipeline optimizations, TanStack DX architecture, zero-thrash state transitions, and low-end device efficiency strategies |
 | [architecture/architecture-guidelines.md](architecture/architecture-guidelines.md) | Layered topology, golden rules of dependencies, workspace boundaries |
 | [architecture/architecture-deep-dive.md](architecture/architecture-deep-dive.md) | Philosophy of restraint, sovereignty rules |
@@ -103,9 +105,11 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-08-25-transparent-hosted-oss.md](decisions/2026-08-25-transparent-hosted-oss.md) | **ADR — Transparent Hosted OSS** (supersedes 2026-08-24 for monorepo): MIT public, hosted production, dev-only self-host seams |
 | [decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md](decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md) | ADR — Rewarded Ad Center compliance, app store policies, COPPA gating, ATT consent, and SSV cryptographic security governance |
 | [decisions/2026-08-31-editorial-platform-topology.md](decisions/2026-08-31-editorial-platform-topology.md) | ADR for shared editorial infrastructure and separate EdLove/GuruDevi publications |
+| [decisions/2026-09-10-guest-local-first-lease.md](decisions/2026-09-10-guest-local-first-lease.md) | Mobile-only Guest local-first lease, cloud-write boundary, and account claim/migration checkpoint |
+| [decisions/2026-09-10-entry-route-authority.md](decisions/2026-09-10-entry-route-authority.md) | Mobile route authority; names the visitor path Continue as Guest and keeps anonymous identity local-only |
 | [decisions/2026-09-14-gurudevi-web-sanctuary-functional-migration-and-navigation.md](decisions/2026-09-14-gurudevi-web-sanctuary-functional-migration-and-navigation.md) | Functional migration source, Sanctuary information architecture, and navigation-variant evaluation |
 | [decisions/2026-09-14-gurudevi-sanctuary-spatial-language-and-domain-transitions.md](decisions/2026-09-14-gurudevi-sanctuary-spatial-language-and-domain-transitions.md) | Domain canvas atmospheres, spatial language, light, and browser transition contract |
-| [decisions/2026-09-14-sanctuary-explore-access-and-persistence.md](decisions/2026-09-14-sanctuary-explore-access-and-persistence.md) | Public Explore, guest-cloud, durable-account, and developer-sandbox persistence boundaries |
+| [decisions/2026-09-14-sanctuary-explore-access-and-persistence.md](decisions/2026-09-14-sanctuary-explore-access-and-persistence.md) | Public web Explore boundary; clarifies mobile-only Guest and excludes web Guest continuity |
 | [decisions/2026-09-14-gurudevi-browser-unified-canvas-foundation.md](decisions/2026-09-14-gurudevi-browser-unified-canvas-foundation.md) | DRY browser CanvasFrame foundation and real-product-first implementation order |
 | [decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md](decisions/2026-09-14-gurudevi-canvas-model-and-domain-floor-authority.md) | Canonical shared canvas model, domain-owned floor authority, and rejection of one generic renderer |
 | [decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md](decisions/2026-09-15-gurudevi-domain-workbench-active-tasks-and-temporal-horizon.md) | Cross-platform authority for domain-local task workbenches, restoration, and temporal context |
@@ -122,6 +126,7 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 
 | Document | Description |
 |---|---|
+| [current_progress/2026-09-26-dependency-intelligence-graph-implementation-plan.md](current_progress/2026-09-26-dependency-intelligence-graph-implementation-plan.md) | Active phased implementation plan for persistent dependency intelligence, continuous evidence intake, and upgrade-gate integration. |
 | [current_progress/2026-06-20-feature-rollout-implementation-plan.md](current_progress/2026-06-20-feature-rollout-implementation-plan.md) | Feature rollout implementation steps and release milestones |
 | [current_progress/2026-06-09-oxlint-eslint-hybrid-checklist.md](current_progress/2026-06-09-oxlint-eslint-hybrid-checklist.md) | Hybrid lint setup status and tool migration checklist |
 | [current_progress/2026-06-26-onboarding-api-routing.md](current_progress/2026-06-26-onboarding-api-routing.md) | Routing progress, schema updates, task checklists, and blockers |
@@ -135,7 +140,7 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 | [current_progress/2026-08-10-live-supabase-inspection.md](current_progress/2026-08-10-live-supabase-inspection.md) | Read-only linked Supabase structural, RLS, grants, and advisor inspection |
 | [current_progress/2026-09-07-ui-primitives-production-hardening-plan.md](current_progress/2026-09-07-ui-primitives-production-hardening-plan.md) | Phased production hardening of owned UI primitives, accessibility contracts, `cn` composition, and Vitest 5 verification |
 | [current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md](current_progress/2026-09-14-gurudevi-web-migration-restart-handoff.md) | Active restart handoff, hybrid shell-and-slice plan, and multi-agent operating model for the Gurudevi Next.js migration |
-| [current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md](current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md) | Active real-product-first Sanctuary implementation sequence, with Explore as a later reuse adapter |
+| [current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md](current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md) | Active browser Sanctuary implementation sequence for account and web Explore adapters; excludes web Guest and links to Safe Try plan |
 | [current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md](current_progress/2026-09-14-gurudevi-domain-canvas-port-map.md) | Evidence-backed map of each domain floor, configurable furniture, and browser migration order |
 | [current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md](current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md) | Canonical Self feature-layer ownership, compatibility inventory, and cross-platform migration gates |
 | [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets |
@@ -160,6 +165,9 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/2026-07-24-physical-device-deployment-log.md](infra/2026-07-24-physical-device-deployment-log.md) | Live runlog for physical hardware builds and USB debugging |
 | [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments, including CLI setup, CI/CD integration, and app-specific configuration patterns. |
 | [infra/production-readiness-program.md](infra/production-readiness-program.md) | Cross-platform production-readiness checklist for mobile, API, web, data, sync, security, and operations |
+| [infra/oss-public-release-security-checklist.md](infra/oss-public-release-security-checklist.md) | P0 release gate and security/privacy/legal checklist for flipping the repo public and accepting external contributions, mapped to OpenSSF OSPS Baseline |
+| [infra/oss-public-release-devops-checklist.md](infra/oss-public-release-devops-checklist.md) | CI/CD, installability, cross-platform portability, release engineering, and contributor-onboarding checklist for public/OSS release |
+| [infra/developer-environment-and-distribution-plan.md](infra/developer-environment-and-distribution-plan.md) | Plan for making the monorepo installable and contributable on Windows, macOS, and Linux: tiered toolchain paths, WSL2 mechanics, single-source toolchain versioning, and the Phase 0–5 fix sequence |
 | [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets |
 | [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
 | [current_progress/2026-08-31-ad-center-phased-implementation-plan.md](current_progress/2026-08-31-ad-center-phased-implementation-plan.md) | 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI) |
@@ -197,6 +205,13 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 ---
 
 ## Changelog
+
+### 2026-10-04
+
+- **Updated**: `architecture/safe-exploration-and-reversible-work-model.md` — compared against the existing Explore, Guest, rollout, and sandbox authorities; added independent feature-availability and Simple/Full presentation controls, foundation-first Safe Try sequencing, and v1 selected-new-record Keep rules.
+- **Updated**: `architecture/safe-exploration-and-reversible-work-model.md` — confirmed web-only Explore, mobile-only Guest, account-holder Safe Try on both platforms, current stack readiness, research references, and ordered implementation phases.
+- **Updated**: `current_progress/2026-09-14-gurudevi-sanctuary-web-implementation-plan.md`, `decisions/2026-09-14-sanctuary-explore-access-and-persistence.md`, and the September 10 Guest/entry ADRs — clarified web-only Explore, mobile-only Guest, and aligned Safe Try with the canonical plan.
+- **Updated**: `decisions/2026-09-10-entry-route-authority.md` — reserves Explore terminology for web and names the mobile entry “Continue as Guest.”
 
 ### 2026-09-19
 

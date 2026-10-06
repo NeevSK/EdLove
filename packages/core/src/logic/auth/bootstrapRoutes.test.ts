@@ -28,4 +28,71 @@ describe('web auth callback bootstrap route', () => {
       }),
     ).toMatchObject({ decision: 'app', redirectTo: '/self' });
   });
+
+  it('admits guest onboarding only for an anonymous session', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasSession: false,
+        onboardingCompleted: false,
+        pathname: '/onboarding',
+        sessionMode: 'unauthenticated',
+        guestOnboardingIntent: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasSession: true,
+        onboardingCompleted: false,
+        pathname: '/onboarding',
+        sessionMode: 'anonymous',
+        guestOnboardingIntent: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
+
+  it('resumes a completed anonymous guest after an explicit Explore action', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasActiveCapacity: true,
+        hasSession: true,
+        onboardingCompleted: true,
+        pathname: '/onboarding',
+        sessionMode: 'anonymous',
+        guestOnboardingIntent: true,
+      }),
+    ).toMatchObject({ decision: 'app', redirectTo: '/self' });
+  });
+
+  it('never treats an anonymous session alone as admission to a protected route', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasSession: true,
+        onboardingCompleted: false,
+        pathname: '/self',
+        sessionMode: 'anonymous',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+  });
+
+  it('keeps a cold anonymous root launch on welcome even if a prior guest completed onboarding', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasActiveCapacity: true,
+        hasSession: true,
+        onboardingCompleted: true,
+        pathname: '/',
+        sessionMode: 'anonymous',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+  });
 });

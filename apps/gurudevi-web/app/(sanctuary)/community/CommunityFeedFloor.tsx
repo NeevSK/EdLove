@@ -2,11 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
 import {
   COMMUNITY_GROUP_PAGE_SIZE,
-  parseCommunityGroupsResult,
   type CommunityGroup,
   type CommunityGroupsResult,
+  parseCommunityGroupsResult,
 } from '../../../lib/community/groups-contract';
 import styles from './community.module.css';
 
@@ -15,7 +16,18 @@ type CommunityFloorMode = 'account' | 'explore';
 export function CommunityFeedFloor({
   mode = 'account',
   result: initialResult,
-}: Readonly<{ mode?: CommunityFloorMode; result: CommunityGroupsResult }>) {
+  accountId,
+}: Readonly<{
+  mode?: CommunityFloorMode;
+  result: CommunityGroupsResult;
+  accountId?: string;
+}>) {
+  const floorAppearance = useBrowserWorkspaceAppearance({
+    accountId: accountId ?? 'explore',
+    defaultGroupOrder: ['feed', 'circles', 'messages', 'announcements'],
+    enableRemoteSync: mode === 'account' && Boolean(accountId),
+    workspaceId: 'community',
+  });
   const router = useRouter();
   const [isRefreshing, startRefresh] = useTransition();
   const [query, setQuery] = useState('');
@@ -77,8 +89,10 @@ export function CommunityFeedFloor({
   }, [initialResult, mode, query]);
 
   const visibleResult = mode === 'explore' ? initialResult : result;
-  const visibleGroups = mode === 'explore' ? localGroups : (result.kind === 'ready' ? result.groups : []);
-  const searchIsPending = mode === 'account' && query.trim() !== resolvedQuery && query.trim() !== '';
+  const visibleGroups =
+    mode === 'explore' ? localGroups : result.kind === 'ready' ? result.groups : [];
+  const searchIsPending =
+    mode === 'account' && query.trim() !== resolvedQuery && query.trim() !== '';
 
   async function loadMore() {
     if (mode !== 'account' || result.kind !== 'ready' || !result.hasMore || isLoadingMore) return;
@@ -117,6 +131,8 @@ export function CommunityFeedFloor({
       data-domain="community"
       data-mode={mode}
       aria-labelledby="community-title"
+      data-appearance={floorAppearance.appearance.preset}
+      data-motion={floorAppearance.appearance.motion}
     >
       <header className={styles.arrival}>
         <p className={styles.eyebrow}>
@@ -183,7 +199,8 @@ export function CommunityFeedFloor({
               </button>
             </section>
           ) : null}
-          {mode === 'account' && (isSearching || searchIsPending || searchError) ? null : visibleGroups.length > 0 ? (
+          {mode === 'account' &&
+          (isSearching || searchIsPending || searchError) ? null : visibleGroups.length > 0 ? (
             <>
               <p className={styles.inlineStatus} role="status" aria-live="polite">
                 {visibleGroups.length} {visibleGroups.length === 1 ? 'circle' : 'circles'} shown
@@ -202,14 +219,20 @@ export function CommunityFeedFloor({
                     onClick={() => void loadMore()}
                     type="button"
                   >
-                    {isLoadingMore ? 'Loading more circles…' : loadMoreError ? 'Retry loading more' : 'Show more circles'}
+                    {isLoadingMore
+                      ? 'Loading more circles…'
+                      : loadMoreError
+                        ? 'Retry loading more'
+                        : 'Show more circles'}
                   </button>
                 </div>
               ) : null}
             </>
           ) : (
             <section className={styles.state} aria-live="polite">
-              <h2>{query.trim() ? 'No circles match that search' : 'No circles are available yet'}</h2>
+              <h2>
+                {query.trim() ? 'No circles match that search' : 'No circles are available yet'}
+              </h2>
               <p>
                 {query.trim()
                   ? 'Try another name or description.'
@@ -228,7 +251,10 @@ async function requestPage(
   offset: number,
   signal: AbortSignal,
 ): Promise<CommunityGroupsResult> {
-  const params = new URLSearchParams({ limit: String(COMMUNITY_GROUP_PAGE_SIZE), offset: String(offset) });
+  const params = new URLSearchParams({
+    limit: String(COMMUNITY_GROUP_PAGE_SIZE),
+    offset: String(offset),
+  });
   if (search) params.set('search', search);
   const response = await fetch(`/api/community/groups?${params}`, {
     cache: 'no-store',

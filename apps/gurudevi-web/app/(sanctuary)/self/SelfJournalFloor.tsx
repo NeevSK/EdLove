@@ -1,7 +1,9 @@
 'use client';
 
 import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
+import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import { resolveWorkspaceGroupOrder } from '@repo/core/logic/workspace/canvas';
 import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
@@ -17,6 +19,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
+import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
 import {
   type BurnedJournalEntry,
   burnJournal,
@@ -55,6 +59,8 @@ const initialScreen: ScreenState = {
   isBurning: false,
   notice: null,
 };
+
+type SelfGroup = SelfFeatureManifestItem['category'];
 
 const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
   null,
@@ -120,11 +126,30 @@ function formatDate(value: string): string {
     : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
 }
 
-export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string }>) {
+export function SelfJournalFloor({
+  accountId,
+  displayName,
+}: Readonly<{ accountId: string; displayName: string }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
+  const floorAppearance = useBrowserWorkspaceAppearance({
+    accountId,
+    defaultGroupOrder: ['identity', 'wellbeing', 'growth', 'practice', 'professional'],
+    workspaceId: 'self',
+  });
+  const [isPracticing, setIsPracticing] = useState(false);
   const [moodModalOpen, setMoodModalOpen] = useState(false);
   const workbench = useDomainWorkbench('self');
   const [showOverview, setShowOverview] = useState(true);
+  const practiceAdapter = useMemo(
+    () =>
+      accountId
+        ? createAccountSafeTrySelfPracticeAdapter({ accountId, workspaceId: 'self' })
+        : null,
+    [accountId],
+  );
+  const canPracticeInBrowser =
+    practiceAdapter !== null &&
+    declaredPracticeCapability(fireJournalFeature.id, 'browser') !== null;
   const horizon = workbench.state.temporalHorizon ?? todayHorizon();
   const focusedTask = useMemo(
     () =>
@@ -143,7 +168,9 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
   const loadHistory = useCallback(async () => {
     setScreen((current) => ({ ...current, error: null, historyStatus: 'loading' }));
     try {
-      const entries = await loadBurnedJournalHistory();
+      const entries = isPracticing
+        ? ((await practiceAdapter?.loadJournal()) ?? [])
+        : await loadBurnedJournalHistory();
       setScreen((current) => ({ ...current, entries, historyStatus: 'ready' }));
     } catch (error) {
       setScreen((current) => ({
@@ -153,7 +180,7 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
         historyStatus: 'error',
       }));
     }
-  }, []);
+  }, [isPracticing, practiceAdapter]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -162,19 +189,57 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
 
     setScreen((current) => ({ ...current, error: null, isBurning: true, notice: null }));
     try {
-      const entry = await burnJournal(content);
+      const entry = isPracticing
+        ? await practiceAdapter?.burnJournal(content)
+        : await burnJournal(content);
+      if (!entry) throw new Error('Safe Try is unavailable until the account identity is ready.');
       setScreen((current) => ({
         ...current,
         draft: '',
         entries: [entry, ...current.entries],
         isBurning: false,
-        notice: 'Released. Only this short preview remains in your journal history.',
+        notice: isPracticing
+          ? 'Practice release saved on this device. Your real journal was not changed.'
+          : 'Released. Only this short preview remains in your journal history.',
       }));
     } catch (error) {
       setScreen((current) => ({
         ...current,
         error: error instanceof Error ? error.message : 'We could not release that reflection.',
         isBurning: false,
+      }));
+    }
+  }
+
+  async function enterSafeTry() {
+    if (!canPracticeInBrowser) return;
+    try {
+      const entries = await practiceAdapter?.loadJournal();
+      if (!entries) return;
+      setIsPracticing(true);
+      setScreen({ ...initialScreen, entries, historyStatus: 'ready' });
+    } catch (error) {
+      setScreen((current) => ({
+        ...current,
+        error: error instanceof Error ? error.message : 'Safe Try could not open on this device.',
+      }));
+    }
+  }
+
+  async function discardSafeTry() {
+    try {
+      if (!practiceAdapter) return;
+      await practiceAdapter.reset();
+      setIsPracticing(false);
+      setScreen((current) => ({
+        ...initialScreen,
+        draft: current.draft,
+        notice: 'Safe Try was discarded. Your real Fire Journal was not changed.',
+      }));
+    } catch (error) {
+      setScreen((current) => ({
+        ...current,
+        error: error instanceof Error ? error.message : 'Safe Try could not be discarded.',
       }));
     }
   }
@@ -221,10 +286,16 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
 
   useEffect(() => {
     if (journalActive) void loadHistory();
-  }, [journalActive, loadHistory]);
+  }, [journalActive, isPracticing, loadHistory]);
 
   return (
-    <article className={styles.floor} aria-labelledby="self-floor-title" data-domain="self">
+    <article
+      className={styles.floor}
+      aria-labelledby="self-floor-title"
+      data-domain="self"
+      data-appearance={floorAppearance.appearance.preset}
+      data-motion={floorAppearance.appearance.motion}
+    >
       <div className={styles.workbenchChrome}>
         <TaskStrip
           focusedTaskKey={workbench.state.focusedTaskKey}
@@ -246,11 +317,22 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
       {showOverview ? (
         <SelfOverview
           displayName={displayName}
+          groupOrder={resolveWorkspaceGroupOrder(floorAppearance.groupOrder, [
+            'identity',
+            'wellbeing',
+            'growth',
+            'practice',
+            'professional',
+          ]).filter(isSelfGroup)}
           onOpenFeature={openFeature}
           onOpenFireJournal={openFireJournal}
         />
       ) : journalActive ? (
         <FireJournal
+          isPracticing={isPracticing}
+          practiceStorageKind={practiceAdapter?.storageKind ?? 'memory'}
+          onDiscardPractice={discardSafeTry}
+          onEnterPractice={enterSafeTry}
           screen={screen}
           setScreen={setScreen}
           loadHistory={loadHistory}
@@ -264,21 +346,39 @@ export function SelfJournalFloor({ displayName }: Readonly<{ displayName: string
   );
 }
 
+function isSelfGroup(value: string): value is SelfGroup {
+  return (
+    value === 'identity' ||
+    value === 'wellbeing' ||
+    value === 'growth' ||
+    value === 'practice' ||
+    value === 'professional'
+  );
+}
+
 function SelfOverview({
   displayName,
+  groupOrder,
   onOpenFeature,
   onOpenFireJournal,
 }: Readonly<{
   displayName: string;
+  groupOrder: readonly SelfGroup[];
   onOpenFeature: (feature: SelfFeatureManifestItem) => void;
   onOpenFireJournal: () => void;
 }>) {
-  const byZone = SELF_FEATURE_MANIFEST.all.reduce<Record<string, SelfFeatureManifestItem[]>>(
+  const byCategory = SELF_FEATURE_MANIFEST.all.reduce<Record<SelfGroup, SelfFeatureManifestItem[]>>(
     (groups, feature) => {
-      (groups[feature.defaultZone] ??= []).push(feature);
+      (groups[feature.category] ??= []).push(feature);
       return groups;
     },
-    {},
+    {
+      identity: [],
+      wellbeing: [],
+      growth: [],
+      practice: [],
+      professional: [],
+    },
   );
 
   return (
@@ -312,15 +412,15 @@ function SelfOverview({
           is real; the rest remain visible without pretending to be ready.
         </p>
         <div className={styles.catalogZones}>
-          {(['today', 'private', 'shared'] as const).map((zone) => (
+          {groupOrder.map((zone) => (
             <section
-              aria-labelledby={`self-zone-${zone}`}
+              aria-labelledby={`self-category-${zone}`}
               className={styles.catalogZone}
               key={zone}
             >
-              <h3 id={`self-zone-${zone}`}>{zoneTitle(zone)}</h3>
+              <h3 id={`self-category-${zone}`}>{categoryTitle(zone)}</h3>
               <div className={styles.catalogGrid}>
-                {(byZone[zone] ?? []).map((feature) => (
+                {(byCategory[zone] ?? []).map((feature) => (
                   <FeatureCatalogCard
                     feature={feature}
                     key={feature.id}
@@ -336,8 +436,15 @@ function SelfOverview({
   );
 }
 
-function zoneTitle(zone: 'today' | 'private' | 'shared'): string {
-  return zone === 'today' ? 'Today' : zone === 'private' ? 'Private practice' : 'Shared context';
+function categoryTitle(category: SelfGroup): string {
+  const labels: Record<SelfGroup, string> = {
+    identity: 'Identity',
+    wellbeing: 'Wellbeing',
+    growth: 'Growth',
+    practice: 'Practice & rhythm',
+    professional: 'Professional',
+  };
+  return labels[category] ?? category;
 }
 
 function FeatureCatalogCard({
@@ -578,11 +685,19 @@ function UnavailableTask({
 }
 
 function FireJournal({
+  isPracticing,
+  practiceStorageKind,
+  onDiscardPractice,
+  onEnterPractice,
   screen,
   setScreen,
   loadHistory,
   submit,
 }: Readonly<{
+  isPracticing: boolean;
+  practiceStorageKind: 'local-storage' | 'memory';
+  onDiscardPractice: () => void;
+  onEnterPractice: () => void;
   screen: ScreenState;
   setScreen: Dispatch<SetStateAction<ScreenState>>;
   loadHistory: () => Promise<void>;
@@ -595,7 +710,24 @@ function FireJournal({
       <header className={styles.arrival}>
         <p className={styles.eyebrow}>Self · Fire Journal</p>
         <h1 id="self-floor-title">Make room for what needs to be released.</h1>
-        <p>Write freely. When you release an entry, the full text is not retained.</p>
+        <p>
+          {isPracticing
+            ? practiceStorageKind === 'local-storage'
+              ? 'Safe Try uses fictional sample data and saves only on this browser. Your account journal is untouched.'
+              : 'Safe Try uses fictional sample data in this page session only. Your account journal is untouched.'
+            : 'Write freely. When you release an entry, the full text is not retained.'}
+        </p>
+        <div className={styles.actions}>
+          {isPracticing ? (
+            <button className={styles.retryButton} onClick={onDiscardPractice} type="button">
+              End Safe Try and discard
+            </button>
+          ) : (
+            <button className={styles.retryButton} onClick={onEnterPractice} type="button">
+              Try this safely
+            </button>
+          )}
+        </div>
       </header>
       <div className={styles.grid}>
         <section className={styles.alcove} aria-labelledby="fire-journal-compose-title">
@@ -622,9 +754,17 @@ function FireJournal({
             />
             <div className={styles.actions}>
               <button className={styles.burnButton} disabled={screen.isBurning} type="submit">
-                {screen.isBurning ? 'Releasing…' : 'Release to Fire Journal'}
+                {screen.isBurning
+                  ? 'Releasing…'
+                  : isPracticing
+                    ? 'Practice release'
+                    : 'Release to Fire Journal'}
               </button>
-              <span className={styles.hint}>The full reflection is not saved.</span>
+              <span className={styles.hint}>
+                {isPracticing
+                  ? 'This only changes the local practice copy.'
+                  : 'The full reflection is not saved.'}
+              </span>
             </div>
           </form>
           {screen.notice ? (

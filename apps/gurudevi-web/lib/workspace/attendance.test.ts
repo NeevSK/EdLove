@@ -1,11 +1,14 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   discardUnmatchedAttendanceDraftMarks,
+  discardAccountPracticeAttendance,
   loadAccountAttendanceDraft,
+  loadAccountPracticeAttendance,
   loadExploreAttendance,
   removeSyncedAttendanceDraftMarks,
   restoreAccountAttendanceDraft,
   saveAccountAttendanceDraft,
+  saveAccountPracticeAttendance,
   saveExploreAttendance,
   stepAttendanceStatus,
   type AccountAttendanceDraftScope,
@@ -124,5 +127,100 @@ describe('Workspace account attendance drafts', () => {
     expect(() => saveAccountAttendanceDraft(scope, students)).toThrow(
       'The browser could not keep this pending attendance draft',
     );
+  });
+});
+
+describe('Workspace account attendance practice adapter', () => {
+  const accountId = 'account-practice-17';
+
+  beforeEach(() => {
+    vi.stubGlobal('window', {
+      localStorage: {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => values.set(key, value),
+        removeItem: (key: string) => values.delete(key),
+      },
+    });
+  });
+
+  it('loads fictional students and keeps saved marks per account, practice feature, and day', () => {
+    const initial = loadAccountPracticeAttendance(accountId, date);
+    expect(initial.classroom.id).toBe('practice-classroom');
+    expect(initial.students.map((student) => student.name)).toEqual(['Nila Sen', 'Ravi Das', 'Mira Anand']);
+    expect(initial.students.every((student) => student.status === 'present')).toBe(true);
+
+    const changed = initial.students.map((student, index) =>
+      index === 0 ? { ...student, status: 'late' as const } : student,
+    );
+    saveAccountPracticeAttendance(accountId, date, changed);
+
+    expect(loadAccountPracticeAttendance(accountId, date).students[0]?.status).toBe('late');
+    expect(loadAccountPracticeAttendance(accountId, '2026-09-18').students[0]?.status).toBe('present');
+    expect(loadAccountPracticeAttendance('different-account', date).students[0]?.status).toBe('present');
+    const stored = [...values.values()].join('\n');
+    expect(stored).not.toContain('Learner one');
+    expect(stored).not.toContain('Nila Sen');
+  });
+
+  it('discards only the selected account attendance practice workspace', () => {
+    const changed = loadAccountPracticeAttendance(accountId, date).students.map((student) => ({
+      ...student,
+      status: 'absent' as const,
+    }));
+    saveAccountPracticeAttendance(accountId, date, changed);
+    saveAccountPracticeAttendance('different-account', date, changed);
+
+    discardAccountPracticeAttendance(accountId);
+
+    expect(loadAccountPracticeAttendance(accountId, date).students.every((student) => student.status === 'present')).toBe(true);
+    expect(loadAccountPracticeAttendance('different-account', date).students.every((student) => student.status === 'absent')).toBe(true);
+  });
+
+  it('preserves malformed practice data and reports storage failures', () => {
+    const first = loadAccountPracticeAttendance(accountId, date);
+    saveAccountPracticeAttendance(accountId, date, first.students);
+    const [key] = [...values.entries()][0] ?? [];
+    if (!key) throw new Error('Practice storage key was not created.');
+    values.set(key, '{invalid-json');
+
+    expect(() => loadAccountPracticeAttendance(accountId, date)).toThrow(
+      'could not read the local attendance practice workspace',
+    );
+    expect(values.get(key)).toBe('{invalid-json');
+  });
+
+  it('reports quota and discard failures without claiming practice data was saved or removed', () => {
+    const practice = loadAccountPracticeAttendance(accountId, date);
+    vi.stubGlobal('window', {
+      localStorage: {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: () => {
+          throw new Error('quota exceeded');
+        },
+        removeItem: () => {
+          throw new Error('storage unavailable');
+        },
+      },
+    });
+    expect(() => saveAccountPracticeAttendance(accountId, date, practice.students)).toThrow(
+      'The browser could not keep this local attendance practice',
+    );
+
+    vi.stubGlobal('window', {
+      localStorage: {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => values.set(key, value),
+        removeItem: () => {
+          throw new Error('storage unavailable');
+        },
+      },
+    });
+    saveAccountPracticeAttendance(accountId, date, practice.students);
+    const [key] = [...values.keys()];
+    expect(key).toBeDefined();
+    expect(() => discardAccountPracticeAttendance(accountId)).toThrow(
+      'could not be discarded from this browser',
+    );
+    if (key) expect(values.has(key)).toBe(true);
   });
 });

@@ -1,0 +1,70 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [labeled, unlabeled, synchronize, opened, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          script: |
+            const { owner, repo, number } = context.payload.pull_request;
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+            
+            // Only auto-merge security patches and non-expo minor/patch
+            const shouldAutoMerge = labels.some(l => 
+              l === 'security' || 
+              l === 'dependencies' && !labels.some(l => l === 'expo-ecosystem')
+            );
+            
+            if (!shouldAutoMerge) {
+              console.log('Skipping auto-merge: not a security patch or non-expo minor/patch');
+              return;
+            }
+            
+            // Check if all status checks passed
+            const checks = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: context.payload.pull_request.head.sha
+            });
+            
+            const allPassed = checks.data.check_runs.every(run => run.conclusion === 'success');
+            if (!allPassed) {
+              console.log('Waiting for all checks to pass...');
+              return;
+            }
+            
+            // Enable auto-merge
+            try {
+              await github.rest.pulls.updateBranch({
+                owner,
+                repo,
+                pull_number: number,
+              });
+              await github.graphql(`
+                mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+                  enablePullRequestAutoMerge(input: { pullRequestId: $prId, mergeMethod: $mergeMethod }) {
+                    pullRequest { autoMergeRequest { enabledAt } }
+                  }
+                }
+              `, {
+                prId: context.payload.pull_request.node_id,
+                mergeMethod: 'SQUASH'
+              });
+              console.log('Auto-merge enabled for PR #' + number);
+            } catch (e) {
+              console.error('Failed to enable auto-merge:', e);
+            }

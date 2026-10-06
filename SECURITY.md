@@ -29,3 +29,7 @@ disclosure.
 
 Doppler is source of truth (`docs/infra/doppler-toolchain.md`). CI masks secrets via
 `::add-mask` (`load-doppler-env` action). Never paste real values in issues/PRs.
+
+## Git History Note
+
+This repository contains a historical Google API key leak in commit `b56f62af` (removed in `83e3b4c9`). While the key has been rotated in Google Cloud Console and the current tracked surface is clean, the commit remains in git history for transparency. This is documented in the openness ADR (`docs/decisions/2026-08-25-transparent-hosted-oss.md`). The repository follows a "transparent hosted" model where history is preserved for auditability, but current code is continuously scanned for secrets via `pnpm audit:secrets`.

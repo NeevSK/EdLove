@@ -1,9 +1,15 @@
 import type {
   ResolvedWorkspaceSurface,
+  WorkspaceAppearance,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
 } from '@repo/core/types';
+
+export const DEFAULT_WORKSPACE_APPEARANCE: WorkspaceAppearance = {
+  preset: 'default',
+  motion: 'off',
+};
 
 export const WORKSPACE_CANVAS_ZONES = [
   'today',
@@ -44,6 +50,17 @@ export interface WorkspaceZoneLayoutGroup<
 }
 
 const unique = <TValue>(values: TValue[]): TValue[] => Array.from(new Set(values));
+
+export function resolveWorkspaceGroupOrder<TGroupId extends string>(
+  stored: readonly string[] | undefined,
+  defaults: readonly TGroupId[],
+): TGroupId[] {
+  const allowed = new Set(defaults);
+  const selected = (stored ?? []).filter((groupId): groupId is TGroupId =>
+    allowed.has(groupId as TGroupId),
+  );
+  return unique([...selected, ...defaults.filter((groupId) => !selected.includes(groupId))]);
+}
 
 const toSurfaceMap = <TSurfaceId extends string, TCapabilityKey extends string>(
   surfaces: WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>[],
@@ -101,6 +118,7 @@ export function createDefaultWorkspaceLayout<
     zoneBySurface,
     isDefault: true,
     surfaceMetadata: {},
+    appearance: DEFAULT_WORKSPACE_APPEARANCE,
     updatedAt,
   };
 }
@@ -114,6 +132,21 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
   const migratedIsDefault = (layout as unknown as { isDefault?: boolean }).isDefault ?? true;
   const migratedMetadata =
     (layout as unknown as { surfaceMetadata?: Record<string, unknown> }).surfaceMetadata ?? {};
+  const appearance = layout.appearance ?? DEFAULT_WORKSPACE_APPEARANCE;
+
+  // Some platform adapters persist a floor preference before their domain
+  // registry is hydrated. Preserve the stored arrangement until definitions
+  // are available instead of treating the empty registry as authoritative.
+  if (surfaces.length === 0) {
+    return {
+      ...layout,
+      isDefault: migratedIsDefault,
+      surfaceMetadata: migratedMetadata,
+      appearance,
+      groupOrder: layout.groupOrder ? unique(layout.groupOrder) : undefined,
+      updatedAt,
+    };
+  }
   const surfaceMap = toSurfaceMap(surfaces);
   const defaultOrder = sortSurfaceIdsByDefault(surfaces);
   const remainingSurfaceIds = new Set(defaultOrder);
@@ -158,8 +191,10 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
     hidden,
     pinned,
     zoneBySurface,
+    groupOrder: layout.groupOrder ? unique(layout.groupOrder) : undefined,
     isDefault: migratedIsDefault,
     surfaceMetadata: migratedMetadata,
+    appearance,
     updatedAt,
   };
 }
@@ -251,6 +286,19 @@ export function setWorkspaceSurfaceOrder<TSurfaceId extends string>(
   };
 }
 
+export function setWorkspaceGroupOrder<TSurfaceId extends string>(
+  layout: WorkspaceLayout<TSurfaceId>,
+  groupOrder: string[],
+  updatedAt = new Date().toISOString(),
+): WorkspaceLayout<TSurfaceId> {
+  return {
+    ...layout,
+    groupOrder: unique(groupOrder),
+    isDefault: false,
+    updatedAt,
+  };
+}
+
 export function setWorkspaceSurfaceHidden<TSurfaceId extends string>(
   layout: WorkspaceLayout<TSurfaceId>,
   surfaceId: TSurfaceId,
@@ -313,5 +361,29 @@ export function resetWorkspaceLayoutToDefault<TSurfaceId extends string>(
   layout: WorkspaceLayout<TSurfaceId>,
   updatedAt = new Date().toISOString(),
 ): WorkspaceLayout<TSurfaceId> {
-  return { ...layout, isDefault: true, updatedAt };
+  return { ...layout, groupOrder: undefined, isDefault: true, updatedAt };
+}
+
+export function setWorkspaceAppearance<TSurfaceId extends string>(
+  layout: WorkspaceLayout<TSurfaceId>,
+  appearance: WorkspaceAppearance,
+  updatedAt = new Date().toISOString(),
+): WorkspaceLayout<TSurfaceId> {
+  return {
+    ...layout,
+    appearance,
+    isDefault: false,
+    updatedAt,
+  };
+}
+
+export function resetWorkspaceAppearance<TSurfaceId extends string>(
+  layout: WorkspaceLayout<TSurfaceId>,
+  updatedAt = new Date().toISOString(),
+): WorkspaceLayout<TSurfaceId> {
+  return {
+    ...layout,
+    appearance: DEFAULT_WORKSPACE_APPEARANCE,
+    updatedAt,
+  };
 }

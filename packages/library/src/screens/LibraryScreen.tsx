@@ -4,18 +4,24 @@
 
 import { identityAPI } from '@repo/core/api/client';
 import { useDomainRollout, useTracking } from '@repo/core/hooks';
-import { coreRuntime, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import {
+  coreRuntime,
+  resolveWorkspaceAppearanceColor,
+  usePermissions,
+  useStore,
+  useTemporalStore,
+} from '@repo/core/logic';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
 import { libraryAPI } from '@repo/library/api/library';
 import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
 import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
 import { ResourceList } from '@repo/library/components/ResourceList';
 import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
 import { useBookmarkedResources, useLibrary } from '@repo/library/hooks/useLibrary';
-import { useLibraryWorkspaceSurfaces } from '@repo/library/workspace/useLibraryWorkspaceSurfaces';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type { CreateResourceInput, LibraryResource, ResourceType } from '@repo/library/types';
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
+import { useLibraryWorkspaceSurfaces } from '@repo/library/workspace/useLibraryWorkspaceSurfaces';
 import { CollectionCard } from '@repo/ui/components/CollectionCard';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
@@ -30,13 +36,13 @@ import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import {
+  FileSpreadsheet,
   FileText,
   Layers,
   LayoutGrid,
   Library,
   List,
   Map as MapIcon,
-  FileSpreadsheet,
   Play,
   Plus,
 } from '@repo/ui/icons';
@@ -414,7 +420,8 @@ export default function LibraryScreen() {
         .catch(() => {
           dispatch({
             type: 'SET_FALLBACK_ERROR',
-            error: 'Public collections could not be loaded. Your personal library is still available.',
+            error:
+              'Public collections could not be loaded. Your personal library is still available.',
           });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
@@ -666,8 +673,8 @@ export default function LibraryScreen() {
         const message = getLibraryCreateErrorMessage(error);
         showToast(message, 'error');
         const err = new Error(message);
-      (err as { cause?: unknown }).cause = error;
-      throw err;
+        (err as { cause?: unknown }).cause = error;
+        throw err;
       }
     },
     [
@@ -1175,7 +1182,11 @@ export default function LibraryScreen() {
   );
 
   return (
-    <ScreenWrapper scroll={!isSearchMode} noTopInset={true}>
+    <ScreenWrapper
+      backgroundColor={resolveWorkspaceAppearanceColor(libraryLayout?.appearance?.preset)}
+      scroll={!isSearchMode}
+      noTopInset={true}
+    >
       <GlobalHeader
         title={t('tabs.library') || 'Library'}
         subtitle={t('library.knowledgeSanctuary')}

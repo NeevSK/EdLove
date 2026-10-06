@@ -1,0 +1,149 @@
+.profile,
+.state {
+  max-width: 46rem;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.intro {
+  max-width: 40rem;
+}
+
+.eyebrow {
+  color: #9a5b2d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.65rem;
+  text-transform: uppercase;
+}
+
+.profile h1,
+.state h1 {
+  color: #2d2018;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.08;
+  margin: 0;
+}
+
+.intro > p:last-child,
+.state > p:not(.eyebrow) {
+  color: #62564d;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  margin: 1rem 0 0;
+}
+
+.identity {
+  background: #fffdfa;
+  border: 1px solid #e6d9ce;
+  border-radius: 1rem;
+  box-shadow: 0 0.8rem 2rem rgb(59 38 24 / 8%);
+  margin-top: 2rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.identity dl {
+  margin: 0;
+}
+
+.identity dl > div {
+  border-bottom: 1px solid #eee2d8;
+  display: grid;
+  gap: 0.3rem;
+  padding: 1.15rem 0;
+}
+
+.identity dl > div:last-child {
+  border-bottom: 0;
+}
+
+.identity dt {
+  color: #74675d;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.identity dd {
+  color: #2d2018;
+  font-size: 1.15rem;
+  font-weight: 650;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.readOnly {
+  color: #74675d;
+  font-size: 0.88rem;
+  margin: 1rem 0 0;
+}
+
+.deletion {
+  border-top: 1px solid #e6d9ce;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+}
+
+.deletion h2 {
+  color: #2d2018;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.deletion p {
+  color: #62564d;
+  line-height: 1.6;
+  margin: 0.75rem 0 0;
+}
+
+.deletionActions {
+  margin-top: 1rem;
+}
+
+.deletion button {
+  background: transparent;
+  border: 1px solid #a84432;
+  border-radius: 0.5rem;
+  color: #8b3021;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+}
+
+.deletion button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.deletion button:focus-visible {
+  outline: 3px solid #d4843a;
+  outline-offset: 3px;
+}
+
+.action {
+  background: #744321;
+  border-radius: 0.5rem;
+  color: #fff;
+  display: inline-block;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+
+.action:focus-visible {
+  outline: 3px solid #d4843a;
+  outline-offset: 3px;
+}
+
+.action:hover {
+  background: #593116;
+}
+
+@media (max-width: 36rem) {
+  .profile,
+  .state {
+    padding: 1.25rem;
+  }
+}

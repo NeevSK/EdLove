@@ -293,9 +293,7 @@ app.use(
         return origin;
       }
       const allowedOrigins = [
-        'https://gurudevi.app',
         'https://sanctuary.gurudevi.app',
-        'https://platform.gurudevi.edlove.org',
       ];
       return allowedOrigins.includes(origin) ? origin : null;
     },

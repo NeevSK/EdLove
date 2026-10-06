@@ -2,7 +2,7 @@
 title: "EDLOVE.ORG"
 status: "active"
 created: 2026-02-02
-updated: 2026-08-24
+updated: 2026-10-02
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, edlove-web]
@@ -78,6 +78,14 @@ Run these from the `apps/edlove-web` directory:
 â”œâ”€â”€ Docs/             # ðŸ“– The Constellation (Documentation)
 â””â”€â”€ package.json
 ```
+
+---
+
+## Open Source
+
+This project is part of the Polymath Platform monorepo, released under the MIT License. See the root `LICENSE` file for details.
+
+For contributor guidelines, see the root [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ---
 

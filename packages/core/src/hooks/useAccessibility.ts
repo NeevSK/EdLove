@@ -122,7 +122,7 @@ export function useFontScale(): number {
     setFontScale(scale);
 
     // Listen for font scale changes
-    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+    const subscription = Dimensions.addEventListener('change', ({ window }: { window: { fontScale: number } }) => {
       setFontScale(window.fontScale);
     });
 
@@ -173,7 +173,7 @@ export function useAccessibleColorScheme() {
  * with proper error handling and deduplication.
  */
 let lastAnnouncement = '';
-let announcementTimeout: NodeJS.Timeout | null = null;
+let announcementTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export function announceForAccessibility(
   message: string,

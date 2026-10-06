@@ -192,4 +192,24 @@ describe('useAuthLifecycle bootstrap ordering', () => {
     expect(lifecycleMocks.storeState.setUser).not.toHaveBeenCalledWith(null);
     expect(lifecycleMocks.storeState.setOnboardingCompleted).not.toHaveBeenCalledWith(false);
   });
+
+  it('does not resolve a cloud profile for an anonymous bootstrap or auth event', async () => {
+    const anonymousSession = session({ id: 'guest-1', is_anonymous: true });
+    lifecycleMocks.getAuthSession.mockResolvedValue(anonymousSession);
+    lifecycleMocks.onAuthStateChange.mockImplementation((listener) => {
+      lifecycleMocks.authStateListener = listener;
+      return { data: { subscription: { unsubscribe: vi.fn() } } };
+    });
+
+    useAuthLifecycle();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(lifecycleMocks.resolveAuthProfile).not.toHaveBeenCalled();
+
+    await lifecycleMocks.authStateListener?.('SIGNED_IN', anonymousSession);
+
+    expect(lifecycleMocks.resolveAuthProfile).not.toHaveBeenCalled();
+    expect(lifecycleMocks.storeState.setUser).toHaveBeenCalledWith(null);
+  });
 });

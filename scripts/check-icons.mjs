@@ -5,9 +5,9 @@ import { createRequire } from 'node:module';
 /**
  * Icon Bridge Contract Verifier
  *
- * Enforces that `@repo/ui/icons` is the ONLY public lucide icon surface in the
- * repository, and that the bridge itself only uses tree-shakable per-icon
- * subpath imports (`lucide-react-native/icons/<kebab>`).
+ * Enforces that `@repo/ui/icons`, `/native`, and `/web` are the only public
+ * Lucide icon surfaces in the repository. The native bridge uses tree-shakable
+ * per-icon subpath imports (`lucide-react-native/icons/<kebab>`).
  *
  * Fails when:
  *  1. Any app/package file imports lucide directly (root `lucide-react-native`,
@@ -22,10 +22,13 @@ import { createRequire } from 'node:module';
 const root = process.cwd();
 const uiPackageRoot = path.join(root, 'packages', 'ui');
 const bridgeFile = path.join(uiPackageRoot, 'src', 'icons.native.ts');
+const webBridgeFile = path.join(uiPackageRoot, 'src', 'icons.web.ts');
 const webShimFile = path.join(root, 'apps', 'gurudevi-mobile', 'src', 'shims', 'lucide-react-native-web.js');
+const uiCheckerFile = path.join(uiPackageRoot, 'scripts', 'check-icons.mjs');
+const checkerFile = path.resolve(process.argv[1]);
 
 // Files that are legitimately allowed to touch lucide directly.
-const allowlist = new Set([bridgeFile, webShimFile].map((p) => path.normalize(p)));
+const allowlist = new Set([bridgeFile, webBridgeFile, webShimFile, uiCheckerFile, checkerFile].map((p) => path.normalize(p)));
 
 const filePattern = /\.(ts|tsx|js|jsx|mjs|cjs)$/;
 const skipDirs = new Set(['node_modules', '.git', 'dist', '.expo', '.tmp', 'archives']);
@@ -60,6 +63,7 @@ try {
 }
 
 const bridgeText = fs.readFileSync(bridgeFile, 'utf8');
+const webBridgeText = fs.readFileSync(webBridgeFile, 'utf8');
 const bridgeExports = [];
 for (const line of bridgeText.split(/\r?\n/)) {
   const m = line.match(/^export \{\s*default as ([A-Za-z0-9]+)\s*\}\s+from 'lucide-react-native\/icons\/([^']+)';$/);
@@ -72,6 +76,18 @@ for (const line of bridgeText.split(/\r?\n/)) {
     violations.push(`bridge ${bridgeFile}: only public per-icon subpaths are allowed, found: ${line.trim()}`);
   } else if (/from\s*['"]lucide-react-native['"]/.test(line) && !/^export\s+type\b/.test(line.trim())) {
     violations.push(`bridge ${bridgeFile}: runtime root import is not allowed, found: ${line.trim()}`);
+  }
+}
+
+const webExportBlock = webBridgeText.match(/export\s*\{([\s\S]*?)\}\s*from 'lucide-react';/);
+if (!webExportBlock) {
+  violations.push(`web bridge ${webBridgeFile}: expected a named lucide-react export block`);
+} else {
+  const webExports = new Set(webExportBlock[1].match(/[A-Z][A-Za-z0-9]*/g) ?? []);
+  for (const { name } of bridgeExports) {
+    if (!webExports.has(name)) {
+      violations.push(`web bridge ${webBridgeFile}: missing '${name}' exported by the native bridge`);
+    }
   }
 }
 
@@ -111,8 +127,8 @@ for (const candidate of ['apps', 'packages']) {
 if (violations.length > 0) {
   console.error('Icon bridge contract violation:');
   for (const v of violations) console.error(`- ${v}`);
-  console.error('\nImport icons from @repo/ui/icons only. The bridge (packages/ui/src/icons.native.ts)');
-  console.error('is the single public surface. To add an icon, add one export line there.');
+  console.error('\nImport icons from @repo/ui/icons, @repo/ui/icons/native, or @repo/ui/icons/web only.');
+  console.error('Add matching native and web exports before exposing a new shared icon name.');
   process.exit(1);
 }
 

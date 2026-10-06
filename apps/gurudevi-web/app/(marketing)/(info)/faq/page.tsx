@@ -16,7 +16,7 @@ const questions = [
   ],
   [
     'When does it launch and what is the multi-year roadmap?',
-    'Our journey unfolds across three grounded phases: Alpha Release on October 6, 2026 (Design Cycle artifact genesis for pilot teachers); Beta Release on October 6, 2027 (Relevance Cycle field evaluation and multi-workspace expansion); and GA Stable Sanctuary on October 6, 2028 (Rigor Cycle nationwide availability). Pacing remains responsive to capital flow, founder capacity, and research rigor.',
+    'Our journey unfolds across three grounded phases: Alpha Release (Design Cycle artifact genesis for pilot teachers); Beta Release (Relevance Cycle field evaluation and multi-workspace expansion); and GA Stable Sanctuary (Rigor Cycle nationwide availability). Pacing remains responsive to capital flow, founder capacity, and research rigor.',
   ],
   [
     'What can a principal see?',

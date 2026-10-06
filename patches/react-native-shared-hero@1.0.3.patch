@@ -1,0 +1,25 @@
+diff --git a/android/src/main/java/com/sharedhero/SharedHeroViewManager.kt b/android/src/main/java/com/sharedhero/SharedHeroViewManager.kt
+index d7c5bec1e8eab1f171309ec15645ab0292acd56d..5ca7f30310a71015c1e9c32fff651891e95b3769 100644
+--- a/android/src/main/java/com/sharedhero/SharedHeroViewManager.kt
++++ b/android/src/main/java/com/sharedhero/SharedHeroViewManager.kt
+@@ -208,10 +208,12 @@ class SharedHeroViewManager :
+  * no public surface and is meaningless in isolation — it knows the exact props
+  * the codegen delegate fails to dispatch for `SharedHeroView`.
+  */
++@Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
+ private class HeroStylePropDelegate(
+   private val inner: ViewManagerDelegate<SharedHeroView>,
+ ) : ViewManagerDelegate<SharedHeroView> {
+ 
++  @Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
+   override fun setProperty(view: SharedHeroView, propName: String, value: Any?) {
+     when (propName) {
+       // Border radius — uniform + all 12 per-corner variants.
+@@ -264,6 +266,7 @@ private class HeroStylePropDelegate(
+     }
+   }
+ 
++  @Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
+   override fun receiveCommand(
+     view: SharedHeroView,
+     commandName: String,

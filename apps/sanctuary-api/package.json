@@ -14,11 +14,11 @@
     "start:no-doppler": "node ../../scripts/with-dotenv-fallback.mjs node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"biome check src\" --name \"apps_sanctuary-api-lint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"apps_sanctuary-api-format\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_sanctuary-api-test\"",
-    "test:coverage": "vitest run --coverage --exclude=src/__tests__/integration/**",
-    "test:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun x vitest run\" --name \"apps_sanctuary-api-test_bun\"",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:integration:watch": "vitest --config vitest.integration.config.ts"
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_sanctuary-api-test\" --evidence-level G1",
+    "test:coverage": "node ../../scripts/run-and-report.mjs --cmd \"vitest run --coverage --exclude=src/__tests__/integration/**\" --name \"apps_sanctuary-api-test_coverage\" --evidence-level G1",
+    "test:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun x vitest run\" --name \"apps_sanctuary-api-test_bun\" --evidence-level G1",
+    "test:integration": "node ../../scripts/run-and-report.mjs --cmd \"vitest run --config vitest.integration.config.ts\" --name \"apps_sanctuary-api-test_integration\" --evidence-level G3",
+    "test:integration:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest --config vitest.integration.config.ts\" --name \"apps_sanctuary-api-test_integration_watch\" --evidence-level G3"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.53",

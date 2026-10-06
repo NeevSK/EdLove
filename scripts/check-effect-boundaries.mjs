@@ -8,11 +8,20 @@ const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);
 const ignoredDirectories = new Set([
   'node_modules',
   'dist',
+  'dist-dev',
   '.expo',
   '.turbo',
   '.vercel',
   'archives',
   'coverage',
+  'android',
+  'ios',
+  '.gradle',
+  'build',
+  '.git',
+  '.next',
+  'powersync',
+  'rust-lab',
 ]);
 
 function filesIn(directory) {

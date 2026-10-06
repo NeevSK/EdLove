@@ -57,7 +57,9 @@ export default async function WorkspacePage() {
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
       <WorkspaceFloor
+        key={entry.authSubjectId}
         mode="account"
+        capacity={entry.activeCapacity}
         scope={{ bondId: entry.activeScope.bondId, entityId: entry.activeScope.entityId }}
         subjectId={entry.authSubjectId}
       />

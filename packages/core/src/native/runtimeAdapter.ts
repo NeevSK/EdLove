@@ -105,7 +105,7 @@ export const nativeLinkingProvider: LinkingProvider = {
   canOpenURL: (url: string) => Linking.canOpenURL(url),
   addEventListener: (type: 'url', handler: (event: { url: string }) => void) =>
     Linking.addEventListener(type, handler),
-  getInitialURL: () => Linking.getInitialURL(),
+  getInitialURL: async () => (await Linking.getInitialURL()) ?? null,
 };
 
 export const nativeLocationProvider: LocationProvider = {

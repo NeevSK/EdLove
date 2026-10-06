@@ -26,6 +26,31 @@ export {
   requestGuestToAccountMigration,
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
+export {
+  createAccountPracticeScope,
+  deriveAccountPracticeKey,
+  resolveAccountPracticeWriteDecision,
+} from '@repo/core/lib/practiceBoundary';
+export type { AccountPracticeScope } from '@repo/core/lib/practiceBoundary';
+export { createPracticeController } from '@repo/core/lib/practiceContract';
+export type {
+  PracticeAdapter,
+  PracticeController,
+  PracticeResult,
+  SyncPracticeAdapter,
+  SyncPracticeController,
+  PracticeValue,
+} from '@repo/core/lib/practiceContract';
+export {
+  declaredCapabilities,
+  declaredPracticeCapability,
+  resolvePracticeAvailability,
+} from '@repo/core/logic/registry/capabilityManifest';
+export type {
+  CapabilityDeclaration,
+  CapabilityPracticePolicy,
+  PracticeAvailability,
+} from '@repo/core/logic/registry/capabilityManifest';
 export type {
   ExplicitGuestToAccountMigration,
   PersistenceExperience,

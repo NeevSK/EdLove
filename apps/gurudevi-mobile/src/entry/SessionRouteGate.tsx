@@ -30,14 +30,6 @@ export function SessionRouteGate({
   // router.replace() updates the browser location before Expo Router commits
   // the destination tree. Keeping children mounted in that gap can show the
   // previous route at the new URL (for example, Welcome at /self).
-  if (routeTarget.redirectTo && pathname !== routeTarget.redirectTo) {
-    return (
-      <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
-        <BrandPulse size={32} accessibilityLabel="Opening your sanctuary" />
-      </Box>
-    );
-  }
-
   if (routeTarget.decision === 'booting' && !isPublicBootstrapRoute(pathname)) {
     return (
       <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
@@ -61,12 +53,22 @@ export function SessionRouteGate({
     );
   }
 
-  return (
+  const transition = routeTarget.redirectTo && pathname !== routeTarget.redirectTo;
+  const content = (
     <>
       {children}
       {routeTarget.decision === 'app' && !isPublicBootstrapRoute(pathname)
         ? appServices
         : null}
     </>
+  );
+  if (!transition) return content;
+  return (
+    <Box className="flex-1">
+      {content}
+      <Box className="absolute inset-0 z-50 items-center justify-center bg-phase-canvas px-8">
+        <BrandPulse size={32} accessibilityLabel="Opening your sanctuary" />
+      </Box>
+    </Box>
   );
 }

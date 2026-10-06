@@ -394,10 +394,10 @@ export const AuthScreenWeb = memo(
           } else {
             await authAPI.signUp(email, password);
             showToast({
-              message:
-                t('auth.checkEmail') || 'Identity initiated. Please check your email to confirm.',
+              message: 'Welcome! Your identity is ready.',
               type: 'success',
             });
+            onSuccess?.();
           }
         } else {
           showToast({ message: 'Welcome back! Reconnecting...', type: 'info', duration: 2000 });

@@ -2,9 +2,9 @@ import { authAPI, identityAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
 import { deepLink, getSessionIdentityMode } from '@repo/core/logic';
-import { FlowResolver, GuestDataSync } from '@repo/core/native';
+import { FlowResolver, getGuestClaimIdentity, getLocalGuestIdentity, GuestDataSync } from '@repo/core/native';
 import { storage } from '@repo/core/storage';
-import type { Capacity, User } from '@repo/core/types';
+import type { User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { default as GuestDataSyncModal } from '@repo/ui/components/GuestDataSyncModal';
@@ -12,7 +12,7 @@ import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Mail, Shield } from '@repo/ui/icons';
+import { Mail } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -363,10 +363,18 @@ const AuthScreen = memo(
 
         if (isAnon && currentSession?.user) {
           GuestDataSync.rememberGuestSession(currentSession.user.id);
-          const existingName =
-            (currentUser?.display_name && String(currentUser.display_name).trim()) ||
-            'Sanctuary User';
-          await authAPI.linkAnonymousToEmail(email, password, existingName, 'teacher' as Capacity);
+          const guestClaim = getGuestClaimIdentity(
+            await getLocalGuestIdentity(currentSession.user.id),
+          );
+          if (!guestClaim.capacity) {
+            throw new Error('Choose a capacity before securing your guest journey.');
+          }
+          await authAPI.linkAnonymousToEmail(
+            email,
+            password,
+            guestClaim.displayName,
+            guestClaim.capacity,
+          );
 
           const internalId = await identityAPI.getMyInternalId();
           hapticSuccess();
@@ -387,16 +395,16 @@ const AuthScreen = memo(
             if (onSuccess) onSuccess();
           }
         } else {
-          await authAPI.signUp(email, password, undefined, getRedirectUrl());
+          await authAPI.signUp(email, password);
           hapticSuccess();
           showToast({
-            message:
-              t('auth.checkEmail') || 'Identity initiated. Please check your email to confirm.',
+            message: t('auth.signupSuccess') || 'Welcome! Your identity is ready.',
             type: 'success',
           });
+          if (onSuccess) onSuccess();
         }
       },
-      [currentUser, email, password, showToast, t, onSuccess, getRedirectUrl],
+      [currentUser, email, password, showToast, t, onSuccess],
     );
 
     const completeLogin = useCallback(async () => {
@@ -509,89 +517,6 @@ const AuthScreen = memo(
         dispatch({ type: 'SET_LOADING', loading: false });
       }
     }, [email, showToast, t]);
-
-    const handlePasskeySignIn = useCallback(async () => {
-      dispatch({ type: 'SET_LOADING', loading: true });
-      hapticLight();
-      showToast({ message: 'Opening passkey sign-in...', type: 'info', duration: 2000 });
-      try {
-        const redirectUrl = getRedirectUrl();
-        const passkeyOptions = await authAPI.signInWithPasskey(redirectUrl, true);
-        const passkeyUrl = (passkeyOptions as { url?: string })?.url;
-
-        if (!passkeyUrl) {
-          showToast({
-            message: 'Passkey sign-in is not available on this device yet.',
-            type: 'error',
-          });
-          return;
-        }
-
-        const authResponse = await WebBrowser.openAuthSessionAsync(passkeyUrl, redirectUrl);
-        if (authResponse.type === 'success' && (authResponse as any).url) {
-          const result = await deepLink.handleURL((authResponse as { url: string }).url);
-          if (!result.isHandled) {
-            showToast({
-              message: 'Passkey sign-in could not be completed. Please try again.',
-              type: 'error',
-            });
-            return;
-          }
-          hapticSuccess();
-          onSuccess?.();
-        }
-      } catch (err) {
-        handleAPIError(err);
-        showToast({
-          message: 'Passkey sign-in failed. Try Google sign-in or email instead.',
-          type: 'error',
-        });
-      } finally {
-        dispatch({ type: 'SET_LOADING', loading: false });
-      }
-    }, [getRedirectUrl, onSuccess, showToast]);
-
-    const handlePasskeyRegister = useCallback(async () => {
-      dispatch({ type: 'SET_LOADING', loading: true });
-      hapticLight();
-      showToast({ message: 'Creating a passkey...', type: 'info', duration: 2000 });
-      try {
-        const redirectUrl = getRedirectUrl();
-        const passkeyOptions = await authAPI.registerPasskey(redirectUrl, true);
-        const passkeyUrl = (passkeyOptions as { url?: string })?.url;
-
-        if (!passkeyUrl) {
-          showToast({
-            message: 'Passkey setup is not available on this device yet.',
-            type: 'error',
-          });
-          return;
-        }
-
-        const authResponse = await WebBrowser.openAuthSessionAsync(passkeyUrl, redirectUrl);
-        if (authResponse.type === 'success' && (authResponse as any).url) {
-          const result = await deepLink.handleURL((authResponse as { url: string }).url);
-          if (result.isHandled) {
-            hapticSuccess();
-            onSuccess?.();
-            return;
-          }
-        }
-
-        showToast({
-          message: 'Passkey was created, but no session tokens were returned.',
-          type: 'info',
-        });
-      } catch (err) {
-        handleAPIError(err);
-        showToast({
-          message: 'Passkey creation failed. You can continue with Google or email.',
-          type: 'error',
-        });
-      } finally {
-        dispatch({ type: 'SET_LOADING', loading: false });
-      }
-    }, [getRedirectUrl, onSuccess, showToast]);
 
     const handleShowEmailAuth = useCallback(() => {
       hapticLight();
@@ -820,22 +745,6 @@ const AuthScreen = memo(
                           </Box>
                           <ButtonText className="text-lg font-bold" style={{ color: '#000' }}>
                             {isSignUp ? 'Sign up with Google' : t('auth.signInWithGoogle')}
-                          </ButtonText>
-                        </HStack>
-                      </Button>
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        onPress={() => {
-                          void (isSignUp ? handlePasskeyRegister() : handlePasskeySignIn());
-                        }}
-                        isDisabled={loading}
-                        className="h-[54px] rounded-2xl border-phase-border bg-transparent"
-                      >
-                        <HStack className="gap-2 items-center">
-                          <Shield size={18} color={text.primary} />
-                          <ButtonText className="text-phase-primary font-medium">
-                            {isSignUp ? 'Create passkey' : 'Use passkey'}
                           </ButtonText>
                         </HStack>
                       </Button>

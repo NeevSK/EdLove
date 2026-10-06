@@ -7,13 +7,11 @@ import type { RouterClient } from '@orpc/server';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { cleanupTestData, createTestUserWithBond, integrationTest } from '../integration-setup';
 
-// Test configuration
-const TEST_API_URL = 'http://localhost:3000/api';
-
 // Create a simple ORPC client for integration tests (avoids @orpc/tanstack-query dependency issue)
 function createIntegrationClient(headers: Record<string, string> = {}) {
+  const { apiUrl } = integrationTest.environment();
   const link = new RPCLink<Record<never, never>>({
-    url: TEST_API_URL,
+    url: apiUrl,
     headers,
     fetch: async (request, init) => {
       return globalThis.fetch(request, init);
@@ -30,9 +28,7 @@ describe('Self Domain Integration Tests', () => {
     // Create test user with bond
     testUser = await createTestUserWithBond('teacher', 'SCHOOL', 'test-school-integration');
 
-    // In a real test, you'd get the auth token from Supabase
-    // For now, we'll use a mock token or skip if no auth
-    authToken = process.env.TEST_AUTH_TOKEN || 'mock-token';
+    authToken = integrationTest.environment().authToken;
   });
 
   afterAll(async () => {
@@ -46,10 +42,7 @@ describe('Self Domain Integration Tests', () => {
   });
 
   it('should log mood and retrieve history', async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -94,10 +87,7 @@ describe('Self Domain Integration Tests', () => {
   });
 
   it('should burn journal entry', async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -122,10 +112,7 @@ describe('Self Domain Integration Tests', () => {
   });
 
   it("should get today's mood", async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -153,7 +140,7 @@ describe('Library Domain Integration Tests', () => {
 
   beforeAll(async () => {
     testUser = await createTestUserWithBond('teacher', 'SCHOOL', 'test-school-integration');
-    authToken = process.env.TEST_AUTH_TOKEN || 'mock-token';
+    authToken = integrationTest.environment().authToken;
   });
 
   afterAll(async () => {
@@ -163,10 +150,7 @@ describe('Library Domain Integration Tests', () => {
   });
 
   it('should create library resource', async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -199,10 +183,7 @@ describe('Library Domain Integration Tests', () => {
   });
 
   it('should list library resources', async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -232,7 +213,7 @@ describe('Mapping Domain Integration Tests', () => {
 
   beforeAll(async () => {
     testUser = await createTestUserWithBond('teacher', 'SCHOOL', 'test-school-integration');
-    authToken = process.env.TEST_AUTH_TOKEN || 'mock-token';
+    authToken = integrationTest.environment().authToken;
   });
 
   afterAll(async () => {
@@ -242,10 +223,7 @@ describe('Mapping Domain Integration Tests', () => {
   });
 
   it('should create and retrieve mapping topology', async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -284,7 +262,7 @@ describe('Rewards Domain Integration Tests', () => {
 
   beforeAll(async () => {
     testUser = await createTestUserWithBond('student', 'SCHOOL', 'test-school-integration');
-    authToken = process.env.TEST_AUTH_TOKEN || 'mock-token';
+    authToken = integrationTest.environment().authToken;
   });
 
   afterAll(async () => {
@@ -294,10 +272,7 @@ describe('Rewards Domain Integration Tests', () => {
   });
 
   it('should get rewards and check achievements', async () => {
-    if (!testUser || !authToken) {
-      console.log('Skipping - no test user or auth token');
-      return;
-    }
+    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,

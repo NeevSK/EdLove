@@ -20,6 +20,26 @@ function session(): AuthSession {
 }
 
 describe('resolveAuthProfile', () => {
+  it('does not resolve cloud identity or lifecycle state for an anonymous session', async () => {
+    const identifyActiveCitizen = vi.fn();
+    const getAccountLifecycleStatus = vi.fn();
+    const getSchoolType = vi.fn();
+
+    await expect(
+      resolveAuthProfile(
+        {
+          ...session(),
+          user: { ...session().user, is_anonymous: true },
+        },
+        { getAccountLifecycleStatus, getSchoolType, identifyActiveCitizen },
+      ),
+    ).resolves.toEqual({ kind: 'unavailable', profileError: null });
+
+    expect(identifyActiveCitizen).not.toHaveBeenCalled();
+    expect(getAccountLifecycleStatus).not.toHaveBeenCalled();
+    expect(getSchoolType).not.toHaveBeenCalled();
+  });
+
   it('returns active identity facts and resolves the school type', async () => {
     const getSchoolType = vi.fn().mockResolvedValue('government');
     const getAccountLifecycleStatus = vi.fn();

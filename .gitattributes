@@ -1,0 +1,62 @@
+# Normalize line endings in the repository, and check out LF in the working tree.
+#
+# This repo is developed from Windows (core.autocrlf=true), WSL2, Linux, and macOS.
+# Without this file a Windows checkout rewrites every file to CRLF, which breaks:
+#   - Husky hooks (.husky/pre-commit etc.) -> "pre-commit: not found"
+#   - shell scripts with a #!/usr/bin/env sh shebang -> "bad interpreter"
+#   - EAS cloud builds, which clone with LF regardless of local settings
+* text=auto eol=lf
+
+# Files that must keep CRLF in the working tree.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts: LF is mandatory, not cosmetic. Keep the exec bit so that
+# ./script.sh works after a fresh clone on Linux and macOS.
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Husky hooks are invoked by path, not through a shell interpreter, and a
+# CRLF commit-msg hook fails with a confusing "$'\r': command not found".
+.husky/** text eol=lf
+
+# Lockfile: generated, always LF, never merge-conflict it by hand.
+pnpm-lock.yaml text eol=lf merge=binary linguist-generated=true
+
+# Generated analytics output and compiled JS committed alongside TS sources.
+# Marked so diffs and language stats ignore them (see the security checklist's
+# tracked-but-ignored remediation).
+packages/analytics/src/**/*.js linguist-generated=true
+packages/analytics/src/**/*.js.map linguist-generated=true
+
+# Documentation: keep Markdown LF, but do not let git mangle trailing whitespace
+# semantics inside fenced code blocks that encode exact output.
+*.md text eol=lf
+
+# ---------------------------------------------------------------------------
+# Binary assets - never attempt EOL conversion or diffing.
+# ---------------------------------------------------------------------------
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.br binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.mp3 binary
+*.mp4 binary
+*.mov binary
+*.webm binary
+*.keystore binary
+*.jks binary
+*.p12 binary
+*.keystore.base64 text eol=lf

@@ -1,5 +1,13 @@
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
+export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night';
+export type WorkspaceAppearanceMotion = 'off' | 'subtle';
+
+export interface WorkspaceAppearance {
+  preset: WorkspaceAppearancePreset;
+  motion: WorkspaceAppearanceMotion;
+}
+
 export type WorkspaceSwitcherTargetId =
   | 'founder'
   | 'admin'
@@ -75,8 +83,10 @@ export interface WorkspaceLayout<TSurfaceId extends string = string> {
   hidden: TSurfaceId[];
   pinned: TSurfaceId[];
   zoneBySurface: Partial<Record<TSurfaceId, WorkspaceZoneId>>;
+  groupOrder?: string[];
   isDefault?: boolean;
   surfaceMetadata?: Record<string, unknown>;
+  appearance?: WorkspaceAppearance;
   updatedAt: string;
 }
 

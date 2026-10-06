@@ -1,7 +1,9 @@
 import { execSync, spawnSync } from 'node:child_process';
-import * as path from 'node:path';
 
-const WSL_TARGET = '/home/nsk/projects/polymath-platform';
+import { repoRoot, resolveWslWorkspace, toWslPath } from './lib/wsl-workspace.mjs';
+
+const WSL_TARGET = resolveWslWorkspace();
+const WSL_SOURCE = toWslPath(repoRoot);
 
 console.log('🔄 Starting High-Speed Windows-to-WSL2 Monorepo Sync...');
 
@@ -33,10 +35,12 @@ try {
     '--exclude=android/app/build',
     '--exclude=android/.cxx',
     '--exclude=ios/build',
-    '--exclude=ios/Pods'
+    '--exclude=ios/Pods',
+    '--exclude=docs',
+    '--exclude=reports'
   ].join(' ');
 
-  const syncCmd = `rsync -avq ${excludes} /mnt/c/x/ ${WSL_TARGET}/`;
+  const syncCmd = `rsync -avq ${excludes} ${WSL_SOURCE}/ ${WSL_TARGET}/`;
   execSync(`wsl -e bash -c "${syncCmd}"`, { stdio: 'inherit' });
 
   console.log('✅ WSL2 synchronization completed successfully in < 1 second.');

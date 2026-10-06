@@ -1,19 +1,20 @@
 ---
 title: "Gurudevi Public Site (Marketing)"
-status: "active"
+status: "deprecated"
 created: 2026-03-20
-updated: 2026-08-24
+updated: 2026-10-02
 author: "Naveen"
 scribe: "opencode"
-tags: [apps, gurudevi-marketingWeb]
+tags: [apps, gurudevi-marketingWeb, deprecated]
 ---
 
-# Gurudevi Public Site (Marketing)
+# ⚠️ DEPRECATED: Gurudevi Public Site (Marketing)
 
-**URL**: `gurudevi.edlove.org` (eventually `gurudevi.lk`)
+**Status**: This app is deprecated. See [DEPRECATION.md](./DEPRECATION.md) for details.
 
-This app is the public-facing landing and marketing site for the Gurudevi
-project — philosophy, capabilities, FAQ, privacy.
+**New Home**: `apps/gurudevi-web` (Next.js canonical platform)
+
+This Astro-based marketing site is being migrated to the unified Next.js platform at `apps/gurudevi-web`. All new marketing/web work should go there.
 
 ## What Gurudevi is
 

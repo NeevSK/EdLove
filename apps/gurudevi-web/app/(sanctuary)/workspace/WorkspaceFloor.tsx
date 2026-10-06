@@ -1,21 +1,26 @@
 'use client';
 
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import {
+  type AccountAttendanceDraftScope,
   type AttendanceStatus,
+  discardAccountPracticeAttendance,
   discardUnmatchedAttendanceDraftMarks,
-  loadAccountAttendanceDraft,
   loadAccountAttendance,
+  loadAccountAttendanceDraft,
   loadAccountClassrooms,
+  loadAccountPracticeAttendance,
   loadExploreAttendance,
   removeSyncedAttendanceDraftMarks,
   restoreAccountAttendanceDraft,
   saveAccountAttendance,
   saveAccountAttendanceDraft,
+  saveAccountPracticeAttendance,
   saveExploreAttendance,
-  type AccountAttendanceDraftScope,
   stepAttendanceStatus,
   type WorkspaceClassroom,
   type WorkspaceStudent,
@@ -26,6 +31,7 @@ import styles from './workspace.module.css';
 type WorkspaceFloorProps = Readonly<{
   mode: 'account' | 'explore';
   subjectId?: string;
+  capacity?: string;
   scope?: Readonly<{ bondId: string; entityId: string }>;
 }>;
 type LoadState = 'loading' | 'ready' | 'error';
@@ -61,7 +67,13 @@ function statusCounts(students: readonly WorkspaceStudent[]) {
   );
 }
 
-export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) {
+export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFloorProps) {
+  const floorAppearance = useBrowserWorkspaceAppearance({
+    accountId: subjectId ?? 'explore',
+    defaultGroupOrder: ['operational'],
+    enableRemoteSync: mode === 'account' && Boolean(subjectId),
+    workspaceId: 'workspace',
+  });
   const workbench = useDomainWorkbench('workspace');
   const [overview, setOverview] = useState(true);
   const [classrooms, setClassrooms] = useState<readonly WorkspaceClassroom[]>([]);
@@ -75,7 +87,9 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [unsynced, setUnsynced] = useState(false);
+  const [practiceMode, setPracticeMode] = useState(false);
   const [unmatchedDraftCount, setUnmatchedDraftCount] = useState(0);
+  const latestLoadRef = useRef(0);
   const focused = useMemo(
     () =>
       workbench.state.tasks.find((task) => task.taskKey === workbench.state.focusedTaskKey) ?? null,
@@ -84,19 +98,30 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
 
   const load = useCallback(
     async (selectedDate: string, selectedClassroom?: WorkspaceClassroom) => {
+      const loadId = ++latestLoadRef.current;
       setLoadState('loading');
       setError(null);
       setSaved(false);
       try {
-        if (mode === 'explore') {
+        if (mode === 'account' && practiceMode && subjectId) {
+          const practice = loadAccountPracticeAttendance(subjectId, selectedDate);
+          setClassrooms([practice.classroom]);
+          setClassroom(practice.classroom);
+          selectedClassroomRef.current = practice.classroom;
+          setStudents(practice.students);
+          setUnsynced(false);
+          setUnmatchedDraftCount(0);
+        } else if (mode === 'explore') {
           const local = loadExploreAttendance(selectedDate);
           setClassrooms(local.classrooms);
           setClassroom(local.classroom);
           selectedClassroomRef.current = local.classroom;
           setStudents(local.students);
         } else if (subjectId) {
-          if (!scope) throw new Error('Your selected classroom scope is unavailable. Reload Workspace.');
+          if (!scope)
+            throw new Error('Your selected classroom scope is unavailable. Reload Workspace.');
           const available = await loadAccountClassrooms(subjectId);
+          if (loadId !== latestLoadRef.current) return;
           setClassrooms(available);
           const selected =
             selectedClassroom ??
@@ -107,6 +132,7 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
           selectedClassroomRef.current = selected;
           if (selected) {
             const roster = await loadAccountAttendance(selected, selectedDate, subjectId);
+            if (loadId !== latestLoadRef.current) return;
             const draft = loadAccountAttendanceDraft(accountDraftScope(selected.id, selectedDate));
             const restored = restoreAccountAttendanceDraft(roster, draft);
             setStudents(restored.students);
@@ -122,16 +148,20 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
         }
         setLoadState('ready');
       } catch (cause) {
+        if (loadId !== latestLoadRef.current) return;
         setLoadState('error');
         setError(
           cause instanceof Error ? cause.message : 'Workspace could not load. Please retry.',
         );
       }
     },
-    [mode, scope, subjectId],
+    [mode, practiceMode, scope, subjectId],
   );
 
-  function accountDraftScope(classroomId: string, selectedDate: string): AccountAttendanceDraftScope {
+  function accountDraftScope(
+    classroomId: string,
+    selectedDate: string,
+  ): AccountAttendanceDraftScope {
     if (!subjectId || !scope) throw new Error('The selected account scope is unavailable.');
     return {
       accountId: subjectId,
@@ -143,6 +173,7 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
   }
 
   function persistAccountDraft(nextStudents: readonly WorkspaceStudent[]) {
+    if (practiceMode) return true;
     if (mode !== 'account' || !classroom) return true;
     try {
       saveAccountAttendanceDraft(accountDraftScope(classroom.id, date), nextStudents);
@@ -150,7 +181,9 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
       setError(null);
       return true;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'The attendance draft could not be saved locally.');
+      setError(
+        cause instanceof Error ? cause.message : 'The attendance draft could not be saved locally.',
+      );
       return false;
     }
   }
@@ -181,19 +214,17 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
   function changeStatus(studentId: string) {
     setSaved(false);
     const next = students.map((student) =>
-        student.id === studentId
-          ? { ...student, status: stepAttendanceStatus(student.status) }
-          : student,
-      );
+      student.id === studentId
+        ? { ...student, status: stepAttendanceStatus(student.status) }
+        : student,
+    );
     if (!persistAccountDraft(next)) return;
     setStudents(next);
   }
 
   function markAll(status: AttendanceStatus) {
     setSaved(false);
-    const next = students.map((student) =>
-      student.studentId ? { ...student, status } : student,
-    );
+    const next = students.map((student) => (student.studentId ? { ...student, status } : student));
     if (!persistAccountDraft(next)) return;
     setStudents(next);
   }
@@ -204,7 +235,9 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
     setError(null);
     setNotice(null);
     try {
-      if (mode === 'explore') saveExploreAttendance(date, students);
+      if (mode === 'account' && practiceMode && subjectId) {
+        saveAccountPracticeAttendance(subjectId, date, students);
+      } else if (mode === 'explore') saveExploreAttendance(date, students);
       else if (subjectId) {
         await saveAccountAttendance(classroom, date, students, subjectId);
         const remaining = removeSyncedAttendanceDraftMarks(
@@ -213,13 +246,14 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
         );
         setUnmatchedDraftCount(remaining);
         setUnsynced(remaining > 0);
-      }
-      else throw new Error('Your account identity is unavailable. Sign in again to continue.');
+      } else throw new Error('Your account identity is unavailable. Sign in again to continue.');
       setSaved(true);
       setNotice(
-        mode === 'explore'
-          ? 'Saved in this browser’s local Explore workspace.'
-          : 'Attendance saved for this classroom.',
+        practiceMode
+          ? 'Practice attendance saved on this device. It has not changed a live classroom.'
+          : mode === 'explore'
+            ? 'Saved in this browser’s local Explore workspace.'
+            : 'Attendance saved for this classroom.',
       );
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Attendance was not saved. Please retry.');
@@ -237,10 +271,28 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
       );
       setUnmatchedDraftCount(0);
       setUnsynced(remaining > 0);
-      setNotice('Unmatched local draft marks were discarded. Current roster marks remain unchanged.');
+      setNotice(
+        'Unmatched local draft marks were discarded. Current roster marks remain unchanged.',
+      );
       setError(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unmatched draft marks were not removed.');
+    }
+  }
+
+  function endPractice() {
+    if (mode !== 'account' || !practiceMode || !subjectId) return;
+    try {
+      discardAccountPracticeAttendance(subjectId);
+      setPracticeMode(false);
+      setOverview(true);
+      setSaved(false);
+      setNotice('Attendance practice was discarded. Your live classroom records were not changed.');
+      setError(null);
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : 'The practice workspace could not be discarded.',
+      );
     }
   }
 
@@ -248,6 +300,12 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
   const markableCount = students.filter((student) => student.studentId !== null).length;
   const unlinkedCount = students.length - markableCount;
   const activeAttendance = focused?.featureId === attendanceTask.featureId;
+  const practiceAvailability = resolvePracticeAvailability({
+    featureId: attendanceTask.featureId,
+    platform: 'browser',
+    capacity,
+    hasSelectedScope: Boolean(scope),
+  });
   const horizon = workbench.state.temporalHorizon ?? todayHorizon();
 
   useEffect(() => {
@@ -268,7 +326,13 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
   }
 
   return (
-    <article className={styles.floor} data-domain="workspace" aria-labelledby="workspace-title">
+    <article
+      className={styles.floor}
+      data-domain="workspace"
+      data-appearance={floorAppearance.appearance.preset}
+      data-motion={floorAppearance.appearance.motion}
+      aria-labelledby="workspace-title"
+    >
       <div className={styles.workbench}>
         <TaskStrip
           focusedTaskKey={workbench.state.focusedTaskKey}
@@ -292,7 +356,11 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
 
       <header className={styles.heading}>
         <p className={styles.eyebrow}>
-          {mode === 'explore' ? 'Explore · local workspace' : 'Workspace'}
+          {practiceMode
+            ? 'Safe Try · fictional attendance'
+            : mode === 'explore'
+              ? 'Explore · local workspace'
+              : 'Workspace'}
         </p>
         <h1 id="workspace-title">A steady view of the work in your care</h1>
         <p>
@@ -335,6 +403,11 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
           ) : null}
         </p>
       ) : null}
+      {practiceMode ? (
+        <p className={styles.notice} role="status">
+          Fictional sample students · Saved only on this device · No live classroom changes.
+        </p>
+      ) : null}
 
       {overview || !activeAttendance ? (
         <section aria-labelledby="workspace-overview-title" className={styles.overview}>
@@ -369,6 +442,30 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
               ? 'Loading workspace…'
               : 'Open attendance'}
           </button>
+          {mode === 'account' &&
+          !practiceMode &&
+          subjectId &&
+          practiceAvailability.available ? (
+            <button
+              className={styles.secondary}
+              onClick={() => {
+                latestLoadRef.current += 1;
+                setPracticeMode(true);
+                setOverview(false);
+                const result = workbench.open(attendanceTask);
+                if (result.kind === 'at-capacity') {
+                  setPracticeMode(false);
+                  setOverview(true);
+                  setError(
+                    'Close another Workspace task before opening daily attendance practice.',
+                  );
+                }
+              }}
+              type="button"
+            >
+              Try attendance safely
+            </button>
+          ) : null}
           {mode === 'account' && loadState === 'ready' && classrooms.length === 0 ? (
             <p className={styles.muted}>
               No classrooms are connected to this account yet. A school or classroom bond is
@@ -475,8 +572,19 @@ export function WorkspaceFloor({ mode, subjectId, scope }: WorkspaceFloorProps) 
                 onClick={() => void save()}
                 type="button"
               >
-                {saving ? 'Saving attendance…' : saved ? 'Saved' : 'Save attendance'}
+                {saving
+                  ? 'Saving attendance…'
+                  : saved
+                    ? 'Saved'
+                    : practiceMode
+                      ? 'Save practice changes'
+                      : 'Save attendance'}
               </button>
+              {practiceMode ? (
+                <button className={styles.secondary} onClick={endPractice} type="button">
+                  End practice and discard
+                </button>
+              ) : null}
             </>
           ) : null}
         </section>

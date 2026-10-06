@@ -49,7 +49,7 @@ vi.mock('react-native-worklets', () => ({
   },
 }));
 
-vi.mock('@shopify/react-native-skia', () => ({}));
+vi.mock('react-native-skia', () => ({}));
 vi.mock('@sentry/react-native', () => ({ init: vi.fn(), captureException: vi.fn() }));
 
 vi.mock('react-native-external-keyboard', () => {

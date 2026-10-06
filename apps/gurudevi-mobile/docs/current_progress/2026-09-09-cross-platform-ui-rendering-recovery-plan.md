@@ -59,7 +59,7 @@ The route-gate suite remains a G1 harness when run through mocked host seams,
 but it now has an explicit G2 scenario command:
 
 ```text
-pnpm --filter gurudevi-mobile test:g2:capability
+pnpm --filter gurudevi-mobile test:g1:route-gate
 ```
 
 The scenarios cover visible protected bootstrap, public-route continuity,
@@ -82,7 +82,7 @@ alongside a new real React lifecycle suite for
 `CapabilityHydrationProvider`:
 
 ```text
-pnpm --filter gurudevi-mobile test:g3:capability
+pnpm --filter gurudevi-mobile test:g1:capability
 ```
 
 The latest run passes 21/21 scenarios: five route-gate scenarios, three

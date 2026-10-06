@@ -1,5 +1,4 @@
-import * as Effect from 'effect/Effect';
-import * as Fiber from 'effect/Fiber';
+import { Effect, Fiber } from 'effect';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useSovereignEffect<A, E>(

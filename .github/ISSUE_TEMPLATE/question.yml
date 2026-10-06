@@ -1,0 +1,17 @@
+---
+name: Question
+about: Ask a question about the project
+title: '[Question] '
+labels: question
+assignees: ''
+
+---
+
+## Question
+What would you like to know?
+
+## Context
+Provide context about what you're trying to do, what you've tried, and where you're stuck.
+
+## Related Documentation
+Link to any relevant docs, ADRs, or previous discussions.

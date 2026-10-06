@@ -19,12 +19,6 @@
       ],
       "@repo/ui/*": [
         "../ui/dist/*"
-      ],
-      "@intuitui-labs/lk-edu-geo": [
-        "../lk-edu-geo/dist/index.d.ts"
-      ],
-      "@intuitui-labs/lk-edu-geo/*": [
-        "../lk-edu-geo/dist/*"
       ]
     },
     "outDir": "./dist",

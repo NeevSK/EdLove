@@ -118,9 +118,9 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_admin-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_admin-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_admin-check-cycles\"",
-    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_admin-test\"",
-    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_admin-test_watch\"",
-    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_admin-test_ui\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_admin-test\" --evidence-level G1",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_admin-test_watch\" --evidence-level G1",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_admin-test_ui\" --evidence-level G1",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_admin-clean\""
   },
   "dependencies": {
@@ -137,8 +137,8 @@
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.102.8",
     "date-fns": "^4.4.0",
-    "expo-clipboard": "~57.0.2",
-    "expo-router": "~57.0.21",
+    "expo-clipboard": "~58.0.3",
+    "expo-router": "~58.0.13",
     "react-i18next": "^17.0.13"
   },
   "devDependencies": {

@@ -2,19 +2,10 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-09-14
+  updated: 2026-10-05
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
 
 package_entries:
-  @intuitui-labs/form-builder-engine:
-    layer: domain
-    summary: "Headless, hexagonal, offline-first form engine — schema-driven validation, adapter ports, no UI."
-    floating: undecided
-    upgrade_notes: "engine-of-record for all forms; keep UI-agnostic."
-  @intuitui-labs/lk-edu-geo:
-    layer: domain
-    summary: "Type-safe data package for Sri Lankan geographical & educational jurisdictions (districts, zones, schools)."
-    floating: undecided
   @repo/accounting:
     layer: domain
     summary: "Financial records & ledger domain for future Gurudevi ERP expansion."
@@ -132,18 +123,15 @@ package_entries:
     floating: undecided
   gurudevi-mobile:
     layer: "app (mobile)"
-    summary: "The Operational Engine — Expo 57 / RN 0.86 mobile app for teachers, students, principals."
+    summary: "The Operational Engine — Expo 58 / RN 0.88 New Arch mobile app for teachers, students, principals."
     floating: undecided
-    upgrade_notes: "Sacred pins (reanimated 4.5.0, mmkv 4.3.2, nitro 0.36.1, gesture-handler 3.0.2, skia 2.6.5) — see AGENTS.md. NEVER expo install --fix."
+    upgrade_notes: "Sacred pins (reanimated 4.7.1, worklets 0.13.0, mmkv 4.3.2, nitro 0.37.1, gesture-handler 3.3.0, skia 3.0.2, typescript 7.0.2) — see AGENTS.md. NEVER expo install --fix."
   gurudevi-web:
     layer: "app (web)"
-    summary: "gurudevi-web — awaiting curation"
+    summary: "Canonical browser Gurudevi — unified Next.js 16 (App Router, Tailwind v4) platform for marketing and authenticated sanctuary journeys."
     floating: undecided
 
 overlap_verdicts:
-  naming-intuitui-labsform-builder-engine-vs-repoform-builder:
-    verdict: watch
-    note: "Feature host vs headless engine — keep host thin; engine is the publishable unit."
 
 usecase_notes:
   @repo/sanctuary-api:
@@ -159,5 +147,5 @@ usecase_notes:
     summary: "The Operational Engine — mobile app for teachers, students, and principals. Largest consumer in the workspace."
     coupling: "Pulls 14 domain packages (ai, classroom, payments, people, profile, self, scanner-kit...). Most fragile: sacred native pins + new-arch only; any domain change ripples here."
   gurudevi-web:
-    summary: "Canonical browser Gurudevi — one Next.js application for public and authenticated journeys."
-    coupling: "Migration foundation. Do not import React Native UI; accept only browser-safe, platform-neutral domain contracts."
+    summary: "Canonical browser Gurudevi — unified Next.js 16 application for public marketing and authenticated sanctuary journeys."
+    coupling: "Primary web target. Built browser-native; accepts only browser-safe, platform-neutral domain contracts."

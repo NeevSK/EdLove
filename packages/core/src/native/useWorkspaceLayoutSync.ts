@@ -4,7 +4,10 @@ import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-l
 import {
   createDefaultWorkspaceLayout,
   normalizeWorkspaceLayout,
+  resetWorkspaceAppearance,
   resolveWorkspaceSurfaceLayout,
+  setWorkspaceAppearance,
+  setWorkspaceGroupOrder,
   setWorkspaceSurfaceHidden,
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
@@ -16,6 +19,7 @@ import {
   resolveWorkspaceLayoutTarget,
   toWorkspaceLayoutRecord,
   toWorkspaceLayoutUpsert,
+  WORKSPACE_COMPACT_BREAKPOINT,
   type WorkspaceLayoutPlatformKind,
   type WorkspaceLayoutScreenClass,
 } from '@repo/core/logic/workspace/layoutSync';
@@ -67,6 +71,9 @@ export interface UseWorkspaceLayoutSyncResult<
   setSurfaceHidden: (surfaceId: TSurfaceId, hidden: boolean) => void;
   setSurfacePinned: (surfaceId: TSurfaceId, pinned: boolean) => void;
   setSurfaceZone: (surfaceId: TSurfaceId, zone: WorkspaceZoneId) => void;
+  setAppearance: (appearance: NonNullable<WorkspaceLayout<TSurfaceId>['appearance']>) => void;
+  resetAppearance: () => void;
+  setGroupOrder: (groupOrder: string[]) => void;
 }
 
 const serializeLayout = <TSurfaceId extends string>(
@@ -110,7 +117,7 @@ export function useWorkspaceLayoutSync<
   enableRemoteSync = true,
   platform,
   screenClass,
-  compactBreakpoint = 768,
+  compactBreakpoint = WORKSPACE_COMPACT_BREAKPOINT,
 }: UseWorkspaceLayoutSyncOptions<
   TSurfaceId,
   TCapabilityKey,
@@ -361,6 +368,30 @@ export function useWorkspaceLayoutSync<
     [],
   );
 
+  const setAppearance = useCallback(
+    (appearance: NonNullable<WorkspaceLayout<TSurfaceId>['appearance']>) =>
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+        current ? setWorkspaceAppearance(current, appearance) : current,
+      ),
+    [],
+  );
+
+  const resetAppearance = useCallback(
+    () =>
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+        current ? resetWorkspaceAppearance(current) : current,
+      ),
+    [],
+  );
+
+  const setGroupOrder = useCallback(
+    (groupOrder: string[]) =>
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+        current ? setWorkspaceGroupOrder(current, groupOrder) : current,
+      ),
+    [],
+  );
+
   return useMemo(
     () => ({
       layout,
@@ -375,6 +406,9 @@ export function useWorkspaceLayoutSync<
       setSurfaceHidden,
       setSurfacePinned,
       setSurfaceZone,
+      setAppearance,
+      resetAppearance,
+      setGroupOrder,
     }),
     [
       layout,
@@ -389,6 +423,9 @@ export function useWorkspaceLayoutSync<
       setSurfaceHidden,
       setSurfacePinned,
       setSurfaceZone,
+      setAppearance,
+      resetAppearance,
+      setGroupOrder,
     ],
   );
 }

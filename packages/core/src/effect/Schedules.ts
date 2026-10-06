@@ -10,9 +10,7 @@
  * Import:
  *   import { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/utils/effect';
  */
-import * as Duration from 'effect/Duration';
-import { pipe } from 'effect/Function';
-import * as Schedule from 'effect/Schedule';
+import { Duration, pipe, Schedule } from 'effect';
 
 /**
  * Default retry: exponential backoff at 200ms, max 3 retries (4 total attempts).

@@ -9,6 +9,7 @@ type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
 export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
+  const [remember, setRemember] = useState(false);
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,14 +26,25 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
 
     setState('submitting');
     setMessage('');
-    const { error } = await runtime.client.auth.signInWithPassword({ email, password });
+    const { data, error } = await runtime.client.auth.signInWithPassword({ email, password });
     if (error) {
       setState('error');
       setMessage('We could not sign in with those details. Check them and try again.');
       return;
     }
 
-    window.location.assign(safeReturnPath(returnTo));
+    // Set session duration preference (non-blocking)
+    runtime.setSessionDuration(remember).catch(() => {});
+
+    // Give Supabase client time to persist session to cookies before navigation
+    if (data.session) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    // Use href assignment for more reliable navigation
+    const destination = safeReturnPath(returnTo);
+    console.log('[SignInForm] Navigating to:', destination);
+    window.location.href = destination;
   }
 
   return (
@@ -60,6 +72,17 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
         required
         type="password"
       />
+      <label className="flex items-center gap-2 font-sans text-sm cursor-pointer">
+        <input
+          className="w-4 h-4 border border-line bg-paper focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          id="remember"
+          name="remember"
+          type="checkbox"
+          checked={remember}
+          onChange={(e) => setRemember(e.target.checked)}
+        />
+        <span>Remember me for 30 days</span>
+      </label>
       {state !== 'ready' && state !== 'submitting' ? (
         <p className="font-sans text-sm text-red-700" role="alert">
           {message}

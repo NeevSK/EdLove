@@ -5,7 +5,12 @@
   "fixed": [],
   "linked": [],
   "access": "restricted",
-  "baseBranch": "main",
+  "baseBranch": "main-dev",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@repo/database",
+    "@repo/policies",
+    "@repo/scanner-kit",
+    "@repo/schema"
+  ]
 }

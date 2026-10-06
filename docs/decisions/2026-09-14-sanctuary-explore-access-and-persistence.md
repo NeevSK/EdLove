@@ -2,6 +2,7 @@
 title: "Sanctuary Explore Access and Persistence Model"
 status: "accepted"
 created: 2026-09-14
+updated: 2026-10-04
 decision_owner: "Gurudevi product architecture"
 tags: [adr, sanctuary, explore, guest, sandbox, local-first, web]
 ---
@@ -23,7 +24,7 @@ person chooses more continuity:
 | Session | Identity and data | Intended use |
 | --- | --- | --- |
 | Explore | No Supabase identity. Browser-local, namespaced data plus baseline fixtures. | Immediate, private, frictionless exploration. |
-| Guest cloud | Explicitly requested anonymous Supabase identity, still local-first until a supported cloud action is chosen. | A future, deliberate cross-device trial; never silently created by opening Explore. |
+| Mobile Guest | Explicitly requested anonymous Supabase identity; feature data remains local-first. | Mobile-only temporary continuity under the separate Guest lease ADR; not a web Explore state. |
 | Account | Authenticated durable identity and server-authorized data. | Sync, sharing, collaboration, billing, and durable work. |
 | Developer sandbox | Development-only, separately gated tooling with scoped real accounts or fixtures. | Engineering and QA only; never the public Explore experience. |
 
@@ -62,11 +63,11 @@ and account-conversion flow are behavior references. They are not browser
 imports: they depend on native storage and Expo routing. The browser must own
 an equivalent browser-safe persistence port.
 
-The optional Guest cloud session is not authorized for broad web rollout yet.
-Before it is built, product and security review must decide its retention,
-cross-device semantics, anti-abuse controls, eligibility for paid capabilities,
-and exactly which local records can migrate. It cannot be inferred from the
-old anonymous onboarding or queued-mutation implementations.
+Guest is the mobile-only local-first path defined by the September 10 Guest
+lease ADR. There is no browser Guest identity, Guest cloud session, or
+cross-device Guest continuity in this product scope. Public web Explore stays
+identity-free; Safe Try for authenticated users is a separate per-feature
+capability.
 
 ## Architecture contract
 
@@ -78,8 +79,8 @@ same domain canvas and feature components
                |
      session + capability + data ports
        /            |             \
-Explore local   Guest-cloud      Account server/sync
-adapter         adapter          adapter
+Explore local                  Account server/sync
+adapter                         adapter
 ```
 
 Each adapter must explicitly define reads, local mutation application, reset,
@@ -113,8 +114,8 @@ the original local namespace.
    by swapping only the adapter.
 5. Replace product-facing global demo interception feature by feature. Keep
    developer-only sandbox tooling isolated and production-hidden.
-6. Decide Guest cloud separately; do not make it a prerequisite for public
-   Explore.
+6. Keep mobile Guest governed by its separate accepted lease decision; no web
+   Guest state is part of this Explore implementation sequence.
 
 ## Known reconciliation work
 
@@ -140,3 +141,14 @@ the original local namespace.
 - Reduced motion, keyboard, screen-reader, offline, storage-failure, reset,
   conversion-success, and conversion-failure paths are verified at the
   appropriate evidence levels.
+
+
+## Platform-scope clarification (2026-10-04)
+
+This ADR governs public **web Explore** only. Mobile does not offer an Explore
+mode; it offers the explicit **Continue as Guest** flow governed by
+[`2026-09-10-guest-local-first-lease.md`](2026-09-10-guest-local-first-lease.md).
+Web does not offer Guest identity, guest-cloud persistence, or cross-device
+Guest continuity. Public web Explore remains identity-free. Authenticated
+account holders on web and mobile receive feature-level Safe Try under
+[`safe-exploration-and-reversible-work-model.md`](../architecture/safe-exploration-and-reversible-work-model.md).

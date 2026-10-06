@@ -12,6 +12,11 @@ tags: [roadmap, todo, production-hardening, ratchet, future-work]
 
 > **Definitive Tracking of Follow-Up Tasks, Next Ratchet Phases, and G4/G5 Verification Goals**
 
+> **Superseded as the execution plan:** use [Running App → Production Evidence
+> Plan](2026-09-21-running-app-user-journey-plan.md). This document is retained
+> as historical follow-up context; its earlier completed-baseline language is
+> not a production-readiness claim.
+
 ---
 
 ## 1. Summary of What is Done (Baseline Completed)

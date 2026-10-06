@@ -3,6 +3,12 @@ import {
   derivePersistenceKey,
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
+import {
+  createAccountPracticeScope,
+  deriveAccountPracticeKey,
+  resolveAccountPracticeWriteDecision,
+} from '@repo/core/lib/practiceBoundary';
+import { createPracticeController, type PracticeResult } from '@repo/core/lib/practiceContract';
 import type { WorkbenchRestorationSnapshot } from '@repo/core/types';
 import type { WorkbenchStorage } from '@/lib/workbench';
 import { parseWorkbenchSnapshot } from '@/lib/workbench/storage';
@@ -15,22 +21,29 @@ const exploreIdentity = createPersistenceIdentity({
   experience: 'explore',
   principal: { kind: 'guest', id: 'browser-explorer' },
 });
-const journalKey = derivePersistenceKey(exploreIdentity, 'self:fire_journal');
-const moodKey = derivePersistenceKey(exploreIdentity, 'self:mood_lotus');
 const workbenchKey = derivePersistenceKey(exploreIdentity, 'workbench:self');
 const LOCAL_SCHEMA_VERSION = 1;
 
-export type ExploreJournalEntry = BurnedJournalEntry & Readonly<{ source: 'sample' | 'explore' }>;
-export type ExploreMoodLog = MoodLog & Readonly<{ source: 'sample' | 'explore' }>;
+export type ExploreJournalEntry = BurnedJournalEntry &
+  Readonly<{ source: 'sample' | 'explore' | 'practice' }>;
+export type ExploreMoodLog = MoodLog & Readonly<{ source: 'sample' | 'explore' | 'practice' }>;
 
 type LocalCollection<T> = Readonly<{ version: 1; entries: readonly T[] }>;
 
 export type ExploreSelfPracticeAdapter = Readonly<{
+  storageKind: ExploreStorage['kind'];
   loadJournal(): readonly ExploreJournalEntry[];
   burnJournal(content: string): ExploreJournalEntry;
   loadMoodHistory(): readonly ExploreMoodLog[];
   logMood(input: Readonly<{ mood: MoodValue; note?: string }>): ExploreMoodLog;
   reset(): void;
+}>;
+
+export type AccountSafeTryFireJournalAdapter = Readonly<{
+  storageKind: ExploreStorage['kind'];
+  loadJournal(): PracticeResult<readonly ExploreJournalEntry[]>;
+  burnJournal(content: string): PracticeResult<ExploreJournalEntry>;
+  reset(): PracticeResult<void>;
 }>;
 
 function newId(): string {
@@ -52,7 +65,7 @@ function isJournalEntry(value: unknown): value is ExploreJournalEntry {
     typeof value.content_preview === 'string' &&
     isDate(value.created_at) &&
     value.is_burned === true &&
-    (value.source === 'sample' || value.source === 'explore')
+    (value.source === 'sample' || value.source === 'explore' || value.source === 'practice')
   );
 }
 
@@ -64,7 +77,7 @@ function isMoodEntry(value: unknown): value is ExploreMoodLog {
     typeof value.mood === 'string' &&
     (value.note === null || typeof value.note === 'string') &&
     isDate(value.created_at) &&
-    (value.source === 'sample' || value.source === 'explore')
+    (value.source === 'sample' || value.source === 'explore' || value.source === 'practice')
   );
 }
 
@@ -108,10 +121,11 @@ function readCollection<T>(
   return initialized;
 }
 
-function assertLocalExploreWrite(): void {
-  const local = resolvePersistenceWriteDecision(exploreIdentity, 'local');
-  const cloud = resolvePersistenceWriteDecision(exploreIdentity, 'production');
-  if (!local.allowed || cloud.allowed) throw new Error('Explore writes must stay on this browser.');
+function assertLocalOnlyWrite(identity: ReturnType<typeof createPersistenceIdentity>): void {
+  const local = resolvePersistenceWriteDecision(identity, 'local');
+  const production = resolvePersistenceWriteDecision(identity, 'production');
+  if (!local.allowed || production.allowed)
+    throw new Error('This private practice must stay on this device.');
 }
 
 function createSampleJournal(now: Date): readonly ExploreJournalEntry[] {
@@ -146,20 +160,26 @@ function store<T>(storage: ExploreStorage, key: string, entries: readonly T[]): 
   return collection;
 }
 
-export function createExploreSelfPracticeAdapter(
-  options: { storage?: ExploreStorage; now?: () => Date; createId?: () => string } = {},
+function createLocalSelfPracticeAdapter(
+  identity: ReturnType<typeof createPersistenceIdentity>,
+  source: 'explore' | 'practice',
+  deriveKey: (key: string) => string,
+  options: { storage?: ExploreStorage; now?: () => Date; createId?: () => string },
 ): ExploreSelfPracticeAdapter {
   const storage = options.storage ?? createExploreStorage();
   const now = options.now ?? (() => new Date());
   const createId = options.createId ?? newId;
+  const journalKey = deriveKey('self:fire_journal');
+  const moodKey = deriveKey('self:mood_lotus');
   const journal = () =>
     readCollection(storage, journalKey, isJournalEntry, createSampleJournal, now);
   const moods = () => readCollection(storage, moodKey, isMoodEntry, createSampleMood, now);
 
   return {
+    storageKind: storage.kind,
     loadJournal: () => journal().entries,
     burnJournal: (content) => {
-      assertLocalExploreWrite();
+      assertLocalOnlyWrite(identity);
       const normalized = content.trim();
       if (!normalized) throw new Error('Write a few words before releasing this reflection.');
       const previous = journal().entries;
@@ -168,14 +188,14 @@ export function createExploreSelfPracticeAdapter(
         content_preview: normalized.slice(0, 50),
         created_at: now().toISOString(),
         is_burned: true,
-        source: 'explore',
+        source,
       };
       store(storage, journalKey, [entry, ...previous]);
       return entry;
     },
     loadMoodHistory: () => moods().entries,
     logMood: ({ mood, note }) => {
-      assertLocalExploreWrite();
+      assertLocalOnlyWrite(identity);
       const choice = MOOD_CHOICES.find((candidate) => candidate.value === mood);
       if (!choice) throw new Error('Choose how you are feeling before saving this check-in.');
       const entry: ExploreMoodLog = {
@@ -185,16 +205,89 @@ export function createExploreSelfPracticeAdapter(
         mood: choice.value,
         note: note?.trim() || null,
         created_at: now().toISOString(),
-        source: 'explore',
+        source,
       };
       store(storage, moodKey, [entry, ...moods().entries]);
       return entry;
     },
     reset: () => {
-      assertLocalExploreWrite();
+      assertLocalOnlyWrite(identity);
       storage.removeItem(journalKey);
       storage.removeItem(moodKey);
     },
+  };
+}
+
+export function createExploreSelfPracticeAdapter(
+  options: { storage?: ExploreStorage; now?: () => Date; createId?: () => string } = {},
+): ExploreSelfPracticeAdapter {
+  return createLocalSelfPracticeAdapter(
+    exploreIdentity,
+    'explore',
+    (key) => derivePersistenceKey(exploreIdentity, key),
+    options,
+  );
+}
+
+export function createAccountSafeTrySelfPracticeAdapter(input: {
+  accountId: string;
+  workspaceId: string;
+  storage?: ExploreStorage;
+  now?: () => Date;
+  createId?: () => string;
+}): AccountSafeTryFireJournalAdapter {
+  const scope = createAccountPracticeScope({
+    accountId: input.accountId,
+    featureId: 'fire_journal',
+    workspaceId: input.workspaceId,
+  });
+  const localDecision = resolveAccountPracticeWriteDecision(scope, 'local');
+  const productionDecision = resolveAccountPracticeWriteDecision(scope, 'production');
+  if (!localDecision.allowed || productionDecision.allowed)
+    throw new Error('Fire Journal Safe Try must stay on this device.');
+
+  const storage = input.storage ?? createExploreStorage();
+  const adapter = createLocalSelfPracticeAdapter(
+    scope.identity,
+    'practice',
+    (key) => deriveAccountPracticeKey(scope, key),
+    { ...input, storage },
+  );
+  const journalKey = deriveAccountPracticeKey(scope, 'self:fire_journal');
+  const practiceController = createPracticeController({
+    scope,
+    adapter: {
+      load: () => ({ entries: adapter.loadJournal() }),
+      save: (value: { entries: readonly ExploreJournalEntry[] }) => {
+        store(storage, journalKey, value.entries);
+      },
+      reset: () => {
+        storage.removeItem(journalKey);
+      },
+      discard: () => {
+        storage.removeItem(journalKey);
+      },
+    },
+  });
+
+  return {
+    storageKind: adapter.storageKind,
+    loadJournal: () => practiceController.load().entries,
+    burnJournal: (content) => {
+      const normalized = content.trim();
+      if (!normalized) throw new Error('Write a few words before releasing this reflection.');
+      const entry: ExploreJournalEntry = {
+        id: newId(),
+        content_preview: normalized.slice(0, 50),
+        created_at: new Date().toISOString(),
+        is_burned: true,
+        source: 'practice',
+      };
+      const entries = practiceController.load().entries;
+      practiceController.save({ entries: [entry, ...entries] });
+      return entry;
+    },
+    reset: () => practiceController.reset(),
   };
 }
 
@@ -206,7 +299,7 @@ export function createExploreSelfWorkbenchStorage(storage: ExploreStorage): Work
     },
     save: (snapshot: WorkbenchRestorationSnapshot) => {
       if (snapshot.domain !== 'self') return;
-      assertLocalExploreWrite();
+      assertLocalOnlyWrite(exploreIdentity);
       storage.setItem(workbenchKey, JSON.stringify(snapshot));
     },
   };

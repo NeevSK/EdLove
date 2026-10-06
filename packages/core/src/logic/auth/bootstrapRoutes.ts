@@ -61,6 +61,48 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     };
   }
 
+  if (params.guestOnboardingIntent && isOnboardingPath) {
+    if (params.sessionMode !== 'anonymous') {
+      return {
+        decision: 'public',
+        redirectTo: '/welcome',
+        policy: {
+          state: 'public',
+          entryPoint: 'welcome',
+          reason: 'no-session',
+          redirectTo: '/welcome',
+          canRenderCurrentPath: false,
+        },
+      };
+    }
+
+    if (state === 'ready') {
+      return {
+        decision: 'app',
+        redirectTo: '/self',
+        policy: {
+          state: 'ready',
+          entryPoint: 'app',
+          reason: 'ready-for-app',
+          redirectTo: '/self',
+          canRenderCurrentPath: false,
+        },
+      };
+    }
+
+    return {
+      decision: 'public',
+      redirectTo: null,
+      policy: {
+        state: 'public',
+        entryPoint: 'onboarding',
+        reason: 'already-public',
+        redirectTo: null,
+        canRenderCurrentPath: true,
+      },
+    };
+  }
+
   if (state === 'public') {
     return {
       decision: 'public',
@@ -103,20 +145,6 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
         reason: 'needs-onboarding',
         redirectTo: isOnboardingPath ? null : '/onboarding',
         canRenderCurrentPath: isOnboardingPath,
-      },
-    };
-  }
-
-  if (params.guestOnboardingIntent && isOnboardingPath) {
-    return {
-      decision: 'public',
-      redirectTo: null,
-      policy: {
-        state: 'public',
-        entryPoint: 'onboarding',
-        reason: 'already-public',
-        redirectTo: null,
-        canRenderCurrentPath: true,
       },
     };
   }

@@ -2,7 +2,7 @@
 title: "AGENTS.md — Agent Guardrails for Polymath Platform"
 status: "active"
 created: 2026-08-03
-updated: 2026-09-09
+updated: 2026-10-04
 author: "Naveen"
 scribe: "Antigravity"
 tags: [AGENTS.md, quality, guardrails]
@@ -11,7 +11,58 @@ tags: [AGENTS.md, quality, guardrails]
 # AGENTS.md — Agent Guardrails for Polymath Platform
 
 > **This file exists to prevent agents from making build-breaking mistakes.**
-> Read it before touching any Expo / React Native / Gradle code.
+> **READ THIS FIRST** — Architecture guardrails before any code changes.
+>
+> 🚨 **PRIME DIRECTIVE: WEB-FIRST & REPO-DOCS-FIRST FOR ALL MODERN ECOSYSTEM DECISIONS**
+> Agent static training memory has a fixed cutoff and is blind to recent changes in Expo SDK 58, React Native 0.86+, Kotlin 2.x, Gradle 8.x, Skia v3, Effect v4, etc. **NEVER rely on internal memory or make guesses.** Always perform live web searches (`search_web`), query registries (npm/Maven), and read repo docs (`docs/infra/*`, `docs/Learning/*`, `docs/architecture/*`) before proposing, diagnosing, or modifying code. If an operation fails repeatedly in the same spot, STOP and research upstream immediately.
+
+---
+
+## Architecture — Read Before Any Change
+
+### The Three Apps (Know Which You're In)
+
+| App | Purpose | Framework | **Build In** |
+|-----|---------|-----------|--------------|
+| **`apps/gurudevi-mobile`** | **Native iOS/Android** — flagship mobile | Expo 58 (RN 0.88, New Arch) | ✅ Mobile features |
+| **`apps/gurudevi-web`** | **Unified Web Platform** — Marketing + Sanctuary (Next.js 16) | Next.js 16 (App Router, Tailwind v4) | ✅ **Primary web target** |
+| `apps/gurudevi-marketingWeb` | Legacy marketing (Astro) | Astro/Svelte | ⚠️ **Migrating → gurudevi-web** |
+| `apps/edlove-web` | EdLove foundation | Astro | ✅ Active |
+| `apps/sanctuary-api` | Sanctuary API (Hono) | Node.js/Hono | ✅ Active |
+
+### Domain Packages (Shared Logic Only)
+
+| Package | Purpose | Use For |
+|---------|---------|---------|
+| `@repo/core` | Platform spine: auth, tenancy, permissions, contracts, API clients | Shared logic, hooks, schemas, API clients |
+| `@repo/classroom` | Classroom domain: attendance, gradebook, reflect, workspace | Classroom domain logic |
+| `@repo/ui` | RN/NativeWind primitives (tokens, not web components) | RN components only |
+| `@repo/ui/tokens` | Design tokens (colors, spacing, motion) — platform-neutral | Design values only |
+| `@repo/ui/web` | **Web-only components** (built in gurudevi-web, extracted after proven) | Web-only components |
+
+---
+
+## Critical Architecture Boundaries (NEVER CROSS)
+
+| ❌ NEVER | ✅ INSTEAD |
+|----------|------------|
+| Import `*.web.tsx` in `gurudevi-web` | Build browser-native in `apps/gurudevi-web` |
+| Import `@repo/ui` web components in Next.js | Use `@repo/ui/tokens` for design values; build web components in `gurudevi-web` |
+| Import Expo/RN/PowerSync in `gurudevi-web` | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` |
+| Import `@repo/ui` web components in `gurudevi-web` | Build web components in `apps/gurudevi-web` |
+| Put web components in `@repo/ui` | Build in `apps/gurudevi-web`; extract to `@repo/ui/web` **after proven** |
+| Use RN Web (`*.web.tsx`) for new features | RN Web is **migration source only** — being retired |
+
+### The Three Web Targets (Know the Difference)
+
+| Target | Purpose | Codebase | Status |
+|--------|---------|----------|--------|
+| **`gurudevi-web` (Next.js)** | **Primary production web** — Marketing + Sanctuary | `apps/gurudevi-web` | ✅ **Primary** |
+| **RN Web (Expo)** | Migration source, fallback | `apps/gurudevi-mobile/*.web.tsx` | ⚠️ Retiring |
+| `gurudevi-marketingWeb` (Astro) | Legacy marketing | `apps/gurudevi-marketingWeb` | ⚠️ Migrating → gurudevi-web |
+
+**`gurudevi-web` = Primary production web (Marketing + Sanctuary).**  
+**RN Web = Migration source only, fallback.**
 
 ---
 
@@ -87,7 +138,11 @@ if command -v ccache >/dev/null 2>&1; then
   export CCACHE_MAXSIZE="10G"
 fi
 
-cd /home/nsk/projects/polymath-platform/apps/gurudevi-mobile/android
+# Use YOUR ext4 workspace path — not someone's. The default below only applies
+# if you keep the repo at ~/projects/polymath-platform. If your Linux checkout
+# lives elsewhere, export POLYMATH_WSL_DIR before running the Windows scripts.
+export POLYMATH_WSL_DIR="${POLYMATH_WSL_DIR:-$HOME/projects/polymath-platform}"
+cd "$POLYMATH_WSL_DIR/apps/gurudevi-mobile/android"
 
 # Standard development build (default):
 ./gradlew :app:assembleDebug --build-cache --no-daemon --max-workers=2 \
@@ -105,6 +160,37 @@ cd /home/nsk/projects/polymath-platform/apps/gurudevi-mobile/android
    - **Install Dev APK**: `pnpm run install:android`
    - **Install Release APK**: `pnpm run install:android:release`
 
+   These scripts read `POLYMATH_WSL_DIR` (see `scripts/lib/wsl-workspace.mjs`).
+   If your Linux ext4 checkout is not at `~/projects/polymath-platform`, set it.
+   The value must be a **Linux** path — it is interpolated into a bash script, so
+   `~` and `$HOME` expand inside the distro. Use single quotes in PowerShell;
+   `"$HOME"` would expand to the *Windows* home (`C:\Users\...`) and break `cd`:
+   ```powershell
+   $env:POLYMATH_WSL_DIR = '~/projects/my-other-clone'
+   ```
+   Never hardcode a personal path back into `scripts/`.
+
+### 6. Web-First, Docs-First, and Live Registry Verification (MANDATORY)
+
+Agents **MUST NOT** rely on static internal training memory for fast-moving, canary, beta, or prerelease libraries and tooling (e.g. Expo SDK 58, React Native 0.86+, Kotlin 2.x, Gradle 8.x, Skia v3, Effect v4, Glance / Peek, Nitro Modules, etc.). Agent training memory has fixed knowledge cutoffs and is blind to the latest breaking changes, compiler rules, and package coordinates. Relying on internal memory leads to hallucinations, obsolete recommendations, and repeated build failures.
+
+1. **Search Web First**:
+   - For ANY error, build failure, configuration change, or version decision involving modern or fast-moving libraries, **immediately search the web (`search_web`)**.
+   - Query live package registries (npm via `npm view <pkg> versions`, Maven Central) and live GitHub repositories (issues, PRs, releases, commits) to verify actual package coordinates, breaking changes, and compatibility tables before guessing or applying fixes.
+2. **Read Existing Architecture Documentation First**:
+   - This repository maintains authoritative living documentation in `docs/infra/*`, `docs/Learning/*`, `docs/architecture/*`, and `apps/gurudevi-mobile/docs/*`.
+   - **Never guess or reinvent** toolchain configurations, build arguments, or environment variables. Always consult the existing SOPs, decision logs, and runbooks first.
+3. **Repeated Failure Circuit Breaker**:
+   - If a native build or task fails repeatedly in the exact same place (e.g. Kotlin compilation failure in a third-party module), **STOP IMMEDIATELY**.
+   - Do NOT guess, tweak arbitrary flags, or rerun builds in a loop.
+   - Follow this triage sequence:
+     a. **Search the web** for the exact compiler error and library name to identify known upstream breaks with newer React Native / Kotlin versions.
+     b. **Audit actual workspace usage**: Run `grep_search` across `apps/gurudevi-mobile/src` and `packages/` to see if the failing package is even imported or used. If it is an unused dependency, evaluate removing it.
+     c. **Check upstream releases and patches**: If the package is required, check npm and GitHub for a compatible release or create a clean, targeted patch via `pnpm patch`.
+4. **No Outdated Architecture Assumptions**:
+   - Never assume older React Native or Expo paradigms (e.g. old bridge patterns, deprecated Gradle plugins, obsolete package tags) apply to Expo 58+ or React Native 0.86+ New Architecture. Always verify live web documentation first.
+
+
 ---
 
 ## Sacred Versions (do NOT change without explicit approval)
@@ -114,11 +200,11 @@ These packages are pinned to specific versions for new-architecture compatibilit
 | Package | Sacred version | Why |
 |---|---|---|
 | `react-native-gesture-handler` | 3.3.0 | RNGH v3 for new arch |
-| `react-native-reanimated` | 4.6.0 | Reanimated 4 for new arch |
-| `react-native-worklets` | 0.12.2 | Required by reanimated 4 |
+| `react-native-reanimated` | 4.7.1 | Reanimated 4 for new arch & Expo 58 |
+| `react-native-worklets` | 0.13.0 | Required by reanimated 4.7 |
 | `react-native-mmkv` | 4.3.2 | Nitro modules v4 |
 | `react-native-nitro-modules` | 0.37.1 | Required by mmkv 4 / Nitro v0.37 |
-| `@shopify/react-native-skia` | 2.11.2 | New arch Skia |
+| `react-native-skia` | 3.0.2 | RN Skia v3 (Graphite/WebGPU fork by William Candillon) |
 | `typescript` | 7.0.2 | Latest stable |
 
 
@@ -292,6 +378,45 @@ are complete.
 Fix it if trivial (<20 lines), otherwise file it as a follow-up task with the
 file:line reference. Every caught pattern that recurs goes into this Slop List
 so agents stop producing it.
+
+---
+
+### Web Crawling & Document Ingestion Guardrails
+
+1. **No Flat JSON Ledgers for Concurrent Ingestion**: Always use SQLite with Write-Ahead Logging (`WAL`) mode (`PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL; PRAGMA busy_timeout = 10000;`) for crawler state and task tracking. Never rely on flat JSON files that rewrite the entire state on every download.
+2. **Re-entrant Synchronization Only (`RLock`)**: In multi-threaded scrapers, all synchronization primitives that protect network calls or state commits must use `threading.RLock()` to prevent re-entrant deadlocks.
+3. **Sub-50ms Header Rejection**: Always inspect `Content-Type` before consuming response bodies. Discard HTML landing pages, paywall stubs, and bot challenges immediately without burning chunk read timeouts.
+4. **Magic Byte Verification**: Never rely on URL extensions or HTTP status codes alone. Verify file magic headers (e.g. `%PDF-` for PDFs) and minimum byte thresholds ($\ge 2,000$ bytes) before committing files to permanent vaults.
+5. **Decoupled Two-Stage Architecture**: Never combine network fetching and CPU-heavy text/NLP extraction in the same loop. Separate into Stage 1 (ingestion & raw storage) and Stage 2 (batch text extraction into JSONL shards).
+
+---
+
+## Production Evidence Governance
+
+The full standing protocol is
+[`docs/architecture/production-evidence-governance.md`](docs/architecture/production-evidence-governance.md).
+It applies to every agent-authored change.
+
+- Use a task mode such as `[AUDIT-TESTS]`, `[CHAR]`, `[REG]`, `[IMPL]`,
+  `[AUTHZ]`, `[INT]`, or `[FAIL]` for non-trivial work.
+- Before changing identity, authorization, tenant scope, durable writes, sync,
+  payments, privacy, migrations, or destructive operations, state the affected
+  user journey/invariant, required evidence, real seam, substitutions, and
+  smallest failing or characterization proof.
+- Preserve existing behavior while characterizing it. Do not convert a bounded
+  hardening task into a rewrite or silently absorb discovered adjacent gaps.
+- Mocks are G1 boundary evidence unless a named real runtime/seam has run.
+  Never represent mocked behavior as G2-G5 or R1 proof.
+- Do not skip evidence promotions: a G4 or G5 execution result is not a
+  graduated assurance claim while any applicable lower level is absent. Mark a
+  level not applicable only with a written runtime-specific rationale and an
+  accepted alternate boundary.
+- Every defect receives a regression proof before its fix. Every structural
+  change to an existing flow receives characterization coverage unless an
+  equivalent explicit contract already exists.
+- `pnpm run check:test-evidence` audits all declared test-command claims;
+  `pnpm run check:test-evidence -- --changed` is the PR gate for new or changed
+  commands. Do not add an unclassified test command.
 
 ---
 

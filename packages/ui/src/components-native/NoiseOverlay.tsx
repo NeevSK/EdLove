@@ -1,4 +1,4 @@
-import { Canvas, ColorMatrix, Paint, Rect, Turbulence } from '@shopify/react-native-skia';
+import { Canvas, ColorMatrix, Paint, Rect, Turbulence } from 'react-native-skia';
 import type React from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 

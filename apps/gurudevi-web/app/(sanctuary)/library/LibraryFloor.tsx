@@ -3,6 +3,7 @@
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { TaskStrip } from '../components/workbench';
@@ -24,7 +25,15 @@ const CATALOG_TASK = {
   localStatePolicy: 'none',
 } as const;
 
-export function LibraryFloor({ displayName }: Readonly<{ displayName: string }>) {
+export function LibraryFloor({
+  accountId,
+  displayName,
+}: Readonly<{ accountId: string; displayName: string }>) {
+  const floorAppearance = useBrowserWorkspaceAppearance({
+    accountId,
+    defaultGroupOrder: ['discovery', 'collections', 'tools'],
+    workspaceId: 'library',
+  });
   const workbench = useDomainWorkbench('library');
   const [query, setQuery] = useState('');
   const [resources, setResources] = useState<readonly BrowserLibraryResource[]>([]);
@@ -111,7 +120,13 @@ export function LibraryFloor({ displayName }: Readonly<{ displayName: string }>)
   }
 
   return (
-    <article className={styles.floor} data-domain="library" aria-labelledby="library-title">
+    <article
+      className={styles.floor}
+      data-appearance={floorAppearance.appearance.preset}
+      data-domain="library"
+      data-motion={floorAppearance.appearance.motion}
+      aria-labelledby="library-title"
+    >
       <header className={styles.arrival}>
         <p className={styles.eyebrow}>Library · account collection</p>
         <h1 id="library-title">A place to find what helps you grow.</h1>

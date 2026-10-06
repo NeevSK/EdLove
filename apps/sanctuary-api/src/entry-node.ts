@@ -4,17 +4,29 @@ import { serve } from '@hono/node-server';
 import { startRetentionMaintenance } from './ai/maintenance/retention';
 import { app } from './core/app';
 
-console.log('DATABASE_URL loaded:', process.env.DATABASE_URL ? 'YES' : 'NO');
-
-const port = Number(process.env.PORT) || 3000;
-console.log(`Sanctuary API standing guard on port ${port} (Node.js Adapter)`);
+const port = Number(process.env.PORT) || 3001;
+console.info(`Sanctuary API standing guard on port ${port} (Node.js Adapter)`);
 
 const retentionTimer = startRetentionMaintenance();
 
 if (process.env.NODE_ENV !== 'test') {
+  if (process.env.DEBUG) {
+    console.debug(`[server] Binding serve() on port ${port}`);
+  }
   const server = serve({
     fetch: app.fetch,
     port,
+    hostname: '0.0.0.0',
+  });
+  
+  server.on('listening', () => {
+    if (process.env.DEBUG) {
+      console.debug(`[server] Listening on ${JSON.stringify(server.address())}`);
+    }
+  });
+  
+  server.on('error', (err) => {
+    console.error(`[server] Server error:`, err);
   });
 
   let shuttingDown = false;

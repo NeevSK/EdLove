@@ -1,4 +1,4 @@
-import * as Layer from 'effect/Layer';
+import { Layer } from 'effect';
 
 /**
  * Dependency Injection Layer composition for @repo/core.

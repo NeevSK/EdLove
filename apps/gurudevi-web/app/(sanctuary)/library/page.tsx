@@ -39,7 +39,7 @@ export default async function LibraryPage() {
 
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
-      <LibraryFloor displayName={entry.displayName} />
+      <LibraryFloor accountId={entry.authSubjectId} displayName={entry.displayName} />
     </SanctuaryShell>
   );
 }

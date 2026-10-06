@@ -2,7 +2,7 @@
 
 > Part of the [Stack Catalog](../stack-map.md) · auto-generated · links point back to the master
 
-Canonical browser Gurudevi — one Next.js application for public and authenticated journeys.
+Canonical browser Gurudevi — unified Next.js 16 application for public marketing and authenticated sanctuary journeys.
 
 ## Workspace packages used
 
@@ -22,17 +22,21 @@ react
 react-dom
 ```
 
-## Dev tooling (12)
+## Dev tooling (16)
 
 ```text
 @playwright/test
 @repo/eslint-config
 @repo/typescript-config
 @tailwindcss/postcss
+@testing-library/react
+@testing-library/user-event
 @types/node
 @types/react
 @types/react-dom
+dotenv
 eslint
+msw
 postcss
 tailwindcss
 typescript
@@ -41,5 +45,5 @@ vitest
 
 ## Coupling notes
 
-Migration foundation. Do not import React Native UI; accept only browser-safe, platform-neutral domain contracts.
+Primary web target. Built browser-native; accepts only browser-safe, platform-neutral domain contracts.
 

@@ -2,6 +2,8 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { resolveFdCommand } from './lib/fd-resolver.mjs';
+
 // Known native-only packages across our monorepo that require shims for web
 const KNOWN_NATIVE_PACKAGES = [
   'expo-av',
@@ -60,19 +62,8 @@ function getSourceFiles(dirs) {
 
   // Try to use fd first
   try {
-    let fdCmd = 'fd';
-    try {
-      execSync('fd --version', { stdio: 'ignore' });
-    } catch (_e) {
-      // Check common WinGet portable path as extreme fallback
-      const wingetPath =
-        'C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe';
-      if (fs.existsSync(wingetPath)) {
-        fdCmd = `"${wingetPath}"`;
-      } else {
-        throw new Error('fd not found');
-      }
-    }
+    const fdCmd = resolveFdCommand();
+    if (!fdCmd) throw new Error('fd not available');
 
     dirs.forEach((dir) => {
       if (!fs.existsSync(dir)) return;

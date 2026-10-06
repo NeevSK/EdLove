@@ -39,6 +39,16 @@ describe('Input Component (scenario contract)', {
     expect(onChangeText).toHaveBeenCalledWith('John Doe');
   });
 
+  it('preserves an explicit secure text request', async () => {
+    const { getByPlaceholderText } = await render(
+      <Input>
+        <InputField placeholder="Password" secureTextEntry />
+      </Input>,
+    );
+
+    expect(getByPlaceholderText('Password').props.secureTextEntry).toBe(true);
+  });
+
   it('displays invalid state correctly', async () => {
     const { getByTestId } = await render(
       <Input isInvalid={true} testID="input-container">

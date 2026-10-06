@@ -276,7 +276,7 @@ export function useAuthLifecycle() {
         previousUserIdRef.current = initialSession?.user?.id ?? null;
 
         const sessionMode = getSessionIdentityMode(initialSession);
-        if (sessionMode === 'authenticated' || sessionMode === 'anonymous') {
+        if (sessionMode === 'authenticated') {
           await fetchAndSetUserProfile(initialSession);
         } else if (initialSession?.user) {
           clearDerivedIdentityState();
@@ -324,7 +324,7 @@ export function useAuthLifecycle() {
       }
 
       const currentMode = getSessionIdentityMode(currentSession);
-      if (currentMode === 'authenticated' || currentMode === 'anonymous') {
+      if (currentMode === 'authenticated') {
         await fetchAndSetUserProfile(currentSession);
       } else if (currentSession?.user) {
         setUser(null);
@@ -345,7 +345,7 @@ export function useAuthLifecycle() {
 
     // 4. Mobile AppState Wake-Up Reconciler
     const handleAppStateChange = (nextState: AppStateStatus) => {
-      if (nextState === 'active') {
+      if (nextState === 'active' && getSessionIdentityMode(session) === 'authenticated') {
         const now = Date.now();
         if (now - lastReconciledAtRef.current >= APP_STATE_RECONCILE_THROTTLE_MS) {
           lastReconciledAtRef.current = now;
@@ -383,7 +383,7 @@ export function useAuthLifecycle() {
   // 4. Realtime Profile Updates (Capability Sync)
   const currentUser = useStore((state) => state.user);
   useEffect(() => {
-    if (!currentUser?.id) return;
+    if (!currentUser?.id || getSessionIdentityMode(session) !== 'authenticated') return;
 
     const subscription = realtime.subscribe(
       `user-profile-sync-${currentUser.id}`,
@@ -405,7 +405,7 @@ export function useAuthLifecycle() {
         console.error('Auth: Failed to remove channel during cleanup', e);
       });
     };
-  }, [currentUser?.id, refreshProfile]);
+  }, [currentUser?.id, refreshProfile, session]);
 
   return useMemo(
     () => ({

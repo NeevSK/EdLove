@@ -105,12 +105,15 @@ export const Portal = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (isWeb) return;
+    // Native portals are rendered in place. Keeping a second external-store
+    // host here causes every freshly-created React element to unregister and
+    // re-register during startup, which can cascade into an update loop.
+    if (!isWeb) return;
     context.register(id, children);
   }, [children, context, id, isWeb]);
 
   useEffect(() => {
-    if (isWeb) return;
+    if (!isWeb) return;
     return () => {
       context.unregister(id);
     };
@@ -126,7 +129,7 @@ export const Portal = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  if (!context.isProvided) return children;
+  if (!context.isProvided || !isWeb) return children;
 
   return null;
 };
