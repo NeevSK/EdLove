@@ -28,7 +28,7 @@
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@repo/editorial": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.2",
+    "astro": "^7.3.5",
     "svelte": "^5.57.0",
     "tailwindcss": "^4.3.3",
     "typescript": "7.0.2"
@@ -59,3 +59,4 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
+
