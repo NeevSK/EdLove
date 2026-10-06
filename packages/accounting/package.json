@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@repo/core": "workspace:*",
-    "@supabase/supabase-js": "2.102.1"
+    "@supabase/supabase-js": "2.117.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
