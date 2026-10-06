@@ -408,7 +408,7 @@
     "@repo/types-shim": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@supabase/supabase-js": "2.117.2",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.104.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^25.9.6",
     "@types/react": "^19.3.0",
@@ -429,10 +429,10 @@
     "@growthbook/growthbook": "^1.7.0",
     "@hono/zod-openapi": "^1.6.3",
     "@intuitui-labs/form-builder-engine": "^0.1.0",
-    "@orpc/client": "1.15.0",
-    "@orpc/contract": "1.15.0",
-    "@orpc/server": "1.15.0",
-    "@orpc/tanstack-query": "1.15.0",
+    "@orpc/client": "1.15.4",
+    "@orpc/contract": "1.15.4",
+    "@orpc/server": "1.15.4",
+    "@orpc/tanstack-query": "1.15.4",
     "@paralleldrive/cuid2": "^2.3.1",
     "@powersync/common": "^2.2.1",
     "@powersync/drizzle-driver": "^0.8.0",
@@ -444,21 +444,21 @@
     "@sentry/browser": "10.64.0",
     "@supabase/postgrest-js": "2.117.2",
     "@supabase/supabase-js": "2.117.2",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.104.1",
     "@zenstackhq/server": "^3.9.4",
     "@zenstackhq/zod": "3.8.3",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^0.45.3",
     "effect": "^3.22.2",
     "fast-json-patch": "^3.1.1",
-    "hono": "^4.13.7",
+    "hono": "^4.13.13",
     "i18next": "^26.4.2",
-    "inngest": "^4.20.0",
+    "inngest": "^4.21.1",
     "isomorphic-webcrypto": "^2.3.8",
     "pino": "^10.3.1",
-    "react-i18next": "^17.0.13",
+    "react-i18next": "^17.0.15",
     "uuid": "^14.0.2",
-    "zod": "4.5.4"
+    "zod": "4.6.5"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -474,3 +474,13 @@
     "test:ui": "vitest --ui"
   }
 }
+
+
+
+
+
+
+
+
+
+

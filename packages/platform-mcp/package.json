@@ -28,7 +28,7 @@
     "@swmansion/argent": "^0.23.0",
     "agent-device": "^0.20.10",
     "dotenv": "^17.4.2",
-    "zod": "4.5.4"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
@@ -56,3 +56,4 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
+

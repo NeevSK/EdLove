@@ -35,37 +35,37 @@
     "@opentelemetry/resources": "2.10.0",
     "@opentelemetry/sdk-trace-base": "2.10.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
-    "@orpc/client": "1.15.0",
-    "@orpc/contract": "1.15.0",
-    "@orpc/openapi": "1.15.0",
+    "@orpc/client": "1.15.4",
+    "@orpc/contract": "1.15.4",
+    "@orpc/openapi": "1.15.4",
     "@orpc/opentelemetry": "2.0.0-beta.31",
     "@orpc/pino": "2.0.0-beta.31",
-    "@orpc/server": "1.15.0",
+    "@orpc/server": "1.15.4",
     "@repo/core": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
     "@scalar/hono-api-reference": "^0.11.16",
     "@sentry/node": "^8.55.2",
-    "@tanstack/ai": "0.52.0",
+    "@tanstack/ai": "0.64.1",
     "@tanstack/ai-anthropic": "0.18.3",
     "@tanstack/ai-gemini": "0.26.4",
     "@tanstack/ai-openai": "0.22.3",
-    "ai": "^7.0.99",
+    "ai": "^7.0.128",
     "dotenv": "^17.4.2",
     "foglamp": "^0.7.1",
-    "hono": "^4.13.7",
-    "inngest": "^4.20.0",
+    "hono": "^4.13.13",
+    "inngest": "^4.21.1",
     "pino": "^9.14.0",
     "pino-pretty": "^11.3.0",
     "posthog-node": "^5.52.1",
-    "zod": "4.5.4"
+    "zod": "4.6.5"
   },
   "pnpm": {
     "overrides": {
-      "@orpc/client": "1.15.0"
+      "@orpc/client": "1.15.4"
     },
     "resolutions": {
-      "@orpc/client": "1.15.0"
+      "@orpc/client": "1.15.4"
     }
   },
   "devDependencies": {
@@ -89,3 +89,7 @@
     "test:bun": "bun x vitest run"
   }
 }
+
+
+
+

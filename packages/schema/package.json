@@ -32,7 +32,7 @@
     "@zenstackhq/orm": "3.8.3",
     "@zenstackhq/zod": "3.8.3",
     "decimal.js": "^10.6.0",
-    "zod": "4.5.4"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
@@ -48,3 +48,4 @@
     "clean": "rm -rf .turbo node_modules src/generated"
   }
 }
+
