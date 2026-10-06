@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@repo/core/lib/storage';
 import { setHapticsEnabled } from '@repo/ui/utils/haptics';
 import {
   createContext,
@@ -59,8 +59,9 @@ export function SensoryProvider({ children }: { children: ReactNode }) {
   }, [preferences.hapticsEnabled]);
 
   useEffect(() => {
-    void AsyncStorage.getItem(SENSORY_KEY)
-      .then((value) => setPreferences(readPreferences(value)))
+    void storage
+      .getStringAsync(SENSORY_KEY)
+      .then((value) => setPreferences(readPreferences(value ?? null)))
       .catch((error: unknown) => {
         console.warn('[SensoryProvider] Load error:', error);
       });
@@ -71,7 +72,7 @@ export function SensoryProvider({ children }: { children: ReactNode }) {
       const next = { ...preferences, [key]: value };
       setPreferences(next);
       try {
-        await AsyncStorage.setItem(SENSORY_KEY, JSON.stringify(next));
+        storage.set(SENSORY_KEY, JSON.stringify(next));
       } catch (error: unknown) {
         console.warn('[SensoryProvider] Save error:', error);
       }

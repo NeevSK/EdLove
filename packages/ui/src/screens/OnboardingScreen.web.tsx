@@ -2,7 +2,6 @@
  * ONBOARDING SCREEN - Web Edition
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';

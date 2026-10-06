@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@repo/core/lib/storage';
 import { handleAPIError } from '@repo/core/logic';
 import type { Capacity } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -29,7 +29,7 @@ export function useProfileCompletion(
   useEffect(() => {
     const loadCelebrationState = async () => {
       try {
-        const val = await AsyncStorage.getItem(CELEBRATION_KEY);
+        const val = await storage.getStringAsync(CELEBRATION_KEY);
         setHasSeenCelebration(val === 'true');
       } catch (error) {
         handleAPIError(error);
@@ -41,7 +41,7 @@ export function useProfileCompletion(
   const markCompletionCelebrationSeen = useCallback(async () => {
     try {
       setHasSeenCelebration(true);
-      await AsyncStorage.setItem(CELEBRATION_KEY, 'true');
+      storage.set(CELEBRATION_KEY, 'true');
     } catch (error) {
       handleAPIError(error);
     }

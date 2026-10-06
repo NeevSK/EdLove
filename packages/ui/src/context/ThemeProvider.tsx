@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@repo/core/lib/storage';
 import { useStore } from '@repo/core/logic';
 import {
   createContext,
@@ -54,11 +54,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     async function loadThemeSettings() {
       try {
         const [veil, living] = await Promise.all([
-          AsyncStorage.getItem(STORAGE_KEYS.IS_VEIL_ACTIVE),
-          AsyncStorage.getItem(STORAGE_KEYS.ENABLE_LIVING_THEME),
+          storage.getStringAsync(STORAGE_KEYS.IS_VEIL_ACTIVE),
+          storage.getStringAsync(STORAGE_KEYS.ENABLE_LIVING_THEME),
         ]);
-        if (veil) setIsVeilActive(veil === 'true');
-        if (living !== null) setEnableLivingThemeState(living === 'true');
+        if (veil !== undefined) setIsVeilActive(veil === 'true');
+        if (living !== undefined) setEnableLivingThemeState(living === 'true');
       } catch (e) {
         console.warn('[ThemeProvider] Load error:', e);
       }
@@ -100,7 +100,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const newValue = !isVeilActive;
     setIsVeilActive(newValue);
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.IS_VEIL_ACTIVE, String(newValue));
+      storage.set(STORAGE_KEYS.IS_VEIL_ACTIVE, String(newValue));
     } catch (e) {
       console.warn('[ThemeProvider] Veil error:', e);
     }
@@ -109,7 +109,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setEnableLivingTheme = useCallback(async (enabled: boolean) => {
     setEnableLivingThemeState(enabled);
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
+      storage.set(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
     } catch (e) {
       console.warn('[ThemeProvider] Living error:', e);
     }

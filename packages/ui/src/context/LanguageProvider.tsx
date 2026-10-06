@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@repo/core/lib/storage';
 import i18n from 'i18next';
 import {
   createContext,
@@ -26,7 +26,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadLanguage() {
       try {
-        const lang = await AsyncStorage.getItem(LANGUAGE_KEY);
+        const lang = await storage.getStringAsync(LANGUAGE_KEY);
         if (lang) {
           setLanguageState(lang as Language);
           i18n.changeLanguage(lang);
@@ -41,7 +41,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLanguage = useCallback(async (lang: Language) => {
     setLanguageState(lang);
     try {
-      await AsyncStorage.setItem(LANGUAGE_KEY, lang);
+      storage.set(LANGUAGE_KEY, lang);
       await i18n.changeLanguage(lang);
     } catch (e) {
       console.warn('[LanguageProvider] Save error:', e);

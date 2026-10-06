@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { identityAPI } from '@repo/core/api/client';
+import { storage } from '@repo/core/lib/storage';
 import { FlowResolver } from '@repo/core/native';
 import type { QRPayload } from '@repo/core/types';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -34,7 +34,7 @@ export default function QRHandlerScreen() {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) {
           // Store and redirect to auth
-          await AsyncStorage.setItem('pending_qr_action', JSON.stringify(p));
+          storage.set('pending_qr_action', JSON.stringify(p));
           router.push('/auth');
           return;
         }

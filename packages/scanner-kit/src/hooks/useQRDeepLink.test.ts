@@ -1,19 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const storage = vi.hoisted(() => new Map<string, string>());
-const storageMocks = vi.hoisted(() => ({
-  getItem: vi.fn(async (key: string) => storage.get(key) ?? null),
-  removeItem: vi.fn(async (key: string) => {
-    storage.delete(key);
+const storageMap = vi.hoisted(() => new Map<string, string>());
+const storageSpy = vi.hoisted(() => ({
+  delete: vi.fn((key: string) => {
+    storageMap.delete(key);
   }),
-  setItem: vi.fn(async (key: string, value: string) => {
-    storage.set(key, value);
+  set: vi.fn((key: string, value: string) => {
+    storageMap.set(key, value);
   }),
+  getStringAsync: vi.fn(async (key: string) => storageMap.get(key)),
+  getString: vi.fn((key: string) => storageMap.get(key)),
 }));
 
 const payload = { action: 'join_class' as const, classroom_id: 'class-1', v: 1 as const };
 
-vi.mock('@react-native-async-storage/async-storage', () => ({ default: storageMocks }));
+vi.mock('@repo/core/lib/storage', () => ({ storage: storageSpy }));
 const classifyRouteIntent = vi.hoisted(() => vi.fn<any>(() => ({ kind: 'qr' as const, payload })));
 
 vi.mock('@repo/core/logic', () => ({ classifyRouteIntent }));
@@ -28,7 +29,7 @@ import { dispatchQRDeepLink, redeemPendingQRAction } from './useQRDeepLink';
 
 describe('QR pending-action boundary', () => {
   beforeEach(() => {
-    storage.clear();
+    storageMap.clear();
     vi.clearAllMocks();
   });
 
@@ -37,7 +38,7 @@ describe('QR pending-action boundary', () => {
 
     await expect(redeemPendingQRAction()).resolves.toEqual(payload);
     await expect(redeemPendingQRAction()).resolves.toBeNull();
-    expect(storageMocks.removeItem).toHaveBeenCalledOnce();
+    expect(storageSpy.delete).toHaveBeenCalledOnce();
   });
 
   it('delivers an authenticated QR action without persisting it', async () => {
@@ -56,6 +57,6 @@ describe('QR pending-action boundary', () => {
 
     await expect(dispatchQRDeepLink('https://evil.example/qr')).resolves.toBe(false);
 
-    expect(storageMocks.setItem).not.toHaveBeenCalled();
+    expect(storageSpy.set).not.toHaveBeenCalled();
   });
 });

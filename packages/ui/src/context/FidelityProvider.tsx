@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@repo/core/lib/storage';
 import {
   createContext,
   type ReactNode,
@@ -33,7 +33,7 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadFidelity() {
       try {
-        const level = await AsyncStorage.getItem(FIDELITY_KEY);
+        const level = await storage.getStringAsync(FIDELITY_KEY);
         if (level && isFidelityLevel(level)) setFidelityLevelState(level);
       } catch (error) {
         console.warn('[FidelityProvider] Load error:', error);
@@ -51,7 +51,7 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
     if (!isFidelityLevel(level)) return;
     setFidelityLevelState(level);
     try {
-      await AsyncStorage.setItem(FIDELITY_KEY, level);
+      storage.set(FIDELITY_KEY, level);
     } catch (e) {
       console.warn('[FidelityProvider] Save error:', e);
     }
