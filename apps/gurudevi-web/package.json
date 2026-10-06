@@ -21,7 +21,7 @@
     "test:e2e:desktop": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --project=desktop-chrome\" --name \"apps_gurudevi-web-test_e2e_desktop\" --evidence-level G4"
   },
   "dependencies": {
-    "@orpc/client": "1.15.0",
+    "@orpc/client": "1.15.4",
     "@repo/core": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
@@ -49,3 +49,4 @@
     "vitest": "5.0.0"
   }
 }
+
