@@ -26,7 +26,7 @@ export interface IBadgeProps extends ViewProps {
   action?: BadgeAction;
 }
 
-const Badge = React.forwardRef<RNView, IBadgeProps>(
+const Badge = React.forwardRef<any, IBadgeProps>(
   ({ className, size = 'md', variant = 'solid', action = 'primary', children, ...props }, ref) => {
     const contextValue = useMemo(() => ({ variant, action, size }), [variant, action, size]);
 

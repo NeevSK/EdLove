@@ -688,7 +688,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
       try {
         // Saved progress recovery logic
-        const savedProgress = await AsyncStorage.getItem(getOnboardingProgressKey(internalId));
+        const savedProgress = await storage.getStringAsync(getOnboardingProgressKey(internalId));
         if (savedProgress) {
           const progress = parseOnboardingDraft(savedProgress, internalId);
           if (progress) {
@@ -743,7 +743,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
         if (!profile || !profile.full_name) {
           // Uninitialized or uncreated user account -> wipe draft cache and start cleanly at Welcome Step 0
           try {
-            await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
+            storage.delete(getOnboardingProgressKey(internalId));
           } catch {
             // Ignore failure when clearing progress key
           }
@@ -835,19 +835,21 @@ const OnboardingScreen = memo(function OnboardingScreen({
     const userId = resolvedInternalIdRef.current;
     if (!userId) return;
 
-    void AsyncStorage.setItem(
-      getOnboardingProgressKey(userId),
-      serializeOnboardingDraft({ userId, state }),
-    ).catch((err) => {
+    try {
+      storage.set(
+        getOnboardingProgressKey(userId),
+        serializeOnboardingDraft({ userId, state }),
+      );
+    } catch (err: unknown) {
       console.warn('[Onboarding] Failed to save progress:', err);
-    });
+    }
   }, [currentStep, name, selectedCapacity, state.schoolId]);
 
   const clearSavedProgress = useCallback(async () => {
     const progressUserId = resolvedInternalIdRef.current;
     if (!progressUserId) return;
 
-    await AsyncStorage.removeItem(getOnboardingProgressKey(progressUserId));
+    storage.delete(getOnboardingProgressKey(progressUserId));
   }, []);
 
   const handleCompleteOnboarding = useCallback(async () => {
@@ -1086,7 +1088,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   // On Android, resizing the viewport alone does not reliably scroll a focused
   // field above the keyboard. Keep a single scroll owner and move its end into
   // view once the keyboard has finished opening.
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<React.ElementRef<typeof ScrollView>>(null);
   useEffect(() => {
     const eventName = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const subscription = Keyboard.addListener(eventName, () => {

@@ -556,7 +556,7 @@ export default memo(function OnboardingScreenWeb({
 
       try {
         try {
-          const saved = await AsyncStorage.getItem(getOnboardingProgressKey(internalId));
+          const saved = await storage.getStringAsync(getOnboardingProgressKey(internalId));
           if (saved) {
             const progress = parseOnboardingDraft(saved, internalId);
             if (progress) {
@@ -601,7 +601,7 @@ export default memo(function OnboardingScreenWeb({
         if (!profile || !profile.full_name) {
           // Uninitialized or uncreated user account -> wipe draft cache and start cleanly at Welcome Step 0
           try {
-            await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
+            storage.delete(getOnboardingProgressKey(internalId));
           } catch {
             // Ignore failure when clearing progress key
           }
@@ -692,7 +692,7 @@ export default memo(function OnboardingScreenWeb({
         resolvedInternalIdRef.current = internalId;
       }
       if (internalId) {
-        await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
+        storage.delete(getOnboardingProgressKey(internalId));
       }
       dispatch({ type: 'COMPLETE' });
       hapticSuccess();
@@ -759,7 +759,7 @@ export default memo(function OnboardingScreenWeb({
         });
 
         await onboardingAPI.completeOnboarding(internalId);
-        await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
+        storage.delete(getOnboardingProgressKey(internalId));
 
         hapticSuccess();
         showToast(`Sandbox Profile Ready (${devRole})!`, 'success', 3000);
@@ -830,7 +830,7 @@ export default memo(function OnboardingScreenWeb({
           });
 
           await onboardingAPI.completeOnboarding(internalId);
-          await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
+          storage.delete(getOnboardingProgressKey(internalId));
 
           hapticSuccess();
           showToast(getDevOnboardingTemplateLabel(template), 'success', 3000);
@@ -918,12 +918,14 @@ export default memo(function OnboardingScreenWeb({
     const userId = resolvedInternalIdRef.current;
     if (!userId) return;
 
-    void AsyncStorage.setItem(
-      getOnboardingProgressKey(userId),
-      serializeOnboardingDraft({ userId, state }),
-    ).catch((storageError: unknown) => {
+    try {
+      storage.set(
+        getOnboardingProgressKey(userId),
+        serializeOnboardingDraft({ userId, state }),
+      );
+    } catch (storageError: unknown) {
       console.warn('[Onboarding] Failed to persist progress locally:', storageError);
-    });
+    }
   }, [currentStep, name, selectedCapacity, state.schoolId]);
 
   const currentTourScreen = useMemo(() => {

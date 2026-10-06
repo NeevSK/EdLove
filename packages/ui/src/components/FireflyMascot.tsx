@@ -96,7 +96,7 @@ export function FireflyMascot({
           decodeFormat={
             Platform.OS === 'android' ? visualCapabilities.imageDecodeFormat : undefined
           }
-          source={artwork.source}
+          source={artwork.source as any}
           style={{ height: size, width: size }}
           transition={0}
           onError={() => setArtworkFailed(true)}

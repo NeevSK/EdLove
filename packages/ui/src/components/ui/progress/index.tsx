@@ -29,7 +29,7 @@ export interface IProgressProps extends ViewProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const Progress = React.forwardRef<View, IProgressProps>(
+export const Progress = React.forwardRef<any, IProgressProps>(
   ({ className, value = 0, size = 'md', children, ...props }, ref) => {
     const heightMap = {
       xs: 'h-1',
@@ -57,7 +57,7 @@ export const Progress = React.forwardRef<View, IProgressProps>(
   },
 );
 
-export const ProgressFilledTrack = React.forwardRef<View, ViewProps & { className?: string }>(
+export const ProgressFilledTrack = React.forwardRef<any, ViewProps & { className?: string }>(
   ({ className, ...props }, ref) => {
     const { value } = useProgress();
 

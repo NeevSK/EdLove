@@ -132,7 +132,7 @@ const Button = React.forwardRef<View, IButtonProps>(
 
 Button.displayName = 'Button';
 
-export const ButtonText = React.forwardRef<RNText, TextProps & { className?: string }>(
+export const ButtonText = React.forwardRef<any, TextProps & { className?: string }>(
   ({ className, children, ...props }, ref) => {
     const { variant, action } = useButton();
     const textColors = {

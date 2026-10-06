@@ -57,7 +57,7 @@ export default function QRShareButton({
   backgroundColor = '#1a1a2e',
   accentColor = '#f5a623',
 }: QRShareButtonProps) {
-  const viewRef = useRef<View>(null);
+  const viewRef = useRef<any>(null);
   const shareUrl = shortUrl ?? value;
 
   const handleShareImage = async () => {

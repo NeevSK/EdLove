@@ -63,7 +63,6 @@ export default function ScreenWrapper({
     >
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={resolvedBackground}
       />
 
       <View

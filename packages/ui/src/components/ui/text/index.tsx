@@ -8,7 +8,7 @@ import { Text as RNText, type StyleProp, type TextProps, type TextStyle } from '
 const StyledText = styled(RNText);
 
 export const Text = React.forwardRef<
-  RNText,
+  any,
   TextProps & { className?: string; size?: string; sx?: StyleProp<TextStyle> }
 >(({ className, size, sx, style, children, allowFontScaling = true, ...props }, ref) => {
   const sizeMap: Record<string, string> = {
@@ -38,7 +38,7 @@ export const Text = React.forwardRef<
 Text.displayName = 'Text';
 
 export const Heading = React.forwardRef<
-  RNText,
+  any,
   TextProps & {
     className?: string;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';

@@ -20,7 +20,7 @@ const spaceMap: Record<string, string> = {
   xl: 'gap-8', // 32px
 };
 
-export const HStack = React.forwardRef<View, IHStackProps>(
+export const HStack = React.forwardRef<any, IHStackProps>(
   ({ className, space, reversed, sx, style, children, ...props }, ref) => {
     const gapClass = space ? spaceMap[space] || `gap-${space}` : '';
     return (

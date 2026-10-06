@@ -9,7 +9,7 @@ interface IDividerProps extends ViewProps {
   orientation?: 'horizontal' | 'vertical';
 }
 
-export const Divider = React.forwardRef<View, IDividerProps>(
+export const Divider = React.forwardRef<any, IDividerProps>(
   ({ className, orientation = 'horizontal', ...props }, ref) => {
     const orientationClasses = orientation === 'horizontal' ? 'w-full h-[1px]' : 'h-full w-[1px]';
     return (

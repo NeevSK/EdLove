@@ -28,7 +28,7 @@ const StyledRefreshControl = styled(RNRefreshControl);
 const StyledKeyboardAvoidingView = styled(RNKeyboardAvoidingView);
 const StyledAnimatedView = styled(Animated.View as ComponentType<any>);
 
-export const View = React.forwardRef<RNView, ViewProps & { className?: string }>(
+export const View = React.forwardRef<any, ViewProps & { className?: string }>(
   ({ className, children, ...props }, ref) => (
     <StyledView {...props} ref={ref} className={className}>
       {children}
@@ -38,7 +38,7 @@ export const View = React.forwardRef<RNView, ViewProps & { className?: string }>
 View.displayName = 'View';
 
 export const ScrollView = React.forwardRef<
-  RNScrollView,
+  any,
   ScrollViewProps & { className?: string; contentContainerClassName?: string }
 >(({ className, contentContainerClassName, children, ...props }, ref) => (
   <StyledScrollView
@@ -52,7 +52,7 @@ export const ScrollView = React.forwardRef<
 ));
 ScrollView.displayName = 'ScrollView';
 
-export const Pressable = React.forwardRef<RNView, PressableProps & { className?: string }>(
+export const Pressable = React.forwardRef<any, PressableProps & { className?: string }>(
   ({ className, children, ...props }, ref) => (
     <StyledPressable {...props} ref={ref} className={className}>
       {children}
@@ -62,7 +62,7 @@ export const Pressable = React.forwardRef<RNView, PressableProps & { className?:
 Pressable.displayName = 'Pressable';
 
 export const FlatList = React.forwardRef<
-  RNFlatList,
+  any,
   FlatListProps<any> & {
     className?: string;
     contentContainerClassName?: string;
@@ -79,7 +79,7 @@ export type FlatList = RNFlatList;
 FlatList.displayName = 'FlatList';
 
 export const RefreshControl = React.forwardRef<
-  RNRefreshControl,
+  any,
   RefreshControlProps & { className?: string }
 >(({ className, ...props }, ref) => (
   <StyledRefreshControl {...props} ref={ref} className={className} />
@@ -90,7 +90,7 @@ RefreshControl.displayName = 'RefreshControl';
 export const AnimatedView: React.ComponentType<any> = StyledAnimatedView;
 
 export const KeyboardAvoidingView = React.forwardRef<
-  RNKeyboardAvoidingView,
+  any,
   KeyboardAvoidingViewProps & { className?: string }
 >(({ className, ...props }, ref) => (
   <StyledKeyboardAvoidingView {...props} ref={ref} className={className} />

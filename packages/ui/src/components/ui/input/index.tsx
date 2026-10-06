@@ -37,7 +37,7 @@ export interface IInputProps extends ViewProps {
   isInvalid?: boolean;
 }
 
-const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
+const Input = React.forwardRef<any, IInputProps>(
   ({ className, isDisabled, isInvalid, children, ...props }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
     const formControl = useFormControlContext();
@@ -88,7 +88,7 @@ const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
 Input.displayName = 'Input';
 
 export const InputField = React.forwardRef<
-  React.ElementRef<typeof TextInput>,
+  any,
   TextInputProps & { className?: string; type?: 'text' | 'password' | 'number' }
 >(({ className, type, onFocus, onBlur, ...props }, ref) => {
   const { id, describedBy, isDisabled, isInvalid, setIsFocused } = useInput();

@@ -10,7 +10,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
  * A hardened primitive for backdrops.
  * Blocks interactions and provides a dimming layer.
  */
-export const Overlay = React.forwardRef<View, any>(
+export const Overlay = React.forwardRef<any, any>(
   ({ className, isOpen, onPress, onClick, ...props }, ref) => {
     if (!isOpen) return null;
 
@@ -60,7 +60,7 @@ export const Overlay = React.forwardRef<View, any>(
       >
         <Pressable
           {...props}
-          ref={ref}
+          ref={ref as any}
           onPress={handlePress}
           accessibilityRole="button"
           accessibilityLabel="backdrop"
