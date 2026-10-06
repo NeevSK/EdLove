@@ -32,7 +32,7 @@
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "date-fns": "^4.4.0",
-    "react-i18next": "^17.0.13"
+    "react-i18next": "^17.0.15"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
@@ -61,3 +61,4 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
+

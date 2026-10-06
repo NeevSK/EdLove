@@ -27,7 +27,7 @@
     "@repo/ui": "workspace:*",
     "expo-keep-awake": "~58.0.3",
     "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.13"
+    "react-i18next": "^17.0.15"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -71,3 +71,4 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
+
