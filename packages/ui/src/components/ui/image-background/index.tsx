@@ -21,7 +21,9 @@ export interface IImageBackgroundProps extends ViewProps {
   children?: React.ReactNode;
 }
 
-export const ImageBackground = React.forwardRef<
+export const ImageBackground: React.ForwardRefExoticComponent<
+  IImageBackgroundProps & React.RefAttributes<any>
+> = React.forwardRef<
   any,
   IImageBackgroundProps
 >(
