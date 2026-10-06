@@ -15,6 +15,11 @@ minimumReleaseAgeExclude:
   - 'react-native-skia-graphite-*'
   - 'jest-expo'
   - '@shopify/flash-list'
+  - 'ai'
+  - '@ai-sdk/*'
+  - 'posthog-react-native'
+  - '@posthog/*'
+  - '@tanstack/ai'
 
 publicHoistPattern:
   - '*@tanstack/query-core*'
@@ -53,7 +58,7 @@ overrides:
   '@zenstackhq/sdk': '3.8.0'
   '@zenstackhq/zod': '3.8.0'
   '@zenstackhq/schema': '3.8.0'
-  zod: '4.5.4'
+  zod: '4.6.5'
   zod-validation-error: '5.0.0'
   kysely: '0.28.16'
   react: '19.3.0'
@@ -73,8 +78,8 @@ overrides:
   whatwg-encoding: '*'
   nitro-modules: '0.33.9'
   '@sentry/react-native': '~8.23.0'
-  'react-native-skia': '3.0.2'
-  '@shopify/react-native-skia': 'npm:react-native-skia@3.0.2'
+  'react-native-skia': '3.0.3'
+  '@shopify/react-native-skia': 'npm:react-native-skia@3.0.3'
   '@react-native-async-storage/async-storage': '2.2.0'
   '@expo/vector-icons': '15.1.1'
   react-native-maps: '^1.29.0'
@@ -181,3 +186,4 @@ allowBuilds:
   unrs-resolver: true
   vd-tool: true
   workerd: true
+
