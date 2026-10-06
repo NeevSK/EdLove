@@ -279,11 +279,15 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       for await (const chunk of source) {
         if (chunk.type === 'TEXT_MESSAGE_CONTENT') {
           textChunkCount++;
-          const part = chunk.content as { text?: string } | undefined;
-          if (part?.text) assistantText += part.text;
+          const delta = (chunk as { delta?: string }).delta;
+          if (delta) assistantText += delta;
         }
         if (chunk.type === 'RUN_FINISHED' && chunk.usage) {
-          tokensUsed = chunk.usage.totalTokens ?? 0;
+          if (Array.isArray(chunk.usage)) {
+            tokensUsed = chunk.usage.reduce((sum, u) => sum + (u.totalTokens ?? 0), 0);
+          } else {
+            tokensUsed = (chunk.usage as { totalTokens?: number }).totalTokens ?? 0;
+          }
         }
         yield chunk;
       }

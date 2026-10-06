@@ -7,7 +7,6 @@ function syntheticStream(): AsyncIterable<StreamChunk> {
       type: EventType.RUN_STARTED,
       threadId: 'thread-1',
       runId: 'run-1',
-      model: 'gpt-4o-mini',
     },
     {
       type: EventType.TEXT_MESSAGE_START,

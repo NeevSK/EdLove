@@ -26,7 +26,7 @@ export async function* vercelStreamToTanStackChunks(
     type: EventType.RUN_STARTED,
     threadId,
     runId,
-    model,
+    metadata: { model },
     timestamp: now(),
   };
 
@@ -39,7 +39,7 @@ export async function* vercelStreamToTanStackChunks(
             type: EventType.TEXT_MESSAGE_START,
             messageId,
             role: 'assistant',
-            model,
+            metadata: { model },
             timestamp: now(),
           };
         }
@@ -47,14 +47,14 @@ export async function* vercelStreamToTanStackChunks(
           type: EventType.TEXT_MESSAGE_CONTENT,
           messageId,
           delta: event.text ?? '',
-          model,
+          metadata: { model },
           timestamp: now(),
         };
         break;
       }
       case 'finish': {
         if (messageId) {
-          yield { type: EventType.TEXT_MESSAGE_END, messageId, model, timestamp: now() };
+          yield { type: EventType.TEXT_MESSAGE_END, messageId, metadata: { model }, timestamp: now() };
         }
         const u = event.totalUsage;
         const usage = u
