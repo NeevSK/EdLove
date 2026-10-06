@@ -14,10 +14,10 @@ import {
   StickyNote,
   X,
 } from '@repo/ui/icons';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import {
   ActivityIndicator,
   Box,
-  FlatList,
   HStack,
   Icon,
   Input,
@@ -480,7 +480,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
               />
             </Box>
           ) : (
-            <FlatList
+            <SanctuaryFlashList
               data={rows}
               keyExtractor={(r) => r.id}
               renderItem={renderRow}

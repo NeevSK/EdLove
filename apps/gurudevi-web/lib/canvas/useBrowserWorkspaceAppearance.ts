@@ -35,6 +35,27 @@ function groupStorageKey(
   return `workspace-groups:${workspaceId}:${layoutTarget}:${accountId}`;
 }
 
+function pinnedStorageKey(
+  accountId: string,
+  workspaceId: string,
+  layoutTarget: WorkspaceLayoutTarget,
+): string {
+  return `workspace-pinned:${workspaceId}:${layoutTarget}:${accountId}`;
+}
+
+function readPinned(key: string, defaults: readonly string[]): string[] {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(key) ?? 'null');
+    return Array.isArray(parsed) && parsed.every((value) => typeof value === 'string')
+      ? parsed.length > 0
+        ? parsed
+        : [...defaults]
+      : [...defaults];
+  } catch {
+    return [...defaults];
+  }
+}
+
 function readGroups(key: string, defaults: readonly string[]): string[] {
   try {
     const parsed: unknown = JSON.parse(window.localStorage.getItem(key) ?? 'null');
@@ -87,16 +108,20 @@ export function useBrowserWorkspaceAppearance({
   workspaceId,
   enableRemoteSync = true,
   defaultGroupOrder = [],
+  defaultPinnedIds = [],
 }: Readonly<{
   accountId: string;
   workspaceId: string;
   enableRemoteSync?: boolean;
   defaultGroupOrder?: readonly string[];
+  defaultPinnedIds?: readonly string[];
 }>) {
   const defaultGroupOrderKey = defaultGroupOrder.join('|');
+  const defaultPinnedIdsKey = defaultPinnedIds.join('|');
   const [layoutTarget, setLayoutTarget] = useState<WorkspaceLayoutTarget>('web');
   const [appearance, setAppearanceState] = useState<WorkspaceAppearance>(DEFAULT_APPEARANCE);
   const [groupOrder, setGroupOrderState] = useState<string[]>([...defaultGroupOrder]);
+  const [pinnedIds, setPinnedIdsState] = useState<string[]>([...defaultPinnedIds]);
   const [status, setStatus] = useState<AppearanceStatus>('loading');
 
   useEffect(() => {
@@ -113,9 +138,11 @@ export function useBrowserWorkspaceAppearance({
     let cancelled = false;
     const key = storageKey(accountId, workspaceId, layoutTarget);
     const groupsKey = groupStorageKey(accountId, workspaceId, layoutTarget);
+    const pinnedKey = pinnedStorageKey(accountId, workspaceId, layoutTarget);
     setStatus('loading');
     const local = readLocal(key);
     setGroupOrderState(readGroups(groupsKey, defaultGroupOrder));
+    setPinnedIdsState(readPinned(pinnedKey, defaultPinnedIds));
     if (local) setAppearanceState(local);
 
     if (!enableRemoteSync) {
@@ -145,6 +172,7 @@ export function useBrowserWorkspaceAppearance({
         const remoteLayout = record ? toWorkspaceLayoutRecord(record) : null;
         const remote = remoteLayout?.appearance;
         const remoteGroups = remoteLayout?.groupOrder;
+        const remotePinned = remoteLayout?.pinned;
         if (remote) {
           setAppearanceState(remote);
           writeLocal(key, remote);
@@ -157,6 +185,10 @@ export function useBrowserWorkspaceAppearance({
           setGroupOrderState(normalizedRemoteGroups);
           writeLocal(groupsKey, normalizedRemoteGroups);
         }
+        if (remotePinned && remotePinned.length > 0) {
+          setPinnedIdsState(remotePinned);
+          writeLocal(pinnedKey, remotePinned);
+        }
         setStatus('ready');
       })
       .catch(() => {
@@ -166,7 +198,7 @@ export function useBrowserWorkspaceAppearance({
     return () => {
       cancelled = true;
     };
-  }, [accountId, defaultGroupOrderKey, enableRemoteSync, layoutTarget, workspaceId]);
+  }, [accountId, defaultGroupOrderKey, defaultPinnedIdsKey, enableRemoteSync, layoutTarget, workspaceId]);
 
   const setAppearance = useCallback(
     async (next: WorkspaceAppearance) => {
@@ -214,8 +246,6 @@ export function useBrowserWorkspaceAppearance({
 
   const setGroupOrder = useCallback(
     async (next: string[]) => {
-      // The caller's order is authoritative. Reading the previous local order
-      // here would make an intentional reorder appear unchanged.
       const normalized = normalizeGroups(next, defaultGroupOrder);
       setGroupOrderState(normalized);
       const canPersistLocally = writeLocal(
@@ -251,11 +281,52 @@ export function useBrowserWorkspaceAppearance({
         );
         setStatus('saved');
       } catch {
-        // The local order remains available when the account sync is offline.
         setStatus('offline');
       }
     },
     [accountId, defaultGroupOrderKey, enableRemoteSync, layoutTarget, workspaceId],
+  );
+
+  const setPinnedIds = useCallback(
+    async (next: string[]) => {
+      setPinnedIdsState(next);
+      const canPersistLocally = writeLocal(
+        pinnedStorageKey(accountId, workspaceId, layoutTarget),
+        next,
+      );
+      setStatus(canPersistLocally ? 'saving' : 'error');
+      if (!enableRemoteSync) {
+        setStatus(canPersistLocally ? 'saved' : 'error');
+        return;
+      }
+
+      const client = createBrowserSupabaseClient();
+      if (!client) {
+        setStatus('offline');
+        return;
+      }
+      try {
+        const repository = createSupabaseWorkspaceLayoutRepository(client);
+        const current =
+          (await repository.getLayout(accountId, workspaceId, layoutTarget)) ??
+          (layoutTarget === 'shared'
+            ? null
+            : await repository.getLayout(accountId, workspaceId, 'shared'));
+        const currentLayout = current
+          ? toWorkspaceLayoutRecord(current)
+          : createDefaultWorkspaceLayout({ workspaceId, userId: accountId, surfaces: [] });
+        await repository.upsertLayout(
+          toWorkspaceLayoutUpsert(
+            { ...currentLayout, pinned: next },
+            { userId: accountId, workspaceId, layoutTarget },
+          ),
+        );
+        setStatus('saved');
+      } catch {
+        setStatus('offline');
+      }
+    },
+    [accountId, enableRemoteSync, layoutTarget, workspaceId],
   );
 
   const resetAppearance = useCallback(() => setAppearance(DEFAULT_APPEARANCE), [setAppearance]);
@@ -263,10 +334,12 @@ export function useBrowserWorkspaceAppearance({
   return {
     appearance,
     groupOrder,
+    pinnedIds,
     layoutTarget,
     resetAppearance,
     status,
     setAppearance,
     setGroupOrder,
+    setPinnedIds,
   };
 }

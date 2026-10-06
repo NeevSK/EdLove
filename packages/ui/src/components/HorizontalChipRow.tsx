@@ -1,5 +1,5 @@
 import { SanctuaryChip, type SanctuaryChipProps } from '@repo/ui/components/SanctuaryChip';
-import { FlatList } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
@@ -22,8 +22,8 @@ export interface HorizontalChipRowProps {
 }
 
 /**
- * HorizontalChipRow - scrollable row of SanctuaryChips backed by FlatList.
- * Safe to nest inside VirtualizedList/FlatList (different axis avoids RN warning).
+ * HorizontalChipRow - scrollable row of SanctuaryChips backed by a lightweight horizontal ScrollView.
+ * Safe to nest inside VirtualizedList / SanctuaryFlashList without virtualization overhead.
  */
 export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
   chips,
@@ -34,26 +34,26 @@ export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
   paddingHorizontal = Theme.spacing.md,
   center,
 }) => (
-  <FlatList
+  <ScrollView
     horizontal
-    data={chips}
-    keyExtractor={(item) => item.value}
-    renderItem={({ item }) => (
-      <SanctuaryChip
-        label={item.label}
-        selected={item.value === selectedValue}
-        onPress={() => onSelect(item.value)}
-        size={size}
-        variant={variant}
-      />
-    )}
     showsHorizontalScrollIndicator={false}
     contentContainerStyle={[
       styles.container,
       { paddingHorizontal },
       center && styles.centeredContent,
     ]}
-  />
+  >
+    {chips.map((item) => (
+      <SanctuaryChip
+        key={item.value}
+        label={item.label}
+        selected={item.value === selectedValue}
+        onPress={() => onSelect(item.value)}
+        size={size}
+        variant={variant}
+      />
+    ))}
+  </ScrollView>
 );
 
 const styles = StyleSheet.create({

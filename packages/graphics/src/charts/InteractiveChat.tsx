@@ -39,7 +39,7 @@ export function InteractiveChat({
 }: InteractiveChatProps) {
   const [inputText, setInputText] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
 
   useEffect(() => {
     // Auto-scroll to bottom when new messages arrive

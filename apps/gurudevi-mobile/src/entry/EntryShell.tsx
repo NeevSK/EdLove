@@ -9,6 +9,7 @@ import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@r
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
+import { MascotProvider } from '@repo/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -19,6 +20,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
 import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
+import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { GuestLeaseBoundary } from '@/entry/GuestLeaseBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
@@ -57,28 +59,30 @@ export function EntryShell() {
                         <DeepLinkProvider>
                           <AuthQueryCacheBoundary />
                           <FABProvider>
-                            <Box className="flex-1 bg-phase-canvas">
-                              <AppVersionGateOverlay />
-                              <GuestLeaseBoundary>
-                                <GuestPersistenceNotice />
-                                <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                  <Stack screenOptions={{ headerShown: false }}>
-                                  <Stack.Screen name="index" />
-                                  <Stack.Screen name="welcome" />
-                                  <Stack.Screen name="auth" />
-                                  <Stack.Screen name="account-recovery" />
-                                  <Stack.Screen name="onboarding" />
-                                  <Stack.Screen name="public-form/[slug]" />
-                                  <Stack.Screen name="(tabs)" />
-                                  <Stack.Screen
-                                    name="(modal)"
-                                    options={{ presentation: 'modal' }}
-                                  />
-                                  </Stack>
-                                </SessionRouteGate>
-                              </GuestLeaseBoundary>
-                              <LotusPetalFAB />
-                            </Box>
+                            <MascotProvider config={fireflyMascotConfig}>
+                              <Box className="flex-1 bg-phase-canvas">
+                                <AppVersionGateOverlay />
+                                <GuestLeaseBoundary>
+                                  <GuestPersistenceNotice />
+                                  <SessionRouteGate appServices={<AuthenticatedAppServices />}>
+                                    <Stack screenOptions={{ headerShown: false }}>
+                                    <Stack.Screen name="index" />
+                                    <Stack.Screen name="welcome" />
+                                    <Stack.Screen name="auth" />
+                                    <Stack.Screen name="account-recovery" />
+                                    <Stack.Screen name="onboarding" />
+                                    <Stack.Screen name="public-form/[slug]" />
+                                    <Stack.Screen name="(tabs)" />
+                                    <Stack.Screen
+                                      name="(modal)"
+                                      options={{ presentation: 'modal' }}
+                                    />
+                                    </Stack>
+                                  </SessionRouteGate>
+                                </GuestLeaseBoundary>
+                                <LotusPetalFAB />
+                              </Box>
+                            </MascotProvider>
                           </FABProvider>
                         </DeepLinkProvider>
                       </ExternalLinkProvider>

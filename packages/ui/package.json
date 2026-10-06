@@ -346,12 +346,14 @@
       "default": "./src/components/SanctuaryChip.tsx"
     },
     "./components/SanctuaryFlashList": {
+      "types": "./src/components/SanctuaryFlashList.tsx",
       "import": "./src/components/SanctuaryFlashList.tsx",
       "browser": "./src/components/SanctuaryFlashList.web.tsx",
       "react-native": "./src/components/SanctuaryFlashList.tsx",
       "default": "./src/components/SanctuaryFlashList.tsx"
     },
     "./components/SanctuaryTable": {
+      "types": "./src/components/SanctuaryTable.tsx",
       "import": "./src/components/SanctuaryTable.tsx",
       "browser": "./src/components/SanctuaryTable.web.tsx",
       "react-native": "./src/components/SanctuaryTable.tsx",
@@ -372,6 +374,7 @@
       "default": "./src/components/SanctuaryInput.tsx"
     },
     "./components/SanctuaryLegendList": {
+      "types": "./src/components/SanctuaryLegendList.tsx",
       "import": "./src/components/SanctuaryLegendList.tsx",
       "browser": "./src/components/SanctuaryLegendList.web.tsx",
       "react-native": "./src/components/SanctuaryLegendList.tsx",
@@ -907,7 +910,7 @@
     "xstate": "^5.32.6"
   },
   "peerDependencies": {
-    "@legendapp/list": "3.3.3",
+    "@legendapp/list": "3.6.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "*",
     "@shopify/flash-list": "2.3.3",
@@ -938,7 +941,7 @@
   },
   "devDependencies": {
     "@babel/traverse": "7.29.8",
-    "@legendapp/list": "3.3.3",
+    "@legendapp/list": "3.6.0",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/apca-w3": "^0.1.3",

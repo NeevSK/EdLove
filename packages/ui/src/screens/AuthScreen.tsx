@@ -32,6 +32,7 @@ import * as WebBrowser from 'expo-web-browser';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInput } from 'react-native';
 
 // Required for expo-auth-session to complete the auth session on Android
 WebBrowser.maybeCompleteAuthSession();
@@ -183,7 +184,7 @@ const AuthScreen = memo(
       newUserId,
     } = state;
 
-    const passwordRef = useRef<any>(null);
+    const passwordRef = useRef<React.ComponentRef<typeof TextInput> | null>(null);
 
     const { profile: myProfile } = useIdentity();
 

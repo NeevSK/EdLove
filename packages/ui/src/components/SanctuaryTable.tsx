@@ -7,7 +7,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 export interface SanctuaryTableProps<TData> {
   table: Table<TData>;
-  estimatedItemSize?: number;
 }
 
 /**
@@ -16,7 +15,6 @@ export interface SanctuaryTableProps<TData> {
  */
 export function SanctuaryTable<TData>({
   table,
-  estimatedItemSize = 60,
 }: SanctuaryTableProps<TData>) {
   const colors = useThemedColors();
   const headers = table.getFlatHeaders();
@@ -55,7 +53,6 @@ export function SanctuaryTable<TData>({
       {/* Recycler Body */}
       <SanctuaryFlashList
         data={rows}
-        estimatedItemSize={estimatedItemSize}
         keyExtractor={(row) => row.id}
         renderItem={({ item: row }) => (
           <View style={[styles.row, { borderBottomColor: colors.border }]}>

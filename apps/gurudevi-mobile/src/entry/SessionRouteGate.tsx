@@ -1,5 +1,6 @@
 import { isPublicBootstrapRoute, useAuth } from '@repo/core/logic';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Mascot } from '@repo/ui/components/Mascot';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect } from 'react';
@@ -22,33 +23,60 @@ export function SessionRouteGate({
     guestOnboardingIntent: pathname === '/onboarding' && params.entry === 'guest',
   });
 
+  console.log('[SessionRouteGate]', {
+    pathname,
+    redirectTo: routeTarget.redirectTo,
+    decision: routeTarget.decision,
+    sessionMode: routeState.session ? (routeState.session.user.is_anonymous ? 'anonymous' : 'auth') : 'none',
+    onboardingCompleted: routeState.onboardingCompleted,
+    isLocalGuestReady: routeState.isLocalGuestReady,
+  });
+
   useEffect(() => {
     if (!routeTarget.redirectTo) return;
-    if (pathname !== routeTarget.redirectTo) router.replace(routeTarget.redirectTo);
+    if (pathname !== routeTarget.redirectTo) router.replace(routeTarget.redirectTo as any);
   }, [pathname, routeTarget.redirectTo, router]);
 
   // router.replace() updates the browser location before Expo Router commits
   // the destination tree. Keeping children mounted in that gap can show the
   // previous route at the new URL (for example, Welcome at /self).
   if (routeTarget.decision === 'booting' && !isPublicBootstrapRoute(pathname)) {
-    return (
-      <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
-        <BrandPulse size={32} accessibilityLabel="Restoring your sanctuary" />
-        <Text className="mt-4 text-center text-base font-semibold text-phase-text-primary">
-          {routeState.profileError
-            ? 'We could not finish restoring your sanctuary.'
-            : 'Restoring your sanctuary…'}
-        </Text>
-        {routeState.profileError ? (
+    if (routeState.profileError) {
+      return (
+        <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
+          <Mascot mode="offline" state="interrupted" size={140} podVariant="raw" />
+          <Text className="mt-6 text-center text-xl font-bold text-phase-text-primary">
+            Sanctuary Connection Paused
+          </Text>
+          <Text className="mt-2 text-center text-sm text-phase-text-muted">
+            {routeState.profileError}
+          </Text>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Retry restoring your sanctuary"
             onPress={() => void refreshProfile()}
-            className="mt-5 rounded-full bg-phase-interactive px-5 py-3"
+            className="mt-6 w-full max-w-xs items-center rounded-xl bg-phase-interactive py-3.5 px-6 shadow-sm active:opacity-90"
           >
-            <Text className="font-bold text-white">Try again</Text>
+            <Text className="font-semibold text-white">Reconnect Sanctuary</Text>
           </Pressable>
-        ) : null}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Return to Welcome"
+            onPress={() => router.replace('/welcome')}
+            className="mt-3 py-2 px-4"
+          >
+            <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
+          </Pressable>
+        </Box>
+      );
+    }
+
+    return (
+      <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
+        <Mascot mode="glowing" state="guiding" size={120} podVariant="raw" />
+        <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
+          Restoring your sanctuary…
+        </Text>
       </Box>
     );
   }

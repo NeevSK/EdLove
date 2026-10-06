@@ -272,6 +272,10 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 - **Added**: `Core/local-first-architecture-principles.md` — extracted engineering content from personal exploration docs (event-sourcing, Cynefin, boundary conditions).
 - **Fixed**: Broken absolute-path links in `Core/developer-playbook.md` and `current_progress/2026-06-20-feature-rollout-implementation-plan.md`; WANDERER → THIRD_CLASS in `Core/onboarding.md`.
 
+### 2026-10-06
+
+- **Added**: `apps/gurudevi-mobile/docs/Learning/EXPO_AGENT_CLI_GUIDANCE.md` — Comprehensive guide and guardrail playbook for `@expo/agent-cli` in Expo SDK 58. Configured `target: "dev-build"` in `apps/gurudevi-mobile/package.json`.
+
 ### 2026-08-09
 
 - **Added**: `docs/docs-sop.md` — Root-level documentation SOP for the monorepo following the same standards as app-specific SOPs.

@@ -236,3 +236,189 @@
     width: 100%;
   }
 }
+
+@media (min-width: 48rem) {
+  .masterDetailLayout {
+    display: grid;
+    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .backOverviewBar {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .masterDetailLayout {
+    display: block;
+  }
+
+  .catalogRail {
+    display: none;
+  }
+
+  .backOverviewBar {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+}
+
+.catalogRail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper-light) 50%, transparent);
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+}
+
+.catalogRailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.catalogRailTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.returnOverviewButton {
+  padding: 0.35rem 0.75rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.returnOverviewButton:hover {
+  background: color-mix(in srgb, var(--lotus) 10%, transparent);
+  color: var(--ink);
+}
+
+.catalogRailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.catalogRailSectionTitle {
+  margin: 0.25rem 0 0.1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.catalogRailList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.catalogRailRow {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.catalogRailItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.catalogRailItem:hover {
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  border-color: var(--line);
+}
+
+.catalogRailItemActive {
+  background: color-mix(in srgb, var(--lotus) 12%, var(--paper));
+  border-color: color-mix(in srgb, var(--lotus) 30%, transparent);
+  font-weight: 600;
+}
+
+.catalogRailItemLabel {
+  flex: 1;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.catalogRailPinButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.catalogRailPinButton:hover {
+  color: var(--lotus);
+  background: color-mix(in srgb, var(--lotus) 10%, transparent);
+}
+
+.catalogRailPinButtonPinned {
+  color: var(--lotus);
+}
+
+.activeResourceStage {
+  min-width: 0;
+}
+
+.streamBackButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  background: var(--paper-light);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+

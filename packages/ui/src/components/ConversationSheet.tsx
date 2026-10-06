@@ -2,7 +2,6 @@ import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '@repo
 import {
   Actionsheet,
   Box,
-  FlatList,
   HStack,
   Icon,
   Input,
@@ -15,7 +14,9 @@ import {
 import { formatTimestamp, getInitialsFromName } from '@repo/ui/utils';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
+import type { LegendListRef } from '@legendapp/list/react-native';
 import { BrandPulse } from './BrandPulse';
+import { SanctuaryLegendList } from './SanctuaryLegendList';
 
 export interface CommentAuthor {
   id: string;
@@ -195,11 +196,11 @@ export function ConversationSheet({
 }: ConversationSheetProps) {
   const [draft, setDraft] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const flatListRef = useRef<FlatList>(null);
+  const legendListRef = useRef<LegendListRef>(null);
 
   useEffect(() => {
     if (comments.length === 0) return;
-    const timer = setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 150);
+    const timer = setTimeout(() => legendListRef.current?.scrollToEnd({ animated: true }), 150);
     return () => clearTimeout(timer);
   }, [comments.length]);
 
@@ -248,8 +249,8 @@ export function ConversationSheet({
                 </Text>
               </VStack>
             ) : (
-              <FlatList
-                ref={flatListRef}
+              <SanctuaryLegendList
+                ref={legendListRef}
                 data={comments}
                 keyExtractor={(item: CommentItem) => item.id}
                 contentContainerStyle={{

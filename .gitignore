@@ -161,3 +161,6 @@ TEST_INFRA.md
 TEST_READY.md
 DEAD_ENDS.md
 reports/*.png
+
+# Bundle visualizer and route bundle analysis reports
+apps/gurudevi-mobile/reports/

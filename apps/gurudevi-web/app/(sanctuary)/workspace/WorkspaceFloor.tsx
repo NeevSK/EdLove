@@ -3,7 +3,7 @@
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
+import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import {
   type AccountAttendanceDraftScope,
@@ -68,14 +68,13 @@ function statusCounts(students: readonly WorkspaceStudent[]) {
 }
 
 export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFloorProps) {
-  const floorAppearance = useBrowserWorkspaceAppearance({
+  const [overview, setOverview] = useState(true);
+  const canvas = useWorkspaceCanvas({
     accountId: subjectId ?? 'explore',
-    defaultGroupOrder: ['operational'],
     enableRemoteSync: mode === 'account' && Boolean(subjectId),
-    workspaceId: 'workspace',
+    activeTaskId: !overview ? attendanceTask.featureId : null,
   });
   const workbench = useDomainWorkbench('workspace');
-  const [overview, setOverview] = useState(true);
   const [classrooms, setClassrooms] = useState<readonly WorkspaceClassroom[]>([]);
   const [classroom, setClassroom] = useState<WorkspaceClassroom | null>(null);
   const selectedClassroomRef = useRef<WorkspaceClassroom | null>(null);
@@ -300,6 +299,10 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   const markableCount = students.filter((student) => student.studentId !== null).length;
   const unlinkedCount = students.length - markableCount;
   const activeAttendance = focused?.featureId === attendanceTask.featureId;
+  const pinnedClassrooms = useMemo(
+    () => classrooms.filter((item) => canvas.pinnedIds.includes(item.id)),
+    [classrooms, canvas.pinnedIds],
+  );
   const practiceAvailability = resolvePracticeAvailability({
     featureId: attendanceTask.featureId,
     platform: 'browser',
@@ -329,8 +332,8 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
     <article
       className={styles.floor}
       data-domain="workspace"
-      data-appearance={floorAppearance.appearance.preset}
-      data-motion={floorAppearance.appearance.motion}
+      data-appearance={canvas.appearance.preset}
+      data-motion={canvas.appearance.motion}
       aria-labelledby="workspace-title"
     >
       <div className={styles.workbench}>
@@ -474,120 +477,211 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
           ) : null}
         </section>
       ) : (
-        <section className={styles.attendance} aria-labelledby="attendance-title">
-          <div className={styles.attendanceHeading}>
-            <div>
-              <p className={styles.eyebrow}>
-                {classroom?.subject ?? 'Classroom'} · {date}
-              </p>
-              <h2 id="attendance-title">{classroom?.name ?? 'Daily attendance'}</h2>
+        <div className={styles.masterDetailLayout}>
+          <aside className={styles.catalogRail} aria-label="Classroom navigation rail">
+            <div className={styles.catalogRailHeader}>
+              <h3 className={styles.catalogRailTitle}>Classrooms</h3>
+              <button
+                type="button"
+                className={styles.returnOverviewButton}
+                onClick={() => setOverview(true)}
+              >
+                Overview
+              </button>
             </div>
-            {classrooms.length > 1 ? (
-              <label className={styles.classPicker}>
-                Classroom
-                <select
-                  value={classroom?.id ?? ''}
-                  onChange={(event) => {
-                    const next = classrooms.find((item) => item.id === event.target.value);
-                    if (next) {
-                      selectedClassroomRef.current = next;
-                      void load(date, next);
-                    }
-                  }}
-                >
-                  {classrooms.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : null}
-          </div>
-          {loadState === 'loading' ? (
-            <p className={styles.loading} role="status">
-              Loading the classroom roster…
-            </p>
-          ) : null}
-          {loadState === 'ready' ? (
-            <>
-              <div className={styles.counts}>
-                <span>
-                  <strong>{counts.present}</strong> present
-                </span>
-                <span>
-                  <strong>{counts.late}</strong> late
-                </span>
-                <span>
-                  <strong>{counts.absent}</strong> absent
-                </span>
-                <span>
-                  <strong>{counts.excused}</strong> excused
-                </span>
-                <span className={styles.muted}>{students.length} students</span>
-              </div>
-              <div className={styles.bulkActions} aria-label="Mark all students">
-                <span>Mark all</span>
-                {(['present', 'late', 'absent', 'excused'] as const).map((status) => (
-                  <button key={status} type="button" onClick={() => markAll(status)}>
-                    {status}
-                  </button>
-                ))}
-              </div>
-              {students.length ? (
-                <ul className={styles.roster}>
-                  {students.map((student, index) => (
-                    <li key={student.id}>
-                      <span className={styles.roll}>{student.rollNumber ?? index + 1}</span>
-                      <span className={styles.studentName}>{student.name}</span>
+
+            {pinnedClassrooms.length > 0 && (
+              <div className={styles.catalogRailSection}>
+                <span className={styles.catalogRailSectionTitle}>Pinned</span>
+                <ul className={styles.catalogRailList}>
+                  {pinnedClassrooms.map((item) => (
+                    <li key={item.id} className={styles.catalogRailRow}>
                       <button
-                        aria-label={
-                          student.studentId
-                            ? `${student.name}, ${student.status}. Change attendance status.`
-                            : `${student.name}, not linked to a student account.`
-                        }
-                        className={`${styles.status} ${styles[student.status]}`}
-                        disabled={!student.studentId}
-                        onClick={() => changeStatus(student.id)}
                         type="button"
+                        className={`${styles.catalogRailItem} ${classroom?.id === item.id ? styles.catalogRailItemActive : ''}`}
+                        onClick={() => {
+                          selectedClassroomRef.current = item;
+                          void load(date, item);
+                        }}
                       >
-                        {student.studentId ? student.status : 'not linked'}
+                        <span className={styles.catalogRailItemLabel}>{item.name}</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.catalogRailPinButton} ${styles.catalogRailPinButtonPinned}`}
+                        onClick={() => canvas.togglePin(item.id)}
+                        aria-label={`Unpin ${item.name}`}
+                        aria-pressed="true"
+                      >
+                        📌
                       </button>
                     </li>
                   ))}
                 </ul>
-              ) : (
-                <p className={styles.empty}>No students are enrolled in this classroom yet.</p>
-              )}
-              {unlinkedCount > 0 ? (
-                <p className={styles.muted}>
-                  {unlinkedCount} roster {unlinkedCount === 1 ? 'entry is' : 'entries are'} not
-                  linked to a student account, so attendance cannot be recorded for{' '}
-                  {unlinkedCount === 1 ? 'it' : 'them'} yet.
+              </div>
+            )}
+
+            <div className={styles.catalogRailSection}>
+              <span className={styles.catalogRailSectionTitle}>
+                All Classrooms ({classrooms.length})
+              </span>
+              <ul className={styles.catalogRailList}>
+                {classrooms.map((item) => {
+                  const isPinned = canvas.pinnedIds.includes(item.id);
+                  return (
+                    <li key={item.id} className={styles.catalogRailRow}>
+                      <button
+                        type="button"
+                        className={`${styles.catalogRailItem} ${classroom?.id === item.id ? styles.catalogRailItemActive : ''}`}
+                        onClick={() => {
+                          selectedClassroomRef.current = item;
+                          void load(date, item);
+                        }}
+                      >
+                        <span className={styles.catalogRailItemLabel}>{item.name}</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.catalogRailPinButton} ${isPinned ? styles.catalogRailPinButtonPinned : ''}`}
+                        onClick={() => canvas.togglePin(item.id)}
+                        aria-label={isPinned ? `Unpin ${item.name}` : `Pin ${item.name}`}
+                        aria-pressed={isPinned}
+                      >
+                        {isPinned ? '📌' : '📍'}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </aside>
+
+          <main className={styles.activeWorkspaceStage}>
+            <div className={styles.backOverviewBar}>
+              <button
+                type="button"
+                className={styles.streamBackButton}
+                onClick={() => setOverview(true)}
+              >
+                ← Back to Overview
+              </button>
+            </div>
+            <section className={styles.attendance} aria-labelledby="attendance-title">
+              <div className={styles.attendanceHeading}>
+                <div>
+                  <p className={styles.eyebrow}>
+                    {classroom?.subject ?? 'Classroom'} · {date}
+                  </p>
+                  <h2 id="attendance-title">{classroom?.name ?? 'Daily attendance'}</h2>
+                </div>
+                {classrooms.length > 1 ? (
+                  <label className={styles.classPicker}>
+                    Classroom
+                    <select
+                      value={classroom?.id ?? ''}
+                      onChange={(event) => {
+                        const next = classrooms.find((item) => item.id === event.target.value);
+                        if (next) {
+                          selectedClassroomRef.current = next;
+                          void load(date, next);
+                        }
+                      }}
+                    >
+                      {classrooms.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+              </div>
+              {loadState === 'loading' ? (
+                <p className={styles.loading} role="status">
+                  Loading the classroom roster…
                 </p>
               ) : null}
-              <button
-                className={styles.primary}
-                disabled={!markableCount || saving}
-                onClick={() => void save()}
-                type="button"
-              >
-                {saving
-                  ? 'Saving attendance…'
-                  : saved
-                    ? 'Saved'
-                    : practiceMode
-                      ? 'Save practice changes'
-                      : 'Save attendance'}
-              </button>
-              {practiceMode ? (
-                <button className={styles.secondary} onClick={endPractice} type="button">
-                  End practice and discard
-                </button>
+              {loadState === 'ready' ? (
+                <>
+                  <div className={styles.counts}>
+                    <span>
+                      <strong>{counts.present}</strong> present
+                    </span>
+                    <span>
+                      <strong>{counts.late}</strong> late
+                    </span>
+                    <span>
+                      <strong>{counts.absent}</strong> absent
+                    </span>
+                    <span>
+                      <strong>{counts.excused}</strong> excused
+                    </span>
+                    <span className={styles.muted}>{students.length} students</span>
+                  </div>
+                  <div className={styles.bulkActions} aria-label="Mark all students">
+                    <span>Mark all</span>
+                    {(['present', 'late', 'absent', 'excused'] as const).map((status) => (
+                      <button key={status} type="button" onClick={() => markAll(status)}>
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                  {students.length ? (
+                    <ul className={styles.roster}>
+                      {students.map((student, index) => (
+                        <li key={student.id}>
+                          <span className={styles.roll}>{student.rollNumber ?? index + 1}</span>
+                          <span className={styles.studentName}>{student.name}</span>
+                          <button
+                            aria-label={
+                              student.studentId
+                                ? `${student.name}, ${student.status}. Change attendance status.`
+                                : `${student.name}, not linked to a student account.`
+                            }
+                            className={`${styles.status} ${styles[student.status]}`}
+                            disabled={!student.studentId}
+                            onClick={() => changeStatus(student.id)}
+                            type="button"
+                          >
+                            {student.studentId ? student.status : 'not linked'}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={styles.empty}>No students are enrolled in this classroom yet.</p>
+                  )}
+                  {unlinkedCount > 0 ? (
+                    <p className={styles.muted}>
+                      {unlinkedCount} roster {unlinkedCount === 1 ? 'entry is' : 'entries are'} not
+                      linked to a student account, so attendance cannot be recorded for{' '}
+                      {unlinkedCount === 1 ? 'it' : 'them'} yet.
+                    </p>
+                  ) : null}
+                  <button
+                    className={styles.primary}
+                    disabled={!markableCount || saving}
+                    onClick={() => void save()}
+                    type="button"
+                  >
+                    {saving
+                      ? 'Saving attendance…'
+                      : saved
+                        ? 'Saved'
+                        : practiceMode
+                          ? 'Save practice changes'
+                          : 'Save attendance'}
+                  </button>
+                  {practiceMode ? (
+                    <button className={styles.secondary} onClick={endPractice} type="button">
+                      End practice and discard
+                    </button>
+                  ) : null}
+                </>
               ) : null}
-            </>
-          ) : null}
-        </section>
+            </section>
+          </main>
+        </div>
       )}
     </article>
   );

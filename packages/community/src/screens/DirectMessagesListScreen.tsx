@@ -167,7 +167,6 @@ export default function DirectMessagesListScreen({
       <SanctuaryFlashList
         data={conversations}
         keyExtractor={(item: DirectConversation) => item.id}
-        estimatedItemSize={80}
         renderItem={renderItem}
         onRefresh={onRefresh}
         refreshing={isControlled ? loading : refreshing}

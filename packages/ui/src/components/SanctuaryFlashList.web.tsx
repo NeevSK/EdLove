@@ -1,33 +1,28 @@
-/**
- * Web implementation for SanctuaryFlashList.
- *
- * Sanctuary V3: Migrated to @shopify/flash-list v2.
- * FlashList v2 is a JS-only solution and officially supports React Native for Web.
- * This ensures identical performance behavior and component recycling across all platforms.
- */
-
 import EmptyState from '@repo/ui/components/EmptyState';
 import type { SanctuaryFlashListProps } from '@repo/ui/components/SanctuaryFlashList';
 import { BookOpen } from '@repo/ui/icons';
 import { RefreshControl } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-function SanctuaryFlashListWeb<T>({
-  data,
-  renderItem,
+export type { FlashListRef };
 
-  estimatedItemSize, // Used in v2
-  refreshing = false,
-  onRefresh,
-  emptyComponent,
-  refreshColor,
-  contentContainerStyle,
-  ListEmptyComponent,
-  ...props
-}: SanctuaryFlashListProps<T>) {
+const SanctuaryFlashListWeb = React.forwardRef(function SanctuaryFlashListWebInner<T>(
+  {
+    data,
+    renderItem,
+    refreshing = false,
+    onRefresh,
+    emptyComponent,
+    refreshColor,
+    contentContainerStyle,
+    ListEmptyComponent,
+    ...props
+  }: SanctuaryFlashListProps<T>,
+  ref: React.ForwardedRef<FlashListRef<T>>,
+) {
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;
 
@@ -48,10 +43,10 @@ function SanctuaryFlashListWeb<T>({
 
   return (
     <FlashList
+      ref={ref}
       {...(props as any)}
       data={data}
       renderItem={renderItem}
-      estimatedItemSize={estimatedItemSize}
       ListEmptyComponent={renderEmpty}
       contentContainerStyle={[
         { paddingBottom: Theme.spacing.xl },
@@ -69,6 +64,9 @@ function SanctuaryFlashListWeb<T>({
       }
     />
   );
-}
+}) as <T>(
+  props: SanctuaryFlashListProps<T> & { ref?: React.Ref<FlashListRef<T>> | undefined },
+) => React.ReactElement | null;
 
+export const SanctuaryFlashList = SanctuaryFlashListWeb;
 export default SanctuaryFlashListWeb;

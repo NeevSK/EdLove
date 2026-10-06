@@ -635,7 +635,6 @@ export default function CommunityScreen() {
       <SanctuaryFlashList
         data={posts}
         keyExtractor={(item) => item.id}
-        estimatedItemSize={260}
         onScroll={onScroll}
         scrollEventThrottle={16}
         refreshing={isFetchingPosts && !loadingPosts}

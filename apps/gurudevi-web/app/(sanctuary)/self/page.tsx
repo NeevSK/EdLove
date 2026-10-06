@@ -4,7 +4,7 @@ import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
 import { SanctuaryShell } from '../components/SanctuaryShell';
-import { SelfJournalFloor } from './SelfJournalFloor';
+import { SelfFloor } from './SelfFloor';
 
 export const metadata = { title: 'Self | Gurudevi Sanctuary' };
 
@@ -41,7 +41,7 @@ export default async function SelfPage() {
 
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
-      <SelfJournalFloor
+      <SelfFloor
         accountId={entry.authSubjectId}
         displayName={entry.displayName}
         key={entry.authSubjectId}

@@ -18,7 +18,7 @@ export const warmMirrorContract = {
     path: '/warmMirror/:userId',
     request: {
       params: z.object({ userId: z.uuid() }),
-      query: z.object({ since: z.string().datetime().optional() }),
+      query: z.object({ since: z.string().datetime().optional() }).default({}),
     },
     responses: {
       200: { schema: warmMirrorDataPoints, description: 'Personal warm mirror data points' },

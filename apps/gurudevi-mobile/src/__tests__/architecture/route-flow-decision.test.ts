@@ -114,7 +114,7 @@ describe('route flow decision helper', () => {
     ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
   });
 
-  it('does not treat a completed anonymous session as a returning account at root', () => {
+  it('allows a completed anonymous session to resume at root /self', () => {
     expect(
       getAuthRouteTarget({
         pathname: '/',
@@ -125,6 +125,21 @@ describe('route flow decision helper', () => {
         hasActiveAccessToken: true,
         hasSession: true,
       }),
-    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+    ).toMatchObject({ decision: 'app', redirectTo: '/self' });
+  });
+
+  it('keeps auth accessible for an anonymous session seeking to sign in', () => {
+    expect(
+      getAuthRouteTarget({
+        pathname: '/auth',
+        bootstrapReady: true,
+        sessionMode: 'anonymous',
+        onboardingCompleted: true,
+        hasActiveCapacity: true,
+        hasActiveAccessToken: true,
+        hasSession: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
   });
 });
+

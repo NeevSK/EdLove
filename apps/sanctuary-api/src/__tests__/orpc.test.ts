@@ -46,7 +46,9 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
         note: 'Feeling great!',
       };
 
-      const body = await createTestORPCClient(authenticatedHeaders).self.logMood(moodPayload);
+      const body = await createTestORPCClient(authenticatedHeaders).self.logMood({
+        body: moodPayload,
+      });
       expect(body.mood).toBe('joy');
     });
   });
@@ -54,7 +56,7 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
   describe('Profile Router', () => {
     it('should retrieve a user profile by ID', async () => {
       const body = await createTestORPCClient(authenticatedHeaders).profile.getUserProfile({
-        id: userId,
+        params: { id: userId },
       });
       expect(body.id).toBe(userId);
       expect(body.username).toBe('testcitizen');
@@ -62,7 +64,7 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
 
     it('should update profile info and return updated object', async () => {
       const updatePayload = {
-        id: userId,
+        params: { id: userId },
         body: {
           bio: 'Inspirational teacher',
         },
@@ -77,17 +79,19 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
       const client = createTestORPCClient(authenticatedHeaders).profile;
       expect(await client.getSocialLinks({})).toEqual([]);
       const link = await client.upsertSocialLink({
-        platform: 'website',
-        url: 'https://example.com',
+        body: {
+          platform: 'website',
+          url: 'https://example.com',
+        },
       });
       expect(link).toMatchObject({
         user_id: userId,
         platform: 'website',
         url: 'https://example.com',
       });
-      expect(await client.deleteSocialLink({ id: '423e4567-e89b-12d3-a456-426614174000' })).toEqual(
-        { success: true },
-      );
+      expect(
+        await client.deleteSocialLink({ params: { id: '423e4567-e89b-12d3-a456-426614174000' } }),
+      ).toEqual({ success: true });
     });
   });
 });

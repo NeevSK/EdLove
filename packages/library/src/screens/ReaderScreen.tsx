@@ -102,7 +102,7 @@ export default function ReaderScreen() {
   const [readingStartTime, setReadingStartTime] = useState(Date.now());
 
   // PDF rendering
-  const pdfContainerRef = useRef<View | null>(null);
+  const pdfContainerRef = useRef<React.ComponentRef<typeof View> | null>(null);
   const pageCanvasRefs = useRef<Map<number, HTMLCanvasElement>>(new Map());
 
   // Load PDF document

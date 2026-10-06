@@ -70,13 +70,11 @@ export function BrandPulse({
 
   if (Platform.OS !== 'web') {
     return (
-      <Animated.View
-        {...accessibilityProps}
-        className={className}
-        style={[styles.wrap, animatedStyle, style]}
-      >
-        {content}
-      </Animated.View>
+      <View {...accessibilityProps} className={className} style={[styles.wrap, style]}>
+        <Animated.View style={animatedStyle}>
+          {content}
+        </Animated.View>
+      </View>
     );
   }
 

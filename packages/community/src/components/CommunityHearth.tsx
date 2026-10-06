@@ -1,6 +1,7 @@
 import { GlassCard } from '@repo/ui/components/GlassCard';
+import { SanctuaryFlashList, type FlashListRef } from '@repo/ui/components/SanctuaryFlashList';
 import { Heart, Megaphone, Sparkles, Users } from '@repo/ui/icons';
-import { Box, FlatList, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, useWindowDimensions } from 'react-native';
@@ -27,7 +28,7 @@ export default function CommunityHearth({
 }: CommunityHearthProps) {
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
-  const flatListRef = useRef<FlatList>(null);
+  const flashListRef = useRef<FlashListRef<SanctuaryManifesto>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleEndorse = React.useCallback(
@@ -54,7 +55,7 @@ export default function CommunityHearth({
     if (!manifestos?.length) return;
     const interval = setInterval(() => {
       const nextIndex = (activeIndex + 1) % manifestos.length;
-      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+      flashListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setActiveIndex(nextIndex);
     }, AUTO_SWIPE_INTERVAL);
     return () => clearInterval(interval);
@@ -123,8 +124,8 @@ export default function CommunityHearth({
           </Box>
         </HStack>
 
-        <FlatList
-          ref={flatListRef}
+        <SanctuaryFlashList
+          ref={flashListRef}
           data={manifestos}
           renderItem={renderManifesto}
           keyExtractor={(item) => item.id}

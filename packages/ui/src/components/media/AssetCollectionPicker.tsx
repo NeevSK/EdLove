@@ -1,7 +1,7 @@
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { ChevronRight, Folder, Lock, X } from '@repo/ui/icons';
 import {
   Box,
-  FlatList,
   HStack,
   Icon,
   Modal,
@@ -70,7 +70,7 @@ export const AssetCollectionPicker: React.FC<AssetCollectionPickerProps> = ({
         </ModalHeader>
 
         <ModalBody className="p-0">
-          <FlatList
+          <SanctuaryFlashList
             data={items}
             keyExtractor={(item: PickerItem) => item.id}
             renderItem={({ item }: { item: PickerItem }) => (

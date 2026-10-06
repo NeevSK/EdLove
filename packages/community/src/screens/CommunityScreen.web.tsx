@@ -395,7 +395,6 @@ export default function CommunityScreenWeb() {
           data={filteredPosts as CommunityPost[]}
           renderItem={renderPostItem}
           keyExtractor={(item: CommunityPost) => item.id}
-          estimatedItemSize={240}
           onEndReached={() => {
             if (hasNextPosts && !isFetchingNextPosts) void fetchNextPosts();
           }}

@@ -4,13 +4,13 @@ import type { Student } from '@repo/core/types';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { Pen, Plus, QrCode, Sparkles, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   Button,
   ButtonText,
   Center,
-  FlatList,
   Heading,
   HStack,
   Icon,
@@ -90,7 +90,7 @@ export default function StudentList({
 
   return (
     <VStack className="flex-1 bg-sanctuary-surface">
-      <FlatList
+      <SanctuaryFlashList
         data={students}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (

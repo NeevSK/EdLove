@@ -30,6 +30,9 @@ vi.mock('@/entry/bootstrapRouteState', () => ({
 vi.mock('@repo/ui/components/BrandPulse', () => ({
   BrandPulse: () => null,
 }));
+vi.mock('@repo/ui/components/Mascot', () => ({
+  Mascot: () => null,
+}));
 vi.mock('@repo/ui/primitives', () => ({
   Box: 'Box',
   Pressable: 'Pressable',
@@ -195,5 +198,14 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(mocks.refreshProfile).toHaveBeenCalledTimes(1);
+
+    const escapeHatch = tree!.root.findByProps({ accessibilityLabel: 'Return to Welcome' });
+    expect(escapeHatch.props.accessibilityRole).toBe('button');
+
+    await act(async () => {
+      escapeHatch.props.onPress();
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith('/welcome');
   });
 });

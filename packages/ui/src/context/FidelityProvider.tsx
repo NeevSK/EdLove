@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useReality } from './RealityProvider';
+import { useRealityOptional } from './RealityProvider';
 import type { FidelityLevel } from './types';
 import { computeEffectiveFidelity } from './visualPolicy';
 
@@ -27,7 +27,7 @@ function isFidelityLevel(value: string): value is FidelityLevel {
 }
 
 export function FidelityProvider({ children }: { children: ReactNode }) {
-  const { reality } = useReality();
+  const { reality } = useRealityOptional();
   const [fidelityLevel, setFidelityLevelState] = useState<FidelityLevel>('auto');
 
   useEffect(() => {

@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
   contentClip: {
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   avatarPod: {
     borderWidth: 2,

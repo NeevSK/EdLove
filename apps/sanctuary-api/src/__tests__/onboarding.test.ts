@@ -53,7 +53,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     it('should return 200 when bond already exists (idempotent)', async () => {
       setMockUserData(defaultMockUser);
       setMockActiveBond({
-        id: 'existing-bond',
+        id: '123e4567-e89b-12d3-a456-426614174001',
         capacity: 'teacher',
         entity_type: 'PLATFORM',
         entity_id: 'GLOBAL',

@@ -95,4 +95,10 @@ function SanctuaryLegendListWeb<ItemT>(
   );
 }
 
-export default forwardRef(SanctuaryLegendListWeb);
+export type { LegendListRef };
+
+export const SanctuaryLegendList = forwardRef(SanctuaryLegendListWeb) as <ItemT = any>(
+  props: SanctuaryLegendListProps<ItemT> & { ref?: React.Ref<LegendListRef> | undefined },
+) => React.ReactElement | null;
+
+export default SanctuaryLegendList;

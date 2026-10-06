@@ -220,21 +220,22 @@ export const onboardingRouter = impl.router({
         if (!profile) throw SovereignError.notFound('User');
 
         const now = new Date();
+        const bonds = (profile as any).bonds ?? [];
         const selectedBondId = profile.preferences?.active_bond_id;
         const selectedBond = selectedBondId
-          ? profile.bonds.find(
-              (bond) =>
+          ? bonds.find(
+              (bond: any) =>
                 bond.id === selectedBondId &&
                 bond.status === 'active' &&
-                bond.valid_from <= now &&
+                (!bond.valid_from || bond.valid_from <= now) &&
                 (!bond.valid_until || bond.valid_until > now),
             )
           : null;
-        const hasPersonalBond = profile.bonds.some(
-          (bond) =>
+        const hasPersonalBond = bonds.some(
+          (bond: any) =>
             bond.entity_type === 'PERSONAL_CLASSROOM' &&
             bond.status === 'active' &&
-            bond.valid_from <= now &&
+            (!bond.valid_from || bond.valid_from <= now) &&
             (!bond.valid_until || bond.valid_until > now),
         );
         if (!selectedBond || !hasPersonalBond) {

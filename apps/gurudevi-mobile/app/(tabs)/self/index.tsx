@@ -1,11 +1,12 @@
 import { useStore } from '@repo/core/store/useStore';
-import { resolveFeatureContent } from '@repo/self/components/FeatureRegistry';
+import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
+import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Box } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useMemo } from 'react';
-import { SanctuaryOverviewHub } from '@/components/self/SanctuaryOverviewHub';
+import { SelfFloor } from '@/components/self/SelfFloor';
 import { useTrackActiveSubTab } from '@/hooks/useTrackActiveSubTab';
 import { getSelfRegistry } from '@/navigation/registries/selfRegistry';
 
@@ -25,7 +26,7 @@ export default function SelfScreen() {
   const featureTitle = activeFeatureDef?.title || featureId || 'Task';
 
   if (!featureId) {
-    return <SanctuaryOverviewHub />;
+    return <SelfFloor />;
   }
 
   return <SelfFeatureScreen featureId={featureId} title={featureTitle} />;
@@ -51,7 +52,10 @@ function SelfFeatureScreen({ featureId, title }: { featureId: string; title: str
         paddingTop: tokens.spacing.sm,
       }}
     >
-      {resolveFeatureContent(featureId, user?.id)}
+      <SelfFeatureRenderer
+        featureId={canonicalSelfFeatureId(featureId)}
+        userId={user?.id}
+      />
     </Box>
   );
 }

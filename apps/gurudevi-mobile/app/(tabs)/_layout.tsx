@@ -34,6 +34,10 @@ import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 const EMPTY_DOMAIN_TABS: readonly string[] = [];
 
+export const unstable_settings = {
+  initialRouteName: 'self',
+};
+
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function TabsLayout() {
@@ -412,7 +416,6 @@ function TabsLayoutContent() {
   return (
     <>
       <Tabs
-        initialRouteName="self"
         screenOptions={{
           headerShown: !autoHideChromeOnScroll || isChromeVisible,
           tabBarHideOnKeyboard: true,

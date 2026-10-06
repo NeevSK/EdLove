@@ -5,8 +5,9 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { BookOpen, ChevronRight, ClipboardCheck, Plus, Users, Zap } from '@repo/ui/icons';
-import { Box, FlatList, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -311,12 +312,11 @@ export default function ClassroomList({
         </Box>
       ) : (
         <>
-          <FlatList
+          <SanctuaryFlashList
             data={classrooms}
             renderItem={renderClassroomCard}
             keyExtractor={keyExtractor}
             ItemSeparatorComponent={ItemSeparator}
-            className="flex-1"
             contentContainerStyle={{ padding: 16 }}
             showsVerticalScrollIndicator={false}
             onEndReached={fetchMore}

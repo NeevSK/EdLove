@@ -151,6 +151,7 @@ export function getBootstrapRouteTarget(
       onboardingCompleted: false,
       pathname: state.pathname,
       sessionMode: getSessionIdentityMode(state.session),
+      guestOnboardingIntent: options.guestOnboardingIntent,
     });
   }
   const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
@@ -180,5 +181,6 @@ export function getBootstrapRouteTarget(
     onboardingCompleted: state.onboardingCompleted,
     pathname: state.pathname,
     sessionMode: getSessionIdentityMode(state.session),
+    guestOnboardingIntent: options.guestOnboardingIntent,
   });
 }

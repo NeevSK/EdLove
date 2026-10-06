@@ -39,7 +39,17 @@ export function setMockZenStackDbAvailable(available: boolean) {
 }
 
 export function setMockActiveBond(bond: any) {
-  mockActiveBond = bond;
+  mockActiveBond = bond
+    ? {
+        id: bond.id ?? 'bond-mock-id',
+        user_id: bond.user_id ?? '123e4567-e89b-12d3-a456-426614174000',
+        status: bond.status ?? 'active',
+        valid_from: new Date('2020-01-01'),
+        valid_until: null,
+        metadata: null,
+        ...bond,
+      }
+    : null;
 }
 
 export function setMockUserData(data: any) {
@@ -191,22 +201,49 @@ function createMockDelegate(name: string): any {
           }
           if (name === 'user') {
             return async (args: any = {}) => {
-              if (mockUserData) return mockUserData;
-              return {
+              const u = mockUserData ?? {
                 id: args?.where?.id ?? 'mock-user-id',
                 email: 'mock-user@example.com',
                 full_name: 'Mock User',
+                first_name: 'Mock',
+                last_name: 'User',
                 onboarding_completed: true,
                 onboarding_state: 'COMPLETED',
               };
+              const res = { ...u };
+              if (args?.include?.bonds) {
+                res.bonds = mockActiveBond
+                  ? [
+                      mockActiveBond,
+                      {
+                        id: '123e4567-e89b-12d3-a456-426614174099',
+                        user_id: res.id,
+                        entity_id: 'pc-mock',
+                        entity_type: 'PERSONAL_CLASSROOM',
+                        capacity: mockActiveBond.capacity ?? 'teacher',
+                        status: 'active',
+                        valid_from: new Date('2020-01-01'),
+                        valid_until: null,
+                      },
+                    ]
+                  : [];
+              }
+              if (args?.include?.preferences) {
+                res.preferences = {
+                  id: 'pref-mock',
+                  user_id: res.id,
+                  active_bond_id: mockActiveBond?.id ?? null,
+                };
+              }
+              return res;
             };
           }
           if (name === 'userPreferences') {
             return async (args: any = {}) => {
-              if (mockUserPreferences) return mockUserPreferences;
-              return {
+              const base = {
                 id: 'preferences-mock-id',
                 user_id: args?.where?.user_id ?? 'mock-user-id',
+                active_bond_id: mockActiveBond?.id ?? null,
                 favorite_features: [],
                 hidden_features: [],
                 morning_check_time: null,
@@ -218,6 +255,8 @@ function createMockDelegate(name: string): any {
                 updated_at: new Date(),
                 created_at: new Date(),
               };
+              if (mockUserPreferences) return { ...base, ...mockUserPreferences };
+              return base;
             };
           }
           if (name === 'libraryCollection' && mockLibraryCollectionRead) {
@@ -891,6 +930,8 @@ function createMockDelegate(name: string): any {
         if (prop === 'findFirst') {
           if (name === 'bond') {
             return async (args: any = {}) => {
+              if (args?.where?.entity_type === 'PERSONAL_CLASSROOM' && mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM')
+                return null;
               if (args?.where?.entity_type === 'SCHOOL' && mockActiveBond?.entity_type !== 'SCHOOL')
                 return null;
               if (

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
-import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
+import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
 import {
   COMMUNITY_GROUP_PAGE_SIZE,
   type CommunityGroup,
@@ -22,11 +22,9 @@ export function CommunityFeedFloor({
   result: CommunityGroupsResult;
   accountId?: string;
 }>) {
-  const floorAppearance = useBrowserWorkspaceAppearance({
+  const canvas = useCommunityCanvas({
     accountId: accountId ?? 'explore',
-    defaultGroupOrder: ['feed', 'circles', 'messages', 'announcements'],
     enableRemoteSync: mode === 'account' && Boolean(accountId),
-    workspaceId: 'community',
   });
   const router = useRouter();
   const [isRefreshing, startRefresh] = useTransition();
@@ -38,6 +36,7 @@ export function CommunityFeedFloor({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const [retrySearch, setRetrySearch] = useState(0);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     setResult(initialResult);
@@ -91,6 +90,10 @@ export function CommunityFeedFloor({
   const visibleResult = mode === 'explore' ? initialResult : result;
   const visibleGroups =
     mode === 'explore' ? localGroups : result.kind === 'ready' ? result.groups : [];
+  const selectedGroup = useMemo(
+    () => visibleGroups.find((g) => g.id === selectedGroupId) ?? null,
+    [selectedGroupId, visibleGroups],
+  );
   const searchIsPending =
     mode === 'account' && query.trim() !== resolvedQuery && query.trim() !== '';
 
@@ -131,8 +134,8 @@ export function CommunityFeedFloor({
       data-domain="community"
       data-mode={mode}
       aria-labelledby="community-title"
-      data-appearance={floorAppearance.appearance.preset}
-      data-motion={floorAppearance.appearance.motion}
+      data-appearance={canvas.appearance.preset}
+      data-motion={canvas.appearance.motion}
     >
       <header className={styles.arrival}>
         <p className={styles.eyebrow}>
@@ -205,84 +208,173 @@ export function CommunityFeedFloor({
               <p className={styles.inlineStatus} role="status" aria-live="polite">
                 {visibleGroups.length} {visibleGroups.length === 1 ? 'circle' : 'circles'} shown
               </p>
-              <div className={styles.groupList}>
-                {visibleGroups.map((group) => (
-                  <CommunityGroupCard key={group.id} group={group} />
-                ))}
-              </div>
-              {mode === 'account' && result.kind === 'ready' && result.hasMore ? (
-                <div>
-                  {loadMoreError ? <p role="alert">{loadMoreError}</p> : null}
+          {selectedGroup ? (
+            <div className={styles.masterDetailLayout} data-layout-mode={canvas.layoutMode}>
+              <aside aria-label="Community Circles" className={styles.catalogRail}>
+                <div className={styles.catalogRailHeader}>
+                  <h3 className={styles.catalogRailTitle}>Community Circles</h3>
                   <button
-                    className={styles.action}
-                    disabled={isLoadingMore}
-                    onClick={() => void loadMore()}
+                    className={styles.returnOverviewButton}
+                    onClick={() => setSelectedGroupId(null)}
                     type="button"
                   >
-                    {isLoadingMore
-                      ? 'Loading more circles…'
-                      : loadMoreError
-                        ? 'Retry loading more'
-                        : 'Show more circles'}
+                    All Circles
                   </button>
                 </div>
-              ) : null}
-            </>
+
+                <section aria-labelledby="rail-circles-heading" className={styles.catalogRailSection}>
+                  <h4 id="rail-circles-heading" className={styles.catalogRailSectionTitle}>
+                    Circles
+                  </h4>
+                  <ul className={styles.catalogRailList}>
+                    {visibleGroups.map((group) => {
+                      const isCurrent = group.id === selectedGroupId;
+                      const isPinned = canvas.pinnedSurfaces.includes(group.id as any);
+                      return (
+                        <li key={group.id}>
+                          <div className={styles.catalogRailRow}>
+                            <button
+                              className={`${styles.catalogRailItem} ${isCurrent ? styles.catalogRailItemActive : ''}`}
+                              onClick={() => setSelectedGroupId(group.id)}
+                              type="button"
+                            >
+                              <span className={styles.catalogRailItemLabel}>{group.name}</span>
+                            </button>
+                            <button
+                              aria-label={isPinned ? `Unpin ${group.name}` : `Pin ${group.name}`}
+                              className={`${styles.catalogRailPinButton} ${isPinned ? styles.catalogRailPinButtonPinned : ''}`}
+                              onClick={() => canvas.togglePin(group.id as any)}
+                              type="button"
+                            >
+                              {isPinned ? '📌' : '📍'}
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              </aside>
+
+              <div className={styles.activeCircleStage}>
+                <div className={styles.backOverviewBar}>
+                  <button
+                    className={styles.streamBackButton}
+                    onClick={() => setSelectedGroupId(null)}
+                    type="button"
+                  >
+                    ← Back to Circles
+                  </button>
+                </div>
+                <article className={styles.focusedCircleBody}>
+                  <div className={styles.focusedCircleHeader}>
+                    <h2>{selectedGroup.name}</h2>
+                    <p className={styles.focusedCircleMeta}>
+                      {selectedGroup.memberCount} members · Shared circle
+                    </p>
+                    <p>{selectedGroup.description || 'A shared sanctuary space for conversation and mutual care.'}</p>
+                  </div>
+                  <div className={styles.focusedCircleFeedMock}>
+                    <p>Welcome to <strong>{selectedGroup.name}</strong>. Here seekers and educators share reflections, notices, and collaborative questions.</p>
+                  </div>
+                </article>
+              </div>
+            </div>
           ) : (
-            <section className={styles.state} aria-live="polite">
-              <h2>
-                {query.trim() ? 'No circles match that search' : 'No circles are available yet'}
-              </h2>
-              <p>
-                {query.trim()
-                  ? 'Try another name or description.'
-                  : 'When a circle is available to your selected scope, it will appear here.'}
-              </p>
-            </section>
+            <div className={styles.groupList}>
+              {visibleGroups.map((group) => (
+                <CommunityGroupCard
+                  key={group.id}
+                  group={group}
+                  onSelect={() => setSelectedGroupId(group.id)}
+                />
+              ))}
+            </div>
           )}
+          {mode === 'account' && result.kind === 'ready' && result.hasMore && !selectedGroup ? (
+            <div>
+              {loadMoreError ? <p role="alert">{loadMoreError}</p> : null}
+              <button
+                className={styles.action}
+                disabled={isLoadingMore}
+                onClick={() => void loadMore()}
+                type="button"
+              >
+                {isLoadingMore
+                  ? 'Loading more circles…'
+                  : loadMoreError
+                    ? 'Retry loading more'
+                    : 'Show more circles'}
+              </button>
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <section className={styles.state} aria-live="polite">
+          <h2>
+            {query.trim() ? 'No circles match that search' : 'No circles are available yet'}
+          </h2>
+          <p>
+            {query.trim()
+              ? 'Try another name or description.'
+              : 'When a circle is available to your selected scope, it will appear here.'}
+          </p>
         </section>
       )}
-    </article>
-  );
+    </section>
+  )}
+</article>
+);
 }
 
 async function requestPage(
-  search: string,
-  offset: number,
-  signal: AbortSignal,
+search: string,
+offset: number,
+signal: AbortSignal,
 ): Promise<CommunityGroupsResult> {
-  const params = new URLSearchParams({
-    limit: String(COMMUNITY_GROUP_PAGE_SIZE),
-    offset: String(offset),
-  });
-  if (search) params.set('search', search);
-  const response = await fetch(`/api/community/groups?${params}`, {
-    cache: 'no-store',
-    signal,
-  });
-  const payload: unknown = await response.json().catch(() => null);
-  if (!response.ok) {
-    if (response.status === 403) return { kind: 'denied' };
-    throw new Error('Circle directory is unavailable. Check your connection and try again.');
-  }
-  const result = parseCommunityGroupsResult(payload);
-  if (!result) throw new Error('Circle directory returned an invalid response. Try again.');
-  return result;
+const params = new URLSearchParams({
+limit: String(COMMUNITY_GROUP_PAGE_SIZE),
+offset: String(offset),
+});
+if (search) params.set('search', search);
+const response = await fetch(`/api/community/groups?${params}`, {
+cache: 'no-store',
+signal,
+});
+const payload: unknown = await response.json().catch(() => null);
+if (!response.ok) {
+if (response.status === 403) return { kind: 'denied' };
+throw new Error('Circle directory is unavailable. Check your connection and try again.');
+}
+const result = parseCommunityGroupsResult(payload);
+if (!result) throw new Error('Circle directory returned an invalid response. Try again.');
+return result;
 }
 
-function CommunityGroupCard({ group }: Readonly<{ group: CommunityGroup }>) {
-  return (
-    <article className={styles.group}>
-      <div className={styles.groupMark} aria-hidden="true">
-        {group.name.trim().charAt(0).toLocaleUpperCase() || '○'}
-      </div>
-      <div className={styles.groupCopy}>
-        <h2>{group.name}</h2>
-        <p>{group.description || 'A shared space for conversation and practice.'}</p>
-      </div>
-      <footer className={styles.meta}>
-        <span>{group.memberCount} members</span>
-      </footer>
-    </article>
-  );
+function CommunityGroupCard({
+group,
+onSelect,
+}: Readonly<{
+group: CommunityGroup;
+onSelect?: () => void;
+}>) {
+return (
+<article className={styles.group}>
+  <div className={styles.groupMark} aria-hidden="true">
+    {group.name.trim().charAt(0).toLocaleUpperCase() || '○'}
+  </div>
+  <div className={styles.groupCopy}>
+    <h2>{group.name}</h2>
+    <p>{group.description || 'A shared space for conversation and practice.'}</p>
+    {onSelect ? (
+      <button className={styles.action} onClick={onSelect} type="button">
+        Enter circle
+      </button>
+    ) : null}
+  </div>
+  <footer className={styles.meta}>
+    <span>{group.memberCount} members</span>
+  </footer>
+</article>
+);
 }

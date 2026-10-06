@@ -1,8 +1,9 @@
 import { useBanyanGrowth } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
-import { resolveFeatureContent } from '@repo/self/components/FeatureRegistry';
+import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import WelcomeModal from '@repo/self/components/WelcomeModal';
+import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
 import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useSanctuaryRegistry } from '@repo/self/hooks/useSanctuaryRegistry';
@@ -48,7 +49,12 @@ export default function StudentSelfView() {
     const features = domain.features.map((fId) => ({
       id: fId,
       label: fId.replace('_', ' '), // Default label, registry might override
-      content: resolveFeatureContent(fId, userId ?? undefined),
+      content: (
+        <SelfFeatureRenderer
+          featureId={canonicalSelfFeatureId(fId)}
+          userId={userId ?? undefined}
+        />
+      ),
       // Specific history overrides if needed
       historyContent:
         fId === 'fire_journal' ? <JournalSection entries={journalEntries} /> : undefined,

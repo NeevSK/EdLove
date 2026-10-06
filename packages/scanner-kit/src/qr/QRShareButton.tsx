@@ -1,6 +1,7 @@
 import QRCodeGenerator from '@repo/scanner-kit/QRCodeGenerator';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
+import type { View } from 'react-native';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
@@ -46,7 +47,7 @@ export default function QRShareButton({
   backgroundColor = '#1a1a2e',
   accentColor = '#f5a623',
 }: QRShareButtonProps) {
-  const viewRef = useRef<any>(null);
+  const viewRef = useRef<React.ComponentRef<typeof View> | null>(null);
   const shareUrl = shortUrl ?? value;
 
   const handleShareImage = async () => {

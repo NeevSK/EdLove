@@ -36,9 +36,9 @@ import {
   StickyNote,
   X,
 } from '@repo/ui/icons';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import {
   Box,
-  FlatList,
   HStack,
   Icon,
   Input,
@@ -473,7 +473,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             />
           </Box>
         ) : (
-          <FlatList
+          <SanctuaryFlashList
             data={grouped}
             keyExtractor={(g) => g.label}
             renderItem={renderGroup}

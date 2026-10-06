@@ -141,8 +141,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+const DEFAULT_THEME_VALUE: ThemeContextValue = {
+  themeMode: 'system',
+  temporalPhase: 'dawn',
+  isDark: false,
+  isVeilActive: false,
+  enableLivingTheme: true,
+  setThemeMode: async () => {},
+  toggleVeil: async () => {},
+  setEnableLivingTheme: async () => {},
+};
+
 export function useThemeContext() {
   const context = useContext(ThemeContext);
   if (!context) throw new Error('useThemeContext must be used within a ThemeProvider');
   return context;
+}
+
+export function useThemeContextOptional(): ThemeContextValue {
+  return useContext(ThemeContext) ?? DEFAULT_THEME_VALUE;
 }

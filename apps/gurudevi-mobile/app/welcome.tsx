@@ -10,6 +10,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import { fireflyPrototypeArtwork } from '@/brand/mascotArtwork';
+import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -24,14 +25,19 @@ function Fallback() {
 export default function WelcomeRoute() {
   const router = useRouter();
   const params = useLocalSearchParams<{ legacy?: string; mode?: string }>();
+  const routeState = useBootstrapRouteState('/welcome');
 
   const handleLogin = useCallback(() => {
-    router.push('/auth');
+    router.push('/auth?mode=login');
   }, [router]);
 
   const handleGuest = useCallback(() => {
-    router.push('/onboarding?entry=guest');
-  }, [router]);
+    if (routeState.isLocalGuestReady) {
+      router.replace('/self');
+    } else {
+      router.push('/onboarding?entry=guest');
+    }
+  }, [router, routeState.isLocalGuestReady]);
 
   // On Web by default (or when mode=spatial is requested), render the new decoupled SpatialSanctuaryWelcomeScreen
   const useSpatialWeb = Platform.OS === 'web' && params.legacy !== '1';

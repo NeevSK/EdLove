@@ -7,9 +7,6 @@ import { Platform, StyleSheet, View } from 'react-native';
 import Svg, {
   Circle,
   Defs,
-  Ellipse,
-  LinearGradient,
-  Path,
   RadialGradient,
   Stop,
 } from 'react-native-svg';
@@ -75,16 +72,16 @@ export function FireflyMascot({
   }[role];
   const glowColor = glowColorOverride ?? (isInterrupted ? tokens.colors.warning : roleColor);
 
+  const isMicroSize = size < 48;
+
   const innerContent =
-    artwork && !artworkFailed ? (
+    artwork && !artworkFailed && !isMicroSize ? (
       <View
         style={[
           styles.container,
           {
             height: size,
             width: size,
-            borderRadius: Math.round(size * 0.12),
-            overflow: 'hidden',
           },
         ]}
       >
@@ -109,135 +106,33 @@ export function FireflyMascot({
       >
         <Svg height={size} viewBox="0 0 240 260" width={size}>
           <Defs>
-            <RadialGradient cx="50%" cy="52%" id="fireflyHalo" r="52%">
-              <Stop offset="0" stopColor={glowColor} stopOpacity="0.3" />
+            <RadialGradient cx="50%" cy="50%" id="fireflyHalo" r="50%">
+              <Stop offset="0" stopColor={glowColor} stopOpacity="0.32" />
               <Stop offset="1" stopColor={glowColor} stopOpacity="0" />
             </RadialGradient>
-            <LinearGradient id="fireflyWing" x1="0" x2="1" y1="0" y2="1">
-              <Stop
-                offset="0"
-                stopColor={theme === 'dark' ? tokens.colors.accentDepth : tokens.colors.surface}
-                stopOpacity="0.96"
-              />
-              <Stop
-                offset="1"
-                stopColor={
-                  theme === 'dark' ? tokens.colors.accentAtmospheric : tokens.colors.border
-                }
-                stopOpacity="0.7"
-              />
-            </LinearGradient>
-            <LinearGradient id="fireflyBody" x1="0" x2="1" y1="0" y2="1">
-              <Stop
-                offset="0"
-                stopColor={theme === 'dark' ? tokens.colors.textInverse : tokens.colors.ink}
-              />
-              <Stop offset="1" stopColor={tokens.colors.ink} />
-            </LinearGradient>
-            <RadialGradient cx="50%" cy="35%" id="fireflyLight" r="70%">
-              <Stop offset="0" stopColor={tokens.colors.surface} />
-              <Stop offset="0.45" stopColor={glowColor} />
-              <Stop offset="1" stopColor={tokens.colors.accentAtmospheric} />
+            <RadialGradient cx="50%" cy="50%" id="fireflyCore" r="50%">
+              <Stop offset="0" stopColor={tokens.colors.surface} stopOpacity="0.95" />
+              <Stop offset="0.4" stopColor={glowColor} stopOpacity="0.8" />
+              <Stop offset="1" stopColor={glowColor} stopOpacity="0" />
             </RadialGradient>
           </Defs>
-          <Ellipse cx="120" cy="223" fill={tokens.colors.ink} opacity="0.14" rx="62" ry="10" />
           {visualCapabilities.allowAmbientEffects ? (
             <Circle
               testID="firefly-mascot-halo"
               cx="120"
-              cy="125"
+              cy="130"
               fill="url(#fireflyHalo)"
               r="106"
             />
           ) : null}
-          <Path
-            d="M108 123 C72 68 32 73 61 134 C75 160 95 158 112 143 Z"
-            fill="url(#fireflyWing)"
-            stroke={theme === 'dark' ? tokens.colors.accentAtmospheric : tokens.colors.border}
-            strokeWidth="3"
-          />
-          <Path
-            d="M132 123 C168 68 208 73 179 134 C165 160 145 158 128 143 Z"
-            fill="url(#fireflyWing)"
-            stroke={theme === 'dark' ? tokens.colors.accentAtmospheric : tokens.colors.border}
-            strokeWidth="3"
-          />
-          <Path
-            d="M108 65 Q96 36 77 42 M132 65 Q144 36 163 42"
-            fill="none"
-            stroke={theme === 'dark' ? tokens.colors.textInverse : tokens.colors.ink}
-            strokeLinecap="round"
-            strokeWidth="5"
-          />
-          <Circle cx="77" cy="42" fill={roleColor} r="5" />
-          <Circle cx="163" cy="42" fill={roleColor} r="5" />
-          <Circle cx="120" cy="85" fill="url(#fireflyBody)" r="35" />
-          <Ellipse cx="120" cy="133" fill="url(#fireflyBody)" rx="31" ry="54" />
-          <Path
-            d="M96 127 Q120 113 144 127 L139 180 Q120 198 101 180 Z"
-            fill="url(#fireflyLight)"
-            opacity={
-              isInterrupted
-                ? 0.34
-                : resolvedState === 'complete'
-                  ? 0.98
-                  : resolvedState === 'guiding' || resolvedState === 'curious'
-                    ? 0.92
-                    : 0.68
-            }
-            stroke={tokens.colors.accentAtmospheric}
-            strokeWidth="3"
-          />
-          <Circle cx="109" cy="82" fill={tokens.colors.textInverse} r="6" />
-          <Circle cx="131" cy="82" fill={tokens.colors.textInverse} r="6" />
-          <Circle
-            cx="110"
-            cy="83"
-            fill={theme === 'dark' ? tokens.colors.textInverse : tokens.colors.ink}
-            r="2.2"
-          />
-          <Circle
-            cx="132"
-            cy="83"
-            fill={theme === 'dark' ? tokens.colors.textInverse : tokens.colors.ink}
-            r="2.2"
-          />
-          <Path
-            d="M111 99 Q120 106 129 99"
-            fill="none"
-            stroke={tokens.colors.surface}
-            strokeLinecap="round"
-            strokeWidth="3"
-          />
-          <Path
-            d="M91 137 Q75 145 72 161 M149 137 Q165 145 168 161 M105 185 Q99 204 88 211 M135 185 Q141 204 152 211"
-            fill="none"
-            stroke={theme === 'dark' ? tokens.colors.textInverse : tokens.colors.ink}
-            strokeLinecap="round"
-            strokeWidth="5"
-          />
-          <Circle cx="78" cy="161" fill={roleColor} r="5" />
-          <Circle cx="162" cy="161" fill={roleColor} r="5" />
-          <Circle
-            cx="120"
-            cy="153"
-            fill={glowColor}
-            opacity={
-              isInterrupted
-                ? 0.34
-                : resolvedState === 'complete'
-                  ? 0.98
-                  : resolvedState === 'guiding' || resolvedState === 'curious'
-                    ? 0.92
-                    : 0.68
-            }
-            r="15"
-          />
+          <Circle cx="120" cy="130" fill="url(#fireflyCore)" r="52" />
+          <Circle cx="120" cy="130" fill={glowColor} opacity={isInterrupted ? 0.35 : 0.88} r="18" />
+          <Circle cx="120" cy="130" fill={tokens.colors.surface} opacity={0.9} r="8" />
         </Svg>
       </View>
     );
 
-  const effectivePodVariant = podVariant ?? (artwork ? 'halo' : undefined);
+  const effectivePodVariant = podVariant ?? (artwork && !isMicroSize ? 'halo' : undefined);
 
   if (effectivePodVariant) {
     return (

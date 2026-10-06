@@ -112,14 +112,36 @@ function orderForRole(features: readonly SelfFeatureManifestItem[], role: SelfVi
 /**
  * The Overview is the Self floor, not a registry item. Every returned item is
  * a real native-delivered feature with the canonical feature id as its task id.
+ * Supports holistic multi-capacity resolution for users with multiple roles.
  */
-export function getSelfRegistry(capacity?: string | null): MobileDomainRegistry {
-  const role = normalizeRole(capacity);
+export function getSelfRegistry(
+  capacities?: string | null | readonly string[],
+): MobileDomainRegistry {
+  const capacityList = Array.isArray(capacities)
+    ? capacities
+    : capacities
+      ? [capacities]
+      : [];
+  const roles: SelfViewRole[] =
+    capacityList.length > 0
+      ? Array.from(new Set(capacityList.map(normalizeRole)))
+      : ['teacher'];
+
+  const primaryRole = roles[0] ?? 'teacher';
   const manifest = resolveSelfFeatureManifest(null, DEFAULT_SELF_PREFERENCES.features, 'native');
-  const items: MobileFeatureItem[] = orderForRole(
-    manifest.all.filter((feature) => feature.delivery === 'runnable'),
-    role,
-  ).map((feature) => ({
+  const runnableFeatures = manifest.all.filter((feature) => feature.delivery === 'runnable');
+
+  const sorted = [...runnableFeatures].sort((left, right) => {
+    const rightWeight = Math.max(
+      ...roles.map((r) => right.roleWeights?.[r] ?? (right.roleWeights ? 0 : 50)),
+    );
+    const leftWeight = Math.max(
+      ...roles.map((r) => left.roleWeights?.[r] ?? (left.roleWeights ? 0 : 50)),
+    );
+    return rightWeight - leftWeight || left.defaultOrder - right.defaultOrder;
+  });
+
+  const items: MobileFeatureItem[] = sorted.map((feature) => ({
     id: feature.id,
     title: feature.label,
     description: `${feature.category} · ${feature.domain}`,
@@ -130,5 +152,14 @@ export function getSelfRegistry(capacity?: string | null): MobileDomainRegistry 
     category: feature.category,
   }));
 
-  return { domain: 'self', ...copyForRole[role], items };
+  const copy = copyForRole[primaryRole] ?? copyForRole.teacher;
+  const isMultiRole = roles.length > 1;
+
+  return {
+    domain: 'self',
+    title: isMultiRole ? 'Personal Inner Sanctuary' : copy.title,
+    subtitle: isMultiRole ? 'Integrated practices for your mind, rhythm, and life' : copy.subtitle,
+    roleBadge: isMultiRole ? 'Integrated' : copy.roleBadge,
+    items,
+  };
 }

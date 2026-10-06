@@ -45,12 +45,12 @@ tags: [gurudevi, nextjs, implementation, phases]
 
 | # | Task | Acceptance |
 |---|------|------------|
-| 2.1 | Wire `SelfJournalFloor` → `selfJournal.ts` + `selfApiClient.ts` | Real entries load/create/update/delete |
-| 2.2 | Add loading (`BrandPulse`), empty (`BrandedEmptyState`), error (`ErrorState`) | All 3 states render correctly |
+| 2.1 | Wire `SelfFloor` → `selfJournal.ts` + `selfApiClient.ts` | ✅ Real entries load/burn/release with `useSelfCanvas` (32/32 tests pass) |
+| 2.2 | Add loading (`BrandPulse`), empty (`BrandedEmptyState`), error (`ErrorState`) | ✅ FeatureStateBoundary & retry states verified |
 | 2.3 | Optimistic create + rollback on failure | Immediate UI update; toast on failure |
-| 2.4 | G2 test: create → read → update → delete flow | Vitest + MSW mocks Supabase |
+| 2.4 | G2 test: component integration & failure paths | ✅ `selfFloor.component.test.tsx` (8/8 G2 passed) |
 | 2.5 | G3 test: Playwright — full journey on phone viewport | Real Supabase; screenshots match mobile |
-| 2.6 | Desktop enhancement: two-column layout ≥768px | CSS grid; no mobile regression |
+| 2.6 | Desktop/Tablet enhancement: Master-detail rail ≥768px | ✅ `SelfFloor.tsx` + `self-floor.module.css` (Practice Catalog rail + stage) |
 | 2.7 | Document slice pattern in `SLICE_PATTERN.md` | Next slice starts from template |
 
 ---

@@ -38,7 +38,7 @@ export default function ScannerModal({
   const modalTitle = title ?? t('scanner.web.title');
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
 
   // Reset state each time the modal opens and focus the input
   useEffect(() => {

@@ -68,7 +68,7 @@
     "@expo/metro-runtime": "~58.0.11",
     "@expo/ui": "~58.0.12",
     "@journeyapps/wa-sqlite": "^1.7.2",
-    "@legendapp/list": "3.3.9",
+    "@legendapp/list": "3.6.0",
     "@lottiefiles/dotlottie-react": "^0.13.5",
     "@op-engineering/op-sqlite": "^17.2.0",
     "@powersync/drizzle-driver": "^0.8.0",
@@ -100,7 +100,7 @@
     "@repo/ui": "workspace:*",
     "@repo/workforce": "workspace:*",
     "@sentry/react-native": "~8.23.0",
-    "@shopify/flash-list": "2.3.2",
+    "@shopify/flash-list": "2.3.3",
     "@stripe/stripe-react-native": "0.76.0",
     "@supabase/postgrest-js": "2.117.2",
     "@supabase/supabase-js": "2.117.2",
@@ -329,6 +329,13 @@
         "react-native-keyboard-controller",
         "react-native-skia"
       ]
+    },
+    "agent-cli": {
+      "target": "dev-build",
+      "buildBackend": "local",
+      "android": {
+        "buildBackend": "local"
+      }
     }
   },
   "_originalScripts": {

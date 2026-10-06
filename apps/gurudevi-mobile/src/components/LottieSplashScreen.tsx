@@ -13,7 +13,7 @@ export function LottieSplashScreen({
   loop = false,
   autoPlay = true,
 }: LottieSplashScreenProps) {
-  const animationRef = useRef<LottieView>(null);
+  const animationRef = useRef<React.ComponentRef<typeof LottieView>>(null);
 
   useEffect(() => {
     if (autoPlay) {

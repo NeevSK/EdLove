@@ -149,18 +149,20 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     };
   }
 
-  if (params.sessionMode === 'anonymous' && pathname === '/') {
-    return {
-      decision: 'public',
-      redirectTo: '/welcome',
-      policy: {
-        state: 'public',
-        entryPoint: 'welcome',
-        reason: 'no-session',
-        redirectTo: '/welcome',
-        canRenderCurrentPath: false,
-      },
-    };
+  if (params.sessionMode === 'anonymous') {
+    if (pathname === '/auth' || pathname === '/auth/callback') {
+      return {
+        decision: 'public',
+        redirectTo: null,
+        policy: {
+          state: 'public',
+          entryPoint: pathname === '/auth' ? 'auth' : 'welcome',
+          reason: 'already-public',
+          redirectTo: null,
+          canRenderCurrentPath: true,
+        },
+      };
+    }
   }
 
   return {

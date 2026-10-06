@@ -82,7 +82,7 @@ describe('web auth callback bootstrap route', () => {
     ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
   });
 
-  it('keeps a cold anonymous root launch on welcome even if a prior guest completed onboarding', () => {
+  it('allows a cold anonymous root launch to resume /self if a prior guest completed onboarding and is ready', () => {
     expect(
       getAuthRouteTarget({
         bootstrapReady: true,
@@ -93,6 +93,49 @@ describe('web auth callback bootstrap route', () => {
         pathname: '/',
         sessionMode: 'anonymous',
       }),
+    ).toMatchObject({ decision: 'app', redirectTo: '/self' });
+  });
+
+  it('keeps an incomplete anonymous guest on welcome on root launch', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasActiveCapacity: false,
+        hasSession: true,
+        onboardingCompleted: false,
+        pathname: '/',
+        sessionMode: 'anonymous',
+      }),
     ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
   });
+
+  it('allows an anonymous guest to visit auth without redirecting to self', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasActiveCapacity: true,
+        hasSession: true,
+        onboardingCompleted: true,
+        pathname: '/auth',
+        sessionMode: 'anonymous',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
+
+  it('allows an anonymous guest to exchange an auth callback without redirecting to self', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveAccessToken: true,
+        hasActiveCapacity: true,
+        hasSession: true,
+        onboardingCompleted: true,
+        pathname: '/auth/callback',
+        sessionMode: 'anonymous',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
 });
+

@@ -45,7 +45,7 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
@@ -146,7 +146,7 @@ const NameStep = memo(
     capacity: Capacity;
     schoolName?: string;
   }) => {
-    const inputRef = useRef<any>(null);
+    const inputRef = useRef<React.ComponentRef<typeof TextInput> | null>(null);
 
     useEffect(() => {
       // Focus name input on mount imperatively

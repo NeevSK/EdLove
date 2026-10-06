@@ -130,46 +130,79 @@ All workspace domains (`self`, `classroom`, `library`, `community`, `admin`) sha
 
 ---
 
-## 5. Domain Integration Pattern (e.g. `@repo/self`)
+---
 
-Individual packages consume the engine without any duplicate layout code:
+## 5. Architectural Contract: Canvas vs. Floor
 
-```tsx
-import { WorkspaceCanvas, type SpatialArrangement } from '@repo/ui/components/workspace';
+As the platform matures across Web, Tablet, and Native Mobile, the spatial engine follows a strict separation of concerns between **Canvas** (spatial mathematics & headless arrangement) and **Floor** (platform-native tactile surface, ergonomics, and atmosphere):
 
-export function SelfCanvas({ features, viewMode, onReorder, ...props }) {
-  const spatialMode: SpatialArrangement =
-    viewMode === 'carousel' ? 'carousel' : viewMode === 'stream' ? 'stream' : 'catalog-grid';
-
-  return (
-    <WorkspaceCanvas
-      depthPreset="sanctuary-calm"
-      spatialArrangement={spatialMode}
-      surfaces={surfaceDefinitions}
-      layout={workspaceLayout}
-      renderSurfaceContent={(surface) => <SelfFeatureRenderer ... />}
-      onReorder={onReorder}
-      onTogglePin={onTogglePin}
-    />
-  );
-}
 ```
+┌────────────────────────────────────────────────────────────────────────┐
+│  Layer 2: Interactive Stage & Ergonomic Cards                          │
+│  (Fire Journal, Practices, Rails, Accessible Text, Focus Traps)       │
+├────────────────────────────────────────────────────────────────────────┤
+│  Layer 1: Tactile Floor Surface (Platform UI)                          │
+│  (Next.js CSS Modules / RN Views, Vignette, Blur, Safe Areas, Margins) │
+├────────────────────────────────────────────────────────────────────────┤
+│  Layer 0: Atmospheric Shading Ground (Game/Shader Engine)              │
+│  (WebGPU / Skia v3 Graphite / TypeGPU / Canvas2D Particles / SVG Mesh) │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### The Roles Defined
+
+| Concept | Layer | Responsibilities | Key Rule |
+| :--- | :--- | :--- | :--- |
+| **Canvas** | Headless Logic | - Item ordering, categories & grouping<br>- Pinned & hidden item state (cap of 2)<br>- Viewport breakpoint math (`mobile`, `tablet`, `desktop`)<br>- Adaptive layout mode (`overview`, `master-detail`, `stream`)<br>- Headless sync (Supabase / localStorage) | **Headless only**: 0 JSX, 0 DOM, 0 React Native views. Pure state and spatial mathematics. |
+| **Floor** | UI & Atmosphere | - Physical ground under the seeker's feet<br>- Web: semantic HTML, CSS Grid, media queries, CSS Modules<br>- Mobile: React Native `ScrollView`, safe-areas, touch targets ($\ge 44\text{px}$)<br>- Tactile atmospheric backdrops (radial blooms, parchment grain, embers) | **Platform-native**: Web renders in Next.js (`apps/gurudevi-web`), Mobile renders in Expo (`apps/gurudevi-mobile`). |
+
+### Standalone Domain Canvases (Zero Mangling)
+Rather than forcing all domains into a bloated `WorkspaceCanvas` with institutional zone decks (`today`, `work`, `institution`), each of the **5 sanctuary tabs** owns a dedicated, decoupled domain canvas:
+1. `SelfCanvas` (`useSelfCanvas`): Personal practices, reflection, Fire Journal, Lotus mood, streaks (pin cap 2).
+2. `WorkspaceCanvas` (`useWorkspaceCanvas`): School/classroom management, attendance, gradebook, timetable (pin cap 4).
+3. `CommunityCanvas` (`useCommunityCanvas`): Circles, announcements, feed, discussions (pin cap 0).
+4. `LibraryCanvas` (`useLibraryCanvas`): Curricula, scrolls, books, reading history (pin cap 2).
+5. `ProfileCanvas` (`useProfileCanvas`): Identity, achievements, credentials, account settings (pin cap 3).
+
+### Cross-Device Form Factor & Ergonomics
+- **Mobile Phone ($< 768\text{px}$)**: Single-column `stream` layout optimized for one-handed thumb reach with prominent `← Back to Overview` navigation.
+- **Tablet ($768\text{px} - 1024\text{px}$)**: Dual-pane **`master-detail`** layout. The Practice Catalog Rail ($320\text{px}$) docks on the left, while the active reflection/ritual renders on the right stage.
+- **Desktop Web ($> 1024\text{px}$)**: Panoramic bento grid overview with side-rail expansion during deep task execution.
 
 ---
 
-## 6. What Was Accomplished & What Remains
+## 6. Atmospheric Ground & Shading Architecture (WebGPU / Skia / TypeGPU)
 
-### ✅ Accomplished:
-- **Zero-Shadow Tactile Elevation**: Replaced blurry shadows with crisp architectural borders and 0px-blur bevels.
-- **Consolidation**: Reduced 13 fragmented workspace files into 4 clean, robust modules in `@repo/ui`.
-- **Polymorphic Layouts**: Fully implemented `catalog-grid`, `carousel`, and `stream` in `@repo/ui`.
-- **Self Domain Integration**: Wired `SelfScreen.unified.tsx` and `SelfCanvas.tsx` into the shared engine with mode switcher pills.
-- **Strict Verification**: Passed monorepo `pnpm run check-types` across all 27 packages with 0 errors.
+The Floor provides atmospheric immersion without degrading typographic legibility or UI performance:
 
-### 🔮 Remaining / Future Horizons:
-1. **Domain Rollout**:
-   - Adopt `ResponsiveWorkspaceCanvas` in `ClassroomScreen` and `CommunityScreen` for uniform experience.
-2. **A/B Testing Wiring**:
-   - Connect the active `spatialArrangement` to GrowthBook flags for progressive experimentation.
-3. **Figma Token Sync**:
-   - Align Figma library tokens with the zero-shadow tactile depth presets.
+1. **Zero-Rerender GPU Shading**:
+   - Background atmospheres (particles, embers, fluid mesh) run in Layer 0 via WebGL/WebGPU or Canvas 2D on web, and via `react-native-skia` v3 (Graphite/WebGPU fork) on native mobile.
+   - Animations live strictly on the GPU thread or via CSS compositor (`transform`, `opacity`), never triggering React re-renders.
+2. **WCAG Legibility Guardrail**:
+   - Layer 1 applies a contrast-preserving paper tone and vignette between the shader and text, guaranteeing WCAG AA/AAA compliance across `default`, `dawn`, `garden`, and `night` presets.
+3. **Future TypeGPU Portability**:
+   - Shaders defined in TypeGPU cross-compile between browser WebGPU and native Skia runtime effects.
+
+---
+
+## 7. What Was Accomplished & What Remains
+
+### ✅ Accomplished (Production Hardened):
+- **Canvas vs. Floor Decoupling**: Defined and implemented the headless `useSelfCanvas` spatial engine in `apps/gurudevi-web/lib/canvas/useSelfCanvas.ts`.
+- **Master-Detail Rail & Quick-Switch**: Upgraded `SelfFloor.tsx` to render both quick-switch Pinned practices and the complete Categorized Practice Catalog directly in the left rail, enabling fluid in-workflow practice transitions on tablets and desktop without returning to overview.
+- **SSR Hydration Resilience**: Refactored responsive layout containers to rely on CSS media queries and container styling, eliminating SSR-to-client layout mismatch.
+- **Palette-Adaptive Atmospheric Shading**: Shipped `FloorAtmosphere.tsx` with preset-adaptive particle shading (`night` = silver star dust, `dawn` = warm amber mist, `garden` = sage green, `default` = sacred lotus gold), RAF timestamp delta throttling ($\le 35\text{fps}$ on mobile/tablet), and automatic pausing when tabs are hidden (`document.hidden`).
+- **Cross-Device Supabase Layout Synchronization**: Upgraded `useBrowserWorkspaceAppearance.ts` to manage `pinnedIds` and sync both `pinned` and `groupOrder` to Supabase `workspace_layouts`, establishing seamless cross-device parity with mobile's `@repo/core/native/useWorkspaceLayoutSync`.
+- **The 5 Standalone Domain Canvases**: Built and wired standalone headless hooks across all 5 sanctuary floors:
+  - `Self`: `useSelfCanvas.ts` (Practice stage + catalog rail)
+  - `Community`: `useCommunityCanvas.ts` (Circles rail + Feed stream)
+  - `Library`: `useLibraryCanvas.ts` (Collections shelf + Reader stage)
+  - `Workspace`: `useWorkspaceCanvas.ts` (Operational zones: `today`, `work`, `institution`, `outlook`)
+  - `Profile`: `useProfileCanvas.ts` (Identity & security sections)
+- **Strict Verification Gate**: 44/44 tests passing across `domainCanvases.test.ts` (G1), `selfCanvas.test.ts` (G1), `selfFloor.test.tsx` (G1), and `selfFloor.component.test.tsx` (G2). Monorepo typecheck clean (0 errors).
+
+### 🔮 Future Roadmap (Stage 2 Graphics & Mobile Evolution):
+1. **TypeGPU & Skia WebGPU Shaders**: Elevate the 2D canvas particle loop to hardware compute shaders via TypeGPU / Skia WebGPU as devices support WebGPU natively.
+2. **Native Mobile Alignment**: Wire mobile's `SanctuaryOverviewHub.tsx` to directly consume the unified `workspace_layouts` record emitted by the web platform.
+
+

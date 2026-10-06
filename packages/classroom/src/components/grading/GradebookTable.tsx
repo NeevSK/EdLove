@@ -10,7 +10,8 @@ import {
   marksToGPA,
   type StudentGrade,
 } from '@repo/analytics/stats';
-import { Box, FlatList, HStack, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,16 +148,13 @@ export default function GradebookTable({
           )}
         </HStack>
 
-        {/* Table Body with FlatList */}
-        <FlatList
+        {/* Table Body with SanctuaryFlashList */}
+        <SanctuaryFlashList
           data={sortedGrades}
           renderItem={renderGradeRow}
           keyExtractor={keyExtractor}
           ListEmptyComponent={EmptyComponent}
           showsVerticalScrollIndicator={false}
-          initialNumToRender={15}
-          maxToRenderPerBatch={10}
-          windowSize={5}
         />
       </VStack>
     </Box>

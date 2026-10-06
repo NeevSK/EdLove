@@ -53,8 +53,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   return <LanguageContext value={value}>{children}</LanguageContext>;
 }
 
+const DEFAULT_LANGUAGE_VALUE: LanguageContextValue = {
+  language: 'en',
+  setLanguage: async () => {},
+};
+
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) throw new Error('useLanguage must be used within a LanguageProvider');
   return context;
+}
+
+export function useLanguageOptional(): LanguageContextValue {
+  return useContext(LanguageContext) ?? DEFAULT_LANGUAGE_VALUE;
 }

@@ -202,8 +202,6 @@ export function getNativeShellTextWidth(
   return Math.max(0, containerWidth - horizontalPadding * 2 - reservedControls);
 }
 
-/** Backward-friendly semantic alias for callers working with translated copy. */
-export const getLocalizedTextWidth = getNativeShellTextWidth;
 
 function withAlpha(hexColor: string, alpha: number) {
   const value = hexColor.replace('#', '');

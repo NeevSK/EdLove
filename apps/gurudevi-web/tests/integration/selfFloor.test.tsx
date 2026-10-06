@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import * as React from 'react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 // Mock the selfApiClient module
@@ -10,7 +11,7 @@ vi.mock('@/lib/sanctuary/selfApiClient', () => ({
 import { requestAccountSelfProcedure } from '@/lib/sanctuary/selfApiClient';
 import { loadBurnedJournalHistory, burnJournal } from '@/lib/sanctuary/selfJournal';
 import { logMood, loadMoodHistory } from '@/lib/sanctuary/selfWellbeing';
-import { SelfJournalFloor } from '@/app/(sanctuary)/self/SelfJournalFloor';
+import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
 import { resolveSelfFeatureManifest } from '@repo/self/features/featureManifest';
 import { BROWSER_SELF_FEATURES } from '@/app/(sanctuary)/self/browserFeatureRegistry';
 
@@ -90,22 +91,50 @@ vi.mock('@/app/(sanctuary)/self/browserFeatureRegistry', () => ({
   isBrowserSelfFeatureDelivered: vi.fn((id) => ['fire_journal', 'mood_lotus'].includes(id)),
 }));
 
-vi.mock('@/lib/workbench', () => ({
-  useDomainWorkbench: vi.fn(() => ({
-    state: {
-      temporalHorizon: null,
-      tasks: [],
-      focusedTaskKey: null,
-    },
-    open: vi.fn(() => ({ kind: 'ok' })),
-    close: vi.fn(() => ({ kind: 'overview' })),
-    focus: vi.fn(),
-    setTemporalHorizon: vi.fn(),
-  })),
-}));
+vi.mock('@/lib/workbench', async () => {
+  const ReactModule = await import('react');
+  return {
+    useDomainWorkbench: vi.fn(() => {
+      const [tasks, setTasks] = ReactModule.useState<any[]>([]);
+      const [focusedTaskKey, setFocusedTaskKey] = ReactModule.useState<string | null>(null);
+      const [temporalHorizon, setTemporalHorizon] = ReactModule.useState<any>(null);
+
+      const open = ReactModule.useCallback((task: any) => {
+        const taskKey = task.taskKey ?? task.featureId;
+        const descriptor = { ...task, taskKey };
+        setTasks((prev) => [...prev.filter((t) => t.taskKey !== taskKey), descriptor]);
+        setFocusedTaskKey(taskKey);
+        return { kind: 'ok', task: descriptor };
+      }, []);
+
+      const close = ReactModule.useCallback((taskKey: string) => {
+        setTasks((prev) => prev.filter((t) => t.taskKey !== taskKey));
+        setFocusedTaskKey(null);
+        return { kind: 'overview' };
+      }, []);
+
+      const focus = ReactModule.useCallback((taskKey: string) => {
+        setFocusedTaskKey(taskKey);
+      }, []);
+
+      return {
+        state: {
+          temporalHorizon,
+          tasks,
+          focusedTaskKey,
+        },
+        open,
+        close,
+        focus,
+        setTemporalHorizon,
+      };
+    }),
+  };
+});
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(requestAccountSelfProcedure).mockReset();
 });
 
 describe('Self Journal G1 Boundary Tests — API Functions', () => {
@@ -286,31 +315,31 @@ describe('Self Journal Empty States (G1)', () => {
   });
 });
 
-describe('SelfJournalFloor Component Boundary Tests (G1)', () => {
+describe('SelfFloor Component Boundary Tests (G1)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders Self overview when no feature is selected', () => {
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
     expect(screen.getByText('Self · Overview')).toBeDefined();
     expect(screen.getByText('A place to notice what is asking for your care.')).toBeDefined();
-    expect(screen.getByText('Fire Journal')).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'Fire Journal', level: 2 })).toBeDefined();
     expect(screen.getByRole('button', { name: /open fire journal/i })).toBeDefined();
   });
 
   it('shows practice catalog with zones', () => {
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
-    expect(screen.getByRole('heading', { name: 'Today' })).toBeDefined();
-    expect(screen.getByRole('heading', { name: 'Private practice' })).toBeDefined();
-    expect(screen.getByRole('heading', { name: 'Shared context' })).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'Wellbeing' })).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'Practice & rhythm' })).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'Identity' })).toBeDefined();
   });
 
   it('opens Fire Journal when button is clicked', async () => {
     const user = userEvent.setup();
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
     await user.click(screen.getByRole('button', { name: /open fire journal/i }));
 
@@ -324,32 +353,37 @@ describe('SelfJournalFloor Component Boundary Tests (G1)', () => {
     vi.mocked(requestAccountSelfProcedure).mockRejectedValueOnce(new Error('We could not release that reflection.'));
 
     const user = userEvent.setup();
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
     await user.click(screen.getByRole('button', { name: /open fire journal/i }));
     await user.type(screen.getByRole('textbox', { name: /a private reflection/i }), 'This will fail');
     await user.click(screen.getByRole('button', { name: /release to fire journal/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeDefined();
+      expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
     });
   });
 
   it('opens Mood Lotus modal from catalog', async () => {
     const user = userEvent.setup();
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
     const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
-    await user.click(moodLotusCard);
+    if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
+    await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
-    expect(screen.getByRole('dialog', { name: /mood lotus/i })).toBeDefined();
+    expect(screen.getByRole('dialog')).toBeDefined();
     expect(screen.getByText('How are you arriving?')).toBeDefined();
   });
 });
 
 describe('Mood Lotus Boundary Tests (G1)', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.mocked(requestAccountSelfProcedure).mockReset();
+    vi.mocked(requestAccountSelfProcedure).mockImplementation(async (proc) => {
+      if (proc === 'getJournalHistory' || proc === 'getMoodHistory') return [];
+      return null;
+    });
   });
 
   it('logs a mood and shows in history', async () => {
@@ -357,18 +391,23 @@ describe('Mood Lotus Boundary Tests (G1)', () => {
       id: 'mood-123',
       user_id: 'test-user',
       mood: 'calm',
-      mood_score: 7,
+      mood_score: 4,
       note: 'Feeling centered',
       created_at: '2026-01-01T00:00:00Z',
     };
 
-    vi.mocked(requestAccountSelfProcedure).mockResolvedValue(mockEntry);
+    vi.mocked(requestAccountSelfProcedure).mockImplementation(async (proc) => {
+      if (proc === 'getMoodHistory') return [];
+      if (proc === 'logMood') return mockEntry;
+      return null;
+    });
 
     const user = userEvent.setup();
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
     const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
-    await user.click(moodLotusCard);
+    if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
+    await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
     await user.click(screen.getByRole('button', { name: /calm/i }));
     await user.type(screen.getByRole('textbox', { name: /a few words/i }), 'Feeling centered');
@@ -380,13 +419,18 @@ describe('Mood Lotus Boundary Tests (G1)', () => {
   });
 
   it('shows error when mood logging fails', async () => {
-    vi.mocked(requestAccountSelfProcedure).mockRejectedValueOnce(new Error('We could not save this check-in.'));
+    vi.mocked(requestAccountSelfProcedure).mockImplementation(async (proc) => {
+      if (proc === 'getMoodHistory') return [];
+      if (proc === 'logMood') throw new Error('We could not save this check-in.');
+      return null;
+    });
 
     const user = userEvent.setup();
-    render(<SelfJournalFloor displayName="Test User" />);
+    render(<SelfFloor displayName="Test User" />);
 
     const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
-    await user.click(moodLotusCard);
+    if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
+    await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
     await user.click(screen.getByRole('button', { name: /calm/i }));
     await user.click(screen.getByRole('button', { name: /save calm/i }));

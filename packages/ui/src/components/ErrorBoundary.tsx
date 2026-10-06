@@ -2,6 +2,7 @@ import { useTheme } from '@repo/ui/hooks/useTheme';
 import { tokens } from '@repo/ui/tokens';
 import { Component, type ErrorInfo, type ReactNode, useCallback, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View, Pressable } from '@repo/ui/primitives';
+import { Mascot } from './Mascot';
 
 interface Props {
   children: ReactNode;
@@ -95,17 +96,9 @@ function ErrorCard({
           },
         ]}
       >
-        {/* Resting Flower Emblem */}
-        <View
-          style={[
-            styles.iconCircle,
-            {
-              backgroundColor: isDark ? 'rgba(212, 132, 58, 0.12)' : 'rgba(212, 132, 58, 0.10)',
-              borderColor: isDark ? 'rgba(212, 132, 58, 0.3)' : 'rgba(212, 132, 58, 0.25)',
-            },
-          ]}
-        >
-          <Text style={styles.emblemIcon}>🥀</Text>
+        {/* Sanctuary Guide Interrupted Presence */}
+        <View style={styles.mascotContainer}>
+          <Mascot mode="offline" state="interrupted" size={120} podVariant="raw" />
         </View>
 
         {/* Reassuring Header & Copy */}
@@ -347,6 +340,11 @@ const styles = StyleSheet.create({
   emblemIcon: {
     fontSize: 32,
     lineHeight: 36,
+  },
+  mascotContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: tokens.spacing.md,
   },
   titleText: {
     fontSize: 22,

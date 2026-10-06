@@ -1315,7 +1315,6 @@ export default function LibraryScreen() {
                   data={[{ type: 'COLLECTIONS', id: 'collections' }]}
                   keyExtractor={keyExtractor}
                   renderItem={renderFlatListItem}
-                  estimatedItemSize={280}
                   contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}
                   showsVerticalScrollIndicator={false}
                   refreshing={refreshing}
@@ -1472,7 +1471,6 @@ export default function LibraryScreen() {
                       data={orderedShelfData}
                       keyExtractor={keyExtractor}
                       renderItem={renderFlatListItem}
-                      estimatedItemSize={280}
                       contentContainerStyle={{
                         paddingBottom: bottomPadding + 40,
                         paddingTop: Theme.spacing.md,

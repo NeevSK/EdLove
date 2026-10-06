@@ -251,7 +251,6 @@ export function SelfNavigator({
                 ? { paddingVertical: tokens.spacing.xs, paddingHorizontal: tokens.spacing.xs }
                 : { paddingHorizontal: effectiveIsTablet ? 32 : 20 }
             }
-            estimatedItemSize={isLandscape ? 72 : effectiveIsTablet ? 104 : 72}
             keyExtractor={(item) => item.id}
             getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
           />

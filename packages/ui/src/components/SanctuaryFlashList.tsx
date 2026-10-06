@@ -2,14 +2,16 @@ import EmptyState from '@repo/ui/components/EmptyState';
 import { BookOpen } from '@repo/ui/icons';
 import { RefreshControl } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { FlashList, type FlashListProps } from '@shopify/flash-list';
+import { FlashList, type FlashListProps, type FlashListRef } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
+export type { FlashListRef };
+export type SanctuaryFlashListRef<T> = FlashListRef<T>;
+
 export interface SanctuaryFlashListProps<T>
   extends Omit<FlashListProps<T>, 'refreshControl' | 'masonry'> {
-  /** Estimated size of a single list item (Optional in v2, Auto-calculated) */
-  estimatedItemSize?: number;
+  ref?: React.Ref<FlashListRef<T>> | undefined;
   /** Whether the list is currently refreshing */
   refreshing?: boolean;
   /** Function to call when refreshing */
@@ -27,32 +29,28 @@ export interface SanctuaryFlashListProps<T>
 }
 
 /**
- * SanctuaryFlashList - A high-performance list component optimized for component recycling.
+ * SanctuaryFlashList - A high-performance list component optimized for component recycling on New Architecture.
  *
  * Philosophy: Performance is silent but essential for presence.
- * This component wraps @shopify/flash-list with Sanctuary-themed defaults.
- *
- * @example
- * <SanctuaryFlashList
- *   data={resources}
- *   renderItem={({ item }) => <ResourceRow resource={item} />}
- *   estimatedItemSize={Theme.listSizes.resourceRow}
- * />
+ * This component wraps @shopify/flash-list v2 with Sanctuary-themed defaults.
+ * Sizing estimation is completely automatic in v2.
  */
-export function SanctuaryFlashList<T>({
-  data,
-  renderItem,
-  estimatedItemSize,
-  refreshing = false,
-  onRefresh,
-  emptyComponent,
-  refreshColor,
-  contentContainerStyle,
-  ListEmptyComponent,
-  masonry,
-  numColumns = 2,
-  ...props
-}: SanctuaryFlashListProps<T>) {
+export const SanctuaryFlashList = React.forwardRef(function SanctuaryFlashListInner<T>(
+  {
+    data,
+    renderItem,
+    refreshing = false,
+    onRefresh,
+    emptyComponent,
+    refreshColor,
+    contentContainerStyle,
+    ListEmptyComponent,
+    masonry,
+    numColumns = 2,
+    ...props
+  }: SanctuaryFlashListProps<T>,
+  ref: React.ForwardedRef<FlashListRef<T>>,
+) {
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;
 
@@ -73,10 +71,10 @@ export function SanctuaryFlashList<T>({
 
   return (
     <FlashList
+      ref={ref}
       {...(props as any)}
       data={data}
       renderItem={renderItem}
-      estimatedItemSize={estimatedItemSize}
       ListEmptyComponent={renderEmpty}
       contentContainerStyle={[{ paddingBottom: Theme.spacing.xl }, contentContainerStyle]}
       refreshControl={
@@ -93,6 +91,8 @@ export function SanctuaryFlashList<T>({
       numColumns={masonry ? numColumns : undefined}
     />
   );
-}
+}) as <T>(
+  props: SanctuaryFlashListProps<T> & { ref?: React.Ref<FlashListRef<T>> | undefined },
+) => React.ReactElement | null;
 
 export default SanctuaryFlashList;

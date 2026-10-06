@@ -346,7 +346,6 @@ export function BaseSelfView({
                   ? { paddingVertical: tokens.spacing.xs, paddingHorizontal: tokens.spacing.xs }
                   : { paddingHorizontal: isTablet ? 32 : 20 }
               }
-              estimatedItemSize={isLandscape ? 72 : isTablet ? 104 : 72}
               keyExtractor={(item) => item.id}
               getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
             />

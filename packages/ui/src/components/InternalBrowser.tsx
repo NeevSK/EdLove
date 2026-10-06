@@ -56,7 +56,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
   showToolbar = true,
 }) => {
   const { scene } = useTheme();
-  const webViewRef = useRef<WebView>(null);
+  const webViewRef = useRef<React.ComponentRef<typeof WebView> | null>(null);
 
   const [state, dispatch] = useReducer(browserReducer, {
     canGoBack: false,

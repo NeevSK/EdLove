@@ -17,7 +17,7 @@ import {
   registerExternalLinkRuntime,
 } from '@repo/ui/utils/linking';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useReality } from './EnvironmentContext';
+import { useRealityOptional } from './EnvironmentContext';
 
 interface PendingRequest {
   url: string;
@@ -137,7 +137,7 @@ const MethodItem = React.memo(({ method, isSelected, onSelect }: MethodItemProps
 });
 
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
-  const { reality } = useReality();
+  const { reality } = useRealityOptional();
   const { showToast } = useSanctuaryToast();
   const realityRef = useRef(reality);
   realityRef.current = reality;

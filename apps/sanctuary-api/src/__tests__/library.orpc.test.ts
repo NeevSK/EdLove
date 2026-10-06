@@ -342,8 +342,8 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
     await expect(
       createTestORPCClient(headers).library.updateCollection({
-        id: 'a23e4567-e89b-12d3-a456-426614174000',
-        name: 'Unauthorized',
+        params: { id: 'a23e4567-e89b-12d3-a456-426614174000' },
+        body: { name: 'Unauthorized' },
       }),
     ).rejects.toMatchObject({ status: 403 });
   });

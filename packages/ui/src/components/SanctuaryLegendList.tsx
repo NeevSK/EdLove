@@ -145,8 +145,10 @@ function SanctuaryLegendListInner<ItemT>(
   return <LegendList {...(sharedProps as any)} {...(rest as any)} />;
 }
 
+export type { LegendListRef };
+
 export const SanctuaryLegendList = forwardRef(SanctuaryLegendListInner) as <ItemT = any>(
-  props: SanctuaryLegendListProps<ItemT> & React.RefAttributes<LegendListRef>,
+  props: SanctuaryLegendListProps<ItemT> & { ref?: React.Ref<LegendListRef> | undefined },
 ) => React.ReactElement | null;
 
 export default SanctuaryLegendList;

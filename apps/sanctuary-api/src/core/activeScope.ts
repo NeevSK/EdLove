@@ -6,25 +6,25 @@ import { type createZenStackDb } from '@repo/database/client';
 import { z } from 'zod';
 
 const ScopeBondSchema = z.object({
-  id: z.uuid(),
-  user_id: z.uuid(),
+  id: z.string(),
+  user_id: z.string(),
   entity_id: z.string(),
   entity_type: z.string(),
   capacity: z.string(),
-  status: z.enum(['active', 'archived', 'revoked']),
-  valid_from: z.date(),
-  valid_until: z.date().nullable(),
-  metadata: z.unknown().nullable(),
+  status: z.enum(['active', 'archived', 'revoked']).optional().default('active'),
+  valid_from: z.date().optional(),
+  valid_until: z.date().nullable().optional(),
+  metadata: z.unknown().nullable().optional(),
 });
 const ScopeUserSchema = z.object({
-  id: z.uuid(),
-  email: z.string().nullable(),
-  full_name: z.string(),
-  display_name: z.string().nullable(),
-  first_name: z.string().nullable(),
-  last_name: z.string().nullable(),
-  onboarding_completed: z.boolean().nullable(),
-  capacity: z.string().nullable(),
+  id: z.string(),
+  email: z.string().nullable().optional(),
+  full_name: z.string().optional().default(''),
+  display_name: z.string().nullable().optional(),
+  first_name: z.string().nullable().optional(),
+  last_name: z.string().nullable().optional(),
+  onboarding_completed: z.boolean().nullable().optional(),
+  capacity: z.string().nullable().optional(),
 });
 
 export type ScopeBond = z.infer<typeof ScopeBondSchema>;
@@ -136,7 +136,7 @@ export function activeScopeReader(db: ZenStackDb): ActiveScopeDb {
         const result = await db.userPreferences.findUnique({ where, select });
         return result === null
           ? null
-          : z.object({ active_bond_id: z.uuid().nullable() }).parse(result);
+          : z.object({ active_bond_id: z.string().nullable() }).parse(result);
       },
       update: ({ where, data }) => db.userPreferences.update({ where, data }),
     },
@@ -153,7 +153,7 @@ export async function resolvePersistedActiveBond(
     select: { active_bond_id: true },
   });
   const parsedPreferences = preferences
-    ? z.object({ active_bond_id: z.uuid().nullable() }).parse(preferences)
+    ? z.object({ active_bond_id: z.string().nullable() }).parse(preferences)
     : null;
   const bondId = parsedPreferences?.active_bond_id;
   if (!bondId) return null;

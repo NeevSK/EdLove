@@ -108,7 +108,6 @@ export function ResourceList({
         key={`resource-list-${viewMode}`}
         numColumns={viewMode === 'grid' ? 2 : 1}
         keyExtractor={(item: LibraryResource) => item.id}
-        estimatedItemSize={viewMode === 'grid' ? 200 : Theme.listSizes.resourceRow}
         ListHeaderComponent={ListHeaderComponent}
         ListFooterComponent={ListFooterComponent}
         onEndReached={onEndReached}

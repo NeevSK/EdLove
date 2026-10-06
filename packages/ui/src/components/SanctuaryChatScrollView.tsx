@@ -24,7 +24,7 @@ export interface SanctuaryChatScrollViewProps extends KeyboardChatScrollViewProp
 
 function SanctuaryChatScrollViewInner(
   { keyboardLiftBehavior = 'always', ...props }: SanctuaryChatScrollViewProps,
-  ref: React.ForwardedRef<Reanimated.ScrollView>,
+  ref: React.ForwardedRef<React.ComponentRef<typeof Reanimated.ScrollView>>,
 ) {
   return (
     <KeyboardChatScrollView ref={ref} keyboardLiftBehavior={keyboardLiftBehavior} {...props} />

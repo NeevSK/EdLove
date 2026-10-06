@@ -323,7 +323,6 @@ export default function CuratorReviewScreen() {
           keyExtractor={(item) => item.id}
           renderItem={activeRenderer}
           contentContainerStyle={{ padding: 16 }}
-          estimatedItemSize={120}
           ListEmptyComponent={
             <BrandedEmptyState
               title="The wisdom stream is quiet"

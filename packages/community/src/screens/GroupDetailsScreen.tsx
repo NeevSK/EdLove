@@ -406,7 +406,6 @@ export default function GroupDetailsScreen() {
 
         <SanctuaryFlashList
           data={posts}
-          estimatedItemSize={280}
           ListHeaderComponent={renderHeader}
           renderItem={({ item, index }: { item: any; index: number }) => (
             <AnimatedView

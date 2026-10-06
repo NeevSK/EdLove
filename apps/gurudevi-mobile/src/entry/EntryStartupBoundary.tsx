@@ -1,8 +1,10 @@
 import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
-import { BrandPulse } from '@repo/ui';
+import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
 import { useEffect, useState } from 'react';
 import { Text, View, Pressable } from '@repo/ui/primitives';
+
+import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import { EntryShell } from '@/entry/EntryShell';
@@ -22,43 +24,49 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
   }, []);
 
   return (
-    <View
-      accessibilityRole={error ? 'alert' : 'progressbar'}
-      accessibilityLabel={error ? 'Gurudevi could not start' : 'Preparing Gurudevi'}
-      style={{
-        alignItems: 'center',
-        backgroundColor: '#20140E',
-        flex: 1,
-        justifyContent: 'center',
-        padding: 32,
-      }}
-    >
-      <BrandPulse size={32} tintColor="#D4843A" />
-      <Text style={{ color: '#F5EDD6', fontSize: 16, marginTop: 16, textAlign: 'center' }}>
-        {error ? 'Gurudevi could not finish starting.' : 'Preparing your sanctuary…'}
-      </Text>
-      {error ? (
-        <>
-          <Text style={{ color: '#D8C8B8', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
-            {error.message}
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Retry starting Gurudevi"
-            onPress={onRetry}
-            style={{
-              backgroundColor: '#D4843A',
-              borderRadius: 10,
-              marginTop: 20,
-              paddingHorizontal: 20,
-              paddingVertical: 12,
-            }}
-          >
-            <Text style={{ color: '#20140E', fontWeight: '700' }}>Try again</Text>
-          </Pressable>
-        </>
-      ) : null}
-    </View>
+    <MascotProvider config={fireflyMascotConfig}>
+      <View
+        accessibilityRole={error ? 'alert' : 'progressbar'}
+        accessibilityLabel={error ? 'Gurudevi could not start' : 'Preparing Gurudevi'}
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#20140E',
+          flex: 1,
+          justifyContent: 'center',
+          padding: 32,
+        }}
+      >
+        {error ? (
+          <Mascot mode="offline" state="interrupted" size={120} podVariant="raw" />
+        ) : (
+          <BrandPulse size={32} tintColor="#D4843A" />
+        )}
+        <Text style={{ color: '#F5EDD6', fontSize: 16, marginTop: 16, textAlign: 'center' }}>
+          {error ? 'Gurudevi could not finish starting.' : 'Preparing your sanctuary…'}
+        </Text>
+        {error ? (
+          <>
+            <Text style={{ color: '#D8C8B8', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
+              {error.message}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Retry starting Gurudevi"
+              onPress={onRetry}
+              style={{
+                backgroundColor: '#D4843A',
+                borderRadius: 10,
+                marginTop: 20,
+                paddingHorizontal: 20,
+                paddingVertical: 12,
+              }}
+            >
+              <Text style={{ color: '#20140E', fontWeight: '700' }}>Try again</Text>
+            </Pressable>
+          </>
+        ) : null}
+      </View>
+    </MascotProvider>
   );
 }
 

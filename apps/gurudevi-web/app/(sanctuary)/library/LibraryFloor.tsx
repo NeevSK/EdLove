@@ -3,7 +3,7 @@
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
-import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
+import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { TaskStrip } from '../components/workbench';
@@ -25,14 +25,22 @@ const CATALOG_TASK = {
   localStatePolicy: 'none',
 } as const;
 
+function collectionLabel(category: string): string {
+  const map: Record<string, string> = {
+    discovery: 'Discovery & Search',
+    collections: 'Curated Collections',
+    tools: 'Practice Tools',
+    archives: 'Ancient Archives',
+  };
+  return map[category] ?? category;
+}
+
 export function LibraryFloor({
   accountId,
   displayName,
 }: Readonly<{ accountId: string; displayName: string }>) {
-  const floorAppearance = useBrowserWorkspaceAppearance({
+  const canvas = useLibraryCanvas({
     accountId,
-    defaultGroupOrder: ['discovery', 'collections', 'tools'],
-    workspaceId: 'library',
   });
   const workbench = useDomainWorkbench('library');
   const [query, setQuery] = useState('');
@@ -122,9 +130,9 @@ export function LibraryFloor({
   return (
     <article
       className={styles.floor}
-      data-appearance={floorAppearance.appearance.preset}
+      data-appearance={canvas.appearance.preset}
       data-domain="library"
-      data-motion={floorAppearance.appearance.motion}
+      data-motion={canvas.appearance.motion}
       aria-labelledby="library-title"
     >
       <header className={styles.arrival}>
@@ -147,78 +155,142 @@ export function LibraryFloor({
       />
 
       {catalogIsOpen ? (
-        <section className={styles.catalog} aria-labelledby="resource-catalog-title">
-          <div className={styles.sectionHeading}>
-            <p className={styles.eyebrow}>Browse</p>
-            <h2 id="resource-catalog-title">Resource catalog</h2>
-            <p>Search the resources the Library service makes available to your account.</p>
-          </div>
-          <form className={styles.search} onSubmit={submitSearch} role="search">
-            <label htmlFor="library-search">Search titles and descriptions</label>
-            <div className={styles.searchRow}>
-              <input
-                id="library-search"
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Try a subject, topic, or title"
-                type="search"
-                value={query}
-              />
-              <button disabled={isSearching} type="submit">
-                {isSearching ? 'Searching…' : 'Search'}
+        <div className={styles.masterDetailLayout} data-layout-mode={canvas.layoutMode}>
+          <aside aria-label="Library Collections" className={styles.catalogRail}>
+            <div className={styles.catalogRailHeader}>
+              <h3 className={styles.catalogRailTitle}>Library Shelf</h3>
+              <button
+                className={styles.returnOverviewButton}
+                onClick={returnToOverview}
+                type="button"
+              >
+                Overview
               </button>
             </div>
-          </form>
 
-          {status === 'loading' ? (
-            <p className={styles.state} role="status">
-              Loading Library resources…
-            </p>
-          ) : null}
-          {status === 'denied' || status === 'error' ? (
-            <div className={styles.state} role="alert">
-              <p>{notice}</p>
-              <button onClick={retry} type="button">
-                Try again
+            <section aria-labelledby="rail-collections-heading" className={styles.catalogRailSection}>
+              <h4 id="rail-collections-heading" className={styles.catalogRailSectionTitle}>
+                Collections
+              </h4>
+              <ul className={styles.catalogRailList}>
+                {canvas.groupOrder.map((category) => {
+                  const isPinned = canvas.pinnedCategories.includes(category);
+                  return (
+                    <li key={category}>
+                      <div className={styles.catalogRailRow}>
+                        <button
+                          className={styles.catalogRailItem}
+                          onClick={() => {
+                            setQuery(category === 'discovery' ? '' : category);
+                            void loadResources(category === 'discovery' ? '' : category);
+                          }}
+                          type="button"
+                        >
+                          <span className={styles.catalogRailItemLabel}>
+                            {collectionLabel(category)}
+                          </span>
+                        </button>
+                        <button
+                          aria-label={isPinned ? `Unpin ${collectionLabel(category)}` : `Pin ${collectionLabel(category)}`}
+                          className={`${styles.catalogRailPinButton} ${isPinned ? styles.catalogRailPinButtonPinned : ''}`}
+                          onClick={() => canvas.togglePin(category)}
+                          type="button"
+                        >
+                          {isPinned ? '📌' : '📍'}
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          </aside>
+
+          <div className={styles.activeResourceStage}>
+            <div className={styles.backOverviewBar}>
+              <button
+                className={styles.streamBackButton}
+                onClick={returnToOverview}
+                type="button"
+              >
+                ← Back to Overview
               </button>
             </div>
-          ) : null}
-          {status === 'ready' && resources.length === 0 ? (
-            <p className={styles.state} role="status">
-              {query.trim()
-                ? 'No resources matched that search.'
-                : 'No resources are available in this view yet.'}
-            </p>
-          ) : null}
-          {status === 'ready' && resources.length > 0 ? (
-            <ul className={styles.resourceGrid} aria-label="Library resources">
-              {resources.map((resource) => {
-                const url = safeResourceUrl(resource.url);
-                return (
-                  <li className={styles.resourceCard} key={resource.id}>
-                    <div className={styles.resourceMeta}>
-                      <span>{resource.type || 'Resource'}</span>
-                      {resource.verified ? <span>Verified</span> : null}
-                    </div>
-                    <h3>{resource.title}</h3>
-                    <p>{resource.description || 'No description provided.'}</p>
-                    <div className={styles.tags}>
-                      {resource.subjects.slice(0, 2).map((subject) => (
-                        <span key={subject}>{subject}</span>
-                      ))}
-                    </div>
-                    {url ? (
-                      <a href={url} rel="noreferrer" target="_blank">
-                        Open resource <span aria-hidden="true">↗</span>
-                      </a>
-                    ) : (
-                      <span className={styles.unavailableLink}>Resource link unavailable</span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : null}
-        </section>
+
+            <section className={styles.catalog} aria-labelledby="resource-catalog-title">
+              <div className={styles.sectionHeading}>
+                <p className={styles.eyebrow}>Browse</p>
+                <h2 id="resource-catalog-title">Resource catalog</h2>
+                <p>Search the resources the Library service makes available to your account.</p>
+              </div>
+              <form className={styles.search} onSubmit={submitSearch} role="search">
+                <label htmlFor="library-search">Search titles and descriptions</label>
+                <div className={styles.searchRow}>
+                  <input
+                    id="library-search"
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Try a subject, topic, or title"
+                    type="search"
+                    value={query}
+                  />
+                  <button disabled={isSearching} type="submit">
+                    {isSearching ? 'Searching…' : 'Search'}
+                  </button>
+                </div>
+              </form>
+
+              {status === 'loading' ? (
+                <p className={styles.state} role="status">
+                  Loading Library resources…
+                </p>
+              ) : null}
+              {status === 'denied' || status === 'error' ? (
+                <div className={styles.state} role="alert">
+                  <p>{notice}</p>
+                  <button onClick={retry} type="button">
+                    Try again
+                  </button>
+                </div>
+              ) : null}
+              {status === 'ready' && resources.length === 0 ? (
+                <p className={styles.state} role="status">
+                  {query.trim()
+                    ? 'No resources matched that search.'
+                    : 'No resources are available in this view yet.'}
+                </p>
+              ) : null}
+              {status === 'ready' && resources.length > 0 ? (
+                <ul className={styles.resourceGrid} aria-label="Library resources">
+                  {resources.map((resource) => {
+                    const url = safeResourceUrl(resource.url);
+                    return (
+                      <li className={styles.resourceCard} key={resource.id}>
+                        <div className={styles.resourceMeta}>
+                          <span>{resource.type || 'Resource'}</span>
+                          {resource.verified ? <span>Verified</span> : null}
+                        </div>
+                        <h3>{resource.title}</h3>
+                        <p>{resource.description || 'No description provided.'}</p>
+                        <div className={styles.tags}>
+                          {resource.subjects.slice(0, 2).map((subject) => (
+                            <span key={subject}>{subject}</span>
+                          ))}
+                        </div>
+                        {url ? (
+                          <a href={url} rel="noreferrer" target="_blank">
+                            Open resource <span aria-hidden="true">↗</span>
+                          </a>
+                        ) : (
+                          <span className={styles.unavailableLink}>Resource link unavailable</span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
+            </section>
+          </div>
+        </div>
       ) : (
         <section className={styles.overview} aria-labelledby="library-overview-title">
           <div>

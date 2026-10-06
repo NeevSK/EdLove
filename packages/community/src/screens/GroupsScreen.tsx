@@ -293,7 +293,6 @@ export default function GroupsScreen({
         data={activeGroups}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        estimatedItemSize={120}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
         ListFooterComponent={

@@ -34,6 +34,7 @@
     "build:android:release": "node scripts/build-android.mjs --type=release",
     "install:android": "adb install -r apps/gurudevi-mobile/android/app/build/outputs/apk/debug/app-debug.apk",
     "install:android:release": "adb install -r apps/gurudevi-mobile/android/app/build/outputs/apk/release/app-release.apk",
+    "clean:android-data": "adb shell pm clear --user 0 app.gurudevi.sanctuary.dev && adb shell am start --user 0 -n app.gurudevi.sanctuary.dev/app.gurudevi.sanctuary.MainActivity",
     "sync:wsl": "node scripts/sync-wsl.mjs",
     "ios": "node ./scripts/run-and-report.mjs --cmd \"pnpm exec expo run:ios\" --name \"package_json-ios\"",
     "i18n:audit": "node ./scripts/run-and-report.mjs --cmd \"node scripts/i18n/audit-keys.mjs\" --name \"package_json-i18n_audit\"",

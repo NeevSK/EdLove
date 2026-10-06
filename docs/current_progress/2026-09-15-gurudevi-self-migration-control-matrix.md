@@ -249,7 +249,7 @@ The following sources materially informed this matrix (paths are exact):
 29. `packages/self/src/components/EnergyForecast.web.tsx`
 30. `packages/self/src/components/SleepTracker.web.tsx`
 31. `apps/gurudevi-web/app/(sanctuary)/self/browserFeatureRegistry.ts`
-32. `apps/gurudevi-web/app/(sanctuary)/self/SelfJournalFloor.tsx`
+32. `apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx`
 33. `apps/gurudevi-mobile/src/components/self/SanctuaryOverviewHub.tsx`
 34. `apps/gurudevi-mobile/app/(tabs)/self/index.tsx`
 35. `apps/gurudevi-mobile/src/navigation/registries/selfRegistry.ts`

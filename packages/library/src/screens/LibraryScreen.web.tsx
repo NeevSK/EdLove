@@ -1126,7 +1126,6 @@ export default function LibraryScreenWeb() {
                           horizontal
                           showsHorizontalScrollIndicator={false}
                           keyExtractor={(col: LibraryCollection) => `search-cat-${col.id}`}
-                          estimatedItemSize={320}
                           contentContainerStyle={{ paddingBottom: 16 }}
                           renderItem={({ item: col }: { item: LibraryCollection }) => (
                             <Box className="mr-5 w-[320px]">
@@ -1161,7 +1160,6 @@ export default function LibraryScreenWeb() {
                           horizontal
                           showsHorizontalScrollIndicator={false}
                           keyExtractor={(col: LibraryCollection) => `search-col-${col.id}`}
-                          estimatedItemSize={320}
                           contentContainerStyle={{ paddingBottom: 16 }}
                           renderItem={({ item: col }: { item: LibraryCollection }) => (
                             <Box className="mr-5 w-[320px]">
@@ -1199,7 +1197,6 @@ export default function LibraryScreenWeb() {
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             keyExtractor={(res) => `search-${shelf.id}-${res.id}`}
-                            estimatedItemSize={280}
                             contentContainerStyle={{ paddingBottom: 16 }}
                             renderItem={({ item: res }) => (
                               <Box className="mr-5 w-[280px]">
@@ -1226,7 +1223,6 @@ export default function LibraryScreenWeb() {
                           horizontal
                           showsHorizontalScrollIndicator={false}
                           keyExtractor={(res) => `search-other-${res.id}`}
-                          estimatedItemSize={280}
                           contentContainerStyle={{ paddingBottom: 16 }}
                           renderItem={({ item: res }) => (
                             <Box className="mr-5 w-[280px]">
@@ -1335,7 +1331,6 @@ export default function LibraryScreenWeb() {
                       horizontal
                       showsHorizontalScrollIndicator={false}
                       keyExtractor={(col: LibraryCollection) => `feat-cat-${col.id}`}
-                      estimatedItemSize={320}
                       contentContainerStyle={{ paddingBottom: 16 }}
                       renderItem={({ item: col }: { item: LibraryCollection }) => (
                         <Box className="mr-5">
@@ -1371,7 +1366,6 @@ export default function LibraryScreenWeb() {
                       horizontal
                       showsHorizontalScrollIndicator={false}
                       keyExtractor={(col: LibraryCollection) => `feat-col-${col.id}`}
-                      estimatedItemSize={320}
                       contentContainerStyle={{ paddingBottom: 16 }}
                       renderItem={({ item: col }: { item: LibraryCollection }) => {
                         const isOwner = !!user?.id && col.creator_id === user.id;
@@ -1432,7 +1426,6 @@ export default function LibraryScreenWeb() {
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(res) => `shelf-${shelf.id}-${res.id}`}
-                        estimatedItemSize={280}
                         contentContainerStyle={{ paddingBottom: 16 }}
                         renderItem={({ item: res }) => (
                           <Box className="mr-5 w-[280px]">

@@ -1,4 +1,5 @@
 import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import { authAPI } from '@repo/core/api/auth';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
 import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
@@ -608,6 +609,28 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     }
     router.push('/icon-lab');
   }, [navigation, router]);
+
+  const handleDevClearAllCache = useCallback(async () => {
+    try {
+      storage.clearAll();
+      try {
+        await authAPI.signOut();
+      } catch (e) {
+        console.warn('Sign out during dev cache wipe:', e);
+      }
+      showToast({
+        message: 'Developer: Cleared all local storage, sessions, MMKV, and app cache.',
+        type: 'success',
+      });
+      router.replace('/welcome');
+    } catch (err: unknown) {
+      console.warn('[handleDevClearAllCache] error:', err);
+      showToast({
+        message: 'Failed to clear local cache.',
+        type: 'error',
+      });
+    }
+  }, [router, showToast]);
 
   const headerStyleOptions = useMemo(
     () => [
@@ -1320,18 +1343,32 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
           accessibilityHint="Experiment with living surface compositions and lighting."
         />
         {__DEV__ && (
-          <SettingsOption
-            icon={
-              <Box className="text-phase-secondary">
-                <Sparkles size={24} />
-              </Box>
-            }
-            title="Iconography Lab"
-            description="Compare Lucide, Phosphor, and native Lucide rendering."
-            onPress={handleIconLab}
-            accessibilityLabel="Open Iconography Lab"
-            accessibilityHint="Compare icon systems across mobile and web."
-          />
+          <>
+            <SettingsOption
+              icon={
+                <Box className="text-phase-secondary">
+                  <Sparkles size={24} />
+                </Box>
+              }
+              title="Iconography Lab"
+              description="Compare Lucide, Phosphor, and native Lucide rendering."
+              onPress={handleIconLab}
+              accessibilityLabel="Open Iconography Lab"
+              accessibilityHint="Compare icon systems across mobile and web."
+            />
+            <SettingsOption
+              icon={
+                <Box className="text-phase-secondary">
+                  <Lock size={24} />
+                </Box>
+              }
+              title="Developer: Reset All Local Data & Caches"
+              description="Wipes local MMKV, storage, and resets app to clean welcome state."
+              onPress={handleDevClearAllCache}
+              accessibilityLabel="Developer: Reset All Local Data & Caches"
+              accessibilityHint="Wipe all local storage and reset to a fresh install."
+            />
+          </>
         )}
         <SettingsOption
           icon={
