@@ -164,12 +164,12 @@
     "@repo/ui": "workspace:*",
     "@supabase/postgrest-js": "2.117.2",
     "@supabase/supabase-js": "2.117.2",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.104.1",
     "date-fns": "^4.4.0",
     "expo-clipboard": "~58.0.3",
     "expo-image-picker": "~58.0.10",
     "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.13",
+    "react-i18next": "^17.0.15",
     "react-native-reanimated": "^4.6.0"
   },
   "devDependencies": {
@@ -177,7 +177,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
     "eslint": "^10.10.0",
-    "react-i18next": "^17.0.13",
+    "react-i18next": "^17.0.15",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0"
@@ -203,3 +203,5 @@
     "test:ui": "vitest --ui"
   }
 }
+
+

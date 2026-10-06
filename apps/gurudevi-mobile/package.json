@@ -106,7 +106,7 @@
     "@supabase/supabase-js": "2.117.2",
     "@swmansion/react-native-bottom-sheet": "^0.14.1",
     "@tanstack/react-pacer": "^0.22.1",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.104.1",
     "@ts-rest/core": "3.53.0-rc.1",
     "@types/qrcode": "^1.5.6",
     "@zenstackhq/orm": "3.8.3",
@@ -192,7 +192,7 @@
     "i18next": "^26.4.2",
     "ieee754": "1.2.1",
     "inline-style-prefixer": "5.1.2",
-    "inngest": "^4.20.0",
+    "inngest": "^4.21.1",
     "invariant": "^2.2.4",
     "isomorphic-webcrypto": "^2.3.8",
     "jpeg-js": "^0.4.4",
@@ -204,7 +204,7 @@
     "phosphor-react-native": "3.0.6",
     "pino": "^10.3.1",
     "posthog-js": "^1.430.2",
-    "posthog-react-native": "^4.71.0",
+    "posthog-react-native": "^4.78.5",
     "qrcode": "^1.5.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -365,3 +365,6 @@
     "postinstall": "node scripts/copy-powersync-assets.mjs"
   }
 }
+
+
+

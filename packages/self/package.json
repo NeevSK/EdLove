@@ -92,9 +92,9 @@
     "@repo/core": "workspace:*",
     "@repo/profile": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.104.1",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^0.45.3",
     "expo-audio": "~58.0.5",
     "expo-file-system": "~58.0.5",
     "expo-haptics": "~58.0.4",
@@ -109,7 +109,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
     "eslint": "^10.10.0",
-    "react-i18next": "^17.0.13",
+    "react-i18next": "^17.0.15",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.0"
@@ -135,3 +135,6 @@
     "test:ui": "vitest --ui"
   }
 }
+
+
+

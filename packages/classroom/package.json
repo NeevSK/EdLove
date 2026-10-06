@@ -76,12 +76,12 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.102.8",
+    "@tanstack/react-query": "^5.104.1",
     "date-fns": "^4.4.0",
     "expo-clipboard": "~58.0.3",
     "expo-image-picker": "~58.0.10",
     "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.13"
+    "react-i18next": "^17.0.15"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
@@ -114,3 +114,5 @@
     "test:ui": "vitest --ui"
   }
 }
+
+

@@ -54,8 +54,8 @@
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.102.8",
-    "react-i18next": "^17.0.13"
+    "@tanstack/react-query": "^5.104.1",
+    "react-i18next": "^17.0.15"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
@@ -70,7 +70,7 @@
     "@repo/ui": "*",
     "posthog-js": "^1.383.1",
     "posthog-node": "^5.36.6",
-    "posthog-react-native": "^4.46.21",
+    "posthog-react-native": "^4.78.5",
     "react": "*",
     "react-i18next": "*",
     "react-native": "*"
@@ -99,3 +99,6 @@
     "test:ui": "vitest --ui"
   }
 }
+
+
+
