@@ -1,14 +1,53 @@
 import { styled } from 'nativewind';
 import React from 'react';
-import { type ImageBackgroundProps, ImageBackground as RNImageBackground } from 'react-native';
+import {
+  type ImageProps,
+  type ImageSourcePropType,
+  Image,
+  StyleSheet,
+  View,
+  type ViewProps,
+} from 'react-native';
 
-const StyledImageBackground = styled(RNImageBackground as React.ComponentType<any>);
+const StyledView = styled(View);
+const StyledImage = styled(Image as React.ComponentType<any>);
+
+export interface IImageBackgroundProps extends ViewProps {
+  source: ImageSourcePropType;
+  resizeMode?: ImageProps['resizeMode'];
+  imageStyle?: ImageProps['style'];
+  imageClassName?: string;
+  className?: string;
+  children?: React.ReactNode;
+}
 
 export const ImageBackground = React.forwardRef<
-  RNImageBackground,
-  ImageBackgroundProps & { className?: string }
->(({ className, ...props }, ref) => (
-  <StyledImageBackground {...props} ref={ref} className={className} />
-));
+  any,
+  IImageBackgroundProps
+>(
+  (
+    {
+      source,
+      resizeMode = 'cover',
+      imageStyle,
+      imageClassName,
+      className,
+      style,
+      children,
+      ...props
+    },
+    ref,
+  ) => (
+    <StyledView {...props} ref={ref} style={style} className={className}>
+      <StyledImage
+        source={source}
+        resizeMode={resizeMode}
+        style={[StyleSheet.absoluteFill, imageStyle]}
+        className={imageClassName}
+      />
+      {children}
+    </StyledView>
+  ),
+);
 
 ImageBackground.displayName = 'ImageBackground';
