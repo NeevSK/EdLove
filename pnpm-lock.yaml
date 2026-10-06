@@ -792,7 +792,7 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       drizzle-orm:
-        specifier: ^0.45.2
+        specifier: ^0.45.3
         version: 0.45.3(@libsql/client@0.17.3)(@op-engineering/op-sqlite@17.2.0(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.0.2))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.2.2))(react@19.3.0))(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(better-sqlite3@12.9.0)(expo-sqlite@58.0.9(expo@58.0.3)(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.0.2))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.2.2))(react@19.3.0))(kysely@0.28.16)(pg@8.23.1)(prisma@6.19.3(typescript@7.0.2))
       effect:
         specifier: ^3.22.2
