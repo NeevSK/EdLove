@@ -167,7 +167,7 @@
     "oxlint": "^1.81.0",
     "oxlint-config-universe": "0.2.0",
     "oxlint-plugin-react-native": "0.2.33",
-    "pg": "^8.23.0",
+    "pg": "^8.23.1",
     "promptfoo": "^0.122.2",
     "react-native-devtools": "^0.0.1",
     "size-limit": "^13.0.3",
@@ -257,3 +257,4 @@
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\""
   }
 }
+
