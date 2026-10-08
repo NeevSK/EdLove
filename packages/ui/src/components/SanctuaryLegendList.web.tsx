@@ -13,33 +13,31 @@ import type { SanctuaryLegendListProps } from '@repo/ui/components/SanctuaryLege
 import { useOptionalChatContext } from '@repo/ui/context/ChatContext';
 import { BookOpen } from '@repo/ui/icons';
 import { Theme } from '@repo/ui/theme/Theme';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-function SanctuaryLegendListWeb<ItemT>(
-  {
-    data,
-    renderItem,
-    keyboardLiftBehavior: _keyboardLiftBehavior,
-    keyboardOffset: _keyboardOffset,
-    anchoredEndSpace: _anchoredEndSpace,
-    contentInsetEndAdjustment: _contentInsetEndAdjustment,
-    initialScrollAtEnd = true,
-    maintainScrollAtEnd,
-    onRefresh,
-    refreshing,
-    emptyComponent,
-    ListEmptyComponent,
-    contentContainerStyle,
-    ...rest
-  }: SanctuaryLegendListProps<ItemT>,
-  forwardedRef: React.ForwardedRef<LegendListRef>,
-) {
+export function SanctuaryLegendList<ItemT>({
+  data,
+  renderItem,
+  keyboardLiftBehavior: _keyboardLiftBehavior,
+  keyboardOffset: _keyboardOffset,
+  anchoredEndSpace: _anchoredEndSpace,
+  contentInsetEndAdjustment: _contentInsetEndAdjustment,
+  initialScrollAtEnd = true,
+  maintainScrollAtEnd,
+  onRefresh,
+  refreshing,
+  emptyComponent,
+  ListEmptyComponent,
+  contentContainerStyle,
+  ref,
+  ...rest
+}: SanctuaryLegendListProps<ItemT>) {
   const chat = useOptionalChatContext();
 
   const innerRef = useRef<LegendListRef>(null);
 
-  useImperativeHandle(forwardedRef, () => innerRef.current as LegendListRef, []);
+  useImperativeHandle(ref, () => innerRef.current as LegendListRef, []);
 
   useEffect(() => {
     if (!chat) return;
@@ -96,9 +94,4 @@ function SanctuaryLegendListWeb<ItemT>(
 }
 
 export type { LegendListRef };
-
-export const SanctuaryLegendList = forwardRef(SanctuaryLegendListWeb) as <ItemT = any>(
-  props: SanctuaryLegendListProps<ItemT> & { ref?: React.Ref<LegendListRef> | undefined },
-) => React.ReactElement | null;
-
 export default SanctuaryLegendList;

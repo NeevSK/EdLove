@@ -73,32 +73,23 @@ Effect-TS is built around the `Effect<A, E, R>` type:
 
 ---
 
-## 4. Version Decision: v3 Now, v4 Later
+## 4. Version Standard: Effect v4.0.2 Active Standard
 
-**Decision: Use v3.22.0 for production. Plan v4 migration when stable (estimated Q4 2026-Q1 2027).**
+**Standard: Effect v4.0.2 is the active monorepo standard (living in `@repo/core`).**
 
-| Factor | v3.22.0 | v4 beta.99 |
+| Factor | Effect v4.0.2 (Active) | Notes |
 |---|---|---|
-| Production | ✅ Recommended by maintainers | ❌ Beta — API churn |
-| React Native | ✅ Stable | ⚠️ Issue #6252 (FetchHttpClient crash) still open |
-| Bundle | ~50KB | ~20KB (moot — Effect lives in `@repo/core` Node context) |
-| Metro/Hermes | ✅ No issues | ⚠️ Had metro issues (fixed Mar), generator issues (fixed Jun) |
-| @effect/ai | ❌ Not available | ✅ Available in v4 beta |
+| Production | ✅ Official stable release | Active in `@repo/core` |
+| Monorepo Boundary | ✅ Strictly in `@repo/core` | Mobile UI never imports Effect directly |
+| Metro/Hermes | ✅ Zero runtime issues | Boundary facade protects React Native shell |
+| @effect/ai | ✅ Integrated in core | First-class AI model support |
+| Unified Packages | ✅ Stream & Schema merged | No external `@effect/*` dependencies needed |
 
-### React Native Compatibility Status
+### Architecture Invariant
 
-- **v3**: Fully compatible. `Effect.gen` with generators works fine under babel-preset-expo and Hermes.
-- **v4 beta**: Three issues have been identified and mostly resolved:
-  - Metro bundler incompatibility → **Fixed** Mar 2026 (effect-smol PR #1863)
-  - `Effect.fn` crash with transpiled generators → **Fixed** Jun 2026 (PR #6254)
-  - FetchHttpClient + Atom + Hermes crash → **Still open** (#6252, no repro provided)
-- **Verdict**: v4 is not production-safe for RN until #6252 is resolved.
-
-### Migration plan
-
-- All code in this guide targets **v3 syntax**
-- v4 renames are documented in [section 9](#9-v4-migration-reference) for future use
-- When v4 stable ships: update imports per the official v3→v4 map, fix renames (~2 days total)
+- Effect is strictly encapsulated inside `packages/core`.
+- Mobile screens and components consume promises, React Query, and Zustand through the `@repo/core/utils/effect` facade.
+- [scripts/check-effect-boundaries.mjs](file:///c:/x/scripts/check-effect-boundaries.mjs) enforces that no direct Effect imports exist in `apps/gurudevi-mobile`.
 
 ---
 
@@ -382,9 +373,8 @@ export function useSovereignEffect<A, E, R>(
 | `Effect.timeoutFail(...)` | Removed — use `Effect.timeout` + `catchTag` | ❌ Manual |
 | `Runtime.defaultRuntime` | Removed — use `ManagedRuntime` | ❌ Manual |
 | `Effect.serviceFunctions(...)` | Removed — use `Service.use()` | ❌ Manual |
-| `Schedule.stop` | `Schedule.recurs(0)` | ⚠️ Semi-auto |
-| `Schedule.once` | `Schedule.recurs(1)` | ⚠️ Semi-auto |
-| `Schedule.intersect` | `Schedule.both` | ✅ Yes |
+| `Schedule.intersect` | `Schedule.max([...])` | ✅ Array composition |
+| `Effect.either` / `Either` | `Effect.result` / `Result` (`Success`/`Failure`) | ✅ Yes |
 | `Effect.gen` `_` parameter | Removed — function takes no args | ❌ Manual |
 | `Option.fromNullable` | `Option.fromNullishOr` | ✅ Yes |
 | `NoSuchElementException` | `NoSuchElementError` | ✅ Yes |

@@ -20,6 +20,8 @@ minimumReleaseAgeExclude:
   - 'posthog-react-native'
   - '@posthog/*'
   - '@tanstack/ai'
+  - 'effect'
+  - '@effect/*'
 
 publicHoistPattern:
   - '*@tanstack/query-core*'

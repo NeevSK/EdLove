@@ -39,5 +39,11 @@ This ledger tracks architectural dead-ends, failed patterns, and "hard-won" less
 - **The Sovereign Way**: Atomic, single-responsibility files.
 - **Learning**: Monitor \`sovereign_audit(action: 'cognitive_load')\` scores.
 
+## 🚫 5. The "Ad-Hoc Tool Island" Anti-pattern (Bypassing Sovereign Platform MCP)
+- **Mistake**: Creating isolated scratch test scripts, ad-hoc API wrappers, or standalone MCP server blocks in client configs instead of inspecting and leveraging the existing `@repo/platform-mcp` gateway.
+- **Consequence**: Fragmented tooling, credential leaks outside Doppler, zero governance, and cognitive drift across agent sessions.
+- **The Sovereign Way**: Ground in existing substrate first. Multiplex new tools into `@repo/platform-mcp` (`DownstreamServerSpec`), manage secrets in Doppler, build the package, and codify the capability into `AGENTS.md`.
+- **Learning**: Respect the Sovereign Gateway multiplexer before writing any single-off script.
+
 ---
 *Add your own mistakes here. Every failure documented is a step towards Absolute God Mode.*

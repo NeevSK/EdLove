@@ -1,5 +1,6 @@
 'use client';
 
+import { completeOnboarding, createInitialBond } from '@repo/core/api/onboardingClient';
 import { type FormEvent, useState } from 'react';
 import { browserAuthRuntime } from '../auth/browserAuth';
 
@@ -14,17 +15,18 @@ const capacities = [
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
 
-function apiOrigin(): string | null {
-  const origin = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, '');
-  return origin || null;
-}
-
-function unavailableMessage(status: number): string {
+function unavailableMessage(status: number | null): string {
   if (status === 401)
     return 'Your secure session has expired. Sign in again, then continue enrollment.';
   if (status === 403)
     return 'This capacity is not available for this account. Choose another capacity or contact support.';
   return 'We could not establish your sanctuary right now. Nothing was completed; please retry.';
+}
+
+function errorStatus(error: unknown): number | null {
+  if (typeof error !== 'object' || error === null) return null;
+  const status = Reflect.get(error, 'status');
+  return typeof status === 'number' ? status : null;
 }
 
 export function OnboardingForm() {
@@ -35,8 +37,7 @@ export function OnboardingForm() {
     event.preventDefault();
     const form = event.currentTarget;
     const runtime = browserAuthRuntime();
-    const origin = apiOrigin();
-    if (!runtime || !origin) {
+    if (!runtime) {
       setState('unavailable');
       setMessage('Enrollment is not configured in this environment.');
       return;
@@ -60,38 +61,17 @@ export function OnboardingForm() {
 
     setState('submitting');
     setMessage('');
-    const headers = {
-      Authorization: `Bearer ${identity.session.access_token}`,
-      'Content-Type': 'application/json',
-    };
     try {
-      const create = await fetch(`${origin}/api/onboarding/createInitialBond`, {
-        body: JSON.stringify({
-          json: { body: { orientation, confirmCapacityChange: false, context: { displayName } } },
-        }),
-        headers,
-        method: 'POST',
+      await createInitialBond({
+        orientation,
+        confirmCapacityChange: false,
+        context: { displayName },
       });
-      if (!create.ok) {
-        setState('error');
-        setMessage(unavailableMessage(create.status));
-        return;
-      }
-
-      const finish = await fetch(`${origin}/api/onboarding/completeOnboarding`, {
-        body: JSON.stringify({ json: {} }),
-        headers,
-        method: 'POST',
-      });
-      if (!finish.ok) {
-        setState('error');
-        setMessage(unavailableMessage(finish.status));
-        return;
-      }
+      await completeOnboarding();
       window.location.replace('/self');
-    } catch {
+    } catch (error) {
       setState('error');
-      setMessage('We could not reach the sanctuary service. Check your connection and retry.');
+      setMessage(unavailableMessage(errorStatus(error)));
     }
   }
 

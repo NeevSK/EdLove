@@ -25,7 +25,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 interface WisdomSeedsProps {
   userId?: string;
@@ -172,7 +172,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
             </Box>
           ) : (
             notes.map((note, index) => (
-              <Animated.View key={note.id} entering={FadeIn.delay(index * 100)} layout={Layout}>
+              <Animated.View key={note.id} entering={FadeIn.delay(index * 100)} layout={LinearTransition}>
                 <Pressable
                   onPress={() =>
                     router.push({ pathname: '/self/wisdom/[id]', params: { id: note.id } })

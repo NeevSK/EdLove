@@ -47,14 +47,14 @@ export function FocusRing({
         Animated.timing(scaleAnim, {
           toValue: 1.02,
           duration: 120,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
       }}
       onBlur={() => {
         Animated.timing(scaleAnim, {
           toValue: 1,
           duration: 120,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start(() => setFocused(false));
       }}
       onPress={onPress}

@@ -34,7 +34,7 @@ import {
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { useCallback, useState } from 'react';
-import Animated, { FadeIn, FadeInRight, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInRight, LinearTransition } from 'react-native-reanimated';
 
 type OrientationSeeds = {
   depth_breadth: number;
@@ -242,7 +242,7 @@ export const OrientationCaptureStep = ({
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <Animated.View layout={Layout} entering={FadeIn.duration(600)}>
+        <Animated.View layout={LinearTransition} entering={FadeIn.duration(600)}>
           <VStack className="gap-2 mb-10">
             <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-[0.3em]">
               Sequence {questionIndex + 1} of {QUESTIONS.length}
@@ -261,7 +261,7 @@ export const OrientationCaptureStep = ({
           {question.options.map((opt, i) => {
             const isSelected = selected === i;
             return (
-              <Animated.View key={opt.label} entering={FadeInRight.delay(i * 100)} layout={Layout}>
+              <Animated.View key={opt.label} entering={FadeInRight.delay(i * 100)} layout={LinearTransition}>
                 <Pressable
                   onPress={() => handleSelect(i)}
                   accessibilityRole="button"

@@ -71,24 +71,24 @@ const filterReanimatedProps = (props) => {
   return rest;
 };
 
-const AnimatedView = React.forwardRef((props, ref) => {
+const AnimatedView = ({ ref, ...props }) => {
   return React.createElement(RNView, { ref, ...filterReanimatedProps(props) });
-});
+};
 AnimatedView.displayName = 'Animated.View';
 
-const AnimatedText = React.forwardRef((props, ref) => {
+const AnimatedText = ({ ref, ...props }) => {
   return React.createElement(RNText, { ref, ...filterReanimatedProps(props) });
-});
+};
 AnimatedText.displayName = 'Animated.Text';
 
-const AnimatedScrollView = React.forwardRef((props, ref) => {
+const AnimatedScrollView = ({ ref, ...props }) => {
   return React.createElement(RNScrollView, { ref, ...filterReanimatedProps(props) });
-});
+};
 AnimatedScrollView.displayName = 'Animated.ScrollView';
 
-const AnimatedImage = React.forwardRef((props, ref) => {
+const AnimatedImage = ({ ref, ...props }) => {
   return React.createElement(RNImage, { ref, ...filterReanimatedProps(props) });
-});
+};
 AnimatedImage.displayName = 'Animated.Image';
 
 const Animated = {

@@ -449,7 +449,7 @@
     "@zenstackhq/zod": "3.8.3",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.3",
-    "effect": "^3.22.2",
+    "effect": "^4.0.2",
     "fast-json-patch": "^3.1.1",
     "hono": "^4.13.13",
     "i18next": "^26.4.2",
@@ -474,13 +474,3 @@
     "test:ui": "vitest --ui"
   }
 }
-
-
-
-
-
-
-
-
-
-

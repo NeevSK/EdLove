@@ -21,10 +21,10 @@ import { Context, Effect, Layer } from 'effect';
  *    intentional boundary. The port is infrastructure (I/O), not domain.
  *    Wrap with Effect.tryPromise for typed error handling at the call site.
  */
-export class GrowthPort extends Context.Tag('app/GrowthPort')<GrowthPort, IGrowthPort>() {}
+export class GrowthPort extends Context.Service<GrowthPort, IGrowthPort>()('app/GrowthPort') {}
 
 /**
- * GrowthManagerTag — Effect Context.Tag for the GrowthManager.
+ * GrowthManagerTag — Effect Context.Service for the GrowthManager.
  *
  * Provides a fully-wired GrowthManager in Effect workflows.
  * Created with the GrowthPort from context.
@@ -32,17 +32,17 @@ export class GrowthPort extends Context.Tag('app/GrowthPort')<GrowthPort, IGrowt
  * Tradeoffs over direct singleton import:
  *  + Test layers provide a manager wired to any port
  *  + Effect code uses yield* instead of import { growth }
- *  - GrowthManager is a large class (698 lines); Tag only makes sense
+ *  - GrowthManager is a large class (698 lines); Service only makes sense
  *    when the caller is already in Effect context
  *  - For simple reads, prefer `yield* GrowthPort` instead (lighter)
  *  - The class methods return Promise<T> — callers in Effect context
  *    should wrap with Effect.tryPromise({ try: () => gm.method(), catch })
  *    so rejected Promises remain visible in the typed failure channel.
  */
-export class GrowthManagerTag extends Context.Tag('app/GrowthManager')<
+export class GrowthManagerTag extends Context.Service<
   GrowthManagerTag,
   GrowthManager
->() {}
+>()('app/GrowthManager') {}
 
 /**
  * Live implementation of GrowthPort backed by Supabase.
@@ -58,7 +58,10 @@ export const GrowthPortLive: Layer.Layer<GrowthPort, never, never> = Layer.succe
  */
 export const GrowthManagerLive: Layer.Layer<GrowthManagerTag, never, GrowthPort> = Layer.effect(
   GrowthManagerTag,
-  Effect.map(GrowthPort, (port) => new GrowthManager(port)),
+  Effect.gen(function* () {
+    const port = yield* GrowthPort;
+    return new GrowthManager(port);
+  }),
 );
 
 /**

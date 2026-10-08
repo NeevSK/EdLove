@@ -12,9 +12,10 @@ import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUt
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Easing, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
+import Reanimated, { FadeInDown, FadeOutUp, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface GlobalHeaderProps {
@@ -96,16 +97,6 @@ export default function GlobalHeader({
     internalSearchQuery: '',
   });
 
-  const searchAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(searchAnim, {
-      toValue: state.isSearchActive ? 1 : 0,
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-  }, [state.isSearchActive, searchAnim]);
 
   const searchQuery = searchProps?.value ?? state.internalSearchQuery;
 
@@ -177,14 +168,6 @@ export default function GlobalHeader({
     markAllRead,
   } = useNotifications(user?.id);
 
-  const searchMaxHeight = searchAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 56],
-  });
-  const searchOpacity = searchAnim.interpolate({
-    inputRange: [0, 0.4, 1],
-    outputRange: [0, 0, 1],
-  });
 
   return (
     <Box
@@ -390,14 +373,13 @@ export default function GlobalHeader({
         </HStack>
 
         {/* Smooth Animated In-Place Search Input Row */}
-        <Animated.View
-          style={{
-            maxHeight: searchMaxHeight,
-            opacity: searchOpacity,
-            overflow: 'hidden',
-          }}
-        >
-          {state.isSearchActive && (
+        {state.isSearchActive && (
+          <Reanimated.View
+            entering={FadeInDown.duration(200)}
+            exiting={FadeOutUp.duration(150)}
+            layout={LinearTransition.duration(200)}
+            style={{ overflow: 'hidden' }}
+          >
             <Box className="pt-1">
               <SanctuaryInput
                 value={searchQuery}
@@ -406,8 +388,8 @@ export default function GlobalHeader({
                 leftIcon={Search}
               />
             </Box>
-          )}
-        </Animated.View>
+          </Reanimated.View>
+        )}
 
         <NotificationDrawer
           isVisible={state.showNotifications}

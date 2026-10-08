@@ -23,7 +23,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
-import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 interface DecisionJournalSectionProps {
   userId: string | null;
@@ -65,7 +65,7 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
 
   return (
     <VStack className="flex-1 gap-6">
-      <Animated.View layout={Layout} entering={FadeIn.duration(800)}>
+      <Animated.View layout={LinearTransition} entering={FadeIn.duration(800)}>
         <Box className="bg-white/5 rounded-3xl border border-white/10 p-xl shadow-sm">
           <VStack className="gap-lg">
             <Box className="bg-white/5 rounded-2xl border border-white/5 p-4 min-h-[120px]">

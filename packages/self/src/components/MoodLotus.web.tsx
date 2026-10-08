@@ -23,7 +23,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useEffect, useRef, useState } from 'react';
-import { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 interface MoodLotusProps {
   userId?: string;
@@ -184,7 +184,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
               />
             )}
 
-            <AnimatedView layout={Layout} entering={FadeIn.duration(600)}>
+            <AnimatedView layout={LinearTransition} entering={FadeIn.duration(600)}>
               <Text
                 className={`${isDetail ? 'text-[140px]' : 'text-[100px]'} select-none transition-transform duration-500 hover:scale-110 drop-shadow-2xl`}
               >
@@ -228,7 +228,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
 
             {/* Intention Log */}
             {selected !== null && (
-              <AnimatedView entering={FadeInDown} layout={Layout} className="gap-4">
+              <AnimatedView entering={FadeInDown} layout={LinearTransition} className="gap-4">
                 <VStack className="gap-1.5">
                   <Text className="text-[10px] uppercase font-black tracking-widest text-mistGray/40 pl-1">
                     Resonance Note
@@ -268,7 +268,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
 
           {/* Dynamic Paced Breathing (Web Optimized) */}
           {(showBreath || isDetail) && (
-            <AnimatedView entering={FadeInDown} layout={Layout}>
+            <AnimatedView entering={FadeInDown} layout={LinearTransition}>
               <Box className="p-8 bg-skyBlue/5 rounded-[32px] border border-skyBlue/10 items-center justify-center shadow-xl">
                 <VStack className="items-center gap-6 w-full">
                   <HStack className="items-center gap-2 px-3 py-1 bg-skyBlue/10 rounded-full border border-skyBlue/20">

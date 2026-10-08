@@ -16,7 +16,7 @@ import { useEffect } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import Animated, {
   FadeInUp,
-  Layout,
+  LinearTransition,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -50,7 +50,7 @@ export default function AIAssistantScreen() {
   const renderMessage = ({ item }: { item: Message }) => {
     const isUser = item.role === 'user';
     return (
-      <Animated.View entering={FadeInUp.springify().damping(15)} layout={Layout.springify()}>
+      <Animated.View entering={FadeInUp.springify().damping(15)} layout={LinearTransition.springify()}>
         <MessageBubble
           content={item.content}
           variant={isUser ? 'user' : 'assistant'}

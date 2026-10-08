@@ -18,7 +18,7 @@ import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'reac
 import { Dimensions, Image, PanResponder, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
-  Extrapolate,
+  Extrapolation,
   interpolate,
   type SharedValue,
   useAnimatedStyle,
@@ -287,10 +287,10 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     return {
       transform: [
         {
-          translateY: interpolate(scrollY.value, [0, 100], [0, 100], Extrapolate.CLAMP),
+          translateY: interpolate(scrollY.value, [0, 100], [0, 100], Extrapolation.CLAMP),
         },
       ],
-      opacity: interpolate(scrollY.value, [0, 50, 100], [1, 0.5, 0], Extrapolate.CLAMP),
+      opacity: interpolate(scrollY.value, [0, 50, 100], [1, 0.5, 0], Extrapolation.CLAMP),
     };
   });
 

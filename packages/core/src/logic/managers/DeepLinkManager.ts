@@ -54,14 +54,22 @@ export class DeepLinkManager {
         return this.handleAuthCallback(url, params);
       }
 
-      // 2. Classroom Invite Check
-      const inviteMatch = parsedUrl.pathname.match(/^\/(?:invite\/)?classroom\/([^/]+)$/);
-      if (inviteMatch) {
-        const encodedInviteCode = inviteMatch[1];
-        const inviteCode = encodedInviteCode ? decodeURIComponent(encodedInviteCode) : undefined;
+      // 2. Classroom Invite Check (standard /invite/classroom/:code or vanity /c/:code)
+      let encodedInviteCode: string | undefined;
+      if (parsedUrl.protocol === 'gurudevi:' && parsedUrl.hostname === 'c') {
+        encodedInviteCode = parsedUrl.pathname.replace(/^\//, '');
+      } else {
+        const inviteMatch =
+          parsedUrl.pathname.match(/^\/(?:invite\/)?classroom\/([^/]+)$/) ||
+          parsedUrl.pathname.match(/^\/c\/([^/]+)$/);
+        encodedInviteCode = inviteMatch?.[1];
+      }
+
+      if (encodedInviteCode) {
+        const inviteCode = decodeURIComponent(encodedInviteCode);
         return {
           type: DeepLinkType.CLASSROOM_INVITE,
-          params: inviteCode ? { inviteCode, ...params } : params,
+          params: { inviteCode, ...params },
           isHandled: false, // Shell needs to navigate
         };
       }

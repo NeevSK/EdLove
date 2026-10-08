@@ -1,4 +1,5 @@
 import { isPublicBootstrapRoute, useAuth } from '@repo/core/logic';
+import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
@@ -33,9 +34,21 @@ export function SessionRouteGate({
   });
 
   useEffect(() => {
+    // Post-authentication/onboarding resumption of deferred deep links
+    if (routeTarget.decision === 'app') {
+      const pending = pendingIntentStore?.getState?.()?.drainPendingIntent?.();
+      if (pending?.targetPath) {
+        const targetBase = pending.targetPath.split(/[?#]/)[0];
+        if (pathname !== targetBase && pathname !== pending.targetPath) {
+          router.replace(pending.targetPath as any);
+          return;
+        }
+      }
+    }
+
     if (!routeTarget.redirectTo) return;
     if (pathname !== routeTarget.redirectTo) router.replace(routeTarget.redirectTo as any);
-  }, [pathname, routeTarget.redirectTo, router]);
+  }, [pathname, routeTarget.decision, routeTarget.redirectTo, router]);
 
   // router.replace() updates the browser location before Expo Router commits
   // the destination tree. Keeping children mounted in that gap can show the

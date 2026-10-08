@@ -21,7 +21,7 @@ import {
 } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, { FadeIn, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 interface DailyContentCardProps {
   type: 'motivation' | 'did_you_know';
@@ -90,7 +90,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
   const needsExpansion = content.content.length > 120;
 
   return (
-    <Animated.View layout={Layout} entering={FadeIn.duration(800)}>
+    <Animated.View layout={LinearTransition} entering={FadeIn.duration(800)}>
       <Pressable
         onPress={() => needsExpansion && setExpanded(!expanded)}
         accessibilityRole={needsExpansion ? 'button' : undefined}

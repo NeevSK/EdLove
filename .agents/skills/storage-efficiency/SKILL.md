@@ -1,3 +1,8 @@
+---
+name: storage-efficiency
+description: Consolidated cross-stack storage efficiency and data-schema optimization guidance across Postgres, ZenStack, Drizzle, PowerSync, and SQLite.
+---
+
 # Storage Efficiency & Data-Schema Optimization
 
 ## Purpose

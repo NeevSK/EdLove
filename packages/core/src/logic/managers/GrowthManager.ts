@@ -165,7 +165,7 @@ export class GrowthManager {
           }),
         catch: (e) => e,
       }).pipe(
-        Effect.catchAll((e) => reportBestEffort(Effect.fail(e), 'GrowthManager.recordEvent')),
+        Effect.catch((e: unknown) => reportBestEffort(Effect.fail(e), 'GrowthManager.recordEvent')),
       );
 
       yield* fireAndForget(
@@ -339,7 +339,7 @@ export class GrowthManager {
             source_entity_id: (metadata.source_entity_id as string) || null,
           }),
         ).pipe(
-          Effect.catchAll((e) =>
+          Effect.catch((e: unknown) =>
             Effect.logError('[GrowthManager] recordCrystalDiscovery failed', e),
           ),
         ),

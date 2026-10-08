@@ -7,7 +7,7 @@ import { APIError } from '@repo/core/types/API';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
 import { strictRetryPolicy, tryPromise } from '@repo/core/utils/effect';
-import { Data, Duration, Effect, pipe } from 'effect';
+import { Data, Duration, Effect, Option, pipe } from 'effect';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
 
@@ -54,7 +54,7 @@ function supabaseCall<T>(
     ),
     Effect.retry(strictRetryPolicy),
     Effect.timeout(Duration.seconds(15)),
-    Effect.catchTag('TimeoutException', () =>
+    Effect.catchTag('TimeoutError', () =>
       Effect.fail(new SupabaseQueryError({ message: 'Supabase query timed out' })),
     ),
   );
@@ -62,7 +62,9 @@ function supabaseCall<T>(
 
 function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Promise<T> {
   return Effect.runPromise(
-    effect.pipe(Effect.catchAll((e) => Effect.fail(new APIError(e.message, 'SUPABASE_ERROR')))),
+    effect.pipe(
+      Effect.catch((e: SupabaseQueryError) => Effect.fail(new APIError(e.message, 'SUPABASE_ERROR'))),
+    ),
   );
 }
 
@@ -141,10 +143,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
         const legacyResult = await runEffect(
           supabaseCall(() =>
             supabaseClient.from('users').select('id').eq('id', authUid).maybeSingle(),
-          ).pipe(Effect.optionFromOptional),
+          ).pipe(Effect.map(Option.fromNullishOr)),
         );
 
-        if (legacyResult._tag === 'Some') {
+        if (Option.isSome(legacyResult)) {
           const legacyId = (legacyResult.value as any).id;
           await this.linkIdentity(legacyId, 'supabaseClient', authUid);
           internalId = legacyId;
@@ -187,7 +189,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
           .eq('user_id', userId)
           .order('created_at', { ascending: true }),
       ).pipe(
-        Effect.catchAll((e) => {
+        Effect.catch((e: SupabaseQueryError) => {
           console.warn('[SupabaseIdentityAdapter] Bonds table not found or error:', e.message);
           return Effect.succeed(null);
         }),
@@ -358,7 +360,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
             .select('id')
             .single(),
         ).pipe(
-          Effect.catchAll((e) => {
+          Effect.catch((e: SupabaseQueryError) => {
             console.error(
               '[createInitialBond] Failed to initialize personal classroom record:',
               e.message,
@@ -493,12 +495,12 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     await Effect.runPromise(
       Effect.gen(function* () {
         const bonds = yield* tryPromise(() => self.getBonds(userId)).pipe(
-          Effect.catchAll(() => Effect.succeed<Bond[]>([])),
+          Effect.catch(() => Effect.succeed<Bond[]>([])),
         );
 
         if (bonds.length === 0) {
           const profile = yield* tryPromise(() => self.getProfile(userId)).pipe(
-            Effect.catchAll(() => Effect.succeed(null)),
+            Effect.catch(() => Effect.succeed(null)),
           );
 
           if (profile) {
@@ -515,7 +517,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
                 .select('id')
                 .single(),
             ).pipe(
-              Effect.catchAll((e) => {
+              Effect.catch((e: SupabaseQueryError) => {
                 console.error(
                   '[completeOnboarding] Failed to create default personal classroom:',
                   e.message,
@@ -537,7 +539,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
                   { onConflict: 'user_id,entity_id,capacity' },
                 ),
               ).pipe(
-                Effect.catchAll((e) => {
+                Effect.catch((e: SupabaseQueryError) => {
                   console.error(
                     '[completeOnboarding] Failed to create default PERSONAL_CLASSROOM bond:',
                     e.message,
@@ -549,7 +551,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
           }
         }
       }).pipe(
-        Effect.catchAll((e) => {
+        Effect.catch((e: unknown) => {
           console.warn('[completeOnboarding] Failed to check/create default sanctuary:', e);
           return Effect.void;
         }),

@@ -35,22 +35,20 @@ export interface SanctuaryFlashListProps<T>
  * This component wraps @shopify/flash-list v2 with Sanctuary-themed defaults.
  * Sizing estimation is completely automatic in v2.
  */
-export const SanctuaryFlashList = React.forwardRef(function SanctuaryFlashListInner<T>(
-  {
-    data,
-    renderItem,
-    refreshing = false,
-    onRefresh,
-    emptyComponent,
-    refreshColor,
-    contentContainerStyle,
-    ListEmptyComponent,
-    masonry,
-    numColumns = 2,
-    ...props
-  }: SanctuaryFlashListProps<T>,
-  ref: React.ForwardedRef<FlashListRef<T>>,
-) {
+export function SanctuaryFlashList<T>({
+  data,
+  renderItem,
+  refreshing = false,
+  onRefresh,
+  emptyComponent,
+  refreshColor,
+  contentContainerStyle,
+  ListEmptyComponent,
+  masonry,
+  numColumns = 2,
+  ref,
+  ...props
+}: SanctuaryFlashListProps<T>) {
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;
 
@@ -91,8 +89,6 @@ export const SanctuaryFlashList = React.forwardRef(function SanctuaryFlashListIn
       numColumns={masonry ? numColumns : undefined}
     />
   );
-}) as <T>(
-  props: SanctuaryFlashListProps<T> & { ref?: React.Ref<FlashListRef<T>> | undefined },
-) => React.ReactElement | null;
+}
 
 export default SanctuaryFlashList;

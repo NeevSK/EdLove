@@ -25,7 +25,7 @@ import {
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
+import { FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
 
 interface StudentGoalsProps {
   userId: string;
@@ -181,7 +181,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
 
         {/* Add Goal Input */}
         {showAddGoal && (
-          <AnimatedView entering={FadeInUp} layout={Layout.springify()}>
+          <AnimatedView entering={FadeInUp} layout={LinearTransition.springify()}>
             <Box className="p-lg bg-white/5 rounded-3xl border border-white/10 mb-4 shadow-xl">
               <VStack className="gap-lg">
                 <Box className="bg-obsidian rounded-2xl border border-white/10 p-2 h-16 justify-center">
@@ -217,7 +217,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
             <AnimatedView
               key={goal.id}
               entering={FadeInRight.delay(index * 100)}
-              layout={Layout.springify()}
+              layout={LinearTransition.springify()}
             >
               <Box className="p-lg bg-white/5 rounded-3xl border border-white/5 shadow-sm">
                 <VStack className="gap-5">

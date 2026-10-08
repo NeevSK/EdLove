@@ -3,7 +3,7 @@ import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { Platform } from 'react-native';
-import Animated, { FadeIn, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 /**
  * TemporalNavigator
@@ -53,7 +53,7 @@ export const TemporalNavigator = () => {
 
   return (
     <Animated.View
-      layout={Layout}
+      layout={LinearTransition}
       entering={FadeIn}
       className="flex-row items-center justify-between bg-phase-surface/10 mx-4 my-2 py-2.5 px-3 rounded-xl border border-white/5 shadow-sm"
     >

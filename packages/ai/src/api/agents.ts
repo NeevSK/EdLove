@@ -4,16 +4,9 @@
  */
 
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { type CoordinationGap, runReliefAudit } from '@repo/core';
 
-export interface CoordinationGap {
-  id: string;
-  type: 'relief' | 'timetable' | 'resource';
-  title: string;
-  description: string;
-  priority: 'low' | 'medium' | 'high';
-  suggestedAction: string;
-  context: any;
-}
+export type { CoordinationGap };
 
 /**
  * ReliefCoordinator Agent
@@ -27,84 +20,18 @@ export interface CoordinationGap {
 export const ReliefCoordinator = {
   /**
    * Checks for today's approved staff leaves and surfaces uncovered classrooms.
-   * Queries: staff_leaves (status=approved, today), classrooms (teacher_id IN absentIds).
+   * Dispatches through hardened Effect v4 pipeline with timeouts, retries, and schema validation.
    */
   async checkSectionStatus(schoolId: string, sectionId?: string): Promise<CoordinationGap[]> {
-    const gaps: CoordinationGap[] = [];
     try {
-      const today = new Date().toISOString().split('T')[0];
-
-      // 1. Find teachers on approved leave today
-      const { data: leaves } = await supabase
-        .from('staff_leaves')
-        .select('user_id, leave_type, users(full_name)')
-        .eq('school_id', schoolId)
-        .eq('status', 'approved')
-        .lte('start_date', today)
-        .gte('end_date', today);
-
-      if (!leaves?.length) return gaps;
-
-      const absentTeacherIds = leaves.map((l: any) => l.user_id);
-
-      // 2. Find classrooms assigned to those teachers
-      let classroomQuery = supabase
-        .from('classrooms')
-        .select('id, name, grade, teacher_id')
-        .in('teacher_id', absentTeacherIds)
-        .eq('school_id', schoolId);
-
-      if (sectionId) classroomQuery = classroomQuery.eq('id', sectionId);
-
-      const { data: classrooms } = await classroomQuery.limit(10);
-
-      // 3. For each absent teacher/classroom, find available teachers (no leave today)
-      const availableTeachersQuery = supabase
-        .from('users')
-        .select('id, full_name')
-        .eq('school_id', schoolId)
-        .eq('authority', 'teacher');
-
-      const { data: allTeachers } =
-        absentTeacherIds.length > 0
-          ? await availableTeachersQuery.not(
-              'id',
-              'in',
-              `(${absentTeacherIds.map((id) => `"${id}"`).join(',')})`,
-            )
-          : await availableTeachersQuery;
-
-      for (const classroom of classrooms ?? []) {
-        const matchingLeave = leaves.find((l: any) => l.user_id === classroom.teacher_id);
-        const absentTeacher = matchingLeave
-          ? ((matchingLeave as any).users?.full_name ?? 'Absent teacher')
-          : 'Absent teacher';
-        const suggestion = (allTeachers as any[])?.[0]?.full_name
-          ? `Assign ${(allTeachers as any[])[0].full_name} (available)`
-          : 'No free teacher found \u2014 check timetable';
-
-        gaps.push({
-          id: `relief-${classroom.id}-${today}`,
-          type: 'relief',
-          title: `Relief needed: ${classroom.name}`,
-          description: `${absentTeacher} is on approved leave. ${classroom.name} may be uncovered.`,
-          priority: 'high',
-          suggestedAction: suggestion,
-          context: {
-            classroomId: classroom.id,
-            classroomName: classroom.name,
-            absentTeacherIds,
-            availableTeachers: allTeachers ?? [],
-          },
-        });
-      }
+      return await runReliefAudit(schoolId, sectionId);
     } catch (err) {
       console.warn(
         '[ReliefCoordinator] checkSectionStatus error:',
         err instanceof Error ? err.message : String(err),
       );
+      return [];
     }
-    return gaps;
   },
 
   /**

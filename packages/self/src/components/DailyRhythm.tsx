@@ -52,7 +52,7 @@ import {
 import { useToast } from '@repo/ui/providers';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInRight, LinearTransition } from 'react-native-reanimated';
 
 const DAYS = [
   { id: 1, label: 'M' },
@@ -249,7 +249,7 @@ function DailyRhythmContent() {
                 <Animated.View
                   key={period.id}
                   entering={FadeInRight.delay(index * 100)}
-                  layout={Layout}
+                  layout={LinearTransition}
                 >
                   <Pressable
                     onLongPress={() => {

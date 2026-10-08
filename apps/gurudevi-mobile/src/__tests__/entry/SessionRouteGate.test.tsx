@@ -39,6 +39,7 @@ vi.mock('@repo/ui/primitives', () => ({
   Text: 'Text',
 }));
 
+import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 
 function AppServices() {
@@ -47,6 +48,7 @@ function AppServices() {
 
 describe('SessionRouteGate account isolation', () => {
   beforeEach(() => {
+    pendingIntentStore.getState().clearPendingIntent();
     mocks.pathname = '/self';
     mocks.searchParams = {};
     mocks.replace.mockReset();
@@ -207,5 +209,51 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+  });
+
+  it('drains pending intent store and navigates to deferred route when session enters app', async () => {
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath: '/community?inviteCode=RESUME123',
+      intentKind: 'classroomInvite',
+      params: { inviteCode: 'RESUME123' },
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = { decision: 'app', redirectTo: null };
+
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith('/community?inviteCode=RESUME123');
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('does NOT trigger redundant replace when pathname matches target base route', async () => {
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath: '/community?inviteCode=ALREADY_HERE',
+      intentKind: 'classroomInvite',
+      params: { inviteCode: 'ALREADY_HERE' },
+    });
+
+    mocks.pathname = '/community';
+    mocks.routeTarget = { decision: 'app', redirectTo: null };
+
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 });

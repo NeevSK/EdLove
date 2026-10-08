@@ -4,7 +4,7 @@ import EmptyState from '@repo/ui/components/EmptyState';
 import { useOptionalChatContext } from '@repo/ui/context/ChatContext';
 import { BookOpen } from '@repo/ui/icons';
 import { Theme } from '@repo/ui/theme/Theme';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { type SharedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -27,6 +27,7 @@ export interface SanctuaryLegendListProps<ItemT>
     LegendListProps<ItemT>,
     'refreshControl' | 'refScrollView' | 'renderScrollComponent'
   > {
+  ref?: React.Ref<LegendListRef> | undefined;
   /**
    * Keyboard lift behavior. When provided, the list renders through
    * `KeyboardAwareLegendList` (keyboard-controller `KeyboardChatScrollView`).
@@ -49,25 +50,23 @@ export interface SanctuaryLegendListProps<ItemT>
   contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
-function SanctuaryLegendListInner<ItemT>(
-  {
-    data,
-    renderItem,
-    keyboardLiftBehavior,
-    keyboardOffset,
-    anchoredEndSpace,
-    contentInsetEndAdjustment: contentInsetProp,
-    initialScrollAtEnd = true,
-    maintainScrollAtEnd,
-    onRefresh,
-    refreshing,
-    emptyComponent,
-    ListEmptyComponent,
-    contentContainerStyle,
-    ...rest
-  }: SanctuaryLegendListProps<ItemT>,
-  forwardedRef: React.ForwardedRef<LegendListRef>,
-) {
+export function SanctuaryLegendList<ItemT>({
+  data,
+  renderItem,
+  keyboardLiftBehavior,
+  keyboardOffset,
+  anchoredEndSpace,
+  contentInsetEndAdjustment: contentInsetProp,
+  initialScrollAtEnd = true,
+  maintainScrollAtEnd,
+  onRefresh,
+  refreshing,
+  emptyComponent,
+  ListEmptyComponent,
+  contentContainerStyle,
+  ref,
+  ...rest
+}: SanctuaryLegendListProps<ItemT>) {
   const chat = useOptionalChatContext();
   const fallbackInset = useSharedValue(0);
   const contentInsetEndAdjustment =
@@ -75,7 +74,7 @@ function SanctuaryLegendListInner<ItemT>(
 
   const innerRef = useRef<LegendListRef>(null);
 
-  useImperativeHandle(forwardedRef, () => innerRef.current as LegendListRef, []);
+  useImperativeHandle(ref, () => innerRef.current as LegendListRef, []);
 
   // Register the list so a co-located ChatComposer can report its growth.
   useEffect(() => {
@@ -146,9 +145,4 @@ function SanctuaryLegendListInner<ItemT>(
 }
 
 export type { LegendListRef };
-
-export const SanctuaryLegendList = forwardRef(SanctuaryLegendListInner) as <ItemT = any>(
-  props: SanctuaryLegendListProps<ItemT> & { ref?: React.Ref<LegendListRef> | undefined },
-) => React.ReactElement | null;
-
 export default SanctuaryLegendList;

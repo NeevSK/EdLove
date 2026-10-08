@@ -1,9 +1,9 @@
-import React, { forwardRef } from 'react';
+import type React from 'react';
 import {
   KeyboardChatScrollView,
   type KeyboardChatScrollViewProps,
 } from 'react-native-keyboard-controller';
-import Reanimated from 'react-native-reanimated';
+import type Reanimated from 'react-native-reanimated';
 
 export type { KeyboardChatScrollViewProps } from 'react-native-keyboard-controller';
 
@@ -20,17 +20,17 @@ export type { KeyboardChatScrollViewProps } from 'react-native-keyboard-controll
 export interface SanctuaryChatScrollViewProps extends KeyboardChatScrollViewProps {
   /** @default 'always' */
   keyboardLiftBehavior?: KeyboardChatScrollViewProps['keyboardLiftBehavior'];
+  ref?: React.Ref<React.ComponentRef<typeof Reanimated.ScrollView>>;
 }
 
-function SanctuaryChatScrollViewInner(
-  { keyboardLiftBehavior = 'always', ...props }: SanctuaryChatScrollViewProps,
-  ref: React.ForwardedRef<React.ComponentRef<typeof Reanimated.ScrollView>>,
-) {
+export function SanctuaryChatScrollView({
+  keyboardLiftBehavior = 'always',
+  ref,
+  ...props
+}: SanctuaryChatScrollViewProps) {
   return (
     <KeyboardChatScrollView ref={ref} keyboardLiftBehavior={keyboardLiftBehavior} {...props} />
   );
 }
-
-export const SanctuaryChatScrollView = forwardRef(SanctuaryChatScrollViewInner);
 
 export default SanctuaryChatScrollView;

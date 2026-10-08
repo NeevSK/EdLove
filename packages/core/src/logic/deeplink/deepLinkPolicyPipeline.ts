@@ -9,8 +9,8 @@ const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
 export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
-export const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite']);
-export const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/auth/complete', '/qr', '/invite'];
+export const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite', 'c']);
+export const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/auth/complete', '/qr', '/invite', '/c'];
 
 /**
  * Tagged Error Types for Deep Link Failures (Effect v4 compatible)
@@ -38,6 +38,29 @@ export class DeepLinkParseError extends Data.TaggedError('DeepLinkParseError')<{
   readonly url: string;
   readonly cause: unknown;
 }> {}
+
+export const MAX_REFERRER_LENGTH = 1024;
+
+export class ReferrerLengthError extends Data.TaggedError('ReferrerLengthError')<{
+  readonly length: number;
+  readonly max: number;
+}> {}
+
+export class ReferrerForbiddenCharsError extends Data.TaggedError('ReferrerForbiddenCharsError')<{
+  readonly raw: string;
+}> {}
+
+export class ReferrerParseError extends Data.TaggedError('ReferrerParseError')<{
+  readonly raw: string;
+  readonly cause: unknown;
+}> {}
+
+export interface ValidatedReferrerIntent {
+  readonly inviteCode?: string;
+  readonly utmSource?: string;
+  readonly utmCampaign?: string;
+  readonly raw: string;
+}
 
 export type DeepLinkValidationError =
   | DeepLinkLengthError
@@ -151,8 +174,16 @@ export const classifyRouteIntentEffect = (
       return { kind: 'authCallback', url: acceptedUrl } as const;
     }
 
-    const inviteMatch = parsed.pathname.match(/^\/invite\/classroom\/([^/]+)$/);
-    const encodedInviteCode = inviteMatch?.[1];
+    let encodedInviteCode: string | undefined;
+    if (parsed.protocol === 'gurudevi:' && parsed.hostname === 'c') {
+      encodedInviteCode = parsed.pathname.replace(/^\//, '');
+    } else {
+      const inviteMatch =
+        parsed.pathname.match(/^\/(?:invite\/)?classroom\/([^/]+)$/) ||
+        parsed.pathname.match(/^\/c\/([^/]+)$/);
+      encodedInviteCode = inviteMatch?.[1];
+    }
+
     if (encodedInviteCode) {
       const inviteCode = yield* Effect.try({
         try: () => decodeURIComponent(encodedInviteCode),
@@ -168,10 +199,65 @@ export const classifyRouteIntentEffect = (
     return { kind: 'unsupported' } as const;
   });
 
+/**
+ * Decodes Google Play Install Referrer string using pure Effect-TS v4 pipeline.
+ * Treats referrer string as untrusted input, bounds length, and sanitizes invite codes.
+ */
+export const decodeInstallReferrerEffect = (
+  rawReferrer: string,
+): Effect.Effect<
+  ValidatedReferrerIntent,
+  ReferrerLengthError | ReferrerForbiddenCharsError | ReferrerParseError
+> =>
+  Effect.gen(function* () {
+    if (rawReferrer.length > MAX_REFERRER_LENGTH) {
+      return yield* Effect.fail(
+        new ReferrerLengthError({ length: rawReferrer.length, max: MAX_REFERRER_LENGTH }),
+      );
+    }
+
+    if (FORBIDDEN_URL_PATTERN.test(rawReferrer)) {
+      return yield* Effect.fail(new ReferrerForbiddenCharsError({ raw: rawReferrer }));
+    }
+
+    const decoded = yield* Effect.try({
+      try: () => decodeURIComponent(rawReferrer),
+      catch: (cause) => new ReferrerParseError({ raw: rawReferrer, cause }),
+    });
+
+    const params = new URLSearchParams(decoded);
+    const candidateCode = params.get('inviteCode') ?? params.get('c');
+    const utmSource = params.get('utm_source');
+    const utmCampaign = params.get('utm_campaign');
+
+    const sanitizedInviteCode =
+      candidateCode && /^[A-Za-z0-9_-]{4,32}$/.test(candidateCode)
+        ? candidateCode
+        : undefined;
+
+    return {
+      inviteCode: sanitizedInviteCode,
+      utmSource: utmSource ? utmSource.slice(0, 64) : undefined,
+      utmCampaign: utmCampaign ? utmCampaign.slice(0, 64) : undefined,
+      raw: rawReferrer,
+    };
+  });
+
+export function decodeInstallReferrer(rawReferrer: string): ValidatedReferrerIntent | null {
+  return Effect.runSync(
+    decodeInstallReferrerEffect(rawReferrer).pipe(
+      Effect.map((intent) => intent as ValidatedReferrerIntent | null),
+      Effect.catch(() => Effect.succeed(null as ValidatedReferrerIntent | null)),
+    ),
+  );
+}
+
 export function classifyRouteIntent(url: string): RouteIntent {
   return Effect.runSync(
     classifyRouteIntentEffect(url).pipe(
-      Effect.catchAll((error) => Effect.succeed({ kind: 'rejected', reason: error._tag } as const)),
+      Effect.catch((error: DeepLinkValidationError) =>
+        Effect.succeed({ kind: 'rejected', reason: error._tag } as const),
+      ),
     ),
   );
 }
@@ -183,7 +269,7 @@ export function normalizeAcceptedDeepLink(url: string): string | null {
   return Effect.runSync(
     validateDeepLinkEffect(url).pipe(
       Effect.map((validUrl) => validUrl as string | null),
-      Effect.catchAll(() => Effect.succeed(null as string | null)),
+      Effect.catch(() => Effect.succeed(null as string | null)),
     ),
   );
 }
@@ -203,4 +289,19 @@ export function normalizeAcceptedInternalRoute(path: string): string | null {
     return null;
   }
   return isValidAppRoutePath(path) ? path : null;
+}
+
+/**
+ * Canonical Outbound Link Builders
+ * Generates verified, first-party public URLs and custom scheme deep links
+ * for sharing classroom invitations across web and native mobile apps.
+ */
+export function formatClassroomShareUrl(code: string): string {
+  const cleanCode = encodeURIComponent(code.trim());
+  return `https://gurudevi.app/c/${cleanCode}`;
+}
+
+export function formatClassroomDeepLink(code: string): string {
+  const cleanCode = encodeURIComponent(code.trim());
+  return `gurudevi://c/${cleanCode}`;
 }

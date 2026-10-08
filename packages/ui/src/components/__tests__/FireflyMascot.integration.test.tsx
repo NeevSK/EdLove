@@ -15,9 +15,8 @@ vi.mock('@repo/ui/context/VisualCapabilities', () => ({
 vi.mock('expo-image', () => {
   const React = require('react');
   return {
-    Image: React.forwardRef((props: Record<string, unknown>, ref: unknown) =>
+    Image: ({ ref, ...props }: Record<string, unknown> & { ref?: unknown }) =>
       React.createElement('Image', { ...props, ref, testID: props.testID ?? 'expo-image' }),
-    ),
   };
 });
 vi.mock('react-native-svg', () => {

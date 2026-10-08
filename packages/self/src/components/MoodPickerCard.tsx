@@ -21,7 +21,7 @@ import {
 } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo, useState } from 'react';
-import Animated, { FadeIn, FadeInUp, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInUp, LinearTransition } from 'react-native-reanimated';
 
 interface MoodPickerCardProps {
   isOpen: boolean;
@@ -80,7 +80,7 @@ export function MoodPickerCard({
   };
 
   return (
-    <Animated.View layout={Layout} entering={FadeIn.duration(800)}>
+    <Animated.View layout={LinearTransition} entering={FadeIn.duration(800)}>
       <Box className={`p-xl rounded-3xl border ${bgClass} shadow-sm overflow-hidden`}>
         <VStack className="gap-lg">
           {/* Header */}

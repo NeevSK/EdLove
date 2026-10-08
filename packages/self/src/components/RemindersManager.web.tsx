@@ -27,7 +27,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';
-import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
+import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 type Reminder = ReminderRecord;
 
@@ -148,7 +148,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       </HStack>
 
       {showForm && (
-        <Animated.View entering={FadeInDown} layout={Layout}>
+        <Animated.View entering={FadeInDown} layout={LinearTransition}>
           <VStack className="gap-4 p-6 bg-shroud border border-white/10 rounded-[24px] shadow-xl">
             <VStack className="gap-1.5">
               <Text className="text-[10px] uppercase font-black tracking-widest text-mistGray/50 pl-1">
@@ -211,7 +211,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       ) : (
         <VStack className="gap-3">
           {reminders.map((r, idx) => (
-            <Animated.View key={r.id} entering={FadeInDown.delay(idx * 50)} layout={Layout}>
+            <Animated.View key={r.id} entering={FadeInDown.delay(idx * 50)} layout={LinearTransition}>
               <HStack
                 className={`items-center gap-4 p-4 bg-white/5 border border-white/5 rounded-[20px] transition-all opacity-100 ${!r.is_active ? 'opacity-40 grayscale' : ''}`}
               >

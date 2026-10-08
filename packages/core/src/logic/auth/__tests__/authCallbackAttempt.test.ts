@@ -8,8 +8,8 @@ describe('auth callback attempt contract', () => {
   it('issues only bounded attempts with a safe internal return path', () => {
     expect(Effect.runSync(issueAuthCallbackAttempt(input))).toMatchObject({ returnPath: '/self', expiresAt: 1100 });
     expect(
-      Effect.runSync(Effect.either(issueAuthCallbackAttempt({ ...input, returnPath: 'https://evil.example' }))),
-    ).toMatchObject({ _tag: 'Left', left: { _tag: 'InvalidAuthCallbackAttempt', reason: 'return-path' } });
+      Effect.runSync(Effect.result(issueAuthCallbackAttempt({ ...input, returnPath: 'https://evil.example' }))),
+    ).toMatchObject({ _tag: 'Failure', failure: { _tag: 'InvalidAuthCallbackAttempt', reason: 'return-path' } });
   });
 
   it('rejects expiry, account changes, and absent attempts before exchange', () => {

@@ -378,12 +378,12 @@ describe('Effect-TS Production Resilience & Load-Breaking Tests', () => {
         Queue.take(queue).pipe(
           Effect.flatMap((task) =>
             Effect.tryPromise({ try: task, catch: (e) => e as Error }).pipe(
-              Effect.catchAll((err) =>
+              Effect.catch((err: unknown) =>
                 Effect.sync(() => {
                   monitoring.captureException(err, { boundary: 'queue-test' });
                 }),
               ),
-              Effect.catchAllDefect((defect) =>
+              Effect.catchDefect((defect: unknown) =>
                 Effect.sync(() => {
                   monitoring.captureException(defect, { boundary: 'queue-defect-test' });
                 }),

@@ -36,16 +36,16 @@ export function reportBestEffort<E>(
   label: string,
 ): Effect.Effect<void, never, never> {
   return effect.pipe(
-    Effect.catchAll((error) =>
+    Effect.catch((error: E) =>
       Effect.sync(() => {
         captureException(error, { operation: label, boundary: 'fire-and-forget' });
-      }).pipe(Effect.zipRight(Effect.logError(`[${label}] fire-and-forget failed`, error))),
+      }).pipe(Effect.andThen(Effect.logError(`[${label}] fire-and-forget failed`, error))),
     ),
-    Effect.catchAllDefect((defect) =>
+    Effect.catchDefect((defect: unknown) =>
       Effect.sync(() => {
         const err = normalizeError(defect);
         captureException(err, { operation: label, boundary: 'fire-and-forget-defect' });
-      }).pipe(Effect.zipRight(Effect.logError(`[${label}] fire-and-forget defect`, defect))),
+      }).pipe(Effect.andThen(Effect.logError(`[${label}] fire-and-forget defect`, defect))),
     ),
     Effect.asVoid,
   );
@@ -58,7 +58,7 @@ export function reportBestEffort<E>(
 export function runForkBestEffort<E>(
   effect: Effect.Effect<unknown, E, never>,
   label: string,
-): Fiber.RuntimeFiber<void, never> {
+): Fiber.Fiber<void, never> {
   return Effect.runFork(reportBestEffort(effect, label));
 }
 
@@ -71,11 +71,11 @@ export function runToPromise<T, E extends { message?: string }>(
 ): Promise<T> {
   return Effect.runPromise(
     effect.pipe(
-      Effect.catchAll((e) =>
+      Effect.catch((e: E) =>
         Effect.sync(() => {
           captureException(e, { operation: errorCode ?? 'EFFECT_ERROR', boundary: 'effect' });
         }).pipe(
-          Effect.zipRight(
+          Effect.andThen(
             Effect.fail(
               Object.assign(
                 new APIError(e.message ?? 'Unknown error', errorCode ?? 'EFFECT_ERROR', e, true),
@@ -85,12 +85,12 @@ export function runToPromise<T, E extends { message?: string }>(
           ),
         ),
       ),
-      Effect.catchAllDefect((defect) => {
+      Effect.catchDefect((defect: unknown) => {
         const err = normalizeError(defect);
         return Effect.sync(() => {
           captureException(err, { operation: errorCode ?? 'EFFECT_DEFECT', boundary: 'effect-defect' });
         }).pipe(
-          Effect.zipRight(
+          Effect.andThen(
             Effect.fail(
               new APIError(err.message || 'Fatal defect encountered', errorCode ?? 'FATAL_DEFECT', err, true),
             ),

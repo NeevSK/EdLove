@@ -549,4 +549,25 @@ export class AuditService {
     const result = runPowerShellScript('scripts/check-memory-sinks.ps1');
     return toText(result.combined, !result.ok);
   }
+
+  handleAuditVersionDrift(args: {
+    majorLag?: number;
+    failOnUnannotated?: boolean;
+    json?: boolean;
+    codeOnly?: boolean;
+    depsOnly?: boolean;
+  }) {
+    const majorLag = args.majorLag ?? 1;
+    console.error(`Auditing Version Drift and Framework Dialects (majorLag: ${majorLag})...`);
+
+    const cliArgs = ['scripts/audit-version-drift.mjs', `--n-major=${majorLag}`];
+    if (args.json) cliArgs.push('--json');
+    if (args.failOnUnannotated) cliArgs.push('--fail-on-unannotated');
+    if (args.codeOnly) cliArgs.push('--code-only');
+    if (args.depsOnly) cliArgs.push('--deps-only');
+
+    const result = runCommand('node', cliArgs);
+    return toText(result.combined, !result.ok);
+  }
 }
+

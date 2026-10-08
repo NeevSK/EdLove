@@ -1,4 +1,8 @@
 import { identityAPI, onboardingAPI } from '@repo/core/api/client';
+import {
+  completeOnboarding as completeCanonicalOnboarding,
+  createInitialBond as createCanonicalInitialBond,
+} from '@repo/core/api/onboardingClient';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';
 import { useStore } from '@repo/core/store';
@@ -642,6 +646,37 @@ const OnboardingScreen = memo(function OnboardingScreen({
     return { internalId: citizen.id, isAnonymous: false };
   }, [isAnonymous, userId]);
 
+  const createInitialBondForSubject = useCallback(
+    async (
+      orientation: Capacity,
+      context: Record<string, unknown>,
+      internalId: string,
+      isAnonymousSubject: boolean,
+    ) => {
+      if (isAnonymousSubject) {
+        await onboardingAPI.createInitialBond(orientation, { ...context, userId: internalId });
+        return;
+      }
+      await createCanonicalInitialBond({
+        orientation,
+        confirmCapacityChange: false,
+        context,
+      });
+    },
+    [],
+  );
+
+  const completeOnboardingForSubject = useCallback(
+    async (internalId: string, isAnonymousSubject: boolean) => {
+      if (isAnonymousSubject) {
+        await onboardingAPI.completeOnboarding(internalId);
+        return;
+      }
+      await completeCanonicalOnboarding();
+    },
+    [],
+  );
+
   // ── Restore saved progress or pre-fill from existing auth & invites ──
   useEffect(() => {
     const initOnboarding = async () => {
@@ -836,10 +871,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     if (!userId) return;
 
     try {
-      storage.set(
-        getOnboardingProgressKey(userId),
-        serializeOnboardingDraft({ userId, state }),
-      );
+      storage.set(getOnboardingProgressKey(userId), serializeOnboardingDraft({ userId, state }));
     } catch (err: unknown) {
       console.warn('[Onboarding] Failed to save progress:', err);
     }
@@ -860,7 +892,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       const { internalId } = await resolveOnboardingSubject();
 
       // 1. Mark journey as completed in DB
-      await onboardingAPI.completeOnboarding(internalId);
+      await completeOnboardingForSubject(internalId, isAnonymous);
 
       // 2. Finalize persistence
       await clearSavedProgress();
@@ -885,6 +917,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     isProcessing,
     clearSavedProgress,
     resolveOnboardingSubject,
+    completeOnboardingForSubject,
   ]);
 
   const handleDevFastTrack = useCallback(
@@ -900,12 +933,16 @@ const OnboardingScreen = memo(function OnboardingScreen({
       try {
         const { internalId, isAnonymous: isAnonymousSubject } = await resolveOnboardingSubject();
 
-        await onboardingAPI.createInitialBond(devRole, {
-          userId: internalId,
-          displayName: devName,
-          fullName: devName,
-          schoolId: devSchoolId || null,
-        });
+        await createInitialBondForSubject(
+          devRole,
+          {
+            displayName: devName,
+            fullName: devName,
+            schoolId: devSchoolId || null,
+          },
+          internalId,
+          isAnonymousSubject,
+        );
 
         if (!isAnonymousSubject) {
           await identityAPI.modifyUserProfile(internalId, {
@@ -917,7 +954,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
           });
         }
 
-        await onboardingAPI.completeOnboarding(internalId);
+        await completeOnboardingForSubject(internalId, isAnonymousSubject);
         await clearSavedProgress();
 
         hapticSuccess();
@@ -933,7 +970,15 @@ const OnboardingScreen = memo(function OnboardingScreen({
         dispatch({ type: 'SET_PROCESSING', isProcessing: false });
       }
     },
-    [onComplete, showToast, isAnonymous, clearSavedProgress, resolveOnboardingSubject],
+    [
+      onComplete,
+      showToast,
+      isAnonymous,
+      clearSavedProgress,
+      resolveOnboardingSubject,
+      createInitialBondForSubject,
+      completeOnboardingForSubject,
+    ],
   );
 
   const handleNext = useCallback(async () => {
@@ -970,12 +1015,16 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
           showToast('Fast-tracking developer setup...', 'info', 2000);
 
-          await onboardingAPI.createInitialBond(template.role, {
-            userId: internalId,
-            displayName: template.name,
-            fullName: template.name,
-            schoolId: template.schoolId,
-          });
+          await createInitialBondForSubject(
+            template.role,
+            {
+              displayName: template.name,
+              fullName: template.name,
+              schoolId: template.schoolId,
+            },
+            internalId,
+            isAnonymousSubject,
+          );
 
           if (!isAnonymousSubject) {
             await identityAPI.modifyUserProfile(internalId, {
@@ -987,7 +1036,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
             });
           }
 
-          await onboardingAPI.completeOnboarding(internalId);
+          await completeOnboardingForSubject(internalId, isAnonymousSubject);
           await clearSavedProgress();
 
           hapticSuccess();
@@ -1011,12 +1060,16 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
         // 2. Create the Bond
         showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);
-        await onboardingAPI.createInitialBond(selectedCapacity, {
-          userId: internalId,
-          displayName: name || 'Gurudevi User',
-          fullName: name || 'Gurudevi User',
-          schoolId: state.schoolId,
-        });
+        await createInitialBondForSubject(
+          selectedCapacity,
+          {
+            displayName: name || 'Gurudevi User',
+            fullName: name || 'Gurudevi User',
+            schoolId: state.schoolId,
+          },
+          internalId,
+          isAnonymousSubject,
+        );
         console.log('🔗 [Onboarding] Initial Bond created.');
         showToast('Identity bond secured.', 'success', 1000);
       } else if (currentPhase === 'complete') {
@@ -1055,6 +1108,8 @@ const OnboardingScreen = memo(function OnboardingScreen({
     isAnonymous,
     clearSavedProgress,
     resolveOnboardingSubject,
+    createInitialBondForSubject,
+    completeOnboardingForSubject,
   ]);
 
   const handleBack = useCallback(() => {

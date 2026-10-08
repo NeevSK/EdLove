@@ -88,7 +88,7 @@ export class GuestDataManager {
             Effect.map((allPeriods) => allPeriods.filter((p) => p.day_of_week === dayOfWeek)),
           );
         }),
-        Effect.catchAll(() => Effect.succeed([])),
+        Effect.catch(() => Effect.succeed([])),
       ),
     );
   }
@@ -112,7 +112,7 @@ export class GuestDataManager {
         yield* writeStorage$(GUEST_TIMETABLE_KEY(), allPeriods);
         return newPeriod;
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catch((e) =>
           Effect.sync(() => {
             console.error('Failed to add guest timetable period:', e);
             throw e;
@@ -139,7 +139,7 @@ export class GuestDataManager {
           yield* writeStorage$(GUEST_TIMETABLE_KEY(), allPeriods);
         }
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catch((e) =>
           Effect.sync(() => {
             console.error('Failed to update guest timetable period:', e);
             throw e;
@@ -159,7 +159,7 @@ export class GuestDataManager {
         const filtered = allPeriods.filter((p) => p.localId !== localId);
         yield* writeStorage$(GUEST_TIMETABLE_KEY(), filtered);
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catch((e) =>
           Effect.sync(() => {
             console.error('Failed to delete guest timetable period:', e);
             throw e;
@@ -175,7 +175,7 @@ export class GuestDataManager {
         Effect.flatMap((data) =>
           data ? parseArray$<GuestMoodLog>(data, GUEST_MOOD_LOGS_KEY()) : Effect.succeed([]),
         ),
-        Effect.catchAll(() => Effect.succeed([])),
+        Effect.catch(() => Effect.succeed([])),
       ),
     );
   }
@@ -197,7 +197,7 @@ export class GuestDataManager {
         yield* writeStorage$(GUEST_MOOD_LOGS_KEY(), logs);
         return newLog;
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catch((e) =>
           Effect.sync(() => {
             console.error('Failed to add guest mood log:', e);
             throw e;
@@ -215,7 +215,7 @@ export class GuestDataManager {
             ? parseArray$<GuestJournalEntry>(data, GUEST_JOURNAL_ENTRIES_KEY())
             : Effect.succeed([]),
         ),
-        Effect.catchAll(() => Effect.succeed([])),
+        Effect.catch(() => Effect.succeed([])),
       ),
     );
   }
@@ -238,7 +238,7 @@ export class GuestDataManager {
         yield* writeStorage$(GUEST_JOURNAL_ENTRIES_KEY(), entries);
         return newEntry;
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catch((e) =>
           Effect.sync(() => {
             console.error('Failed to add guest journal entry:', e);
             throw e;
@@ -254,7 +254,7 @@ export class GuestDataManager {
         Effect.flatMap((data) =>
           data ? parseArray$<GuestStudent>(data, GUEST_STUDENTS_KEY()) : Effect.succeed([]),
         ),
-        Effect.catchAll(() => Effect.succeed([])),
+        Effect.catch(() => Effect.succeed([])),
       ),
     );
   }
@@ -271,7 +271,7 @@ export class GuestDataManager {
         yield* writeStorage$(GUEST_STUDENTS_KEY(), updated);
         return newStudents;
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catch((e) =>
           Effect.sync(() => {
             console.error('Failed to add guest students:', e);
             throw e;

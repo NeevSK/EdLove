@@ -1,0 +1,136 @@
+# Framework Dialect & Code Deprecation Rules — Curated.
+# Defines code patterns considered legacy or deprecated relative to the active monorepo stack:
+# React 19.3, React Native 0.88 (New Architecture), Expo SDK 58, PowerSync JS v2.
+
+metadata:
+  updated: 2026-10-08
+
+dialect_rules:
+  react_forward_ref:
+    category: "React 19"
+    name: "React.forwardRef"
+    pattern: forwardRef\(
+    severity: "MEDIUM"
+    message: "Deprecated in React 19. Pass ref directly as a standard component prop."
+  react_use_form_state:
+    category: "React 19"
+    name: "React useFormState"
+    pattern: useFormState\(
+    severity: "HIGH"
+    message: "Removed/deprecated in React 19. Use useActionState instead."
+  react_default_props:
+    category: "React 19"
+    name: "Component.defaultProps"
+    pattern: \.defaultProps\s*=
+    severity: "HIGH"
+    message: "Deprecated for function components in React 19. Use ES6 default argument values."
+  rn_use_native_driver_false:
+    category: "RN 0.88 New Architecture"
+    name: "useNativeDriver: false"
+    pattern: useNativeDriver:\s*false
+    severity: "LOW"
+    message: "Avoid disabling native driver unless animating layout properties directly."
+  rn_view_prop_types:
+    category: "RN 0.88 New Architecture"
+    name: "ViewPropTypes"
+    pattern: ViewPropTypes
+    severity: "CRITICAL"
+    message: "Removed in modern React Native. Use React.ComponentProps<typeof View>."
+  expo_new_arch_enabled:
+    category: "Expo SDK 58"
+    name: "newArchEnabled in app.json"
+    pattern: \"newArchEnabled\":
+    severity: "HIGH"
+    message: "New Architecture is mandatory and default in Expo SDK 58. Flag is obsolete."
+  expo_permissions_module:
+    category: "Expo SDK 58"
+    name: "expo-permissions import"
+    pattern: from ['"]expo-permissions['"]
+    severity: "HIGH"
+    message: "Deprecated module. Use feature-specific permission methods (e.g. expo-location)."
+  powersync_abstract_database:
+    category: "PowerSync v2"
+    name: "AbstractPowerSyncDatabase"
+    pattern: AbstractPowerSyncDatabase
+    severity: "MEDIUM"
+    message: "Legacy PowerSync v1 class. Use CommonPowerSyncDatabase in PowerSync JS v2."
+  reanimated_scroll_view_offset:
+    category: "Reanimated 4.7"
+    name: "useScrollViewOffset"
+    pattern: useScrollViewOffset\(
+    severity: "MEDIUM"
+    message: "Deprecated in Reanimated 4. Use useScrollOffset instead."
+  reanimated_extrapolate:
+    category: "Reanimated 4.7"
+    name: "Extrapolate"
+    pattern: Extrapolate\.(CLAMP|IDENTITY|EXTEND)
+    severity: "MEDIUM"
+    message: "Deprecated in Reanimated 4. Use Extrapolation enum instead."
+  reanimated_layout_transition:
+    category: "Reanimated 4.7"
+    name: "Layout transition"
+    pattern: \blayout=\{Layout\b
+    severity: "MEDIUM"
+    message: "Layout is deprecated in Reanimated 4. Use LinearTransition instead."
+  worklets_make_shareable_clone:
+    category: "Worklets 0.13"
+    name: "makeShareableCloneRecursive"
+    pattern: makeShareableCloneRecursive
+    severity: "HIGH"
+    message: "Deprecated in Worklets 0.13. Use createSerializable instead."
+  worklets_shareable_ref:
+    category: "Worklets 0.13"
+    name: "ShareableRef"
+    pattern: ShareableRef<
+    severity: "HIGH"
+    message: "Deprecated in Worklets 0.13. Use SerializableRef instead."
+  rn_interaction_manager:
+    category: "RN 0.88 New Architecture"
+    name: "InteractionManager"
+    pattern: InteractionManager\.
+    severity: "HIGH"
+    message: "Removed in React Native 0.88 core. Refactor to requestIdleCallback or worklets."
+  rngh_legacy_handler:
+    category: "RNGH 3.3"
+    name: "Legacy RNGH Handlers"
+    pattern: <(Pan|Tap|Fling|LongPress|Pinch|Rotation)GestureHandler
+    severity: "HIGH"
+    message: "Legacy JSX handlers are deprecated in RNGH v3. Use GestureDetector with Gesture.*."
+  effect_v3_catch_all:
+    category: "Effect v4"
+    name: "Effect.catchAll"
+    pattern: Effect\.catchAll\(
+    severity: "CRITICAL"
+    message: "Removed in Effect v4. Use Effect.catch instead."
+  effect_v3_catch_all_defect:
+    category: "Effect v4"
+    name: "Effect.catchAllDefect"
+    pattern: Effect\.catchAllDefect\(
+    severity: "CRITICAL"
+    message: "Removed in Effect v4. Use Effect.catchDefect instead."
+  effect_v3_zip_right:
+    category: "Effect v4"
+    name: "Effect.zipRight"
+    pattern: Effect\.zipRight\(
+    severity: "CRITICAL"
+    message: "Removed in Effect v4. Use Effect.andThen instead."
+  effect_v3_intersect:
+    category: "Effect v4"
+    name: "Schedule.intersect"
+    pattern: Schedule\.intersect\(
+    severity: "CRITICAL"
+    message: "Removed in Effect v4. Use Schedule.max([...]) instead."
+  effect_v3_context_tag:
+    category: "Effect v4"
+    name: "Context.Tag"
+    pattern: Context\.Tag\(
+    severity: "CRITICAL"
+    message: "Removed in Effect v4. Use Context.Service instead."
+  effect_v3_either:
+    category: "Effect v4"
+    name: "Effect.either"
+    pattern: Effect\.either\(
+    severity: "HIGH"
+    message: "Removed in Effect v4. Use Effect.result and Result module instead."
+
+

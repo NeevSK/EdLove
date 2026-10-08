@@ -92,6 +92,10 @@ dependency_entries:
     category: tooling
     purpose: "Compiler — sacred 7.0.2 (latest stable)"
     sacred: "7.0.2"
+  effect:
+    category: resilience
+    purpose: "Resilience, retries, and typed error channels for @repo/core"
+    notes: "Monorepo baseline is Effect v4.0.2. Encapsulated inside packages/core."
   "@supabase/supabase-js":
     category: data-sync
     purpose: "Postgres/Realtime client"
@@ -142,9 +146,11 @@ dependency_entries:
   "@journeyapps/wa-sqlite":
     category: data-sync
     purpose: "WebAssembly SQLite (web fallback)"
+    notes: "v1.7 WebAssembly SQLite pinned for web OPFS / PowerSync web persistence."
   "@op-engineering/op-sqlite":
     category: data-sync
     purpose: "Native SQLite module for RN"
+    notes: "v17 pinned for Nitro SQLite bindings and PowerSync native compatibility."
   "@tanstack/react-query":
     category: state
     purpose: "Server-state/data-fetching core (12 consumers)"
@@ -232,6 +238,11 @@ dependency_entries:
   "@sentry/browser":
     category: observability
     purpose: "Crash/error monitoring (web)"
+    notes: "v10 pinned for web error tracking and telemetry alignment."
+  "@sentry/node":
+    category: observability
+    purpose: "Error monitoring for Sanctuary API (Hono/Node)"
+    notes: "v8 held for Node/Hono server compatibility."
   posthog-js:
     category: observability
     purpose: "Product analytics (web)"
@@ -241,6 +252,27 @@ dependency_entries:
   pino:
     category: observability
     purpose: "Structured logging"
+    notes: "pino v9 pinned for log transport stability with pino-pretty v11."
+  pino-pretty:
+    category: observability
+    purpose: "Pretty printing for local development logs"
+    notes: "Pinned v11 for pino v9 log transport compatibility."
+  tesseract.js:
+    category: media
+    purpose: "Client-side OCR text extraction"
+    notes: "v5 pinned for local web worker and model asset stability."
+  inline-style-prefixer:
+    category: native
+    purpose: "CSS prefixer required by react-native-web"
+    notes: "v5 pinned as direct peer dependency of react-native-web runtime."
+  effect:
+    category: architecture
+    purpose: "Functional programming & Effect TS runtime"
+    notes: "v3.22 pinned; gradual migration toward Effect v4 in progress."
+  vercel:
+    category: tooling
+    purpose: "Deployment CLI for Vercel"
+    notes: "v59 pinned for monorepo build deployment workflows."
   "@opentelemetry/api":
     category: observability
     purpose: "Tracing API"
@@ -271,6 +303,7 @@ dependency_entries:
   dotenv:
     category: utility
     purpose: "Env file loading (tools)"
+    notes: "v17 pinned; Doppler is the primary secret store."
   "@expo-google-fonts/inter":
     category: media
     purpose: "Inter font package"
@@ -298,6 +331,7 @@ dependency_entries:
   "@react-native-async-storage/async-storage":
     category: storage
     purpose: "Async key-value storage"
+    notes: "v2 pinned for legacy storage fallback; native code uses MMKV v4."
   expo-secure-store:
     category: crypto
     purpose: "Secure keychain storage"
@@ -346,6 +380,7 @@ dependency_entries:
   "@maplibre/maplibre-react-native":
     category: maps
     purpose: "MapLibre RN maps"
+    notes: "v10 pinned for React Native 0.88 New Architecture stability."
   "@nishansanjuka/srilanka_geographics":
     category: maps
     purpose: "Sri Lanka geo dataset (used by lk-edu-geo)"
@@ -454,6 +489,7 @@ dependency_entries:
   jest:
     category: testing
     purpose: "Legacy test runner (jest-expo)"
+    notes: "v29 pinned for monorepo test runners."
   jest-expo:
     category: testing
     purpose: "Jest preset for Expo"
@@ -469,9 +505,11 @@ dependency_entries:
   "@testing-library/jest-dom":
     category: testing
     purpose: "jest-dom matchers"
+    notes: "v6 pinned for vitest DOM matchers."
   msw:
     category: testing
     purpose: "Mock Service Worker for API mocking in web tests"
+    notes: "v2 pinned for API request interception in integration tests."
   "@playwright/test":
     category: testing
     purpose: "E2E browser tests"
@@ -484,9 +522,11 @@ dependency_entries:
   size-limit:
     category: tooling
     purpose: "Bundle size budgets"
+    notes: "v13 pinned for bundle size quality gates."
   "@size-limit/preset-small-lib":
     category: tooling
     purpose: "Size-limit preset"
+    notes: "v13 pinned alongside size-limit."
   promptfoo:
     category: eval
     purpose: "LLM eval suites (also global tool)"
@@ -526,6 +566,7 @@ dependency_entries:
   "@types/node":
     category: types
     purpose: "Node type definitions"
+    notes: "Node 24 LTS runtime type definitions; v26 types tracking future Node."
   "@types/semver":
     category: types
     purpose: "semver types"
@@ -544,3 +585,55 @@ dependency_entries:
   "@intuitui-labs/lk-edu-geo":
     category: maps
     purpose: "Type-safe geographical and educational jurisdictions for Sri Lanka"
+  "@babel/runtime":
+    category: tooling
+    purpose: "Babel 7 runtime for Metro bundler and React Native transforms"
+    notes: "Babel 7 runtime pinned for Metro and React Native toolchain."
+  "@babel/traverse":
+    category: tooling
+    purpose: "Babel 7 AST traversal for monorepo AST scripts"
+    notes: "Babel 7 AST traversal pinned for Metro and React Native transforms."
+  "@modelcontextprotocol/server-sequential-thinking":
+    category: ai
+    purpose: "MCP sequential thinking engine"
+    notes: "Calver pinned in platform MCP dependencies."
+  "@paralleldrive/cuid2":
+    category: utility
+    purpose: "Collision-resistant ID generation for schema entities"
+    notes: "v2 pinned for collision-resistant ID generation in schema entities."
+  "@rozenite/performance-monitor-plugin":
+    category: tooling
+    purpose: "Performance monitoring profiler plugin"
+    notes: "v1 pinned for development performance profiling."
+  "@tanstack/react-form":
+    category: forms
+    purpose: "Headless reactive form engine"
+    notes: "v0.20 pinned; form system transitioning to unified schemas."
+  "@tanstack/react-table":
+    category: tables
+    purpose: "Headless table and grid system"
+    notes: "v8 stable pinned for web data grids."
+  "@types/jest":
+    category: types
+    purpose: "Type definitions for Jest"
+    notes: "v29 pinned for Jest test runner compatibility."
+  "@types/uuid":
+    category: types
+    purpose: "Type definitions for uuid"
+    notes: "v10 pinned matching uuid dependency."
+  eslint-config-universe:
+    category: lint
+    purpose: "Expo ESLint config ruleset"
+    notes: "v15 pinned for Expo SDK 58 ESLint config alignment."
+  react-native-external-keyboard:
+    category: native
+    purpose: "Hardware keyboard event navigation"
+    notes: "v1.1 pinned for hardware keyboard event navigation."
+  react-native-nitro-google-signin:
+    category: native
+    purpose: "Nitro Google Sign-in native module"
+    notes: "v1.3 Nitro module pinned for Google auth on New Architecture."
+  react-native-url-polyfill:
+    category: native
+    purpose: "WHATWG URL standard polyfill for React Native"
+    notes: "v3 pinned for WHATWG URL standard polyfill in React Native."

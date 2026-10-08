@@ -25,7 +25,7 @@ import {
 } from '@repo/ui/primitives';
 import { confirmAction } from '@repo/ui/utils/dialogs';
 import { useEffect, useState } from 'react';
-import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
+import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 interface TomorrowPrepProps {
   userId?: string;
@@ -177,7 +177,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
       {/* Quick Draft Form */}
       {showForm && (
-        <Animated.View entering={FadeInDown} layout={Layout}>
+        <Animated.View entering={FadeInDown} layout={LinearTransition}>
           <HStack className="gap-3 p-4 bg-shroud border border-white/10 rounded-[24px] shadow-2xl">
             <Input className="flex-1 bg-white/5 border-white/10 rounded-xl h-12">
               <InputField
@@ -227,7 +227,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       ) : (
         <VStack className="gap-2.5">
           {tomorrowItems.map((item, idx) => (
-            <Animated.View key={item.id} entering={FadeInDown.delay(idx * 50)} layout={Layout}>
+            <Animated.View key={item.id} entering={FadeInDown.delay(idx * 50)} layout={LinearTransition}>
               <HStack
                 className={`items-center gap-4 p-4 bg-white/5 border border-white/5 rounded-[22px] transition-all ${item.is_completed ? 'opacity-40' : 'opacity-100'}`}
               >

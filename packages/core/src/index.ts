@@ -144,8 +144,16 @@ export { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 export {
   classifyRouteIntent,
   classifyRouteIntentEffect,
+  formatClassroomDeepLink,
+  formatClassroomShareUrl,
   type RouteIntent,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+export {
+  isPendingIntentExpired,
+  pendingIntentStore,
+  usePendingIntentStore,
+  type PendingDeepLinkIntent,
+} from '@repo/core/logic/deeplink/pendingIntentStore';
 export * from '@repo/core/logic/capabilityDecision';
 export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
@@ -379,4 +387,5 @@ export { UserSchema } from '@repo/core/logic/schemas/user.schema';
 export { validateForm, validators } from '@repo/core/logic/utils/validators';
 export * from '@repo/core/logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
+export * from '@repo/core/logic/agents';
 export { z };

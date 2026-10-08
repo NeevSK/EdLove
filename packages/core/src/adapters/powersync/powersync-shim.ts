@@ -67,8 +67,6 @@ export interface CommonPowerSyncDatabase {
   }>;
 }
 
-/** @deprecated Use CommonPowerSyncDatabase for PowerSync JS v2 terminology. */
-export type AbstractPowerSyncDatabase = CommonPowerSyncDatabase;
 
 export interface PowerSyncBackendConnector {
   fetchCredentials(): Promise<PowerSyncCredentials>;

@@ -19,7 +19,7 @@ export function useSovereignEffect<A, E>(
       const value = yield* effect;
       if (active) setResult({ status: 'success', data: value });
     }).pipe(
-      Effect.catchAll((error) => {
+      Effect.catch((error: unknown) => {
         if (active) setResult({ status: 'failure', error: error as E });
         return Effect.void;
       }),
@@ -50,7 +50,7 @@ export function useSovereignCallback<Args extends Array<unknown>, A, E>(
       return Effect.runPromise(
         effectFn(...args).pipe(
           Effect.tap(() => Effect.sync(() => setStatus('success'))),
-          Effect.catchAll((e) => {
+          Effect.catch((e: E) => {
             setStatus('failure');
             return Effect.fail(e);
           }),

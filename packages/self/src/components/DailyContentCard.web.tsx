@@ -10,7 +10,7 @@ import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Lightbulb, Sparkles, User } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
-import Animated, { FadeIn, Layout } from 'react-native-reanimated';
+import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 interface DailyContentCardProps {
   type: 'motivation' | 'did_you_know';
@@ -48,7 +48,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
   if (!content) return null;
 
   return (
-    <Animated.View layout={Layout} entering={FadeIn.duration(800)}>
+    <Animated.View layout={LinearTransition} entering={FadeIn.duration(800)}>
       <Pressable
         onPress={() => setExpanded((v) => !v)}
         className={`p-xl bg-white/5 rounded-2xl border-l-4 border-y border-r border-white/5 transition-all active:scale-[0.99] ${borderClass}`}

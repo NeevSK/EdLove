@@ -7,6 +7,9 @@ import { Effect } from 'effect';
 import { describe, expect, it } from 'vitest';
 import {
   classifyRouteIntent,
+  decodeInstallReferrerEffect,
+  formatClassroomDeepLink,
+  formatClassroomShareUrl,
   isQRDeepLink,
   normalizeAcceptedDeepLink,
   normalizeAcceptedInternalRoute,
@@ -162,6 +165,22 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
       });
     });
 
+    it('classifies first-party vanity path /c/:code and custom scheme gurudevi://c/:code to classroomInvite', () => {
+      const httpsResult = classifyRouteIntent('https://gurudevi.app/c/BIO-2026');
+      expect(httpsResult).toEqual({
+        kind: 'classroomInvite',
+        inviteCode: 'BIO-2026',
+        url: 'https://gurudevi.app/c/BIO-2026',
+      });
+
+      const nativeResult = classifyRouteIntent('gurudevi://c/BIO-2026');
+      expect(nativeResult).toEqual({
+        kind: 'classroomInvite',
+        inviteCode: 'BIO-2026',
+        url: 'gurudevi://c/BIO-2026',
+      });
+    });
+
     it('separates unsupported valid links from rejected hostile input', () => {
       expect(classifyRouteIntent('https://gurudevi.app/invite')).toEqual({
         kind: 'unsupported',
@@ -170,6 +189,62 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
         kind: 'rejected',
         reason: 'DeepLinkHostOrSchemeError',
       });
+    });
+  });
+
+  describe('decodeInstallReferrerEffect (Google Play Install Referrer pipeline)', () => {
+    it('decodes a valid encoded referrer string into a structured intent', async () => {
+      const raw = 'utm_source%3Dwhatsapp%26utm_campaign%3Dteacher_drive%26inviteCode%3DCHEM_2026';
+      const exit = await Effect.runPromiseExit(decodeInstallReferrerEffect(raw));
+      expect(exit._tag).toBe('Success');
+      if (exit._tag === 'Success') {
+        expect(exit.value).toEqual({
+          inviteCode: 'CHEM_2026',
+          utmSource: 'whatsapp',
+          utmCampaign: 'teacher_drive',
+          raw,
+        });
+      }
+    });
+
+    it('sanitizes inviteCode strictly rejecting malicious SQL or script characters', async () => {
+      const raw = 'inviteCode%3DCHEM_2026%3Cscript%3E';
+      const exit = await Effect.runPromiseExit(decodeInstallReferrerEffect(raw));
+      expect(exit._tag).toBe('Success');
+      if (exit._tag === 'Success') {
+        // Must be undefined because it contains non-alphanumeric chars
+        expect(exit.value.inviteCode).toBeUndefined();
+      }
+    });
+
+    it('fails with ReferrerLengthError on excessive referrer strings (> 1024 chars)', async () => {
+      const raw = 'a'.repeat(1025);
+      const exit = await Effect.runPromiseExit(decodeInstallReferrerEffect(raw));
+      expect(exit._tag).toBe('Failure');
+      if (exit._tag === 'Failure') {
+        expect(exit.cause.toString()).toContain('ReferrerLengthError');
+      }
+    });
+
+    it('fails with ReferrerForbiddenCharsError on null bytes or CRLF', async () => {
+      const raw = 'inviteCode=TEST\0EVIL';
+      const exit = await Effect.runPromiseExit(decodeInstallReferrerEffect(raw));
+      expect(exit._tag).toBe('Failure');
+      if (exit._tag === 'Failure') {
+        expect(exit.cause.toString()).toContain('ReferrerForbiddenCharsError');
+      }
+    });
+  });
+
+  describe('outbound link formatting', () => {
+    it('formats canonical public share URLs and native deep links cleanly', () => {
+      expect(formatClassroomShareUrl('MATH-2026')).toBe('https://gurudevi.app/c/MATH-2026');
+      expect(formatClassroomDeepLink('MATH-2026')).toBe('gurudevi://c/MATH-2026');
+    });
+
+    it('safely encodes special characters in classroom invite codes', () => {
+      expect(formatClassroomShareUrl('SCIENCE 101')).toBe('https://gurudevi.app/c/SCIENCE%20101');
+      expect(formatClassroomDeepLink('SCIENCE 101')).toBe('gurudevi://c/SCIENCE%20101');
     });
   });
 });

@@ -80,6 +80,9 @@ function startDeferredServices(): void {
   void import('@/lib/backgroundSync')
     .then(({ registerBackgroundSync }) => registerBackgroundSync())
     .catch((error: unknown) => console.warn('[startup] background sync deferred:', error));
+  void import('@/lib/deepLinks/installReferrerBridge')
+    .then(({ resolveDeferredInstallIntent }) => resolveDeferredInstallIntent())
+    .catch((error: unknown) => console.warn('[startup] deferred install referrer bridge deferred:', error));
 }
 
 export function EntryStartupBoundary() {

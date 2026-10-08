@@ -1,7 +1,7 @@
 import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/core/api/client';
-import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
+import { cryptoManager, runAttendanceAudit, usePermissions, useStore } from '@repo/core';
 import type { MultimodalContent } from '@tanstack/ai-client';
 import { useChat, xhrHttpStream } from '@tanstack/ai-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -26,33 +26,16 @@ interface ClassroomRow {
  * overdue assignments with ungraded submissions.
  */
 async function detectAttendanceGaps(
-  db: SupabaseClient,
+  _db: SupabaseClient,
   classrooms: ClassroomRow[],
   today: string,
 ): Promise<CoordinationGap[]> {
-  const gaps: CoordinationGap[] = [];
-  const classroomIds = classrooms.map((c) => c.id);
-
-  const { data: markedToday } = await db
-    .from('attendance')
-    .select('classroom_id')
-    .in('classroom_id', classroomIds)
-    .eq('date', today);
-
-  const markedIds = new Set((markedToday ?? []).map((r: any) => r.classroom_id));
-  for (const c of classrooms.filter((c) => !markedIds.has(c.id))) {
-    gaps.push({
-      id: `attendance-${c.id}`,
-      type: 'relief',
-      title: `Attendance pending: ${c.name}`,
-      description: `Today's attendance for ${c.name} has not been recorded yet.`,
-      priority: 'high',
-      suggestedAction: 'Mark attendance now',
-      context: { classroomId: c.id, classroomName: c.name },
-    });
+  try {
+    return await runAttendanceAudit(classrooms, today);
+  } catch (err) {
+    console.warn('[useAIAgent] detectAttendanceGaps error:', err);
+    return [];
   }
-
-  return gaps;
 }
 
 async function countUngradedSubmissions(

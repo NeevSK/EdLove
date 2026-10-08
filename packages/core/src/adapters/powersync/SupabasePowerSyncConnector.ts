@@ -120,7 +120,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
             return Effect.void;
           }),
           Effect.retry(strictRetryPolicy),
-          Effect.catchAll((e) => {
+          Effect.catch((e: unknown) => {
             if (e instanceof PowerSyncUploadError) return Effect.fail(e);
             return Effect.fail(new PowerSyncUploadError(0, String(e)));
           }),
@@ -132,14 +132,13 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
         sovereignBus.emit('powersync:sync_complete', { tablesAffected });
       }).pipe(
-        Effect.catchAll((error) =>
+        Effect.catch((error: Error | PowerSyncUploadError) =>
           Effect.sync(() => {
-            const isAccountChanged = error instanceof PowerSyncAccountChangedError;
             sovereignBus.emit('powersync:unavailable', {
               reason:
                 error instanceof PowerSyncAccountChangedError ? 'account_switched' : 'service_down',
             });
-          }).pipe(Effect.zipRight(Effect.fail(error))),
+          }).pipe(Effect.andThen(Effect.fail(error))),
         ),
       ),
       'POWERSYNC_UPLOAD_FAILED',

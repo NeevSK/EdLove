@@ -56,9 +56,8 @@ vi.mock('react-native-external-keyboard', () => {
   const React = require('react');
   return {
     K: {
-      Pressable: React.forwardRef((props: Record<string, unknown>, ref: unknown) =>
+      Pressable: ({ ref, ...props }: Record<string, unknown> & { ref?: unknown }) =>
         React.createElement('Pressable', { ...props, ref }),
-      ),
     },
     Keyboard: {
       addListener: vi.fn(() => ({ remove: vi.fn() })),
@@ -70,8 +69,7 @@ vi.mock('react-native-external-keyboard', () => {
 
 vi.mock('react-native-fast-confetti', () => {
   const React = require('react');
-  const Confetti = React.forwardRef((props: Record<string, unknown>, ref: unknown) =>
-    React.createElement('Confetti', { ...props, ref }),
-  );
+  const Confetti = ({ ref, ...props }: Record<string, unknown> & { ref?: unknown }) =>
+    React.createElement('Confetti', { ...props, ref });
   return { __esModule: true, default: Confetti, Confetti };
 });

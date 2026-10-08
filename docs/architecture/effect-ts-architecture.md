@@ -1,16 +1,16 @@
 ---
-title: "Effect-TS Architecture & Migration Guide"
+title: "Effect-TS Architecture & Standard Guide"
 status: "active"
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-10-08
 author: "Naveen"
 scribe: "Antigravity"
-tags: [architecture, effect-ts, resilience, migration, v3, v4]
+tags: [architecture, effect-ts, resilience, v4, production-standard]
 ---
 
-# Effect-TS Architecture & Migration Guide
+# Effect-TS Architecture & Standard Guide
 
-> **Scope**: `packages/core` — Effect v3 usage, current design, v4 migration readiness.
+> **Scope**: `packages/core` — Effect v4.0.2 production standard, canonical patterns, and boundary architecture.
 >
 > This document is the single source of truth for Effect-TS architectural decisions.
 > Agents modifying Effect-adjacent code should read this first.
@@ -180,90 +180,58 @@ function getAuditQueue(): Queue.Queue<() => Promise<unknown>> {
 
 ## 7. The DI Layer (`logic/ports/growth.tags.ts`)
 
-The only file using `Context`, `Layer`, and `Context.Tag` for full Effect dependency injection.
+The primary location using `Context`, `Layer`, and `Context.Service` for full Effect dependency injection.
 
 ```ts
-// v3 pattern (current)
-class GrowthPort extends Context.Tag('@core/GrowthPort')<GrowthPort, IGrowthPort>() {}
+// v4 standard (active)
+export class GrowthPort extends Context.Service<GrowthPort, IGrowthPort>()('app/GrowthPort') {}
+export class GrowthManagerTag extends Context.Service<GrowthManagerTag, GrowthManager>()('app/GrowthManager') {}
 ```
 
-**v4 migration change** (not yet — see §8):
-```ts
-// v4 pattern (future)
-class GrowthPort extends Context.Service<GrowthPort, IGrowthPort>()('@core/GrowthPort') {}
-```
-
-The argument order flips. The concept is identical.
+The curried constructor pattern binds identity and shape cleanly in v4.
 
 ---
 
-## 8. Effect v4 Migration Readiness
+## 8. Effect v4 Active Architecture Standard
 
-**Current status**: v3.22.x, no v4 migration yet. Plan is to migrate when v4 stabilizes in production use.
+**Current status**: **Effect v4.0.2 Active Standard** in `@repo/core`.
 
-### Migration risk by area
+### Monorepo Invariant Map (v4)
 
-| Area | Risk | Current state | v4 change |
-|---|---|---|---|
-| `Schedule` API | **LOW** | `Schedule.exponential`, `Schedule.intersect`, `Schedule.recurs` | Stable; no change |
-| `Data.TaggedError` | **LOW** | All local errors | Fine for non-RPC errors; prefer `Schema.TaggedErrorClass` for serialization boundaries |
-| `Context.Tag` | **MEDIUM** | Only in `growth.tags.ts` (1 file) | Rename to `Context.Service`; argument order flips |
-| `Effect.runSync` | **LOW** (now fixed) | Lazy init via `getAuditQueue()` | Safe in v4 owned-runtime model |
-| `Effect.runFork` | **LOW** | Used in hooks, lifecycle | No change expected |
-| `Queue.unbounded` | **LOW** | 1 usage, now lazy | Stable API; owned-runtime pattern now satisfied |
-| `@effect/schema` | **N/A** | Not used | Skip migration concern |
-| `@effect/platform` | **N/A** | Not used | Skip migration concern |
-| `@effect/rpc` | **N/A** | Not used | Skip migration concern |
-| `import * as X from 'effect/X'` | **LOW** | All files | Sub-paths work in v4; migration guide recommends root imports, codemods handle this |
-
-### Estimated migration effort
-
-1. **Automated** (codemod): All import paths, `Effect.Service` → `Context.Service` → handled by official `effect-v3-to-v4` codemod
-2. **Manual** (1 file, 1 change): `growth.tags.ts` — `Context.Tag` → `Context.Service` argument order
-3. **Manual** (if RPC added): Replace `Data.TaggedError` with `Schema.TaggedErrorClass` for cross-boundary errors
-
-**Total**: ~1–2 hours once codemods are available.
-
-### What to do before migrating
-
-1. Read the official `MIGRATION.md` in `effect-ts/effect` repository (v4 branch)
-2. Run `pnpm exec effect-v3-to-v4` in `packages/core`
-3. Manually fix `growth.tags.ts` (Context.Tag → Context.Service)
-4. Run `pnpm --filter @repo/core exec tsc --noEmit`
-5. Run the test suite: `pnpm --filter @repo/core test`
+| Area | v4 Active Pattern | Notes |
+|---|---|---|
+| **Schedules** | `Schedule.max([Schedule.exponential("200 millis"), Schedule.recurs(n)])` | Replaces v3 `Schedule.intersect`. |
+| **Error Handling** | `Effect.catch(handler)` and `Effect.catchDefect(handler)` | Replaces v3 `Effect.catchAll` / `Effect.catchAllDefect`. |
+| **Chaining** | `Effect.andThen(nextEffect)` | Replaces v3 `Effect.zipRight`. |
+| **Services** | `Context.Service<Self, Shape>()("id")` | Replaces v3 `Context.Tag`. |
+| **Failure Channels** | `Result<A, E>` (`Success` / `Failure`) via `Effect.result` | Replaces v3 `Either` (`Left` / `Right`) and `Effect.either`. |
+| **Tagged Errors** | `Data.TaggedError` (local) & `Schema.TaggedError` (RPC/API) | `Data.TaggedError` retained for internal domain errors. |
+| **Runtime Model** | Lazy singleton initializers (`getAuditQueue()`) | Safe under v4 owned-runtime model. |
+| **Generators** | `Effect.gen(function* () { ... })` & `Effect.fn("name")` | Generators yield directly; automatic tracing with `Effect.fn`. |
+| **Merged Modules** | Root `'effect'` export | `@effect/schema`, `@effect/platform`, `@effect/stream` merged into core. |
 
 ---
 
-## 9. AI Agent Rules for this Codebase
+## 9. AI Agent Rules for this Codebase (v4 Standard)
 
 If you are an AI agent making changes in or near Effect-adjacent code, follow these rules:
 
-1. **Never add a new `Schedule.exponential(...)` block.** Import `defaultRetryPolicy`, `strictRetryPolicy`, or `retryPolicy(n)` from `@repo/core/utils/effect` instead.
-2. **Never use `Effect.runSync(...)` at module top level.** Use the lazy singleton pattern in `deviceAccounts.ts` as the reference.
-3. **Never call `Effect.runPromise` in a React hook or Zustand store.** Use `runEffect(...)` or `fireAndForget(...)` from `utils/effect.ts`.
-4. **Never export a `TaggedError` class from its module unless another module actually imports it.** Check cross-module usage before adding `export`.
-5. **The `effect/Schedules.ts` file is the authoritative list of retry policies.** If a policy doesn't exist there, add it there — do not add it inline at the call site.
-6. **Do not install new `@effect/*` packages** without explicit human approval. Current stance is minimal Effect surface; new packages expand migration complexity.
+1. **Never add a new `Schedule.exponential(...)` block.** Import `defaultRetryPolicy`, `strictRetryPolicy`, or `retryPolicy(n)` from `@repo/core/utils/effect` or `@repo/core/effect/schedules` instead.
+2. **Never use `Schedule.intersect`.** Use `Schedule.max([...])` for retry policy composition.
+3. **Never use `Effect.catchAll` or `Effect.zipRight`.** Use `Effect.catch` and `Effect.andThen`.
+4. **Never use `Effect.either` or `Either.Left`/`Right`.** Use `Effect.result` and `Result.Failure`/`Success`.
+5. **Never use `Effect.runSync(...)` at module top level.** Use the lazy singleton pattern in `deviceAccounts.ts` as the reference.
+6. **Never call `Effect.runPromise` in a React hook or Zustand store.** Use `runEffect(...)` or `fireAndForget(...)` from `utils/effect.ts`.
+7. **Never export a `TaggedError` class from its module unless another module actually imports it.** Check cross-module usage before adding `export`.
+8. **The `effect/Schedules.ts` file is the authoritative list of retry policies.** If a policy doesn't exist there, add it there — do not add it inline at the call site.
+9. **Keep Effect strictly inside `packages/core`.** Outside of `packages/core`, no imports from `'effect'` are permitted.
 
 ---
 
-## 10. Future Considerations
+## 10. Future Horizons (Effect v4 Capabilities)
 
-### When to expand Effect usage (safe)
-
-- Adding a new API adapter with retry + timeout: follow the `supabaseIdentity.adapter.ts` pattern
-- Adding a new background queue: follow the `deviceAccounts.ts` lazy singleton pattern
-- Adding typed error channels to an existing service: add a `TaggedError` class private to that module
-
-### When NOT to expand Effect usage
-
-- TanStack Query handles retry for you → don't add Effect retry on top of it
-- A single async call with no retry need → plain `async/await`
-- State management → Zustand, not Effect
-
-### v4 adoption signal
-
-We will begin the v4 migration when:
-- Effect v4.x has a stable release with final migration tooling
-- The team has reviewed the `MIGRATION.md` and confirmed no unexpected breaking changes
-- A dedicated migration branch is allocated (do not migrate as a side effect of feature work)
+### Safe Expansion Paths:
+- **`ManagedRuntime`**: Consolidate boundary execution in API handlers (`apps/sanctuary-api` Hono routes).
+- **`Schema.TaggedError`**: Use for schemas and errors crossing network boundaries or RPC endpoints.
+- **`DateTime` algebra**: Utilize Effect's `DateTime` module for timezone-safe calendar and scheduling logic.
+- **`effect/ai`**: Provider-agnostic LLM orchestration within `@repo/core/ai` tools.

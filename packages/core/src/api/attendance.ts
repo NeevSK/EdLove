@@ -21,7 +21,7 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpErro
     }),
     Effect.retry(defaultRetryPolicy),
     Effect.timeout(Duration.seconds(15)),
-    Effect.catchTag('TimeoutException', () =>
+    Effect.catchTag('TimeoutError', () =>
       Effect.fail(
         new AttendanceHttpError({
           message: 'Attendance API timed out after 15s',
@@ -34,7 +34,7 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpErro
 
 function toPromise<T>(effect: Effect.Effect<T, AttendanceHttpError, never>): Promise<T> {
   return Effect.runPromise(
-    effect.pipe(Effect.catchAll((e) => Effect.fail(new APIError(e.message, e.status)))),
+    effect.pipe(Effect.catch((e: AttendanceHttpError) => Effect.fail(new APIError(e.message, e.status)))),
   );
 }
 

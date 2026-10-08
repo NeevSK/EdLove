@@ -1,21 +1,29 @@
+---
+name: expo-rn-expert
+description: Authoritative engineering guidelines for building cross-platform React Native applications with Expo SDK and Expo Router.
+---
+
 # Expo & React Native Engineering Playbook (expo-rn-expert)
 
-Authoritative engineering guidelines for building cross-platform React Native (web and mobile) applications with **Expo SDK 57** and Expo Router in the Polymath Platform monorepo.
+Authoritative engineering guidelines for building cross-platform React Native (web and mobile) applications with **Expo SDK 58**, React Native 0.88 (New Architecture), and Expo Router in the Polymath Platform monorepo.
 
 ---
 
-## 0. Stack Facts (SDK 57 — verified 2026-08-13)
+## 0. Stack Facts (Expo SDK 58 — Active Platform Baseline)
 
-- **Expo SDK**: `~57.0.12` · **React Native**: `0.86.2` · **React**: 19.2+
-- **New Architecture only**: legacy architecture was removed in SDK 55. All native
+- **Expo SDK**: `~58.0.3` · **React Native**: `0.88.0-rc.3` (New Architecture) · **React**: `19.3.0`
+- **New Architecture only**: Legacy architecture was removed in SDK 55. All native
   modules must be New-Architecture (Fabric/TurboModules) compatible.
-- **Expo Router**: `~57.0.12` (aligned with the SDK). Deep linking via `gurudevi`
+- **Expo Router**: Aligned with SDK 58. Deep linking via `gurudevi`
   scheme; `DeepLinkProvider` is mounted in the root `app/_layout.tsx` provider tree.
 - **Sacred native pins** (do NOT change without explicit approval — see `AGENTS.md`):
-  `react-native-gesture-handler` 3.0.2, `react-native-reanimated` 4.5.0,
-  `react-native-worklets` 0.11.1, `react-native-mmkv` 4.3.2,
-  `react-native-nitro-modules` 0.36.1, `@shopify/react-native-skia` 2.11.2,
-  `typescript` 7.0.2.
+  - `react-native-gesture-handler`: `3.3.0` (RNGH v3 for New Architecture)
+  - `react-native-reanimated`: `4.7.1` (Reanimated 4 for New Architecture & Expo 58)
+  - `react-native-worklets`: `0.13.0` (Required by Reanimated 4.7)
+  - `react-native-mmkv`: `4.3.2` (Nitro modules v4)
+  - `react-native-nitro-modules`: `0.37.1` (Required by MMKV 4 / Nitro v0.37)
+  - `react-native-skia`: `3.0.2` (RN Skia v3 Graphite/WebGPU fork)
+  - `typescript`: `7.0.2` (Monorepo baseline)
 - **NEVER run `npx expo install --fix` or `--check`** — it downgrades sacred pins
   and breaks the New-Architecture build. Use `pnpm --filter gurudevi-mobile exec expo-doctor`.
 - **NEVER hand-edit `android/` or `ios/`** — they are ephemeral prebuild output.
@@ -93,10 +101,10 @@ To eliminate viewport cutoffs and frozen scrolls on high-performance web/mobile 
 ## 5. New-Architecture Native Modules
 
 *   All native module work goes through **Nitro modules** (`react-native-nitro-modules`
-    0.36.1) or Expo Modules. See the nitro-guidance / mmkv-guidance skills for the
+    0.37.1) or Expo Modules. See the nitro-guidance / mmkv-guidance skills for the
     enforcement spec.
-*   Motion/animation code uses **Reanimated 4** + **RNGH v3** (hook-based API).
-    Reanimated 4 requires `react-native-worklets`.
+*   Motion/animation code uses **Reanimated 4** (4.7.1) + **RNGH v3** (3.3.0, hook-based API).
+    Reanimated 4 requires `react-native-worklets` (0.13.0).
 *   When adding a native dependency: (1) check for an Expo config plugin and wire it
     into `app.json`; (2) for Maven repos add `android.extraMavenRepos` under
     `expo-build-properties`; (3) for custom native code, write a config plugin under
@@ -115,3 +123,66 @@ To eliminate viewport cutoffs and frozen scrolls on high-performance web/mobile 
 *   After any dependency change, run `pnpm run stack-map` (see `AGENTS.md`).
 *   Do not claim a native build passes without device/CI verification — Android
     builds take ~20 minutes locally and are deferred to CI.
+
+---
+
+## 7. How to Update Expo SDK
+
+1. **Review Upstream**: Check the Expo SDK changelog and breaking changes before bumping versions.
+2. **Upgrade SDK**: Run `npx expo upgrade` (updates SDK + aligned Expo packages).
+3. **Verify with Doctor**: Run `pnpm --filter gurudevi-mobile exec expo-doctor` to audit dependency alignment.
+4. **Physical Device Validation**: Test on a physical iOS/Android device to verify Fabric and TurboModules initialization.
+5. **Protect Sacred Pins**: If `expo upgrade` attempts to bump or align sacred pinned packages (RNGH, Reanimated, MMKV, Nitro, Skia), manually restore the pins in `package.json` and verify `expo.install.exclude` and `expo.doctor.reactNativeDirectoryCheck.exclude`.
+
+---
+
+## 8. Debugging Native Prebuild & Config Plugins
+
+1. **Inspect Resolved Prebuild Config**:
+   ```bash
+   npx expo config --type prebuild
+   ```
+   Verifies whether custom config plugins under `apps/gurudevi-mobile/plugins/` transformed the manifest/gradle files as expected.
+2. **Clean Ephemeral Native State**:
+   ```powershell
+   Remove-Item -Path "apps\gurudevi-mobile\android" -Recurse -Force
+   npx expo prebuild --no-install --platform android
+   ```
+3. **Inspect Plugin Logs**: Prebuild output enumerates every executed plugin in sequence. Look for plugin resolution failures.
+4. **Reference Documentation**:
+   - Developer runbook: [`apps/gurudevi-mobile/docs/Learning/EXPO_BUILD_RUNBOOK.md`](file:///c:/x/apps/gurudevi-mobile/docs/Learning/EXPO_BUILD_RUNBOOK.md)
+   - Infra & Gradle SOP: [`apps/gurudevi-mobile/docs/infra/expo-57-native-gradle-sop.md`](file:///c:/x/apps/gurudevi-mobile/docs/infra/expo-57-native-gradle-sop.md)
+
+---
+
+## 9. Agent-Native CLI (`@expo/agent-cli`) in Expo SDK 58
+
+Expo SDK 58 introduces `@expo/agent-cli` (`bin: expo-agent-cli`), the official agent-native interface designed for AI coding agents to run Expo workflows with machine-readable outputs and structured exit codes:
+
+### Core Workflows
+* **Project Health & Status**:
+  ```bash
+  npx @expo/agent-cli status
+  ```
+  Returns parsed project configuration, SDK alignment, and recommended next step.
+* **Detached Dev Server Execution**:
+  ```bash
+  npx @expo/agent-cli dev --detach
+  ```
+  Spawns Metro/native dev server in detached mode so agent sessions retain execution control.
+* **Runtime Verification & Screen Inspection**:
+  ```bash
+  npx @expo/agent-cli runtime:tree    # Inspect visible hierarchy and testIDs
+  npx @expo/agent-cli runtime:errors  # Capture active exceptions over time window
+  npx @expo/agent-cli runtime:reload  # Reload app from disk modifications
+  ```
+* **Single-Exit-Code Smoke Gate**:
+  ```bash
+  npx @expo/agent-cli smoke
+  ```
+  Verifies the running app bundle matches disk changes and returns exit code 0 or structured failure code.
+* **Automated Package Skill Synchronization**:
+  ```bash
+  npx @expo/agent-cli skills:sync
+  ```
+  Walks autolinked Expo dependencies, discovers embedded `skills/<name>/SKILL.md` files, and creates junctions in `.agents/skills/`.

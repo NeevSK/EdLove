@@ -9,20 +9,18 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 export type { FlashListRef };
 
-const SanctuaryFlashListWeb = React.forwardRef(function SanctuaryFlashListWebInner<T>(
-  {
-    data,
-    renderItem,
-    refreshing = false,
-    onRefresh,
-    emptyComponent,
-    refreshColor,
-    contentContainerStyle,
-    ListEmptyComponent,
-    ...props
-  }: SanctuaryFlashListProps<T>,
-  ref: React.ForwardedRef<FlashListRef<T>>,
-) {
+function SanctuaryFlashListWeb<T>({
+  data,
+  renderItem,
+  refreshing = false,
+  onRefresh,
+  emptyComponent,
+  refreshColor,
+  contentContainerStyle,
+  ListEmptyComponent,
+  ref,
+  ...props
+}: SanctuaryFlashListProps<T>) {
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;
 
@@ -64,9 +62,7 @@ const SanctuaryFlashListWeb = React.forwardRef(function SanctuaryFlashListWebInn
       }
     />
   );
-}) as <T>(
-  props: SanctuaryFlashListProps<T> & { ref?: React.Ref<FlashListRef<T>> | undefined },
-) => React.ReactElement | null;
+}
 
 export const SanctuaryFlashList = SanctuaryFlashListWeb;
 export default SanctuaryFlashListWeb;

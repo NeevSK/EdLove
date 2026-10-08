@@ -12,7 +12,8 @@
       "bundleIdentifier": "app.gurudevi.sanctuary",
       "buildNumber": "1",
       "associatedDomains": [
-        "applinks:sanctuary.gurudevi.app"
+        "applinks:sanctuary.gurudevi.app",
+        "applinks:gurudevi.app"
       ]
     },
     "android": {
@@ -54,12 +55,73 @@
         },
         {
           "action": "VIEW",
+          "data": [
+            {
+              "scheme": "gurudevi",
+              "host": "invite"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "gurudevi",
+              "host": "c"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
           "autoVerify": true,
           "data": [
             {
               "scheme": "https",
               "host": "sanctuary.gurudevi.app",
               "pathPrefix": "/qr"
+            },
+            {
+              "scheme": "https",
+              "host": "sanctuary.gurudevi.app",
+              "pathPrefix": "/invite"
+            },
+            {
+              "scheme": "https",
+              "host": "sanctuary.gurudevi.app",
+              "pathPrefix": "/c"
+            },
+            {
+              "scheme": "https",
+              "host": "sanctuary.gurudevi.app",
+              "pathPrefix": "/auth/callback"
+            },
+            {
+              "scheme": "https",
+              "host": "gurudevi.app",
+              "pathPrefix": "/qr"
+            },
+            {
+              "scheme": "https",
+              "host": "gurudevi.app",
+              "pathPrefix": "/invite"
+            },
+            {
+              "scheme": "https",
+              "host": "gurudevi.app",
+              "pathPrefix": "/c"
+            },
+            {
+              "scheme": "https",
+              "host": "gurudevi.app",
+              "pathPrefix": "/auth/callback"
             }
           ],
           "category": [

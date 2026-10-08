@@ -51,8 +51,20 @@ export {
 export {
   classifyRouteIntent,
   classifyRouteIntentEffect,
+  decodeInstallReferrer,
+  decodeInstallReferrerEffect,
+  formatClassroomDeepLink,
+  formatClassroomShareUrl,
   type RouteIntent,
+  type ValidatedReferrerIntent,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+export {
+  isPendingIntentExpired,
+  pendingIntentStore,
+  usePendingIntentStore,
+  type PendingDeepLinkIntent,
+  type PendingIntentStoreState,
+} from '@repo/core/logic/deeplink/pendingIntentStore';
 export {
   getSessionIdentityMode,
   type IdentityAvailability,

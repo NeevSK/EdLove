@@ -53,9 +53,9 @@ export const Easing = {
 };
 
 const createMockComponent = (tag: string) => {
-  const Component = React.forwardRef((props: any, ref: any) => {
+  const Component = ({ ref, ...props }: any) => {
     return React.createElement(tag, { ...props, ref });
-  });
+  };
   Component.displayName = `Animated(${tag})`;
   return Component;
 };

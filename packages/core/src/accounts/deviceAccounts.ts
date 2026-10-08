@@ -119,7 +119,7 @@ function getAuditQueue(): Queue.Queue<() => Promise<unknown>> {
       Queue.take(_auditQueue).pipe(
         Effect.flatMap((task) =>
           Effect.tryPromise({ try: task, catch: normalizeDeviceAccountError }).pipe(
-            Effect.catchAll((e) =>
+            Effect.catch((e: unknown) =>
               Effect.sync(() => console.warn('[deviceAccounts] Audit op failed', e)),
             ),
           ),

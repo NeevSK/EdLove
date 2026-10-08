@@ -237,6 +237,12 @@ function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
       args: [proxyScriptPath(), 'npx', '-y', '@mendable/firecrawl-mcp-server'],
     },
     {
+      name: 'exa',
+      envKey: 'EXA_API_KEY',
+      command: 'node',
+      args: [proxyScriptPath(), 'npx', '-y', 'exa-mcp-server'],
+    },
+    {
       name: 'reactnative-solutions',
       envKey: 'NONE', // No API key required
       alwaysRun: true,
@@ -629,6 +635,7 @@ class PolymathPlatformServer {
           'types',
           'hooks',
           'deprecations',
+          'version_drift',
           'memory_sinks',
           'cognitive_load',
           'push_audit',
@@ -659,6 +666,7 @@ class PolymathPlatformServer {
           types: (p) => this.audit.handleCheckTypes(p as any),
           hooks: (p) => this.audit.handleAuditHookViolations(p as any),
           deprecations: (p) => this.audit.handleAuditDeprecations(p as any),
+          version_drift: (p) => this.audit.handleAuditVersionDrift(p as any),
           memory_sinks: () => this.audit.handleCheckMemorySinks(),
           cognitive_load: (p) => this.audit.handleReportCognitiveLoad(p as any),
           push_audit: () => this.audit.handlePushAudit(),

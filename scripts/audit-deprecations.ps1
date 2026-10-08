@@ -25,12 +25,14 @@ $patterns = @(
     @{ Name = "RN: ListView"; Pattern = "ListView"; Severity = "CRITICAL"; Message = "Removed. Use FlatList or SectionList." },
     @{ Name = "RN: Picker"; Pattern = "import.*Picker.*from 'react-native'"; Severity = "MEDIUM"; Message = "Use @react-native-picker/picker." },
     
-    # Expo SDK 55 Deprecations
-    @{ Name = "Expo: newArchEnabled"; Pattern = "newArchEnabled"; Severity = "HIGH"; Message = "Removed in Expo 55. New Architecture is now mandatory." },
-    @{ Name = "Expo: notification config"; Pattern = '\"notification\":'; Severity = "HIGH"; Message = "Removed in app.json for Expo 55." },
-    @{ Name = "Expo: expo-permissions"; Pattern = "from 'expo-permissions'"; Severity = "HIGH"; Message = "Use module-specific permission methods (e.g. expo-location)." },
-    @{ Name = "Expo: expo-ads-admob"; Pattern = "from 'expo-ads-admob'"; Severity = "CRITICAL"; Message = "This package is deprecated and no longer supported." },
+    # Expo SDK 58 Deprecations
+    @{ Name = "Expo: newArchEnabled"; Pattern = "\"newArchEnabled\":"; Severity = "HIGH"; Message = "New Architecture is mandatory and default in Expo SDK 58. Flag is obsolete." },
+    @{ Name = "Expo: expo-permissions"; Pattern = "from ['\"]expo-permissions['\"]"; Severity = "HIGH"; Message = "Use module-specific permission methods (e.g. expo-location)." },
+    @{ Name = "Expo: expo-ads-admob"; Pattern = "from ['\"]expo-ads-admob['\"]"; Severity = "CRITICAL"; Message = "This package is deprecated and no longer supported." },
     
+    # PowerSync JS v2 Dialect
+    @{ Name = "PowerSync: AbstractPowerSyncDatabase"; Pattern = "AbstractPowerSyncDatabase"; Severity = "MEDIUM"; Message = "Legacy PowerSync v1 class. Use CommonPowerSyncDatabase in PowerSync JS v2." },
+
     # Gluestack / UI
     @{ Name = "UI: Legacy Deprecation Tag"; Pattern = "@deprecated"; Severity = "REVIEW"; Message = "Symbol is explicitly marked as deprecated in JSDoc." },
     @{ Name = "RN: useNativeDriver: false"; Pattern = "useNativeDriver:\s*false"; Severity = "LOW"; Message = "Avoid disabling native driver unless animating layout properties." }

@@ -398,11 +398,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -421,11 +421,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -444,11 +444,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -467,11 +467,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -490,11 +490,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -513,11 +513,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -536,11 +536,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -559,11 +559,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -582,11 +582,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -605,11 +605,11 @@
         "packages/core/src/lib/sync/registry.ts"
       ],
       "clientCalls": [
-        "client.api as any).powersync.upload.$post",
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
@@ -1009,7 +1009,8 @@
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
-        "client.api as any).self.thoughtRecord[':id'].$patch"
+        "client.api as any).self.thoughtRecord[':id'].$patch",
+        "orpcClient.sync.uploadBatch"
       ],
       "hasResponses": true
     },
