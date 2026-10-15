@@ -1,8 +1,8 @@
 const path = require('node:path');
 const fs = require('node:fs');
 
-const projectRoot = 'c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile';
-const workspaceRoot = 'c:/Users/Naween/projects/polymath-platform';
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(__dirname, '../..');
 
 const resolvePackage = (name, parentPaths = []) => {
   const searchPaths = [projectRoot, workspaceRoot, ...parentPaths];

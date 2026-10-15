@@ -1,8 +1,8 @@
 const path = require('node:path');
 const fs = require('node:fs');
 
-const _projectRoot = 'c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile';
-const workspaceRoot = 'c:/Users/Naween/projects/polymath-platform';
+const _projectRoot = __dirname;
+const workspaceRoot = path.resolve(__dirname, '../..');
 
 // 1. DISCOVERY LOGIC
 const INTERNAL_PACKAGE_MAPPINGS = {};
