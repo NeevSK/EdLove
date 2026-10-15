@@ -16,7 +16,7 @@ codebase (React Native Web).
 
 > **Transparent Hosted — MIT open source, hosted production.** `platform.gurudevi.edlove.org` is the recommended way to get community + curated library network benefits. Code is public for audit; self-host is dev-only/edge-case (isolated DB). See ADR [`2026-08-25-transparent-hosted-oss`](../../docs/decisions/2026-08-25-transparent-hosted-oss.md).
 
-> **Stack**: Expo SDK 57 · React Native 0.86 · New Architecture enabled ·
+> **Stack**: Expo SDK 58 · React Native 0.88 · New Architecture enabled ·
 > TypeScript · pnpm monorepo · PowerSync offline-first · Drizzle ORM ·
 > ZenStack v3 access control · Sovereign Hono API (`@repo/core`)
 

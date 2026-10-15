@@ -12,8 +12,9 @@ tags: [platform, monorepo]
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.0.2-blue)](https://www.typescriptlang.org/)
-[![Expo](https://img.shields.io/badge/Expo-57.0.24-000020?logo=expo)](https://expo.dev/)
-[![React Native](https://img.shields.io/badge/React_Native-0.86.2-61DAFB?logo=react)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-58.0.3-000020?logo=expo)](https://expo.dev/)
+[![React Native](https://img.shields.io/badge/React_Native-0.88-61DAFB?logo=react)](https://reactnative.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.4-black?logo=next.js)](https://nextjs.org/)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor_Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 > **Transparent Hosted — MIT open source, hosted production.** Code is public for audit at this repo (`LICENSE` MIT). Production runs hosted at `platform.gurudevi.edlove.org` (Expo 57 + Supabase Cloud + PowerSync Cloud + EAS). Self-host is dev-only/edge-case — you get community + curated library network benefits on our hosted stack. See ADR [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md).
@@ -29,11 +30,11 @@ A single monorepo for the EdLove education ecosystem:
 
 | App | Purpose | Framework | Status |
 |-----|---------|-----------|--------|
-| **`apps/gurudevi-mobile`** | **Native iOS/Android** — the flagship mobile app | Expo 57 (React Native 0.86, New Architecture) | ✅ Active |
-| **`apps/gurudevi-web`** | **Unified Web Platform** — Marketing + Sanctuary (Next.js 16) | Next.js 16 (App Router, Tailwind v4) | ✅ **Primary web target** |
-| `apps/gurudevi-marketingWeb` | Legacy marketing site (Astro) | Astro/Svelte | ⚠️ **Migrating → gurudevi-web** |
-| `apps/edlove-web` | EdLove foundation web (Astro) | Astro | ✅ Active |
-| `apps/sanctuary-api` | Sanctuary API (Hono) | Node.js/Hono | ✅ Active |
+| **`apps/gurudevi-mobile`** | **Native iOS/Android** — the flagship mobile app | Expo 58 (React Native 0.88, New Architecture) | ✅ Active |
+| **`apps/gurudevi-web`** | **Unified Web Platform** — Marketing + Sanctuary | Next.js 16.4 (Turbopack, Tailwind v4) | ✅ **Primary web target** |
+| `apps/gurudevi-marketingWeb` | Legacy marketing site | Astro/Svelte | ⚠️ **Deprecated → gurudevi-web** |
+| `apps/edlove-web` | EdLove Epistemic Commons (`edlove.org`) | Next.js 16.4 (SSG 223 routes, Turbopack) | ✅ Active |
+| `apps/sanctuary-api` | Sanctuary API & Verification Engine | Node.js/Hono/oRPC | ✅ Active |
 
 ### Domain Packages (Shared Logic)
 
@@ -87,9 +88,10 @@ A single monorepo for the EdLove education ecosystem:
 **Gurudevi** is in active development toward v1.0. The platform is feature-complete for core classroom workflows (attendance, assignments, wellbeing, community, library) but production deployment and operational hardening are ongoing.
 
 ### What's Working
-- ✅ Mobile app (React Native/Expo 57) with native new-architecture support
-- ✅ **Web platform (Next.js 15) — unified marketing + sanctuary at `gurudevi.app`**
-- ✅ Sanctuary API (Node.js/Hono) with OpenAPI spec
+- ✅ Mobile app (React Native 0.88 / Expo 58) with native new-architecture support
+- ✅ **Web platform (Next.js 16.4 Turbopack) — unified marketing + sanctuary at `gurudevi.app`**
+- ✅ EdLove Epistemic Commons (`edlove.org`) — 223 SSG static routes & AI crawler index
+- ✅ Sanctuary API (Node.js/Hono/oRPC) with OpenAPI spec
 - ✅ Local-first sync via PowerSync (offline support)
 - ✅ Multi-tenant authorization via ZenStack + Cedar policies
 - ✅ Cross-school community and curated library
