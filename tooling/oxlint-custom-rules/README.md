@@ -1,3 +1,3 @@
-# oxlint-plugin-polymath
+# oxlint-plugin-edlove
 
-Polymath custom Oxlint rules plugin providing AST-level architectural guardrails (banned naked Zustand store imports, max useState count, restricted async button handlers, and hydration-safe deterministic renders).
+EdLove custom Oxlint rules plugin providing AST-level architectural guardrails (banned naked Zustand store imports, max useState count, restricted async button handlers, and hydration-safe deterministic renders).

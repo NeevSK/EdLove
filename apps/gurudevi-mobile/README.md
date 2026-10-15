@@ -10,9 +10,8 @@ tags: [apps, gurudevi-mobile, expo, offline-first]
 
 # Gurudevi Mobile
 
-The operational engine of the Polymath platform: an Expo React Native app for
-teachers, students, and principals, with a full web target built from the same
-codebase (React Native Web).
+The operational engine of the EdLove & Gurudevi sanctuary: an Expo React Native app for
+teachers, students, and principals.
 
 > **Transparent Hosted — MIT open source, hosted production.** `platform.gurudevi.edlove.org` is the recommended way to get community + curated library network benefits. Code is public for audit; self-host is dev-only/edge-case (isolated DB). See ADR [`2026-08-25-transparent-hosted-oss`](../../docs/decisions/2026-08-25-transparent-hosted-oss.md).
 

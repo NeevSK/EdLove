@@ -91,4 +91,4 @@ pnpm dev
 - **Mobile app**: `apps/gurudevi-mobile` (React Native/Expo)
 - **Marketing site**: `apps/gurudevi-marketingWeb` (Astro) — ⚠️ **DEPRECATED**, migrating here
 - **Sanctuary API**: `apps/sanctuary-api` (Node.js/Hono)
-- **EdLove web**: `apps/edlove-web` (Astro) — Separate ecosystem site, not Gurudevi product
+- **EdLove web**: `apps/edlove-web` (Next.js 16 SSG) — Epistemic Commons and Research Atlas (`edlove.org`)

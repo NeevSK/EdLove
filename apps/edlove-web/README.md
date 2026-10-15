@@ -88,7 +88,7 @@ Run these from the `apps/edlove-web` directory:
 
 ## Open Source & Community
 
-This project is part of the Polymath Platform monorepo, released under the MIT License. See the root [LICENSE](../../LICENSE) file for details.
+This project is part of the EdLove ecosystem monorepo, released under the MIT License. See the root [LICENSE](../../LICENSE) file for details.
 
 For contributor guidelines, see the root [CONTRIBUTING.md](../../CONTRIBUTING.md). Security issues should be reported according to [SECURITY.md](../../SECURITY.md).
 

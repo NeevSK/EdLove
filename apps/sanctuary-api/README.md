@@ -10,7 +10,7 @@ tags: [apps, sanctuary-api, hono, orpc, openapi]
 
 # Sanctuary API
 
-The sovereign backend and verification service for the Polymath Platform / Gurudevi ecosystem. Built with **Node.js**, **Hono**, and **oRPC**, providing type-safe RPC contracts, OpenAPI schemas, and telemetry for the mobile and web clients.
+The sovereign backend and verification service for the EdLove & Gurudevi Sanctuary ecosystem. Built with **Node.js**, **Hono**, and **oRPC**, providing type-safe RPC contracts, OpenAPI schemas, and telemetry for the mobile and web clients.
 
 ---
 

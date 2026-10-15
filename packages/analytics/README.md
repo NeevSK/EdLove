@@ -10,7 +10,7 @@ tags: [packages, analytics]
 
 # @repo/analytics
 
-Premium analytics engine for polymath-platform providing advanced student performance insights, GPA calculations, and predictive analytics.
+Analytics and insights engine for the EdLove and Gurudevi ecosystem providing student performance insights, humane grading calculations, and pedagogical analytics.
 
 ## Purpose
 
