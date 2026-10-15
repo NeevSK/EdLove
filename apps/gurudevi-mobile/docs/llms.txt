@@ -1,0 +1,51 @@
+# Gurudevi Mobile Documentation Index (llms.txt)
+# Generated: 2026-10-15 | Git SHA: 5772cb8
+# Source: apps/gurudevi-mobile/docs/INDEX.md + docs-sop.md
+# This file follows the Docs7 llms.txt pattern — one line per document.
+
+## Navigation and adaptive chrome authority
+
+- [Mobile Navigation and Adaptive Chrome Architecture](architecture/mobile-navigation-and-adaptive-chrome.md) — canonical authority for active sub-tabs, domain registries, adaptive header hierarchy, collapsible chrome on scroll, and mindful community cadence.
+## Schema and database authority
+
+- [Fresh-install migration order repair and compatibility](decisions/2026-10-15-relief-inventory-migration-order-repair.md) — approved rename, identical-policy replacement fixes and local bootstrap evidence; remote history remains unchanged.
+- [Idealist Builder's Engineering Handbook](architecture/idealist-builders-engineering-handbook.md) — personal and team mental model for translating human vision into dependable software.
+- [Schema and Database Trust and Performance Guide](architecture/schema-db-trust-and-performance.md) — reusable rules for ZModel, Zod, PostgreSQL, RLS/RPC, migrations, idempotency, indexes, and verification.
+- [Database Parity and Schema Inventory Governance](database-parity-inventory-governance.md) — object ownership and parity evidence rules.
+- [Feature Lifecycle Management](architecture/feature-lifecycle-management.md) — continuously maintained source of truth.
+- [Lifecycle Audit and Consolidated Plan](architecture/2026-07-26-feature-flag-lifecycle-audit-and-plan.md) — dated implementation evidence.
+- [Feature Lifecycle Decision](decisions/004-feature-lifecycle-management.md) — current architecture boundary.
+- [Legacy Schema Retirement Runbook](architecture/2026-07-26-feature-flag-schema-retirement-runbook.md) — production-only retirement procedure.
+- [New Capability and Feature Flag Checklist](architecture/NEW_FEATURE_CHECKLIST.md) — onboarding procedure for developers and agents.
+- [Feature Gate Order and Context Ownership](decisions/005-feature-gate-order-and-context-ownership.md) — authorization, entitlement, rollout, and offline boundaries.
+- [Feature Access: Local and Server Architecture](architecture/2026-07-26-feature-access-local-server-architecture.md) — bootstrap context, authority boundaries, and enforcement parity.
+- [Entity-Bond and Policy Parity Foundation](architecture/2026-07-26-entity-bond-policy-parity-feature-spec.md) — canonical bond scope, ZenStack/Cedar vocabulary, and offline authority rules.
+- [Identity, App, Device, and Account Lifecycle](architecture/identity-app-device-lifecycle.md) — authoritative app/user/device topology, guest conversion, onboarding, citizenship, institutional joining, and entitlement boundaries.
+- [Feature Lifecycle Future Work](architecture/feature-lifecycle-future-work.md) — remaining production control-plane, legacy-schema, and governance work.
+- [Capability Policy Composition Guide](architecture/capability-policy-composition-guide.md) — how capacity, school type, citizenship, entitlement, platform, and rollout criteria are assigned to the correct authority.
+- [GrowthBook Cloud Rollout Record](architecture/2026-08-04-growthbook-cloud-rollout.md) — live control-plane state: 12 flags created, SDK wiring verification, audit result, client key, follow-ups.
+- [GrowthBook Key Naming (ADR-012)](decisions/012-growthbook-key-naming-ssot.md) — canonical `gurudevi.<domain>.<feature>` key convention, SSOT manifest, and rollout plan.
+## Platform-wide native capability work
+
+- [Native Capabilities](../../../native-capabilities/README.md) — middle-out architecture, capability contracts, testing/error/debugging standards, mental models, and roadmap for Rust/UniFFI, Expo modules, and Nitro.
+## Reliability and observability authority — read before Effect or telemetry work
+
+- [Observability and Error Handling Guide](Core/observability-and-error-handling-guide.md) — day-to-day developer and agent rules.
+- [Effect, PostHog, Sentry, and OpenTelemetry Boundary](decisions/2026-07-26-effect-observability-boundary.md) — why each system exists, what it owns, and what is intentionally deferred.
+- [Sanctuary API Observability and OpenTelemetry Plan](../../sanctuary-api/docs/architecture/2026-07-26-observability-and-tracing-plan.md) — backend-first tracing scope and mobile deferral criteria.
+- [Effect and OpenTelemetry Coherence and Coverage Audit](architecture/2026-07-26-effect-otel-coherence-and-coverage-audit.md) — evidence-based coverage matrix, coherence rules, gaps, and completion definition.
+- [Effect and OpenTelemetry Production Roadmap](Core/effect-otel-production-roadmap.md) — living implementation order, exit gates, and review rules.
+- [Product Analytics and PostHog Contract](architecture/2026-07-26-product-analytics-posthog-spec.md) — canonical product dimensions, event vocabulary, privacy boundaries, and PostHog ownership.
+- [Product Analytics Developer Guide](architecture/product-analytics-guide.md) — practical rules for adding product events.
+- [Effect-TS Coding Guide](Core/effect-ts-coding-guide.md) — Effect patterns and anti-patterns.
+- [Product Analytics Future Work](architecture/product-analytics-future-work.md) — remaining privacy, event-quality, dashboard, and offline-verification work.
+- [Effect-TS Architecture & Migration Guide (Repo-Wide)](../../../docs/architecture/effect-ts-architecture.md) — canonical source of truth for Effect-TS resilience, retry policies, and v4 migration readiness.
+## 📅 Recent Documentation Updates (Chronological Feed)
+
+- [Navigation & Sanctuary Refactor](./current_progress/2026-09-12-navigation-and-sanctuary-refactor.md) + [Mobile Navigation & Adaptive Chrome](architecture/mobile-navigation-and-adaptive-chrome.md) — Active sub-tabs terminology purge, 5-tab LRU cap, role-aware domain feature registries, Sanctuary overview hub with query param serialization, adaptive header hierarchy, collapsible chrome on scroll, and mindful anti-infinite community feed.
+- [Route Intent Policy](../../../docs/architecture/route-intent-policy.md) — Canonical public-link, QR, auth-callback, web/mobile handoff, recovery, refactor, and evidence policy for Expo 57 and Next.js 16. The 2026-09-07 audit and plan remain historical evidence.
+- [Android Build Chronicle & Performance Savings Report](infra/2026-09-05-android-build-chronicle-and-savings-report.md) — Post-mortem of MLKit blocker removal, ccache CMake launcher activation (905 units cached), Gradle build-cache metrics (77.2% reuse), and successful installation of versionCode 24 APK onto Samsung Galaxy physical device.
+
+---
+*Total: 32 documents*
+*Generated by scripts/generate-llms-txt.ts — run to refresh*

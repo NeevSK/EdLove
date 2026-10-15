@@ -5,7 +5,7 @@ created: 2025-11-03
 updated: 2026-10-15
 author: "Naveen"
 scribe: "Antigravity"
-tags: [edlove, gurudevi, sanctuary, offline-first, education-commons]
+tags: [edlove, gurudevi, sanctuary, offline-first, education-commons, humane-tech]
 ---
 
 # EdLove & Gurudevi Sanctuary
@@ -19,114 +19,96 @@ tags: [edlove, gurudevi, sanctuary, offline-first, education-commons]
 
 > **"Education born from Love, built with Love."**
 > 
-> **Transparent Hosted — MIT open source, hosted production.** Code is public for audit at this repository (`LICENSE` MIT). Production runs hosted at `edlove.org` and `gurudevi.app` (Next.js 16 + Expo 58 + Supabase + PowerSync + EAS). Self-hosting is supported for local development and offline environments. See ADR [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md).
+> **Transparent Hosted — MIT Open Source.** All code is public for community audit and collaboration under the MIT License. Hosted platforms run at [edlove.org](https://edlove.org) and [gurudevi.app](https://gurudevi.app). Self-hosting is fully supported for schools, community servers, and offline local-area networks.
 
 ---
 
-## The Dual-Engine Ecosystem
+## 🌿 The Dual-Engine Ecosystem
 
 EdLove is a civic and educational software constellation dedicated to **Education as Care Work**, non-extractive learning, and local-first institutional sovereignty:
 
-1. **EdLove Epistemic Commons (`edlove.org`)**: The philosophical foundation, global educational innovations archive, and open research atlas. Built as a high-velocity static knowledge commons with zero trackers and open AI discoverability.
-2. **Gurudevi Sanctuary (`gurudevi.app`)**: An offline-first digital haven and operational ecology for teachers, principals, students, and families. Designed for high resilience on fragile network connections, zero surveillance, and joyful classroom practice.
+1. **EdLove Epistemic Commons ([edlove.org](https://edlove.org))**: The public knowledge sanctuary, housing the 200 Educational Innovations archive, 6 Cosmos Paradigms, Pedagogy Canon, and the Ceylon Research Atlas. Built as an open, accessible knowledge commons with zero trackers and open AI discoverability.
+2. **Gurudevi Sanctuary ([gurudevi.app](https://gurudevi.app))**: An offline-first digital haven and operational ecology for teachers, principals, students, and families. Designed for high resilience on fragile network connections, absolute privacy, and joyful, dignified classroom practice.
 
 ---
 
-## Architecture & Topology
+## 🏛️ Ecosystem Overview
 
 ### Applications (`apps/`)
 
-| Application | Purpose | Framework / Runtime | Status |
-| :--- | :--- | :--- | :--- |
-| [**`apps/edlove-web`**](./apps/edlove-web) | **EdLove Epistemic Commons (`edlove.org`)** — 223 pre-rendered SSG routes, 200 Innovations Archive, 6 Cosmos Paradigms, Ceylon Research Atlas | Next.js 16.4 (SSG, Turbopack, Tailwind v4) | ✅ Active |
-| [**`apps/gurudevi-web`**](./apps/gurudevi-web) | **Gurudevi Unified Platform (`gurudevi.app`)** — Canonical browser sanctuary + marketing, host-routing proxy, in-browser WASM SQLite (OPFS) | Next.js 16.4 (Hybrid SSG/SSR, Turbopack) | ✅ **Primary Web Target** |
-| [**`apps/gurudevi-mobile`**](./apps/gurudevi-mobile) | **Gurudevi Mobile** — Operational flagship for teachers, students, and principals | Expo SDK 58 (React Native 0.88, New Architecture) | ✅ Active |
-| [**`apps/sanctuary-api`**](./apps/sanctuary-api) | **Sanctuary Verification Engine** — Cryptographic receipts, OpenAPI, distributed telemetry | Node.js / Hono / oRPC | ✅ Active |
-| `apps/gurudevi-marketingWeb` | Legacy marketing site (Astro) | Astro / Svelte | ⚠️ **Deprecated → gurudevi-web** |
+| Application | Purpose | Real State & Environment |
+| :--- | :--- | :--- |
+| [**`apps/edlove-web`**](./apps/edlove-web) | **EdLove Epistemic Commons (`edlove.org`)** — Public educational philosophy, 200 Innovations Archive, 6 Cosmos Paradigms, and Ceylon Research Atlas | 223 pre-rendered static routes, high-contrast APCA typography, instant search |
+| [**`apps/gurudevi-web`**](./apps/gurudevi-web) | **Gurudevi Unified Platform (`gurudevi.app`)** — Canonical browser sanctuary: public discovery + authenticated classroom, self, and school workspaces | Next.js 16 (Turbopack, Tailwind v4) with in-browser offline WASM SQLite |
+| [**`apps/gurudevi-mobile`**](./apps/gurudevi-mobile) | **Gurudevi Mobile** — Daily operational mobile haven for teachers, students, and principals | Expo SDK 58 / React Native 0.88 with local SQLite offline synchronization |
+| [**`apps/sanctuary-api`**](./apps/sanctuary-api) | **Sanctuary Verification Engine** — Cryptographic receipts, OpenAPI contracts, and distributed sync coordination | Lightweight, high-velocity Node.js / Hono microservice |
 
-### Shared Domain Packages (`packages/`)
+### Shared Domains (`packages/`)
 
-| Package | Purpose |
+| Domain Package | Human Role & Real State |
 | :--- | :--- |
-| [`@repo/core`](./packages/core) | **Ecosystem Spine**: Auth, tenancy, permissions, capabilities, offline resilience, and API clients |
-| [`@repo/classroom`](./packages/classroom) | **Classroom Domain**: Attendance, gradebook, reflect, classroom canvas, and practice definitions |
-| [`@repo/self`](./packages/self) | **Self Sanctuary**: Wellbeing, mindfulness, journaling, and personal reflection |
-| [`@repo/community`](./packages/community) | **Relational Space**: Inter-school trust networks, announcements, and peer connections |
-| [`@repo/library`](./packages/library) | **Curated Library**: Curated pedagogical resources, readers, and media |
-| [`@repo/ui`](./packages/ui) | **Design Primitives**: Platform-neutral design tokens, motion primitives, and accessible components |
+| [`@repo/core`](./packages/core) | **Ecosystem Spine**: Offline resilience, tenant boundaries, capability permissions, and cross-platform contracts |
+| [`@repo/classroom`](./packages/classroom) | **Classroom Sanctuary**: Compassionate attendance, reflective gradebook, lesson plans, timetables, and student reflections |
+| [`@repo/self`](./packages/self) | **Inner Sanctuary**: Private wellbeing check-ins, mindful journaling, gratitude, and personal growth |
+| [`@repo/community`](./packages/community) | **Relational Commons**: Non-algorithmic teacher circles, collaborative study groups, and family announcements |
+| [`@repo/library`](./packages/library) | **Open Knowledge**: Multilingual open educational resources (Sinhala, Tamil, English), clean readers, and offline collections |
+| [`@repo/profile`](./packages/profile) | **Identity & Journey**: Multidimensional growth paths, living portfolios, milestone celebrations, and verified identity QR badges |
+| [`@repo/admin`](./packages/admin) | **Institutional Stewardship**: Compassionate school leadership, term calendar, leave approvals, and official school reports |
+| [`@repo/people`](./packages/people) | **Human Presence**: Staff directory, educator care, daily presence pulses, and guardian relationships |
+| [`@repo/workforce`](./packages/workforce) | **Operational Services**: Support structures for lab assistants, maintenance teams, security, and facilities |
+| [`@repo/accounting`](./packages/accounting) & [`@repo/payments`](./packages/payments) | **Ethical Stewardship**: Transparent fee management, immediate digital receipts, and non-extractive bookkeeping |
+| [`@repo/scanner-kit`](./packages/scanner-kit) | **Optical Capture**: Fast, on-device QR scanning for classroom attendance and textbook resource discovery |
+| [`@repo/form-builder`](./packages/form-builder) | **Community Sensing**: Flexible, multi-language surveys, field observations, and classroom climate feedback |
+| [`@repo/graphics`](./packages/graphics) | **Visual Topologies**: Interactive educational knowledge trees, campus maps, and relationship diagrams |
+| [`@repo/database`](./packages/database) | **Offline Storage**: Local-first SQLite persistence and cloud synchronization |
+| [`@repo/editorial`](./packages/editorial) | **Editorial Publishing**: Content structures and metadata for research articles and innovations dossiers |
+| [`@repo/policies`](./packages/policies) & [`@repo/schema`](./packages/schema) | **Data Governance**: Formal Cedar authorization policies and unified ZenStack schema definitions |
+| [`@repo/platform-mcp`](./packages/platform-mcp) | **Sovereign Gateway**: Multi-model agentic tool gateway and codebase intelligence |
+| [`@repo/ui`](./packages/ui) | **Humane Design System**: Calming, tactile NativeWind design tokens and APCA-certified accessible components |
 
 ---
 
-## Core Invariants & Boundaries
+## 🛡️ Guiding Invariants
 
-- **Zero Data Enclosure**: Student and teacher data is strictly private. No behavioural ad trackers, zero surveillance, and local-first encryption.
-- **Offline-First by Design**: Primary classroom workflows function fully without internet. Local changes sync deterministically via PowerSync SQLite when connectivity is restored.
-- **Browser-Native Web**: `apps/gurudevi-web` is built browser-native in Next.js 16 with semantic HTML and route-scoped OPFS/SharedArrayBuffer headers (`COOP: same-origin`, `COEP: credentialless`).
-- **Sacred Native Pins**: Native mobile dependencies (Expo 58, React Native 0.88, Reanimated 4.7.1, Nitro 0.37.1) are pinned to ensure deterministic New Architecture builds.
+* **Dignity Over Surveillance**: We believe children and teachers are living beings to be nurtured, not data points to be mined. Zero advertising trackers, zero behavioral profiling.
+* **Local-First Autonomy**: A classroom never stops functioning when the internet goes down. Teaching and learning happen locally on physical devices and synchronize quietly when connections return.
+* **Convivial Software**: Designed to eliminate bureaucratic paperwork and return time, energy, and joy to the human relationships that make true education possible.
 
 ---
 
-## Quick Start
+## 🚀 Getting Started
 
-### Prerequisites
-- Node.js `22.x` (managed via `.nvmrc`)
-- pnpm `9.x` or later
+### For Explorers & Educators
+* Visit **[edlove.org](https://edlove.org)** to explore the 200 Educational Innovations and the Ceylon Research Atlas.
+* Experience the web sanctuary at **[gurudevi.app](https://gurudevi.app)**.
 
-### Installation & Development
-
+### For Developers & Community Contributors
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/NeevSK/EdLove.git
 cd EdLove
 
-# Install dependencies across all workspaces
+# 2. Install workspace dependencies
 pnpm install
 
-# Start development with Doppler secrets injection (team)
+# 3. Start local development
 pnpm dev
 
-# Or start individual surfaces
-pnpm --filter edlove-web dev        # EdLove Commons (localhost:4321 / 3000)
-pnpm --filter gurudevi-web dev      # Gurudevi Sanctuary (localhost:3000)
-pnpm --filter gurudevi-mobile dev   # Mobile Expo Dev Server
-```
-
-### Local Development Without Doppler
-
-To develop locally without Doppler, use the provided `.env.example` templates:
-
-```bash
-# Gurudevi Mobile local setup
-cp apps/gurudevi-mobile/.env.example apps/gurudevi-mobile/.env.local
-pnpm --filter gurudevi-mobile dev:no-doppler
-
-# Gurudevi Web local setup
-cp apps/gurudevi-web/.env.example apps/gurudevi-web/.env.local
-pnpm --filter gurudevi-web dev
+# Or run individual applications
+pnpm --filter edlove-web dev        # EdLove Commons
+pnpm --filter gurudevi-web dev      # Gurudevi Unified Web
+pnpm --filter gurudevi-mobile dev   # Mobile Development Client
 ```
 
 ---
 
-## Quality & Verification Gates
+## 🤝 Community & Stewardship
 
-```bash
-pnpm run lint          # Run Biome & ESLint across monorepo
-pnpm run check-types   # TypeScript strict compilation check
-pnpm run audit:secrets # Verify zero unencrypted secrets in workspace
-pnpm run test          # Execute Vitest test suites
-```
-
----
-
-## Community & Governance
-
-We welcome contributors who share our commitment to civic technology and education as care work:
-
-- **Contributing Guide**: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
-- **Code of Conduct**: [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)
-- **Security & Vulnerability Reporting**: [`SECURITY.md`](./SECURITY.md)
-- **Academic Citation**: [`CITATION.cff`](./CITATION.cff)
-- **License**: Released under the [MIT License](./LICENSE).
+* **Contributing**: Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) to understand our care-first contribution ethos.
+* **Code of Conduct**: We hold our spaces to the [`Contributor Covenant 2.1`](./CODE_OF_CONDUCT.md).
+* **Security & Vulnerabilities**: Please consult [`SECURITY.md`](./SECURITY.md) for private reporting.
+* **Citation**: For academic works citing this platform, please refer to [`CITATION.cff`](./CITATION.cff).
+* **License**: Released under the [MIT License](./LICENSE).
 
 ---
 

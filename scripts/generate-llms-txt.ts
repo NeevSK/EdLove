@@ -5,6 +5,7 @@
  * Agent-side only — no runtime deps, no platform buy.
  */
 
+import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

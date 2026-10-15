@@ -1,0 +1,40 @@
+# EdLove & Gurudevi Sanctuary (llms.txt)
+
+> Education born from Love, built with Love. An offline-first, convivial educational platform and epistemic commons for schools, teachers, and learners.
+
+This repository follows the llmstxt.org specification to provide AI models and automated indexers with direct, high-signal access to the architecture, packages, and principles of the EdLove and Gurudevi ecosystem.
+
+## Primary Documentation
+- [Repository Overview](README.md): High-level architecture, dual-engine ecosystem, and quick start guide.
+- [Public Opening Checklist](docs/infra/public-opening-checklist.md): Standards, security guarantees, and open-source verification records.
+- [Contributing Guide](CONTRIBUTING.md): Principles of care work and community contribution guidelines.
+- [Security Policy](SECURITY.md): Vulnerability reporting procedures and privacy invariants.
+- [Citation Metadata](CITATION.cff): Academic and bibliographic citation records.
+
+## Applications
+- [EdLove Commons (apps/edlove-web)](apps/edlove-web/README.md): Public epistemic commons, 200 Educational Innovations archive, Cosmos Paradigms, and Ceylon Research Atlas at edlove.org.
+- [Gurudevi Unified Web (apps/gurudevi-web)](apps/gurudevi-web/README.md): Canonical browser platform and offline WASM SQLite sanctuary at gurudevi.app.
+- [Gurudevi Mobile Flagship (apps/gurudevi-mobile)](apps/gurudevi-mobile/README.md): Expo SDK 58 and React Native 0.88 offline-first daily classroom haven for teachers and students.
+- [Sanctuary API Engine (apps/sanctuary-api)](apps/sanctuary-api/README.md): Node.js, Hono, and oRPC verification and settlement microservice.
+
+## Shared Domain Packages
+- [Ecosystem Spine (@repo/core)](packages/core/README.md): Offline resilience, session foundations, tenant safety, and shared platform contracts.
+- [Classroom Sanctuary (@repo/classroom)](packages/classroom/README.md): Compassionate attendance, reflective gradebook, lesson planning, and student reflections.
+- [Inner Sanctuary (@repo/self)](packages/self/README.md): Private wellbeing check-ins, mindful journaling, gratitude, and personal growth.
+- [Relational Commons (@repo/community)](packages/community/README.md): Non-algorithmic teacher circles, student collaborative groups, and community coordination.
+- [Open Knowledge Sanctuary (@repo/library)](packages/library/README.md): Multilingual curated open educational resources (Sinhala, Tamil, English) and accessible readers.
+- [Identity & Journey (@repo/profile)](packages/profile/README.md): Developmental growth paths, living portfolios, and offline QR identity presentation.
+- [Institutional Stewardship (@repo/admin)](packages/admin/README.md): School hierarchy, official calendar, leave approvals, and institutional reports.
+- [Human Presence Layer (@repo/people)](packages/people/README.md): Staff directory, educator care, daily presence pulses, and guardian links.
+- [Operational Staffing (@repo/workforce)](packages/workforce/README.md): Support structures for lab assistants, maintenance teams, security, and facilities.
+- [Ethical Financial Ledgers (@repo/accounting)](packages/accounting/README.md): Transparent double-entry bookkeeping and school budgeting.
+- [Transparent Collections (@repo/payments)](packages/payments/README.md): Dignified fee statements, instant digital receipts, and scholarship records.
+- [Offline Optical Capture (@repo/scanner-kit)](packages/scanner-kit/README.md): Fast, privacy-preserving on-device QR scanning for attendance and resources.
+- [Community Sensing & Forms (@repo/form-builder)](packages/form-builder/README.md): Multi-language surveys, field observations, and classroom climate feedback.
+- [Visual Knowledge & Topology (@repo/graphics)](packages/graphics/README.md): Interactive educational knowledge graphs and school campus maps.
+- [Offline Storage Layer (@repo/database)](packages/database/README.md): PowerSync bidirectional sync and local SQLite persistence.
+- [Editorial Publishing (@repo/editorial)](packages/editorial/README.md): Publishing contracts and metadata schemas for edlove.org.
+- [Data Governance & Policies (@repo/policies)](packages/policies/README.md): Formal Cedar authorization policies and boundary rules.
+- [Unified Schema (@repo/schema)](packages/schema/README.md): ZenStack ZModel relational schemas and migration definitions.
+- [Sovereign Gateway (@repo/platform-mcp)](packages/platform-mcp/README.md): Model Context Protocol gateway and codebase intelligence.
+- [Humane Design System (@repo/ui)](packages/ui/README.md): Tactile, APCA-contrast compliant NativeWind tokens and calming components.

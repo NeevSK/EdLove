@@ -1,34 +1,30 @@
 ---
-title: "@repo/graphics"
+title: "@repo/graphics - Visual Knowledge & Topology"
 status: "active"
 created: 2026-03-25
-updated: 2026-03-25
-author: "Naveen"
-scribe: "opencode"
-tags: [packages, graphics]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [packages, graphics, visualization, knowledge-graphs, maps]
 ---
 
-# @repo/graphics
+# @repo/graphics — Visual Knowledge & Topology
 
-## Purpose
-`@repo/graphics` owns reusable visual systems, diagrams, topologies, and richer graphical rendering shared across domains.
+> **Bringing abstract educational relationships, school topologies, and knowledge networks to life.**
 
-## Owns
-- reusable graphics and knowledge-topology components
-- cross-domain visual rendering logic
-- package-local web/native graphic variants when rendering technology differs
+`@repo/graphics` provides visual rendering tools for complex educational ideas. From interactive maps of educational ecosystems to conceptual knowledge trees and school layout diagrams, it makes relationships visible and tangible.
 
-## Does Not Own
-- domain orchestration
-- app shell layout or route control
-- business workflows that only happen to include graphics
+---
 
-## Collaborates With
-- `@repo/ui` for layout integration
-- domain packages that need advanced visuals
+## 🎨 Visual Paradigms
 
-## Web Placement
-Browser-specific graphic implementations belong here when the visual system itself differs across platforms.
+* **Ecosystem & Campus Topologies**: Interactive diagrams that illustrate the connections between classrooms, libraries, workshops, and gardens.
+* **Knowledge Graphs & Skill Trees**: Non-linear visual maps that help students explore how subjects, historical ideas, and scientific concepts interrelate.
+* **Responsive Visual Displays**: High-performance SVG, Canvas, and WebGPU visualizations that adjust smoothly across mobile phones and desktop displays.
+* **Accessible Visual Information**: All graphics provide descriptive text equivalents and semantic fallbacks for screen readers and low-vision users.
 
-## App Adapter Rule
-The app should consume graphics through domain packages or shared exports, not own graphic logic directly.
+---
+
+## 🛡️ Invariants
+
+* **Clarity of Meaning**: Visual effects are used purposefully to deepen understanding, never as gratuitous eye-candy that distracts or drains battery life.
+* **Performance on Modest Hardware**: Rendering loops are heavily optimized to prevent stuttering on entry-level Android devices.

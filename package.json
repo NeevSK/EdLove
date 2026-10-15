@@ -1,5 +1,5 @@
 {
-  "name": "polymath-platform",
+  "name": "edlove",
   "private": true,
   "type": "module",
   "scripts": {
@@ -36,6 +36,9 @@
     "install:android:release": "adb install -r apps/gurudevi-mobile/android/app/build/outputs/apk/release/app-release.apk",
     "clean:android-data": "adb shell pm clear --user 0 app.gurudevi.sanctuary.dev && adb shell am start --user 0 -n app.gurudevi.sanctuary.dev/app.gurudevi.sanctuary.MainActivity",
     "sync:wsl": "node scripts/sync-wsl.mjs",
+    "sync:workspace": "node scripts/workspace-sync.mjs",
+    "sync:push": "node scripts/workspace-sync.mjs --to-wsl",
+    "sync:pull": "node scripts/workspace-sync.mjs --to-win",
     "ios": "node ./scripts/run-and-report.mjs --cmd \"pnpm exec expo run:ios\" --name \"package_json-ios\"",
     "i18n:audit": "node ./scripts/run-and-report.mjs --cmd \"node scripts/i18n/audit-keys.mjs\" --name \"package_json-i18n_audit\"",
     "i18n:no-inline-fallbacks": "node ./scripts/run-and-report.mjs --cmd \"node scripts/i18n/check-inline-fallbacks.js\" --name \"package_json-i18n_no-inline-fallbacks\"",
@@ -260,4 +263,3 @@
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\""
   }
 }
-

@@ -1,58 +1,42 @@
 ---
-title: "@repo/ui"
+title: "@repo/ui - Humane Design System"
 status: "active"
 created: 2026-03-25
-updated: 2026-08-29
-author: "Naveen"
-scribe: "opencode"
-tags: [packages, ui, design-system, nativewind]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [packages, ui, design-system, accessibility, tokens, apca]
 ---
 
-# @repo/ui
+# @repo/ui — Humane Design System
 
-`@repo/ui` is Gurudevi's source-owned, NativeWind-aware design system for Expo, React Native, and web. It owns the visual language and reusable interaction surfaces; product packages compose those surfaces into domain workflows.
+> **A tactile, calm, and accessible visual language built for educators and learners.**
 
-## Architecture
+`@repo/ui` provides the design primitives, semantic tokens, and interaction components that define the look, feel, and soul of Gurudevi and EdLove. It is designed to feel restorative, clear, and dignified across both mobile touchscreens and desktop browsers.
 
-The package is organized as a small ownership hierarchy:
+---
 
-1. **Tokens** — semantic colors, typography, spacing, geometry, motion, and responsive behavior. Import the dependency-free contract explicitly from `@repo/ui/tokens`.
-2. **Primitives** — `Box`, `Text`, `Heading`, `VStack`, `HStack`, `Pressable`, `Input`, `Icon`, and related neutral building blocks.
-3. **Compounds** — `Button`, `FormField`, `Tabs`, `Command`, `Combobox`, `Popover`, `Dialog`, `Sheet`, and other reusable interaction contracts.
-4. **Brand components** — Gurudevi-specific feedback, loading, empty, success, and shell components.
-5. **Product components** — cross-domain UI intentionally shared by multiple product packages.
+## 🎨 Design Philosophy & Principles
 
-Prefer `@repo/ui/primitives` for neutral building blocks and explicit `@repo/ui/components/*` paths for larger components. Components should accept `className` where styling is part of the public contract and derive colors and behavior from semantic tokens.
+1. **Restorative Pacing & Visual Calm**: Learning environments should foster focus and tranquility. We avoid garish neon accents, relentless flashing badges, and high-stress notification red-dots.
+2. **APCA & WCAG3 Contrast Rigor**: Every text and UI element is rigorously checked against modern perceptual contrast algorithms, ensuring effortless legibility in bright classroom daylight as well as evening study.
+3. **Tactile & Natural Motion**: Subtle animations and gestures provide responsive, organic physical feedback without disorienting motion sickness or lag.
+4. **Universal Accessibility**: Semantic HTML for browsers, full screen-reader label coverage, and accessible touch target sizes (minimum 44x44 points) across all devices.
 
-## Third-party UI policy
+---
 
-Third-party libraries may provide behavior references, accessibility patterns, or native capability adapters. They are not the package's styling authority. Wrap or re-implement them behind an `@repo/ui` façade when they become part of the product surface, so consumers receive consistent tokens, NativeWind styling, dark mode, platform behavior, and accessibility semantics.
+## 🏛️ Component & Token Hierarchy
 
-The compatibility layer in `@repo/ui/gluestack` is retained for migration only. New consumers must use the source-owned primitives and compounds.
+The design system is structured to provide consistency without rigidity:
 
-## Platform boundaries
+* **Semantic Tokens (`@repo/ui/tokens`)**: Platform-neutral color palettes, typography scales, spacing units, and corner radii. Free of framework dependencies so they can be consumed anywhere.
+* **Primitives (`@repo/ui/primitives`)**: Elemental layout blocks—`Box`, `Text`, `Heading`, `VStack`, `HStack`, `Pressable`, and `Icon`.
+* **Compounds**: Accessible interactive components—`Button`, `FormField`, `Tabs`, `Dialog`, `Sheet`, `Popover`, `Combobox`, and `Command`.
+* **Sanctuary Shells**: Branded states for calm loading, compassionate empty screens, and celebratory milestone moments.
 
-Shared components should work across native and web where practical. Use `.native.tsx` and `.web.tsx` variants when platform behavior genuinely differs; keep the public contract aligned across variants. React Native imports are appropriate inside primitive implementations and platform adapters. Native capabilities such as storage, haptics, location, and sync belong behind the relevant `@repo/core` runtime boundary.
+---
 
-`@repo/ui/tokens` is the cross-platform UI contract boundary. It contains plain immutable values and types: no React, React Native, DOM, Tailwind, NativeWind, or framework imports. `@repo/ui/native` and future `@repo/ui/web` surfaces may consume it, but must never import one another. Domain logic remains outside this package.
+## 🤝 For Contributors & Designers
 
-## Showcase and documentation
-
-- [Source-owned NativeWind architecture](./docs/architecture/source-owned-nativewind-ui.md)
-- [Implementation roadmap](./docs/architecture/source-owned-nativewind-ui-roadmap.md)
-- [Semantic token guide](./docs/architecture/semantic-tokens.md)
-- [Component inventory](./docs/architecture/component-inventory.yaml)
-- [Documentation index](./docs/INDEX.md)
-- Development showcase route: `/ui-showcase` in `apps/gurudevi-mobile` (development builds only)
-
-## Verification
-
-From the repository root:
-
-```bash
-node node_modules/typescript/bin/tsc --build packages/ui/tsconfig.json --noEmit --pretty false
-pnpm --filter @repo/ui test
-pnpm --filter @repo/ui run lint:biome
-```
-
-Keep tests focused on public interaction contracts—keyboard and pointer behavior, accessibility state, controlled open/close state, form validation, and platform parity. Do not weaken assertions to accommodate implementation details.
+* Design from the mobile viewport upward: a component must feel completely natural in one hand on a compact smartphone before being scaled for desktop monitors.
+* Favor semantic colors (`surface-primary`, `text-secondary`, `brand-accent`) over raw hex codes so dark and light sanctuary themes remain harmonious.
+* Keep interactions fluid and respectful of user intent.

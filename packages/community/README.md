@@ -1,35 +1,31 @@
 ---
-title: "@repo/community"
+title: "@repo/community - Relational Commons"
 status: "active"
 created: 2026-03-25
-updated: 2026-03-25
-author: "Naveen"
-scribe: "opencode"
-tags: [packages, community]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [packages, community, solidarity, relationships, care-work]
 ---
 
-# @repo/community
+# @repo/community — Relational Commons
 
-## Purpose
-`@repo/community` is the relational ecosystem domain. It owns groups, feed participation, and community-specific creation and discovery flows.
+> **Nurturing authentic relationships, teacher solidarity, and collaborative learning communities.**
 
-## Owns
-- community APIs, types, and hooks
-- group and feed feature components
-- community-specific screens and any package-local web/native variants
+`@repo/community` represents the relational dimension of the Gurudevi ecosystem. It connects educators, learners, and families across schools, fostering genuine mutual aid rather than algorithmic engagement traps.
 
-## Does Not Own
-- app shell layout and route orchestration
-- profile identity rendering
-- classroom, admin, or self feature ownership
+---
 
-## Collaborates With
-- `@repo/core` for permissions and shared data access
-- `@repo/profile` for identity presentation
-- `@repo/ui` for shared interaction patterns
+## 🤝 Humane Purpose & Capabilities
 
-## Web Placement
-Community-specific browser experiences belong inside this package when they are truly feature-level differences.
+* **Teacher Peer Circles**: Safe spaces where educators can exchange lesson ideas, discuss classroom challenges, and offer mutual encouragement.
+* **School & Community Announcements**: Meaningful, broadcast-safe notices that keep families and learning communities aligned with school events.
+* **Collaborative Learning Groups**: Interest-based groups where students and mentors explore topics beyond the standardized curriculum.
+* **Non-Algorithmic Feeds**: Content is presented chronologically and transparently. There are no recommendation algorithms optimized to maximize outrage, screen time, or behavioral addiction.
 
-## App Adapter Rule
-The app may host route adapters for community routes, but not community orchestration.
+---
+
+## 🧭 Architectural Principles
+
+* **Relational Over Transactional**: Community interactions prioritize thoughtful long-form dialogue and mutual support over superficial metrics or vanity engagement counts.
+* **Privacy & Boundary Respect**: Group memberships and interactions strictly observe consent, ensuring family spaces and student interactions remain protected.
+* **Clean Separation of Concerns**: Identity presentation is coordinated with `@repo/profile`, while general design primitives come from `@repo/ui`.

@@ -1,8 +1,8 @@
 {
-  "name": "oxlint-plugin-polymath",
+  "name": "oxlint-plugin-edlove",
   "version": "0.1.0",
   "private": true,
-  "description": "Polymath architectural guardrails plugin for Oxlint (AST-level rules for state, stores, and hydration safety)",
+  "description": "EdLove architectural guardrails plugin for Oxlint (AST-level rules for state, stores, and hydration safety)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

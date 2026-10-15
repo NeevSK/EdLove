@@ -57,6 +57,8 @@ yarn-error.log*
 # Misc
 *.txt
 !**/public/robots.txt
+!llms.txt
+!**/llms.txt
 .DS_Store
 *.pem
 .claude/settings.local.json

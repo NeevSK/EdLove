@@ -1,144 +1,69 @@
 ---
-title: "Gurudevi Mobile"
+title: "Gurudevi Mobile Flagship"
 status: "active"
 created: 2026-02-05
-updated: 2026-08-24
+updated: 2026-10-15
 author: "Naveen"
-scribe: "opencode"
-tags: [apps, gurudevi-mobile, expo, offline-first]
+scribe: "Antigravity"
+tags: [apps, gurudevi-mobile, expo, react-native, offline-first, teachers]
 ---
 
-# Gurudevi Mobile
+# Gurudevi Mobile Flagship
 
-The operational engine of the EdLove & Gurudevi sanctuary: an Expo React Native app for
-teachers, students, and principals.
+> **The daily operational haven for teachers, students, and school leaders on iOS and Android.**
 
-> **Transparent Hosted — MIT open source, hosted production.** `platform.gurudevi.edlove.org` is the recommended way to get community + curated library network benefits. Code is public for audit; self-host is dev-only/edge-case (isolated DB). See ADR [`2026-08-25-transparent-hosted-oss`](../../docs/decisions/2026-08-25-transparent-hosted-oss.md).
-
-> **Stack**: Expo SDK 58 · React Native 0.88 · New Architecture enabled ·
-> TypeScript · pnpm monorepo · PowerSync offline-first · Drizzle ORM ·
-> ZenStack v3 access control · Sovereign Hono API (`@repo/core`)
+Gurudevi Mobile is the primary mobile client of the **EdLove** ecosystem. Engineered for high performance on accessible mobile hardware, it brings offline-first simplicity and peace of mind directly into the classroom.
 
 ---
 
-## Quick start
+## 📱 Human-Centered Capabilities
 
+* **Teacher Classroom Flow**: Fast, one-tap morning attendance, quick student notes, assignment tracking, and timetable orientation that works seamlessly without cellular data or Wi-Fi.
+* **The Personal Sanctuary (`Self`)**: Private wellbeing check-ins, mindful reflection, gratitude notes, and personal energy awareness for educators.
+* **Student Journey & Portfolios**: Safe spaces for learners to view schedules, submit project reflections, and celebrate learning milestones.
+* **Institutional Coordination**: Quick announcements, school calendar overviews, and peer connection circles.
+* **Offline Local-First Architecture**: Changes are saved immediately to local SQLite on the device and sync quietly via PowerSync once connectivity is restored.
+
+---
+
+## 🛠️ Architecture at a Glance
+
+* **Framework**: React Native 0.88 with the New Architecture enabled, built with Expo SDK 58.
+* **Local Persistence**: High-velocity SQLite with PowerSync offline synchronization and Nitro MMKV storage.
+* **Design Primitives**: Tactile NativeWind tokens and APCA-certified high-contrast components from `@repo/ui`.
+* **Domain Integration**: Shared business models, capabilities, and contracts provided by `@repo/core`, `@repo/classroom`, and `@repo/self`.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+* Node.js `22.x` and `pnpm`
+* Android Studio / Xcode (or Expo Go / Expo Development Client)
+
+### Quick Start
 ```bash
-pnpm install                 # from repo root (workspace install)
+# From repository root
+pnpm install
 
-pnpm --filter gurudevi-mobile setup:env   # pull env from Doppler (team)
-pnpm --filter gurudevi-mobile dev         # Expo dev server (Doppler-injected)
-pnpm --filter gurudevi-mobile android    # native Android dev build
+# Start the Expo development server
+pnpm --filter gurudevi-mobile dev
+
+# Or run directly on an Android device/emulator
+pnpm --filter gurudevi-mobile android
 ```
 
-No Doppler locally? Use `dev:no-doppler` and a hand-written `.env` — this is also the
-edge-case self-host dev loop (see ADR `2026-08-25-transparent-hosted-oss.md`):
-
+### Local Environment Setup
+To develop locally without team credentials, copy the example environment file:
 ```bash
-supabase start   # optional — local Postgres 17 + API on 54321 (supabase/config.toml)
-supabase status  # copy API URL + publishable key into .env.local
-cp .env.example .env.local   # then pnpm --filter gurudevi-mobile dev:no-doppler
+cp apps/gurudevi-mobile/.env.example apps/gurudevi-mobile/.env.local
+pnpm --filter gurudevi-mobile dev:no-doppler
 ```
-
-Secrets are **never** committed; `.env*` is gitignored. `.env.example` is the contract
-(`config/doppler-secrets.json`); `EXPO_PUBLIC_POWERSYNC_URL=""` means Message Bus only.
-`EXPO_PUBLIC_LIBRARY_UPSTREAM_URL` (empty by default) is reserved for future Hub Pull
-federation — leave empty unless you implement it.
-
-### Web target
-
-```bash
-pnpm --filter gurudevi-mobile web        # dev server (RN Web)
-pnpm --filter gurudevi-mobile build:web  # static export -> dist/
-```
-
-Deployed to `platform.gurudevi.edlove.org` via
-`.github/workflows/web-deploy.yml`. Web-specific overrides use `*.web.tsx`.
 
 ---
 
-## Architecture in one screen
+## 🤝 Contributor & Design Guardrails
 
-| Concern | Owner |
-|---|---|
-| UI primitives + brand system | `packages/ui` (`@repo/ui`) |
-| Domain logic / sovereign API | `packages/core` (`@repo/core`) |
-| Schema + migrations | `packages/schema`, `packages/database` |
-| Offline sync | PowerSync + `packages/database` |
-| AuthZ policies | ZenStack v3 (`.zmodel`) |
-| State | Zustand + TanStack Query |
-| Local storage | MMKV (nitro modules) |
-
-**UI rule:** always import from `@repo/ui`. Never import gluestack directly.
-Branded state components exist for every async surface — see
-[Branded Components guide](../../AGENTS.md) (BrandPulse, ErrorState,
-SuccessCheck/Glow, BrandedEmptyState, skeleton family).
-
----
-
-## Native builds & configuration
-
-- `android/` and `ios/` are **generated artifacts** (gitignored) — never edit
-  them. All native config lives in `app.json` + custom plugins in `plugins/`.
-- Several packages are pinned to specific versions for new-architecture
-  compatibility ("sacred versions"). See the table in the repo-root
-  [`AGENTS.md`](../../AGENTS.md) before touching dependencies.
-- Never run `npx expo install --fix` or `expo prebuild --clean`.
-
-```bash
-pnpm --filter gurudevi-mobile build:dev        # EAS development build
-pnpm --filter gurudevi-mobile build:preview    # EAS preview build
-pnpm --filter gurudevi-mobile build:prod       # EAS production build
-```
-
-Build troubleshooting: [docs/Learning/EXPO_BUILD_RUNBOOK.md](docs/Learning/EXPO_BUILD_RUNBOOK.md)
-and [docs/infra/expo-57-native-gradle-sop.md](docs/infra/expo-57-native-gradle-sop.md).
-
----
-
-## Quality gates
-
-```bash
-pnpm --filter gurudevi-mobile lint          # Biome + ESLint
-pnpm --filter gurudevi-mobile check-types   # tsc --build
-pnpm --filter gurudevi-mobile test          # Vitest
-pnpm --filter gurudevi-mobile audit:boundaries
-```
-
-A husky pre-push hook ("sovereign gate") runs commitlint, lint, react-doctor,
-and type checks before pushes are accepted.
-
----
-
-## Branch flow
-
-Promotion is merge-forward only:
-
-```
-feature/* -> main-dev -> main-QA -> main-preview -> main
-```
-
-Default branch: `main-dev`. Experimental work lands on `main-bleeding-edge`;
-exploration on `main-innovate`. No rebase on long-lived branches.
-
----
-
-## Documentation map
-
-All docs follow [docs/docs-sop.md](docs/docs-sop.md) (frontmatter contract,
-living/historical/generated tiers).
-
-| Path | Contents |
-|---|---|
-| `docs/INDEX.md` | Chronological changelog + navigation hub |
-| `docs/architecture/` | System design, data engines, security models |
-| `docs/Core/` | Engine details, UI doctrine, coding standards |
-| `docs/decisions/` | ADRs |
-| `docs/current_progress/` | Active plans (finished work moves to `old_docs/`) |
-| `docs/infra/` | Builds, CI, deployment, environment |
-| `docs/web/` | RN Web alignment guides |
-| `docs/Learning/` | Onboarding + build runbooks |
-
-## License
-
-MIT — see root [`LICENSE`](../../LICENSE). Transparent Hosted: code is open, production is hosted at `platform.gurudevi.edlove.org` (community/library network benefits require the hosted stack).
+* **Sacred Native Pins**: To maintain stability on the React Native New Architecture, native dependencies (`react-native-reanimated`, `react-native-gesture-handler`, `react-native-nitro-modules`, `react-native-skia`) are strictly pinned. Never run automated blanket dependency updates.
+* **Respect Teacher Attention**: Every interaction should minimize taps and reduce visual noise. If an action can be completed with a single tap, design it that way.
+* **Dignity & Privacy**: Never introduce behavioral trackers, invasive analytics, or third-party advertising SDKs into the mobile client.

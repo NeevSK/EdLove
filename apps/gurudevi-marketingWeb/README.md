@@ -1,42 +1,25 @@
 ---
-title: "Gurudevi Public Site (Marketing)"
+title: "Gurudevi Marketing Web (Legacy)"
 status: "deprecated"
 created: 2026-03-20
-updated: 2026-10-02
-author: "Naveen"
-scribe: "opencode"
-tags: [apps, gurudevi-marketingWeb, deprecated]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [apps, gurudevi-marketingWeb, deprecated, web]
 ---
 
-# ⚠️ DEPRECATED: Gurudevi Public Site (Marketing)
+# Gurudevi Marketing Web (Legacy)
 
-**Status**: This app is deprecated. See [DEPRECATION.md](./DEPRECATION.md) for details.
+> **Notice: This standalone marketing prototype has completed its transition and is now consolidated into the unified web platform at [`apps/gurudevi-web`](../gurudevi-web).**
 
-**New Home**: `apps/gurudevi-web` (Next.js canonical platform)
+---
 
-This Astro-based marketing site is being migrated to the unified Next.js platform at `apps/gurudevi-web`. All new marketing/web work should go there.
+## 🧭 Ecosystem Evolution
 
-## What Gurudevi is
+To provide a seamless, high-performance experience for teachers, students, and parents, Gurudevi's public web presence has been united with the browser sanctuary in **`apps/gurudevi-web`** (`gurudevi.app`).
 
-Gurudevi is an "Education Ecology Support System" built around five pillars:
+### Where to Find Things Now:
+* **Public Discovery & Stories**: `apps/gurudevi-web/app/(marketing)`
+* **Authenticated Sanctuary & Classroom**: `apps/gurudevi-web/app/(sanctuary)`
+* **Epistemic Commons & 200 Innovations Archive**: `apps/edlove-web` (`edlove.org`)
 
-1. **SELF** — wellbeing, mindfulness, personal reflection
-2. **WORKSPACE** — role-personalized environments:
-   - *Classroom Workspace* (teachers)
-   - *School Workspace* (principals/stewards)
-   - *Learning Studio* (students)
-   - *Family Space* (guardians)
-3. **COMMUNITY** — relational space for shared coordination and connection
-4. **LIBRARY** — shared curation of learning resources
-5. **PROFILE** — identity and developmental journey tracking
-
-## Tech stack
-
-- Framework: Astro
-- Styling: Tailwind CSS v4
-
-## Documentation
-
-- Context: [CONTEXT.md](./CONTEXT.md)
-- Core concept: [docs/core_idea.md](./docs/core_idea.md)
-- Web platform (the "real app"): [gurudevi-mobile/docs/web/WEB_GUIDE.md](../gurudevi-mobile/docs/web/WEB_GUIDE.md)
+This folder is preserved for archival history. All active web contributions should be made in `apps/gurudevi-web` or `apps/edlove-web`.

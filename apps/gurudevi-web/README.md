@@ -1,94 +1,46 @@
-# Gurudevi Web (Next.js)
+# Gurudevi Web — Unified Browser Platform
 
-**URL**: `platform.gurudevi.edlove.org` → `gurudevi.app` (Marketing + Sanctuary)
+> **Live Environment**: [gurudevi.app](https://gurudevi.app)
 
-This is the **canonical web platform** for Gurudevi — the unified browser experience that includes both public marketing and authenticated sanctuary. It uses Next.js 16 with the App Router and shares core business logic with the mobile app via `@repo/core` and `@repo/ui`.
+Gurudevi Web is the browser home of the **Gurudevi Sanctuary**. It brings together public community discovery, educational stories, and the complete authenticated workspace for teachers, school leaders, students, and families in a modern, accessible web interface.
 
-## Platform Unification
+---
 
-This app is consolidating two separate web surfaces:
+## 🌸 What This Surface Delivers
 
-- **Public marketing** (from `apps/gurudevi-marketingWeb`): Philosophy, capabilities, FAQ, privacy
-- **Authenticated sanctuary** (currently here): The browser-based product experience
+* **The Public Portal**: Educational philosophies, community stories, privacy charters, and guidance for schools considering adopting Gurudevi.
+* **The Living Workspaces**:
+  * **Classroom Workspace**: Attendance, compassionate grading, lesson delivery, and timetable overviews.
+  * **Inner Sanctuary (`/self`)**: Private journaling, mindful check-ins, and personal growth reflection.
+  * **Institutional Stewardship (`/admin`)**: School structure, approvals, and official reporting.
+  * **Open Library (`/library`)**: Curated regional learning resources and accessible readers.
+* **In-Browser Offline Sovereignty**: Built with in-browser WASM SQLite (OPFS), allowing teachers on desktop or Chromebooks to continue working even during local power or network outages.
 
-Per ADR [`2026-09-12-gurudevi-web-canonical-platform.md`](../../docs/decisions/2026-09-12-gurudevi-web-canonical-platform.md), this app will become the single canonical browser implementation. The Astro-based marketing site (`apps/gurudevi-marketingWeb`) will be migrated here and then deprecated.
+---
 
-See the implementation plan: [`2026-09-26-gurudevi-web-implementation-plan.md`](../../docs/current_progress/2026-09-26-gurudevi-web-implementation-plan.md)
+## 🎨 Craft & Accessibility Standards
 
-## What This App Is
+* **Accessible to All**: Full compliance with APCA and WCAG contrast guidelines for effortless reading in classroom environments.
+* **Browser-Native Performance**: Powered by Next.js 16 with the App Router, Turbopack, and semantic HTML without heavy native emulation wrappers.
+* **Mobile-First Responsiveness**: Designed to adapt gracefully from handheld smartphones up to wide classroom smart-displays.
 
-- **Marketing routes** (`app/(marketing)`): Public landing, support, documentation
-- **Sanctuary routes** (`app/(sanctuary)`): Authenticated product experience
-- **Shared contracts**: Uses the same Supabase, ZenStack authorization, and design tokens as mobile
+---
 
-## Tech Stack
-
-- Framework: Next.js 16 (App Router)
-- Styling: Tailwind CSS v4
-- Auth: Supabase SSR
-- State: React Query + Server Components
-- Sharing: `@repo/core`, `@repo/ui`, `@repo/self`
-
-## Development
-
-### Prerequisites
-
-- Node.js 22.x or later
-- pnpm 9.x or later
-
-### Quick Start
+## 🚀 Running Locally
 
 ```bash
-# From monorepo root
-pnpm install
-
-# Navigate to app
-cd apps/gurudevi-web
-
-# With Doppler (team)
-doppler run -- pnpm dev
-
-# Without Doppler (contributors)
-cp .env.example .env.local
-# Fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-pnpm dev
+# From the repository root
+pnpm --filter gurudevi-web dev
 ```
 
-### Commands
+Visit `http://localhost:3000` in your browser.
 
-| Command | Action |
-|---------|--------|
-| `pnpm dev` | Start local development server at `localhost:3000` |
-| `pnpm build` | Build for production |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run linting (Biome + ESLint) |
-| `pnpm check-types` | TypeScript type checking |
-| `pnpm test:g1:auth-callback` | G1 boundary tests for auth flows |
-| `pnpm test:e2e` | G4 browser E2E tests with Playwright |
+To configure local credentials, copy `.env.example` to `.env.local` and add your local Supabase test keys.
 
-## Architecture Notes
+---
 
-- **No React Native imports**: This is a pure web app — do not import React Native components
-- **Semantic HTML**: Build with browser-native behavior and accessibility
-- **Shared contracts**: Only platform-neutral validation, repositories, and design tokens are shared
-- **Viewport**: Design from 360-430px phone viewport upward; desktop enhancement must not alter primary phone journey
+## 🤝 Guidance for Contributors
 
-## Documentation
-
-- **Context**: See `CONTEXT.md` in this directory
-- **Mobile web guide**: `apps/gurudevi-mobile/docs/web/WEB_GUIDE.md`
-- **Platform readiness**: `docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md`
-
-## Security & Authorization
-
-- Uses the same Supabase project as mobile (via `NEXT_PUBLIC_SUPABASE_URL`)
-- Authorization via ZenStack policies (`@repo/policies`) + Cedar runtime
-- JWT verification on server routes via Supabase SSR
-- See `docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md` for full model
-
-## Related Apps
-
-- **Mobile app**: `apps/gurudevi-mobile` (React Native/Expo)
-- **Marketing site**: `apps/gurudevi-marketingWeb` (Astro) — ⚠️ **DEPRECATED**, migrating here
-- **Sanctuary API**: `apps/sanctuary-api` (Node.js/Hono)
-- **EdLove web**: `apps/edlove-web` (Next.js 16 SSG) — Epistemic Commons and Research Atlas (`edlove.org`)
+* Keep visual components calm, legible, and uncluttered.
+* Ensure all navigation and interactive elements can be operated cleanly with keyboard alone and assistive screen readers.
+* For design tokens and shared layout blocks, utilize `@repo/ui` and `@repo/core`.

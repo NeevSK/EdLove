@@ -1,36 +1,31 @@
 ---
-title: "@repo/library"
+title: "@repo/library - Open Knowledge Sanctuary"
 status: "active"
 created: 2026-03-25
-updated: 2026-03-25
-author: "Naveen"
-scribe: "opencode"
-tags: [packages, library]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [packages, library, open-knowledge, pedagogy, curation]
 ---
 
-# @repo/library
+# @repo/library — Open Knowledge Sanctuary
 
-## Purpose
-`@repo/library` is the knowledge sanctuary domain. It owns library browsing, collections, resource consumption, maps, and contribution flows.
+> **Curating open educational treasures, regional learning materials, and rich pedagogical resources.**
 
-## Owns
-- library APIs, types, hooks, and resource logic
-- library screens, collection detail views, and media viewers
-- package-local web/native variants for browsing and resource playback
-- collection and curation UI that belongs to the library domain
+`@repo/library` is the shared digital library and knowledge commons for Gurudevi. It makes high-quality learning resources freely accessible to teachers and students, especially in areas with limited physical books or unreliable internet.
 
-## Does Not Own
-- app shell navigation
-- generic browser shell components
-- classroom or profile workflows that only happen to link into the library
+---
 
-## Collaborates With
-- `@repo/core` for data and identity context
-- `@repo/ui` for shared cards and sanctuary surfaces
-- `@repo/graphics` for richer visual perspectives
+## 📚 Living Capabilities
 
-## Web Placement
-`*.web.tsx` files belong in `src/screens` and feature component folders when the browser version needs denser browsing, map, or media UX.
+* **Curated Pedagogical Collections**: Hand-curated lesson guides, open textbooks, problem sets, and interactive experiments organized by grade and subject.
+* **Regional Language Diversity**: Multilingual learning archives in Sinhala, Tamil, and English, honoring local linguistic heritage and contextual understanding.
+* **Offline-Available Media & Readers**: Clean, accessible reading viewers and offline document caching so students can read anytime, anywhere.
+* **Teacher Resource Sharing**: Simple pathways for educators to share self-authored worksheets, diagrams, and localized learning activities with colleagues.
 
-## App Adapter Rule
-The app may keep thin route adapters and stack registration, but library search, collections, and contribution behavior should live here.
+---
+
+## 🧭 Invariants & Openness
+
+1. **Free from Commercial Paywalls**: Knowledge in this sanctuary is treated as a public good, freely available to community schools and self-directed learners.
+2. **Distraction-Free Reading**: The reader interfaces prioritize typographic clarity, comfortable contrast, and reader focus, without intrusive banners or popups.
+3. **Low-Bandwidth Optimization**: File formats and preview graphics are compressed to load quickly over rural mobile connections.

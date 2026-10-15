@@ -1,40 +1,31 @@
 ---
-title: "@repo/profile"
+title: "@repo/profile - Identity & Developmental Journey"
 status: "active"
 created: 2026-03-25
-updated: 2026-03-25
-author: "Naveen"
-scribe: "opencode"
-tags: [packages, profile]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [packages, profile, identity, growth, journey]
 ---
 
-# @repo/profile
+# @repo/profile — Identity & Developmental Journey
 
-## Purpose
-`@repo/profile` is the identity-expression domain for people and school-facing presence. It owns profile rendering, social presentation, completion, and profile-linked public views.
+> **Celebrating personal growth, authentic individuality, and lifelong learning pathways.**
 
-## Owns
-- **Individual Story (Individual Holon)**
-- Personal growth metrics (Nature Paths: Lotus, Banyan, River, Crystal)
-- Private journey tracking (Whispered Moments, Living Journey)
-- Social identity-expression (Avatar, Bio, Social Links, Thuthimal rewards)
-- Profile rendering and profile-linked public views
+`@repo/profile` is the domain for personal self-expression and milestone recognition. It provides students and teachers with a dignified representation of who they are, how they are growing, and the learning paths they are walking.
 
-## Does Not Own
-- **Institutional Duty (The "Member")**
-- Staff attendance, presence, and leave tracking (moves to `@repo/people`)
-- School-wide ecosystem health metrics (moves to `@repo/people`)
-- Auth/session control
-- App shell routing and linking
-- Classroom or admin domain governance
+---
 
-## Collaborates With
-- `@repo/core` for identity data and entity access
-- `@repo/ui` for shared surfaces
-- `@repo/scanner-kit` for QR presentation
+## 🌟 Capabilities & Human Journey
 
-## Web Placement
-`*.web.tsx` files are allowed inside `src/screens` and `src/components` when profile experiences need browser-native layouts.
+* **Developmental Growth Pathways**: Visual tracking of personal exploration across multidimensional pathways (e.g. creative, analytical, reflective, ecological) rather than linear academic test rankings.
+* **Living Journey & Milestones**: A narrative timeline where learners can celebrate breakthrough moments, artistic creations, and service projects.
+* **Dignified Identity Expression**: Customizable avatars, bio notes, cultural badges, and personal learning aspirations.
+* **Secure QR Presentation**: Offline-verifiable identity badges for school attendance and library borrowing, powered by `@repo/scanner-kit`.
 
-## App Adapter Rule
-The app layer may keep route adapters for profile routes, but profile-specific composition and web rendering should live in this package.
+---
+
+## 🛡️ Clear Domain Invariants
+
+* **Development Over Competition**: Profiles avoid zero-sum public leaderboards or public ranking scores that cause student anxiety.
+* **Separation from Institutional Duty**: Staff duty scheduling, formal leave records, and administrative employment data belong in `@repo/people` and `@repo/workforce`; `@repo/profile` remains the personal expression of the individual.
+* **Student Data Protection**: Public visibility settings default to strict privacy, ensuring minors decide what they wish to share and with whom.

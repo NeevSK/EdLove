@@ -1,34 +1,30 @@
 ---
-title: "@repo/accounting"
+title: "@repo/accounting - Ethical Financial Ledgers"
 status: "active"
 created: 2026-03-25
-updated: 2026-03-25
-author: "Naveen"
-scribe: "opencode"
-tags: [packages, accounting]
+updated: 2026-10-15
+author: "EdLove Foundation & Gurudevi Sanctuary"
+tags: [packages, accounting, ethics, transparency, institutional-finance]
 ---
 
-# @repo/accounting
+# @repo/accounting — Ethical Financial Ledgers
 
-## Purpose
-`@repo/accounting` is the financial records and ledger domain for future Gurudevi ERP expansion.
+> **Transparent institutional bookkeeping, budgeting, and fiscal stewardship for schools.**
 
-## Owns
-- accounting contracts, ledger logic, budgeting flows, and finance-oriented screens when they become active
-- package-local web/native accounting variants
+`@repo/accounting` handles financial record-keeping for community schools and educational institutions. It ensures that every rupee collected or spent on student education is tracked with clarity, honesty, and accountability.
 
-## Does Not Own
-- payment gateway orchestration
-- app shell routing
-- generic admin governance that is not accounting-specific
+---
 
-## Collaborates With
-- `@repo/core` for permissions and tenancy
-- `@repo/payments` for collection-side workflows
-- `@repo/admin` for institutional reporting surfaces
+## 📊 Core Stewardship Areas
 
-## Web Placement
-When accounting screens arrive, dense browser-first accounting views belong here rather than in the app layer.
+* **Institutional General Ledger**: Double-entry bookkeeping tailored to educational non-profits and public schools.
+* **Budget Tracking & Allocations**: Managing departmental allocations for learning materials, library acquisitions, laboratory supplies, and campus improvements.
+* **Audit & Compliance Reporting**: Clean, exportable financial summaries for school boards, parent-teacher associations, and government oversight.
+* **Financial Transparency**: Clear visibility into operating costs to prevent financial leakage and foster community trust.
 
-## App Adapter Rule
-The app may register routes, but accounting ownership belongs here.
+---
+
+## 🧭 Invariants
+
+* **Ethical Accounting**: Designed for transparency and student welfare, not speculative financialization or extractive debt collection.
+* **Separation from Checkout**: Daily fee collection and receipts are managed through `@repo/payments`; this package provides the structured general ledger behind those operations.

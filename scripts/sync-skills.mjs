@@ -68,7 +68,7 @@ async function syncWorkspaceSkillsToAntigravity() {
     }
   }
 
-  let consolidatedInstructions = `---\ntitle: "Unified Developer Copilot Instructions"\nstatus: "active"\ncreated: 2026-05-31\nupdated: ${new Date().toISOString().slice(0, 10)}\nauthor: "Naveen"\nscribe: "opencode"\ntags: [.github, generated]\n---\n\n# Unified Developer Copilot Instructions\n\nGenerated automatically by the Polymath Platform Gateway. Do not edit directly.\n\n`;
+  let consolidatedInstructions = `---\ntitle: "Unified Developer Copilot Instructions"\nstatus: "active"\ncreated: 2026-05-31\nupdated: ${new Date().toISOString().slice(0, 10)}\nauthor: "Naveen"\nscribe: "Antigravity"\ntags: [.github, generated]\n---\n\n# Unified Developer Copilot Instructions\n\nGenerated automatically by the EdLove & Gurudevi Gateway. Do not edit directly.\n\n`;
 
   // Prepend root .cursorrules if available
   const cursorRulesPath = path.join(workspaceRoot, '.cursorrules');
@@ -95,7 +95,7 @@ async function syncWorkspaceSkillsToAntigravity() {
         .split('-')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ')} Skill`,
-      summary: `Workspace-bounded engineering playbook for ${skillName} integrated into the Polymath Platform.`,
+      summary: `Workspace-bounded engineering playbook for ${skillName} integrated into EdLove & Gurudevi Sanctuary.`,
       tags: [skillName, 'sovereign', 'monorepo', 'playbook'],
       updatedAt: new Date().toISOString(),
       references: [
