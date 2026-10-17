@@ -1,4 +1,5 @@
 import { communityORPCContract } from '@repo/core/api/community.orpc.contract';
+import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
@@ -307,7 +308,8 @@ export const communityRouter = impl.router({
       return { active: true };
     }),
   getComments: impl.getComments.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    const rows = await (context.db as any).communityComment.findMany({
+    assertDatabase(context);
+    const rows = await context.db.communityComment.findMany({
       where: { post_id: input.params.postId },
       take: input.query.limit ?? 60,
       orderBy: { created_at: 'asc' },
@@ -318,7 +320,8 @@ export const communityRouter = impl.router({
   createComment: impl.createComment
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const row = await (context.db as any).communityComment.create({
+      assertDatabase(context);
+      const row = await context.db.communityComment.create({
         data: {
           post_id: input.params.postId,
           author_id: context.user.id,
@@ -332,22 +335,23 @@ export const communityRouter = impl.router({
   deleteComment: impl.deleteComment
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).communityComment.delete({ where: { id: input.params.commentId } });
+      assertDatabase(context);
+      await context.db.communityComment.delete({ where: { id: input.params.commentId } });
       return { success: true };
     }),
   toggleCommentUpvote: impl.toggleCommentUpvote
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
+      assertDatabase(context);
       const where = {
         comment_id_user_id: { comment_id: input.params.commentId, user_id: context.user.id },
       };
-      const existing = await db.communityCommentUpvote.findUnique({ where });
+      const existing = await context.db.communityCommentUpvote.findUnique({ where });
       if (existing) {
-        await db.communityCommentUpvote.delete({ where });
+        await context.db.communityCommentUpvote.delete({ where });
         return { active: false };
       }
-      await db.communityCommentUpvote.create({
+      await context.db.communityCommentUpvote.create({
         data: { comment_id: input.params.commentId, user_id: context.user.id },
       });
       return { active: true };
@@ -355,7 +359,8 @@ export const communityRouter = impl.router({
   markOfficialAnswer: impl.markOfficialAnswer
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).communityComment.update({
+      assertDatabase(context);
+      await context.db.communityComment.update({
         where: { id: input.params.commentId },
         data: { is_official_answer: true },
       });

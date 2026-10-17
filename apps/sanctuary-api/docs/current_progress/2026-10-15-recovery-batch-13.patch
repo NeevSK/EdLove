@@ -1,0 +1,147 @@
+diff --git a/apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts b/apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts
+index 58e040814..7e129982a 100644
+--- a/apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts
++++ b/apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts
+@@ -41,7 +41,7 @@ describe('rewards API', () => {
+ 
+     it('returns user rewards when they exist', async () => {
+       setMockUserRewards({
+-        id: 'rewards-1',
++        id: '123e4567-e89b-12d3-a456-426614174010',
+         user_id: userId,
+         points: 100,
+         badges: ['Sanctuary Seeker'],
+@@ -52,12 +52,22 @@ describe('rewards API', () => {
+       const response = await createTestORPCClient(headers).rewards.getRewards({ query: {} });
+ 
+       expect(response).toMatchObject({
++        id: '123e4567-e89b-12d3-a456-426614174010',
+         user_id: userId,
+         points: 100,
+         badges: ['Sanctuary Seeker'],
+       });
+     });
+ 
++    it('does not bypass response validation for a corrupted stored identifier', async () => {
++      setMockUserRewards({
++        id: 'synthetic-invalid-private-id', user_id: userId, points: 100, badges: [],
++        created_at: '2026-08-01T00:00:00.000Z', updated_at: '2026-08-14T00:00:00.000Z',
++      });
++      await expect(createTestORPCClient(headers).rewards.getRewards({ query: {} }))
++        .rejects.toMatchObject({ status: 500, message: 'Output validation failed' });
++    });
++
+     it('rejects an attempt to read another user rewards through a query override', async () => {
+       await expect(
+         createTestORPCClient(headers).rewards.getRewards({
+diff --git a/packages/core/src/lib/practiceBoundary.test.ts b/packages/core/src/lib/practiceBoundary.test.ts
+index e82fa1fe9..0ed0c267e 100644
+--- a/packages/core/src/lib/practiceBoundary.test.ts
++++ b/packages/core/src/lib/practiceBoundary.test.ts
+@@ -91,6 +91,12 @@ describe('account practice boundary contracts (G0)', () => {
+       effects: 'local-only',
+       reset: 'feature-workspace',
+       keep: 'disabled',
++      persistence: {
++        mode: 'local-isolated',
++        documentId: 'daily-roll-call',
++        documentSchemaId: 'attendance-daily-roll-call-v1',
++        lifecycle: { inactivityDays: 30, maxDocuments: 20, maxBytes: 256 * 1024 },
++      },
+       capacities: [
+         'teacher',
+         'gradeHead',
+diff --git a/packages/core/src/lib/practiceBoundary.ts b/packages/core/src/lib/practiceBoundary.ts
+index dd9f9093f..2233fc915 100644
+--- a/packages/core/src/lib/practiceBoundary.ts
++++ b/packages/core/src/lib/practiceBoundary.ts
+@@ -42,6 +42,29 @@ export function deriveAccountPracticeKey(scope: AccountPracticeScope, key: strin
+   return derivePersistenceKey(scope.identity, `practice:${segments.join(':')}`);
+ }
+ 
++export function createAccountPracticeDocumentScope(input: {
++  accountId: string;
++  featureId: string;
++  documentId: string;
++}): AccountPracticeScope {
++  return createAccountPracticeScope({ ...input, workspaceId: input.documentId });
++}
++
++export function deriveAccountPracticeDocumentKey(scope: AccountPracticeScope): string {
++  return deriveAccountPracticeKey(scope, 'state');
++}
++
++export function deriveAccountPracticeIndexKey(accountId: string): string {
++  const identity = createPersistenceIdentity({
++    experience: 'sandbox', principal: { kind: 'account', id: accountId },
++  });
++  return derivePersistenceKey(identity, 'practice:index');
++}
++
++export function deriveAccountPracticeLegacyDismissalKey(scope: AccountPracticeScope): string {
++  return deriveAccountPracticeKey(scope, 'legacy-dismissed');
++}
++
+ /** Practice storage is local; production dispatch must remain denied. */
+ export function resolveAccountPracticeWriteDecision(
+   scope: AccountPracticeScope,
+diff --git a/packages/core/src/lib/practiceContract.ts b/packages/core/src/lib/practiceContract.ts
+index 79dc79fa8..837ea77be 100644
+--- a/packages/core/src/lib/practiceContract.ts
++++ b/packages/core/src/lib/practiceContract.ts
+@@ -43,6 +43,10 @@ export function createPracticeController<T extends PracticeValue>(input: {
+   scope: AccountPracticeScope;
+   adapter: SyncPracticeAdapter<T>;
+ }): SyncPracticeController<T>;
++export function createPracticeController<T extends PracticeValue>(input: {
++  scope: AccountPracticeScope;
++  adapter: PracticeAdapter<T>;
++}): PracticeController<T>;
+ export function createPracticeController<T extends PracticeValue>(input: {
+   scope: AccountPracticeScope;
+   adapter: PracticeAdapter<T>;
+diff --git a/packages/core/src/logic/registry/capabilityManifest.ts b/packages/core/src/logic/registry/capabilityManifest.ts
+index b3013bd57..8e421ef29 100644
+--- a/packages/core/src/logic/registry/capabilityManifest.ts
++++ b/packages/core/src/logic/registry/capabilityManifest.ts
+@@ -12,6 +12,13 @@ export type CapabilityPracticePolicy = Readonly<{
+   reset: 'feature-workspace';
+   keep: PracticeKeepPolicy;
+   capacities?: readonly string[];
++  persistence: Readonly<{
++    mode: 'local-isolated';
++    documentId: string;
++    documentSchemaId: string;
++    legacyLocations?: readonly Readonly<{ documentId: string; recordId: string }>[];
++    lifecycle: Readonly<{ inactivityDays: number; maxDocuments: number; maxBytes: number }>;
++  }>;
+ }>;
+ 
+ export type PracticeAvailability =
+@@ -58,6 +65,13 @@ export const CAPABILITY_MANIFEST: readonly CapabilityDeclaration[] = [
+       effects: 'local-only',
+       reset: 'feature-workspace',
+       keep: 'disabled',
++      persistence: {
++        mode: 'local-isolated',
++        documentId: 'fire-journal',
++        documentSchemaId: 'fire-journal-practice-v1',
++        legacyLocations: [{ documentId: 'self', recordId: 'self:fire_journal' }],
++        lifecycle: { inactivityDays: 30, maxDocuments: 20, maxBytes: 256 * 1024 },
++      },
+     },
+   },
+   {
+@@ -85,6 +99,12 @@ export const CAPABILITY_MANIFEST: readonly CapabilityDeclaration[] = [
+       effects: 'local-only',
+       reset: 'feature-workspace',
+       keep: 'disabled',
++      persistence: {
++        mode: 'local-isolated',
++        documentId: 'daily-roll-call',
++        documentSchemaId: 'attendance-daily-roll-call-v1',
++        lifecycle: { inactivityDays: 30, maxDocuments: 20, maxBytes: 256 * 1024 },
++      },
+       capacities: [
+         'teacher',
+         'gradeHead',

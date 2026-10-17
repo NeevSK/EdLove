@@ -4,11 +4,40 @@ import { vi } from 'vitest';
 import { coreRuntime } from '../../../../packages/core/src/logic/runtimeRegistry';
 
 let mockZenStackDbAvailable = true;
+const mockAuthIdentities = new Map<string, string | null>();
+const legacyAuthFixtureAccounts: Readonly<Record<string, string>> = {
+  'admin-user-1': '123e4567-e89b-12d3-a456-426614174000',
+  'teacher-user-1': '123e4567-e89b-12d3-a456-426614174000',
+  'student-user-1': '123e4567-e89b-12d3-a456-426614174002',
+};
+let mockAuthIdentityError: Error | null = null;
+let mockAuthIdentityLookup: { query: string; parameters: readonly unknown[] } | null = null;
+
+export function setMockAuthIdentity(subject: string, accountId: string | null) {
+  mockAuthIdentities.set(subject, accountId);
+}
+
+export function setMockAuthIdentityError(error: Error | null) {
+  mockAuthIdentityError = error;
+}
+
+export function resetMockAuthIdentities() {
+  mockAuthIdentities.clear();
+  mockAuthIdentityError = null;
+  mockAuthIdentityLookup = null;
+}
+
+export function getMockAuthIdentityLookup() {
+  return mockAuthIdentityLookup;
+}
 let mockActiveBond: any = null;
 let mockUserData: any = null;
 let mockUsers: any[] = [];
 let mockDailyContentRows: any[] = [];
 let mockLastQueryRawArgs: unknown[] | null = null;
+let mockLastExecuteRawArgs: unknown[] | null = null;
+let mockLastDatabaseQueryArgs: [string, readonly unknown[]] | null = null;
+let mockRawQueryRowsQueue: unknown[][] = [];
 let mockQueryRowsQueue: any[][] = [];
 let mockLibraryCollectionRead: any = null;
 let mockLibraryCollections: any[] = [];
@@ -31,8 +60,18 @@ let mockWhisperedMoments: any[] = [];
 
 // Classroom note mock
 let mockClassroomNotes: any[] = [];
+let mockClassroomNoteRead: Record<string, unknown> | null | undefined;
+export function setMockClassroomNoteRead(row: Record<string, unknown> | null | undefined) {
+  mockClassroomNoteRead = row;
+}
 let mockClassrooms: any[] = [];
 let mockClassroomStudents: any[] = [];
+const mockEducationalRows = new Map<string, Record<string, unknown>>();
+let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
+
+export function setMockAssignmentSubmissionRead(row: Record<string, unknown> | null) {
+  mockAssignmentSubmissionRead = row;
+}
 
 export function setMockZenStackDbAvailable(available: boolean) {
   mockZenStackDbAvailable = available;
@@ -69,8 +108,33 @@ export function getMockLastQueryRawArgs(): unknown[] | null {
   return mockLastQueryRawArgs;
 }
 
+export function getMockLastDatabaseQueryArgs(): [string, readonly unknown[]] | null {
+  return mockLastDatabaseQueryArgs;
+}
+
+export function setMockRawQueryRowsQueue(rows: unknown[][]) {
+  mockRawQueryRowsQueue = [...rows];
+  mockLastQueryRawArgs = null;
+  mockLastExecuteRawArgs = null;
+}
+
+export function getMockLastExecuteRawArgs(): unknown[] | null {
+  return mockLastExecuteRawArgs;
+}
+
+async function queryMockRawRows(...args: unknown[]): Promise<unknown[]> {
+  mockLastQueryRawArgs = args;
+  return mockRawQueryRowsQueue.shift() ?? mockDailyContentRows;
+}
+
+async function executeMockRaw(...args: unknown[]): Promise<number> {
+  mockLastExecuteRawArgs = args;
+  return 1;
+}
+
 export function setMockQueryRowsQueue(rows: any[][]) {
   mockQueryRowsQueue = [...rows];
+  mockLastDatabaseQueryArgs = null;
 }
 
 export function setMockLibraryTemporalRead({
@@ -137,6 +201,7 @@ export function setMockClassroomRelationships({
 }) {
   mockClassrooms = classrooms;
   mockClassroomStudents = students ?? [];
+  mockEducationalRows.clear();
 }
 
 export function getMockLibraryCollectionFindManyArgs() {
@@ -149,27 +214,62 @@ function createMockDelegate(name: string): any {
     {
       get(_target, prop) {
         if (prop === 'findUnique') {
+          if (name === 'classroomStudent')
+            return async (args: {
+              where: { classroom_id_student_id: { classroom_id: string; student_id: string } };
+            }) => {
+              const key = args.where.classroom_id_student_id;
+              return (
+                mockClassroomStudents.find(
+                  (row) =>
+                    row.classroom_id === key.classroom_id && row.student_id === key.student_id,
+                ) ?? null
+              );
+            };
+          if (name === 'classroom')
+            return async (args: { where: { id: string } }) =>
+              mockClassrooms.find((row) => row.id === args.where.id) ?? null;
+          if (name === 'material')
+            return async (args: { where: { id: string } }) =>
+              mockEducationalRows.get(`material:${args.where.id}`) ?? null;
           if (name === 'sanctuaryManifesto') {
             return async () => ({
               id: 'd23e4567-e89b-12d3-a456-426614174000',
               school_id: mockActiveBond?.entity_id ?? '223e4567-e89b-12d3-a456-426614174000',
             });
           }
-          if (name === 'communityCommentUpvote') return async () => null;
-          if (name === 'assignmentSubmission') return async () => null;
-          if (name === 'classroomNote')
+          if (name === 'gradeClass') {
             return async (args: any = {}) => ({
-              id: args?.where?.id ?? 'mock-note-id',
-              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
-              school_id: 'school-123',
-              author_id: '123e4567-e89b-12d3-a456-426614174000',
+              id: args?.where?.id ?? '123e4567-e89b-12d3-a456-426614174004',
+              school_id: mockActiveBond?.entity_id ?? '123e4567-e89b-12d3-a456-426614174000',
+              academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+              status: 'active',
             });
+          }
+          if (name === 'communityCommentUpvote') return async () => null;
+          if (name === 'assignmentSubmission') return async () => mockAssignmentSubmissionRead;
+          if (name === 'classroomNote')
+            return async (args: any = {}) =>
+              mockClassroomNoteRead !== undefined
+                ? mockClassroomNoteRead
+                : {
+                    id: args?.where?.id ?? 'mock-note-id',
+                    classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+                    school_id: 'school-123',
+                    author_id: '123e4567-e89b-12d3-a456-426614174000',
+                    classroom: { school_id: 'school-123' },
+                  };
           if (name === 'assignment')
-            return async () => ({
-              id: '923e4567-e89b-12d3-a456-426614174000',
-              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
-              school_id: 'school-123',
-            });
+            return async (args: { where: { id: string } }) => {
+              const row = mockEducationalRows.get(`assignment:${args.where.id}`) ?? {
+                id: '923e4567-e89b-12d3-a456-426614174000',
+                classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+              };
+              return {
+                ...row,
+                classroom: mockClassrooms.find((item) => item.id === row.classroom_id),
+              };
+            };
           if (name === 'principalNote')
             return async (args: any = {}) => ({
               id: args?.where?.id ?? 'principal-note-mock-id',
@@ -192,8 +292,8 @@ function createMockDelegate(name: string): any {
                   }
                 : null;
           if (name === 'school') {
-            return async () => ({
-              id: 'mock-school',
+            return async (args: any = {}) => ({
+              id: args?.where?.id ?? '123e4567-e89b-12d3-a456-426614174000',
               name: 'Mock School',
               created_by: '123e4567-e89b-12d3-a456-426614174000',
               _count: { classrooms: 0, bonds: 0 },
@@ -422,6 +522,53 @@ function createMockDelegate(name: string): any {
           prop === 'deleteMany' ||
           prop === 'updateMany'
         ) {
+          if (name === 'libraryCollection' && prop === 'update') {
+            return async (args: { where: { id: string }; data: Record<string, unknown> }) => {
+              const existing =
+                mockLibraryCollectionRead?.id === args.where.id ? mockLibraryCollectionRead : {};
+              return {
+                id: args.where.id,
+                name: 'Test Collection',
+                description: null,
+                thumbnail_url: null,
+                creator_id: '123e4567-e89b-12d3-a456-426614174000',
+                visibility: 'public',
+                subjects: [],
+                topics: [],
+                grades: [],
+                resource_ids: [],
+                sequence_order: [],
+                is_official: false,
+                forks: 0,
+                used_by_count: 0,
+                endorsements: 0,
+                estimated_duration: null,
+                school_id: null,
+                original_collection_id: null,
+                created_at: new Date('2026-01-01T00:00:00.000Z'),
+                updated_at: new Date('2026-01-01T00:00:00.000Z'),
+                ...existing,
+                ...args.data,
+                creator: { full_name: 'Mock User', avatar_url: null },
+                collection_nodes: [],
+              };
+            };
+          }
+          if (name === 'resourceEngagement' && prop === 'create') {
+            return async (args: {
+              data: {
+                resource_id: string;
+                user_id: string;
+                engagement_type: string;
+                classroom_id?: string | null;
+              };
+            }) => ({
+              id: 'a23e4567-e89b-12d3-a456-426614174000',
+              ...args.data,
+              classroom_id: args.data.classroom_id ?? null,
+              created_at: new Date('2026-01-01T00:00:00.000Z'),
+            });
+          }
           if (name === 'sanctuaryManifesto' && prop === 'create') {
             return async (args: any = {}) => ({
               id: 'd23e4567-e89b-12d3-a456-426614174000',
@@ -440,6 +587,13 @@ function createMockDelegate(name: string): any {
               ...(args?.data ?? {}),
             });
           }
+          if (name === 'groupMember' && prop === 'create') {
+            return async (args: { data: Record<string, unknown> }) => ({
+              id: '523e4567-e89b-12d3-a456-426614174000',
+              joined_at: null,
+              ...args.data,
+            });
+          }
           if (name === 'groupMember' && prop === 'update') {
             return async (args: any = {}) => ({
               id: '523e4567-e89b-12d3-a456-426614174000',
@@ -451,11 +605,35 @@ function createMockDelegate(name: string): any {
               ...(args?.data ?? {}),
             });
           }
+          if (name === 'communityComment' && prop === 'create') {
+            return async (args: any = {}) => ({
+              id: '423e4567-e89b-12d3-a456-426614174000',
+              post_id: args?.data?.post_id ?? '123e4567-e89b-12d3-a456-426614174000',
+              author_id: args?.data?.author_id ?? '123e4567-e89b-12d3-a456-426614174000',
+              content: args?.data?.content ?? '',
+              is_anonymous: Boolean(args?.data?.is_anonymous),
+              is_official_answer: false,
+              upvote_count: 0,
+              created_at: new Date(),
+              updated_at: new Date(),
+              author: { full_name: 'Mock User', avatar_url: null },
+              ...(args?.data ?? {}),
+            });
+          }
           if (name === 'directConversation' && prop === 'create') {
             return async (args: any = {}) => ({
               id: '623e4567-e89b-12d3-a456-426614174000',
               created_at: new Date(),
               updated_at: new Date(),
+              ...(args?.data ?? {}),
+            });
+          }
+          if (name === 'gradeMark' && prop === 'create') {
+            return async (args: any = {}) => ({
+              id: args?.data?.id ?? crypto.randomUUID(),
+              created_at: new Date(),
+              updated_at: new Date(),
+              publication_state: 'draft',
               ...(args?.data ?? {}),
             });
           }
@@ -685,6 +863,39 @@ function createMockDelegate(name: string): any {
               reactions: [],
               author: { full_name: 'Test Author' },
             });
+          }
+          if (
+            [
+              'classroom',
+              'classroomStudent',
+              'material',
+              'assignment',
+              'assignmentSubmission',
+            ].includes(name)
+          ) {
+            return async (args: any = {}) => {
+              const id = args.where?.id ?? args.data?.id ?? crypto.randomUUID();
+              const data = Object.fromEntries(
+                Object.entries(args.data ?? {}).filter(([, value]) => value !== undefined),
+              );
+              const row = {
+                id,
+                created_at: new Date(),
+                updated_at: new Date(),
+                ...(name === 'classroom' ? { academic_year: '2026' } : {}),
+                ...(name === 'classroomStudent' ? { enrolled_at: new Date() } : {}),
+                ...(name === 'assignmentSubmission'
+                  ? {
+                      submitted_at: new Date(),
+                      classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+                    }
+                  : {}),
+                ...mockEducationalRows.get(`${name}:${id}`),
+                ...data,
+              };
+              mockEducationalRows.set(`${name}:${id}`, row);
+              return row;
+            };
           }
           return async (args: any = {}) => ({
             id: `${name}-mock-id`,
@@ -930,7 +1141,10 @@ function createMockDelegate(name: string): any {
         if (prop === 'findFirst') {
           if (name === 'bond') {
             return async (args: any = {}) => {
-              if (args?.where?.entity_type === 'PERSONAL_CLASSROOM' && mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM')
+              if (
+                args?.where?.entity_type === 'PERSONAL_CLASSROOM' &&
+                mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM'
+              )
                 return null;
               if (args?.where?.entity_type === 'SCHOOL' && mockActiveBond?.entity_type !== 'SCHOOL')
                 return null;
@@ -941,6 +1155,17 @@ function createMockDelegate(name: string): any {
                 return null;
               return mockActiveBond;
             };
+          }
+          if (name === 'gradeClassTeacherAssignment') {
+            return async (args: any = {}) => ({
+              id: 'gcta-mock-1',
+              grade_class_id: args?.where?.grade_class_id ?? '123e4567-e89b-12d3-a456-426614174004',
+              academic_cycle_id: args?.where?.academic_cycle_id ?? '123e4567-e89b-12d3-a456-426614174010',
+              teacher_id: args?.where?.teacher_id ?? '123e4567-e89b-12d3-a456-426614174000',
+              status: 'active',
+              effective_from: new Date('2020-01-01'),
+              effective_to: null,
+            });
           }
           if (name === 'moodLog') {
             return async (args: any = {}) => {
@@ -990,11 +1215,9 @@ function createMockDelegate(name: string): any {
           return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
         }
         if (prop === '$queryRaw') {
-          return async (...args: unknown[]) => {
-            mockLastQueryRawArgs = args;
-            return mockDailyContentRows;
-          };
+          return queryMockRawRows;
         }
+        if (prop === '$executeRaw') return executeMockRaw;
 
         return createMockDelegate(`${name}.${String(prop)}`);
       },
@@ -1010,11 +1233,9 @@ const mockDb = new Proxy(
         return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
       }
       if (prop === '$queryRaw') {
-        return async (...args: unknown[]) => {
-          mockLastQueryRawArgs = args;
-          return mockDailyContentRows;
-        };
+        return queryMockRawRows;
       }
+      if (prop === '$executeRaw') return executeMockRaw;
       if (prop === '$queryRawUnsafe') {
         return async () => [];
       }
@@ -1024,7 +1245,20 @@ const mockDb = new Proxy(
 );
 
 vi.mock('@repo/database/client', () => ({
-  queryDatabaseRows: async <T>() => (mockQueryRowsQueue.shift() ?? []) as T[],
+  queryDatabaseRows: async <T>(query: string, parameters: readonly unknown[] = []) => {
+    if (query.includes('public.auth_identities')) {
+      mockAuthIdentityLookup = { query, parameters };
+      if (mockAuthIdentityError) throw mockAuthIdentityError;
+      const subject = String(parameters[0]);
+      // Existing UUID fixtures model migrated mappings with identical IDs.
+      const accountId = mockAuthIdentities.has(subject)
+        ? mockAuthIdentities.get(subject)
+        : (legacyAuthFixtureAccounts[subject] ?? subject);
+      return (accountId ? [{ user_id: accountId }] : []) as T[];
+    }
+    mockLastDatabaseQueryArgs = [query, parameters];
+    return (mockQueryRowsQueue.shift() ?? []) as T[];
+  },
   canUseZenStackDb: (dbUrl?: string) => {
     if (dbUrl && dbUrl.includes('offline')) return true;
     return mockZenStackDbAvailable;

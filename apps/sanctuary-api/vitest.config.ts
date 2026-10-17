@@ -46,6 +46,7 @@ export default defineConfig({
     sharedViteServer: true,
     globals: true,
     environment: 'node',
+    exclude: ['**/node_modules/**', '**/dist/**', 'src/__tests__/integration/**'],
     alias: [
       {
         find: /^@\/generated\/orm\/(.+)$/,

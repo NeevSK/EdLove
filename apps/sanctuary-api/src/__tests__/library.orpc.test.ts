@@ -1,5 +1,6 @@
 import './setup';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { app } from '../core/app';
 import { createTestORPCClient } from './orpc-client';
 import {
   getMockLibraryCollectionFindManyArgs,
@@ -72,6 +73,36 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     expect(body).toEqual([]);
+  });
+
+  it('serves the same persisted collection DTO through native and read-only OpenAPI routes', async () => {
+    setMockLibraryCollections([
+      {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Transport Parity Collection',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        visibility: 'public',
+        subjects: ['mathematics'],
+        topics: [],
+        grades: [5],
+        created_at: new Date('2026-01-01T00:00:00.000Z'),
+        updated_at: new Date('2026-01-01T00:00:00.000Z'),
+        collection_nodes: [],
+      },
+    ]);
+    const headers = { Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000' };
+    const nativeBody = await createTestORPCClient(headers).library.getCollections({
+      query: { exclude_virtual: true },
+    });
+    const openApiResponse = await app.request(
+      '/api/openapi/library/collections?exclude_virtual=true',
+      {
+        headers,
+      },
+    );
+
+    expect(openApiResponse.status).toBe(200);
+    expect(await openApiResponse.json()).toEqual(nativeBody);
   });
 
   it('applies visibility, grade, search, and pagination filters on the server', async () => {
@@ -173,6 +204,33 @@ describe('Sanctuary API: library via native oRPC', () => {
     expect(body.id).toBe('subject:mathematics');
     expect(body.is_virtual).toBe(true);
     expect(body.subjects).toEqual(['mathematics']);
+    expect(body.sequence_order).toEqual([]);
+    expect(body.is_official).toBe(false);
+    expect(body.creator_avatar_url).toBeNull();
+  });
+
+  it('does not expose unknown fields through the native collection response boundary', async () => {
+    setMockLibraryCollections([
+      {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Strict Collection',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        visibility: 'public',
+        subjects: [],
+        topics: [],
+        grades: [],
+        created_at: new Date('2026-01-01T00:00:00.000Z'),
+        updated_at: new Date('2026-01-01T00:00:00.000Z'),
+        collection_nodes: [],
+        compatibility_alias: true,
+      },
+    ]);
+
+    const body = await createTestORPCClient(headers).library.getCollections({
+      query: { exclude_virtual: true },
+    });
+    expect(body).toHaveLength(1);
+    expect(body[0]).not.toHaveProperty('compatibility_alias');
   });
 
   it('reconstructs explicit collection membership at the requested historical cutoff', async () => {

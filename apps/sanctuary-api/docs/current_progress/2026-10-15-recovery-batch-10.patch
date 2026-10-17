@@ -1,0 +1,871 @@
+diff --git a/apps/sanctuary-api/src/__tests__/history.orpc.test.ts b/apps/sanctuary-api/src/__tests__/history.orpc.test.ts
+index cc0c895a0..41bd2bb35 100644
+--- a/apps/sanctuary-api/src/__tests__/history.orpc.test.ts
++++ b/apps/sanctuary-api/src/__tests__/history.orpc.test.ts
+@@ -1,256 +1,195 @@
+-// Test setup with mocked database - must be at top level for vitest hoisting
+-import { vi } from 'vitest';
+-
+-// Mock database client before any other imports
+-vi.mock('@repo/database/client', () => ({
+-  queryDatabaseRows: async <T>() => [] as any[],
+-  canUseZenStackDb: () => true,
+-  createZenStackDb: () => {
+-    // Lazy import to avoid circular dependency
+-    const { TestContextBuilder } = require('./test-doubles');
+-    const builder = new TestContextBuilder().withZenStackDb(true).withActiveBond({
+-      id: 'bond-history',
+-      user_id: '123e4567-e89b-12d3-a456-426614174000',
+-      entity_id: '123e4567-e89b-12d3-a456-426614174002',
+-      entity_type: 'SCHOOL',
+-      capacity: 'teacher',
+-      status: 'active',
+-    });
+-    return builder.build();
+-  },
+-}));
+-
+-vi.mock('@repo/database', () => ({
+-  getPrismaClient: () => {
+-    const { TestContextBuilder } = require('./test-doubles');
+-    return new TestContextBuilder().build();
+-  },
+-}));
+-
+-// Now import test utilities after mocks are registered
+-import { beforeEach, describe, expect, it } from 'vitest';
+-import { createTestORPCClient, resetTestDatabase, TestContextBuilder } from './test-doubles';
+-
+-describe('history API', () => {
++import './setup';
++import { afterEach, beforeEach, describe, expect, it } from 'vitest';
++import { createTestORPCClient } from './orpc-client';
++import { app } from '../core/app';
++import {
++  setMockActiveBond, setMockClassroomNoteRead, setMockClassroomRelationships,
++  setMockCollectionNodeEvents, setMockQueryRowsQueue, setMockUsers, setMockZenStackDbAvailable,
++} from './setup';
++
++describe('history API (identity/database substituted)', () => {
+   const userId = '123e4567-e89b-12d3-a456-426614174000';
+-  const headers = { Authorization: `Bearer ${userId}` };
+   const actorId = '123e4567-e89b-12d3-a456-426614174001';
++  const classroomId = '123e4567-e89b-12d3-a456-426614174001';
++  const collectionId = '123e4567-e89b-12d3-a456-426614174003';
++  const nodeId = '123e4567-e89b-12d3-a456-426614174004';
++  const recordId = '123e4567-e89b-12d3-a456-426614174007';
++  const client = createTestORPCClient({ Authorization: `Bearer ${userId}` }).history;
++
++  afterEach(() => { setMockClassroomNoteRead(undefined); });
+ 
+   beforeEach(() => {
+-    // Reset test database with a fresh builder for each test
+-    resetTestDatabase((builder) =>
+-      builder
+-        .withZenStackDb(true)
+-        .withActiveBond({
+-          id: 'bond-history',
+-          user_id: userId,
+-          entity_id: '123e4567-e89b-12d3-a456-426614174002',
+-          entity_type: 'SCHOOL',
+-          capacity: 'teacher',
+-          status: 'active',
+-        })
+-        .withUsersList([{ id: actorId, full_name: 'Test Actor' }]),
+-    );
++    setMockZenStackDbAvailable(true);
++    setMockActiveBond({
++      id: 'bond-history', user_id: userId, entity_id: 'school-123',
++      entity_type: 'SCHOOL', capacity: 'teacher', status: 'active',
++    });
++    setMockClassroomRelationships({ classrooms: [
++      { id: classroomId, school_id: 'school-123', teacher_id: userId },
++    ] });
++    setMockClassroomNoteRead({
++      id: recordId, classroom_id: classroomId, school_id: 'school-123', author_id: userId,
++      classroom: { school_id: 'school-123' },
++    });
++    setMockUsers([{ id: actorId, full_name: 'Test Actor' }]);
++    setMockCollectionNodeEvents([]);
++    setMockQueryRowsQueue([]);
+   });
+ 
+   describe('getCollectionMembershipTimeline', () => {
+     it('rejects malformed collection identifiers at the transport boundary', async () => {
+-      await expect(
+-        createTestORPCClient().history.getCollectionMembershipTimeline({ collectionId: 'bad-id' }),
+-      ).rejects.toMatchObject({ status: 400 });
++      await expect(client.getCollectionMembershipTimeline({ params: { collectionId: 'bad-id' } }))
++        .rejects.toMatchObject({ status: 400 });
+     });
+-
+     it('returns empty array when no events exist', async () => {
+-      resetTestDatabase((builder) => builder.withCollectionNodeEvents([]));
+-
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCollectionMembershipTimeline({
+-        collectionId: '123e4567-e89b-12d3-a456-426614174003',
+-      });
+-
+-      expect(response).toEqual([]);
++      expect(await client.getCollectionMembershipTimeline({ params: { collectionId } })).toEqual([]);
+     });
+-
+     it('returns timeline events with actor info', async () => {
+-      resetTestDatabase((builder) =>
+-        builder
+-          .withCollectionNodeEvents([
+-            {
+-              id: 'event-1',
+-              collection_id: '123e4567-e89b-12d3-a456-426614174003',
+-              node_id: '123e4567-e89b-12d3-a456-426614174004',
+-              event_type: 'added',
+-              position: 0,
+-              occurred_at: '2026-08-14T10:00:00.000Z',
+-              actor_id: actorId,
+-            },
+-          ])
+-          .withUsersList([{ id: actorId, full_name: 'Test Actor' }]),
+-      );
+-
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCollectionMembershipTimeline({
+-        collectionId: '123e4567-e89b-12d3-a456-426614174003',
+-      });
+-
++      setMockCollectionNodeEvents([{
++        id: 'event-1', collection_id: collectionId, node_id: nodeId, event_type: 'added',
++        position: 0, occurred_at: '2026-08-14T10:00:00.000Z', actor_id: actorId,
++      }]);
++      const response = await client.getCollectionMembershipTimeline({ params: { collectionId } });
+       expect(response).toHaveLength(1);
+       expect(response[0]).toMatchObject({
+-        id: 'event-1',
+-        collection_id: '123e4567-e89b-12d3-a456-426614174003',
+-        node_id: '123e4567-e89b-12d3-a456-426614174004',
+-        event_type: 'added',
+-        actor_id: actorId,
+-        actor: { full_name: 'Test Actor' },
++        id: 'event-1', collection_id: collectionId, node_id: nodeId, event_type: 'added',
++        actor_id: actorId, actor: { full_name: 'Test Actor' },
+       });
+     });
+-
+     it('returns timeline events with null actor when actor not found', async () => {
+-      resetTestDatabase((builder) =>
+-        builder
+-          .withCollectionNodeEvents([
+-            {
+-              id: 'event-1',
+-              collection_id: '123e4567-e89b-12d3-a456-426614174003',
+-              node_id: '123e4567-e89b-12d3-a456-426614174004',
+-              event_type: 'added',
+-              position: 0,
+-              occurred_at: '2026-08-14T10:00:00.000Z',
+-              actor_id: 'unknown-actor',
+-            },
+-          ])
+-          .withUsersList([]),
+-      );
+-
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCollectionMembershipTimeline({
+-        collectionId: '123e4567-e89b-12d3-a456-426614174003',
+-      });
+-
++      setMockCollectionNodeEvents([{
++        id: 'event-1', collection_id: collectionId, node_id: nodeId, event_type: 'added',
++        position: 0, occurred_at: '2026-08-14T10:00:00.000Z', actor_id: 'unknown-actor',
++      }]);
++      setMockUsers([]);
++      const response = await client.getCollectionMembershipTimeline({ params: { collectionId } });
++      expect(response).toHaveLength(1);
+       expect(response[0].actor).toBeNull();
+     });
+   });
+-
+   describe('getCollectionMembershipAsOf', () => {
+     it('returns empty array when no events exist', async () => {
+-      resetTestDatabase((builder) => builder.withCollectionNodeEvents([]));
+-
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCollectionMembershipAsOf({
+-        collectionId: '123e4567-e89b-12d3-a456-426614174003',
+-        asOf: '2026-08-14T10:00:00.000Z',
+-      });
+-
+-      expect(response).toEqual([]);
++      expect(await client.getCollectionMembershipAsOf({
++        params: { collectionId }, query: { asOf: '2026-08-14T10:00:00.000Z' },
++      })).toEqual([]);
+     });
+-
+     it('returns current members as of given date', async () => {
+-      resetTestDatabase((builder) =>
+-        builder.withCollectionNodeEvents([
+-          {
+-            id: 'event-1',
+-            node_id: '123e4567-e89b-12d3-a456-426614174004',
+-            event_type: 'added',
+-            position: 0,
+-            occurred_at: '2026-08-14T09:00:00.000Z',
+-          },
+-          {
+-            id: 'event-2',
+-            node_id: '123e4567-e89b-12d3-a456-426614174004',
+-            event_type: 'removed',
+-            position: 0,
+-            occurred_at: '2026-08-14T11:00:00.000Z',
+-          },
+-        ]),
+-      );
+-
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCollectionMembershipAsOf({
+-        collectionId: '123e4567-e89b-12d3-a456-426614174003',
+-        asOf: '2026-08-14T10:00:00.000Z',
++      setMockCollectionNodeEvents([
++        { id: 'event-1', collection_id: collectionId, node_id: nodeId, event_type: 'added',
++          position: 0, occurred_at: '2026-08-14T09:00:00.000Z' },
++        { id: 'event-2', collection_id: collectionId, node_id: nodeId, event_type: 'removed',
++          position: 0, occurred_at: '2026-08-14T11:00:00.000Z' },
++      ]);
++      const response = await client.getCollectionMembershipAsOf({
++        params: { collectionId }, query: { asOf: '2026-08-14T10:00:00.000Z' },
+       });
+-
+       expect(response).toHaveLength(1);
+-      expect(response[0].node_id).toBe('123e4567-e89b-12d3-a456-426614174004');
++      expect(response[0].node_id).toBe(nodeId);
+       expect(response[0].added_at).toBe('2026-08-14T09:00:00.000Z');
+     });
+   });
+-
+   describe('getLibraryEntityHistory', () => {
+     it('returns empty array when no version history exists', async () => {
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getLibraryEntityHistory({
+-        entityType: 'collection',
+-        entityId: '123e4567-e89b-12d3-a456-426614174005',
+-      });
+-
+-      expect(response).toEqual([]);
++      expect(await client.getLibraryEntityHistory({ params: {
++        entityType: 'collection', entityId: collectionId,
++      } })).toEqual([]);
+     });
+-
+     it('returns version history for public entity', async () => {
+-      // This test would need queryDatabaseRows mocking for the raw SQL query
+-      // For now, we test the empty case and leave the full integration for integration tests
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getLibraryEntityHistory({
+-        entityType: 'collection',
+-        entityId: '123e4567-e89b-12d3-a456-426614174005',
+-      });
+-
+-      expect(response).toEqual([]);
++      setMockQueryRowsQueue([[{
++        id: 'version-1', entity_type: 'collection', entity_id: collectionId, event_type: 'update',
++        changed_at: new Date('2026-08-14T10:00:00.000Z'), changed_by: actorId,
++        snapshot: { visibility: 'public', title: 'Updated' }, author_full_name: 'Test Actor',
++      }]]);
++      expect(await client.getLibraryEntityHistory({ params: {
++        entityType: 'collection', entityId: collectionId,
++      } })).toEqual([{
++        id: 'version-1', entity_type: 'collection', entity_id: collectionId, event_type: 'update',
++        changed_at: '2026-08-14T10:00:00.000Z', changed_by: actorId,
++        snapshot: { visibility: 'public', title: 'Updated' }, author: { full_name: 'Test Actor' },
++      }]);
+     });
+   });
+-
+   describe('getCommunityEntityHistory', () => {
+     it('returns empty array when no version history exists', async () => {
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCommunityEntityHistory({
+-        entityType: 'community_post',
+-        entityId: '123e4567-e89b-12d3-a456-426614174006',
+-      });
+-
+-      expect(response).toEqual([]);
++      expect(await client.getCommunityEntityHistory({ params: {
++        entityType: 'community_post', entityId: nodeId,
++      } })).toEqual([]);
+     });
+-
+     it('returns version history for community entity', async () => {
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getCommunityEntityHistory({
+-        entityType: 'community_post',
+-        entityId: '123e4567-e89b-12d3-a456-426614174006',
+-      });
+-
+-      expect(response).toEqual([]);
++      setMockQueryRowsQueue([[{
++        id: 'version-community', entity_type: 'community_post', entity_id: nodeId, event_type: 'insert',
++        changed_at: new Date('2026-08-14T10:00:00.000Z'), changed_by: null,
++        snapshot: { content: 'Hello' }, author_full_name: null,
++      }]]);
++      expect(await client.getCommunityEntityHistory({ params: {
++        entityType: 'community_post', entityId: nodeId,
++      } })).toEqual([{
++        id: 'version-community', entity_type: 'community_post', entity_id: nodeId, event_type: 'insert',
++        changed_at: '2026-08-14T10:00:00.000Z', changed_by: null,
++        snapshot: { content: 'Hello' }, author: null,
++      }]);
+     });
+   });
+-
+   describe('getClassroomNoteHistory', () => {
+-    it('returns empty array when note not found', async () => {
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getClassroomNoteHistory({
+-        recordId: '123e4567-e89b-12d3-a456-426614174007',
++    it('serves authorized stored-note history through the read-only OpenAPI projection', async () => {
++      setMockQueryRowsQueue([[{
++        id: 'audit-openapi', table_name: 'classroom_notes', record_id: recordId, action: 'INSERT',
++        old_data: null, new_data: { content: 'Recorded' }, changed_by: userId,
++        changed_at: new Date('2026-08-14T10:00:00.000Z'), author_full_name: 'Teacher',
++      }]]);
++      const response = await app.request(`/api/openapi/history/classroom-notes/${recordId}`, {
++        headers: { Authorization: `Bearer ${userId}` },
+       });
+-
+-      expect(response).toEqual([]);
++      expect(response.status).toBe(200);
++      expect(await response.json()).toEqual([{
++        id: 'audit-openapi', table_name: 'classroom_notes', record_id: recordId, action: 'INSERT',
++        old_data: null, new_data: { content: 'Recorded' }, changed_by: userId,
++        changed_at: '2026-08-14T10:00:00.000Z', author: { full_name: 'Teacher' },
++      }]);
+     });
+ 
+-    it('returns audit log for classroom note', async () => {
+-      // This test would need queryDatabaseRows mocking for the raw SQL query
+-      // For now, we test the empty case and leave the full integration for integration tests
+-      const response = await createTestORPCClient({
+-        Authorization: `Bearer ${userId}`,
+-      }).history.getClassroomNoteHistory({
+-        recordId: '123e4567-e89b-12d3-a456-426614174007',
++    it.each(['teacher', 'principal'])('denies foreign-school stored history for %s', async (capacity) => {
++      setMockActiveBond({
++        user_id: userId, entity_id: 'school-123', entity_type: 'SCHOOL', capacity,
++      });
++      setMockClassroomNoteRead({
++        id: recordId, classroom_id: classroomId, author_id: userId,
++        classroom: { school_id: 'foreign-school' },
++      });
++      await expect(client.getClassroomNoteHistory({ params: { recordId } }))
++        .rejects.toMatchObject({ status: 403 });
++      const response = await app.request(`/api/openapi/history/classroom-notes/${recordId}`, {
++        headers: { Authorization: `Bearer ${userId}` },
+       });
++      expect(response.status).toBe(403);
++      await expect(createTestORPCClient({ Authorization: `Bearer ${userId}` }).educational
++        .getClassroomNoteTimeline({ params: { id: recordId } }))
++        .rejects.toMatchObject({ status: 403 });
++    });
+ 
+-      expect(response).toEqual([]);
++    it('does not grant teacher history access to an unresolved note', async () => {
++      setMockClassroomNoteRead(null);
++      await expect(client.getClassroomNoteHistory({ params: { recordId } }))
++        .rejects.toMatchObject({ status: 403 });
++    });
++    it('returns empty array when note not found', async () => {
++      setMockActiveBond({
++        user_id: userId, entity_id: 'school-123', entity_type: 'SCHOOL', capacity: 'principal',
++      });
++      setMockClassroomNoteRead(null);
++      expect(await client.getClassroomNoteHistory({ params: { recordId } })).toEqual([]);
++    });
++    it('returns audit log for classroom note', async () => {
++      setMockQueryRowsQueue([[{
++        id: 'audit-1', table_name: 'classroom_notes', record_id: recordId, action: 'UPDATE',
++        old_data: { content: 'Before' }, new_data: { content: 'After' }, changed_by: actorId,
++        changed_at: new Date('2026-08-14T10:00:00.000Z'), author_full_name: 'Test Actor',
++      }]]);
++      expect(await client.getClassroomNoteHistory({ params: { recordId } })).toEqual([{
++        id: 'audit-1', table_name: 'classroom_notes', record_id: recordId, action: 'UPDATE',
++        old_data: { content: 'Before' }, new_data: { content: 'After' }, changed_by: actorId,
++        changed_at: '2026-08-14T10:00:00.000Z', author: { full_name: 'Test Actor' },
++      }]);
+     });
+   });
+ });
+diff --git a/apps/sanctuary-api/src/__tests__/setup.ts b/apps/sanctuary-api/src/__tests__/setup.ts
+index 29f7cb39d..805eed4c2 100644
+--- a/apps/sanctuary-api/src/__tests__/setup.ts
++++ b/apps/sanctuary-api/src/__tests__/setup.ts
+@@ -9,6 +9,8 @@ let mockUserData: any = null;
+ let mockUsers: any[] = [];
+ let mockDailyContentRows: any[] = [];
+ let mockLastQueryRawArgs: unknown[] | null = null;
++let mockLastExecuteRawArgs: unknown[] | null = null;
++let mockRawQueryRowsQueue: unknown[][] = [];
+ let mockQueryRowsQueue: any[][] = [];
+ let mockLibraryCollectionRead: any = null;
+ let mockLibraryCollections: any[] = [];
+@@ -31,8 +33,18 @@ let mockWhisperedMoments: any[] = [];
+ 
+ // Classroom note mock
+ let mockClassroomNotes: any[] = [];
++let mockClassroomNoteRead: Record<string, unknown> | null | undefined;
++export function setMockClassroomNoteRead(row: Record<string, unknown> | null | undefined) {
++  mockClassroomNoteRead = row;
++}
+ let mockClassrooms: any[] = [];
+ let mockClassroomStudents: any[] = [];
++const mockEducationalRows = new Map<string, Record<string, unknown>>();
++let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
++
++export function setMockAssignmentSubmissionRead(row: Record<string, unknown> | null) {
++  mockAssignmentSubmissionRead = row;
++}
+ 
+ export function setMockZenStackDbAvailable(available: boolean) {
+   mockZenStackDbAvailable = available;
+@@ -69,6 +81,26 @@ export function getMockLastQueryRawArgs(): unknown[] | null {
+   return mockLastQueryRawArgs;
+ }
+ 
++export function setMockRawQueryRowsQueue(rows: unknown[][]) {
++  mockRawQueryRowsQueue = [...rows];
++  mockLastQueryRawArgs = null;
++  mockLastExecuteRawArgs = null;
++}
++
++export function getMockLastExecuteRawArgs(): unknown[] | null {
++  return mockLastExecuteRawArgs;
++}
++
++async function queryMockRawRows(...args: unknown[]): Promise<unknown[]> {
++  mockLastQueryRawArgs = args;
++  return mockRawQueryRowsQueue.shift() ?? mockDailyContentRows;
++}
++
++async function executeMockRaw(...args: unknown[]): Promise<number> {
++  mockLastExecuteRawArgs = args;
++  return 1;
++}
++
+ export function setMockQueryRowsQueue(rows: any[][]) {
+   mockQueryRowsQueue = [...rows];
+ }
+@@ -137,6 +169,7 @@ export function setMockClassroomRelationships({
+ }) {
+   mockClassrooms = classrooms;
+   mockClassroomStudents = students ?? [];
++  mockEducationalRows.clear();
+ }
+ 
+ export function getMockLibraryCollectionFindManyArgs() {
+@@ -149,6 +182,19 @@ function createMockDelegate(name: string): any {
+     {
+       get(_target, prop) {
+         if (prop === 'findUnique') {
++          if (name === 'classroomStudent')
++            return async (args: { where: { classroom_id_student_id: { classroom_id: string; student_id: string } } }) => {
++              const key = args.where.classroom_id_student_id;
++              return mockClassroomStudents.find((row) =>
++                row.classroom_id === key.classroom_id && row.student_id === key.student_id,
++              ) ?? null;
++            };
++          if (name === 'classroom')
++            return async (args: { where: { id: string } }) =>
++              mockClassrooms.find((row) => row.id === args.where.id) ?? null;
++          if (name === 'material')
++            return async (args: { where: { id: string } }) =>
++              mockEducationalRows.get(`material:${args.where.id}`) ?? null;
+           if (name === 'sanctuaryManifesto') {
+             return async () => ({
+               id: 'd23e4567-e89b-12d3-a456-426614174000',
+@@ -156,20 +202,23 @@ function createMockDelegate(name: string): any {
+             });
+           }
+           if (name === 'communityCommentUpvote') return async () => null;
+-          if (name === 'assignmentSubmission') return async () => null;
++          if (name === 'assignmentSubmission') return async () => mockAssignmentSubmissionRead;
+           if (name === 'classroomNote')
+-            return async (args: any = {}) => ({
++            return async (args: any = {}) => mockClassroomNoteRead !== undefined ? mockClassroomNoteRead : ({
+               id: args?.where?.id ?? 'mock-note-id',
+               classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+               school_id: 'school-123',
+               author_id: '123e4567-e89b-12d3-a456-426614174000',
++                classroom: { school_id: 'school-123' },
+             });
+           if (name === 'assignment')
+-            return async () => ({
+-              id: '923e4567-e89b-12d3-a456-426614174000',
+-              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+-              school_id: 'school-123',
+-            });
++            return async (args: { where: { id: string } }) => {
++              const row = mockEducationalRows.get(`assignment:${args.where.id}`) ?? {
++                id: '923e4567-e89b-12d3-a456-426614174000',
++                classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++              };
++              return { ...row, classroom: mockClassrooms.find((item) => item.id === row.classroom_id) };
++            };
+           if (name === 'principalNote')
+             return async (args: any = {}) => ({
+               id: args?.where?.id ?? 'principal-note-mock-id',
+@@ -686,6 +735,39 @@ function createMockDelegate(name: string): any {
+               author: { full_name: 'Test Author' },
+             });
+           }
++          if (
++            [
++              'classroom',
++              'classroomStudent',
++              'material',
++              'assignment',
++              'assignmentSubmission',
++            ].includes(name)
++          ) {
++            return async (args: any = {}) => {
++              const id = args.where?.id ?? args.data?.id ?? crypto.randomUUID();
++              const data = Object.fromEntries(
++                Object.entries(args.data ?? {}).filter(([, value]) => value !== undefined),
++              );
++              const row = {
++                id,
++                created_at: new Date(),
++                updated_at: new Date(),
++                ...(name === 'classroom' ? { academic_year: '2026' } : {}),
++                ...(name === 'classroomStudent' ? { enrolled_at: new Date() } : {}),
++                ...(name === 'assignmentSubmission'
++                  ? {
++                      submitted_at: new Date(),
++                      classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++                    }
++                  : {}),
++                ...mockEducationalRows.get(`${name}:${id}`),
++                ...data,
++              };
++              mockEducationalRows.set(`${name}:${id}`, row);
++              return row;
++            };
++          }
+           return async (args: any = {}) => ({
+             id: `${name}-mock-id`,
+             ...(args?.data ?? {}),
+@@ -930,7 +1012,10 @@ function createMockDelegate(name: string): any {
+         if (prop === 'findFirst') {
+           if (name === 'bond') {
+             return async (args: any = {}) => {
+-              if (args?.where?.entity_type === 'PERSONAL_CLASSROOM' && mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM')
++              if (
++                args?.where?.entity_type === 'PERSONAL_CLASSROOM' &&
++                mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM'
++              )
+                 return null;
+               if (args?.where?.entity_type === 'SCHOOL' && mockActiveBond?.entity_type !== 'SCHOOL')
+                 return null;
+@@ -990,11 +1075,9 @@ function createMockDelegate(name: string): any {
+           return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+         }
+         if (prop === '$queryRaw') {
+-          return async (...args: unknown[]) => {
+-            mockLastQueryRawArgs = args;
+-            return mockDailyContentRows;
+-          };
++          return queryMockRawRows;
+         }
++        if (prop === '$executeRaw') return executeMockRaw;
+ 
+         return createMockDelegate(`${name}.${String(prop)}`);
+       },
+@@ -1010,11 +1093,9 @@ const mockDb = new Proxy(
+         return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+       }
+       if (prop === '$queryRaw') {
+-        return async (...args: unknown[]) => {
+-          mockLastQueryRawArgs = args;
+-          return mockDailyContentRows;
+-        };
++        return queryMockRawRows;
+       }
++      if (prop === '$executeRaw') return executeMockRaw;
+       if (prop === '$queryRawUnsafe') {
+         return async () => [];
+       }
+diff --git a/apps/sanctuary-api/src/core/orpcMiddleware.ts b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+index 99b5f8da2..48327fd05 100644
+--- a/apps/sanctuary-api/src/core/orpcMiddleware.ts
++++ b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+@@ -1,31 +1,34 @@
+ import { ORPCError } from '@orpc/server';
++import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
+ import { SovereignError } from '@repo/core/types/Errors';
+ import { check as checkCedar } from '@repo/policies';
+ import { evaluateWithRust } from '../authorization/rustEvaluator';
++import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
+ import { type ORPCContext, o } from './orpc';
++import { resolveGradeMarkAuthority } from './gradingAuthority';
+ 
+-export function toORPCError(error: unknown): unknown {
+-  if (!(error instanceof SovereignError)) return error;
+-  const status = error.details.status;
+-  const code =
+-    status === 400
+-      ? 'BAD_REQUEST'
+-      : status === 401
+-        ? 'UNAUTHORIZED'
+-        : status === 403
+-          ? 'FORBIDDEN'
+-          : status === 404
+-            ? 'NOT_FOUND'
+-            : status === 409
+-              ? 'CONFLICT'
+-              : status === 429
+-                ? 'TOO_MANY_REQUESTS'
+-                : status === 503
+-                  ? 'SERVICE_UNAVAILABLE'
+-                  : 'INTERNAL_SERVER_ERROR';
++const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
++  400: 'BAD_REQUEST',
++  401: 'UNAUTHORIZED',
++  403: 'FORBIDDEN',
++  404: 'NOT_FOUND',
++  409: 'CONFLICT',
++  429: 'TOO_MANY_REQUESTS',
++  503: 'SERVICE_UNAVAILABLE',
++};
++
++export function toORPCError(error: unknown, requestId?: string): ORPCError<string, unknown> {
++  if (error instanceof ORPCError) return error;
++  if (!(error instanceof SovereignError)) {
++    return new ORPCError('INTERNAL_SERVER_ERROR', {
++      message: 'An unexpected platform error occurred.',
++      data: { code: 'INTERNAL_SERVER_ERROR', requestId },
++    });
++  }
++  const code = protocolCodeByStatus[error.details.status] ?? 'INTERNAL_SERVER_ERROR';
+   return new ORPCError(code, {
+     message: error.details.detail || error.details.title,
+-    data: { code: error.details.code, requestId: error.details.instance },
++    data: { code: error.details.code, requestId: error.details.instance ?? requestId },
+   });
+ }
+ 
+@@ -33,17 +36,17 @@ export function toORPCError(error: unknown): unknown {
+  * Bootstrap procedures cannot use the authorization gate that requires an
+  * active bond, but they must still preserve the shared typed error wire.
+  */
+-export const sovereignErrorMiddleware = o.middleware(async ({ next }) => {
++export const sovereignErrorMiddleware = o.middleware(async ({ next, context }) => {
+   try {
+     return await next({});
+   } catch (error) {
+-    if (!(error instanceof SovereignError)) {
++    if (!(error instanceof SovereignError) && !(error instanceof ORPCError)) {
+       console.error('[oRPC] unexpected procedure failure', {
+-        name: error instanceof Error ? error.name : 'unknown',
+-        message: error instanceof Error ? error.message : String(error),
++        ...toSafeErrorTelemetry(error, 'INTERNAL_SERVER_ERROR', 500),
++        requestId: context.requestId,
+       });
+     }
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+ });
+ 
+@@ -122,29 +125,76 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+     typeof procedureInput.userId === 'string' ? procedureInput.userId : undefined;
+   const selfScopedTargetId = requestedUserId ?? context.user.id;
+   const authorizationFacts: Record<string, unknown> = {};
++  if (resourceType === 'GradeMark' && (cedarAction === 'grade' || cedarAction === 'publish')) {
++    Object.assign(
++      authorizationFacts,
++      await resolveGradeMarkAuthority(context, procedureInput, cedarAction),
++    );
++  }
++  const routePath = procedure['~orpc'].route.path;
++  const classroomChild =
++    routePath === educationalORPCContract.updateMaterial.path
++      ? 'material'
++      : routePath === educationalORPCContract.updateAssignment.path
++        ? 'assignment'
++        : undefined;
++  if (resourceType === 'Classroom' && classroomChild) {
++    if (!context.db) {
++      throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Database is unavailable.' });
++    }
++    const childId = procedureInput.id;
++    if (typeof childId !== 'string') {
++      throw new ORPCError('BAD_REQUEST', { message: 'A resource identifier is required.' });
++    }
++    const lookup = { where: { id: childId }, select: { classroom_id: true } } as const;
++    const child =
++      classroomChild === 'material'
++        ? await context.db.material.findUnique(lookup)
++        : await context.db.assignment.findUnique(lookup);
++    if (!child) throw new ORPCError('NOT_FOUND', { message: 'Resource was not found.' });
++    const classroom = await context.db.classroom.findUnique({
++      where: { id: child.classroom_id },
++      select: { id: true, school_id: true },
++    });
++    if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom was not found.' });
++    if (classroom.school_id !== (context.schoolId ?? null)) {
++      throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
++    }
++    authorizationFacts.classroomId = classroom.id;
++  }
+   if (context.db && resourceType === 'ClassroomNote' && !procedureInput.classroomId) {
+-    const noteId = typeof procedureInput.id === 'string' ? procedureInput.id : undefined;
++    const noteId =
++      typeof procedureInput.id === 'string'
++        ? procedureInput.id
++        : typeof procedureInput.recordId === 'string' ? procedureInput.recordId : undefined;
+     if (noteId) {
+-      const note = await (context.db as any).classroomNote.findUnique({
++      const note = await context.db.classroomNote.findUnique({
+         where: { id: noteId },
+-        select: { classroom_id: true, school_id: true, author_id: true },
++        select: { classroom_id: true, author_id: true, classroom: { select: { school_id: true } } },
+       });
+-      if (note?.classroom_id) authorizationFacts.classroomId = String(note.classroom_id);
+-      if (note?.school_id) authorizationFacts.schoolId = String(note.school_id);
+-      if (note?.author_id) authorizationFacts.authorId = String(note.author_id);
++      if (note) {
++        if (note.classroom.school_id !== (context.schoolId ?? null)) {
++          throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
++        }
++        authorizationFacts.id = noteId;
++        authorizationFacts.classroomId = note.classroom_id;
++        authorizationFacts.schoolId = note.classroom.school_id;
++        authorizationFacts.authorId = note.author_id;
++      }
+     }
+   }
+   if (context.db && resourceType === 'AssignmentSubmission' && !procedureInput.classroomId) {
+     const assignmentId =
+       typeof procedureInput.assignmentId === 'string' ? procedureInput.assignmentId : undefined;
+     if (assignmentId) {
+-      const assignment = await (context.db as any).assignment.findUnique({
++      const assignment = await context.db.assignment.findUnique({
+         where: { id: assignmentId },
+-        select: { classroom_id: true, school_id: true },
++        select: { classroom_id: true, classroom: { select: { school_id: true } } },
+       });
+       if (assignment?.classroom_id)
+-        authorizationFacts.classroomId = String(assignment.classroom_id);
+-      if (assignment?.school_id) authorizationFacts.schoolId = String(assignment.school_id);
++        authorizationFacts.classroomId = assignment.classroom_id;
++      if (assignment?.classroom.school_id)
++        authorizationFacts.schoolId = assignment.classroom.school_id;
+     }
+   }
+   if (context.db && resourceType === 'PrincipalNote' && !procedureInput.schoolId) {
+@@ -173,32 +223,34 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+       ? verifiedClassroomIds[0]
+       : undefined;
+   const resourceId =
+-    resourceType === 'User'
+-      ? context.user.id
+-      : resourceType === 'School'
+-        ? context.schoolId || 'school_institutional'
+-        : resourceType === 'AssignmentSubmission'
+-          ? (typeof facts.id === 'string' && facts.id) ||
+-            (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
+-            context.schoolId ||
+-            'school_institutional'
+-          : resourceType === 'Classroom'
+-            ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
+-              (typeof facts.id === 'string' && facts.id) ||
+-              (context.capacity === 'student' && defaultVerifiedClassroomId) ||
++    resourceType === 'OperationReceipt'
++      ? String(facts.operationId ?? facts.idempotencyKey ?? context.user.id)
++      : resourceType === 'User'
++        ? context.user.id
++        : resourceType === 'School'
++          ? context.schoolId || 'school_institutional'
++          : resourceType === 'AssignmentSubmission'
++            ? (typeof facts.id === 'string' && facts.id) ||
++              (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
+               context.schoolId ||
+               'school_institutional'
+-            : (selfScopedResource && selfScopedTargetId) ||
+-              (typeof facts.id === 'string' && facts.id) ||
+-              (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
+-              (typeof facts.classroomId === 'string' && facts.classroomId) ||
+-              (typeof facts.studentId === 'string' && facts.studentId) ||
+-              (typeof facts.commentId === 'string' && facts.commentId) ||
+-              (typeof facts.postId === 'string' && facts.postId) ||
+-              (typeof facts.groupId === 'string' && facts.groupId) ||
+-              (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
+-              context.schoolId ||
+-              'school_institutional';
++            : resourceType === 'Classroom'
++              ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
++                (typeof facts.id === 'string' && facts.id) ||
++                (context.capacity === 'student' && defaultVerifiedClassroomId) ||
++                context.schoolId ||
++                'school_institutional'
++              : (selfScopedResource && selfScopedTargetId) ||
++                (typeof facts.id === 'string' && facts.id) ||
++                (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
++                (typeof facts.classroomId === 'string' && facts.classroomId) ||
++                (typeof facts.studentId === 'string' && facts.studentId) ||
++                (typeof facts.commentId === 'string' && facts.commentId) ||
++                (typeof facts.postId === 'string' && facts.postId) ||
++                (typeof facts.groupId === 'string' && facts.groupId) ||
++                (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
++                context.schoolId ||
++                'school_institutional';
+   const request = {
+     principal: context.principal,
+     action: cedarAction,
+@@ -206,7 +258,9 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+       id: resourceId,
+       type: resourceType,
+       attributes: {
+-        ...(resourceType !== 'School' && { school_id: context.schoolId }),
++        ...(resourceType === 'OperationReceipt' && { account_id: context.user.id }),
++        ...(resourceType !== 'School' &&
++          resourceType !== 'OperationReceipt' && { school_id: context.schoolId }),
+         ...(resourceType === 'Classroom' &&
+           typeof facts.teacherId === 'string' && { teacher_id: facts.teacherId }),
+         ...(resourceType === 'Announcement' &&
+@@ -229,11 +283,15 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+             grade_class_id: procedureInput.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.gradeClassId === 'string' && {
+-            grade_class_id: procedureInput.gradeClassId,
++          typeof facts.gradeClassId === 'string' && {
++            grade_class_id: facts.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
++          typeof facts.schoolId === 'string' && { school_id: facts.schoolId }),
++        ...(resourceType === 'GradeMark' &&
++          typeof authorizationFacts.teacherId === 'string' && {
++            teacher_id: authorizationFacts.teacherId,
++          }),
+         ...([
+           'Grade',
+           'GradeMark',
+@@ -326,7 +384,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+   try {
+     result = await next({});
+   } catch (error) {
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+   console.info(
+     JSON.stringify({

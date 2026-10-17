@@ -1,0 +1,88 @@
+diff --git a/apps/sanctuary-api/src/__tests__/educational-path-contract.test.ts b/apps/sanctuary-api/src/__tests__/educational-path-contract.test.ts
+new file mode 100644
+index 000000000..394e77f44
+--- /dev/null
++++ b/apps/sanctuary-api/src/__tests__/educational-path-contract.test.ts
+@@ -0,0 +1,82 @@
++import { OpenAPIHandler } from '@orpc/openapi/fetch';
++import type { SovereignContract } from '@repo/core/api/contracts';
++import { educationalContract } from '@repo/core/api/educational.contract';
++import { describe, expect, it, vi } from 'vitest';
++import { z } from 'zod';
++import { implement } from '../core/orpc';
++
++const routes: SovereignContract = educationalContract;
++const dynamicRoutes = Object.entries(routes).filter(([, route]) => route.path.includes(':'));
++
++describe('educational detailed-input path contracts', () => {
++  it.each(dynamicRoutes)('%s declares each URL identifier in required params', (_, route) => {
++    const names = [...route.path.matchAll(/:([A-Za-z0-9_]+)/g)].map((match) => match[1]);
++    const params = route.request?.params;
++    expect(params, `${route.method.toUpperCase()} ${route.path}`).toBeInstanceOf(z.ZodObject);
++    if (!(params instanceof z.ZodObject))
++      throw new Error('Path params must have an object schema.');
++    expect(Object.keys(params.shape).sort()).toEqual(names.sort());
++    for (const name of names) {
++      if (!name) throw new Error('Path identifier must not be empty.');
++      expect(params.shape[name].isOptional(), `${route.path}: ${name}`).toBe(false);
++    }
++  });
++
++  it('reads upcoming assignments using the URL identity without a duplicate query identity', async () => {
++    const studentId = '123e4567-e89b-12d3-a456-426614174000';
++    const impl = implement({
++      getUpcomingAssignments: educationalContract.getUpcomingAssignments,
++    }).$context();
++    const handler = new OpenAPIHandler(
++      impl.router({
++        getUpcomingAssignments: impl.getUpcomingAssignments.handler(() => []),
++      }),
++    );
++    const result = await handler.handle(
++      new Request(`http://test/educational/students/${studentId}/assignments/upcoming?limit=10`),
++    );
++    expect(result.matched).toBe(true);
++    expect(result.response?.status).toBe(200);
++    await expect(result.response?.json()).resolves.toEqual([]);
++  });
++
++  it.each([
++    ['getMaterials', 'classroomId'],
++    ['getLessonMaterials', 'lessonId'],
++    ['getAssignments', 'classroomId'],
++    ['getLessonAssignments', 'lessonId'],
++    ['getStudentSubmissions', 'studentId'],
++    ['getUpcomingAssignments', 'studentId'],
++  ] as const)('%s maps the URL ID and rejects a duplicate query ID', async (name, field) => {
++    const id = '123e4567-e89b-12d3-a456-426614174000';
++    const route = educationalContract[name];
++    const receive = vi.fn((_input: unknown) => []);
++    const impl = implement({ probe: route }).$context();
++    const handler = new OpenAPIHandler(
++      impl.router({
++        probe: impl.probe.handler(({ input }: { input: unknown }) => receive(input)),
++      }),
++    );
++    const url = `http://test${route.path.replace(`:${field}`, id)}`;
++    const canonical = await handler.handle(new Request(url));
++    expect(canonical.response?.status).toBe(200);
++    expect(receive).toHaveBeenCalledExactlyOnceWith(
++      expect.objectContaining({ params: { [field]: id } }),
++    );
++    receive.mockClear();
++    const duplicate = await handler.handle(new Request(`${url}?${field}=${id}`));
++    expect(duplicate.response?.status).toBe(400);
++    expect(receive).not.toHaveBeenCalled();
++  });
++
++  it.each([
++    ['submitAssignment', 'assignmentId', { content: 'Work' }],
++    ['gradeAssignmentSubmission', 'id', { grade: 5 }],
++  ] as const)('%s rejects a stale body ID even alongside valid params', (name, field, body) => {
++    const route = educationalContract[name];
++    const id = '123e4567-e89b-12d3-a456-426614174000';
++    expect(route.request.params.safeParse({ [field]: id }).success).toBe(true);
++    expect(route.request.body.safeParse(body).success).toBe(true);
++    expect(route.request.body.safeParse({ ...body, [field]: id }).success).toBe(false);
++  });
++});

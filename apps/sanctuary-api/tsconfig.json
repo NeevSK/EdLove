@@ -7,111 +7,44 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "target": "ES2022",
-    "lib": [
-      "es2022",
-      "DOM"
-    ],
-    "types": [
-      "node",
-      "@repo/types-shim"
-    ],
+    "lib": ["es2022", "DOM"],
+    "types": ["node", "@repo/types-shim"],
     "skipLibCheck": true,
     "noImplicitAny": false,
     "strict": false,
     "strictNullChecks": false,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@repo/accounting/*": [
-        "../../packages/accounting/src/*"
-      ],
-      "@repo/admin/*": [
-        "../../packages/admin/src/*"
-      ],
-      "@repo/ai/*": [
-        "../../packages/ai/src/*"
-      ],
-      "@repo/analytics/*": [
-        "../../packages/analytics/src/*"
-      ],
-      "@repo/classroom/*": [
-        "../../packages/classroom/src/*"
-      ],
-      "@repo/community/*": [
-        "../../packages/community/src/*"
-      ],
-      "@repo/core/*": [
-        "../../packages/core/src/*"
-      ],
-      "@repo/database/*": [
-        "../../packages/database/src/*"
-      ],
-      "@repo/form-builder/*": [
-        "../../packages/form-builder/src/*"
-      ],
-      "@repo/graphics/*": [
-        "../../packages/graphics/src/*"
-      ],
-      "@repo/library/*": [
-        "../../packages/library/src/*"
-      ],
-      "@repo/payments/*": [
-        "../../packages/payments/src/*"
-      ],
-      "@repo/people/*": [
-        "../../packages/people/src/*"
-      ],
-      "@repo/platform-mcp/*": [
-        "../../packages/platform-mcp/src/*"
-      ],
-      "@repo/policies/*": [
-        "../../packages/policies/src/*"
-      ],
-      "@repo/profile/*": [
-        "../../packages/profile/src/*"
-      ],
-      "@rn-terrain/cli/*": [
-        "../../packages/rn-terrain-cli/src/*"
-      ],
-      "@rn-terrain/core/*": [
-        "../../packages/rn-terrain-core/src/*"
-      ],
-      "@rn-terrain/mcp/*": [
-        "../../packages/rn-terrain-mcp/src/*"
-      ],
-      "@rn-terrain/vscode/*": [
-        "../../packages/rn-terrain-vscode/src/*"
-      ],
-      "@repo/scanner-kit/*": [
-        "../../packages/scanner-kit/src/*"
-      ],
-      "@repo/schema/*": [
-        "../../packages/schema/src/*"
-      ],
-      "@repo/self/*": [
-        "../../packages/self/src/*"
-      ],
-      "@repo/trube-art/*": [
-        "../../packages/trube-art/src/*"
-      ],
-      "@repo/ui/*": [
-        "../../packages/ui/src/*"
-      ],
-      "@repo/workforce/*": [
-        "../../packages/workforce/src/*"
-      ],
-      "react-native": [
-        "../../packages/core/src/test-shims/react-native.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@repo/accounting/*": ["../../packages/accounting/src/*"],
+      "@repo/admin/*": ["../../packages/admin/src/*"],
+      "@repo/ai/*": ["../../packages/ai/src/*"],
+      "@repo/analytics/*": ["../../packages/analytics/src/*"],
+      "@repo/classroom/*": ["../../packages/classroom/src/*"],
+      "@repo/community/*": ["../../packages/community/src/*"],
+      "@repo/core/*": ["../../packages/core/src/*"],
+      "@repo/database/*": ["../../packages/database/src/*"],
+      "@repo/form-builder/*": ["../../packages/form-builder/src/*"],
+      "@repo/graphics/*": ["../../packages/graphics/src/*"],
+      "@repo/library/*": ["../../packages/library/src/*"],
+      "@repo/payments/*": ["../../packages/payments/src/*"],
+      "@repo/people/*": ["../../packages/people/src/*"],
+      "@repo/platform-mcp/*": ["../../packages/platform-mcp/src/*"],
+      "@repo/policies/*": ["../../packages/policies/src/*"],
+      "@repo/profile/*": ["../../packages/profile/src/*"],
+      "@rn-terrain/cli/*": ["../../packages/rn-terrain-cli/src/*"],
+      "@rn-terrain/core/*": ["../../packages/rn-terrain-core/src/*"],
+      "@rn-terrain/mcp/*": ["../../packages/rn-terrain-mcp/src/*"],
+      "@rn-terrain/vscode/*": ["../../packages/rn-terrain-vscode/src/*"],
+      "@repo/scanner-kit/*": ["../../packages/scanner-kit/src/*"],
+      "@repo/schema/*": ["../../packages/schema/src/*"],
+      "@repo/self/*": ["../../packages/self/src/*"],
+      "@repo/trube-art/*": ["../../packages/trube-art/src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/workforce/*": ["../../packages/workforce/src/*"],
+      "react-native": ["../../packages/core/src/test-shims/react-native.ts"]
     }
   },
   "files": [],
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/__tests__/integration/**/*"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "src/__tests__/integration/**/*"]
 }

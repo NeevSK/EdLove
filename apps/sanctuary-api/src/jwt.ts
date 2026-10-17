@@ -1,3 +1,4 @@
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { fetchWithTrace } from './telemetry/otel';
 
 export interface VerifiedJwtPayload {
@@ -138,11 +139,13 @@ async function getPublicKeyFromJwks(
             );
             return;
           }
+          assertSecureApiUrl(supabaseUrl);
           const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
           console.info('[JWT] Refreshing verification keys from the configured identity provider.');
           const response = await fetchWithTrace(jwksUrl, {
             signal: AbortSignal.timeout(4000),
+            redirect: 'error',
           });
           if (!response.ok) {
             throw new Error(`Failed to fetch JWKS: ${response.statusText}`);
@@ -176,11 +179,14 @@ async function getPublicKeyFromJwks(
           }
         } catch {
           console.warn('[JWT] Verification-key refresh failed.');
+        } finally {
+          activeJwksFetch = null;
         }
       })();
     }
     await activeJwksFetch;
   }
+
 
   return jwkCache.get(kid) ?? null;
 }
@@ -444,4 +450,6 @@ export function clearJwkCache() {
   jwkCache.clear();
   tokenVerificationCache.clear();
   jwksLastFetched = 0;
+  activeJwksFetch = null;
 }
+

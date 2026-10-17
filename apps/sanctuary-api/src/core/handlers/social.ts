@@ -1,5 +1,6 @@
 import { socialORPCContract } from '@repo/core/api/social.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
+import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
@@ -63,20 +64,21 @@ export const socialRouter = impl.router({
     if (input.body.targetUserId === context.user.id) {
       throw SovereignError.invalidInput('Cannot block yourself.');
     }
-    const db = context.db as any;
-    const existing = await db.userBlock.findUnique({
+    assertDatabase(context);
+    const existing = await context.db.userBlock.findUnique({
       where: {
         blocker_id_blocked_id: { blocker_id: context.user.id, blocked_id: input.body.targetUserId },
       },
     });
     if (!existing)
-      await db.userBlock.create({
+      await context.db.userBlock.create({
         data: { blocker_id: context.user.id, blocked_id: input.body.targetUserId },
       });
     return { success: true };
   }),
   unblockUser: impl.unblockUser.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    await (context.db as any).userBlock.deleteMany({
+    assertDatabase(context);
+    await context.db.userBlock.deleteMany({
       where: { blocker_id: context.user.id, blocked_id: input.body.targetUserId },
     });
     return { success: true };
@@ -84,8 +86,8 @@ export const socialRouter = impl.router({
   isBlockingActive: impl.isBlockingActive
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
-      const row = await db.userBlock.findFirst({
+      assertDatabase(context);
+      const row = await context.db.userBlock.findFirst({
         where: {
           OR: [
             { blocker_id: context.user.id, blocked_id: input.query.targetUserId },
@@ -96,7 +98,8 @@ export const socialRouter = impl.router({
       return Boolean(row);
     }),
   getBlockedUsers: impl.getBlockedUsers.use(doubleGateMiddleware).handler(async ({ context }) => {
-    const rows = await (context.db as any).userBlock.findMany({
+    assertDatabase(context);
+    const rows = await context.db.userBlock.findMany({
       where: { blocker_id: context.user.id },
       include: {
         blocked: { select: { id: true, full_name: true, avatar_url: true, capacity: true } },

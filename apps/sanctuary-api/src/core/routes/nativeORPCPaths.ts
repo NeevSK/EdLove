@@ -10,6 +10,7 @@ export const nativeORPCPaths = [
   '/api/identity/*',
   '/api/onboarding/*',
   '/api/community/*',
+  '/api/channel/*',
   '/api/messaging/*',
   '/api/social/*',
   '/api/announcements/*',
@@ -24,6 +25,7 @@ export const nativeORPCPaths = [
   '/api/journalEntries/*',
   '/api/sacredMissions/*',
   '/api/library/*',
+  '/api/media/*',
   '/api/authorization/*',
   '/api/educational/*',
   '/api/grading/*',
@@ -52,4 +54,5 @@ export const nativeORPCPaths = [
   '/api/presence/*',
   '/api/rewards/*',
   '/api/classroom/*',
+  '/api/events/*',
 ] as const;

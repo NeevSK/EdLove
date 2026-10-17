@@ -5,6 +5,7 @@ import { endTime, startTime } from 'hono/timing';
 import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId } from '../telemetry/otel';
 import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
+import { resolveAuthenticatedAccount } from './authenticatedAccount';
 import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext, o } from './orpc';
 
@@ -42,17 +43,17 @@ async function resolveClassroomIds(
 // Context Builder for oRPC from incoming HTTP headers/request
 export async function parseORPCContext(req: Request, env: any, requestId: string) {
   const authHeader = req.headers.get('Authorization');
+  const dbUrl = env?.DATABASE_URL || process.env.DATABASE_URL;
   let user = { id: 'anonymous' };
 
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.replace('Bearer ', '');
     const verifiedPayload = await verifySupabaseJwt(token, env);
     if (verifiedPayload) {
-      user = { id: verifiedPayload.sub };
+      user = await resolveAuthenticatedAccount(verifiedPayload.sub, dbUrl);
     }
   }
 
-  const dbUrl = env?.DATABASE_URL || process.env.DATABASE_URL;
   const db = canUseZenStackDb(dbUrl) ? createZenStackDb(user, dbUrl) : undefined;
 
   if (user.id !== 'anonymous' && !db) {
@@ -213,6 +214,7 @@ import { adminRouter } from './handlers/admin';
 import { agentRouter } from './handlers/agent';
 import { announcementsRouter } from './handlers/announcements';
 import { attendanceRouter } from './handlers/attendance';
+import { channelRouter } from './handlers/channel';
 import { communityRouter } from './handlers/community';
 import { dailyContentRouter } from './handlers/dailyContent';
 import { decisionJournalRouter } from './handlers/decisionJournal';
@@ -220,6 +222,7 @@ import { echoRouter } from './handlers/echo';
 import { editorialRouter } from './handlers/editorial';
 import { educationalRouter } from './handlers/educational';
 import { erpRouter } from './handlers/erp';
+import { eventsRouter } from './handlers/events';
 import { formsRouter } from './handlers/forms';
 import { gradingRouter } from './handlers/grading';
 import { guardianAssessmentRouter } from './handlers/guardianAssessment';
@@ -231,6 +234,7 @@ import { learningReflectionsRouter } from './handlers/learningReflections';
 import { libraryRouter } from './handlers/library';
 import { longitudinalRouter } from './handlers/longitudinal';
 import { mappingRouter } from './handlers/mapping';
+import { mediaRouter } from './handlers/media';
 import { messagingRouter } from './handlers/messaging';
 import { onboardingRouter } from './handlers/onboarding';
 import { permissionSnapshotRouter } from './handlers/permissionSnapshot';
@@ -251,6 +255,7 @@ import { warmMirrorRouter } from './handlers/warmMirror';
 
 // Root Router initialization
 export const router = o.router({
+  events: eventsRouter,
   self: selfRouter,
   learningReflections: learningReflectionsRouter,
   profile: profileRouter,
@@ -269,6 +274,7 @@ export const router = o.router({
   grading: gradingRouter,
   attendance: attendanceRouter,
   community: communityRouter,
+  channel: channelRouter,
   admin: adminRouter,
   messaging: messagingRouter,
   social: socialRouter,
@@ -282,6 +288,7 @@ export const router = o.router({
   history: historyRouter,
   longitudinal: longitudinalRouter,
   schoolForest: schoolForestRouter,
+  media: mediaRouter,
   tracking: trackingRouter,
   warmMirror: warmMirrorRouter,
   presence: presenceRouter,

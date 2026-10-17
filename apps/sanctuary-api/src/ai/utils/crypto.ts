@@ -5,11 +5,11 @@ const IV_LENGTH = 12;
 
 function getSecret(): Buffer {
   const configured = process.env.BYOK_ENCRYPTION_SECRET;
-  if (!configured) {
-    throw new Error('BYOK_ENCRYPTION_SECRET must be provided by Doppler before encrypting keys');
+  if (!configured || configured.length < 32) {
+    throw new Error('BYOK_ENCRYPTION_SECRET must be at least 32 characters before encrypting keys');
   }
 
-  return Buffer.from(configured.substring(0, 32));
+  return Buffer.from(configured.substring(0, 32), 'utf8');
 }
 
 export function encryptKey(text: string): string {

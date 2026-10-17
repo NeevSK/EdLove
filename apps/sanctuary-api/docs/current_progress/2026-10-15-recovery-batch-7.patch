@@ -1,0 +1,877 @@
+diff --git a/apps/sanctuary-api/src/__tests__/education.orpc.test.ts b/apps/sanctuary-api/src/__tests__/education.orpc.test.ts
+index 486a4a910..59cf83369 100644
+--- a/apps/sanctuary-api/src/__tests__/education.orpc.test.ts
++++ b/apps/sanctuary-api/src/__tests__/education.orpc.test.ts
+@@ -1,13 +1,30 @@
+ import './setup';
++import { createZenStackDb } from '@repo/database/client';
++import { ASSIGNMENT_SUBMISSION_CAPABILITY } from '@repo/core/api/educational.contract';
++import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+ import { beforeEach, describe, expect, it } from 'vitest';
+ import { app } from '../core/app';
+ import { createTestORPCClient } from './orpc-client';
+ import {
+   setMockActiveBond,
++  setMockAssignmentSubmissionRead,
+   setMockClassroomRelationships,
++  setMockRawQueryRowsQueue,
+   setMockZenStackDbAvailable,
+ } from './setup';
+ 
++async function prepareSubmissionReceipt(studentId: string, assignmentId: string, content: string) {
++  const operation_id = '823e4567-e89b-12d3-a456-426614174002';
++  const payload_hash = await getConsistentIdempotencyKey(
++    { studentId, assignmentId, content },
++    ASSIGNMENT_SUBMISSION_CAPABILITY,
++  );
++  setMockRawQueryRowsQueue([
++    [{ operation_id }],
++    [{ operation_id, payload_hash, status: 'pending', result: null }],
++  ]);
++}
++
+ describe('Sanctuary API: education via native oRPC', () => {
+   const headers = {
+     Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+@@ -15,6 +32,8 @@ describe('Sanctuary API: education via native oRPC', () => {
+   };
+ 
+   beforeEach(() => {
++    setMockRawQueryRowsQueue([]);
++    setMockAssignmentSubmissionRead(null);
+     setMockZenStackDbAvailable(true);
+     setMockActiveBond({
+       id: 'bond-education',
+@@ -34,18 +53,25 @@ describe('Sanctuary API: education via native oRPC', () => {
+           '923e4567-e89b-12d3-a456-426614174000',
+         ].map((id) => ({
+           id,
++          name: 'Synthetic classroom',
++          academic_year: '2026',
++          created_at: new Date('2026-01-01T00:00:00.000Z'),
++          updated_at: new Date('2026-01-01T00:00:00.000Z'),
+           school_id: 'school-123',
+           teacher_id: '123e4567-e89b-12d3-a456-426614174000',
++          is_archived: false,
+         })),
+       ],
+       students: [
+         {
+           student_id: '223e4567-e89b-12d3-a456-426614174002',
+           classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++          status: 'active',
+         },
+         {
+           student_id: '323e4567-e89b-12d3-a456-426614174002',
+           classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++          status: 'active',
+         },
+       ],
+     });
+@@ -123,7 +149,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+       body: { fullName: 'Shadow Learner' },
+     });
+     expect(shadow).toMatchObject({ classroom_id: classroomId, full_name: 'Shadow Learner' });
+-    const enrollmentId = '523e4567-e89b-12d3-a456-426614174000';
++    const enrollmentId = enrolled.id;
+     expect(
+       await client.updateClassroomStudent({
+         params: { id: enrollmentId },
+@@ -154,7 +180,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(await client.getClassroomNoteTimeline({ params: { id: noteId } })).toEqual([]);
+     const created = await client.createClassroomNote({
+       body: {
+-        classroomId,
++        classroom_id: classroomId,
+         content: 'Lesson recap',
+         visibility: 'class',
+       },
+@@ -165,7 +191,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+       visibility: 'class',
+     });
+     expect(
+-      await client.updateClassroomNote({ params: { id: noteId }, body: { isPinned: true } }),
++      await client.updateClassroomNote({ params: { id: noteId }, body: { is_pinned: true } }),
+     ).toMatchObject({ is_pinned: true });
+     expect(await client.deleteClassroomNote({ params: { id: noteId } })).toEqual({
+       success: true,
+@@ -175,7 +201,6 @@ describe('Sanctuary API: education via native oRPC', () => {
+   it('executes material CRUD through the native Material contract', async () => {
+     const client = createTestORPCClient(headers).educational;
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+-    const materialId = '723e4567-e89b-12d3-a456-426614174000';
+     expect(await client.getMaterials({ query: { classroomId } })).toEqual([]);
+     const created = await client.createMaterial({
+       body: {
+@@ -188,17 +213,16 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(created).toMatchObject({ classroom_id: classroomId, title: 'Reading', type: 'link' });
+     expect(
+       await client.updateMaterial({
+-        params: { id: materialId },
++        params: { id: created.id },
+         body: { title: 'Updated reading' },
+       }),
+     ).toMatchObject({ title: 'Updated reading' });
+-    expect(await client.deleteMaterial({ params: { id: materialId } })).toEqual({ success: true });
++    expect(await client.deleteMaterial({ params: { id: created.id } })).toEqual({ success: true });
+   });
+ 
+   it('executes assignment CRUD through the native Assignment contract', async () => {
+     const client = createTestORPCClient(headers).educational;
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+-    const assignmentId = '823e4567-e89b-12d3-a456-426614174000';
+     expect(await client.getAssignments({ query: { classroomId } })).toEqual([]);
+     const created = await client.createAssignment({
+       body: {
+@@ -210,15 +234,68 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(created).toMatchObject({ classroom_id: classroomId, title: 'Practice', max_points: 20 });
+     expect(
+       await client.updateAssignment({
+-        params: { id: assignmentId },
++        params: { id: created.id },
+         body: { title: 'Updated practice' },
+       }),
+     ).toMatchObject({ title: 'Updated practice' });
+-    expect(await client.deleteAssignment({ params: { id: assignmentId } })).toEqual({
++    expect(await client.deleteAssignment({ params: { id: created.id } })).toEqual({
+       success: true,
+     });
+   });
+ 
++  it('does not authorize a missing material using a classroom-shaped identifier', async () => {
++    await expect(
++      createTestORPCClient(headers).educational.updateMaterial({
++        params: { id: '123e4567-e89b-12d3-a456-426614174001' },
++        body: { title: 'Must not write' },
++      }),
++    ).rejects.toMatchObject({ status: 404 });
++  });
++
++  it('resolves stored material and assignment classrooms before update or deletion', async () => {
++    const userId = '123e4567-e89b-12d3-a456-426614174000';
++    const ownClassroomId = '123e4567-e89b-12d3-a456-426614174001';
++    const foreignClassroomId = '423e4567-e89b-12d3-a456-426614174001';
++    setMockClassroomRelationships({
++      classrooms: [
++        { id: ownClassroomId, school_id: 'school-123', teacher_id: userId },
++        { id: foreignClassroomId, school_id: 'other-school', teacher_id: userId },
++      ],
++    });
++    const db = createZenStackDb({ id: userId });
++    const materialId = '523e4567-e89b-12d3-a456-426614174001';
++    const assignmentId = '623e4567-e89b-12d3-a456-426614174001';
++    await db.material.create({
++      data: {
++        id: materialId,
++        classroom_id: foreignClassroomId,
++        title: 'Foreign material',
++        type: 'link',
++      },
++    });
++    await db.assignment.create({
++      data: {
++        id: assignmentId,
++        classroom_id: foreignClassroomId,
++        title: 'Foreign assignment',
++        max_points: 20,
++      },
++    });
++    const client = createTestORPCClient(headers).educational;
++    await expect(
++      client.updateMaterial({ params: { id: materialId }, body: { title: 'Must not write' } }),
++    ).rejects.toMatchObject({ status: 403 });
++    await expect(client.deleteMaterial({ params: { id: materialId } })).rejects.toMatchObject({
++      status: 403,
++    });
++    await expect(
++      client.updateAssignment({ params: { id: assignmentId }, body: { title: 'Must not write' } }),
++    ).rejects.toMatchObject({ status: 403 });
++    await expect(client.deleteAssignment({ params: { id: assignmentId } })).rejects.toMatchObject({
++      status: 403,
++    });
++  });
++
+   it('enforces and executes native assignment submission procedures', async () => {
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+     const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
+@@ -271,11 +348,99 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(body).toEqual([]);
+   });
+ 
++  it.each([
++    ['rpc', false], ['rpc', true], ['openapi', false], ['openapi', true],
++  ] as const)('rejects an unenrolled submission through %s (keyed=%s)', async (transport, keyed) => {
++    const studentId = '423e4567-e89b-12d3-a456-426614174002';
++    const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
++    setMockActiveBond({
++      user_id: studentId, entity_id: 'school-123', entity_type: 'SCHOOL', capacity: 'student',
++    });
++    const requestHeaders = { Authorization: `Bearer ${studentId}` };
++    const body = {
++      assignmentId, content: 'Unenrolled work',
++      ...(keyed ? { idempotencyKey: '723e4567-e89b-12d3-a456-426614174002' } : {}),
++    };
++    if (transport === 'rpc') {
++      await expect(createTestORPCClient(requestHeaders).educational.submitAssignment({ body }))
++        .rejects.toMatchObject({ status: 403 });
++    } else {
++      const response = await app.request(`/api/openapi/educational/assignments/${assignmentId}/submissions`, {
++        method: 'POST', headers: { ...requestHeaders, 'content-type': 'application/json' },
++        body: JSON.stringify(body),
++      });
++      // The deployed OpenAPI projection is read-only; writes never reach authority.
++      expect(response.status).toBe(404);
++    }
++  });
++
++  it('preserves replay of a submission matching the authenticated intent', async () => {
++    const studentId = '223e4567-e89b-12d3-a456-426614174002';
++    const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
++    const submissionId = '623e4567-e89b-12d3-a456-426614174002';
++    await prepareSubmissionReceipt(studentId, assignmentId, 'My work');
++    setMockActiveBond({
++      user_id: studentId,
++      entity_id: 'school-123',
++      entity_type: 'SCHOOL',
++      capacity: 'student',
++    });
++    setMockAssignmentSubmissionRead({
++      id: submissionId,
++      assignment_id: assignmentId,
++      student_id: studentId,
++      content: 'My work',
++      submitted_at: new Date('2026-10-15T00:00:00.000Z'),
++      assignment: { classroom_id: '123e4567-e89b-12d3-a456-426614174001' },
++    });
++    await expect(
++      createTestORPCClient({ Authorization: `Bearer ${studentId}` }).educational.submitAssignment({
++        body: {
++          assignmentId,
++          content: 'My work',
++          idempotencyKey: '723e4567-e89b-12d3-a456-426614174002',
++        },
++      }),
++    ).resolves.toMatchObject({ id: submissionId, content: 'My work', student_id: studentId });
++  });
++
++  it.each([
++    { student_id: '423e4567-e89b-12d3-a456-426614174002' },
++    { assignment_id: '523e4567-e89b-12d3-a456-426614174002' },
++    { content: 'Different private work' },
++  ])('does not return an existing submission with inconsistent intent %j', async (change) => {
++    const studentId = '223e4567-e89b-12d3-a456-426614174002';
++    const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
++    await prepareSubmissionReceipt(studentId, assignmentId, 'My work');
++    setMockActiveBond({
++      user_id: studentId,
++      entity_id: 'school-123',
++      entity_type: 'SCHOOL',
++      capacity: 'student',
++    });
++    setMockAssignmentSubmissionRead({
++      id: '623e4567-e89b-12d3-a456-426614174002',
++      assignment_id: assignmentId,
++      student_id: studentId,
++      content: 'My work',
++      ...change,
++    });
++    await expect(
++      createTestORPCClient({ Authorization: `Bearer ${studentId}` }).educational.submitAssignment({
++        body: {
++          assignmentId,
++          content: 'My work',
++          idempotencyKey: '723e4567-e89b-12d3-a456-426614174002',
++        },
++      }),
++    ).rejects.toMatchObject({ status: 409 });
++  });
++
+   it('serves procedures through the OpenAPI adapter', async () => {
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+     const response = await app.fetch(
+       new Request(
+-        `http://sanctuary.test/api/openapi/educational/classrooms/${classroomId}/assignments?query[classroomId]=${classroomId}`,
++        `http://sanctuary.test/api/openapi/educational/classrooms/${classroomId}/assignments?classroomId=${classroomId}`,
+         { headers },
+       ),
+     );
+diff --git a/apps/sanctuary-api/src/__tests__/setup.ts b/apps/sanctuary-api/src/__tests__/setup.ts
+index 29f7cb39d..0c92f9eb8 100644
+--- a/apps/sanctuary-api/src/__tests__/setup.ts
++++ b/apps/sanctuary-api/src/__tests__/setup.ts
+@@ -9,6 +9,8 @@ let mockUserData: any = null;
+ let mockUsers: any[] = [];
+ let mockDailyContentRows: any[] = [];
+ let mockLastQueryRawArgs: unknown[] | null = null;
++let mockLastExecuteRawArgs: unknown[] | null = null;
++let mockRawQueryRowsQueue: unknown[][] = [];
+ let mockQueryRowsQueue: any[][] = [];
+ let mockLibraryCollectionRead: any = null;
+ let mockLibraryCollections: any[] = [];
+@@ -33,6 +35,12 @@ let mockWhisperedMoments: any[] = [];
+ let mockClassroomNotes: any[] = [];
+ let mockClassrooms: any[] = [];
+ let mockClassroomStudents: any[] = [];
++const mockEducationalRows = new Map<string, Record<string, unknown>>();
++let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
++
++export function setMockAssignmentSubmissionRead(row: Record<string, unknown> | null) {
++  mockAssignmentSubmissionRead = row;
++}
+ 
+ export function setMockZenStackDbAvailable(available: boolean) {
+   mockZenStackDbAvailable = available;
+@@ -69,6 +77,26 @@ export function getMockLastQueryRawArgs(): unknown[] | null {
+   return mockLastQueryRawArgs;
+ }
+ 
++export function setMockRawQueryRowsQueue(rows: unknown[][]) {
++  mockRawQueryRowsQueue = [...rows];
++  mockLastQueryRawArgs = null;
++  mockLastExecuteRawArgs = null;
++}
++
++export function getMockLastExecuteRawArgs(): unknown[] | null {
++  return mockLastExecuteRawArgs;
++}
++
++async function queryMockRawRows(...args: unknown[]): Promise<unknown[]> {
++  mockLastQueryRawArgs = args;
++  return mockRawQueryRowsQueue.shift() ?? mockDailyContentRows;
++}
++
++async function executeMockRaw(...args: unknown[]): Promise<number> {
++  mockLastExecuteRawArgs = args;
++  return 1;
++}
++
+ export function setMockQueryRowsQueue(rows: any[][]) {
+   mockQueryRowsQueue = [...rows];
+ }
+@@ -137,6 +165,7 @@ export function setMockClassroomRelationships({
+ }) {
+   mockClassrooms = classrooms;
+   mockClassroomStudents = students ?? [];
++  mockEducationalRows.clear();
+ }
+ 
+ export function getMockLibraryCollectionFindManyArgs() {
+@@ -149,6 +178,19 @@ function createMockDelegate(name: string): any {
+     {
+       get(_target, prop) {
+         if (prop === 'findUnique') {
++          if (name === 'classroomStudent')
++            return async (args: { where: { classroom_id_student_id: { classroom_id: string; student_id: string } } }) => {
++              const key = args.where.classroom_id_student_id;
++              return mockClassroomStudents.find((row) =>
++                row.classroom_id === key.classroom_id && row.student_id === key.student_id,
++              ) ?? null;
++            };
++          if (name === 'classroom')
++            return async (args: { where: { id: string } }) =>
++              mockClassrooms.find((row) => row.id === args.where.id) ?? null;
++          if (name === 'material')
++            return async (args: { where: { id: string } }) =>
++              mockEducationalRows.get(`material:${args.where.id}`) ?? null;
+           if (name === 'sanctuaryManifesto') {
+             return async () => ({
+               id: 'd23e4567-e89b-12d3-a456-426614174000',
+@@ -156,7 +198,7 @@ function createMockDelegate(name: string): any {
+             });
+           }
+           if (name === 'communityCommentUpvote') return async () => null;
+-          if (name === 'assignmentSubmission') return async () => null;
++          if (name === 'assignmentSubmission') return async () => mockAssignmentSubmissionRead;
+           if (name === 'classroomNote')
+             return async (args: any = {}) => ({
+               id: args?.where?.id ?? 'mock-note-id',
+@@ -165,11 +207,13 @@ function createMockDelegate(name: string): any {
+               author_id: '123e4567-e89b-12d3-a456-426614174000',
+             });
+           if (name === 'assignment')
+-            return async () => ({
+-              id: '923e4567-e89b-12d3-a456-426614174000',
+-              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+-              school_id: 'school-123',
+-            });
++            return async (args: { where: { id: string } }) => {
++              const row = mockEducationalRows.get(`assignment:${args.where.id}`) ?? {
++                id: '923e4567-e89b-12d3-a456-426614174000',
++                classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++              };
++              return { ...row, classroom: mockClassrooms.find((item) => item.id === row.classroom_id) };
++            };
+           if (name === 'principalNote')
+             return async (args: any = {}) => ({
+               id: args?.where?.id ?? 'principal-note-mock-id',
+@@ -686,6 +730,39 @@ function createMockDelegate(name: string): any {
+               author: { full_name: 'Test Author' },
+             });
+           }
++          if (
++            [
++              'classroom',
++              'classroomStudent',
++              'material',
++              'assignment',
++              'assignmentSubmission',
++            ].includes(name)
++          ) {
++            return async (args: any = {}) => {
++              const id = args.where?.id ?? args.data?.id ?? crypto.randomUUID();
++              const data = Object.fromEntries(
++                Object.entries(args.data ?? {}).filter(([, value]) => value !== undefined),
++              );
++              const row = {
++                id,
++                created_at: new Date(),
++                updated_at: new Date(),
++                ...(name === 'classroom' ? { academic_year: '2026' } : {}),
++                ...(name === 'classroomStudent' ? { enrolled_at: new Date() } : {}),
++                ...(name === 'assignmentSubmission'
++                  ? {
++                      submitted_at: new Date(),
++                      classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++                    }
++                  : {}),
++                ...mockEducationalRows.get(`${name}:${id}`),
++                ...data,
++              };
++              mockEducationalRows.set(`${name}:${id}`, row);
++              return row;
++            };
++          }
+           return async (args: any = {}) => ({
+             id: `${name}-mock-id`,
+             ...(args?.data ?? {}),
+@@ -930,7 +1007,10 @@ function createMockDelegate(name: string): any {
+         if (prop === 'findFirst') {
+           if (name === 'bond') {
+             return async (args: any = {}) => {
+-              if (args?.where?.entity_type === 'PERSONAL_CLASSROOM' && mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM')
++              if (
++                args?.where?.entity_type === 'PERSONAL_CLASSROOM' &&
++                mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM'
++              )
+                 return null;
+               if (args?.where?.entity_type === 'SCHOOL' && mockActiveBond?.entity_type !== 'SCHOOL')
+                 return null;
+@@ -990,11 +1070,9 @@ function createMockDelegate(name: string): any {
+           return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+         }
+         if (prop === '$queryRaw') {
+-          return async (...args: unknown[]) => {
+-            mockLastQueryRawArgs = args;
+-            return mockDailyContentRows;
+-          };
++          return queryMockRawRows;
+         }
++        if (prop === '$executeRaw') return executeMockRaw;
+ 
+         return createMockDelegate(`${name}.${String(prop)}`);
+       },
+@@ -1010,11 +1088,9 @@ const mockDb = new Proxy(
+         return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+       }
+       if (prop === '$queryRaw') {
+-        return async (...args: unknown[]) => {
+-          mockLastQueryRawArgs = args;
+-          return mockDailyContentRows;
+-        };
++        return queryMockRawRows;
+       }
++      if (prop === '$executeRaw') return executeMockRaw;
+       if (prop === '$queryRawUnsafe') {
+         return async () => [];
+       }
+diff --git a/apps/sanctuary-api/src/core/handlers/educational.ts b/apps/sanctuary-api/src/core/handlers/educational.ts
+index 63ae3c535..671c74bff 100644
+--- a/apps/sanctuary-api/src/core/handlers/educational.ts
++++ b/apps/sanctuary-api/src/core/handlers/educational.ts
+@@ -1,12 +1,45 @@
+ import { ORPCError } from '@orpc/server';
+ import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
++import {
++  OperationReceiptResponseSchema,
++  OperationReceiptResultSchema,
++} from '@repo/core/api/educational.contract';
+ import { assertDatabase } from '../apiErrors';
++import { assertSubmissionIntent, settleAssignmentSubmission } from '../assignmentSettlement';
+ import { implement, type ORPCContext } from '../orpc';
+ import { doubleGateMiddleware } from '../orpcMiddleware';
++import { assertSubmissionAuthority } from '../submissionAuthority';
+ 
+ const impl = implement(educationalORPCContract).$context<ORPCContext>();
+ const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
+ 
++type OperationReceiptRow = {
++  operation_id: string;
++  capability: string;
++  status: string;
++  result: unknown;
++  created_at: Date | string;
++  updated_at: Date | string;
++};
++
++function mapOperationReceipt(row: OperationReceiptRow | undefined) {
++  if (!row) throw new ORPCError('NOT_FOUND', { message: 'Operation receipt was not found.' });
++  return OperationReceiptResponseSchema.parse({
++    operationId: row.operation_id,
++    capability: row.capability,
++    status: row.status,
++    result: row.status === 'committed' ? OperationReceiptResultSchema.parse(row.result) : null,
++    errorCode:
++      row.status === 'failed'
++        ? 'OPERATION_FAILED'
++        : row.status === 'conflict'
++          ? 'OPERATION_CONFLICT'
++          : null,
++    createdAt: iso(row.created_at),
++    updatedAt: iso(row.updated_at),
++  });
++}
++
+ const mapClassroom = (row: any) => ({
+   id: String(row.id),
+   school_id: row.school_id ?? null,
+@@ -125,6 +158,32 @@ const mapSubmission = (row: any) => ({
+ });
+ 
+ export const educationalRouter = impl.router({
++  getOperationReceipt: impl.getOperationReceipt
++    .use(doubleGateMiddleware)
++    .handler(async ({ input, context }) => {
++      assertDatabase(context);
++      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
++      SELECT operation_id, capability, status, result, created_at, updated_at
++      FROM public.operation_receipts
++      WHERE account_id = ${context.user.id}::uuid AND operation_id = ${input.params.operationId}::uuid
++      LIMIT 1
++    `;
++      return mapOperationReceipt(rows[0]);
++    }),
++  getOperationReceiptByKey: impl.getOperationReceiptByKey
++    .use(doubleGateMiddleware)
++    .handler(async ({ input, context }) => {
++      assertDatabase(context);
++      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
++      SELECT operation_id, capability, status, result, created_at, updated_at
++      FROM public.operation_receipts
++      WHERE account_id = ${context.user.id}::uuid
++        AND capability = ${input.query.capability}
++        AND idempotency_key = ${input.query.idempotencyKey}::uuid
++      LIMIT 1
++    `;
++      return mapOperationReceipt(rows[0]);
++    }),
+   getByTeacher: impl.getByTeacher.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+     assertDatabase(context);
+     const rows = await (context.db as any).classroom.findMany({
+@@ -579,18 +638,31 @@ export const educationalRouter = impl.router({
+   submitAssignment: impl.submitAssignment
+     .use(doubleGateMiddleware)
+     .handler(async ({ input, context }) => {
+-      const db = context.db as any;
+-      const where = input.body.idempotencyKey
+-        ? { idempotency_key: input.body.idempotencyKey }
+-        : {
+-            assignment_id_student_id: {
+-              assignment_id: input.body.assignmentId,
+-              student_id: context.user.id,
+-            },
+-          };
+-      const existing = await db.assignmentSubmission.findUnique({ where });
+-      if (existing) return mapSubmission(existing);
+-      const row = await db.assignmentSubmission.create({
++      assertDatabase(context);
++      if (input.body.idempotencyKey) {
++        return mapSubmission(
++          await settleAssignmentSubmission(context, {
++            ...input.body,
++            idempotencyKey: input.body.idempotencyKey,
++          }),
++        );
++      }
++      await assertSubmissionAuthority(context.db, context, input.body.assignmentId);
++      const where = {
++        assignment_id_student_id: {
++          assignment_id: input.body.assignmentId,
++          student_id: context.user.id,
++        },
++      };
++      const existing = await context.db.assignmentSubmission.findUnique({
++        where,
++        include: { assignment: { select: { classroom_id: true } } },
++      });
++      if (existing) {
++        assertSubmissionIntent(existing, context.user.id, input.body);
++        return mapSubmission(existing);
++      }
++      const row = await context.db.assignmentSubmission.create({
+         data: {
+           assignment_id: input.body.assignmentId,
+           student_id: context.user.id,
+diff --git a/apps/sanctuary-api/src/core/orpcMiddleware.ts b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+index 99b5f8da2..10872c12b 100644
+--- a/apps/sanctuary-api/src/core/orpcMiddleware.ts
++++ b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+@@ -1,31 +1,34 @@
+ import { ORPCError } from '@orpc/server';
++import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
+ import { SovereignError } from '@repo/core/types/Errors';
+ import { check as checkCedar } from '@repo/policies';
+ import { evaluateWithRust } from '../authorization/rustEvaluator';
++import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
+ import { type ORPCContext, o } from './orpc';
++import { resolveGradeMarkAuthority } from './gradingAuthority';
+ 
+-export function toORPCError(error: unknown): unknown {
+-  if (!(error instanceof SovereignError)) return error;
+-  const status = error.details.status;
+-  const code =
+-    status === 400
+-      ? 'BAD_REQUEST'
+-      : status === 401
+-        ? 'UNAUTHORIZED'
+-        : status === 403
+-          ? 'FORBIDDEN'
+-          : status === 404
+-            ? 'NOT_FOUND'
+-            : status === 409
+-              ? 'CONFLICT'
+-              : status === 429
+-                ? 'TOO_MANY_REQUESTS'
+-                : status === 503
+-                  ? 'SERVICE_UNAVAILABLE'
+-                  : 'INTERNAL_SERVER_ERROR';
++const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
++  400: 'BAD_REQUEST',
++  401: 'UNAUTHORIZED',
++  403: 'FORBIDDEN',
++  404: 'NOT_FOUND',
++  409: 'CONFLICT',
++  429: 'TOO_MANY_REQUESTS',
++  503: 'SERVICE_UNAVAILABLE',
++};
++
++export function toORPCError(error: unknown, requestId?: string): ORPCError<string, unknown> {
++  if (error instanceof ORPCError) return error;
++  if (!(error instanceof SovereignError)) {
++    return new ORPCError('INTERNAL_SERVER_ERROR', {
++      message: 'An unexpected platform error occurred.',
++      data: { code: 'INTERNAL_SERVER_ERROR', requestId },
++    });
++  }
++  const code = protocolCodeByStatus[error.details.status] ?? 'INTERNAL_SERVER_ERROR';
+   return new ORPCError(code, {
+     message: error.details.detail || error.details.title,
+-    data: { code: error.details.code, requestId: error.details.instance },
++    data: { code: error.details.code, requestId: error.details.instance ?? requestId },
+   });
+ }
+ 
+@@ -33,17 +36,17 @@ export function toORPCError(error: unknown): unknown {
+  * Bootstrap procedures cannot use the authorization gate that requires an
+  * active bond, but they must still preserve the shared typed error wire.
+  */
+-export const sovereignErrorMiddleware = o.middleware(async ({ next }) => {
++export const sovereignErrorMiddleware = o.middleware(async ({ next, context }) => {
+   try {
+     return await next({});
+   } catch (error) {
+-    if (!(error instanceof SovereignError)) {
++    if (!(error instanceof SovereignError) && !(error instanceof ORPCError)) {
+       console.error('[oRPC] unexpected procedure failure', {
+-        name: error instanceof Error ? error.name : 'unknown',
+-        message: error instanceof Error ? error.message : String(error),
++        ...toSafeErrorTelemetry(error, 'INTERNAL_SERVER_ERROR', 500),
++        requestId: context.requestId,
+       });
+     }
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+ });
+ 
+@@ -122,6 +125,43 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+     typeof procedureInput.userId === 'string' ? procedureInput.userId : undefined;
+   const selfScopedTargetId = requestedUserId ?? context.user.id;
+   const authorizationFacts: Record<string, unknown> = {};
++  if (resourceType === 'GradeMark' && (cedarAction === 'grade' || cedarAction === 'publish')) {
++    Object.assign(
++      authorizationFacts,
++      await resolveGradeMarkAuthority(context, procedureInput, cedarAction),
++    );
++  }
++  const routePath = procedure['~orpc'].route.path;
++  const classroomChild =
++    routePath === educationalORPCContract.updateMaterial.path
++      ? 'material'
++      : routePath === educationalORPCContract.updateAssignment.path
++        ? 'assignment'
++        : undefined;
++  if (resourceType === 'Classroom' && classroomChild) {
++    if (!context.db) {
++      throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Database is unavailable.' });
++    }
++    const childId = procedureInput.id;
++    if (typeof childId !== 'string') {
++      throw new ORPCError('BAD_REQUEST', { message: 'A resource identifier is required.' });
++    }
++    const lookup = { where: { id: childId }, select: { classroom_id: true } } as const;
++    const child =
++      classroomChild === 'material'
++        ? await context.db.material.findUnique(lookup)
++        : await context.db.assignment.findUnique(lookup);
++    if (!child) throw new ORPCError('NOT_FOUND', { message: 'Resource was not found.' });
++    const classroom = await context.db.classroom.findUnique({
++      where: { id: child.classroom_id },
++      select: { id: true, school_id: true },
++    });
++    if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom was not found.' });
++    if (classroom.school_id !== (context.schoolId ?? null)) {
++      throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
++    }
++    authorizationFacts.classroomId = classroom.id;
++  }
+   if (context.db && resourceType === 'ClassroomNote' && !procedureInput.classroomId) {
+     const noteId = typeof procedureInput.id === 'string' ? procedureInput.id : undefined;
+     if (noteId) {
+@@ -138,13 +178,14 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+     const assignmentId =
+       typeof procedureInput.assignmentId === 'string' ? procedureInput.assignmentId : undefined;
+     if (assignmentId) {
+-      const assignment = await (context.db as any).assignment.findUnique({
++      const assignment = await context.db.assignment.findUnique({
+         where: { id: assignmentId },
+-        select: { classroom_id: true, school_id: true },
++        select: { classroom_id: true, classroom: { select: { school_id: true } } },
+       });
+       if (assignment?.classroom_id)
+-        authorizationFacts.classroomId = String(assignment.classroom_id);
+-      if (assignment?.school_id) authorizationFacts.schoolId = String(assignment.school_id);
++        authorizationFacts.classroomId = assignment.classroom_id;
++      if (assignment?.classroom.school_id)
++        authorizationFacts.schoolId = assignment.classroom.school_id;
+     }
+   }
+   if (context.db && resourceType === 'PrincipalNote' && !procedureInput.schoolId) {
+@@ -173,32 +214,34 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+       ? verifiedClassroomIds[0]
+       : undefined;
+   const resourceId =
+-    resourceType === 'User'
+-      ? context.user.id
+-      : resourceType === 'School'
+-        ? context.schoolId || 'school_institutional'
+-        : resourceType === 'AssignmentSubmission'
+-          ? (typeof facts.id === 'string' && facts.id) ||
+-            (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
+-            context.schoolId ||
+-            'school_institutional'
+-          : resourceType === 'Classroom'
+-            ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
+-              (typeof facts.id === 'string' && facts.id) ||
+-              (context.capacity === 'student' && defaultVerifiedClassroomId) ||
++    resourceType === 'OperationReceipt'
++      ? String(facts.operationId ?? facts.idempotencyKey ?? context.user.id)
++      : resourceType === 'User'
++        ? context.user.id
++        : resourceType === 'School'
++          ? context.schoolId || 'school_institutional'
++          : resourceType === 'AssignmentSubmission'
++            ? (typeof facts.id === 'string' && facts.id) ||
++              (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
+               context.schoolId ||
+               'school_institutional'
+-            : (selfScopedResource && selfScopedTargetId) ||
+-              (typeof facts.id === 'string' && facts.id) ||
+-              (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
+-              (typeof facts.classroomId === 'string' && facts.classroomId) ||
+-              (typeof facts.studentId === 'string' && facts.studentId) ||
+-              (typeof facts.commentId === 'string' && facts.commentId) ||
+-              (typeof facts.postId === 'string' && facts.postId) ||
+-              (typeof facts.groupId === 'string' && facts.groupId) ||
+-              (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
+-              context.schoolId ||
+-              'school_institutional';
++            : resourceType === 'Classroom'
++              ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
++                (typeof facts.id === 'string' && facts.id) ||
++                (context.capacity === 'student' && defaultVerifiedClassroomId) ||
++                context.schoolId ||
++                'school_institutional'
++              : (selfScopedResource && selfScopedTargetId) ||
++                (typeof facts.id === 'string' && facts.id) ||
++                (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
++                (typeof facts.classroomId === 'string' && facts.classroomId) ||
++                (typeof facts.studentId === 'string' && facts.studentId) ||
++                (typeof facts.commentId === 'string' && facts.commentId) ||
++                (typeof facts.postId === 'string' && facts.postId) ||
++                (typeof facts.groupId === 'string' && facts.groupId) ||
++                (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
++                context.schoolId ||
++                'school_institutional';
+   const request = {
+     principal: context.principal,
+     action: cedarAction,
+@@ -206,7 +249,9 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+       id: resourceId,
+       type: resourceType,
+       attributes: {
+-        ...(resourceType !== 'School' && { school_id: context.schoolId }),
++        ...(resourceType === 'OperationReceipt' && { account_id: context.user.id }),
++        ...(resourceType !== 'School' &&
++          resourceType !== 'OperationReceipt' && { school_id: context.schoolId }),
+         ...(resourceType === 'Classroom' &&
+           typeof facts.teacherId === 'string' && { teacher_id: facts.teacherId }),
+         ...(resourceType === 'Announcement' &&
+@@ -229,11 +274,15 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+             grade_class_id: procedureInput.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.gradeClassId === 'string' && {
+-            grade_class_id: procedureInput.gradeClassId,
++          typeof facts.gradeClassId === 'string' && {
++            grade_class_id: facts.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
++          typeof facts.schoolId === 'string' && { school_id: facts.schoolId }),
++        ...(resourceType === 'GradeMark' &&
++          typeof authorizationFacts.teacherId === 'string' && {
++            teacher_id: authorizationFacts.teacherId,
++          }),
+         ...([
+           'Grade',
+           'GradeMark',
+@@ -326,7 +375,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+   try {
+     result = await next({});
+   } catch (error) {
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+   console.info(
+     JSON.stringify({
+diff --git a/apps/sanctuary-api/src/core/routes/orpc.ts b/apps/sanctuary-api/src/core/routes/orpc.ts
+index 311f78989..ed183d4d0 100644
+--- a/apps/sanctuary-api/src/core/routes/orpc.ts
++++ b/apps/sanctuary-api/src/core/routes/orpc.ts
+@@ -15,7 +15,15 @@ async function handleNativeORPC(c: any, rpcHandler: RPCHandler) {
+     context,
+     prefix: '/api',
+   });
+-  console.log('[diag-native]', c.req.raw.url, 'matched=', matched, 'status=', response?.status);
++  console.log(
++    '[diag-native]',
++    c.req.method,
++    c.req.path,
++    'matched=',
++    matched,
++    'status=',
++    response?.status,
++  );
+   return matched && response ? response : c.text('Not Found', 404);
+ }
+ 

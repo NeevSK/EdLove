@@ -54,9 +54,14 @@ export async function* vercelStreamToTanStackChunks(
       }
       case 'finish': {
         if (messageId) {
-          yield { type: EventType.TEXT_MESSAGE_END, messageId, metadata: { model }, timestamp: now() };
+          yield {
+            type: EventType.TEXT_MESSAGE_END,
+            messageId,
+            metadata: { model },
+            timestamp: now(),
+          };
         }
-        const u = event.totalUsage;
+        const u = event.totalUsage ?? event.usage;
         const usage = u
           ? {
               promptTokens: u.inputTokens ?? 0,

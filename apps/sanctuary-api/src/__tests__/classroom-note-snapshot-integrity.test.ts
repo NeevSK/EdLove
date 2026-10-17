@@ -1,0 +1,101 @@
+import { call, os } from '@orpc/server';
+import { createZenStackDb } from '@repo/database/client';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { educationalRouter } from '../core/handlers/educational';
+import type { ORPCContext } from '../core/orpc';
+
+const { queryRaw } = vi.hoisted(() => ({ queryRaw: vi.fn() }));
+
+vi.mock('@repo/database/client', () => ({
+  createZenStackDb: () => ({ classroomNoteEvent: { findMany: queryRaw } }),
+}));
+vi.mock('../core/orpcMiddleware', () => ({
+  doubleGateMiddleware: os.$context<ORPCContext>().middleware(({ next }) => next({})),
+}));
+
+describe('classroom note snapshot reconstruction (authority substituted)', () => {
+  const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+  const context: ORPCContext = {
+    user: { id: '123e4567-e89b-12d3-a456-426614174000' },
+    requestId: 'snapshot-integrity-probe',
+    db: createZenStackDb({ id: '123e4567-e89b-12d3-a456-426614174000' }),
+  };
+  const snapshot = (id: string, content: string) => ({
+    id,
+    classroom_id: classroomId,
+    author_id: context.user.id,
+    content,
+    note_type: 'note',
+    visibility: 'class',
+    is_pinned: false,
+    created_at: '2026-10-01T00:00:00.000Z',
+    updated_at: '2026-10-01T00:00:00.000Z',
+  });
+  const read = () =>
+    call(
+      educationalRouter.getClassroomNoteSnapshot,
+      {
+        params: { classroomId },
+        query: { view_date: '2026-10-14T00:00:00.000Z' },
+      },
+      { context },
+    );
+
+  beforeEach(() => {
+    queryRaw.mockReset();
+  });
+
+  it('does not resurrect a note whose newest eligible event is deletion', async () => {
+    queryRaw.mockResolvedValue([
+      {
+        note_id: 'deleted-note',
+        event_type: 'delete',
+        snapshot: snapshot('deleted-note', 'deleted'),
+      },
+      { note_id: 'live-note', event_type: 'update', snapshot: snapshot('live-note', 'latest') },
+      { note_id: 'deleted-note', event_type: 'create', snapshot: snapshot('deleted-note', 'old') },
+      { note_id: 'live-note', event_type: 'create', snapshot: snapshot('live-note', 'old') },
+    ]);
+    expect(await read()).toEqual([expect.objectContaining({ id: 'live-note', content: 'latest' })]);
+    expect(queryRaw).toHaveBeenCalledOnce();
+    expect(queryRaw).toHaveBeenCalledWith({
+      where: {
+        classroom_id: classroomId,
+        occurred_at: { lte: new Date('2026-10-14T00:00:00.000Z') },
+      },
+      orderBy: [{ occurred_at: 'desc' }, { recorded_at: 'desc' }],
+    });
+  });
+
+  it('uses a newer create after deletion rather than hiding the recreated note', async () => {
+    queryRaw.mockResolvedValue([
+      {
+        note_id: 'recreated-note',
+        event_type: 'create',
+        snapshot: snapshot('recreated-note', 'new'),
+      },
+      {
+        note_id: 'recreated-note',
+        event_type: 'delete',
+        snapshot: snapshot('recreated-note', 'old'),
+      },
+    ]);
+    expect(await read()).toEqual([
+      expect.objectContaining({ id: 'recreated-note', content: 'new' }),
+    ]);
+  });
+
+  it('does not require a deleted event to carry a renderable snapshot', async () => {
+    queryRaw.mockResolvedValue([
+      { note_id: 'deleted-note', event_type: 'delete', snapshot: null },
+      { note_id: 'deleted-note', event_type: 'update', snapshot: snapshot('deleted-note', 'old') },
+    ]);
+    expect(await read()).toEqual([]);
+  });
+
+  it('propagates event-store failure rather than reporting an empty history', async () => {
+    const failure = new Error('synthetic-event-store-unavailable');
+    queryRaw.mockRejectedValue(failure);
+    await expect(read()).rejects.toBe(failure);
+  });
+});

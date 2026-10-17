@@ -1,0 +1,273 @@
+import { call } from '@orpc/server';
+import { createZenStackDb } from '@repo/database/client';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { gradingRouter } from '../core/handlers/grading';
+import type { ORPCContext } from '../core/orpc';
+
+const fixture = vi.hoisted(() => {
+  const ids = {
+    studentId: '123e4567-e89b-12d3-a456-426614174000',
+    schoolId: '123e4567-e89b-12d3-a456-426614174001',
+    academicCycleId: '123e4567-e89b-12d3-a456-426614174002',
+    gradeClassId: '123e4567-e89b-12d3-a456-426614174003',
+    termId: '123e4567-e89b-12d3-a456-426614174004',
+    subjectId: '123e4567-e89b-12d3-a456-426614174005',
+  };
+  const grade = {
+    id: '123e4567-e89b-12d3-a456-426614174006',
+    student_id: ids.studentId,
+    school_id: ids.schoolId,
+    academic_cycle_id: ids.academicCycleId,
+    grade_class_id: ids.gradeClassId,
+    term_id: ids.termId,
+    subject_id: ids.subjectId,
+    marks_earned: 75,
+    max_points: 100,
+    percentage: 75,
+    gpa: 3,
+    letter_grade: 'A',
+    publication_state: 'draft',
+    graded_by: ids.studentId,
+    graded_at: new Date('2026-10-15T00:00:00.000Z'),
+    created_at: new Date('2026-10-15T00:00:00.000Z'),
+    updated_at: new Date('2026-10-15T00:00:00.000Z'),
+  };
+  const gradeClass = {
+    id: ids.gradeClassId,
+    school_id: ids.schoolId,
+    academic_cycle_id: ids.academicCycleId,
+    status: 'active',
+  };
+  const events: string[] = [];
+  const transaction = {
+    gradeMark: {
+      create: vi.fn(async () => {
+        events.push('grade');
+        return grade;
+      }),
+      update: vi.fn(async () => {
+        events.push('publish');
+        return { ...grade, publication_state: 'published' };
+      }),
+    },
+    sentinelAuditLog: {
+      create: vi.fn(async () => {
+        events.push('audit');
+        return {};
+      }),
+    },
+  };
+  const db = {
+    gradeClass: { findUnique: vi.fn(async () => gradeClass) },
+    gradeClassTeacherAssignment: {
+      findFirst: vi.fn(async (): Promise<{ id: string } | null> => ({ id: 'assignment-fixture' })),
+    },
+    gradeMark: {
+      findUnique: vi.fn(async () => grade),
+      create: vi.fn(() => {
+        throw new Error('Unbound grade write');
+      }),
+      update: vi.fn(() => {
+        throw new Error('Unbound publication write');
+      }),
+    },
+    sentinelAuditLog: {
+      create: vi.fn(() => {
+        throw new Error('Unbound audit write');
+      }),
+    },
+    $transaction: vi.fn(async (callback: (tx: typeof transaction) => Promise<unknown>) =>
+      callback(transaction),
+    ),
+  };
+  return { ids, grade, gradeClass, events, transaction, db };
+});
+
+vi.mock('@repo/database/client', () => ({ createZenStackDb: () => fixture.db }));
+
+const context = (): ORPCContext => ({
+  db: createZenStackDb({ id: fixture.ids.studentId }),
+  user: { id: fixture.ids.studentId },
+  schoolId: fixture.ids.schoolId,
+  capacity: 'teacher',
+  requestId: 'grading-fixture-request',
+  principal: {
+    id: fixture.ids.studentId,
+    type: 'teacher',
+    attributes: {
+      school_id: fixture.ids.schoolId,
+      capacity: 'teacher',
+      active_entity_id: fixture.ids.schoolId,
+      active_entity_type: 'SCHOOL',
+      classroom_ids: [],
+    },
+  },
+  securityContext: { device_trust: 'standard', network_zone: 'public' },
+});
+
+describe('grading authority and transaction binding (database substituted)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fixture.events.length = 0;
+    fixture.db.gradeClass.findUnique.mockResolvedValue(fixture.gradeClass);
+    fixture.db.gradeMark.findUnique.mockResolvedValue(fixture.grade);
+    fixture.db.gradeClassTeacherAssignment.findFirst.mockResolvedValue({
+      id: 'assignment-fixture',
+    });
+    fixture.transaction.sentinelAuditLog.create.mockImplementation(async () => {
+      fixture.events.push('audit');
+      return {};
+    });
+  });
+
+  it('saves a teacher draft using the transaction client, not high device trust or legacy classroom IDs', async () => {
+    const body = { ...fixture.ids, marksEarned: 75, maxPoints: 100 };
+    const result = await call(gradingRouter.submitGrade, { body }, { context: context() });
+    expect(result).toMatchObject({ id: fixture.grade.id, publication_state: 'draft' });
+    expect(fixture.events).toEqual(['grade', 'audit']);
+    expect(fixture.db.$transaction).toHaveBeenCalledOnce();
+    expect(fixture.db.gradeMark.create).not.toHaveBeenCalled();
+    expect(fixture.db.sentinelAuditLog.create).not.toHaveBeenCalled();
+    expect(fixture.transaction.sentinelAuditLog.create).toHaveBeenCalledWith({
+      data: {
+        action: 'grade_mark_submitted',
+        resource_id: fixture.grade.id,
+        resource_type: 'grade_mark',
+        actor_id: fixture.ids.studentId,
+        details: body,
+      },
+    });
+    expect(fixture.db.gradeClassTeacherAssignment.findFirst).toHaveBeenCalledWith({
+      where: {
+        grade_class_id: fixture.ids.gradeClassId,
+        academic_cycle_id: fixture.ids.academicCycleId,
+        teacher_id: fixture.ids.studentId,
+        status: 'active',
+        effective_from: { lte: expect.any(Date) },
+        AND: [
+          { OR: [{ effective_to: null }, { effective_to: { gt: expect.any(Date) } }] },
+          { OR: [{ subject_id: null }, { subject_id: fixture.ids.subjectId }] },
+        ],
+      },
+      select: { id: true },
+    });
+  });
+
+  it('publishes through the transaction using the stored grade lifecycle', async () => {
+    const result = await call(
+      gradingRouter.publishGrade,
+      { params: { id: fixture.grade.id } },
+      { context: context() },
+    );
+    expect(result.publication_state).toBe('published');
+    expect(fixture.events).toEqual(['publish', 'audit']);
+    expect(fixture.db.gradeMark.update).not.toHaveBeenCalled();
+    expect(fixture.transaction.sentinelAuditLog.create).toHaveBeenCalledWith({
+      data: {
+        action: 'grade_mark_published',
+        resource_id: fixture.grade.id,
+        resource_type: 'grade_mark',
+        actor_id: fixture.ids.studentId,
+        details: { publication_state: 'published' },
+      },
+    });
+  });
+
+  it.each(['submit', 'publish'] as const)(
+    'does not report success or expose audit failures for %s',
+    async (operation) => {
+      fixture.transaction.sentinelAuditLog.create.mockRejectedValueOnce(
+        new Error('synthetic-private-audit-failure'),
+      );
+      const promise =
+        operation === 'submit'
+          ? call(
+              gradingRouter.submitGrade,
+              { body: { ...fixture.ids, marksEarned: 75, maxPoints: 100 } },
+              { context: context() },
+            )
+          : call(
+              gradingRouter.publishGrade,
+              { params: { id: fixture.grade.id } },
+              { context: context() },
+            );
+      await expect(promise).rejects.toMatchObject({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'An unexpected platform error occurred.',
+      });
+      expect(fixture.db.$transaction).toHaveBeenCalledOnce();
+    },
+  );
+
+  it('denies a teacher without a current teaching assignment before opening a write transaction', async () => {
+    fixture.db.gradeClassTeacherAssignment.findFirst.mockResolvedValueOnce(null);
+    await expect(
+      call(
+        gradingRouter.submitGrade,
+        { body: { ...fixture.ids, marksEarned: 75, maxPoints: 100 } },
+        { context: context() },
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    expect(fixture.db.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('denies publication outside the active school based on the stored grade', async () => {
+    fixture.db.gradeMark.findUnique.mockResolvedValueOnce({
+      ...fixture.grade,
+      school_id: 'foreign-school',
+    });
+    await expect(
+      call(
+        gradingRouter.publishGrade,
+        { params: { id: fixture.grade.id } },
+        { context: context() },
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    expect(fixture.db.$transaction).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { status: 'archived' },
+    { academic_cycle_id: 'another-cycle' },
+    { school_id: 'another-school' },
+  ])('denies an inconsistent lifecycle class %j before any write', async (change) => {
+    fixture.db.gradeClass.findUnique.mockResolvedValueOnce({ ...fixture.gradeClass, ...change });
+    await expect(
+      call(
+        gradingRouter.submitGrade,
+        { body: { ...fixture.ids, marksEarned: 75, maxPoints: 100 } },
+        { context: context() },
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    expect(fixture.db.$transaction).not.toHaveBeenCalled();
+  });
+
+  it.each(['grade', 'publish'])(
+    'preserves same-school principal authority for %s',
+    async (action) => {
+      const principalContext = context();
+      principalContext.capacity = 'principal';
+      if (!principalContext.principal) throw new Error('Missing principal fixture');
+      principalContext.principal.type = 'principal';
+      principalContext.principal.attributes.capacity = 'principal';
+      if (action === 'grade') {
+        await expect(
+          call(
+            gradingRouter.submitGrade,
+            { body: { ...fixture.ids, marksEarned: 75, maxPoints: 100 } },
+            { context: principalContext },
+          ),
+        ).resolves.toMatchObject({ id: fixture.grade.id });
+      } else {
+        await expect(
+          call(
+            gradingRouter.publishGrade,
+            { params: { id: fixture.grade.id } },
+            { context: principalContext },
+          ),
+        ).resolves.toMatchObject({ publication_state: 'published' });
+      }
+      expect(fixture.db.gradeClassTeacherAssignment.findFirst).not.toHaveBeenCalled();
+    },
+  );
+});

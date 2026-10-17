@@ -1,18 +1,19 @@
+import { CapacitySchema } from '@repo/core/api/identity.generated';
 import { onboardingContract } from '@repo/core/api/server';
 import { SovereignError } from '@repo/core/types/Errors';
-import { CapacitySchema } from '@repo/core/api/identity.generated';
-import { assertDatabase } from '../apiErrors';
 import {
   buildIdentityBootstrap,
   persistPersonalSanctuaryBondCapacity,
   resolvePersonalCapacityChange,
 } from '../activeScope';
+import { assertDatabase } from '../apiErrors';
+import { settleOnboardingCompletion } from '../onboardingCompletionSettlement';
+import { implement, type ORPCContext } from '../orpc';
+import { sovereignErrorMiddleware } from '../orpcMiddleware';
 import {
   currentPlatformProvisionConfig,
   resolveInitialBondAuthority,
 } from '../platformBondProvision';
-import { implement, type ORPCContext } from '../orpc';
-import { sovereignErrorMiddleware } from '../orpcMiddleware';
 
 const impl = implement(onboardingContract).$context<ORPCContext>();
 
@@ -25,11 +26,7 @@ export const onboardingRouter = impl.router({
       if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
 
       const userId = context.user.id;
-      const {
-        orientation,
-        confirmCapacityChange,
-        context: requestContext,
-      } = input.body;
+      const { orientation, confirmCapacityChange, context: requestContext } = input.body;
       const primaryCapacity = CapacitySchema.safeParse(orientation);
       if (!primaryCapacity.success) {
         throw SovereignError.invalidInput('Choose a recognized primary capacity.');
@@ -63,9 +60,7 @@ export const onboardingRouter = impl.router({
       const usernameInput = requestContext.username;
       const normalizedUsername =
         typeof usernameInput === 'string' ? usernameInput.trim().toLowerCase() : '';
-      const username = /^[a-z0-9_-]{3,30}$/.test(normalizedUsername)
-        ? normalizedUsername
-        : null;
+      const username = /^[a-z0-9_-]{3,30}$/.test(normalizedUsername) ? normalizedUsername : null;
       const now = new Date();
 
       const result = await context.db.$transaction(async (tx) => {
@@ -196,11 +191,8 @@ export const onboardingRouter = impl.router({
 
       return {
         success: true,
-        scopeBootstrap: buildIdentityBootstrap(
-          result.user,
-          result.user.bonds,
-          result.personalBond,
-        ).scopeBootstrap,
+        scopeBootstrap: buildIdentityBootstrap(result.user, result.user.bonds, result.personalBond)
+          .scopeBootstrap,
       };
     }),
 
@@ -212,7 +204,7 @@ export const onboardingRouter = impl.router({
 
       const userId = context.user.id;
 
-      await context.db.$transaction(async (tx) => {
+      const completeForAuthenticatedSubject = async (tx: any) => {
         const profile = await tx.user.findUnique({
           where: { id: userId },
           include: { bonds: true, preferences: true },
@@ -252,9 +244,21 @@ export const onboardingRouter = impl.router({
             identity_state: 'onboarded',
           },
         });
-      });
+      };
 
-      return { success: true };
+      const idempotencyKey = input.body.idempotencyKey;
+      if (!idempotencyKey) {
+        await context.db.$transaction(completeForAuthenticatedSubject);
+        return { success: true, receiptId: null, replayed: false };
+      }
+
+      const receipt = await settleOnboardingCompletion(
+        context,
+        idempotencyKey,
+        completeForAuthenticatedSubject,
+      );
+
+      return { success: true, ...receipt };
     }),
 
   createFounderSchoolBond: impl.createFounderSchoolBond

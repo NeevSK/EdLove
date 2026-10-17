@@ -3,7 +3,12 @@ import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract'
 import { beforeEach, describe, expect, it } from 'vitest';
 import { app } from '../core/app.js';
 import { createTestORPCClient } from './orpc-client';
-import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';
+import {
+  setMockActiveBond,
+  setMockRawQueryRowsQueue,
+  setMockUserData,
+  setMockZenStackDbAvailable,
+} from './setup';
 
 describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
   const userId = '123e4567-e89b-12d3-a456-426614174000';
@@ -84,7 +89,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockActiveBond({ capacity: 'teacher', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
 
       const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(
-        {},
+        { body: {} },
       );
       expect(body.success).toBe(true);
     });
@@ -94,7 +99,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockActiveBond(null);
 
       await expect(
-        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({}),
+        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({ body: {} }),
       ).rejects.toMatchObject({ status: 400 });
     });
 
@@ -103,12 +108,37 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockActiveBond(null);
 
       await expect(
-        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({}),
+        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({ body: {} }),
       ).rejects.toMatchObject({ status: 400 });
     });
 
     it('does not accept a caller-selected identity in the completion contract', () => {
-      expect('request' in onboardingORPCContract.completeOnboarding).toBe(false);
+      expect(
+        onboardingORPCContract.completeOnboarding.request.body.safeParse({ userId }).success,
+      ).toBe(false);
+    });
+
+    it('returns the committed receipt when the same final completion is retried', async () => {
+      const receiptId = '123e4567-e89b-12d3-a456-426614174099';
+      const idempotencyKey = '123e4567-e89b-12d3-a456-426614174098';
+      setMockUserData(defaultMockUser);
+      setMockActiveBond({ capacity: 'teacher', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
+      setMockRawQueryRowsQueue([
+        [],
+        [
+          {
+            operation_id: receiptId,
+            payload_hash: 'onboarding-completion-v1',
+            status: 'committed',
+          },
+        ],
+      ]);
+
+      await expect(
+        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({
+          body: { idempotencyKey },
+        }),
+      ).resolves.toEqual({ success: true, receiptId, replayed: true });
     });
   });
 });

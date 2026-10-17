@@ -1,15 +1,16 @@
+import crypto from 'node:crypto';
 import { executeDatabaseCommand, queryDatabaseRows } from '@repo/database/client';
 import { Hono } from 'hono';
 
 type Environment = (key: string) => string | undefined;
 
-interface AdMobKeyRecord {
-  keyId: string;
+export interface AdMobKeyRecord {
+  keyId: string | number;
   pem: string;
   base64: string;
 }
 
-interface AdMobKeyResponse {
+export interface AdMobKeyResponse {
   keys: AdMobKeyRecord[];
 }
 
@@ -17,7 +18,17 @@ let cachedKeys: AdMobKeyRecord[] | null = null;
 let lastKeyFetchTime = 0;
 const KEY_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-async function getAdMobPublicKeys(): Promise<AdMobKeyRecord[]> {
+export function clearAdMobKeyCache(): void {
+  cachedKeys = null;
+  lastKeyFetchTime = 0;
+}
+
+export function setTestAdMobKeys(keys: AdMobKeyRecord[]): void {
+  cachedKeys = keys;
+  lastKeyFetchTime = Date.now();
+}
+
+export async function getAdMobPublicKeys(): Promise<AdMobKeyRecord[]> {
   const now = Date.now();
   if (cachedKeys && now - lastKeyFetchTime < KEY_CACHE_TTL_MS) {
     return cachedKeys;
@@ -40,7 +51,43 @@ async function getAdMobPublicKeys(): Promise<AdMobKeyRecord[]> {
   return cachedKeys || [];
 }
 
-export function createAdRewardRoutes(getEnv: Environment) {
+export function extractContentToVerify(rawUrl: string): string {
+  const url = new URL(rawUrl);
+  const search = url.search.startsWith('?') ? url.search.slice(1) : url.search;
+  const sigParamIndex = search.indexOf('&signature=');
+  if (sigParamIndex !== -1) {
+    return search.substring(0, sigParamIndex);
+  }
+  const altIndex = search.indexOf('signature=');
+  if (altIndex !== -1) {
+    return search.substring(0, altIndex > 0 ? altIndex - 1 : altIndex);
+  }
+  return search;
+}
+
+export function verifyAdMobSignature(
+  content: string,
+  signature: string,
+  pem: string,
+): boolean {
+  try {
+    let b64 = signature.replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4 !== 0) {
+      b64 += '=';
+    }
+    const verifier = crypto.createVerify('SHA256');
+    verifier.update(content, 'utf8');
+    return verifier.verify(pem, b64, 'base64');
+  } catch (err) {
+    console.error('[AdRewards] Cryptographic signature check error:', err);
+    return false;
+  }
+}
+
+export function createAdRewardRoutes(
+  _getEnv: Environment,
+  keyFetcher: () => Promise<AdMobKeyRecord[]> = getAdMobPublicKeys,
+) {
   const routes = new Hono();
 
   /**
@@ -61,6 +108,23 @@ export function createAdRewardRoutes(getEnv: Environment) {
 
     if (!transactionId || !userId) {
       return c.text('Bad Request: Missing transaction_id or user_id', 400);
+    }
+
+    if (!signature || !keyId) {
+      return c.text('Bad Request: Missing signature or key_id', 400);
+    }
+
+    // Cryptographic signature verification with Google AdMob public keys
+    const keys = await keyFetcher();
+    const keyRecord = keys.find((k) => String(k.keyId) === String(keyId));
+    if (!keyRecord) {
+      return c.text('Bad Request: Unknown or missing key_id', 400);
+    }
+
+    const contentToVerify = extractContentToVerify(c.req.url);
+    const isValid = verifyAdMobSignature(contentToVerify, signature, keyRecord.pem);
+    if (!isValid) {
+      return c.text('Bad Request: Cryptographic signature verification failed', 400);
     }
 
     const rewardAmount = parseInt(rewardAmountStr, 10) || 10;
@@ -143,10 +207,22 @@ export function createAdRewardRoutes(getEnv: Environment) {
    * Fetch current user energy balance
    */
   routes.get('/rewards/energy-balance', async (c) => {
-    const userId = c.req.query('user_id');
-    if (!userId) {
-      return c.json({ error: 'user_id is required' }, 400);
+    const user = (c.get as any)('user') as { id: string; role?: string } | undefined;
+    if (!user || user.id === 'anonymous') {
+      return c.json({ error: 'Unauthorized: Authentication required to view energy balance' }, 401);
     }
+
+    const requestedUserId = c.req.query('user_id');
+    if (
+      requestedUserId &&
+      requestedUserId !== user.id &&
+      user.role !== 'admin' &&
+      user.role !== 'founder'
+    ) {
+      return c.json({ error: 'Forbidden: Cannot view energy balance of another user' }, 403);
+    }
+
+    const userId = requestedUserId || user.id;
 
     try {
       let data = {

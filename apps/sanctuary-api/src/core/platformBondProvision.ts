@@ -12,7 +12,12 @@ export type InitialBondAuthority = {
 };
 
 function subjectSet(value: string | undefined): Set<string> {
-  return new Set((value ?? '').split(',').map((subject) => subject.trim()).filter(Boolean));
+  return new Set(
+    (value ?? '')
+      .split(',')
+      .map((subject) => subject.trim())
+      .filter(Boolean),
+  );
 }
 
 export function configuredPlatformCapacities(

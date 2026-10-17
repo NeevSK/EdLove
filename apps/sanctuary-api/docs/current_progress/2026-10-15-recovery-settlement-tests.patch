@@ -1,0 +1,318 @@
+diff --git a/apps/sanctuary-api/src/__tests__/assignment-settlement.test.ts b/apps/sanctuary-api/src/__tests__/assignment-settlement.test.ts
+new file mode 100644
+index 000000000..cbea3f7cf
+--- /dev/null
++++ b/apps/sanctuary-api/src/__tests__/assignment-settlement.test.ts
+@@ -0,0 +1,312 @@
++import { createZenStackDb } from '@repo/database/client';
++import { call } from '@orpc/server';
++import { ASSIGNMENT_SUBMISSION_CAPABILITY } from '@repo/core/api/educational.contract';
++import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
++import { beforeEach, describe, expect, it, vi } from 'vitest';
++import { settleAssignmentSubmission } from '../core/assignmentSettlement';
++import { educationalRouter } from '../core/handlers/educational';
++import type { ORPCContext } from '../core/orpc';
++
++const fixture = vi.hoisted(() => {
++  const accountId = '123e4567-e89b-12d3-a456-426614174000';
++  const input = {
++    assignmentId: '123e4567-e89b-12d3-a456-426614174001',
++    content: 'Synthetic work',
++    idempotencyKey: '123e4567-e89b-12d3-a456-426614174002',
++  };
++  const submission = {
++    id: '123e4567-e89b-12d3-a456-426614174003',
++    student_id: accountId,
++    assignment_id: input.assignmentId,
++    content: input.content,
++    submitted_at: new Date('2026-10-15T00:00:00.000Z'),
++    grade: null,
++    feedback: null,
++    graded_at: null,
++    idempotency_key: input.idempotencyKey,
++    assignment: { classroom_id: '123e4567-e89b-12d3-a456-426614174004' },
++  };
++  const initialResult: unknown = null;
++  const receipt = {
++    operation_id: '123e4567-e89b-12d3-a456-426614174005',
++    payload_hash: '',
++    status: 'pending',
++    result: initialResult,
++  };
++  const scenario: {
++    claimed: boolean;
++    missingReceipt: boolean;
++    row: typeof submission | null;
++    auditError: Error | null;
++    queryError: object | null;
++    updated: number;
++  } = {
++    claimed: true,
++    missingReceipt: false,
++    row: null,
++    auditError: null,
++    queryError: null,
++    updated: 1,
++  };
++  const events: string[] = [];
++  const queries: Array<{ sql: string; values: unknown[] }> = [];
++  const tx = {
++    $queryRaw: vi.fn(async (parts: TemplateStringsArray, ...values: unknown[]) => {
++      const sql = parts.join('?');
++      queries.push({ sql, values });
++      if (scenario.queryError) throw scenario.queryError;
++      if (sql.includes('INSERT INTO')) {
++        events.push('claim');
++        if (scenario.claimed) receipt.operation_id = String(values[0]);
++        return scenario.claimed ? [{ operation_id: receipt.operation_id }] : [];
++      }
++      events.push('lock');
++      return scenario.missingReceipt ? [] : [receipt];
++    }),
++    $executeRaw: vi.fn(async (parts: TemplateStringsArray, ...values: unknown[]) => {
++      const sql = parts.join('?');
++      queries.push({ sql, values });
++      if (!sql.includes('UPDATE public.operation_receipts')) return 0;
++      events.push('commit-receipt');
++      return scenario.updated;
++    }),
++    assignmentSubmission: {
++      findUnique: vi.fn(async () => scenario.row),
++      create: vi.fn(async () => {
++        events.push('submission');
++        return submission;
++      }),
++    },
++    sentinelAuditLog: {
++      create: vi.fn(async () => {
++        events.push('audit');
++        if (scenario.auditError) throw scenario.auditError;
++        return {};
++      }),
++    },
++  };
++  const db = {
++    assignment: {
++      findUnique: vi.fn(async () => ({
++        classroom_id: submission.assignment.classroom_id,
++        school_id: 'school-fixture',
++      })),
++    },
++    $transaction: vi.fn(async (callback: (client: typeof tx) => Promise<unknown>) => callback(tx)),
++    assignmentSubmission: {
++      create: vi.fn(() => {
++        throw new Error('Unbound submission write');
++      }),
++    },
++    $queryRaw: vi.fn(() => {
++      throw new Error('Unbound receipt read');
++    }),
++    $executeRaw: vi.fn(() => {
++      throw new Error('Unbound receipt write');
++    }),
++  };
++  return { accountId, input, submission, receipt, scenario, events, queries, tx, db };
++});
++
++vi.mock('@repo/database/client', () => ({ createZenStackDb: () => fixture.db }));
++
++const execute = () =>
++  settleAssignmentSubmission(
++    {
++      db: createZenStackDb({ id: fixture.accountId }),
++      user: { id: fixture.accountId },
++      requestId: 'settlement-fixture',
++    },
++    fixture.input,
++  );
++
++describe('keyed assignment settlement (transaction/database substituted)', () => {
++  beforeEach(async () => {
++    vi.clearAllMocks();
++    fixture.events.length = 0;
++    fixture.queries.length = 0;
++    Object.assign(fixture.scenario, {
++      claimed: true,
++      missingReceipt: false,
++      row: null,
++      auditError: null,
++      queryError: null,
++      updated: 1,
++    });
++    Object.assign(fixture.receipt, {
++      status: 'pending',
++      result: null,
++      payload_hash: await getConsistentIdempotencyKey(
++        {
++          studentId: fixture.accountId,
++          assignmentId: fixture.input.assignmentId,
++          content: fixture.input.content,
++        },
++        ASSIGNMENT_SUBMISSION_CAPABILITY,
++      ),
++    });
++  });
++
++  it('binds submission, audit and payload-matched receipt settlement to the transaction', async () => {
++    await expect(execute()).resolves.toMatchObject({ id: fixture.submission.id });
++    expect(fixture.events).toEqual(['claim', 'lock', 'submission', 'audit', 'commit-receipt']);
++    expect(fixture.db.$transaction).toHaveBeenCalledOnce();
++    expect(fixture.db.assignmentSubmission.create).not.toHaveBeenCalled();
++    expect(fixture.db.$executeRaw).not.toHaveBeenCalled();
++    expect(fixture.queries.find(({ sql }) => sql.includes('INSERT INTO'))?.values).toEqual([
++      expect.any(String),
++      fixture.accountId,
++      ASSIGNMENT_SUBMISSION_CAPABILITY,
++      fixture.input.idempotencyKey,
++      fixture.receipt.payload_hash,
++    ]);
++    expect(fixture.queries.find(({ sql }) => sql.includes('SELECT operation_id'))).toMatchObject({
++      sql: expect.stringContaining('FOR UPDATE'),
++      values: [fixture.accountId, ASSIGNMENT_SUBMISSION_CAPABILITY, fixture.input.idempotencyKey],
++    });
++    expect(fixture.tx.sentinelAuditLog.create).toHaveBeenCalledWith({
++      data: {
++        action: 'assignment_submission_settled',
++        actor_id: fixture.accountId,
++        resource_type: 'assignment_submission',
++        resource_id: fixture.submission.id,
++        details: {
++          assignmentId: fixture.input.assignmentId,
++          operationId: fixture.receipt.operation_id,
++          replayed: false,
++        },
++      },
++    });
++    expect(
++      fixture.queries.find(({ sql }) => sql.includes('UPDATE public.operation_receipts'))?.values,
++    ).toEqual([
++      JSON.stringify({ submissionId: fixture.submission.id }),
++      fixture.receipt.operation_id,
++      fixture.accountId,
++      fixture.receipt.payload_hash,
++    ]);
++    expect(fixture.queries.some(({ sql }) => sql.includes("lock_timeout = '2s'"))).toBe(true);
++  });
++
++  it('replays only a committed receipt and does not repeat domain/audit writes', async () => {
++    fixture.scenario.claimed = false;
++    fixture.scenario.row = fixture.submission;
++    fixture.receipt.status = 'committed';
++    fixture.receipt.result = { submissionId: fixture.submission.id };
++    await expect(execute()).resolves.toMatchObject({ id: fixture.submission.id });
++    expect(fixture.events).toEqual(['claim', 'lock']);
++    expect(fixture.tx.assignmentSubmission.create).not.toHaveBeenCalled();
++    expect(fixture.tx.sentinelAuditLog.create).not.toHaveBeenCalled();
++  });
++
++  it('rejects a reused key with a different canonical payload', async () => {
++    fixture.scenario.claimed = false;
++    fixture.receipt.payload_hash = 'different-hash';
++    await expect(execute()).rejects.toMatchObject({ status: 409 });
++    expect(fixture.tx.assignmentSubmission.findUnique).not.toHaveBeenCalled();
++  });
++
++  it.each([
++    ['pending', 503],
++    ['failed', 503],
++    ['conflict', 409],
++  ] as const)(
++    'does not treat an existing %s receipt as committed even if a row exists',
++    async (status, expected) => {
++      fixture.scenario.claimed = false;
++      fixture.scenario.row = fixture.submission;
++      fixture.receipt.status = status;
++      await expect(execute()).rejects.toMatchObject({ status: expected });
++      expect(fixture.tx.assignmentSubmission.findUnique).not.toHaveBeenCalled();
++      expect(fixture.tx.assignmentSubmission.create).not.toHaveBeenCalled();
++    },
++  );
++
++  it.each([
++    { student_id: 'other-student' },
++    { assignment_id: 'other-assignment' },
++    { content: 'other-content' },
++  ])('does not expose a committed replay with mismatching persisted intent %j', async (change) => {
++    fixture.scenario.claimed = false;
++    fixture.scenario.row = { ...fixture.submission, ...change };
++    fixture.receipt.status = 'committed';
++    fixture.receipt.result = { submissionId: fixture.submission.id };
++    await expect(execute()).rejects.toMatchObject({ status: 409 });
++    expect(fixture.events).toEqual(['claim', 'lock']);
++  });
++
++  it('fails closed when the claimed receipt cannot be read', async () => {
++    fixture.scenario.missingReceipt = true;
++    await expect(execute()).rejects.toMatchObject({ status: 503 });
++    expect(fixture.tx.assignmentSubmission.create).not.toHaveBeenCalled();
++  });
++
++  it('fails closed when a committed receipt references a missing submission', async () => {
++    fixture.scenario.claimed = false;
++    fixture.receipt.status = 'committed';
++    fixture.receipt.result = { submissionId: fixture.submission.id };
++    await expect(execute()).rejects.toMatchObject({ status: 503 });
++    expect(fixture.tx.assignmentSubmission.create).not.toHaveBeenCalled();
++  });
++
++  it('propagates an audit failure without settling the receipt', async () => {
++    fixture.scenario.auditError = new Error('synthetic audit failure');
++    await expect(execute()).rejects.toThrow('synthetic audit failure');
++    expect(fixture.events).toEqual(['claim', 'lock', 'submission', 'audit']);
++  });
++
++  it('does not acknowledge a receipt update affecting zero rows', async () => {
++    fixture.scenario.updated = 0;
++    await expect(execute()).rejects.toMatchObject({ status: 503 });
++  });
++
++  it.each(['55P03', '57014', '40001', '40P01'])(
++    'maps database interruption %s to a retryable safe error',
++    async (dbErrorCode) => {
++      fixture.scenario.queryError = {
++        dbErrorCode,
++        dbErrorMessage: 'synthetic-private-provider-detail',
++      };
++      await expect(execute()).rejects.toMatchObject({
++        status: 503,
++        message: 'Submission settlement was interrupted. Retry with the same key.',
++      });
++    },
++  );
++
++  it('reports a safe conflict for the retained legacy uniqueness constraint', async () => {
++    fixture.scenario.queryError = { dbErrorCode: '23505' };
++    await expect(execute()).rejects.toMatchObject({ status: 409 });
++  });
++
++  it('sanitizes an audit exception through the actual educational procedure boundary', async () => {
++    fixture.scenario.auditError = new Error('synthetic-private-audit-token');
++    const context: ORPCContext = {
++      db: createZenStackDb({ id: fixture.accountId }),
++      user: { id: fixture.accountId },
++      schoolId: 'school-fixture',
++      capacity: 'student',
++      requestId: 'settlement-privacy',
++      principal: {
++        id: fixture.accountId,
++        type: 'student',
++        attributes: {
++          school_id: 'school-fixture',
++          capacity: 'student',
++          active_entity_id: 'school-fixture',
++          active_entity_type: 'SCHOOL',
++          classroom_ids: [fixture.submission.assignment.classroom_id],
++        },
++      },
++      securityContext: { device_trust: 'standard', network_zone: 'public' },
++    };
++    await expect(
++      call(educationalRouter.submitAssignment, { body: fixture.input }, { context }),
++    ).rejects.toMatchObject({
++      status: 500,
++      message: 'An unexpected platform error occurred.',
++      data: { requestId: 'settlement-privacy' },
++    });
++    expect(fixture.events).toEqual(['claim', 'lock', 'submission', 'audit']);
++  });
++});

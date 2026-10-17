@@ -1,11 +1,44 @@
 import { ORPCError } from '@orpc/server';
+import {
+  OperationReceiptResponseSchema,
+  OperationReceiptResultSchema,
+} from '@repo/core/api/educational.contract';
 import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
 import { assertDatabase } from '../apiErrors';
+import { assertSubmissionIntent, settleAssignmentSubmission } from '../assignmentSettlement';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
+import { assertSubmissionAuthority } from '../submissionAuthority';
 
 const impl = implement(educationalORPCContract).$context<ORPCContext>();
 const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
+
+type OperationReceiptRow = {
+  operation_id: string;
+  capability: string;
+  status: string;
+  result: unknown;
+  created_at: Date | string;
+  updated_at: Date | string;
+};
+
+function mapOperationReceipt(row: OperationReceiptRow | undefined) {
+  if (!row) throw new ORPCError('NOT_FOUND', { message: 'Operation receipt was not found.' });
+  return OperationReceiptResponseSchema.parse({
+    operationId: row.operation_id,
+    capability: row.capability,
+    status: row.status,
+    result: row.status === 'committed' ? OperationReceiptResultSchema.parse(row.result) : null,
+    errorCode:
+      row.status === 'failed'
+        ? 'OPERATION_FAILED'
+        : row.status === 'conflict'
+          ? 'OPERATION_CONFLICT'
+          : null,
+    createdAt: iso(row.created_at),
+    updatedAt: iso(row.updated_at),
+  });
+}
 
 const mapClassroom = (row: any) => ({
   id: String(row.id),
@@ -125,6 +158,32 @@ const mapSubmission = (row: any) => ({
 });
 
 export const educationalRouter = impl.router({
+  getOperationReceipt: impl.getOperationReceipt
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
+      SELECT operation_id, capability, status, result, created_at, updated_at
+      FROM public.operation_receipts
+      WHERE account_id = ${context.user.id}::uuid AND operation_id = ${input.params.operationId}::uuid
+      LIMIT 1
+    `;
+      return mapOperationReceipt(rows[0]);
+    }),
+  getOperationReceiptByKey: impl.getOperationReceiptByKey
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
+      SELECT operation_id, capability, status, result, created_at, updated_at
+      FROM public.operation_receipts
+      WHERE account_id = ${context.user.id}::uuid
+        AND capability = ${input.query.capability}
+        AND idempotency_key = ${input.query.idempotencyKey}::uuid
+      LIMIT 1
+    `;
+      return mapOperationReceipt(rows[0]);
+    }),
   getByTeacher: impl.getByTeacher.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const rows = await (context.db as any).classroom.findMany({
@@ -364,10 +423,12 @@ export const educationalRouter = impl.router({
         orderBy: [{ occurred_at: 'desc' }, { recorded_at: 'desc' }],
       });
       const latest = new Map<string, any>();
+      const seen = new Set<string>();
       for (const event of events) {
         const noteId = String(event.note_id);
-        if (!latest.has(noteId) && event.event_type !== 'delete')
-          latest.set(noteId, event.snapshot);
+        if (seen.has(noteId)) continue;
+        seen.add(noteId);
+        if (event.event_type !== 'delete') latest.set(noteId, event.snapshot);
       }
       return Array.from(latest.values()).map(mapClassroomNote);
     }),
@@ -430,7 +491,7 @@ export const educationalRouter = impl.router({
     }),
   getMaterials: impl.getMaterials.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const rows = await (context.db as any).material.findMany({
-      where: { classroom_id: input.query.classroomId },
+      where: { classroom_id: input.params.classroomId },
       orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
     });
     return rows.map(mapMaterial);
@@ -439,7 +500,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).material.findMany({
-        where: { lesson_id: input.query.lessonId },
+        where: { lesson_id: input.params.lessonId },
         orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
       });
       return rows.map(mapMaterial);
@@ -485,7 +546,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignment.findMany({
-        where: { classroom_id: input.query.classroomId },
+        where: { classroom_id: input.params.classroomId },
         orderBy: [{ due_date: 'asc' }, { created_at: 'desc' }],
       });
       return rows.map(mapAssignment);
@@ -494,7 +555,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignment.findMany({
-        where: { lesson_id: input.query.lessonId },
+        where: { lesson_id: input.params.lessonId },
         orderBy: [{ due_date: 'asc' }, { created_at: 'desc' }],
       });
       return rows.map(mapAssignment);
@@ -544,7 +605,7 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignmentSubmission.findMany({
         where: {
-          student_id: input.query.studentId,
+          student_id: input.params.studentId,
           assignment: input.query.classroomId
             ? { classroom_id: input.query.classroomId }
             : undefined,
@@ -560,14 +621,14 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignment.findMany({
         where: {
-          classroom: { students: { some: { student_id: input.query.studentId } } },
+          classroom: { students: { some: { student_id: input.params.studentId } } },
           due_date: { gte: new Date() },
         },
         orderBy: { due_date: 'asc' },
         take: input.query.limit ?? 6,
         include: {
           classroom: { select: { name: true } },
-          submissions: { where: { student_id: input.query.studentId }, select: { id: true } },
+          submissions: { where: { student_id: input.params.studentId }, select: { id: true } },
         },
       });
       return rows.map((row: any) => ({
@@ -579,20 +640,34 @@ export const educationalRouter = impl.router({
   submitAssignment: impl.submitAssignment
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
-      const where = input.body.idempotencyKey
-        ? { idempotency_key: input.body.idempotencyKey }
-        : {
-            assignment_id_student_id: {
-              assignment_id: input.body.assignmentId,
-              student_id: context.user.id,
-            },
-          };
-      const existing = await db.assignmentSubmission.findUnique({ where });
-      if (existing) return mapSubmission(existing);
-      const row = await db.assignmentSubmission.create({
+      assertDatabase(context);
+      const intent = { ...input.body, assignmentId: input.params.assignmentId };
+      if (input.body.idempotencyKey) {
+        return mapSubmission(
+          await settleAssignmentSubmission(context, {
+            ...intent,
+            idempotencyKey: input.body.idempotencyKey,
+          }),
+        );
+      }
+      await assertSubmissionAuthority(context.db, context, intent.assignmentId);
+      const where = {
+        assignment_id_student_id: {
+          assignment_id: intent.assignmentId,
+          student_id: context.user.id,
+        },
+      };
+      const existing = await context.db.assignmentSubmission.findUnique({
+        where,
+        include: { assignment: { select: { classroom_id: true } } },
+      });
+      if (existing) {
+        assertSubmissionIntent(existing, context.user.id, intent);
+        return mapSubmission(existing);
+      }
+      const row = await context.db.assignmentSubmission.create({
         data: {
-          assignment_id: input.body.assignmentId,
+          assignment_id: intent.assignmentId,
           student_id: context.user.id,
           content: input.body.content,
           idempotency_key: input.body.idempotencyKey,
@@ -605,7 +680,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).assignmentSubmission.update({
-        where: { id: input.body.id },
+        where: { id: input.params.id },
         data: {
           grade: input.body.grade,
           feedback: input.body.feedback,

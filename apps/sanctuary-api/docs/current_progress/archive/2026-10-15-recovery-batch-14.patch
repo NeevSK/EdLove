@@ -1,0 +1,20 @@
+diff --git a/packages/self/src/features/featureCatalog.ts b/packages/self/src/features/featureCatalog.ts
+index bd0f5bf04..65746fe89 100644
+--- a/packages/self/src/features/featureCatalog.ts
++++ b/packages/self/src/features/featureCatalog.ts
+@@ -28,6 +28,7 @@ export interface SelfFeatureDefinition {
+   timing?: { preferredPhase: 'morning' | 'afternoon' | 'night' };
+   isPinnable: boolean;
+   isHidable: boolean;
++  practiceDocument?: Readonly<{ schemaId: string }>;
+ }
+ 
+ /**
+@@ -200,6 +201,7 @@ export const FEATURE_CATALOG: Record<string, SelfFeatureDefinition> = {
+   },
+   fire_journal: {
+     id: 'fire_journal',
++    practiceDocument: { schemaId: 'fire-journal-practice-v1' },
+     label: 'Fire Journal',
+     emoji: '🔥',
+     componentId: 'FireJournal',

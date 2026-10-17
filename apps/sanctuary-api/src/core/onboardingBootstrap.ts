@@ -4,6 +4,8 @@ const onboardingBootstrapProcedurePaths = new Set([
   '/api/identity/resolveIdentity',
   '/api/identity/active-scope',
   '/api/capabilities/bootstrap/v1',
+  '/api/identity/capabilityBootstrap',
+  '/api/openapi/capabilities/bootstrap/v1',
 ]);
 
 /**

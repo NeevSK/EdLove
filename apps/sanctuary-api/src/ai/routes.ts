@@ -51,6 +51,7 @@ interface RequestContext {
   billingMode?: 'baseline' | 'byok' | 'purchased';
   schoolId?: string;
   privacyMode?: AiPrivacyMode;
+  aiSdk?: 'tanstack' | 'vercel';
 }
 
 /** Extract the user/assistant transcript from AG-UI wire messages. */
@@ -120,8 +121,9 @@ async function collectStudentPotentialInsight(
   db: any,
   studentName: string,
   analysis: Record<string, unknown>,
+  aiSdk?: 'tanstack' | 'vercel',
 ) {
-  const useVercelSdk = process.env.AI_SDK === 'vercel';
+  const useVercelSdk = (aiSdk ?? process.env.AI_SDK) === 'vercel';
   const billingAdapter = new DbBillingAdapter(db);
   const orchestrator = new Orchestrator(billingAdapter, (provider) => {
     if (useVercelSdk) {
@@ -217,8 +219,14 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       throw SovereignError.invalidInput('The chat transcript is too long.');
     }
 
-    // 1. Select SDK family via env flag
-    const useVercelSdk = process.env.AI_SDK === 'vercel';
+    // 1. Select SDK family dynamically via header, query, body context, or env flag
+    const requestedSdk =
+      c.req.header('x-ai-sdk') ??
+      c.req.query('aiSdk') ??
+      context.aiSdk ??
+      process.env.AI_SDK ??
+      'tanstack';
+    const useVercelSdk = requestedSdk.toLowerCase() === 'vercel';
 
     // 2. Setup Ports & Core Domain Orchestrator with Dynamic Factory Injection
     const billingAdapter = new DbBillingAdapter(db);
@@ -341,7 +349,10 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
     // 6. Encode chunks as newline-delimited JSON
     return toHttpResponse(auditStream(rawStream), {
-      headers: { 'Cache-Control': 'no-cache' },
+      headers: {
+        'Cache-Control': 'no-cache',
+        'x-ai-sdk': useVercelSdk ? 'vercel' : 'tanstack',
+      },
     });
   } catch (err: unknown) {
     const requestId = c.get('requestId') || 'unknown';
@@ -363,13 +374,23 @@ aiRouter.post('/student-potential', rateLimit, async (c) => {
     if (typeof body.studentName !== 'string' || !body.studentName.trim() || !body.analysis) {
       return c.json({ error: 'Invalid student-potential request' }, 400);
     }
+    const requestedSdk =
+      c.req.header('x-ai-sdk') ??
+      c.req.query('aiSdk') ??
+      body.aiSdk ??
+      process.env.AI_SDK ??
+      'tanstack';
+    const useVercelSdk = requestedSdk.toLowerCase() === 'vercel';
     const reply = await collectStudentPotentialInsight(
       user.id,
       db,
       body.studentName.trim().slice(0, 200),
       body.analysis,
+      useVercelSdk ? 'vercel' : 'tanstack',
     );
-    return c.json({ reply }, 200);
+    return c.json({ reply }, 200, {
+      'x-ai-sdk': useVercelSdk ? 'vercel' : 'tanstack',
+    });
   } catch (err) {
     const requestId = c.get('requestId') || 'unknown';
     console.error(`[aiRouter] student-potential request ${requestId} failed:`, err);

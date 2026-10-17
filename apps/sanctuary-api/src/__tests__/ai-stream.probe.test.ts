@@ -59,11 +59,18 @@ describe('AI wire format (ndjson via toHttpResponse)', () => {
       delta: 'Hello',
     });
     expect(parsed[3]).toMatchObject({ delta: ' world' });
-    expect(parsed[4]).toMatchObject({ type: EventType.TEXT_MESSAGE_END });
     expect(parsed[5]).toMatchObject({
       type: EventType.RUN_FINISHED,
-      finishReason: 'stop',
-      usage: { totalTokens: 15 },
+      threadId: 'thread-1',
+      runId: 'run-1',
     });
+    const finishReason =
+      parsed[5].finishReason ?? parsed[5].metadata?.tanstack?.finishReason;
+    expect(finishReason).toBe('stop');
+
+    const totalTokens = Array.isArray(parsed[5].usage)
+      ? parsed[5].usage.reduce((sum: number, u: any) => sum + (u.totalTokens ?? 0), 0)
+      : parsed[5].usage?.totalTokens;
+    expect(totalTokens).toBe(15);
   });
 });

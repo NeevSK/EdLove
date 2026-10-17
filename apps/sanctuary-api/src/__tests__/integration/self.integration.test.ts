@@ -42,7 +42,8 @@ describe('Self Domain Integration Tests', () => {
   });
 
   it('should log mood and retrieve history', async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -87,7 +88,8 @@ describe('Self Domain Integration Tests', () => {
   });
 
   it('should burn journal entry', async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -112,7 +114,8 @@ describe('Self Domain Integration Tests', () => {
   });
 
   it("should get today's mood", async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -150,7 +153,8 @@ describe('Library Domain Integration Tests', () => {
   });
 
   it('should create library resource', async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -183,7 +187,8 @@ describe('Library Domain Integration Tests', () => {
   });
 
   it('should list library resources', async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -223,7 +228,8 @@ describe('Mapping Domain Integration Tests', () => {
   });
 
   it('should create and retrieve mapping topology', async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,
@@ -272,7 +278,8 @@ describe('Rewards Domain Integration Tests', () => {
   });
 
   it('should get rewards and check achievements', async () => {
-    if (!testUser || !authToken) throw new Error('Integration setup did not provide a test user and JWT.');
+    if (!testUser || !authToken)
+      throw new Error('Integration setup did not provide a test user and JWT.');
 
     const client = createIntegrationClient({
       Authorization: `Bearer ${authToken}`,

@@ -15,7 +15,15 @@ async function handleNativeORPC(c: any, rpcHandler: RPCHandler) {
     context,
     prefix: '/api',
   });
-  console.log('[diag-native]', c.req.raw.url, 'matched=', matched, 'status=', response?.status);
+  console.log(
+    '[diag-native]',
+    c.req.method,
+    c.req.path,
+    'matched=',
+    matched,
+    'status=',
+    response?.status,
+  );
   return matched && response ? response : c.text('Not Found', 404);
 }
 

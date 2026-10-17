@@ -41,7 +41,7 @@ describe('rewards API', () => {
 
     it('returns user rewards when they exist', async () => {
       setMockUserRewards({
-        id: 'rewards-1',
+        id: '123e4567-e89b-12d3-a456-426614174010',
         user_id: userId,
         points: 100,
         badges: ['Sanctuary Seeker'],
@@ -52,10 +52,25 @@ describe('rewards API', () => {
       const response = await createTestORPCClient(headers).rewards.getRewards({ query: {} });
 
       expect(response).toMatchObject({
+        id: '123e4567-e89b-12d3-a456-426614174010',
         user_id: userId,
         points: 100,
         badges: ['Sanctuary Seeker'],
       });
+    });
+
+    it('does not bypass response validation for a corrupted stored identifier', async () => {
+      setMockUserRewards({
+        id: 'synthetic-invalid-private-id',
+        user_id: userId,
+        points: 100,
+        badges: [],
+        created_at: '2026-08-01T00:00:00.000Z',
+        updated_at: '2026-08-14T00:00:00.000Z',
+      });
+      await expect(
+        createTestORPCClient(headers).rewards.getRewards({ query: {} }),
+      ).rejects.toMatchObject({ status: 500, message: 'Output validation failed' });
     });
 
     it('rejects an attempt to read another user rewards through a query override', async () => {

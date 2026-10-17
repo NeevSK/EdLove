@@ -1,0 +1,439 @@
+diff --git a/apps/sanctuary-api/src/core/handlers/grading.ts b/apps/sanctuary-api/src/core/handlers/grading.ts
+index ca87818cc..9282f6035 100644
+--- a/apps/sanctuary-api/src/core/handlers/grading.ts
++++ b/apps/sanctuary-api/src/core/handlers/grading.ts
+@@ -121,60 +121,64 @@ export const gradingRouter = impl.router({
+       throw new ORPCError('FORBIDDEN', { message: 'Grade scope is outside the active school.' });
+     }
+     const percentage = (input.body.marksEarned / input.body.maxPoints) * 100;
+-    const db = context.db as any;
+-    const gradeMark = await db.gradeMark.create({
+-      data: {
+-        student_id: input.body.studentId,
+-        school_id: input.body.schoolId,
+-        academic_cycle_id: input.body.academicCycleId,
+-        grade_class_id: input.body.gradeClassId,
+-        term_id: input.body.termId,
+-        subject_id: input.body.subjectId,
+-        marks_earned: input.body.marksEarned,
+-        max_points: input.body.maxPoints,
+-        percentage,
+-        gpa: percentage / 25,
+-        letter_grade: letterGrade(percentage),
+-        assignment_id: input.body.assignmentId,
+-        submission_id: input.body.submissionId,
+-        feedback: input.body.feedback,
+-        idempotency_key: input.body.idempotencyKey,
+-        graded_by: context.user.id,
+-        graded_at: new Date(),
+-      },
+-    });
+-    await db.sentinelAuditLog.create({
+-      data: {
+-        action: 'grade_mark_submitted',
+-        entity_id: gradeMark.id,
+-        entity_type: 'grade_mark',
+-        executor_id: context.user.id,
+-        metadata: input.body,
+-      },
++    const gradeMark = await context.db.$transaction(async (tx) => {
++      const gradeMark = await tx.gradeMark.create({
++        data: {
++          student_id: input.body.studentId,
++          school_id: input.body.schoolId,
++          academic_cycle_id: input.body.academicCycleId,
++          grade_class_id: input.body.gradeClassId,
++          term_id: input.body.termId,
++          subject_id: input.body.subjectId,
++          marks_earned: input.body.marksEarned,
++          max_points: input.body.maxPoints,
++          percentage,
++          gpa: percentage / 25,
++          letter_grade: letterGrade(percentage),
++          assignment_id: input.body.assignmentId,
++          submission_id: input.body.submissionId,
++          feedback: input.body.feedback,
++          idempotency_key: input.body.idempotencyKey,
++          graded_by: context.user.id,
++          graded_at: new Date(),
++        },
++      });
++      await tx.sentinelAuditLog.create({
++        data: {
++          action: 'grade_mark_submitted',
++          resource_id: gradeMark.id,
++          resource_type: 'grade_mark',
++          actor_id: context.user.id,
++          details: input.body,
++        },
++      });
++      return gradeMark;
+     });
+     return mapGradeMark(gradeMark);
+   }),
+ 
+   publishGrade: impl.publishGrade.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+     assertDatabase(context);
+-    const db = context.db as any;
+-    const gradeMark = await db.gradeMark.update({
+-      where: { id: input.params.id },
+-      data: {
+-        publication_state: 'published',
+-        published_at: new Date(),
+-        published_by: context.user.id,
+-      },
+-    });
+-    if (!gradeMark) throw new ORPCError('NOT_FOUND', { message: 'Grade mark not found' });
+-    await db.sentinelAuditLog.create({
+-      data: {
+-        action: 'grade_mark_published',
+-        entity_id: input.params.id,
+-        entity_type: 'grade_mark',
+-        executor_id: context.user.id,
+-        metadata: { publication_state: 'published' },
+-      },
++    const gradeMark = await context.db.$transaction(async (tx) => {
++      const gradeMark = await tx.gradeMark.update({
++        where: { id: input.params.id },
++        data: {
++          publication_state: 'published',
++          published_at: new Date(),
++          published_by: context.user.id,
++        },
++      });
++      if (!gradeMark) throw new ORPCError('NOT_FOUND', { message: 'Grade mark not found' });
++      await tx.sentinelAuditLog.create({
++        data: {
++          action: 'grade_mark_published',
++          resource_id: input.params.id,
++          resource_type: 'grade_mark',
++          actor_id: context.user.id,
++          details: { publication_state: 'published' },
++        },
++      });
++      return gradeMark;
+     });
+     return mapGradeMark(gradeMark);
+   }),
+diff --git a/apps/sanctuary-api/src/core/orpcMiddleware.ts b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+index 99b5f8da2..b845b8d1d 100644
+--- a/apps/sanctuary-api/src/core/orpcMiddleware.ts
++++ b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+@@ -1,31 +1,34 @@
+ import { ORPCError } from '@orpc/server';
++import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
+ import { SovereignError } from '@repo/core/types/Errors';
+ import { check as checkCedar } from '@repo/policies';
+ import { evaluateWithRust } from '../authorization/rustEvaluator';
++import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
+ import { type ORPCContext, o } from './orpc';
++import { resolveGradeMarkAuthority } from './gradingAuthority';
+ 
+-export function toORPCError(error: unknown): unknown {
+-  if (!(error instanceof SovereignError)) return error;
+-  const status = error.details.status;
+-  const code =
+-    status === 400
+-      ? 'BAD_REQUEST'
+-      : status === 401
+-        ? 'UNAUTHORIZED'
+-        : status === 403
+-          ? 'FORBIDDEN'
+-          : status === 404
+-            ? 'NOT_FOUND'
+-            : status === 409
+-              ? 'CONFLICT'
+-              : status === 429
+-                ? 'TOO_MANY_REQUESTS'
+-                : status === 503
+-                  ? 'SERVICE_UNAVAILABLE'
+-                  : 'INTERNAL_SERVER_ERROR';
++const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
++  400: 'BAD_REQUEST',
++  401: 'UNAUTHORIZED',
++  403: 'FORBIDDEN',
++  404: 'NOT_FOUND',
++  409: 'CONFLICT',
++  429: 'TOO_MANY_REQUESTS',
++  503: 'SERVICE_UNAVAILABLE',
++};
++
++export function toORPCError(error: unknown, requestId?: string): ORPCError<string, unknown> {
++  if (error instanceof ORPCError) return error;
++  if (!(error instanceof SovereignError)) {
++    return new ORPCError('INTERNAL_SERVER_ERROR', {
++      message: 'An unexpected platform error occurred.',
++      data: { code: 'INTERNAL_SERVER_ERROR', requestId },
++    });
++  }
++  const code = protocolCodeByStatus[error.details.status] ?? 'INTERNAL_SERVER_ERROR';
+   return new ORPCError(code, {
+     message: error.details.detail || error.details.title,
+-    data: { code: error.details.code, requestId: error.details.instance },
++    data: { code: error.details.code, requestId: error.details.instance ?? requestId },
+   });
+ }
+ 
+@@ -33,17 +36,17 @@ export function toORPCError(error: unknown): unknown {
+  * Bootstrap procedures cannot use the authorization gate that requires an
+  * active bond, but they must still preserve the shared typed error wire.
+  */
+-export const sovereignErrorMiddleware = o.middleware(async ({ next }) => {
++export const sovereignErrorMiddleware = o.middleware(async ({ next, context }) => {
+   try {
+     return await next({});
+   } catch (error) {
+-    if (!(error instanceof SovereignError)) {
++    if (!(error instanceof SovereignError) && !(error instanceof ORPCError)) {
+       console.error('[oRPC] unexpected procedure failure', {
+-        name: error instanceof Error ? error.name : 'unknown',
+-        message: error instanceof Error ? error.message : String(error),
++        ...toSafeErrorTelemetry(error, 'INTERNAL_SERVER_ERROR', 500),
++        requestId: context.requestId,
+       });
+     }
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+ });
+ 
+@@ -122,6 +125,43 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+     typeof procedureInput.userId === 'string' ? procedureInput.userId : undefined;
+   const selfScopedTargetId = requestedUserId ?? context.user.id;
+   const authorizationFacts: Record<string, unknown> = {};
++  if (resourceType === 'GradeMark' && (cedarAction === 'grade' || cedarAction === 'publish')) {
++    Object.assign(
++      authorizationFacts,
++      await resolveGradeMarkAuthority(context, procedureInput, cedarAction),
++    );
++  }
++  const routePath = procedure['~orpc'].route.path;
++  const classroomChild =
++    routePath === educationalORPCContract.updateMaterial.path
++      ? 'material'
++      : routePath === educationalORPCContract.updateAssignment.path
++        ? 'assignment'
++        : undefined;
++  if (resourceType === 'Classroom' && classroomChild) {
++    if (!context.db) {
++      throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Database is unavailable.' });
++    }
++    const childId = procedureInput.id;
++    if (typeof childId !== 'string') {
++      throw new ORPCError('BAD_REQUEST', { message: 'A resource identifier is required.' });
++    }
++    const lookup = { where: { id: childId }, select: { classroom_id: true } } as const;
++    const child =
++      classroomChild === 'material'
++        ? await context.db.material.findUnique(lookup)
++        : await context.db.assignment.findUnique(lookup);
++    if (!child) throw new ORPCError('NOT_FOUND', { message: 'Resource was not found.' });
++    const classroom = await context.db.classroom.findUnique({
++      where: { id: child.classroom_id },
++      select: { id: true, school_id: true },
++    });
++    if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom was not found.' });
++    if (classroom.school_id !== (context.schoolId ?? null)) {
++      throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
++    }
++    authorizationFacts.classroomId = classroom.id;
++  }
+   if (context.db && resourceType === 'ClassroomNote' && !procedureInput.classroomId) {
+     const noteId = typeof procedureInput.id === 'string' ? procedureInput.id : undefined;
+     if (noteId) {
+@@ -229,11 +269,15 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+             grade_class_id: procedureInput.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.gradeClassId === 'string' && {
+-            grade_class_id: procedureInput.gradeClassId,
++          typeof facts.gradeClassId === 'string' && {
++            grade_class_id: facts.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
++          typeof facts.schoolId === 'string' && { school_id: facts.schoolId }),
++        ...(resourceType === 'GradeMark' &&
++          typeof authorizationFacts.teacherId === 'string' && {
++            teacher_id: authorizationFacts.teacherId,
++          }),
+         ...([
+           'Grade',
+           'GradeMark',
+@@ -326,7 +370,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+   try {
+     result = await next({});
+   } catch (error) {
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+   console.info(
+     JSON.stringify({
+diff --git a/packages/policies/src/__tests__/evaluator.test.ts b/packages/policies/src/__tests__/evaluator.test.ts
+index 635dc4cdc..76bd63dac 100644
+--- a/packages/policies/src/__tests__/evaluator.test.ts
++++ b/packages/policies/src/__tests__/evaluator.test.ts
+@@ -12,6 +12,59 @@ const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
+ const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
+ 
+ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fast'] }, () => {
++  it.each(['grade', 'publish'])(
++    'authorizes explicit GradeMark %s using verified teacher ownership without device elevation',
++    (action) => {
++      const request: AuthRequest = {
++        principal: {
++          type: 'teacher',
++          id: 'teacher-1',
++          attributes: {
++            capacity: 'teacher',
++            school_id: 'school-a',
++            classroom_ids: ['grade-class-1'],
++          },
++        },
++        action,
++        resource: {
++          type: 'GradeMark',
++          id: 'grade-mark-1',
++          attributes: {
++            school_id: 'school-a',
++            grade_class_id: 'grade-class-1',
++            teacher_id: 'teacher-1',
++          },
++        },
++        context: { device_trust: 'standard', network_zone: 'public' },
++      };
++      expect(check(request).permitted).toBe(true);
++      expect(
++        check({
++          ...request,
++          resource: {
++            ...request.resource,
++            attributes: {
++              ...request.resource.attributes,
++              teacher_id: 'another-teacher',
++            },
++          },
++        }).permitted,
++      ).toBe(false);
++      expect(
++        check({
++          ...request,
++          principal: {
++            ...request.principal,
++            attributes: {
++              ...request.principal.attributes,
++              capacity: 'student',
++            },
++          },
++        }).permitted,
++      ).toBe(false);
++    },
++  );
++
+   it('enforces static type boundary on authorization check engine (T16 expectTypeOf)', () => {
+     expectTypeOf(check).toBeFunction();
+     expectTypeOf(check).parameter(0).toMatchTypeOf<AuthRequest>();
+@@ -23,22 +76,25 @@ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fas
+   test.for([
+     { capacity: 'admin', expectedPermitted: true },
+     { capacity: 'stranger', expectedPermitted: false },
+-  ])('parametric capability check for root platform actions with role: $capacity (T17 test.for)', ({ capacity, expectedPermitted }) => {
+-    const res = check({
+-      principal: {
+-        type: capacity,
+-        id: `user-${capacity}`,
+-        attributes: { school_id: 'school-a', capacity },
+-      },
+-      action: 'delete',
+-      resource: {
+-        type: 'Classroom',
+-        id: 'classroom-global-target',
+-        attributes: { school_id: 'school-b' },
+-      },
+-    });
+-    expect(res.permitted).toBe(expectedPermitted);
+-  });
++  ])(
++    'parametric capability check for root platform actions with role: $capacity (T17 test.for)',
++    ({ capacity, expectedPermitted }) => {
++      const res = check({
++        principal: {
++          type: capacity,
++          id: `user-${capacity}`,
++          attributes: { school_id: 'school-a', capacity },
++        },
++        action: 'delete',
++        resource: {
++          type: 'Classroom',
++          id: 'classroom-global-target',
++          attributes: { school_id: 'school-b' },
++        },
++      });
++      expect(res.permitted).toBe(expectedPermitted);
++    },
++  );
+ 
+   it('allows a non-wanderer contributor to submit only as themselves', () => {
+     const contributor = {
+diff --git a/packages/policies/src/engine/evaluator.ts b/packages/policies/src/engine/evaluator.ts
+index f5c8bd61e..dfb392b29 100644
+--- a/packages/policies/src/engine/evaluator.ts
++++ b/packages/policies/src/engine/evaluator.ts
+@@ -184,10 +184,14 @@ export function check(request: AuthRequest): AuthResponse {
+         mappedAction = 'read';
+         break;
+       case 'grade':
++        mappedAction = request.resource.type === 'GradeMark' ? 'grade' : 'create';
++        break;
+       case 'submit':
+         mappedAction = 'create';
+         break;
+       case 'publish':
++        mappedAction = request.resource.type === 'GradeMark' ? 'publish' : 'update';
++        break;
+       case 'override':
+       case 'verify':
+       case 'manage':
+diff --git a/packages/policies/src/policies/school/teacher.cedar b/packages/policies/src/policies/school/teacher.cedar
+index 5bd9266cc..e64141bee 100644
+--- a/packages/policies/src/policies/school/teacher.cedar
++++ b/packages/policies/src/policies/school/teacher.cedar
+@@ -89,7 +89,12 @@ permit(
+     (resource is Classroom && principal has classroom_ids && principal.classroom_ids.contains(resource.id)) ||
+     (resource is Library) // Library reads/actions are generally permitted
+   ) &&
+-  // Optionally restrict Grade creation to highly trusted devices
++  (
++    if (resource is GradeMark && (action == Action::"grade" || action == Action::"publish"))
++    then (resource has teacher_id && resource.teacher_id == principal.id)
++    else true
++  ) &&
++  // Legacy Grade creation retains its existing device condition.
+   (
+     if (action == Action::"create" && (resource is Grade || resource is GradeMark)) then (context has device_trust && context.device_trust == "high") else true
+   )
+diff --git a/packages/policies/src/schema/schema.cedarschema b/packages/policies/src/schema/schema.cedarschema
+index 8981ad038..61ef12175 100644
+--- a/packages/policies/src/schema/schema.cedarschema
++++ b/packages/policies/src/schema/schema.cedarschema
+@@ -101,6 +101,7 @@ entity GradeMark {
+   term_id?: String,
+   subject_id?: String,
+   student_id?: String,
++  teacher_id?: String,
+   graded_by?: String
+ };
+ 
+@@ -374,6 +375,12 @@ type SecurityContext = {
+   network_zone?: String
+ };
+ 
++action "grade", "publish" appliesTo {
++  principal: [User],
++  resource: [GradeMark],
++  context: SecurityContext
++};
++
+ action "read", "create", "update", "delete", "use_ai" appliesTo {
+     principal: [User],
+   resource: [

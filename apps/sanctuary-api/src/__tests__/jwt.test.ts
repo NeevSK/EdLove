@@ -223,4 +223,45 @@ describe('Asymmetric JWT Verification Engine', () => {
     expect(verifiedAdmin!.sub).toBe('admin-user-1');
     expect(verifiedStudent!.sub).toBe('student-user-1');
   });
+
+  it('rejects an insecure remote verification-key endpoint before any network request', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch');
+    const token = signToken(
+      { sub: 'user-transport-test', exp: Math.floor(Date.now() / 1000) + 3600 },
+      rsaPrivateKey,
+      kidRsa,
+    );
+    try {
+      await expect(
+        verifySupabaseJwt(token, { SUPABASE_URL: 'http://identity.example.test' }),
+      ).resolves.toBeNull();
+      expect(fetcher).not.toHaveBeenCalled();
+    } finally {
+      fetcher.mockRestore();
+    }
+  });
+
+  it('refuses redirects when downloading verification keys over HTTPS', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ keys: [] }), {
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+    const token = signToken(
+      { sub: 'user-transport-test', exp: Math.floor(Date.now() / 1000) + 3600 },
+      rsaPrivateKey,
+      kidRsa,
+    );
+    try {
+      await expect(
+        verifySupabaseJwt(token, { SUPABASE_URL: 'https://identity.example.test' }),
+      ).resolves.toBeNull();
+      expect(fetcher).toHaveBeenCalledWith(
+        'https://identity.example.test/auth/v1/.well-known/jwks.json',
+        expect.objectContaining({ redirect: 'error', signal: expect.any(AbortSignal) }),
+      );
+    } finally {
+      fetcher.mockRestore();
+    }
+  });
 });

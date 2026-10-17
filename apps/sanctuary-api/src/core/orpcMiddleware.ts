@@ -1,31 +1,34 @@
 import { ORPCError } from '@orpc/server';
+import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { check as checkCedar } from '@repo/policies';
 import { evaluateWithRust } from '../authorization/rustEvaluator';
-import { type ORPCContext, o } from './orpc';
+import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
+import { resolveGradeMarkAuthority } from './gradingAuthority';
+import { type ORPCContext, getOpenAPIMeta, getPolicyMeta, o } from './orpc';
 
-export function toORPCError(error: unknown): unknown {
-  if (!(error instanceof SovereignError)) return error;
-  const status = error.details.status;
-  const code =
-    status === 400
-      ? 'BAD_REQUEST'
-      : status === 401
-        ? 'UNAUTHORIZED'
-        : status === 403
-          ? 'FORBIDDEN'
-          : status === 404
-            ? 'NOT_FOUND'
-            : status === 409
-              ? 'CONFLICT'
-              : status === 429
-                ? 'TOO_MANY_REQUESTS'
-                : status === 503
-                  ? 'SERVICE_UNAVAILABLE'
-                  : 'INTERNAL_SERVER_ERROR';
+const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
+  400: 'BAD_REQUEST',
+  401: 'UNAUTHORIZED',
+  403: 'FORBIDDEN',
+  404: 'NOT_FOUND',
+  409: 'CONFLICT',
+  429: 'TOO_MANY_REQUESTS',
+  503: 'SERVICE_UNAVAILABLE',
+};
+
+export function toORPCError(error: unknown, requestId?: string): ORPCError<string, unknown> {
+  if (error instanceof ORPCError) return error;
+  if (!(error instanceof SovereignError)) {
+    return new ORPCError('INTERNAL_SERVER_ERROR', {
+      message: 'An unexpected platform error occurred.',
+      data: { code: 'INTERNAL_SERVER_ERROR', requestId },
+    });
+  }
+  const code = protocolCodeByStatus[error.details.status] ?? 'INTERNAL_SERVER_ERROR';
   return new ORPCError(code, {
     message: error.details.detail || error.details.title,
-    data: { code: error.details.code, requestId: error.details.instance },
+    data: { code: error.details.code, requestId: error.details.instance ?? requestId },
   });
 }
 
@@ -33,17 +36,17 @@ export function toORPCError(error: unknown): unknown {
  * Bootstrap procedures cannot use the authorization gate that requires an
  * active bond, but they must still preserve the shared typed error wire.
  */
-export const sovereignErrorMiddleware = o.middleware(async ({ next }) => {
+export const sovereignErrorMiddleware = o.middleware(async ({ next, context }) => {
   try {
     return await next({});
   } catch (error) {
-    if (!(error instanceof SovereignError)) {
+    if (!(error instanceof SovereignError) && !(error instanceof ORPCError)) {
       console.error('[oRPC] unexpected procedure failure', {
-        name: error instanceof Error ? error.name : 'unknown',
-        message: error instanceof Error ? error.message : String(error),
+        ...toSafeErrorTelemetry(error, 'INTERNAL_SERVER_ERROR', 500),
+        requestId: context.requestId,
       });
     }
-    throw toORPCError(error);
+    throw toORPCError(error, context.requestId);
   }
 });
 
@@ -72,7 +75,7 @@ function authorityProjection(input: Record<string, unknown>): Record<string, unk
 /** Shared procedure boundary: Cedar authorization plus sanitized oRPC errors. */
 export const doubleGateMiddleware = o.middleware(async ({ next, procedure, context }, input) => {
   const startedAt = performance.now();
-  const policy = (procedure['~orpc'].meta as any)?.policy;
+  const policy = getPolicyMeta(procedure) ?? (procedure['~orpc']?.meta as any)?.policy;
   const procedureName =
     (procedure['~orpc'] as any)?.path ??
     context.requestPath?.split('/').filter(Boolean).pop() ??
@@ -122,35 +125,85 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
     typeof procedureInput.userId === 'string' ? procedureInput.userId : undefined;
   const selfScopedTargetId = requestedUserId ?? context.user.id;
   const authorizationFacts: Record<string, unknown> = {};
+  if (resourceType === 'GradeMark' && (cedarAction === 'grade' || cedarAction === 'publish')) {
+    Object.assign(
+      authorizationFacts,
+      await resolveGradeMarkAuthority(context, procedureInput, cedarAction),
+    );
+  }
+  const openapiMeta = getOpenAPIMeta(procedure);
+  const rawRoutePath = openapiMeta?.path ?? (procedure['~orpc'] as any)?.route?.path;
+  const routePath = rawRoutePath ? rawRoutePath.replace(/\{([A-Za-z0-9_]+)\}/g, ':$1') : undefined;
+  const classroomChild =
+    routePath === educationalORPCContract.updateMaterial.path
+      ? 'material'
+      : routePath === educationalORPCContract.updateAssignment.path
+        ? 'assignment'
+        : undefined;
+  if (resourceType === 'Classroom' && classroomChild) {
+    if (!context.db) {
+      throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Database is unavailable.' });
+    }
+    const childId = procedureInput.id;
+    if (typeof childId !== 'string') {
+      throw new ORPCError('BAD_REQUEST', { message: 'A resource identifier is required.' });
+    }
+    const lookup = { where: { id: childId }, select: { classroom_id: true } } as const;
+    const child =
+      classroomChild === 'material'
+        ? await context.db.material.findUnique(lookup)
+        : await context.db.assignment.findUnique(lookup);
+    if (!child) throw new ORPCError('NOT_FOUND', { message: 'Resource was not found.' });
+    const classroom = await context.db.classroom.findUnique({
+      where: { id: child.classroom_id },
+      select: { id: true, school_id: true },
+    });
+    if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom was not found.' });
+    if (classroom.school_id !== (context.schoolId ?? null)) {
+      throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
+    }
+    authorizationFacts.classroomId = classroom.id;
+  }
   if (context.db && resourceType === 'ClassroomNote' && !procedureInput.classroomId) {
-    const noteId = typeof procedureInput.id === 'string' ? procedureInput.id : undefined;
+    const noteId =
+      typeof procedureInput.id === 'string'
+        ? procedureInput.id
+        : typeof procedureInput.recordId === 'string'
+          ? procedureInput.recordId
+          : undefined;
     if (noteId) {
-      const note = await (context.db as any).classroomNote.findUnique({
+      const note = await context.db.classroomNote.findUnique({
         where: { id: noteId },
-        select: { classroom_id: true, school_id: true, author_id: true },
+        select: { classroom_id: true, author_id: true, classroom: { select: { school_id: true } } },
       });
-      if (note?.classroom_id) authorizationFacts.classroomId = String(note.classroom_id);
-      if (note?.school_id) authorizationFacts.schoolId = String(note.school_id);
-      if (note?.author_id) authorizationFacts.authorId = String(note.author_id);
+      if (note) {
+        if (note.classroom.school_id !== (context.schoolId ?? null)) {
+          throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
+        }
+        authorizationFacts.id = noteId;
+        authorizationFacts.classroomId = note.classroom_id;
+        authorizationFacts.schoolId = note.classroom.school_id;
+        authorizationFacts.authorId = note.author_id;
+      }
     }
   }
   if (context.db && resourceType === 'AssignmentSubmission' && !procedureInput.classroomId) {
     const assignmentId =
       typeof procedureInput.assignmentId === 'string' ? procedureInput.assignmentId : undefined;
     if (assignmentId) {
-      const assignment = await (context.db as any).assignment.findUnique({
+      const assignment = await context.db.assignment.findUnique({
         where: { id: assignmentId },
-        select: { classroom_id: true, school_id: true },
+        select: { classroom_id: true, classroom: { select: { school_id: true } } },
       });
-      if (assignment?.classroom_id)
-        authorizationFacts.classroomId = String(assignment.classroom_id);
-      if (assignment?.school_id) authorizationFacts.schoolId = String(assignment.school_id);
+      if (assignment?.classroom_id) authorizationFacts.classroomId = assignment.classroom_id;
+      if (assignment?.classroom.school_id)
+        authorizationFacts.schoolId = assignment.classroom.school_id;
     }
   }
   if (context.db && resourceType === 'PrincipalNote' && !procedureInput.schoolId) {
     const noteId = typeof procedureInput.id === 'string' ? procedureInput.id : undefined;
     if (noteId) {
-      const note = await (context.db as any).principalNote.findUnique({
+      const note = await context.db.principalNote.findUnique({
         where: { id: noteId },
         select: { school_id: true, author_id: true },
       });
@@ -173,32 +226,34 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
       ? verifiedClassroomIds[0]
       : undefined;
   const resourceId =
-    resourceType === 'User'
-      ? context.user.id
-      : resourceType === 'School'
-        ? context.schoolId || 'school_institutional'
-        : resourceType === 'AssignmentSubmission'
-          ? (typeof facts.id === 'string' && facts.id) ||
-            (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
-            context.schoolId ||
-            'school_institutional'
-          : resourceType === 'Classroom'
-            ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
-              (typeof facts.id === 'string' && facts.id) ||
-              (context.capacity === 'student' && defaultVerifiedClassroomId) ||
+    resourceType === 'OperationReceipt'
+      ? String(facts.operationId ?? facts.idempotencyKey ?? context.user.id)
+      : resourceType === 'User'
+        ? context.user.id
+        : resourceType === 'School'
+          ? context.schoolId || 'school_institutional'
+          : resourceType === 'AssignmentSubmission'
+            ? (typeof facts.id === 'string' && facts.id) ||
+              (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
               context.schoolId ||
               'school_institutional'
-            : (selfScopedResource && selfScopedTargetId) ||
-              (typeof facts.id === 'string' && facts.id) ||
-              (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
-              (typeof facts.classroomId === 'string' && facts.classroomId) ||
-              (typeof facts.studentId === 'string' && facts.studentId) ||
-              (typeof facts.commentId === 'string' && facts.commentId) ||
-              (typeof facts.postId === 'string' && facts.postId) ||
-              (typeof facts.groupId === 'string' && facts.groupId) ||
-              (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
-              context.schoolId ||
-              'school_institutional';
+            : resourceType === 'Classroom'
+              ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
+                (typeof facts.id === 'string' && facts.id) ||
+                (context.capacity === 'student' && defaultVerifiedClassroomId) ||
+                context.schoolId ||
+                'school_institutional'
+              : (selfScopedResource && selfScopedTargetId) ||
+                (typeof facts.id === 'string' && facts.id) ||
+                (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
+                (typeof facts.classroomId === 'string' && facts.classroomId) ||
+                (typeof facts.studentId === 'string' && facts.studentId) ||
+                (typeof facts.commentId === 'string' && facts.commentId) ||
+                (typeof facts.postId === 'string' && facts.postId) ||
+                (typeof facts.groupId === 'string' && facts.groupId) ||
+                (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
+                context.schoolId ||
+                'school_institutional';
   const request = {
     principal: context.principal,
     action: cedarAction,
@@ -206,7 +261,9 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
       id: resourceId,
       type: resourceType,
       attributes: {
-        ...(resourceType !== 'School' && { school_id: context.schoolId }),
+        ...(resourceType === 'OperationReceipt' && { account_id: context.user.id }),
+        ...(resourceType !== 'School' &&
+          resourceType !== 'OperationReceipt' && { school_id: context.schoolId }),
         ...(resourceType === 'Classroom' &&
           typeof facts.teacherId === 'string' && { teacher_id: facts.teacherId }),
         ...(resourceType === 'Announcement' &&
@@ -229,11 +286,15 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
             grade_class_id: procedureInput.gradeClassId,
           }),
         ...(resourceType === 'GradeMark' &&
-          typeof procedureInput.gradeClassId === 'string' && {
-            grade_class_id: procedureInput.gradeClassId,
+          typeof facts.gradeClassId === 'string' && {
+            grade_class_id: facts.gradeClassId,
           }),
         ...(resourceType === 'GradeMark' &&
-          typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
+          typeof facts.schoolId === 'string' && { school_id: facts.schoolId }),
+        ...(resourceType === 'GradeMark' &&
+          typeof authorizationFacts.teacherId === 'string' && {
+            teacher_id: authorizationFacts.teacherId,
+          }),
         ...([
           'Grade',
           'GradeMark',
@@ -326,7 +387,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
   try {
     result = await next({});
   } catch (error) {
-    throw toORPCError(error);
+    throw toORPCError(error, context.requestId);
   }
   console.info(
     JSON.stringify({

@@ -52,7 +52,20 @@ export interface ProcedureMeta {
   };
 }
 
-import { oc } from '@orpc/contract';
+import { defineMeta, oc } from '@orpc/contract';
+import { getOpenAPIMeta, openapi } from '@orpc/openapi';
+
+export const [policyMeta, getPolicyMeta] = defineMeta(
+  'policy',
+  (incoming: NonNullable<ProcedureMeta['policy']>, current) => ({ ...current, ...incoming }),
+);
+
+export const [entitlementMeta, getEntitlementMeta] = defineMeta(
+  'entitlement',
+  (incoming: NonNullable<ProcedureMeta['entitlement']>, current) => ({ ...current, ...incoming }),
+);
+
+export { getOpenAPIMeta, openapi };
 
 /**
  * toORPCContract
@@ -60,38 +73,6 @@ import { oc } from '@orpc/contract';
  * by mapping standard OpenAPI routes to oRPC ContractProcedure instances via oc.route.
  */
 function transformSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
-  if (schema instanceof z.ZodObject) {
-    const shape = schema.shape;
-    // Normalize aliases before parsing the original schema. The previous
-    // implementation cloned every field as optional and only logged parse
-    // failures, allowing malformed requests to reach handlers. Required
-    // fields must remain required at the transport boundary.
-    return z.preprocess((input: any) => {
-      if (input && typeof input === 'object') {
-        const result = { ...input };
-        for (const key of Object.keys(shape)) {
-          const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-          const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-          if (result[key] === undefined && result[snakeKey] !== undefined) {
-            result[key] = result[snakeKey];
-          }
-          if (result[key] === undefined && result[camelKey] !== undefined) {
-            result[key] = result[camelKey];
-          }
-        }
-
-        const hasIdInSchema = 'id' in shape;
-        if (hasIdInSchema && result.id === undefined) {
-          const idKeys = Object.keys(result).filter((k) => k.endsWith('Id') && k !== 'id');
-          if (idKeys.length === 1) {
-            result.id = result[idKeys[0]];
-          }
-        }
-        return result;
-      }
-      return input;
-    }, schema.passthrough());
-  }
   return schema;
 }
 
@@ -143,7 +124,8 @@ export function toORPCContract(contract: any, prefix = ''): any {
         key === '$context' ||
         key === '$config' ||
         key === 'router' ||
-        key === 'lazy'
+        key === 'lazy' ||
+        key === '~orpc'
       ) {
         return undefined;
       }
@@ -161,12 +143,49 @@ export function toORPCContract(contract: any, prefix = ''): any {
             `Protected oRPC contract route "${String(route.path)}" is missing explicit policy metadata`,
           );
         }
-        let builder = oc.route({
-          method: route.method.toUpperCase() as any,
-          path: route.path,
-        });
+        const openApiPath = route.path.replace(/:([A-Za-z0-9_]+)/g, '{$1}');
+        let builder: any = oc.meta(
+          openapi({
+            method: route.method.toUpperCase() as any,
+            path: openApiPath,
+            inputStructure: 'detailed',
+          }),
+        );
 
-        builder = builder.meta(route.metadata);
+        if (route.metadata?.policy) {
+          builder = builder.meta(policyMeta(route.metadata.policy));
+        }
+        if (route.metadata?.entitlement) {
+          builder = builder.meta(entitlementMeta(route.metadata.entitlement));
+        }
+
+        if (route.errors) {
+          builder = builder.errors(route.errors);
+        }
+
+        if (route.responses) {
+          const successResponses = Object.entries(route.responses).filter(
+            ([status]) => Number(status) >= 200 && Number(status) < 300,
+          );
+          if (successResponses.length === 0) {
+            throw new Error(
+              `Protected oRPC contract route "${String(route.path)}" has no successful response schema`,
+            );
+          }
+          if (successResponses.length === 1) {
+            builder = builder.output((successResponses[0][1] as any).schema);
+          } else {
+            builder = builder.output(
+              z.union(
+                successResponses.map(([_, r]: any) => r.schema) as [
+                  z.ZodTypeAny,
+                  z.ZodTypeAny,
+                  ...z.ZodTypeAny[],
+                ],
+              ),
+            );
+          }
+        }
 
         const request = route.request as
           | {
@@ -187,9 +206,33 @@ export function toORPCContract(contract: any, prefix = ''): any {
             envelope[key] = transformed;
           }
           if (Object.keys(envelope).length > 0) {
-            return builder.input(z.object(envelope)) as any;
+            builder = builder.input(z.object(envelope)) as any;
           }
         }
+
+        Object.defineProperties(builder['~orpc'], {
+          inputSchema: {
+            get() {
+              return this.inputSchemas?.[0];
+            },
+            enumerable: true,
+            configurable: true,
+          },
+          outputSchema: {
+            get() {
+              return this.outputSchemas?.[0];
+            },
+            enumerable: true,
+            configurable: true,
+          },
+          route: {
+            get() {
+              return getOpenAPIMeta(builder);
+            },
+            enumerable: true,
+            configurable: true,
+          },
+        });
 
         return builder;
       }

@@ -1,0 +1,181 @@
+diff --git a/packages/core/src/api/assignmentCommands.test.ts b/packages/core/src/api/assignmentCommands.test.ts
+new file mode 100644
+index 000000000..cc195a211
+--- /dev/null
++++ b/packages/core/src/api/assignmentCommands.test.ts
+@@ -0,0 +1,175 @@
++import { beforeEach, describe, expect, it, vi } from 'vitest';
++import { setActiveAccountId } from '@repo/core/lib/accountScope';
++import { replayAssignmentSubmission } from './assignmentCommands';
++import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
++
++const mocks = vi.hoisted(() => ({ submit: vi.fn(), receipt: vi.fn() }));
++vi.mock('./orpcClient', () => ({
++  orpcClient: {
++    educational: {
++      submitAssignment: mocks.submit,
++      getOperationReceiptByKey: mocks.receipt,
++    },
++  },
++}));
++vi.mock('@repo/core/api/client', () => ({ api: {} }));
++vi.mock('@repo/core/api/deviceTrust', () => ({ deviceTrustAPI: {} }));
++vi.mock('@repo/core/api/base', () => ({
++  createSovereignClient: () => ({}),
++  SOVEREIGN_API_URL: 'https://example.test',
++}));
++
++describe('assignment replay (transport/storage substituted)', () => {
++  const userId = '123e4567-e89b-12d3-a456-426614174000';
++  const commandId = '123e4567-e89b-12d3-a456-426614174001';
++  const assignmentId = '123e4567-e89b-12d3-a456-426614174002';
++  const submissionId = '123e4567-e89b-12d3-a456-426614174003';
++  const intent = { assignmentId, content: 'Work' };
++  const context = { commandId, userId };
++  const submission = {
++    id: submissionId,
++    assignment_id: assignmentId,
++    student_id: userId,
++    classroom_id: '123e4567-e89b-12d3-a456-426614174004',
++    content: 'Work',
++    submitted_at: '2026-10-15T00:00:00.000Z',
++    grade: null,
++    feedback: null,
++    graded_at: null,
++    idempotency_key: commandId,
++  };
++  const receipt = {
++    operationId: '123e4567-e89b-12d3-a456-426614174005',
++    capability: 'assignment.submit',
++    status: 'committed',
++    result: { submissionId },
++    errorCode: null,
++    createdAt: '2026-10-15T00:00:00.000Z',
++    updatedAt: '2026-10-15T00:00:00.000Z',
++  };
++
++  beforeEach(() => {
++    vi.clearAllMocks();
++    setActiveAccountId(userId);
++    mocks.submit.mockResolvedValue(submission);
++    mocks.receipt.mockResolvedValue(receipt);
++  });
++
++  it('uses the persisted command UUID and requires a matching committed receipt', async () => {
++    await expect(replayAssignmentSubmission(intent, context)).resolves.toEqual(receipt);
++    expect(mocks.submit).toHaveBeenCalledWith(
++      { params: { assignmentId }, body: { content: intent.content, idempotencyKey: commandId } },
++      {
++        context: { expectedAccountId: userId, retry: 0 },
++      },
++    );
++    expect(mocks.receipt).toHaveBeenCalledWith(
++      {
++        query: {
++          capability: 'assignment.submit',
++          idempotencyKey: commandId,
++        },
++      },
++      { context: { expectedAccountId: userId, retry: 0 } },
++    );
++  });
++
++  it('connects the actual canonical registry entry without rewriting the local hash', async () => {
++    const replay = MUTATION_REGISTRY['assignment.submit'];
++    expect(replay).toBeTypeOf('function');
++    const execution = { ...context, idempotencyKey: 'a'.repeat(64) };
++    await expect(replay?.(intent, execution)).resolves.toEqual(receipt);
++    expect(execution.idempotencyKey).toBe('a'.repeat(64));
++    expect(mocks.submit.mock.calls[0]?.[0].body.idempotencyKey).toBe(commandId);
++  });
++
++  it('accepts an existing matching submission with an older domain key', async () => {
++    mocks.submit.mockResolvedValue({ ...submission, idempotency_key: 'older-domain-key' });
++    await expect(replayAssignmentSubmission(intent, context)).resolves.toEqual(receipt);
++  });
++
++  it.each([null, 'foreign-account'])(
++    'does not dispatch for another or absent active account: %s',
++    async (account) => {
++      setActiveAccountId(account);
++      await expect(replayAssignmentSubmission(intent, context)).rejects.toMatchObject({
++        status: 401,
++      });
++      expect(mocks.submit).not.toHaveBeenCalled();
++    },
++  );
++
++  it.each([
++    { ...intent, studentId: userId },
++    { ...intent, photoUrl: 'https://example.test/photo' },
++    { assignmentId: 'placeholder' },
++  ])('rejects undeclared or invalid intent before network dispatch: %j', async (input) => {
++    await expect(replayAssignmentSubmission(input, context)).rejects.toThrow();
++    expect(mocks.submit).not.toHaveBeenCalled();
++  });
++
++  it('requires a persisted UUID command id rather than the deduplication hash', async () => {
++    await expect(
++      replayAssignmentSubmission(intent, { ...context, commandId: 'a'.repeat(64) }),
++    ).rejects.toThrow();
++    expect(mocks.submit).not.toHaveBeenCalled();
++  });
++
++  it('does not acknowledge or change the key after an uncertain request failure', async () => {
++    const failure = new TypeError('synthetic-offline');
++    mocks.submit.mockRejectedValueOnce(failure);
++    await expect(replayAssignmentSubmission(intent, context)).rejects.toBe(failure);
++    expect(mocks.receipt).not.toHaveBeenCalled();
++    await expect(replayAssignmentSubmission(intent, context)).resolves.toEqual(receipt);
++    expect(mocks.submit.mock.calls.map(([input]) => input.body.idempotencyKey)).toEqual([
++      commandId,
++      commandId,
++    ]);
++  });
++
++  it.each(['pending', 'failed', 'conflict'])(
++    'does not acknowledge a %s receipt',
++    async (status) => {
++      mocks.receipt.mockResolvedValue({ ...receipt, status, result: null });
++      await expect(replayAssignmentSubmission(intent, context)).rejects.toMatchObject({
++        status: 503,
++      });
++    },
++  );
++
++  it('does not acknowledge a receipt for a different submission', async () => {
++    mocks.receipt.mockResolvedValue({ ...receipt, result: { submissionId: assignmentId } });
++    await expect(replayAssignmentSubmission(intent, context)).rejects.toMatchObject({
++      status: 409,
++    });
++  });
++
++  it('does not query a receipt under an account switched during submission', async () => {
++    mocks.submit.mockImplementationOnce(async () => {
++      setActiveAccountId('different-account');
++      return submission;
++    });
++    await expect(replayAssignmentSubmission(intent, context)).rejects.toMatchObject({
++      status: 401,
++    });
++    expect(mocks.receipt).not.toHaveBeenCalled();
++  });
++
++  it('does not acknowledge after an account switch during receipt recovery', async () => {
++    mocks.receipt.mockImplementationOnce(async () => {
++      setActiveAccountId(null);
++      return receipt;
++    });
++    await expect(replayAssignmentSubmission(intent, context)).rejects.toMatchObject({
++      status: 401,
++    });
++  });
++
++  it('rejects a server response for a different owner or intent', async () => {
++    mocks.submit.mockResolvedValue({ ...submission, content: 'Other work' });
++    await expect(replayAssignmentSubmission(intent, context)).rejects.toMatchObject({
++      status: 409,
++    });
++    expect(mocks.receipt).not.toHaveBeenCalled();
++  });
++});

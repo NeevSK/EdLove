@@ -30,18 +30,27 @@ import { PostHog } from 'posthog-node';
 import { z } from 'zod';
 import { aiRouter } from '../ai/routes';
 import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorization/rustEvaluator';
-import { verifySupabaseJwt } from '../jwt';
+import { createIdentityBridge } from './middleware/identityBridge';
+import { createPqcMiddleware } from './middleware/pqcMiddleware';
 import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
+import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
 import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
 import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
 import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext } from './orpc';
+import {
+  requireHttpsMiddleware,
+  resolveAllowedCorsOrigin,
+  type RequestIdEnv,
+} from './transportSecurity';
 import { createConfiguredRateLimitStore, createRateLimitMiddleware } from './rateLimit';
 import { createAdRewardRoutes } from './routes/adRewards';
 import { createDurableAgentRoutes } from './routes/durableAgents';
 import { healthRoutes } from './routes/health';
 import { registerNativeORPCRoutes } from './routes/orpc';
 import { createPayhereWebhookRoutes } from './routes/payhereWebhook';
+import { createVerifiedTelegramIngressRoutes } from './routes/verifiedTelegramIngress';
+import { createVerifiedWhatsappIngressRoutes } from './routes/verifiedWhatsappIngress';
 
 // Initialize Sentry
 if (process.env.SENTRY_DSN) {
@@ -100,7 +109,7 @@ const loggerInstance = pino({
   transport: process.env.NODE_ENV !== 'production' ? { target: 'pino-pretty' } : undefined,
 });
 
-interface Env {
+interface Env extends RequestIdEnv {
   Variables: {
     db: ReturnType<typeof createZenStackDb>;
     user: { id: string };
@@ -120,6 +129,7 @@ app.onError((err, c) => {
   const requestId = c.get('requestId') || 'unknown';
   const traceId = getCurrentTraceId() || undefined;
   const sovereign = normalizeError(err, requestId);
+  const safeError = toSafeErrorTelemetry(err, sovereign.details.code, sovereign.details.status);
   const headers = new Headers(c.res?.headers);
 
   if (err instanceof HTTPException) {
@@ -135,15 +145,12 @@ app.onError((err, c) => {
   headers.delete('Content-Length');
   headers.set('Content-Type', 'application/problem+json; charset=utf-8');
 
-  loggerInstance.error(
-    { err, requestId, traceId, status: sovereign.details.status, code: sovereign.details.code },
-    'Sanctuary API request failed',
-  );
-  // Capture to Sentry with trace context
+  loggerInstance.error({ ...safeError, requestId, traceId }, 'Sanctuary API request failed');
   if (process.env.SENTRY_DSN) {
-    Sentry.captureException(err, {
-      extra: { requestId, traceId },
-      tags: { component: 'sanctuary-api' },
+    Sentry.captureMessage(safeError.message, {
+      level: 'error',
+      extra: { ...safeError, requestId, traceId },
+      tags: { component: 'sanctuary-api', code: safeError.code },
     });
   }
   return new Response(JSON.stringify(sovereign.details), {
@@ -279,24 +286,17 @@ async function sha256Hex(value: string): Promise<string> {
 }
 
 // Mount core security and transport optimization middlewares
+app.use('*', requestId());
 app.use('*', secureHeaders());
+app.use('*', requireHttpsMiddleware());
 app.use('*', compress());
 app.use('*', bodyLimit({ maxSize: 5 * 1024 * 1024 })); // 5MB limit
 
-// CORS (dynamic — allow any localhost origin in dev, restricted list in production)
+// CORS only trusts exact application origins and exact localhost hosts in local modes.
 app.use(
   '*',
   cors({
-    origin: (origin) => {
-      if (!origin) return null;
-      if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) {
-        return origin;
-      }
-      const allowedOrigins = [
-        'https://sanctuary.gurudevi.app',
-      ];
-      return allowedOrigins.includes(origin) ? origin : null;
-    },
+    origin: (origin) => resolveAllowedCorsOrigin(origin, process.env.NODE_ENV),
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowHeaders: [
       'Content-Type',
@@ -336,6 +336,10 @@ app.use('/api/library/*', async (c, next) => {
   c.header('Cache-Control', 'private, no-store');
 });
 app.use('/api/daily-content/*', async (c, next) => {
+  await next();
+  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
+});
+app.use('/api/dailyContent/*', async (c, next) => {
   await next();
   c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
 });
@@ -381,9 +385,6 @@ app.use('/api/*', rateLimitHandler);
 // Logger (structured request/response logging)
 app.use('*', logger());
 
-// Request ID (built-in — available via c.get('requestId'))
-app.use('*', requestId());
-
 // Correlation ID propagation (W3C traceparent/tracestate)
 app.use('/api/*', extractCorrelationIdMiddleware());
 
@@ -408,7 +409,18 @@ if (process.env.SENTRY_DSN) {
       transaction.setStatus({ code: c.res.status >= 500 ? 2 : 1 }); // 2=error, 1=ok
     } catch (error) {
       transaction.setStatus({ code: 2 });
-      transaction.recordException(error as Error);
+      const sovereign = normalizeError(error, c.get('requestId') || 'unknown');
+      const safeError = toSafeErrorTelemetry(
+        error,
+        sovereign.details.code,
+        sovereign.details.status,
+      );
+      transaction.recordException({
+        type: safeError.category,
+        value: safeError.message,
+        code: safeError.code,
+        status: safeError.status,
+      });
       throw error;
     } finally {
       transaction.end();
@@ -419,66 +431,28 @@ if (process.env.SENTRY_DSN) {
 app.route('/', healthRoutes);
 
 // Dev Diagnostics Pipeline: Ingests aggregated mobile error reports in development
-app.post('/dev/diagnostics', async (c) => {
-  const body = await c.req.json().catch(() => null);
-  if (body) {
-    loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
-    try {
-      const fs = await import('node:fs/promises');
-      await fs.writeFile(
-        'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
-        JSON.stringify(body, null, 2),
-        'utf-8',
-      );
-    } catch (fsErr) {
-      console.warn('Could not write dev diagnostics scratch file:', fsErr);
+if (process.env.NODE_ENV === 'development') {
+  app.post('/dev/diagnostics', async (c) => {
+    const body = await c.req.json().catch(() => null);
+    if (body) {
+      loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
+      try {
+        const fs = await import('node:fs/promises');
+        await fs.writeFile(
+          'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
+          JSON.stringify(body, null, 2),
+          'utf-8',
+        );
+      } catch (fsErr) {
+        console.warn('Could not write dev diagnostics scratch file:', fsErr);
+      }
     }
-  }
-  return c.json({ ok: true, received: Boolean(body) });
-});
+    return c.json({ ok: true, received: Boolean(body) });
+  });
+}
 
-app.use('/api/*', async (c, next) => {
-  // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
-  const authHeader = c.req.header('Authorization');
-  let user = { id: 'anonymous' };
-
-  if (authHeader) {
-    if (!authHeader.startsWith('Bearer ')) {
-      throw new HTTPException(401, {
-        message: 'Invalid Authorization header format. Must be Bearer token.',
-      });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    // Provide potential environment context overrides from Hono (e.g. c.env)
-    startTime(c, 'jwt', 'JWT Verification');
-    const verifiedPayload = await verifySupabaseJwt(token, c.env as any);
-    endTime(c, 'jwt');
-
-    if (!verifiedPayload) {
-      throw new HTTPException(401, {
-        message:
-          'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
-      });
-    }
-
-    user = { id: verifiedPayload.sub };
-  }
-
-  // 2. Inject ZenStack Enhanced DB
-  const dbUrl = (c.env as any)?.DATABASE_URL || getEnv('DATABASE_URL');
-  let db: ReturnType<typeof createZenStackDb> | null = null;
-  if (canUseZenStackDb(dbUrl)) {
-    db = createZenStackDb(user, dbUrl);
-  } else {
-    console.warn('DATABASE_URL not found. ReBAC enforcement will be offline.');
-  }
-
-  c.set('user', user);
-  if (db) c.set('db', db);
-
-  return await next();
-});
+app.use('/api/*', createPqcMiddleware());
+app.use('/api/*', createIdentityBridge());
 
 async function getRequestSecurityContext(c: any) {
   const user = c.get('user') || { id: 'anonymous' };
@@ -946,7 +920,7 @@ import { BatchHandlerPlugin, CORSPlugin } from '@orpc/server/plugins';
 import { isReadOnlyOpenApiProcedure } from './openapiReadOnly';
 import { buildORPCContextFromHono, router as orpcRouter } from './router';
 
-const rpcHandler = new RPCHandler(orpcRouter as Router<any, ORPCContext>, {
+const rpcHandler = new RPCHandler(orpcRouter as any, {
   plugins: [
     new BatchHandlerPlugin(),
     new CORSPlugin({
@@ -983,6 +957,8 @@ app.route('/api/ai', aiRouter);
 app.route('/', createDurableAgentRoutes());
 
 app.route('/', createPayhereWebhookRoutes({ md5Hex, sha256Hex }, getEnv));
+app.route('/', createVerifiedWhatsappIngressRoutes({ getEnv }));
+app.route('/', createVerifiedTelegramIngressRoutes({ getEnv }));
 
 app.doc('/doc', {
   openapi: '3.1.0',

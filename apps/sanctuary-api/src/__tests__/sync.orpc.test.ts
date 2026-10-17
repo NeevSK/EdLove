@@ -1,10 +1,13 @@
 import './setup';
+import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
 import {
+  getMockLastExecuteRawArgs,
+  getMockLastQueryRawArgs,
   setMockActiveBond,
   setMockDailyContentRows,
-  getMockLastQueryRawArgs,
+  setMockRawQueryRowsQueue,
   setMockUserData,
   setMockUserPreferences,
   setMockZenStackDbAvailable,
@@ -15,6 +18,8 @@ describe('Sanctuary API: PowerSync upload via native oRPC', () => {
   const headers = { Authorization: `Bearer ${userId}` };
 
   beforeEach(() => {
+    setMockDailyContentRows([]);
+    setMockRawQueryRowsQueue([]);
     setMockZenStackDbAvailable(true);
     setMockUserData(null);
     setMockUserPreferences({ active_bond_id: '123e4567-e89b-12d3-a456-426614174001' });
@@ -99,21 +104,88 @@ describe('Sanctuary API: PowerSync upload via native oRPC', () => {
   });
 
   it('executes an authenticated batch with a server-scoped idempotency key', async () => {
+    const idempotencyKey = 'sync-canonical-success';
+    const crud = [
+      {
+        id: '123e4567-e89b-12d3-a456-426614174099',
+        op: 'PUT',
+        table: 'classroom',
+        opData: { name: 'Canonical Sync Classroom' },
+      },
+    ];
+    const payloadHash = createHash('sha256').update(JSON.stringify(crud)).digest('hex');
+    setMockRawQueryRowsQueue([
+      [{ payload_hash: payloadHash, status: 'processing', processed_count: 0 }],
+    ]);
+
     const response = await createTestORPCClient(headers).sync.uploadBatch({
       body: {
-        idempotencyKey: 'sync-canonical-success',
-        crud: [
-          {
-            id: '123e4567-e89b-12d3-a456-426614174099',
-            op: 'PUT',
-            table: 'classroom',
-            opData: { name: 'Canonical Sync Classroom' },
-          },
-        ],
+        idempotencyKey,
+        crud,
       },
     });
 
     expect(response).toMatchObject({ success: true, processedCount: 1 });
+
+    const queryArgs = getMockLastQueryRawArgs();
+    expect(queryArgs?.[0]).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('SELECT payload_hash, status, processed_count'),
+      ]),
+    );
+    expect(queryArgs).toContain(userId);
+    expect(queryArgs).toContain(idempotencyKey);
+
+    const updateArgs = getMockLastExecuteRawArgs();
+    expect(updateArgs?.[0]).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("SET status = 'completed', processed_count ="),
+      ]),
+    );
+    expect(updateArgs).toContain(1);
+    expect(updateArgs).toContain(userId);
+    expect(updateArgs).toContain(idempotencyKey);
+  });
+
+  it('rejects an idempotency key reused for a different payload', async () => {
+    const idempotencyKey = 'sync-mismatched-payload';
+    const crud = [{ id: 'mutation-mismatch', op: 'PUT', table: 'classroom', opData: {} }];
+    const serializedPayload = JSON.stringify(crud);
+    setMockRawQueryRowsQueue([
+      [{ payload_hash: 'different-payload-hash', status: 'processing', processed_count: 0 }],
+    ]);
+
+    const rejection = await createTestORPCClient(headers)
+      .sync.uploadBatch({ body: { idempotencyKey, crud } })
+      .then(
+        () => null,
+        (error: unknown) => error,
+      );
+
+    expect(rejection).toMatchObject({
+      status: 409,
+      message: 'Idempotency key was reused with a different batch payload',
+      data: { code: 'IDEMPOTENCY_CONFLICT' },
+    });
+    expect(rejection).not.toHaveProperty('cause');
+    const publicError = JSON.stringify(rejection);
+    expect(publicError).not.toContain(idempotencyKey);
+    expect(publicError).not.toContain(serializedPayload);
+    expect(publicError).not.toContain('different-payload-hash');
+  });
+
+  it('returns the stored count for a completed idempotency replay', async () => {
+    const crud = [{ id: 'mutation-replay', op: 'PUT', table: 'classroom', opData: {} }];
+    const payloadHash = createHash('sha256').update(JSON.stringify(crud)).digest('hex');
+    setMockRawQueryRowsQueue([
+      [{ payload_hash: payloadHash, status: 'completed', processed_count: 7 }],
+    ]);
+
+    await expect(
+      createTestORPCClient(headers).sync.uploadBatch({
+        body: { idempotencyKey: 'sync-completed-replay', crud },
+      }),
+    ).resolves.toMatchObject({ success: true, processedCount: 7, idempotent: true });
   });
 
   it('rejects third-class synchronization at the server boundary', async () => {

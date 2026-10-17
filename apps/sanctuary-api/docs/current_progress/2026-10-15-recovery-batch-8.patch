@@ -1,0 +1,142 @@
+diff --git a/apps/sanctuary-api/src/core/handlers/educational.ts b/apps/sanctuary-api/src/core/handlers/educational.ts
+index 63ae3c535..038df1fac 100644
+--- a/apps/sanctuary-api/src/core/handlers/educational.ts
++++ b/apps/sanctuary-api/src/core/handlers/educational.ts
+@@ -1,12 +1,45 @@
+ import { ORPCError } from '@orpc/server';
+ import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
++import {
++  OperationReceiptResponseSchema,
++  OperationReceiptResultSchema,
++} from '@repo/core/api/educational.contract';
+ import { assertDatabase } from '../apiErrors';
++import { assertSubmissionIntent, settleAssignmentSubmission } from '../assignmentSettlement';
+ import { implement, type ORPCContext } from '../orpc';
+ import { doubleGateMiddleware } from '../orpcMiddleware';
++import { assertSubmissionAuthority } from '../submissionAuthority';
+ 
+ const impl = implement(educationalORPCContract).$context<ORPCContext>();
+ const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
+ 
++type OperationReceiptRow = {
++  operation_id: string;
++  capability: string;
++  status: string;
++  result: unknown;
++  created_at: Date | string;
++  updated_at: Date | string;
++};
++
++function mapOperationReceipt(row: OperationReceiptRow | undefined) {
++  if (!row) throw new ORPCError('NOT_FOUND', { message: 'Operation receipt was not found.' });
++  return OperationReceiptResponseSchema.parse({
++    operationId: row.operation_id,
++    capability: row.capability,
++    status: row.status,
++    result: row.status === 'committed' ? OperationReceiptResultSchema.parse(row.result) : null,
++    errorCode:
++      row.status === 'failed'
++        ? 'OPERATION_FAILED'
++        : row.status === 'conflict'
++          ? 'OPERATION_CONFLICT'
++          : null,
++    createdAt: iso(row.created_at),
++    updatedAt: iso(row.updated_at),
++  });
++}
++
+ const mapClassroom = (row: any) => ({
+   id: String(row.id),
+   school_id: row.school_id ?? null,
+@@ -125,6 +158,32 @@ const mapSubmission = (row: any) => ({
+ });
+ 
+ export const educationalRouter = impl.router({
++  getOperationReceipt: impl.getOperationReceipt
++    .use(doubleGateMiddleware)
++    .handler(async ({ input, context }) => {
++      assertDatabase(context);
++      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
++      SELECT operation_id, capability, status, result, created_at, updated_at
++      FROM public.operation_receipts
++      WHERE account_id = ${context.user.id}::uuid AND operation_id = ${input.params.operationId}::uuid
++      LIMIT 1
++    `;
++      return mapOperationReceipt(rows[0]);
++    }),
++  getOperationReceiptByKey: impl.getOperationReceiptByKey
++    .use(doubleGateMiddleware)
++    .handler(async ({ input, context }) => {
++      assertDatabase(context);
++      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
++      SELECT operation_id, capability, status, result, created_at, updated_at
++      FROM public.operation_receipts
++      WHERE account_id = ${context.user.id}::uuid
++        AND capability = ${input.query.capability}
++        AND idempotency_key = ${input.query.idempotencyKey}::uuid
++      LIMIT 1
++    `;
++      return mapOperationReceipt(rows[0]);
++    }),
+   getByTeacher: impl.getByTeacher.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+     assertDatabase(context);
+     const rows = await (context.db as any).classroom.findMany({
+@@ -364,10 +423,12 @@ export const educationalRouter = impl.router({
+         orderBy: [{ occurred_at: 'desc' }, { recorded_at: 'desc' }],
+       });
+       const latest = new Map<string, any>();
++      const seen = new Set<string>();
+       for (const event of events) {
+         const noteId = String(event.note_id);
+-        if (!latest.has(noteId) && event.event_type !== 'delete')
+-          latest.set(noteId, event.snapshot);
++        if (seen.has(noteId)) continue;
++        seen.add(noteId);
++        if (event.event_type !== 'delete') latest.set(noteId, event.snapshot);
+       }
+       return Array.from(latest.values()).map(mapClassroomNote);
+     }),
+@@ -579,18 +640,31 @@ export const educationalRouter = impl.router({
+   submitAssignment: impl.submitAssignment
+     .use(doubleGateMiddleware)
+     .handler(async ({ input, context }) => {
+-      const db = context.db as any;
+-      const where = input.body.idempotencyKey
+-        ? { idempotency_key: input.body.idempotencyKey }
+-        : {
+-            assignment_id_student_id: {
+-              assignment_id: input.body.assignmentId,
+-              student_id: context.user.id,
+-            },
+-          };
+-      const existing = await db.assignmentSubmission.findUnique({ where });
+-      if (existing) return mapSubmission(existing);
+-      const row = await db.assignmentSubmission.create({
++      assertDatabase(context);
++      if (input.body.idempotencyKey) {
++        return mapSubmission(
++          await settleAssignmentSubmission(context, {
++            ...input.body,
++            idempotencyKey: input.body.idempotencyKey,
++          }),
++        );
++      }
++      await assertSubmissionAuthority(context.db, context, input.body.assignmentId);
++      const where = {
++        assignment_id_student_id: {
++          assignment_id: input.body.assignmentId,
++          student_id: context.user.id,
++        },
++      };
++      const existing = await context.db.assignmentSubmission.findUnique({
++        where,
++        include: { assignment: { select: { classroom_id: true } } },
++      });
++      if (existing) {
++        assertSubmissionIntent(existing, context.user.id, input.body);
++        return mapSubmission(existing);
++      }
++      const row = await context.db.assignmentSubmission.create({
+         data: {
+           assignment_id: input.body.assignmentId,
+           student_id: context.user.id,

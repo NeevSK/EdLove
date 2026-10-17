@@ -1,6 +1,7 @@
 import './setup';
 import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
+import { SchoolSummarySchema } from '@repo/core/api/admin.contract';
 import { describe, expect, it } from 'vitest';
 import { app } from '../core/app.js';
 import { createTestORPCClient } from './orpc-client';
@@ -9,7 +10,8 @@ import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
 async function requestNativeLibraryCollections(headers: Record<string, string>) {
   let response: Response | undefined;
   const link = new RPCLink<Record<never, never>>({
-    url: 'http://sanctuary.test/api',
+    url: '/api',
+    origin: 'http://sanctuary.test',
     headers,
     fetch: async (request, init) => {
       response = await app.fetch(new Request(request, init));
@@ -17,8 +19,25 @@ async function requestNativeLibraryCollections(headers: Record<string, string>) 
     },
   });
   const client = createORPCClient<any>(link);
-  await client.library.getCollections({});
+  await client.library.getCollections({ query: {} });
   if (!response) throw new Error('Native library response was not captured');
+  return response;
+}
+
+async function requestDailyContent(headers: Record<string, string>) {
+  let response: Response | undefined;
+  const link = new RPCLink<Record<never, never>>({
+    url: '/api',
+    origin: 'http://sanctuary.test',
+    headers,
+    fetch: async (request, init) => {
+      response = await app.fetch(new Request(request, init));
+      return response;
+    },
+  });
+  const client = createORPCClient<any>(link);
+  await client.dailyContent.getToday();
+  if (!response) throw new Error('Daily content response was not captured');
   return response;
 }
 
@@ -53,40 +72,114 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
     });
   };
 
-  it('should block client-side admin header escalation when DB hydration is available', async () => {
+  it('validates the strict school summary response contract', () => {
+    const summary = {
+      id: schoolId,
+      name: 'Mock School',
+      classrooms_count: 0,
+      bonds_count: 0,
+    };
+
+    expect(SchoolSummarySchema.parse(summary)).toEqual(summary);
+    expect(SchoolSummarySchema.safeParse({ ...summary, classrooms_count: -1 }).success).toBe(false);
+    expect(SchoolSummarySchema.safeParse({ ...summary, unexpected: true }).success).toBe(false);
+    expect(SchoolSummarySchema.safeParse({ ...summary, name: undefined }).success).toBe(false);
+  });
+
+  it('should allow a teacher to read their school while ignoring a forged admin header', async () => {
     setHydratedTeacher();
+
+    let response: Response | undefined;
+    const client: ReturnType<typeof createTestORPCClient> = createORPCClient(
+      new RPCLink<Record<never, never>>({
+        url: '/api',
+        origin: 'http://sanctuary.test',
+        headers: {
+          Authorization: 'Bearer teacher-user-1',
+          'x-capacity': 'admin',
+          'x-school-id': schoolId,
+        },
+        fetch: async (request, init) => {
+          response = await app.fetch(new Request(request, init));
+          return response.clone();
+        },
+      }),
+    );
+    const result = await client.admin.getSchool({ params: { id: schoolId } }).then(
+      (body) => ({ body }),
+      (error: unknown) => ({ error }),
+    );
+
+    if (!response) throw new Error('Native school response was not captured.');
+    expect(response.status).toBe(200);
+    expect(result).toMatchObject({
+      body: { name: 'Mock School', classrooms_count: 0, bonds_count: 0 },
+    });
+  });
+
+  it('should block a teacher from reading another school without forged scope headers', async () => {
+    setHydratedTeacher();
+    const otherSchoolId = '123e4567-e89b-12d3-a456-426614174099';
+
+    await expect(
+      createTestORPCClient({
+        Authorization: 'Bearer teacher-user-1',
+      }).admin.getSchool({ params: { id: otherSchoolId } }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('should block forged admin and school headers from granting cross-school read access', async () => {
+    setHydratedTeacher();
+    const otherSchoolId = '123e4567-e89b-12d3-a456-426614174099';
 
     await expect(
       createTestORPCClient({
         Authorization: 'Bearer teacher-user-1',
         'x-capacity': 'admin',
-        'x-school-id': schoolId,
-      }).admin.getSchool({ id: schoolId }),
-    ).rejects.toMatchObject({ status: 403 });
+        'x-school-id': otherSchoolId,
+      }).admin.getSchool({ params: { id: otherSchoolId } }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 
-  it('should fall back to client headers when DB hydration is unavailable', async () => {
+  it('should return 503 rather than falling back to client scope headers when DB hydration is unavailable', async () => {
     setMockZenStackDbAvailable(false);
 
-    const res = await app.request(`/api/admin/schools/${schoolId}`, {
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer admin-user-1',
-        'x-capacity': 'admin',
-        'x-school-id': schoolId,
-      },
-    });
+    try {
+      await expect(
+        createTestORPCClient({
+          Authorization: 'Bearer admin-user-1',
+          'x-capacity': 'admin',
+          'x-school-id': schoolId,
+        }).admin.getSchool({ params: { id: schoolId } }),
+      ).rejects.toMatchObject({ response: { status: 503 } });
+    } finally {
+      setHydratedTeacher();
+    }
+  });
 
-    expect(res.status).not.toBe(403);
-    setHydratedTeacher();
+  it('should return 503 for a valid bearer token with forged scope headers when DB is unavailable', async () => {
+    setMockZenStackDbAvailable(false);
+    const otherSchoolId = '123e4567-e89b-12d3-a456-426614174099';
+
+    try {
+      await expect(
+        createTestORPCClient({
+          Authorization: 'Bearer teacher-user-1',
+          'x-capacity': 'admin',
+          'x-school-id': otherSchoolId,
+        }).admin.getSchool({ params: { id: otherSchoolId } }),
+      ).rejects.toMatchObject({ response: { status: 503 } });
+    } finally {
+      setHydratedTeacher();
+    }
   });
 
   it('should block anonymous Wanderer from reading school details (Double Gate: Denied by Cedar)', async () => {
     setHydratedTeacher();
 
-    await expect(createTestORPCClient({}).admin.getSchool({ id: schoolId })).rejects.toMatchObject({
-      status: 403,
-    });
+    await expect(
+      createTestORPCClient({}).admin.getSchool({ params: { id: schoolId } }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 
   it('should allow Platform/School Admin to read school details (Double Gate: Allowed by Cedar)', async () => {
@@ -96,8 +189,8 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
       Authorization: 'Bearer admin-user-1',
       'x-capacity': 'admin',
       'x-school-id': schoolId,
-    }).admin.getSchool({ id: schoolId });
-    expect(body.id).toBe('mock-school');
+    }).admin.getSchool({ params: { id: schoolId } });
+    expect(body.id).toBe(schoolId);
   });
 
   it('should block Student from submitting a grade (Double Gate: Denied by Cedar)', async () => {
@@ -109,16 +202,18 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
         'x-capacity': 'student',
         'x-school-id': schoolId,
       }).grading.submitGrade({
-        schoolId,
-        academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
-        gradeClassId: classroomId,
-        termId: '123e4567-e89b-12d3-a456-426614174011',
-        subjectId: '123e4567-e89b-12d3-a456-426614174012',
-        studentId: '123e4567-e89b-12d3-a456-426614174003',
-        marksEarned: 85,
-        maxPoints: 100,
+        body: {
+          schoolId,
+          academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
+          gradeClassId: classroomId,
+          termId: '123e4567-e89b-12d3-a456-426614174011',
+          subjectId: '123e4567-e89b-12d3-a456-426614174012',
+          studentId: '123e4567-e89b-12d3-a456-426614174003',
+          marksEarned: 85,
+          maxPoints: 100,
+        },
       }),
-    ).rejects.toMatchObject({ status: 403 });
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 
   it('should allow Teacher to submit a grade (Double Gate: Allowed by Cedar)', async () => {
@@ -131,14 +226,16 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
       'x-classroom-ids': classroomId,
       'x-device-trust': 'high',
     }).grading.submitGrade({
-      schoolId,
-      academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
-      gradeClassId: classroomId,
-      termId: '123e4567-e89b-12d3-a456-426614174011',
-      subjectId: '123e4567-e89b-12d3-a456-426614174012',
-      studentId: '123e4567-e89b-12d3-a456-426614174003',
-      marksEarned: 85,
-      maxPoints: 100,
+      body: {
+        schoolId,
+        academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
+        gradeClassId: classroomId,
+        termId: '123e4567-e89b-12d3-a456-426614174011',
+        subjectId: '123e4567-e89b-12d3-a456-426614174012',
+        studentId: '123e4567-e89b-12d3-a456-426614174003',
+        marksEarned: 85,
+        maxPoints: 100,
+      },
     });
 
     expect(body.grade_class_id).toBe(classroomId);
@@ -150,12 +247,19 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
 
     await expect(
       createTestORPCClient().sync.uploadBatch({
-        idempotencyKey: 'test-idempotency-key',
-        crud: [
-          { id: 'mutation-1', op: 'PATCH', table: 'users', opData: { display_name: 'Parent One' } },
-        ],
+        body: {
+          idempotencyKey: 'test-idempotency-key',
+          crud: [
+            {
+              id: 'mutation-1',
+              op: 'PATCH',
+              table: 'users',
+              opData: { display_name: 'Parent One' },
+            },
+          ],
+        },
       }),
-    ).rejects.toMatchObject({ status: 403 });
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 
   it('should allow retrieving classroom capacity summary for a user', async () => {
@@ -226,11 +330,13 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
         'x-classroom-ids': 'class-1',
         'x-device-trust': 'high',
       }).grading.submitGrade({
-        classroomId: 'class-1',
-        studentId: 'invalid-uuid',
-        marks: 150,
+        body: {
+          classroomId: 'class-1',
+          studentId: 'invalid-uuid',
+          marks: 150,
+        },
       }),
-    ).rejects.toMatchObject({ status: 400 });
+    ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
   });
 
   it('should include rate limiting headers on API routes', async () => {
@@ -253,34 +359,48 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
     expect(etagVal).toBeDefined();
 
     // Conditional GET request using ETag should yield 304 Not Modified
-    let conditionalResponse: Response | undefined;
-    const conditionalLink = new RPCLink<Record<never, never>>({
-      url: 'http://sanctuary.test/api',
-      headers: {
-        Authorization: 'Bearer teacher-user-1',
-        'x-capacity': 'teacher',
-        'x-school-id': schoolId,
-        'If-None-Match': etagVal!,
-      },
-      fetch: async (request, init) => {
-        conditionalResponse = await app.fetch(new Request(request, init));
-        return conditionalResponse;
-      },
-    });
-    await createORPCClient<any>(conditionalLink).library.getCollections({});
-    // Hono's ETag middleware still applies to the native oRPC response.
-    expect(conditionalResponse?.status).toBe(304);
+    const initialGet = await app.fetch(
+      new Request('http://sanctuary.test/api/openapi/daily-content/today', {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer teacher-user-1',
+          'x-capacity': 'teacher',
+          'x-school-id': schoolId,
+        },
+      }),
+    );
+    const getEtag = initialGet.headers.get('ETag');
+    expect(getEtag).toBeDefined();
+
+    const conditionalRes = await app.fetch(
+      new Request('http://sanctuary.test/api/openapi/daily-content/today', {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer teacher-user-1',
+          'x-capacity': 'teacher',
+          'x-school-id': schoolId,
+          'If-None-Match': getEtag!,
+        },
+      }),
+    );
+    expect(conditionalRes.status).toBe(304);
   });
 
   it('should include Cache-Control headers on read-heavy routes', async () => {
     setHydratedTeacher();
-    const res = await requestNativeLibraryCollections({
+    const libraryRes = await requestNativeLibraryCollections({
       Authorization: 'Bearer teacher-user-1',
       'x-capacity': 'teacher',
       'x-school-id': schoolId,
     });
+    expect(libraryRes.headers.get('Cache-Control')).toBe('private, no-store');
 
-    expect(res.headers.get('Cache-Control')).toBe('public, max-age=60, stale-while-revalidate=600');
+    const dailyRes = await requestDailyContent({
+      Authorization: 'Bearer teacher-user-1',
+      'x-capacity': 'teacher',
+      'x-school-id': schoolId,
+    });
+    expect(dailyRes.headers.get('Cache-Control')).toBe('public, max-age=60, stale-while-revalidate=600');
   });
 
   it('should reject payloads larger than 5MB with a 413 Payload Too Large status', async () => {
