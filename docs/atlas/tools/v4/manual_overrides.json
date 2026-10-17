@@ -1,0 +1,10 @@
+[
+ {"id":"sacred-missions:sacredMissions.list","status":"LIVE","evidence":"packages/core/src/api/hooks/manifesto.hooks.ts:18 sacredMissionsAPI.getManifestos -> sacredMissions.ts:4-10 orpcClient.sacredMissions.list; hook used by packages/community/src/screens/CommunityScreen.tsx (/community nav Y). The caller() heuristic missed the wrapper alias."},
+ {"id":"sacred-missions:sacredMissions.endorse","status":"LIVE","evidence":"manifesto.hooks.ts:24 endorseManifesto -> sacredMissions.ts:53 -> endorse :47; used by CommunityScreen.tsx"},
+ {"id":"sacred-missions:sacredMissions.unendorse","status":"LIVE","evidence":"manifesto.hooks.ts:33 unendorseManifesto -> unendorse :59; used by CommunityScreen.tsx"},
+ {"id":"direct-messages:social.getNotifications","status":"PARTIAL","evidence":"packages/core/src/api/hooks/notification.hooks.ts:24 socialAPI.getNotifications; only consumer is CommunityScreen.web.tsx (Expo web build), so it is unreached on native"},
+ {"id":"notifications:supabase.read:notifications","status":"LIVE","evidence":"useNotifications.ts:38 setUserId -> useNotificationStore.ts:42 loadNotifications :54 notification.getNotifications -> NotificationManager.ts:13 -> supabaseNotification.adapter.ts:11 .from('notifications'); consumers GlobalHeader.tsx, (tabs)/_layout.tsx, NotificationsScreen.tsx. The factory DI hid the import edge. This corrects v1 ('store never written')."},
+ {"id":"notifications:supabase.write:notifications","status":"LIVE","evidence":"markAsRead/markAllRead exposed by useNotifications.ts -> adapter :29/:37 (same chain as the read)"},
+ {"id":"notifications:route/notifications","status":"LIVE","evidence":"(tabs)/notifications.tsx -> NotificationsScreen.tsx uses useNotifications (real Supabase notifications table + realtime); nav: _layout.tsx:357, sanctuary-nav.ts:30"},
+ {"id":"calendar-events:admin.getUpcomingCalendarEvents","status":"UI-UNWIRED","evidence":"hostile check confirmed: the only caller InstitutionalCalendarSection.tsx:126 is not imported by any TS file (barrel-only; mentions are in temp/*.md)"}
+]
