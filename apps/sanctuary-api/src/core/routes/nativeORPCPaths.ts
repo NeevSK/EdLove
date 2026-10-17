@@ -14,6 +14,7 @@ export const nativeORPCPaths = [
   '/api/messaging/*',
   '/api/social/*',
   '/api/announcements/*',
+  '/api/planBridge/*',
   '/api/principalNotes/*',
   '/api/principal-notes/*',
   '/api/admin/*',

@@ -40,6 +40,15 @@ async function resolveClassroomIds(
   return [];
 }
 
+/** Signed-in requests need the per-user DB to build an authorization context. */
+function assertAuthorizationDbAvailable(userId: string, db: unknown): void {
+  if (userId !== 'anonymous' && !db) {
+    throw new ORPCError('SERVICE_UNAVAILABLE', {
+      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
+    });
+  }
+}
+
 // Context Builder for oRPC from incoming HTTP headers/request
 export async function parseORPCContext(req: Request, env: any, requestId: string) {
   const authHeader = req.headers.get('Authorization');
@@ -56,11 +65,7 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
 
   const db = canUseZenStackDb(dbUrl) ? createZenStackDb(user, dbUrl) : undefined;
 
-  if (user.id !== 'anonymous' && !db) {
-    throw new ORPCError('SERVICE_UNAVAILABLE', {
-      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
-    });
-  }
+  assertAuthorizationDbAvailable(user.id, db);
 
   let schoolId = '';
   let capacity: string | null = null;
@@ -142,11 +147,7 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
   const db = c.get('db');
   const requestId = c.get('requestId') || 'unknown';
 
-  if (user.id !== 'anonymous' && !db) {
-    throw new ORPCError('SERVICE_UNAVAILABLE', {
-      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
-    });
-  }
+  assertAuthorizationDbAvailable(user.id, db);
 
   let schoolId = '';
   let capacity: string | null = null;
@@ -238,6 +239,7 @@ import { mediaRouter } from './handlers/media';
 import { messagingRouter } from './handlers/messaging';
 import { onboardingRouter } from './handlers/onboarding';
 import { permissionSnapshotRouter } from './handlers/permissionSnapshot';
+import { planBridgeRouter } from './handlers/planBridge';
 import { presenceRouter } from './handlers/presence';
 import { principalNotesRouter } from './handlers/principalNotes';
 import { privacyRouter } from './handlers/privacy';
@@ -297,4 +299,5 @@ export const router = o.router({
   echoes: echoRouter,
   studentPotential: studentPotentialRouter,
   forms: formsRouter,
+  planBridge: planBridgeRouter,
 });

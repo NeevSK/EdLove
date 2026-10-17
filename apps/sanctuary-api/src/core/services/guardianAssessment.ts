@@ -119,6 +119,8 @@ export async function readGuardianPublishedAssessmentSummary(
         guardian_id: input.guardianId,
         student_id: input.studentId,
         relationship_type: { in: [...VALID_RELATIONSHIP_TYPES] },
+        // Self-created links start 'pending'; only a school leader verifies.
+        verification_status: 'verified',
       },
       select: { id: true },
     });

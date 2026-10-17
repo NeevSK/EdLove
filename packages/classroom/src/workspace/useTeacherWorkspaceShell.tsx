@@ -126,6 +126,11 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
 
   const handleAdminAction = useCallback(
     (action: string) => {
+      if (action === 'plan-and-notices') {
+        setUiState((prev) => ({ ...prev, isAdminModalOpen: false }));
+        router.push('/workspace/plan');
+        return;
+      }
       if (action === 'Attendance' && classrooms.length > 0 && classrooms[0]) {
         setUiState((prev) => ({ ...prev, isAdminModalOpen: false }));
         router.push({

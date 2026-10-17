@@ -28,6 +28,7 @@ import {
   ripplesAPI,
 } from '@repo/core/api/orchestration/growth';
 import { type ORPCClient, type ORPCUtils, orpc, orpcClient } from '@repo/core/api/orpcClient';
+import { planBridgeAPI } from '@repo/core/api/planBridge';
 import { presenceAPI } from '@repo/core/api/presence';
 import { principalNotesAPI } from '@repo/core/api/principalNotes';
 import { privacyAPI } from '@repo/core/api/privacy';
@@ -83,6 +84,7 @@ export * from '@repo/core/api/contextualChallenges';
 export * from '@repo/core/api/contractCoverage';
 export * from '@repo/core/api/contracts';
 export * from '@repo/core/api/decisionJournal.contract';
+export * from '@repo/core/api/demoProvider';
 export * from '@repo/core/api/durableAgents.contract';
 export * from '@repo/core/api/editorial.contract';
 export * from '@repo/core/api/educational.contract';
@@ -108,7 +110,6 @@ export * from '@repo/core/api/longitudinal.contract';
 export * from '@repo/core/api/mapping';
 export * from '@repo/core/api/mapping.contract';
 export * from '@repo/core/api/mockData';
-export * from '@repo/core/api/demoProvider';
 export * from '@repo/core/api/moonPhase';
 export * from '@repo/core/api/naturePaths';
 export * from '@repo/core/api/operations.contract';
@@ -198,6 +199,7 @@ export {
  */
 export const api: Record<string, any> = {
   announcements: announcementAPI,
+  planBridge: planBridgeAPI,
   agent: agentAPI,
   auth: authAPI,
   circles: circleAPI,
