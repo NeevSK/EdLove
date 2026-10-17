@@ -72,6 +72,24 @@ function authorityProjection(input: Record<string, unknown>): Record<string, unk
   return projection;
 }
 
+/**
+ * Batch bodies (arrays) carry no top-level facts, so Cedar would see no grade class and
+ * deny. For attendance batches, project only keys whose value is identical across every
+ * item; a batch spanning several grade classes projects no gradeClassId and stays denied.
+ */
+function uniformBatchProjection(input: Record<string, unknown>): Record<string, unknown> {
+  const items = input.body;
+  if (!Array.isArray(items) || items.length === 0) return {};
+  if (!items.every((item) => item && typeof item === 'object' && !Array.isArray(item))) return {};
+  const [first, ...rest] = items as Record<string, unknown>[];
+  const projection: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(first ?? {})) {
+    if (value === undefined || (value !== null && typeof value === 'object')) continue;
+    if (rest.every((item) => item[key] === value)) projection[key] = value;
+  }
+  return projection;
+}
+
 /** Shared procedure boundary: Cedar authorization plus sanitized oRPC errors. */
 export const doubleGateMiddleware = o.middleware(async ({ next, procedure, context }, input) => {
   const startedAt = performance.now();
@@ -109,7 +127,12 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
     string,
     unknown
   >;
-  const procedureInput = authorityProjection(rawProcedureInput);
+  const procedureInput = {
+    ...(['DailyAttendance', 'AttendanceSession'].includes(resourceType)
+      ? uniformBatchProjection(rawProcedureInput)
+      : {}),
+    ...authorityProjection(rawProcedureInput),
+  };
   const selfScopedResource = new Set([
     'MoodLog',
     'FireJournal',

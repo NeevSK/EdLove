@@ -23,7 +23,13 @@ const _attendanceCoverage = assertContractCoverage(
       getSchoolAttendancePulse: 'getSchoolAttendancePulse',
       getAttendanceReport: 'getAttendanceReport',
     },
-    internalMethods: ['logAttendanceAudit'],
+    // Served by the oRPC attendanceORPCContract (model A), not the legacy operations contract.
+    internalMethods: [
+      'logAttendanceAudit',
+      'getMyGradeClasses',
+      'getGradeClassRoster',
+      'getClassroomAttendanceSnapshot',
+    ],
   }),
 );
 

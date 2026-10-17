@@ -25,7 +25,10 @@ async function resolveClassroomIds(
             : { school_id: schoolId },
         select: { id: true },
       });
-      return rows.map((row: { id: unknown }) => String(row.id));
+      const ids = rows.map((row: { id: unknown }) => String(row.id));
+      // Academic lifecycle (model A): grade classes join the same relationship set,
+      // because teacher.cedar matches resource.grade_class_id against classroom_ids.
+      return [...ids, ...(await resolveGradeClassIds(db, userId, capacity, schoolId))];
     }
     if (capacity === 'student') {
       const rows = await db.classroomStudent.findMany({
@@ -38,6 +41,46 @@ async function resolveClassroomIds(
     console.warn('[AUTHZ] Classroom relationship lookup failed; denying relationship scope.');
   }
   return [];
+}
+
+// Grade classes a staff member may act on. Isolated from the classroom lookup so a
+// missing/unmigrated lifecycle table never removes the caller's classroom scope.
+async function resolveGradeClassIds(
+  db: any,
+  userId: string,
+  capacity: string,
+  schoolId: string,
+): Promise<string[]> {
+  try {
+    if (capacity === 'teacher') {
+      const now = new Date();
+      const rows = await db.gradeClassTeacherAssignment.findMany({
+        where: {
+          teacher_id: userId,
+          status: 'active',
+          effective_from: { lte: now },
+          OR: [{ effective_to: null }, { effective_to: { gte: now } }],
+          grade_class: { school_id: schoolId, status: 'active' },
+        },
+        select: { grade_class_id: true },
+      });
+      return [
+        ...new Set<string>(
+          rows.map((row: { grade_class_id: unknown }) => String(row.grade_class_id)),
+        ),
+      ];
+    }
+    const rows = await db.gradeClass.findMany({
+      where: { school_id: schoolId, status: 'active' },
+      select: { id: true },
+    });
+    return rows.map((row: { id: unknown }) => String(row.id));
+  } catch {
+    console.warn(
+      '[AUTHZ] Grade class relationship lookup failed; continuing without grade classes.',
+    );
+    return [];
+  }
 }
 
 // Context Builder for oRPC from incoming HTTP headers/request

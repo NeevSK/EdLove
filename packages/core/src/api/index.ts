@@ -196,7 +196,9 @@ export {
 /**
  * Unified API Object (Sovereign Orchestration)
  */
-export const api: Record<string, any> = {
+// Typed on purpose: a call to a method that does not exist is a compile error, not a
+// runtime `undefined is not a function` (see docs/atlas TODO "dead facade calls").
+export const api = {
   announcements: announcementAPI,
   agent: agentAPI,
   auth: authAPI,

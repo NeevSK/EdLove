@@ -66,6 +66,20 @@ export function setMockClassroomNoteRead(row: Record<string, unknown> | null | u
 }
 let mockClassrooms: any[] = [];
 let mockClassroomStudents: any[] = [];
+let mockGradeClassAssignments: any[] = [];
+let mockGradeClassEnrollments: any[] = [];
+
+/** Academic lifecycle (model A) rows: teacher assignments and student enrollments. */
+export function setMockGradeClassLifecycle({
+  assignments = [],
+  enrollments = [],
+}: {
+  assignments?: any[];
+  enrollments?: any[];
+}) {
+  mockGradeClassAssignments = assignments;
+  mockGradeClassEnrollments = enrollments;
+}
 const mockEducationalRows = new Map<string, Record<string, unknown>>();
 let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
 
@@ -201,6 +215,8 @@ export function setMockClassroomRelationships({
 }) {
   mockClassrooms = classrooms;
   mockClassroomStudents = students ?? [];
+  mockGradeClassAssignments = [];
+  mockGradeClassEnrollments = [];
   mockEducationalRows.clear();
 }
 
@@ -522,6 +538,16 @@ function createMockDelegate(name: string): any {
           prop === 'deleteMany' ||
           prop === 'updateMany'
         ) {
+          if (name === 'dailyAttendance' && prop === 'upsert') {
+            return async (args: any = {}) => ({
+              id: '123e4567-e89b-12d3-a456-426614174099',
+              ...(args?.create ?? {}),
+              created_at: new Date('2026-10-17T00:00:00.000Z'),
+              updated_at: new Date('2026-10-17T00:00:00.000Z'),
+              student: { full_name: null, avatar_url: null },
+              sessions: [],
+            });
+          }
           if (name === 'libraryCollection' && prop === 'update') {
             return async (args: { where: { id: string }; data: Record<string, unknown> }) => {
               const existing =
@@ -1136,6 +1162,19 @@ function createMockDelegate(name: string): any {
               mockLibraryCollectionFindManyArgs = args;
               return mockLibraryCollections;
             };
+          if (name === 'gradeClassTeacherAssignment')
+            return async (args: any = {}) =>
+              mockGradeClassAssignments.filter(
+                (row) => !args?.where?.teacher_id || row.teacher_id === args.where.teacher_id,
+              );
+          if (name === 'studentGradeClassEnrollment')
+            return async (args: any = {}) =>
+              mockGradeClassEnrollments.filter(
+                (row) =>
+                  (!args?.where?.grade_class_id ||
+                    row.grade_class_id === args.where.grade_class_id) &&
+                  (!args?.where?.status || row.status === args.where.status),
+              );
           return async () => [];
         }
         if (prop === 'findFirst') {

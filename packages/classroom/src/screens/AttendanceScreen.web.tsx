@@ -1,8 +1,14 @@
-import { api, growthSignalsAPI } from '@repo/core/api/client';
+import {
+  loadGradeClassRegister,
+  localDate,
+  PICK_GRADE_CLASS_NOTICE,
+  SHADOW_STUDENT_NOTICE,
+  saveGradeClassRegister,
+} from '@repo/classroom/logic/gradeClassRegister';
+import { attendanceAPI } from '@repo/core/api/attendance';
+import { growthSignalsAPI } from '@repo/core/api/client';
 import { type StudentAttendance } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
-import type { AttendanceRecord } from '@repo/core/types';
-import { generateIdempotencyKey } from '@repo/core/utils';
 
 import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
@@ -10,7 +16,7 @@ import { tokens } from '@repo/ui/tokens';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Status = 'present' | 'absent' | 'late';
@@ -112,59 +118,46 @@ const STATUS_CONFIG: Record<
 export default function AttendanceScreenWeb() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
+  // Model A: the register belongs to a grade class (grade_classes.id). A legacy
+  // `classroomId` param is not mapped to a grade class; the teacher picks one instead.
+  const { gradeClassId: gradeClassParam = '', classroomName = 'Class' } = useLocalSearchParams<{
+    gradeClassId?: string;
     classroomId?: string;
     classroomName?: string;
   }>();
   const user = useAuthStore((state) => state.user);
 
   const [state, dispatch] = useReducer(attendanceReducer, initialState);
+  const [gradeClassId, setGradeClassId] = useState(gradeClassParam);
+  const [gradeClassName, setGradeClassName] = useState(classroomName);
+  const [gradeClasses, setGradeClasses] = useState<{ id: string; name: string }[]>([]);
+  const [excludedWithoutAccount, setExcludedWithoutAccount] = useState(0);
+  const attendanceDate = useMemo(() => localDate(), []);
 
   const loadData = useCallback(async () => {
-    if (!classroomId) {
-      dispatch({ type: 'FETCH_ERROR', payload: 'No classroom selected' });
-      return;
-    }
     dispatch({ type: 'FETCH_START' });
     try {
-      const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
-      const [data, snapshot] = await Promise.all([
-        api.classroomStudents.getAll(classroomId),
-        api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate),
-      ]);
-      const savedStatus = new Map<string, string>(
-        snapshot.records.map(
-          (record: AttendanceRecord) => [record.student_id, record.status] as [string, string],
-        ),
-      );
-      const mappedStudents = data.map(
-        (student: {
-          id: string;
-          student_id?: string | null;
-          full_name: string;
-          roll_number?: string | null;
-        }) => ({
-          id: student.id,
-          student_id: student.student_id || student.id,
-          full_name: student.full_name,
-          roll_number: student.roll_number,
-          status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
-        }),
-      );
-      dispatch({ type: 'FETCH_SUCCESS', payload: mappedStudents });
+      if (!gradeClassId) {
+        const options = await attendanceAPI.getMyGradeClasses();
+        setGradeClasses(options.map((option) => ({ id: option.id, name: option.name })));
+        dispatch({ type: 'FETCH_SUCCESS', payload: [] });
+        return;
+      }
+      const register = await loadGradeClassRegister(gradeClassId, attendanceDate);
+      setExcludedWithoutAccount(register.excludedWithoutAccount);
+      dispatch({ type: 'FETCH_SUCCESS', payload: register.students });
     } catch (err: any) {
       dispatch({
         type: 'FETCH_ERROR',
-        payload: err?.message || 'Failed to load students',
+        payload: err?.message || 'Failed to load the class register',
       });
     }
-  }, [classroomId]);
+  }, [gradeClassId, attendanceDate]);
 
   useEffect(() => {
     void loadData();
-    /* loadData is stable for the selected classroom. */
+    /* loadData is stable for the selected grade class. */
   }, [loadData]);
-
 
   const toggle = useCallback((id: string) => {
     dispatch({ type: 'TOGGLE_STUDENT', payload: id });
@@ -174,33 +167,15 @@ export default function AttendanceScreenWeb() {
     dispatch({ type: 'SET_ALL', payload: status });
   }, []);
 
-  const attendanceDate = useMemo(
-    () => new Date().toISOString().split('T')[0] || new Date().toISOString(),
-    [],
-  );
-
   const handleSave = async () => {
     dispatch({ type: 'SAVE_START' });
     try {
-      await api.attendance.batchRecord(
-        state.students.map((student) => ({
-          classroom_id: classroomId,
-          student_id: student.student_id,
-          status: student.status,
-          date: attendanceDate,
-        })),
-        {
-          actorId: user?.id,
-          reason: 'daily_roll_call',
-          accessKind: 'teacher_marking',
-          idempotencyKey: generateIdempotencyKey('attendance'),
-        },
-      );
+      await saveGradeClassRegister(gradeClassId, attendanceDate, state.students);
       if (user?.id) {
         growthSignalsAPI.emitSilent({
           user_id: user.id,
           event_type: 'attendance_marked',
-          event_metadata: { classroom_id: classroomId },
+          event_metadata: { grade_class_id: gradeClassId },
         });
       }
       dispatch({ type: 'SAVE_SUCCESS' });
@@ -254,7 +229,7 @@ export default function AttendanceScreenWeb() {
           }}
         >
           <button
-            aria-label={`Back to workspace from ${classroomName}`}
+            aria-label={`Back to workspace from ${gradeClassName}`}
             onClick={() => safeBack('/workspace')}
             style={{
               display: 'flex',
@@ -274,7 +249,7 @@ export default function AttendanceScreenWeb() {
           </button>
           <div>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>
-              {t('attendance.sheet.title') || 'Attendance'} · {classroomName}
+              {t('attendance.sheet.title') || 'Attendance'} · {gradeClassName}
             </h2>
             <p
               style={{
@@ -335,8 +310,50 @@ export default function AttendanceScreenWeb() {
           </div>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && !gradeClassId && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-ghost)' }}>
+              {PICK_GRADE_CLASS_NOTICE}
+            </p>
+            {gradeClasses.length === 0 ? (
+              <p style={{ margin: 0, fontSize: '13px', fontWeight: 700 }}>
+                No classes are assigned to you for the current academic year.
+              </p>
+            ) : (
+              gradeClasses.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-label={`Open the ${option.name} register`}
+                  onClick={() => {
+                    setGradeClassName(option.name);
+                    setGradeClassId(option.id);
+                  }}
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--glass-surface)',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    textAlign: 'left',
+                  }}
+                >
+                  {option.name}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+
+        {!loading && !error && gradeClassId && (
           <>
+            <p role="note" style={{ margin: '0 0 16px', fontSize: '12px', color: 'var(--ink-ghost)' }}>
+              {excludedWithoutAccount > 0
+                ? `${excludedWithoutAccount} enrolled student(s) have no account and are not shown. `
+                : ''}
+              {SHADOW_STUDENT_NOTICE}
+            </p>
             <div
               style={{
                 display: 'flex',
