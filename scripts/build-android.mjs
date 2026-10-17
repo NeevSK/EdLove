@@ -38,10 +38,12 @@ const basePackage = 'app.gurudevi.sanctuary';
 const targetPkg = isRelease ? basePackage : `${basePackage}.dev`;
 const appName = isRelease ? 'Gurudevi' : 'Gurudevi (Dev)';
 const abi = args.find((arg) => arg.startsWith('--abi='))?.split('=')[1] || 'arm64-v8a';
+const buildRunId = new Date().toISOString().replace(/[:.]/g, '-');
 
 // Linux-ext4 workspace inside WSL2; overridable per contributor via
 // POLYMATH_WSL_DIR. Interpolation happens inside bash so "$HOME" expands there.
 const WSL_WORKSPACE = resolveWslWorkspace();
+const WINDOWS_REPORTS_DIR = toWslPath(path.join(repoRoot, 'reports', 'android-build'));
 
 console.log(`\x1b[1;35m`);
 console.log(`========================================================================`);
@@ -132,7 +134,7 @@ if (prebuildRes.status !== 0) {
 logStep('Stage 4: Initializing CCACHE, Gradle Build Cache & JVM limits');
 
 const buildScript = `
-set -e
+set -uo pipefail
 
 WSL_WORKSPACE="${WSL_WORKSPACE}"
 cd "\$WSL_WORKSPACE"
@@ -163,22 +165,155 @@ fi
 
 cd "\$WSL_WORKSPACE/apps/gurudevi-mobile/android"
 
+REPORTS_DIR="\$WSL_WORKSPACE/reports/android-build"
+mkdir -p "\$REPORTS_DIR"
+BUILD_STARTED_AT="$(date -Is)"
+BUILD_STARTED_EPOCH="$(date +%s)"
+RAW_LOG="\$REPORTS_DIR/${buildRunId}-${buildType}.gradle.log"
+HEARTBEAT_LOG="\$REPORTS_DIR/${buildRunId}-${buildType}.heartbeat.log"
+SUMMARY="\$REPORTS_DIR/${buildRunId}-${buildType}.summary.txt"
+APK_PATH="\$WSL_WORKSPACE/apps/gurudevi-mobile/android/app/build/outputs/apk/${buildType}/app-${buildType}.apk"
+STALL_TIMEOUT_SECONDS="\${ANDROID_BUILD_STALL_TIMEOUT_SECONDS:-1200}"
+WINDOWS_REPORTS_DIR="${WINDOWS_REPORTS_DIR}"
+WINDOWS_RAW_LOG=""
+WINDOWS_HEARTBEAT_LOG=""
+WINDOWS_SUMMARY=""
+if mkdir -p "\$WINDOWS_REPORTS_DIR" 2>/dev/null; then
+  WINDOWS_RAW_LOG="\$WINDOWS_REPORTS_DIR/${buildRunId}-${buildType}.gradle.log"
+  WINDOWS_HEARTBEAT_LOG="\$WINDOWS_REPORTS_DIR/${buildRunId}-${buildType}.heartbeat.log"
+  WINDOWS_SUMMARY="\$WINDOWS_REPORTS_DIR/${buildRunId}-${buildType}.summary.txt"
+fi
+
+write_heartbeat() {
+  if [ -n "\$WINDOWS_HEARTBEAT_LOG" ]; then
+    tee -a "\$HEARTBEAT_LOG" "\$WINDOWS_HEARTBEAT_LOG"
+  else
+    tee -a "\$HEARTBEAT_LOG"
+  fi
+}
+
+write_summary() {
+  if [ -n "\$WINDOWS_SUMMARY" ]; then
+    tee -a "\$SUMMARY" "\$WINDOWS_SUMMARY"
+  else
+    tee -a "\$SUMMARY"
+  fi
+}
+
+set_phase() {
+  if [ "\${build_phase:-}" != "\$1" ]; then
+    build_phase="\$1"
+    phase_elapsed_seconds=$(( $(date +%s) - BUILD_STARTED_EPOCH ))
+    printf '[%s] phase=%s elapsed_seconds=%s\n' "$(date -Is)" "\$build_phase" "\$phase_elapsed_seconds" | write_heartbeat
+  fi
+}
+
+printf 'started_at=%s\nvariant=${buildType}\ntask=${gradleTask}\nabi=${abi}\nstall_timeout_seconds=%s\n' "\$BUILD_STARTED_AT" "\$STALL_TIMEOUT_SECONDS" > "\$SUMMARY"
+if [ -n "\$WINDOWS_SUMMARY" ]; then cp "\$SUMMARY" "\$WINDOWS_SUMMARY"; fi
+printf '[%s] build started; raw_log=%s\n' "\$BUILD_STARTED_AT" "\$RAW_LOG" | write_heartbeat
+set_phase 'gradle-configuration'
+
 # Check Doppler authentication for Release builds
-RUN_CMD="./gradlew ${gradleTask} --build-cache --no-daemon --max-workers=2 -PreactNativeArchitectures=${abi} --console=plain"
+RUN_COMMAND="./gradlew ${gradleTask} --build-cache --no-daemon --max-workers=2 -PreactNativeArchitectures=${abi} --console=plain --stacktrace --warning-mode=all"
 
 ${
   isRelease
     ? `
 if command -v doppler >/dev/null 2>&1 && doppler me >/dev/null 2>&1; then
   echo "  ✓ Doppler authenticated: injecting release secrets into Metro bundler"
-  doppler run --no-fallback -- $RUN_CMD
+  RUN_COMMAND="doppler run --no-fallback -- \$RUN_COMMAND"
 else
   echo "  ⚠️ Doppler not authenticated in WSL; running Gradle with local environment fallback"
-  $RUN_CMD
 fi
 `
-    : `$RUN_CMD`
+    : ''
 }
+
+if [ -n "\$WINDOWS_RAW_LOG" ]; then
+  setsid bash -c "exec \$RUN_COMMAND" > >(awk '{ print "[" strftime("%Y-%m-%dT%H:%M:%S%z") "] " \$0; fflush() }' | tee "\$RAW_LOG" "\$WINDOWS_RAW_LOG") 2>&1 &
+else
+  setsid bash -c "exec \$RUN_COMMAND" > >(awk '{ print "[" strftime("%Y-%m-%dT%H:%M:%S%z") "] " \$0; fflush() }' | tee "\$RAW_LOG") 2>&1 &
+fi
+build_pid=\$!
+stalled=0
+external_signal=""
+
+terminate_build_tree() {
+  kill -TERM -- "-\$build_pid" 2>/dev/null || true
+  sleep 15
+  kill -KILL -- "-\$build_pid" 2>/dev/null || true
+}
+
+trap 'external_signal=SIGINT; terminate_build_tree' INT
+trap 'external_signal=SIGTERM; terminate_build_tree' TERM
+
+while kill -0 "\$build_pid" 2>/dev/null; do
+  sleep 30
+  current_epoch="$(date +%s)"
+  latest_output_epoch="$(stat -c %Y "\$RAW_LOG" 2>/dev/null || printf '%s' "\$current_epoch")"
+  silent_seconds=$((current_epoch - latest_output_epoch))
+  if grep -qE 'C/C\+\+|ninja:|buildCMakeDebug|externalNativeBuildDebug' "\$RAW_LOG"; then
+    set_phase 'native-cpp'
+  elif grep -qE ':app:.*(package|assemble|merge).*Debug|APK' "\$RAW_LOG"; then
+    set_phase 'apk-packaging'
+  elif grep -qE 'Kotlin|\.kt:' "\$RAW_LOG"; then
+    set_phase 'kotlin-java'
+  fi
+  printf '[%s] build_pid=%s phase=%s output_silence_seconds=%s\n' "$(date -Is)" "\$build_pid" "\$build_phase" "\$silent_seconds" | write_heartbeat
+  if [ "\$silent_seconds" -ge "\$STALL_TIMEOUT_SECONDS" ]; then
+    stalled=1
+    printf '[%s] watchdog: no Gradle output for %ss; terminating process group %s\n' "$(date -Is)" "\$silent_seconds" "\$build_pid" | write_heartbeat
+    terminate_build_tree
+    break
+  fi
+done
+
+wait "\$build_pid"
+gradle_status=\$?
+
+artifact_size=""
+artifact_sha256=""
+if [ "\$gradle_status" -eq 0 ]; then
+  if [ ! -s "\$APK_PATH" ]; then
+    gradle_status=97
+    failure_reason="Gradle exited successfully but APK is missing or empty: \$APK_PATH"
+  else
+    artifact_size="$(stat -c %s "\$APK_PATH")"
+    artifact_sha256="$(sha256sum "\$APK_PATH" | awk '{print \$1}')"
+  fi
+fi
+
+if [ -n "\${failure_reason:-}" ]; then
+  :
+elif [ "\$stalled" -eq 1 ]; then
+  failure_reason="watchdog terminated Gradle after no output for at least \${STALL_TIMEOUT_SECONDS}s"
+elif [ -n "\$external_signal" ]; then
+  failure_reason="build interrupted by \${external_signal}"
+elif [ "\$gradle_status" -ne 0 ]; then
+  failure_reason="Gradle exited with status \${gradle_status}"
+else
+  failure_reason="none"
+fi
+
+{
+  printf 'finished_at=%s\nelapsed_seconds=%s\nexit_status=%s\nresult=%s\nfailure_reason=%s\nfinal_phase=%s\napk_path=%s\napk_bytes=%s\napk_sha256=%s\n' "$(date -Is)" "$(( $(date +%s) - BUILD_STARTED_EPOCH ))" "\$gradle_status" "$( [ "\$gradle_status" -eq 0 ] && printf success || printf failed )" "\$failure_reason" "\$build_phase" "\$APK_PATH" "\$artifact_size" "\$artifact_sha256"
+  if [ "\$gradle_status" -ne 0 ]; then
+    printf '\n--- failure excerpt ---\n'
+    grep -nE 'FAILURE:|Execution failed|What went wrong|^\* Exception|^\* Cause|(^|[^a-zA-Z])error:' "\$RAW_LOG" | tail -n 80 || true
+    printf '\n--- trailing output ---\n'
+    tail -n 120 "\$RAW_LOG" || true
+  fi
+} | write_summary
+
+if [ "\$gradle_status" -ne 0 ]; then
+  cp "\$RAW_LOG" "\$REPORTS_DIR/last-failed-${buildType}.gradle.log"
+  cp "\$SUMMARY" "\$REPORTS_DIR/last-failed-${buildType}.summary.txt"
+  if [ -n "\$WINDOWS_RAW_LOG" ]; then cp "\$RAW_LOG" "\$WINDOWS_REPORTS_DIR/last-failed-${buildType}.gradle.log"; fi
+  if [ -n "\$WINDOWS_SUMMARY" ]; then cp "\$SUMMARY" "\$WINDOWS_REPORTS_DIR/last-failed-${buildType}.summary.txt"; fi
+fi
+
+printf '[%s] build finished: status=%s summary=%s\n' "$(date -Is)" "\$gradle_status" "\$SUMMARY" | write_heartbeat
+exit "\$gradle_status"
 `;
 
 // -----------------------------------------------------------------------------
@@ -191,8 +326,17 @@ console.log(`  • Architectures: ${abi}\n`);
 
 const buildRes = spawnSync('wsl', ['-e', 'bash', '-c', buildScript], { stdio: 'inherit' });
 
+const diagnosticFiles = ['gradle.log', 'heartbeat.log', 'summary.txt'];
+for (const suffix of diagnosticFiles) {
+  const relativeReportPath = `reports/android-build/${buildRunId}-${buildType}.${suffix}`;
+  const sourcePath = `\${WSL_WORKSPACE}/${relativeReportPath}`;
+  const destinationPath = path.resolve(repoRoot, relativeReportPath);
+  fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
+  spawnSync('wsl', ['-e', 'bash', '-c', `test -f "${sourcePath}" && cp "${sourcePath}" "${toWslPath(destinationPath)}"`]);
+}
+
 if (buildRes.status !== 0) {
-  logError('\n❌ Gradle build execution failed inside WSL2.');
+  logError(`\n❌ Gradle build execution failed inside WSL2. Diagnostics: reports/android-build/${buildRunId}-${buildType}.summary.txt`);
   process.exit(1);
 }
 
@@ -203,9 +347,21 @@ logStep('Stage 6: Post-build diagnostics and artifact verification');
 
 const apkRelPath = `apps/gurudevi-mobile/android/app/build/outputs/apk/${buildType}/app-${buildType}.apk`;
 const wslApkPath = `\${WSL_WORKSPACE}/${apkRelPath}`;
-const apkStat = spawnSync('wsl', ['-e', 'bash', '-c', `ls -lh ${wslApkPath}`], {
+const apkStat = spawnSync('wsl', ['-e', 'bash', '-c', `ls -lh "${wslApkPath}"`], {
   encoding: 'utf-8',
 });
+const apkVerification = spawnSync(
+  'wsl',
+  ['-e', 'bash', '-c', `test -s "${wslApkPath}" && sha256sum "${wslApkPath}"`],
+  { encoding: 'utf-8' },
+);
+
+if (apkVerification.status !== 0 || !apkVerification.stdout?.trim()) {
+  logError(`❌ Gradle exited without a verifiable ${buildType} APK at ${apkRelPath}.`);
+  process.exit(1);
+}
+
+const apkSha256 = apkVerification.stdout.trim().split(/\s+/)[0];
 
 console.log(`\n\x1b[1;32m========================================================================`);
 console.log(`  ✅ ${buildType.toUpperCase()} BUILD COMPLETED SUCCESSFULLY! ${getElapsed()}`);
@@ -214,12 +370,17 @@ console.log(`===================================================================
 if (apkStat.stdout && apkStat.stdout.trim()) {
   console.log(`  📦 APK Artifact:  ${apkRelPath}`);
   console.log(`  📊 Details:       ${apkStat.stdout.trim()}`);
+  console.log(`  🔐 SHA-256:       ${apkSha256}`);
 
   try {
     const winApkPath = path.resolve(repoRoot, apkRelPath);
     fs.mkdirSync(path.dirname(winApkPath), { recursive: true });
     const winWslPath = toWslPath(winApkPath);
-    spawnSync('wsl', ['-e', 'bash', '-c', `cp "${wslApkPath}" "${winWslPath}" 2>/dev/null || true`]);
+    const syncResult = spawnSync('wsl', ['-e', 'bash', '-c', `cp "${wslApkPath}" "${winWslPath}" && sha256sum "${winWslPath}"`], { encoding: 'utf-8' });
+    const syncedSha256 = syncResult.stdout?.trim().split(/\s+/)[0];
+    if (syncResult.status !== 0 || syncedSha256 !== apkSha256) {
+      throw new Error(`Windows artifact verification failed (expected ${apkSha256}, received ${syncedSha256 ?? 'none'}).`);
+    }
     console.log(`  🔄 Synced to:     ${winApkPath}`);
   } catch (err) {
     // Non-fatal if Windows sync fails

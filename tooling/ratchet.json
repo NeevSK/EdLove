@@ -1,0 +1,8 @@
+{
+  "anyInSrc": 2065,
+  "tsIgnore": 1,
+  "lintSuppressions": 53,
+  "supabaseFromSites": 533,
+  "sourceFilesOver800Loc": 36,
+  "rootScripts": 129
+}
