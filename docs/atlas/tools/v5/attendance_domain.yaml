@@ -1,0 +1,32 @@
+# v5: attendance verified by hand on terrain/version-hops @ 50fb1b9e (static; nothing executed)
+- id: attendance:mobile-daily-mark
+  task: teacher marks daily attendance on mobile (native)
+  roles: [teacher]
+  route: "apps/gurudevi-mobile/app/attendance.tsx and app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx -> packages/classroom/src/screens/AttendanceScreen.tsx"
+  calls: "AttendanceScreen.tsx:46 api.attendance.getClassroomAttendanceSnapshot(...) and :148 api.attendance.batchRecord(...). api.attendance = createTemporalProxy('attendance', rawAttendanceAPI) (packages/core/src/api/orchestration/operations.ts:30). rawAttendanceAPI (packages/core/src/api/attendance.ts:43) defines only upsertAttendanceRecord, fetchClassroomAttendance, getSchoolAttendancePulse and getAttendanceReport. temporalProxy.ts returns obj[prop] (undefined) for unknown names when online, so the call throws a TypeError. assertContractCoverage (contractCoverage.ts:32) only checks keys that exist. api is typed Record<string, any> (index.ts:198)."
+  effect: "Online: the snapshot throws, falling back to the local SQLite `attendance` table (:53), and the save throws, falling back to INSERT OR REPLACE INTO attendance (:161), which reports 'Saved offline'. Nothing reaches sanctuary-api. When the temporal store is offline, get* returns {data: [], error} from the offline bridge."
+  data: "Local SQLite only. The legacy `attendance` table exists only in migrations/archive/master_baseline.sql; the live chain has daily_attendance (20260813010000:203, FK grade_class_id -> grade_classes, student_id NOT NULL -> users)."
+  ids: "The screen sends classroom_id from public.classrooms (routeResolution.ts:126). No migration links classrooms and grade_classes. classroom_students.student_id is NULL for shadow profiles (master_baseline.sql:142)."
+  new_on_branch: "badge QR scan (handleScanBadge :209, ScannerModal and parseInstitutionalQR) and an offline banner (:268)"
+  status: PARTIAL
+  blocker: "dead facade calls (no client wrapper); id model mismatch; shadow students cannot be stored"
+- id: attendance:web-workspace-mark
+  task: teacher marks daily attendance on gurudevi-web Workspace
+  roles: [teacher]
+  route: "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx (attendanceTask) -> apps/gurudevi-web/lib/workspace/attendance.ts"
+  calls: "attendance.ts:468 orpcClient.attendance.batchRecord (typed, served; handler apps/sanctuary-api/src/core/handlers/attendance.ts:124)"
+  ids: "The classroom comes from /educational/classrooms/by-teacher (attendance.ts:396 -> handlers/educational.ts:187 db.classroom.findMany, the legacy classrooms table). attendance.ts:470 sends gradeClassId: classroom.id, and the server's loadDaily runs db.gradeClass.findUnique (handlers/attendance.ts:51-56), which throws NOT_FOUND unless the ids coincide. batchRecord (:124-133) catches that and returns CONFLICT 'Attendance batch was not applied'. Shadow students are filtered out (attendance.ts:464 studentId !== null)."
+  status: PARTIAL
+  blocker: "classrooms.id is used as grade_classes.id"
+- id: attendance:offline-sync
+  task: attendance syncs offline via PowerSync
+  roles: [teacher]
+  evidence: "powersync/sync-config.yaml is unchanged on the branch. Streams: identity (bonds, school_memberships, classroom_students) and classroom_roster (classroom_students JOIN classrooms). No attendance or daily_attendance stream, no classrooms stream."
+  status: PARTIAL
+  blocker: "nothing to sync down; local writes go to a table with no server twin"
+- id: attendance:server-daily
+  task: (server) record/read daily_attendance by grade class
+  roles: [teacher, principal]
+  evidence: "handlers/attendance.ts: record, getByClassroom (:105), batchRecord (:124), with ZenStack db.dailyAttendance. zmodel DailyAttendance (schema.zmodel:1790) has no @@allow/@@deny policy (the schema has 183 @@allow elsewhere)."
+  status: BACKEND-ONLY
+  note: "reached only by the web workspace (with the id mismatch) and by core attendance.ts wrappers (record/getByClassroom/getSchoolPulse/getReport)"
