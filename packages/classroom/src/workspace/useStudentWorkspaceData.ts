@@ -1,4 +1,9 @@
-import { useStore } from '@repo/core/logic';
+import {
+  getDemoClassrooms,
+  MOCK_ASSIGNMENTS,
+  MOCK_STUDENT_STATS,
+} from '@repo/core/api/client';
+import { useAuthStore, useStore } from '@repo/core/logic';
 
 import { useMemo } from 'react';
 import {
@@ -7,36 +12,60 @@ import {
   useStudentRegistry,
 } from '@repo/classroom/hooks/useStudentDashboardHooks';
 
-const DEMO_STATS = {
-  enrolledClasses: 3,
-  pendingAssignments: 2,
-  growthPoints: 340,
-};
-
 export function useStudentWorkspaceData(forceDemo?: boolean) {
   const isDemoMode = useStore((state) => state.isDemoMode);
-  const isDemoExperience = isDemoMode || forceDemo === true;
+  const isExplorerMode = useAuthStore((state) => state.isExplorerMode);
+  const isGuest = useAuthStore((state) => state.isGuest);
+  const isDemoExperience = isDemoMode || forceDemo === true || isExplorerMode || isGuest;
 
   const registry = useStudentRegistry();
   const questsPulse = useStudentQuestsPulse();
   const growthPulse = useStudentGrowthPulse();
 
-  const classrooms = registry.sanctuaries.data ?? [];
-  const assignments = questsPulse.quests.data ?? [];
+  const realClassrooms = registry.sanctuaries.data ?? [];
+  const realAssignments = questsPulse.quests.data ?? [];
+
+  const classrooms =
+    realClassrooms.length > 0
+      ? realClassrooms
+      : isDemoExperience
+        ? getDemoClassrooms()
+        : [];
+
+  const assignments =
+    realAssignments.length > 0
+      ? realAssignments
+      : isDemoExperience
+        ? (MOCK_ASSIGNMENTS as any)
+        : [];
+
   const pendingAssignments = assignments.filter(
     (assignment: { submitted?: boolean }) => !assignment.submitted,
   ).length;
 
   const stats = useMemo(
     () =>
-      isDemoExperience
-        ? DEMO_STATS
+      isDemoExperience &&
+      (!registry.stats.data ||
+        (registry.stats.data.active_sanctuaries === 0 && registry.stats.data.growth_points === 0))
+        ? {
+            enrolledClasses: classrooms.length,
+            pendingAssignments,
+            growthPoints:
+              growthPulse.points > 0 ? growthPulse.points : MOCK_STUDENT_STATS.growth_points,
+          }
         : {
             enrolledClasses: classrooms.length,
             pendingAssignments,
             growthPoints: growthPulse.points,
           },
-    [classrooms.length, growthPulse.points, isDemoExperience, pendingAssignments],
+    [
+      classrooms.length,
+      growthPulse.points,
+      isDemoExperience,
+      pendingAssignments,
+      registry.stats.data,
+    ],
   );
 
   return {
@@ -44,7 +73,10 @@ export function useStudentWorkspaceData(forceDemo?: boolean) {
     classrooms,
     isDemoExperience,
     hasDataError: Boolean(
-      registry.stats.error || registry.sanctuaries.error || questsPulse.quests.error || growthPulse.error,
+      registry.stats.error ||
+        registry.sanctuaries.error ||
+        questsPulse.quests.error ||
+        growthPulse.error,
     ),
     isLoading:
       !isDemoExperience &&

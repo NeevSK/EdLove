@@ -1,4 +1,5 @@
 import { ClassroomList } from '@repo/classroom/components';
+import { getDemoAssignments, getDemoGoals } from '@repo/core/api/client';
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
@@ -43,25 +44,6 @@ export type StudentDashboardSurface = WorkspaceSurfaceDefinition<
   hiddenByDefault?: boolean;
   content: ReactNode;
 };
-
-const DEMO_ASSIGNMENTS = [
-  {
-    title: 'Wave Function Practice',
-    classroom: 'Grade 10 Mathematics',
-    daysLeft: 3,
-  },
-  {
-    title: 'Lab Report: Photosynthesis',
-    classroom: 'Grade 11 Science',
-    daysLeft: 5,
-  },
-];
-
-const DEMO_GOALS = [
-  { text: 'Complete all pending assignments this week', progress: 65 },
-  { text: 'Improve mathematics score to A grade', progress: 40 },
-  { text: 'Read one library resource daily', progress: 80 },
-];
 
 type Args = {
   isGuest: boolean;
@@ -163,6 +145,27 @@ export function useStudentDashboardSurfaces({
   onOpenClassroom,
   onOpenGuestAuth,
 }: Args) {
+  const demoAssignments = useMemo(() => {
+    return getDemoAssignments()
+      .slice(0, 3)
+      .map((a: any) => {
+        const diffMs = new Date(a.due_date).getTime() - Date.now();
+        const daysLeft = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+        return {
+          title: a.title,
+          classroom:
+            a.classroom_id === 'sample-c1'
+              ? 'Grade 10B Science'
+              : a.classroom_id === 'sample-c2'
+                ? 'Grade 11A Mathematics'
+                : 'Sanctuary Learning',
+          daysLeft,
+        };
+      });
+  }, []);
+
+  const demoGoals = useMemo(() => getDemoGoals(), []);
+
   return useMemo<StudentDashboardSurface[]>(
     () => [
       {
@@ -360,7 +363,7 @@ export function useStudentDashboardSurfaces({
         metadata: ['Assignments', 'Demo'],
         content: (
           <VStack className="gap-3">
-            {DEMO_ASSIGNMENTS.map((assignment, index) => (
+            {demoAssignments.map((assignment, index) => (
               <Box
                 key={index}
                 className="bg-phase-surface rounded-[24px] p-5 border border-phase-border shadow-sm"
@@ -401,7 +404,7 @@ export function useStudentDashboardSurfaces({
         metadata: ['Goals', 'Growth'],
         content: (
           <VStack className="gap-3">
-            {DEMO_GOALS.map((goal, index) => (
+            {demoGoals.map((goal, index) => (
               <Box
                 key={index}
                 className="bg-phase-surface rounded-[24px] p-5 border border-phase-border shadow-sm"
@@ -444,6 +447,8 @@ export function useStudentDashboardSurfaces({
       onOpenReflect,
       onOpenClassroom,
       onOpenGuestAuth,
+      demoAssignments,
+      demoGoals,
     ],
   );
 }

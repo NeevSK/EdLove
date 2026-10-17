@@ -4,10 +4,73 @@ import type {
   FormStorage,
   FormSync,
 } from '@intuitui-labs/form-builder-engine/ports';
-import type { FormResponse, FormSchema } from '@intuitui-labs/form-builder-engine/schema';
+import type { FormResponse, FormSchema, FormPage, FormField } from '@intuitui-labs/form-builder-engine/schema';
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { formResponses, formTemplates } from '@repo/core/adapters/powersync/schema';
 import { eq } from 'drizzle-orm';
+
+export interface ExtendedFormField extends FormField {
+  rubric?: { points?: number; correctValue?: string; [key: string]: unknown };
+}
+
+export interface ExtendedFormPage extends Omit<FormPage, 'fields'> {
+  fields: ExtendedFormField[];
+}
+
+export interface ExtendedFormSchema extends Omit<FormSchema, 'pages'> {
+  pages: ExtendedFormPage[];
+  affordanceConfig?: Record<string, unknown>;
+}
+
+interface SerializedFormConfig {
+  pages: ExtendedFormPage[];
+  settings?: FormSchema['settings'];
+  affordanceConfig?: Record<string, unknown>;
+}
+
+function parseFormConfig(
+  rawConfig: string,
+  baseTemplate: { isPublished: boolean; slug?: string | null; category?: string | null },
+): {
+  pages: ExtendedFormPage[];
+  settings: FormSchema['settings'];
+  affordanceConfig?: Record<string, unknown>;
+} {
+  try {
+    const parsed = JSON.parse(rawConfig);
+    if (Array.isArray(parsed)) {
+      return {
+        pages: parsed,
+        settings: {
+          isPublished: baseTemplate.isPublished,
+          slug: baseTemplate.slug ?? undefined,
+          category: baseTemplate.category ?? undefined,
+        },
+      };
+    }
+
+    const configObj = parsed as SerializedFormConfig;
+    return {
+      pages: configObj.pages || [],
+      settings: {
+        isPublished: baseTemplate.isPublished,
+        slug: baseTemplate.slug ?? undefined,
+        category: baseTemplate.category ?? undefined,
+        ...configObj.settings,
+      },
+      affordanceConfig: configObj.affordanceConfig,
+    };
+  } catch {
+    return {
+      pages: [],
+      settings: {
+        isPublished: baseTemplate.isPublished,
+        slug: baseTemplate.slug ?? undefined,
+        category: baseTemplate.category ?? undefined,
+      },
+    };
+  }
+}
 
 /**
  * PowerSyncFormsAdapter
@@ -19,14 +82,20 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   /**
    * Save or update a form schema in the local SQLite database.
    */
-  async save(form: FormSchema): Promise<void> {
+  async save(form: FormSchema | ExtendedFormSchema): Promise<void> {
     const db = getDrizzleDB();
+    const configPayload: SerializedFormConfig = {
+      pages: form.pages as ExtendedFormPage[],
+      settings: form.settings,
+      affordanceConfig: (form as ExtendedFormSchema).affordanceConfig,
+    };
+
     const templateData = {
       id: form.id,
       ownerId: form.tenantId,
       title: form.title,
       description: form.description || null,
-      config: JSON.stringify(form.pages), // Store multi-page structure in text column
+      config: JSON.stringify(configPayload),
       isPublished: form.settings.isPublished ?? false,
       slug: form.settings.slug || null,
       category: form.settings.category || null,
@@ -43,7 +112,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   /**
    * Load a form schema by ID from the local SQLite database.
    */
-  async load(id: string): Promise<FormSchema> {
+  async load(id: string): Promise<ExtendedFormSchema> {
     const db = getDrizzleDB();
     const templates = await db
       .select()
@@ -56,18 +125,17 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       throw new Error(`Local form template not found: ${id}`);
     }
 
+    const { pages, settings, affordanceConfig } = parseFormConfig(template.config, template);
+
     return {
       v: '1.0',
       id: template.id,
       tenantId: template.ownerId,
       title: template.title,
       description: template.description ?? undefined,
-      pages: JSON.parse(template.config),
-      settings: {
-        isPublished: template.isPublished,
-        slug: template.slug ?? undefined,
-        category: template.category ?? undefined,
-      },
+      pages,
+      settings,
+      affordanceConfig,
       createdAt: template.createdAt,
       updatedAt: template.updatedAt,
     };
@@ -76,28 +144,28 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   /**
    * List all form schemas owned by a specific tenant in the local SQLite database.
    */
-  async list(tenantId: string): Promise<FormSchema[]> {
+  async list(tenantId: string): Promise<ExtendedFormSchema[]> {
     const db = getDrizzleDB();
     const templates = await db
       .select()
       .from(formTemplates)
       .where(eq(formTemplates.ownerId, tenantId));
 
-    return templates.map((template) => ({
-      v: '1.0',
-      id: template.id,
-      tenantId: template.ownerId,
-      title: template.title,
-      description: template.description ?? undefined,
-      pages: JSON.parse(template.config),
-      settings: {
-        isPublished: template.isPublished,
-        slug: template.slug ?? undefined,
-        category: template.category ?? undefined,
-      },
-      createdAt: template.createdAt,
-      updatedAt: template.updatedAt,
-    }));
+    return templates.map((template) => {
+      const { pages, settings, affordanceConfig } = parseFormConfig(template.config, template);
+      return {
+        v: '1.0',
+        id: template.id,
+        tenantId: template.ownerId,
+        title: template.title,
+        description: template.description ?? undefined,
+        pages,
+        settings,
+        affordanceConfig,
+        createdAt: template.createdAt,
+        updatedAt: template.updatedAt,
+      };
+    });
   }
 
   /**
@@ -189,21 +257,21 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
     const templates = await db.select().from(formTemplates);
 
     return templates
-      .map((template) => ({
-        v: '1.0' as const,
-        id: template.id,
-        tenantId: template.ownerId,
-        title: template.title,
-        description: template.description ?? undefined,
-        pages: JSON.parse(template.config),
-        settings: {
-          isPublished: template.isPublished,
-          slug: template.slug ?? undefined,
-          category: template.category ?? undefined,
-        },
-        createdAt: template.createdAt,
-        updatedAt: template.updatedAt,
-      }))
+      .map((template) => {
+        const { pages, settings, affordanceConfig } = parseFormConfig(template.config, template);
+        return {
+          v: '1.0' as const,
+          id: template.id,
+          tenantId: template.ownerId,
+          title: template.title,
+          description: template.description ?? undefined,
+          pages,
+          settings,
+          affordanceConfig,
+          createdAt: template.createdAt,
+          updatedAt: template.updatedAt,
+        };
+      })
       .filter((f) => new Date(f.updatedAt) >= since);
   }
 

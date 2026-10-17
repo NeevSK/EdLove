@@ -152,7 +152,11 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
           }
 
           updateEntry(item.id, 'syncing');
-          await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
+          await mutationFn(item.variables, {
+            idempotencyKey: item.idempotencyKey,
+            commandId: item.id,
+            userId: item.userId,
+          });
 
           // Success! (Resonance achieved)
           removeFromQueue(item.id);

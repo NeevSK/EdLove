@@ -1,7 +1,12 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { createSovereignClient, SOVEREIGN_API_URL, SOVEREIGN_ORPC_URL } from '../base';
 
 describe('Sovereign API transport URLs', { tags: ['pure', 'fast'] }, () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
   it('keeps Hono at the API origin and targets ORPC at its mounted prefix', async ({
     annotate,
   }) => {
@@ -22,5 +27,20 @@ describe('Sovereign API transport URLs', { tags: ['pure', 'fast'] }, () => {
     expectTypeOf(SOVEREIGN_ORPC_URL).toBeString();
     expectTypeOf(createSovereignClient).toBeFunction();
     expectTypeOf(createSovereignClient).parameter(0).toBeString();
+  });
+
+  it('does not default to localhost in production and fails when a client is used unconfigured', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('EXPO_PUBLIC_API_URL', '');
+    vi.stubEnv('NEXT_PUBLIC_API_URL', '');
+    vi.resetModules();
+
+    const productionBase = await import('../base');
+    expect(productionBase.SOVEREIGN_API_PUBLIC_URL).toBe('');
+    expect(productionBase.SOVEREIGN_API_URL).toBe('');
+    expect(productionBase.SOVEREIGN_ORPC_URL).toBe('');
+
+    const client = productionBase.createSovereignClient('');
+    await expect(client.unconfigured.$get()).rejects.toThrow();
   });
 });

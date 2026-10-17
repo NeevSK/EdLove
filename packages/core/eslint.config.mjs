@@ -19,10 +19,7 @@ export default [
     // it via @ts-expect-error at the dynamic-import site.
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
-      'import-x/no-unresolved': [
-        'error',
-        { ignore: ['@cedar-policy/cedar-wasm'] },
-      ],
+      'import-x/no-unresolved': ['error', { ignore: ['@cedar-policy/cedar-wasm'] }],
     },
   },
   {

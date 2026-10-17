@@ -39,10 +39,9 @@ export class GrowthPort extends Context.Service<GrowthPort, IGrowthPort>()('app/
  *    should wrap with Effect.tryPromise({ try: () => gm.method(), catch })
  *    so rejected Promises remain visible in the typed failure channel.
  */
-export class GrowthManagerTag extends Context.Service<
-  GrowthManagerTag,
-  GrowthManager
->()('app/GrowthManager') {}
+export class GrowthManagerTag extends Context.Service<GrowthManagerTag, GrowthManager>()(
+  'app/GrowthManager',
+) {}
 
 /**
  * Live implementation of GrowthPort backed by Supabase.

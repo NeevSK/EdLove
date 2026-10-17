@@ -61,6 +61,13 @@ describe('PowerSync upload idempotency', { tags: ['storage', 'fast'] }, () => {
     await expect(applyPowerSyncBatch(db, second, 'key-conflict', 'user-b')).rejects.toThrow(
       'Idempotency key was reused with a different batch payload',
     );
+    await expect(applyPowerSyncBatch(db, second, 'key-conflict', 'user-b')).rejects.toMatchObject({
+      details: {
+        status: 409,
+        code: 'IDEMPOTENCY_CONFLICT',
+        detail: 'Idempotency key was reused with a different batch payload',
+      },
+    });
   });
 
   it('keeps the same key independent across accounts', async () => {

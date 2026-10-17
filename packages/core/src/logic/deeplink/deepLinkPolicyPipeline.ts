@@ -1,6 +1,6 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
-import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
 import { resolveQR } from '@repo/core/logic/utils/QRResolver';
+import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
 import type { QRPayload } from '@repo/core/types/QRPayload';
 import { Data, Effect } from 'effect';
 
@@ -10,7 +10,13 @@ const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
 export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
 export const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite', 'c']);
-export const ALLOWED_WEB_PATH_PREFIXES = ['/auth/callback', '/auth/complete', '/qr', '/invite', '/c'];
+export const ALLOWED_WEB_PATH_PREFIXES = [
+  '/auth/callback',
+  '/auth/complete',
+  '/qr',
+  '/invite',
+  '/c',
+];
 
 /**
  * Tagged Error Types for Deep Link Failures (Effect v4 compatible)
@@ -169,7 +175,8 @@ export const classifyRouteIntentEffect = (
 
     if (
       (parsed.hostname === 'auth' && parsed.pathname === '/callback') ||
-      (parsed.pathname === '/auth/callback' || parsed.pathname === '/auth/complete')
+      parsed.pathname === '/auth/callback' ||
+      parsed.pathname === '/auth/complete'
     ) {
       return { kind: 'authCallback', url: acceptedUrl } as const;
     }
@@ -231,9 +238,7 @@ export const decodeInstallReferrerEffect = (
     const utmCampaign = params.get('utm_campaign');
 
     const sanitizedInviteCode =
-      candidateCode && /^[A-Za-z0-9_-]{4,32}$/.test(candidateCode)
-        ? candidateCode
-        : undefined;
+      candidateCode && /^[A-Za-z0-9_-]{4,32}$/.test(candidateCode) ? candidateCode : undefined;
 
     return {
       inviteCode: sanitizedInviteCode,

@@ -7,16 +7,15 @@
  */
 
 export {
-  defaultRetryPolicy,
-  strictRetryPolicy,
-  retryPolicy,
-} from '../effect/Schedules';
-
-export {
-  tryPromise,
   fireAndForget,
   fireAndForgetEffect,
+  fromSupabase,
   reportBestEffort,
   runEffect,
-  fromSupabase,
+  tryPromise,
 } from '../effect/index';
+export {
+  defaultRetryPolicy,
+  retryPolicy,
+  strictRetryPolicy,
+} from '../effect/Schedules';

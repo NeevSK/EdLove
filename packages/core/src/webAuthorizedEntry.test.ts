@@ -7,12 +7,14 @@ const activeScope = {
   entityType: 'PERSONAL_CLASSROOM',
   roles: ['TEACHER'],
 } as const;
+const accountId = '00000000-0000-4000-8000-000000000002';
 
 describe('mapAuthorizedEntry', () => {
   it('maps complete authoritative facts into a route-safe ready result', () => {
     expect(
       mapAuthorizedEntry({
         kind: 'active',
+        accountId,
         authSubjectId: 'auth-subject-1',
         displayName: 'Nadeesha',
         onboardingCompleted: true,
@@ -22,6 +24,7 @@ describe('mapAuthorizedEntry', () => {
       }),
     ).toEqual({
       kind: 'ready',
+      accountId,
       authSubjectId: 'auth-subject-1',
       displayName: 'Nadeesha',
       activeCapacity: 'TEACHER',
@@ -35,6 +38,7 @@ describe('mapAuthorizedEntry', () => {
       'requires a display name',
       {
         kind: 'active',
+        accountId,
         authSubjectId: 'subject',
         displayName: ' ',
         onboardingCompleted: true,
@@ -48,6 +52,7 @@ describe('mapAuthorizedEntry', () => {
       'requires completed onboarding',
       {
         kind: 'active',
+        accountId,
         authSubjectId: 'subject',
         displayName: 'Nadeesha',
         onboardingCompleted: false,
@@ -61,6 +66,7 @@ describe('mapAuthorizedEntry', () => {
       'requires a server-selected active scope',
       {
         kind: 'active',
+        accountId,
         authSubjectId: 'subject',
         displayName: 'Nadeesha',
         onboardingCompleted: true,
@@ -78,7 +84,23 @@ describe('mapAuthorizedEntry', () => {
     expect(
       mapAuthorizedEntry({
         kind: 'active',
+        accountId,
         authSubjectId: '',
+        displayName: 'Nadeesha',
+        onboardingCompleted: true,
+        activeCapacity: 'TEACHER',
+        primaryScopeRole: 'TEACHER',
+        activeScope,
+      }),
+    ).toMatchObject({ kind: 'unavailable', reason: 'invalid-authoritative-entry' });
+  });
+
+  it('rejects missing or malformed canonical account IDs', () => {
+    expect(
+      mapAuthorizedEntry({
+        kind: 'active',
+        accountId: 'not-a-uuid',
+        authSubjectId: 'subject',
         displayName: 'Nadeesha',
         onboardingCompleted: true,
         activeCapacity: 'TEACHER',

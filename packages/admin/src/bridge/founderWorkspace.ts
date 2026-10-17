@@ -315,7 +315,7 @@ export function useFounderSchoolStats(schoolId: string) {
     try {
       let schoolData: School;
       let statsData: SchoolStats;
-      if (isDemoMode || isGuest || !schoolId) {
+      if (isDemoMode || isGuest || schoolId === 'demo-school') {
         schoolData = {
           id: 'sample-school',
           name: 'Wisdom Academy',
@@ -326,11 +326,14 @@ export function useFounderSchoolStats(schoolId: string) {
           created_at: new Date(),
         } as School;
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
-      } else {
+      } else if (schoolId) {
         [schoolData, statsData] = await Promise.all([
           api.school.getSchool(schoolId),
           api.school.getSchoolStats(schoolId, viewDate),
         ]);
+      } else {
+        dispatch({ type: 'SET_LOADING', isLoading: false });
+        return;
       }
       dispatch({
         type: 'REFRESH_SUCCESS',

@@ -6,6 +6,8 @@ import type {
   AuthSession,
   AuthUser,
   IAuthPort,
+  PhoneOtpRequest,
+  PhoneOtpVerification,
 } from '@repo/core/logic/ports/auth.port';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { trackProductEvent } from '@repo/core/monitoring';
@@ -145,6 +147,14 @@ export class AuthManager {
     return result;
   }
 
+  signInWithPhoneOtp(params: PhoneOtpRequest): Promise<void> {
+    return this.authPort.signInWithPhoneOtp(params);
+  }
+
+  verifyPhoneOtp(params: PhoneOtpVerification) {
+    return this.authPort.verifyPhoneOtp(params);
+  }
+
   async exchangeCodeForSession(code: string) {
     const result = await this.authPort.exchangeCodeForSession(code);
     await this.recordAuthMethodUsage(
@@ -240,11 +250,7 @@ export class AuthManager {
     return result;
   }
 
-  async signUp(
-    email: string,
-    password: string,
-    fullName?: string,
-  ) {
+  async signUp(email: string, password: string, fullName?: string) {
     const result = await this.authPort.signUp({
       email,
       password,

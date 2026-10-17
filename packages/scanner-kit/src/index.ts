@@ -18,3 +18,7 @@ export { default as QRShareButton } from '@repo/scanner-kit/qr/QRShareButton';
 export { default as ScannerModal } from '@repo/scanner-kit/ScannerModal';
 export { default as QRHandlerScreen } from '@repo/scanner-kit/screens/QRHandlerScreen';
 export type { ScannedStudent } from '@repo/scanner-kit/types';
+export {
+  parseInstitutionalQR,
+  type ParsedInstitutionalQR,
+} from './qr/institutionalQrParser';

@@ -3,7 +3,7 @@ import { api, type StudentObservation } from '@repo/core/api/client';
 import type { AttendanceRecord, StudentGrade } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Card } from '@repo/ui/components/SanctuaryCard';
-import { Activity, Calendar, ChevronRight, TrendingUp } from '@repo/ui/icons';
+import { Activity, Calendar, ChevronRight, Lock, TrendingUp } from '@repo/ui/icons';
 import { Box, Center, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,25 +30,33 @@ export default function ClassroomHolisticInsights({
     try {
       setIsLoading(true);
       setLoadError(null);
-      if (!gradeMarkLifecycleContext) {
-        throw new Error(
-          'Insights require GradeMark lifecycle context: schoolId, academicCycleId, gradeClassId, termId, and subjectId.',
-        );
-      }
       const today = new Date().toISOString().split('T')[0] ?? '';
-      const [attendanceSnapshot, gradebookSnapshot, obsData] = await Promise.all([
+
+      const [attendanceRes, gradebookRes, obsRes] = await Promise.allSettled([
         api.attendance.getClassroomAttendanceSnapshot(classroomId ?? '', today),
-        api.grading.getGradebookSnapshot(gradeMarkLifecycleContext, today),
+        gradeMarkLifecycleContext
+          ? api.grading.getGradebookSnapshot(gradeMarkLifecycleContext, today)
+          : Promise.resolve({ gradeMarks: [] as StudentGrade[] }),
         api.studentObservations.getForClassroom(classroomId ?? ''),
       ]);
 
+      const attendanceRecords =
+        attendanceRes.status === 'fulfilled'
+          ? (attendanceRes.value.records as any[]).map((r) => ({
+              ...r,
+              id: r.id || `temp-${Math.random()}`,
+            })) as AttendanceRecord[]
+          : [];
+
+      const grades =
+        gradebookRes.status === 'fulfilled' ? gradebookRes.value.gradeMarks ?? [] : [];
+
+      const observations = obsRes.status === 'fulfilled' ? obsRes.value ?? [] : [];
+
       setData({
-        attendance: (attendanceSnapshot.records as any[]).map((r) => ({
-          ...r,
-          id: r.id || `temp-${Math.random()}`,
-        })) as AttendanceRecord[],
-        grades: gradebookSnapshot.gradeMarks,
-        observations: obsData,
+        attendance: attendanceRecords,
+        grades,
+        observations,
       });
     } catch (error) {
       console.error('Failed to fetch classroom insights:', error);
@@ -69,10 +77,12 @@ export default function ClassroomHolisticInsights({
     const avgGpa =
       totalGrades > 0
         ? (data.grades.reduce((acc, g) => acc + (g.gpa || 0), 0) / totalGrades).toFixed(2)
-        : '0.00';
+        : '—';
 
     const positiveObs = data.observations.filter((o) => o.observation_type === 'positive').length;
+    const growthObs = data.observations.filter((o) => o.observation_type === 'growth').length;
     const concernObs = data.observations.filter((o) => o.observation_type === 'concern').length;
+    const neutralObs = data.observations.filter((o) => o.observation_type === 'neutral').length;
 
     const attendanceRate =
       data.attendance.length > 0
@@ -83,7 +93,7 @@ export default function ClassroomHolisticInsights({
           )
         : 0;
 
-    return { avgGpa, positiveObs, concernObs, attendanceRate };
+    return { avgGpa, positiveObs, growthObs, concernObs, neutralObs, attendanceRate };
   }, [data]);
 
   if (isLoading) {
@@ -145,15 +155,21 @@ export default function ClassroomHolisticInsights({
             <Icon as={Activity} size="md" className="text-templeGold" />
           </HStack>
 
-          <HStack className="gap-4">
-            <VStack className="flex-1 bg-templeGold/10 p-4 rounded-comfortable">
-              <Heading className="text-templeGold text-xl font-black">{stats.positiveObs}</Heading>
+          <HStack className="gap-3">
+            <VStack className="flex-1 bg-templeGold/10 p-3 rounded-comfortable">
+              <Heading className="text-templeGold text-lg font-black">{stats.positiveObs}</Heading>
               <Text className="text-[10px] text-phaseText-secondary font-bold uppercase">
                 {t('insights.positiveNotes') || 'Positive'}
               </Text>
             </VStack>
-            <VStack className="flex-1 bg-emberRed/10 p-4 rounded-comfortable">
-              <Heading className="text-emberRed text-xl font-black">{stats.concernObs}</Heading>
+            <VStack className="flex-1 bg-sageGreen/10 p-3 rounded-comfortable">
+              <Heading className="text-sageGreen text-lg font-black">{stats.growthObs}</Heading>
+              <Text className="text-[10px] text-phaseText-secondary font-bold uppercase">
+                {t('insights.growthNotes') || 'Growth'}
+              </Text>
+            </VStack>
+            <VStack className="flex-1 bg-emberRed/10 p-3 rounded-comfortable">
+              <Heading className="text-emberRed text-lg font-black">{stats.concernObs}</Heading>
               <Text className="text-[10px] text-phaseText-secondary font-bold uppercase">
                 {t('insights.areasOfConcern') || 'Concerns'}
               </Text>
@@ -171,24 +187,48 @@ export default function ClassroomHolisticInsights({
             {t('insights.noActivity') || 'No recent activity recorded.'}
           </Text>
         )}
-        {data.observations.slice(0, 4).map((obs) => (
-          <Box
-            key={obs.id}
-            className={`p-4 bg-phase-surface rounded-comfortable border-l-4 ${obs.observation_type === 'positive' ? 'border-templeGold' : 'border-phase-canvas'}`}
-          >
-            <HStack className="justify-between items-start">
-              <VStack className="flex-1 pr-2">
-                <Text className="text-phaseText-primary text-sm font-medium leading-relaxed">
-                  {obs.content}
-                </Text>
-                <Text className="text-[10px] text-phaseText-tertiary mt-1.5 font-bold">
-                  {obs.author?.full_name} &bull; {new Date(obs.created_at).toLocaleDateString()}
-                </Text>
-              </VStack>
-              <Icon as={ChevronRight} size="sm" className="text-phaseText-tertiary" />
-            </HStack>
-          </Box>
-        ))}
+        {data.observations.slice(0, 6).map((obs) => {
+          const typeBorder =
+            obs.observation_type === 'positive'
+              ? 'border-templeGold'
+              : obs.observation_type === 'growth'
+                ? 'border-sageGreen'
+                : obs.observation_type === 'concern'
+                  ? 'border-emberRed'
+                  : 'border-phase-canvas';
+
+          return (
+            <Box
+              key={obs.id}
+              className={`p-4 bg-phase-surface rounded-comfortable border-l-4 ${typeBorder}`}
+            >
+              <HStack className="justify-between items-start">
+                <VStack className="flex-1 pr-2 gap-1.5">
+                  <HStack className="items-center gap-2">
+                    <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-secondary">
+                      {obs.observation_type}
+                    </Text>
+                    {obs.visibility === 'private' && (
+                      <HStack className="items-center gap-1 bg-phase-canvas px-1.5 py-0.5 rounded">
+                        <Icon as={Lock} size="2xs" className="text-phaseText-tertiary" />
+                        <Text className="text-[9px] text-phaseText-tertiary font-bold uppercase">
+                          Internal
+                        </Text>
+                      </HStack>
+                    )}
+                  </HStack>
+                  <Text className="text-phaseText-primary text-sm font-medium leading-relaxed">
+                    {obs.content}
+                  </Text>
+                  <Text className="text-[10px] text-phaseText-tertiary font-bold">
+                    {obs.author?.full_name || 'Teacher'} &bull; {new Date(obs.created_at).toLocaleDateString()}
+                  </Text>
+                </VStack>
+                <Icon as={ChevronRight} size="sm" className="text-phaseText-tertiary" />
+              </HStack>
+            </Box>
+          );
+        })}
       </VStack>
     </VStack>
   );

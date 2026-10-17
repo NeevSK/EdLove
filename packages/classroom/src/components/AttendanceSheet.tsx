@@ -6,7 +6,7 @@
 
 import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
-import { Check, Clock, Search, X } from '@repo/ui/icons';
+import { Check, Clock, QrCode, Search, X } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -55,6 +55,7 @@ export default function AttendanceSheet({
   date = new Date().toISOString().split('T')[0],
   initialStudents = [],
   onAttendanceChange,
+  onScanBadgePress,
 }: AttendanceSheetProps) {
   const { t } = useTranslation();
   const {
@@ -188,19 +189,32 @@ export default function AttendanceSheet({
             </HStack>
           </Box>
 
-          {/* Search Bar */}
+          {/* Search Bar & Action Trigger */}
           <Box>
-            <Input className="bg-phase-surface border-phase-canvas/50 rounded-comfortable h-14 flex-row items-center px-4">
-              <Icon as={Search} className="text-phaseText-secondary mr-2" size={20} />
-              <InputField
-                placeholder={t('common.searchPlaceholder') || 'Search students...'}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                className="flex-1 text-phaseText-primary text-base"
-                accessibilityLabel="Search students"
-                accessibilityHint="Filters the attendance roster by student name"
-              />
-            </Input>
+            <HStack className="gap-2 items-center">
+              <Input className="flex-1 bg-phase-surface border-phase-canvas/50 rounded-comfortable h-14 flex-row items-center px-4">
+                <Icon as={Search} className="text-phaseText-secondary mr-2" size={20} />
+                <InputField
+                  placeholder={t('common.searchPlaceholder') || 'Search students...'}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  className="flex-1 text-phaseText-primary text-base"
+                  accessibilityLabel="Search students"
+                  accessibilityHint="Filters the attendance roster by student name"
+                />
+              </Input>
+              {onScanBadgePress && (
+                <Pressable
+                  onPress={onScanBadgePress}
+                  className="w-14 h-14 bg-phase-surface border border-phase-canvas/50 rounded-comfortable items-center justify-center active:bg-phase-canvas"
+                  accessibilityRole="button"
+                  accessibilityLabel="Scan student badge QR code"
+                  accessibilityHint="Opens camera to scan student badge for instant roll call"
+                >
+                  <Icon as={QrCode} className="text-templeGold" size={22} />
+                </Pressable>
+              )}
+            </HStack>
           </Box>
 
           {/* Student List */}
@@ -267,4 +281,5 @@ interface AttendanceSheetProps {
   date?: string;
   initialStudents?: StudentAttendance[];
   onAttendanceChange?: (attendance: StudentAttendance[]) => void;
+  onScanBadgePress?: () => void;
 }

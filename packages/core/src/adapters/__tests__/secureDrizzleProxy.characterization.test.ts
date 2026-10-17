@@ -14,6 +14,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getDrizzleDB,
+  injectNativePowerSyncDB,
   registerOperationContext,
   registerPermissionValidator,
   registerPolicyVersionHash,
@@ -63,15 +64,12 @@ vi.mock('../../logic/runtimeRegistry', () => ({
   },
 }));
 
-vi.mock('../powersync/powersync-shim', () => ({
-  PowerSyncDatabase: vi.fn(),
-}));
-
 describe('secureDrizzleProxy — current per-write behavior (characterization)', () => {
   let secureDb: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    injectNativePowerSyncDB({} as any, rawMockDb);
     secureDb = getDrizzleDB();
   });
 

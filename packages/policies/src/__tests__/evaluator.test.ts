@@ -12,6 +12,79 @@ const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
 const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
 
 describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fast'] }, () => {
+  it('limits ordinary operation receipt reads to the account owner', () => {
+    const request: AuthRequest = {
+      principal: {
+        type: 'teacher',
+        id: 'owner',
+        attributes: { capacity: 'teacher', school_id: 'school-a' },
+      },
+      action: 'read',
+      resource: { id: 'receipt', type: 'OperationReceipt', attributes: { account_id: 'owner' } },
+    };
+    expect(check(request).permitted).toBe(true);
+    expect(
+      check({
+        ...request,
+        resource: { ...request.resource, attributes: { account_id: 'other-owner' } },
+      }).permitted,
+    ).toBe(false);
+    expect(check({ ...request, action: 'update' }).permitted).toBe(false);
+  });
+
+  it.each(['grade', 'publish'])(
+    'authorizes explicit GradeMark %s using verified teacher ownership without device elevation',
+    (action) => {
+      const request: AuthRequest = {
+        principal: {
+          type: 'teacher',
+          id: 'teacher-1',
+          attributes: {
+            capacity: 'teacher',
+            school_id: 'school-a',
+            classroom_ids: ['grade-class-1'],
+          },
+        },
+        action,
+        resource: {
+          type: 'GradeMark',
+          id: 'grade-mark-1',
+          attributes: {
+            school_id: 'school-a',
+            grade_class_id: 'grade-class-1',
+            teacher_id: 'teacher-1',
+          },
+        },
+        context: { device_trust: 'standard', network_zone: 'public' },
+      };
+      expect(check(request).permitted).toBe(true);
+      expect(
+        check({
+          ...request,
+          resource: {
+            ...request.resource,
+            attributes: {
+              ...request.resource.attributes,
+              teacher_id: 'another-teacher',
+            },
+          },
+        }).permitted,
+      ).toBe(false);
+      expect(
+        check({
+          ...request,
+          principal: {
+            ...request.principal,
+            attributes: {
+              ...request.principal.attributes,
+              capacity: 'student',
+            },
+          },
+        }).permitted,
+      ).toBe(false);
+    },
+  );
+
   it('enforces static type boundary on authorization check engine (T16 expectTypeOf)', () => {
     expectTypeOf(check).toBeFunction();
     expectTypeOf(check).parameter(0).toMatchTypeOf<AuthRequest>();
@@ -23,22 +96,25 @@ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fas
   test.for([
     { capacity: 'admin', expectedPermitted: true },
     { capacity: 'stranger', expectedPermitted: false },
-  ])('parametric capability check for root platform actions with role: $capacity (T17 test.for)', ({ capacity, expectedPermitted }) => {
-    const res = check({
-      principal: {
-        type: capacity,
-        id: `user-${capacity}`,
-        attributes: { school_id: 'school-a', capacity },
-      },
-      action: 'delete',
-      resource: {
-        type: 'Classroom',
-        id: 'classroom-global-target',
-        attributes: { school_id: 'school-b' },
-      },
-    });
-    expect(res.permitted).toBe(expectedPermitted);
-  });
+  ])(
+    'parametric capability check for root platform actions with role: $capacity (T17 test.for)',
+    ({ capacity, expectedPermitted }) => {
+      const res = check({
+        principal: {
+          type: capacity,
+          id: `user-${capacity}`,
+          attributes: { school_id: 'school-a', capacity },
+        },
+        action: 'delete',
+        resource: {
+          type: 'Classroom',
+          id: 'classroom-global-target',
+          attributes: { school_id: 'school-b' },
+        },
+      });
+      expect(res.permitted).toBe(expectedPermitted);
+    },
+  );
 
   it('allows a non-wanderer contributor to submit only as themselves', () => {
     const contributor = {

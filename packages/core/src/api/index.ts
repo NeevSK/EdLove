@@ -108,6 +108,7 @@ export * from '@repo/core/api/longitudinal.contract';
 export * from '@repo/core/api/mapping';
 export * from '@repo/core/api/mapping.contract';
 export * from '@repo/core/api/mockData';
+export * from '@repo/core/api/demoProvider';
 export * from '@repo/core/api/moonPhase';
 export * from '@repo/core/api/naturePaths';
 export * from '@repo/core/api/operations.contract';
@@ -270,3 +271,4 @@ export const api: Record<string, any> = {
 };
 
 export default api;
+export * from './pilot.orpc.v2';

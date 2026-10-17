@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { authenticatedSovereignFetch } from '@repo/core/api/clientRuntime';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Chaos & Network Degradation Scenario Suite', () => {
@@ -12,10 +12,13 @@ describe('Chaos & Network Degradation Scenario Suite', () => {
 
   it('safely catches and converts captive portal HTML 200 responses to valid handling without JSON crash', async () => {
     // Captive portal returns 200 OK with HTML content instead of expected JSON
-    const captivePortalResponse = new Response('<html><body>Please log in to Airport WiFi</body></html>', {
-      status: 200,
-      headers: { 'Content-Type': 'text/html' },
-    });
+    const captivePortalResponse = new Response(
+      '<html><body>Please log in to Airport WiFi</body></html>',
+      {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' },
+      },
+    );
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(captivePortalResponse);
 
@@ -68,7 +71,9 @@ describe('Chaos & Network Degradation Scenario Suite', () => {
 
   it('handles truncated or corrupted byte streams without throwing uncaught exceptions', async () => {
     // Malformed chunked stream
-    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new TypeError('NetworkError: Truncated stream'));
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(
+      new TypeError('NetworkError: Truncated stream'),
+    );
 
     const response = await authenticatedSovereignFetch('https://api.gurudevi.org/stream');
     expect(response.status).toBe(503);

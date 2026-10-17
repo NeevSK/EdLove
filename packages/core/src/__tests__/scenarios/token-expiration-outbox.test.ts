@@ -1,7 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { classifyError } from '@repo/core/lib/sync/errorClassifier';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Disaster Suite 1: Token Expiration & Re-Auth Outbox Recovery', () => {
@@ -59,7 +59,9 @@ describe('Disaster Suite 1: Token Expiration & Re-Auth Outbox Recovery', () => {
       });
     }
 
-    expect(authRequiredSpy).toHaveBeenCalledWith(expect.objectContaining({ mutationId: initialQueue[0]!.id }));
+    expect(authRequiredSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ mutationId: initialQueue[0]!.id }),
+    );
 
     // Items MUST remain in active queue, DLQ MUST remain empty
     const queueAfter = useMutationQueue.getState().queue;

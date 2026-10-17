@@ -5,28 +5,47 @@ import type React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SanctuaryCanvas } from '@repo/graphics/components/SanctuaryCanvas';
 
-// Define types locally to avoid analytics dependency
-interface TenantMetrics {
+export interface TenantMetrics {
   engagement: number;
   growth: number;
 }
 
-// Mock API function to avoid analytics dependency
-const mockTenantMetricsAPI = {
-  aggregateTenantMetrics: async (tenantIds: string[], _range: string): Promise<TenantMetrics[]> => {
-    // Return mock data instead of calling analytics API
-    return tenantIds.map(() => ({
-      engagement: 0.5 + Math.random() * 0.5,
-      growth: 0.5 + Math.random() * 0.5,
-    }));
-  },
+export interface CollaborativeGroveProps {
+  tenantIds: string[];
+  fetchMetrics?: (tenantIds: string[], range: string) => Promise<TenantMetrics[]>;
+}
+
+const defaultTenantMetricsFetcher = async (
+  tenantIds: string[],
+  _range: string,
+): Promise<TenantMetrics[]> => {
+  // Deterministic baseline for active tenants without random drift
+  return tenantIds.map(() => ({
+    engagement: 0.5,
+    growth: 0.5,
+  }));
 };
 
-export const CollaborativeGrove: React.FC<{ tenantIds: string[] }> = ({ tenantIds }) => {
+export const CollaborativeGrove: React.FC<CollaborativeGroveProps> = ({
+  tenantIds,
+  fetchMetrics = defaultTenantMetricsFetcher,
+}) => {
   const { data: metrics } = useQuery({
     queryKey: ['tenant-metrics', tenantIds],
-    queryFn: () => mockTenantMetricsAPI.aggregateTenantMetrics(tenantIds, 'last_24h'),
+    queryFn: () => fetchMetrics(tenantIds, 'last_24h'),
+    enabled: tenantIds.length > 0,
   });
+
+  if (tenantIds.length === 0) {
+    return (
+      <SanctuaryCanvas style={styles.container}>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No connected school nodes in grove</Text>
+        </View>
+        <Text style={styles.label}>Collaborative Knowledge Grove</Text>
+      </SanctuaryCanvas>
+    );
+  }
 
   return (
     <SanctuaryCanvas style={styles.container}>
@@ -83,6 +102,16 @@ const styles = StyleSheet.create({
     width: 8,
     height: 20,
     backgroundColor: '#5D4037',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 13,
+    color: '#888',
+    fontStyle: 'italic',
   },
   label: {
     fontSize: 12,

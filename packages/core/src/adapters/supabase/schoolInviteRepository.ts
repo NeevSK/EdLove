@@ -1,5 +1,5 @@
-import { APIError } from '@repo/core/types/API';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface VerifiedSchoolInvite {
@@ -39,7 +39,10 @@ export const createSupabaseSchoolInviteRepository = (
     }
 
     if (invite.max_uses && invite.used_count >= invite.max_uses) {
-      throw new APIError('This invite code has reached its maximum redemptions', 'MAX_USES_REACHED');
+      throw new APIError(
+        'This invite code has reached its maximum redemptions',
+        'MAX_USES_REACHED',
+      );
     }
 
     const school = invite.schools;

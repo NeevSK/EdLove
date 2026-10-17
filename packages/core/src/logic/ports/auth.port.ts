@@ -1,6 +1,7 @@
 export interface AuthUser {
   id: string;
   email?: string | null;
+  phone?: string | null;
   user_metadata?: Record<string, any>;
   app_metadata?: Record<string, any>;
   is_anonymous?: boolean | null;
@@ -115,6 +116,13 @@ export interface IAuthPort {
     email: string,
   ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
+  signInWithPhoneOtp(params: PhoneOtpRequest): Promise<void>;
+
+  verifyPhoneOtp(params: PhoneOtpVerification): Promise<{
+    user: AuthUser;
+    session: AuthSession;
+  }>;
+
   /**
    * Exchanges a PKCE `code` (from a magic-link deep link) for a session.
    */
@@ -178,4 +186,15 @@ export interface IAuthPort {
   signOut(options?: { scope?: 'global' | 'local' | 'others' }): Promise<void>;
 
   executeRpc(fn: string, params?: Record<string, any>): Promise<any>;
+}
+
+export interface PhoneOtpRequest {
+  phone: string;
+  shouldCreateUser?: boolean;
+  captchaToken?: string;
+}
+
+export interface PhoneOtpVerification {
+  phone: string;
+  token: string;
 }

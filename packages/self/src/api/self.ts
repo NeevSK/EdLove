@@ -1,16 +1,9 @@
-import {
-  type AppType,
-  createSovereignClient,
-  growthSignalsAPI,
-  SOVEREIGN_API_URL,
-} from '@repo/core/api/client';
+import { orpcClient } from '@repo/core/api/orpcClient';
+import { growthSignalsAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import type { ThoughtRecord } from '@repo/core/logic/schemas/self.schema';
 import { APIError } from '@repo/core/types';
 import type { FireJournalEntry, MoodLog } from '@repo/self/types';
-
-// Create the type-safe RPC client
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 /**
  * Helper to enforce client-side defense-in-depth guest blocks.
@@ -24,7 +17,7 @@ function assertAuthenticated() {
 
 export const selfAPI = {
   /**
-   * Log a new mood signal via the Remote API.
+   * Log a new mood signal via the Sovereign oRPC API.
    */
   async logMood(
     userId: string,
@@ -33,30 +26,26 @@ export const selfAPI = {
     mood?: MoodLog['mood'],
   ): Promise<MoodLog> {
     assertAuthenticated();
-    const res = await client.api.self.mood.$post({
-      json: {
+    try {
+      const data = await orpcClient.self.logMood({
+        body: {
+          mood_score: score,
+          mood: mood ?? null,
+          note: note ?? null,
+        },
+      });
+
+      // Emit growth signal
+      growthSignalsAPI.emitSilent({
         user_id: userId,
-        mood_score: score,
-        mood,
-        note,
-      },
-    });
+        event_type: 'mood_checkin',
+        event_metadata: { mood_score: score },
+      });
 
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new APIError(error.message || 'Failed to log mood', res.status.toString());
+      return data as MoodLog;
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to log mood', error?.code || 'MOOD_LOG_FAILED');
     }
-
-    const data = (await res.json()) as MoodLog;
-
-    // Emit growth signal (Side effect remains in client for now)
-    growthSignalsAPI.emitSilent({
-      user_id: userId,
-      event_type: 'mood_checkin',
-      event_metadata: { mood_score: score },
-    });
-
-    return data;
   },
 
   /**
@@ -64,15 +53,14 @@ export const selfAPI = {
    */
   async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
     assertAuthenticated();
-    const res = await client.api.self.mood.$get({
-      query: { userId, limit: limit.toString() },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch mood history', res.status.toString());
+    try {
+      const data = await orpcClient.self.getMoodHistory({
+        query: { userId, limit },
+      });
+      return data as MoodLog[];
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch mood history', error?.code || 'MOOD_HISTORY_FAILED');
     }
-
-    return (await res.json()) as MoodLog[];
   },
 
   /**
@@ -80,23 +68,21 @@ export const selfAPI = {
    */
   async burnJournal(userId: string, content: string): Promise<FireJournalEntry> {
     assertAuthenticated();
-    const res = await client.api.self.journal.burn.$post({
-      json: { content },
-    });
+    try {
+      const data = await orpcClient.self.burnJournal({
+        body: { content },
+      });
 
-    if (!res.ok) {
-      throw new APIError('Failed to burn journal entry', res.status.toString());
+      growthSignalsAPI.emitSilent({
+        user_id: userId,
+        event_type: 'fire_journal_entry',
+        event_metadata: {},
+      });
+
+      return data as FireJournalEntry;
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to burn journal entry', error?.code || 'BURN_JOURNAL_FAILED');
     }
-
-    const data = (await res.json()) as FireJournalEntry;
-
-    growthSignalsAPI.emitSilent({
-      user_id: userId,
-      event_type: 'fire_journal_entry',
-      event_metadata: {},
-    });
-
-    return data;
   },
 
   /**
@@ -108,15 +94,14 @@ export const selfAPI = {
     viewDate?: string,
   ): Promise<FireJournalEntry[]> {
     assertAuthenticated();
-    const res = await client.api.self.journal.$get({
-      query: { userId, limit: limit.toString(), viewDate },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch burned history', res.status.toString());
+    try {
+      const data = await orpcClient.self.getJournalHistory({
+        query: { userId, limit, viewDate },
+      });
+      return data as FireJournalEntry[];
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch burned history', error?.code || 'JOURNAL_HISTORY_FAILED');
     }
-
-    return (await res.json()) as FireJournalEntry[];
   },
 
   /**
@@ -124,91 +109,55 @@ export const selfAPI = {
    */
   async getTodayMood(userId: string): Promise<MoodLog | null> {
     assertAuthenticated();
-    const res = await client.api.self.mood.today.$get({
-      query: { userId },
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      throw new APIError('Failed to fetch today mood', res.status.toString());
+    try {
+      const data = await orpcClient.self.getTodayMood({
+        query: { userId },
+      });
+      return (data as MoodLog) ?? null;
+    } catch (error: any) {
+      if (error?.status === 404 || error?.code === 'NOT_FOUND') return null;
+      throw new APIError(error?.message || 'Failed to fetch today mood', error?.code || 'TODAY_MOOD_FAILED');
     }
-
-    return (await res.json()) as MoodLog;
   },
 
   /**
-   * Save a completed thought record via the Remote API.
+   * Save a completed thought record via the Sovereign oRPC API.
    */
   async saveThoughtRecord(
     input: Omit<ThoughtRecord, 'id' | 'created_at' | 'user_id'>,
   ): Promise<ThoughtRecord> {
     assertAuthenticated();
-    const res = await client.api.self.thoughtRecord.$post({
-      json: {
-        thought: input.thought,
-        situation: input.situation,
-        emotion: input.emotion,
-        trap_ids: input.trap_ids,
-        evidence_for: input.evidence_for,
-        evidence_against: input.evidence_against,
-        reframe: input.reframe,
-        mood_before: input.mood_before,
-        mood_after: input.mood_after,
-        post_outcome: input.post_outcome,
-        follow_up: input.follow_up,
-      },
-    });
+    try {
+      const saved = await orpcClient.self.saveThoughtRecord({
+        body: {
+          thought: input.thought,
+          situation: input.situation ?? null,
+          emotion: input.emotion ?? null,
+          trap_ids: input.trap_ids ?? null,
+          evidence_for: input.evidence_for ?? null,
+          evidence_against: input.evidence_against ?? null,
+          reframe: input.reframe ?? null,
+          mood_before: input.mood_before ?? null,
+          mood_after: input.mood_after ?? null,
+          post_outcome: input.post_outcome ?? null,
+          follow_up: input.follow_up ?? null,
+        },
+      });
 
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new APIError(error.message || 'Failed to save thought record', res.status.toString());
+      growthSignalsAPI.emitSilent({
+        user_id: (saved as ThoughtRecord).user_id,
+        event_type: 'reframe_recorded',
+        event_metadata: {
+          mood_before: (saved as ThoughtRecord).mood_before,
+          mood_after: (saved as ThoughtRecord).mood_after,
+          post_outcome: (saved as ThoughtRecord).post_outcome,
+        },
+      });
+
+      return saved as ThoughtRecord;
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to save thought record', error?.code || 'THOUGHT_RECORD_FAILED');
     }
-
-    const saved = (await res.json()) as ThoughtRecord;
-
-    growthSignalsAPI.emitSilent({
-      user_id: saved.user_id,
-      event_type: 'reframe_recorded',
-      event_metadata: {
-        mood_before: saved.mood_before,
-        mood_after: saved.mood_after,
-        post_outcome: saved.post_outcome,
-      },
-    });
-
-    return saved;
-  },
-
-  /**
-   * Complete (or reschedule) the follow-up on a thought record.
-   */
-  async completeThoughtRecordFollowUp(
-    id: string,
-    input: { post_outcome?: ThoughtRecord['post_outcome']; follow_up?: ThoughtRecord['follow_up'] },
-  ): Promise<ThoughtRecord> {
-    assertAuthenticated();
-    const res = await client.api.self.thoughtRecord[':id'].$patch({
-      param: { id },
-      json: {
-        post_outcome: input.post_outcome,
-        follow_up: input.follow_up,
-      },
-    });
-
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new APIError(error.message || 'Failed to update thought record', res.status.toString());
-    }
-
-    const updated = (await res.json()) as ThoughtRecord;
-
-    growthSignalsAPI.emitSilent({
-      user_id: updated.user_id,
-      event_type: 'reframe_follow_up_completed',
-      event_metadata: { post_outcome: updated.post_outcome },
-    });
-
-    return updated;
   },
 
   /**
@@ -220,14 +169,13 @@ export const selfAPI = {
     viewDate?: string,
   ): Promise<ThoughtRecord[]> {
     assertAuthenticated();
-    const res = await client.api.self.thoughtRecord.$get({
-      query: { userId, limit: limit.toString(), viewDate },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch thought records', res.status.toString());
+    try {
+      const data = await orpcClient.self.getThoughtRecords({
+        query: { userId, limit, viewDate },
+      });
+      return data as ThoughtRecord[];
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch thought records', error?.code || 'THOUGHT_HISTORY_FAILED');
     }
-
-    return (await res.json()) as ThoughtRecord[];
   },
 };

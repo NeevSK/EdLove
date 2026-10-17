@@ -4,11 +4,11 @@
  * Handles multi-perspective analysis for students, focusing on finding potential.
  */
 
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { authenticatedSovereignFetch } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { studentPotentialContract } from '@repo/core/api/studentPotential.contract';
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface StudentPotentialAnalysis {
   id: string;
@@ -86,8 +86,10 @@ export const studentPotentialAPI = {
     analysis: Partial<StudentPotentialAnalysis>,
   ): Promise<string> {
     try {
-      const response = await (client.api as any).ai['student-potential'].$post({
-        json: { studentName, analysis },
+      const response = await authenticatedSovereignFetch(`${SOVEREIGN_API_URL}/api/ai/student-potential`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentName, analysis }),
       });
       if (!response.ok) throw new Error(`AI gateway returned ${response.status}`);
       const body = await response.json();

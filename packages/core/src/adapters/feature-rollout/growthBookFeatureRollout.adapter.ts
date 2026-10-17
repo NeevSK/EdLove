@@ -39,10 +39,11 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
       },
     });
 
-    // Resolve the initial payload before evaluating flags. GrowthBook may use a
-    // last-known-good cache when offline and can stream later updates.
+    // React Native has no EventSource implementation. Keep remote flags fresh
+    // while the app is alive with a bounded poll rather than enabling a stream
+    // that the runtime cannot create.
     this.initialization = this.growthbook
-      .init({ streaming: true })
+      .init({ streaming: false, pollingInterval: 15 * 60 * 1000 })
       .then((result) => {
         this.snapshotSource =
           result.source === 'cache' ? 'cache' : result.source === 'network' ? 'remote' : 'computed';

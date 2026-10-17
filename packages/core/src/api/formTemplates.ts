@@ -4,7 +4,7 @@
  * API methods for managing custom form designs and their submissions.
  */
 
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { formResponse, formsContract, formTemplate } from '@repo/core/api/forms.contract';
 import {
   APIError,
@@ -12,17 +12,6 @@ import {
   type FormTemplate,
   type PaginationParams,
 } from '@repo/core/types';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
-const parse = async <T>(
-  response: Response,
-  schema: { parse: (value: unknown) => T },
-  message: string,
-) => {
-  if (!response.ok) throw new APIError(message, response.status.toString());
-  return schema.parse(await response.json());
-};
 
 const pageQuery = (params: PaginationParams) => ({
   limit: params.limit ?? 50,
@@ -36,9 +25,9 @@ export const formTemplatesAPI = {
   async create(
     template: Omit<FormTemplate, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<FormTemplate> {
-    return parse(
-      await (client.api as any).forms.templates.$post({
-        json: {
+    try {
+      const res = await orpcClient.forms.create({
+        body: {
           title: template.title,
           description: template.description ?? null,
           config: template.config,
@@ -46,55 +35,76 @@ export const formTemplatesAPI = {
           slug: template.slug ?? null,
           category: template.category ?? null,
         },
-      }),
-      formTemplate,
-      'Failed to create form template',
-    ) as unknown as Promise<FormTemplate>;
+      });
+      return formTemplate.parse(res) as unknown as FormTemplate;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to create form template',
+        error.status?.toString() || error.code || 'FORM_CREATE_FAILED',
+      );
+    }
   },
 
   /**
    * Get a template by ID
    */
   async getById(id: string): Promise<FormTemplate> {
-    return parse(
-      await (client.api as any).forms.templates[':id'].$get({ param: { id } }),
-      formTemplate,
-      'Failed to fetch form template',
-    ) as unknown as Promise<FormTemplate>;
+    try {
+      const res = await orpcClient.forms.getById({
+        params: { id },
+      });
+      return formTemplate.parse(res) as unknown as FormTemplate;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch form template',
+        error.status?.toString() || error.code || 'FORM_FETCH_FAILED',
+      );
+    }
   },
 
   /**
    * Get a template by slug (Public)
    */
   async getBySlug(slug: string): Promise<FormTemplate> {
-    return parse(
-      await (client.api as any).forms.templates.slug[':slug'].$get({ param: { slug } }),
-      formTemplate,
-      'Failed to fetch form template by slug',
-    ) as unknown as Promise<FormTemplate>;
+    try {
+      const res = await orpcClient.forms.getBySlug({
+        params: { slug },
+      });
+      return formTemplate.parse(res) as unknown as FormTemplate;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch form template by slug',
+        error.status?.toString() || error.code || 'FORM_FETCH_FAILED',
+      );
+    }
   },
 
   /**
    * Get all templates for an owner
    */
   async getByOwner(ownerId: string, params: PaginationParams = {}): Promise<FormTemplate[]> {
-    const response = await (client.api as any).forms.owners[':ownerId'].templates.$get({
-      param: { ownerId },
-      query: pageQuery(params),
-    });
-    if (!response.ok)
-      throw new APIError('Failed to fetch user templates', response.status.toString());
-    return (await response.json()).map((row: unknown) => formTemplate.parse(row)) as FormTemplate[];
+    try {
+      const res = await orpcClient.forms.getByOwner({
+        params: { ownerId },
+        query: pageQuery(params),
+      });
+      return (res as unknown[]).map((row) => formTemplate.parse(row)) as unknown as FormTemplate[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch user templates',
+        error.status?.toString() || error.code || 'FORM_FETCH_FAILED',
+      );
+    }
   },
 
   /**
    * Update a template
    */
   async update(id: string, updates: Partial<FormTemplate>): Promise<FormTemplate> {
-    return parse(
-      await (client.api as any).forms.templates[':id'].$patch({
-        param: { id },
-        json: {
+    try {
+      const res = await orpcClient.forms.update({
+        params: { id },
+        body: {
           title: updates.title,
           description: updates.description,
           config: updates.config,
@@ -102,45 +112,65 @@ export const formTemplatesAPI = {
           slug: updates.slug,
           category: updates.category,
         },
-      }),
-      formTemplate,
-      'Failed to update form template',
-    ) as unknown as Promise<FormTemplate>;
+      });
+      return formTemplate.parse(res) as unknown as FormTemplate;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to update form template',
+        error.status?.toString() || error.code || 'FORM_UPDATE_FAILED',
+      );
+    }
   },
 
   /**
    * Delete a template
    */
   async delete(id: string): Promise<void> {
-    const response = await (client.api as any).forms.templates[':id'].$delete({ param: { id } });
-    if (!response.ok)
-      throw new APIError('Failed to delete form template', response.status.toString());
+    try {
+      await orpcClient.forms.delete({
+        params: { id },
+      });
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to delete form template',
+        error.status?.toString() || error.code || 'FORM_DELETE_FAILED',
+      );
+    }
   },
 
   /**
    * Submit a response to a form
    */
   async submitResponse(response: Omit<FormResponse, 'id' | 'submitted_at'>): Promise<FormResponse> {
-    return parse(
-      await (client.api as any).forms.responses.$post({
-        json: { template_id: response.template_id, data: response.data },
-      }),
-      formResponse,
-      'Failed to submit form response',
-    ) as Promise<FormResponse>;
+    try {
+      const res = await orpcClient.forms.submitResponse({
+        body: { template_id: response.template_id, data: response.data },
+      });
+      return formResponse.parse(res) as FormResponse;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to submit form response',
+        error.status?.toString() || error.code || 'FORM_SUBMIT_FAILED',
+      );
+    }
   },
 
   /**
    * Get responses for a template (Owner only)
    */
   async getResponses(templateId: string, params: PaginationParams = {}): Promise<FormResponse[]> {
-    const response = await (client.api as any).forms.templates[':templateId'].responses.$get({
-      param: { templateId },
-      query: pageQuery(params),
-    });
-    if (!response.ok)
-      throw new APIError('Failed to fetch form responses', response.status.toString());
-    return (await response.json()).map((row: unknown) => formResponse.parse(row)) as FormResponse[];
+    try {
+      const res = await orpcClient.forms.getResponses({
+        params: { templateId },
+        query: pageQuery(params),
+      });
+      return (res as unknown[]).map((row) => formResponse.parse(row)) as FormResponse[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch form responses',
+        error.status?.toString() || error.code || 'FORM_RESPONSES_FAILED',
+      );
+    }
   },
 };
 

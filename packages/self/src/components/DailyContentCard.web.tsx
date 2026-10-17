@@ -13,15 +13,20 @@ import { useEffect, useState } from 'react';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 interface DailyContentCardProps {
-  type: 'motivation' | 'did_you_know';
+  type?: 'motivation' | 'did_you_know';
+  featureId?: string;
+  componentId?: string;
+  userId?: string;
+  compact?: boolean;
 }
 
-export default function DailyContentCard({ type }: DailyContentCardProps) {
+export default function DailyContentCard({ type, featureId }: DailyContentCardProps) {
+  const resolvedType = type ?? (featureId === 'did_you_know' ? 'did_you_know' : 'motivation');
   const [content, setContent] = useState<DailyContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
-  const isMotivation = type === 'motivation';
+  const isMotivation = resolvedType === 'motivation';
   const title = isMotivation ? 'Daily Motivation' : 'Did You Know?';
   const icon = isMotivation ? Sparkles : Lightbulb;
   const accentColorClass = isMotivation ? 'text-sanctuarySaffron' : 'text-emeraldGreen';
@@ -31,11 +36,11 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
     dailyContentAPI
       .getTodaysContent()
       .then((c) => {
-        setContent(isMotivation ? c?.motivation : c?.didYouKnow);
+        setContent(resolvedType === 'motivation' ? c?.motivation : c?.didYouKnow);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [isMotivation]);
+  }, [resolvedType]);
 
   if (loading) {
     return (

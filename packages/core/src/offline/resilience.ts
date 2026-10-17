@@ -1,6 +1,8 @@
 import { storage } from '@repo/core/lib/storage';
 import { handleAPIError } from '@repo/core/logic/apiInterceptor';
 
+export { type OfflineStatus, useOfflineStatus } from './useOfflineStatus';
+
 /**
  * Resilience Configuration
  */

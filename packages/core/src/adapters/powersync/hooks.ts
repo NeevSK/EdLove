@@ -15,7 +15,7 @@ import {
   registerPolicyVersionHash,
   setActiveCapabilityToken,
 } from '@repo/core/adapters/powersync/database';
-import { useQuery, useStatus } from '@repo/core/adapters/powersync/powersync-react-shim';
+import { useQuery, useStatus } from '@powersync/react';
 import {
   type Attendance,
   attendance,

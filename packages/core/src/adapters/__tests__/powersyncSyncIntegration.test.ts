@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { setActiveAccountId } from '../../lib/accountScope';
-import { getDrizzleDB, registerPermissionValidator } from '../powersync/database';
+import { getDrizzleDB, injectNativePowerSyncDB, registerPermissionValidator } from '../powersync/database';
 import { SupabasePowerSyncConnector } from '../powersync/SupabasePowerSyncConnector';
 
 // Mock store state
@@ -42,8 +42,11 @@ const mockUploadPost = vi.fn().mockResolvedValue({
   ok: true,
   json: () => Promise.resolve({ status: 'ok' }),
 });
+const mockUploadBatch = vi.fn().mockResolvedValue({ status: 'ok' });
+
 vi.mock('../../api/base', () => ({
   SOVEREIGN_API_URL: 'http://localhost:3000',
+  SOVEREIGN_ORPC_URL: 'http://localhost:3000/api',
   createSovereignClient: () => ({
     api: {
       powersync: {
@@ -55,6 +58,14 @@ vi.mock('../../api/base', () => ({
   }),
 }));
 
+vi.mock('../../api/orpcClient', () => ({
+  orpcClient: {
+    sync: {
+      uploadBatch: (...args: unknown[]) => mockUploadBatch(...args),
+    },
+  },
+}));
+
 // Mock bootstrap and runtime registration guards
 vi.mock('../../api/highways', () => ({
   assertPowerSyncBootstrapReady: vi.fn(),
@@ -64,10 +75,6 @@ vi.mock('../../logic/runtimeRegistry', () => ({
   coreRuntime: {
     isRegistered: () => true,
   },
-}));
-
-vi.mock('../powersync/powersync-shim', () => ({
-  PowerSyncDatabase: vi.fn(),
 }));
 
 // Mock internal driver execution & Drizzle mapper
@@ -111,6 +118,7 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
     mockCrudQueue.length = 0; // Clear simulated SQLite sync queue
     setActiveAccountId('user-123');
 
+    injectNativePowerSyncDB({} as any, rawMockDb);
     secureDb = getDrizzleDB();
     connector = new SupabasePowerSyncConnector('user-123');
 
@@ -145,7 +153,7 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
 
     // 5. Verify the PowerSync connector did not sync anything upstream
     expect(mockPowerSyncDb.getCrudBatch).toHaveBeenCalledWith(200);
-    expect(mockUploadPost).not.toHaveBeenCalled();
+    expect(mockUploadBatch).not.toHaveBeenCalled();
     expect(mockBatch.complete).not.toHaveBeenCalled();
   });
 
@@ -164,11 +172,11 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
     // 3. Process replication loop via connector
     await connector.uploadData(mockPowerSyncDb);
 
-    // 4. Verify that upload REST endpoint was called with correct payload
+    // 4. Verify that upload endpoint was called with correct payload
     expect(mockPowerSyncDb.getCrudBatch).toHaveBeenCalledWith(200);
-    expect(mockUploadPost).toHaveBeenCalledWith(
+    expect(mockUploadBatch).toHaveBeenCalledWith(
       expect.objectContaining({
-        json: expect.objectContaining({
+        body: expect.objectContaining({
           crud: [
             {
               id: 1,
@@ -181,9 +189,7 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
         }),
       }),
       expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: 'Bearer mock-session-jwt',
-        }),
+        expectedAccountId: 'user-123',
       }),
     );
 
@@ -201,7 +207,7 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
     setActiveAccountId('user-456');
 
     await expect(connector.uploadData(mockPowerSyncDb)).rejects.toThrow();
-    expect(mockUploadPost).not.toHaveBeenCalled();
+    expect(mockUploadBatch).not.toHaveBeenCalled();
     expect(mockBatch.complete).not.toHaveBeenCalled();
   });
 });

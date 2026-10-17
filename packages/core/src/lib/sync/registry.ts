@@ -1,9 +1,7 @@
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { replayAssignmentSubmission } from '@repo/core/api/assignmentCommands';
 import { api } from '@repo/core/api/client';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { orpcClient } from '@repo/core/api/orpcClient';
-
-const client = createSovereignClient(SOVEREIGN_API_URL);
 
 /**
  * Mutation Registry
@@ -12,7 +10,11 @@ const client = createSovereignClient(SOVEREIGN_API_URL);
  * Born in the apps/gurudevi-mobile, now healed and moved to @repo/core.
  */
 
-type MutationExecutionContext = Readonly<{ idempotencyKey: string }>;
+type MutationExecutionContext = Readonly<{
+  idempotencyKey: string;
+  commandId?: string;
+  userId?: string;
+}>;
 type MutationFunction = (variables: any, context?: MutationExecutionContext) => Promise<any>;
 
 function requireIdempotencyKey(context: MutationExecutionContext | undefined): string {
@@ -23,6 +25,7 @@ function requireIdempotencyKey(context: MutationExecutionContext | undefined): s
 }
 
 export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
+  'assignment.submit': (variables, context) => replayAssignmentSubmission(variables, context ?? {}),
   // Community
   createPost: async (vars) => {
     // Core API doesn't have community directly, it's injected
@@ -54,14 +57,14 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
       await orpcClient.sync.uploadBatch({
         body: {
           idempotencyKey: requireIdempotencyKey(context),
-        crud: [
-          {
-            id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
-            op: 'PUT',
-            table: 'fire_journal',
-            opData: vars,
-          },
-        ],
+          crud: [
+            {
+              id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
+              op: 'PUT',
+              table: 'fire_journal',
+              opData: vars,
+            },
+          ],
         },
       });
     } catch (error) {
@@ -74,15 +77,15 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     try {
       await orpcClient.sync.uploadBatch({
         body: {
-        idempotencyKey: requireIdempotencyKey(context),
-        crud: [
-          {
-            id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
-            op: 'PUT',
-            table: 'mood_logs',
-            opData: vars,
-          },
-        ],
+          idempotencyKey: requireIdempotencyKey(context),
+          crud: [
+            {
+              id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
+              op: 'PUT',
+              table: 'mood_logs',
+              opData: vars,
+            },
+          ],
         },
       });
     } catch (error) {
@@ -92,65 +95,64 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   },
 
   logMood: async (vars) => {
-    const res = await (client.api as any).self.mood.$post({
-      json: {
-        user_id: vars.user_id,
-        mood_score: vars.mood_score,
-        mood: vars.mood,
-        note: vars.note,
-      },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync mood log');
+    try {
+      await orpcClient.self.logMood({
+        body: {
+          mood_score: vars.mood_score,
+          mood: vars.mood,
+          note: vars.note,
+        },
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(error.message || 'Failed to sync mood log', { cause: error });
     }
-    return true;
   },
   burnJournal: async (vars) => {
-    const res = await (client.api as any).self.journal.burn.$post({
-      json: { content: vars.content },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync burned journal entry');
+    try {
+      await orpcClient.self.burnJournal({
+        body: { content: vars.content },
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(error.message || 'Failed to sync burned journal entry', { cause: error });
     }
-    return true;
   },
   saveThoughtRecord: async (vars) => {
-    const res = await (client.api as any).self.thoughtRecord.$post({
-      json: {
-        thought: vars.thought,
-        situation: vars.situation,
-        emotion: vars.emotion,
-        trap_ids: vars.trap_ids,
-        evidence_for: vars.evidence_for,
-        evidence_against: vars.evidence_against,
-        reframe: vars.reframe,
-        mood_before: vars.mood_before,
-        mood_after: vars.mood_after,
-        post_outcome: vars.post_outcome,
-        follow_up: vars.follow_up,
-      },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync thought record');
+    try {
+      await orpcClient.self.saveThoughtRecord({
+        body: {
+          thought: vars.thought,
+          situation: vars.situation,
+          emotion: vars.emotion,
+          trap_ids: vars.trap_ids,
+          evidence_for: vars.evidence_for,
+          evidence_against: vars.evidence_against,
+          reframe: vars.reframe,
+          mood_before: vars.mood_before,
+          mood_after: vars.mood_after,
+          post_outcome: vars.post_outcome,
+          follow_up: vars.follow_up,
+        },
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(error.message || 'Failed to sync thought record', { cause: error });
     }
-    return true;
   },
   completeThoughtRecordFollowUp: async (vars) => {
-    const res = await (client.api as any).self.thoughtRecord[':id'].$patch({
-      param: { id: vars.id },
-      json: {
-        post_outcome: vars.post_outcome,
-        follow_up: vars.follow_up,
-      },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync thought record follow-up');
+    try {
+      await orpcClient.self.completeThoughtRecordFollowUp({
+        params: { id: vars.id },
+        body: {
+          post_outcome: vars.post_outcome,
+          follow_up: vars.follow_up,
+        },
+      });
+      return true;
+    } catch (error: any) {
+      throw new Error(error.message || 'Failed to sync thought record follow-up', { cause: error });
     }
-    return true;
   },
 
   // Classroom (Upstreamed from mobile)

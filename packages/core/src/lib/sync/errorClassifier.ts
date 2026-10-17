@@ -12,6 +12,8 @@ export function classifyError(error: any): ErrorCategory {
 
   // Auth Expired: Token expired or needs refresh (should pause, not dump to DLQ)
   if (
+    error.status === 401 ||
+    code === 'UNAUTHORIZED' ||
     code === '401' ||
     msg.includes('jwt expired') ||
     msg.includes('token expired') ||
@@ -23,6 +25,8 @@ export function classifyError(error: any): ErrorCategory {
   // Permanent: Won't fix itself on retry (Schema, Logic, Constraints)
   // Reference: https://www.postgresql.org/docs/current/errcodes-appendix.html
   if (
+    error.status === 400 ||
+    error.status === 403 ||
     code === '23505' || // Unique violation
     code === '42501' || // Insufficient privilege
     code === '42P01' || // Relation doesn't exist
@@ -36,6 +40,8 @@ export function classifyError(error: any): ErrorCategory {
 
   // Conflict: Data fork detected (Version mismatch, 409 Conflict)
   if (
+    error.status === 409 ||
+    code === 'CONFLICT' ||
     code === '409' ||
     msg.includes('conflict') ||
     msg.includes('version mismatch') ||

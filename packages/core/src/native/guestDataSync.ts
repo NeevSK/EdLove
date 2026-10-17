@@ -1,6 +1,6 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { GuestDataManager } from '@repo/core/native/guestDataManager';
 import { setGuestScope } from '@repo/core/native/guestScope';
 
@@ -179,24 +179,11 @@ export class GuestDataSync {
           throw new Error('No active authenticated session. Cannot migrate guest data.');
         }
 
-        const client = createSovereignClient(SOVEREIGN_API_URL);
-        const res = await (client.api as any).powersync.upload.$post(
-          {
-            json: {
-              crud: crudBatch,
-            },
+        await orpcClient.sync.uploadBatch({
+          body: {
+            batch: crudBatch,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          },
-        );
-
-        if (!res.ok) {
-          const err = (await res.json()) as any;
-          throw new Error(err.message || `Sanctuary migration aborted with status ${res.status}`);
-        }
+        });
 
         synced.timetable = guestData.timetable.length;
         synced.moodLogs = guestData.moodLogs.length;

@@ -9,23 +9,24 @@ export { deviceTrustAPI } from '@repo/core/native/deviceTrust';
 export { FlowResolver } from '@repo/core/native/flows/FlowResolver';
 export { GuestDataManager } from '@repo/core/native/guestDataManager';
 export { GuestDataSync } from '@repo/core/native/guestDataSync';
-export {
-  clearGuestLease,
-  clearGuestLeaseData,
-  dismissGuestLeaseReminder,
-  getGuestLeaseStatus,
-  getOrCreateGuestLease,
-  GUEST_LEASE_DAYS,
-  GUEST_LEASE_REMINDER_DAYS,
-  registerGuestLeaseDataKey,
-} from '@repo/core/native/guestLease';
-export type { GuestLeaseStatus } from '@repo/core/native/guestLease';
+export { discardLocalGuestSession } from '@repo/core/native/guestSessionCleanup';
 export {
   clearLocalGuestIdentity,
   getGuestClaimIdentity,
   getLocalGuestIdentity,
   updateLocalGuestIdentity,
 } from '@repo/core/native/guestIdentity';
+export type { GuestLeaseStatus } from '@repo/core/native/guestLease';
+export {
+  clearGuestLease,
+  clearGuestLeaseData,
+  dismissGuestLeaseReminder,
+  GUEST_LEASE_DAYS,
+  GUEST_LEASE_REMINDER_DAYS,
+  getGuestLeaseStatus,
+  getOrCreateGuestLease,
+  registerGuestLeaseDataKey,
+} from '@repo/core/native/guestLease';
 export { getGuestScope, guestStorageKey, setGuestScope } from '@repo/core/native/guestScope';
 export { Runtime } from '@repo/core/native/runtime';
 export {

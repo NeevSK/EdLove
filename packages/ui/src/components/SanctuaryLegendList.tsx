@@ -4,8 +4,9 @@ import EmptyState from '@repo/ui/components/EmptyState';
 import { useOptionalChatContext } from '@repo/ui/context/ChatContext';
 import { BookOpen } from '@repo/ui/icons';
 import { Theme } from '@repo/ui/theme/Theme';
+import { LayoutLoopSentinel } from '../sentinels/LayoutLoopSentinel';
 import React, { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { type SharedValue, useSharedValue } from 'react-native-reanimated';
 
 export type SanctuaryChatKeyboardLift = 'always' | 'whenAtEnd' | 'persistent' | 'never';
@@ -128,21 +129,31 @@ export function SanctuaryLegendList<ItemT>({
     onRefresh,
   };
 
-  if (keyboardLiftBehavior) {
-    return (
-      <KeyboardAwareLegendList
-        {...(sharedProps as any)}
-        {...(rest as any)}
-        keyboardLiftBehavior={keyboardLiftBehavior}
-        keyboardOffset={keyboardOffset}
-        anchoredEndSpace={anchoredEndSpace}
-        contentInsetEndAdjustment={contentInsetEndAdjustment}
-      />
-    );
-  }
+  const content = keyboardLiftBehavior ? (
+    <KeyboardAwareLegendList
+      {...(sharedProps as any)}
+      {...(rest as any)}
+      keyboardLiftBehavior={keyboardLiftBehavior}
+      keyboardOffset={keyboardOffset}
+      anchoredEndSpace={anchoredEndSpace}
+      contentInsetEndAdjustment={contentInsetEndAdjustment}
+    />
+  ) : (
+    <LegendList {...(sharedProps as any)} {...(rest as any)} />
+  );
 
-  return <LegendList {...(sharedProps as any)} {...(rest as any)} />;
+  return (
+    <LayoutLoopSentinel name="SanctuaryLegendList" style={styles.container}>
+      {content}
+    </LayoutLoopSentinel>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export type { LegendListRef };
 export default SanctuaryLegendList;

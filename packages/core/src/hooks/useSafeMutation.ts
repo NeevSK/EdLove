@@ -21,11 +21,24 @@ export interface SafeMutationOptions<TData, TVariables, TContext = unknown> {
   /** Called before mutation runs. Returns optional rollback context passed to onError and onSettled */
   onMutate?: (variables: TVariables) => Promise<TContext | void> | TContext | void;
   /** Called on successful online execution or offline queueing */
-  onSuccess?: (data: TData | null, variables: TVariables, context?: TContext) => Promise<unknown> | unknown;
+  onSuccess?: (
+    data: TData | null,
+    variables: TVariables,
+    context?: TContext,
+  ) => Promise<unknown> | unknown;
   /** Called on network / server execution failure */
-  onError?: (error: unknown, variables: TVariables, context?: TContext) => Promise<unknown> | unknown;
+  onError?: (
+    error: unknown,
+    variables: TVariables,
+    context?: TContext,
+  ) => Promise<unknown> | unknown;
   /** Called when mutation settles (either success or error) */
-  onSettled?: (data: TData | null | undefined, error: unknown | null, variables: TVariables, context?: TContext) => Promise<unknown> | unknown;
+  onSettled?: (
+    data: TData | null | undefined,
+    error: unknown | null,
+    variables: TVariables,
+    context?: TContext,
+  ) => Promise<unknown> | unknown;
   retryCount?: number;
   originalVariables?: TVariables; // For Delta-Resonance diffing
 }
@@ -164,12 +177,30 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
       } catch (err: unknown) {
         const isOffline =
           err instanceof OfflineMutationError ||
-          (err && typeof err === 'object' && '_tag' in err && (err as { _tag: string })._tag === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'cause' in err && (err as any).cause?._tag === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'cause' in err && (err as any).cause?.name === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'details' in err && (err as any).details?.devDetails?._tag === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'details' in err && (err as any).details?.devDetails?.name === 'OfflineMutationError') ||
-          (err instanceof Error && (err.message === 'Network request failed' || err.message === 'Offline mutation failed' || err.name === 'OfflineMutationError'));
+          (err &&
+            typeof err === 'object' &&
+            '_tag' in err &&
+            (err as { _tag: string })._tag === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'cause' in err &&
+            (err as any).cause?._tag === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'cause' in err &&
+            (err as any).cause?.name === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'details' in err &&
+            (err as any).details?.devDetails?._tag === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'details' in err &&
+            (err as any).details?.devDetails?.name === 'OfflineMutationError') ||
+          (err instanceof Error &&
+            (err.message === 'Network request failed' ||
+              err.message === 'Offline mutation failed' ||
+              err.name === 'OfflineMutationError'));
 
         if (isOffline) {
           const mutationId = uuidv7();
@@ -279,4 +310,3 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
     reset,
   };
 }
-

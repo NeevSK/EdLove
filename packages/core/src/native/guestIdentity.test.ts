@@ -34,7 +34,10 @@ describe('getGuestClaimIdentity', () => {
   });
 
   it('refuses an invalid or absent local capacity', () => {
-    expect(getGuestClaimIdentity(identity())).toEqual({ displayName: 'Guest Name', capacity: null });
+    expect(getGuestClaimIdentity(identity())).toEqual({
+      displayName: 'Guest Name',
+      capacity: null,
+    });
     expect(
       getGuestClaimIdentity(
         identity({
@@ -54,9 +57,8 @@ describe('getGuestClaimIdentity', () => {
 
 describe('migrateGuestDataToAuthenticatedUser', () => {
   it('preserves activeBond and deduplicates availableBonds during migration', async () => {
-    const { updateLocalGuestIdentity, migrateGuestDataToAuthenticatedUser, getLocalGuestIdentity } = await import(
-      './guestIdentity'
-    );
+    const { updateLocalGuestIdentity, migrateGuestDataToAuthenticatedUser, getLocalGuestIdentity } =
+      await import('./guestIdentity');
 
     // Seed guest
     await updateLocalGuestIdentity('test-guest-uid', {
@@ -109,7 +111,10 @@ describe('migrateGuestDataToAuthenticatedUser', () => {
       status: 'active',
     });
     expect(migrated.availableBonds).toHaveLength(2);
-    expect(migrated.availableBonds.map((b) => b.entity_id)).toEqual(['classroom-99', 'classroom-42']);
+    expect(migrated.availableBonds.map((b) => b.entity_id)).toEqual([
+      'classroom-99',
+      'classroom-42',
+    ]);
 
     // Check that repeated migration does not duplicate bonds
     await updateLocalGuestIdentity('test-guest-uid', {

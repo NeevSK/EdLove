@@ -1,10 +1,10 @@
 import { clearPowerSyncAccount } from '@repo/core/adapters/powersync/database';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import type {
   AccountTransitionOutcome,
   AccountTransitionPort,
   AccountTransitionRequest,
 } from '@repo/core/logic/ports/accountTransition.port';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 
 function ownedByPrincipal(userId: string | undefined, principalId: string | null): boolean {
   return principalId !== null && userId === principalId;
@@ -67,7 +67,8 @@ class LocalAccountTransitionAdapter implements AccountTransitionPort {
       disposition: request.disposition,
       outgoingPrincipalId: request.outgoingPrincipalId,
       incomingPrincipalId: request.incomingPrincipalId,
-      quarantinedCommandCount: request.disposition === 'preserve-and-quarantine' ? ownedQueue.length : 0,
+      quarantinedCommandCount:
+        request.disposition === 'preserve-and-quarantine' ? ownedQueue.length : 0,
       discardedCommandCount:
         request.disposition === 'discard' ? ownedQueue.length + ownedDeadLetters.length : 0,
       untouchedUnboundCommandCount: unboundCommandCount,

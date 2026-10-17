@@ -67,7 +67,6 @@ const _FAB_HIT_SLOP = 10;
 const _ACTION_BUBBLE_SIZE = 48;
 const ACTION_BUBBLE_SPACING = 12;
 const LONG_PRESS_DURATION = 400; // milliseconds
-const _SCREEN_WIDTH = Dimensions.get('window').width;
 
 // Context-aware configuration
 type IconComponentType = React.ComponentType<{

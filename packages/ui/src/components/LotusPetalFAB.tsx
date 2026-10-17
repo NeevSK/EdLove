@@ -9,10 +9,12 @@ import type React from 'react';
 import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import {
+  Gesture,
   GestureDetector,
-  useExclusiveGestures,
-  usePanGesture,
-  useTapGesture,
+  type GestureStateChangeEvent,
+  type GestureUpdateEvent,
+  type PanGestureChangeEventPayload,
+  type PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -24,7 +26,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 
 // ============================================================================
 // TYPES
@@ -250,51 +252,78 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       persistWebPosition(next.x, next.y);
     }, [clampFabToViewport, persistWebPosition, positionX, positionY]);
 
-    const dragGesture = usePanGesture({
-      enabled: !disabled,
-      minDistance: FAB_DRAG_THRESHOLD,
-      maxPointers: 1,
-      onActivate: () => {
-        'worklet';
-        dragStartX.value = positionX.value;
-        dragStartY.value = positionY.value;
-        pressScale.value = withSpring(1.1);
-        runOnJS(hapticLight)();
-      },
-      onUpdate: (event) => {
-        'worklet';
-        const next = clampGesturePosition(
-          dragStartX.value + event.translationX,
-          dragStartY.value + event.translationY,
-          viewportWidth,
-          viewportHeight,
-          bottomInset,
-          bottomTabPadding,
-        );
-        positionX.value = next.x;
-        positionY.value = next.y;
-      },
-      onDeactivate: (event) => {
-        'worklet';
-        pressScale.value = withSpring(1);
-        if (!event.canceled) {
-          runOnJS(persistWebPosition)(positionX.value, positionY.value);
-        }
-        positionX.value = withSpring(positionX.value, { damping: 15 });
-        positionY.value = withSpring(positionY.value, { damping: 15 });
-      },
-    });
+    const dragGesture = useMemo(
+      () =>
+        Gesture.Pan()
+          .enabled(!disabled)
+          .minDistance(FAB_DRAG_THRESHOLD)
+          .maxPointers(1)
+          .onStart(() => {
+            'worklet';
+            dragStartX.value = positionX.value;
+            dragStartY.value = positionY.value;
+            pressScale.value = withSpring(1.1);
+            scheduleOnRN(hapticLight);
+          })
+          .onUpdate(
+            (event: GestureUpdateEvent<PanGestureHandlerEventPayload & PanGestureChangeEventPayload>) => {
+              'worklet';
+              const next = clampGesturePosition(
+                dragStartX.value + event.translationX,
+                dragStartY.value + event.translationY,
+                viewportWidth,
+                viewportHeight,
+                bottomInset,
+                bottomTabPadding,
+              );
+              positionX.value = next.x;
+              positionY.value = next.y;
+            },
+          )
+          .onEnd((_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
+            'worklet';
+            pressScale.value = withSpring(1);
+            if (success) {
+              scheduleOnRN(persistWebPosition, positionX.value, positionY.value);
+            }
+            positionX.value = withSpring(positionX.value, { damping: 15 });
+            positionY.value = withSpring(positionY.value, { damping: 15 });
+          })
+          .onFinalize(() => {
+            'worklet';
+            pressScale.value = withSpring(1);
+          }),
+      [
+        disabled,
+        bottomInset,
+        bottomTabPadding,
+        dragStartX,
+        dragStartY,
+        persistWebPosition,
+        positionX,
+        positionY,
+        pressScale,
+        viewportHeight,
+        viewportWidth,
+      ],
+    );
 
-    const tapGesture = useTapGesture({
-      enabled: !disabled,
-      maxDistance: FAB_DRAG_THRESHOLD,
-      onActivate: () => {
-        'worklet';
-        runOnJS(handlePress)();
-      },
-    });
+    const tapGesture = useMemo(
+      () =>
+        Gesture.Tap()
+          .enabled(!disabled)
+          .maxDistance(FAB_DRAG_THRESHOLD)
+          .onEnd(() => {
+            'worklet';
+            scheduleOnRN(handlePress);
+          }),
+      [disabled, handlePress],
+    );
 
-    const composedGesture = useExclusiveGestures(tapGesture, dragGesture);
+    const composedGesture = useMemo(
+      () => Gesture.Exclusive(tapGesture, dragGesture),
+      [tapGesture, dragGesture],
+    );
 
     // Breathing Animation
     useEffect(() => {

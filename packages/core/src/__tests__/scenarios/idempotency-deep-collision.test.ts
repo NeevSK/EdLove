@@ -1,5 +1,8 @@
+import {
+  generateIdempotencyKey,
+  getConsistentIdempotencyKey,
+} from '@repo/core/lib/sync/idempotency';
 import { describe, expect, it } from 'vitest';
-import { generateIdempotencyKey, getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 
 describe('Disaster Suite 2: Deeply Nested Key Sorting & Deterministic Idempotency Hardening', () => {
   it('generates identical SHA-256 hash regardless of object key order at deep nesting levels', async () => {

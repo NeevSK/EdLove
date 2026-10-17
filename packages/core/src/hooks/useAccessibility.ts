@@ -122,9 +122,12 @@ export function useFontScale(): number {
     setFontScale(scale);
 
     // Listen for font scale changes
-    const subscription = Dimensions.addEventListener('change', ({ window }: { window: { fontScale: number } }) => {
-      setFontScale(window.fontScale);
-    });
+    const subscription = Dimensions.addEventListener(
+      'change',
+      ({ window }: { window: { fontScale: number } }) => {
+        setFontScale(window.fontScale);
+      },
+    );
 
     return () => subscription?.remove?.();
   }, []);

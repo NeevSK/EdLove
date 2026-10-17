@@ -2,6 +2,10 @@
 // as first-class ZenStack models. ZenStack remains the object/data boundary;
 // these Cedar rules provide the procedure-level authorization gate.
 
+permit(principal, action == Action::"read", resource) when {
+  resource is OperationReceipt && resource.account_id == principal.id
+};
+
 permit(
   principal,
   action == Action::"read",

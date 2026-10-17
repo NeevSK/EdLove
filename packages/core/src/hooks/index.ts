@@ -23,12 +23,18 @@ export { useGroupCreation } from '@repo/core/hooks/useGroupCreation';
 export { useIdentity } from '@repo/core/hooks/useIdentity';
 export { useIsGuest } from '@repo/core/hooks/useIsGuest';
 export { useJourneyHistory } from '@repo/core/hooks/useJourneyHistory';
+export {
+  type LocalFirstQueryResult,
+  type UseLocalFirstQueryOptions,
+  useLocalFirstQuery,
+} from '@repo/core/hooks/useLocalFirstQuery';
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMediaDownloader';
 export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
 export { useNotifications } from '@repo/core/hooks/useNotifications';
 export { usePendingActions } from '@repo/core/hooks/usePendingActions';
 export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
+export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export { useRewards } from '@repo/core/hooks/useRewards';
 export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
 export { useSchoolCreation } from '@repo/core/hooks/useSchoolCreation';
@@ -37,12 +43,4 @@ export { useTaskActions } from '@repo/core/hooks/useTaskActions';
 export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { useTenantContext } from '@repo/core/hooks/useTenantContext';
-export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export { useTracking } from '@repo/core/hooks/useTracking';
-
-export {
-  type LocalFirstQueryResult,
-  type UseLocalFirstQueryOptions,
-  useLocalFirstQuery,
-} from '@repo/core/hooks/useLocalFirstQuery';
-

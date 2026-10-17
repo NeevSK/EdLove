@@ -1,4 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { longitudinalContract } from '@repo/core/api/longitudinal.contract';
 import type {
   LongitudinalEntityType,
@@ -6,13 +6,6 @@ import type {
   StudentLongitudinalTimeline,
 } from '@repo/core/logic/schemas/temporal.schema';
 import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
-const parseResponse = async <T>(res: Response, message: string): Promise<T> => {
-  if (!res.ok) throw new APIError(message, res.status.toString());
-  return (await res.json()) as T;
-};
 
 export const longitudinalAPI = {
   /**
@@ -23,12 +16,17 @@ export const longitudinalAPI = {
     viewDate: string,
     entityTypes?: LongitudinalEntityType[],
   ): Promise<StudentLongitudinalTimeline> {
-    return parseResponse<StudentLongitudinalTimeline>(
-      await (client.api as any).longitudinal.student.timeline.$get({
+    try {
+      const res = await orpcClient.longitudinal.getStudentTimeline({
         query: { studentId, viewDate, entityTypes },
-      }),
-      'Failed to fetch student longitudinal timeline',
-    );
+      });
+      return res as StudentLongitudinalTimeline;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch student longitudinal timeline',
+        error.status?.toString() || error.code || 'LONGITUDINAL_FETCH_FAILED',
+      );
+    }
   },
 
   /**
@@ -39,12 +37,17 @@ export const longitudinalAPI = {
     viewDate: string,
     entityTypes?: LongitudinalEntityType[],
   ): Promise<StudentLongitudinalSnapshot> {
-    return parseResponse<StudentLongitudinalSnapshot>(
-      await (client.api as any).longitudinal.student.snapshot.$get({
+    try {
+      const res = await orpcClient.longitudinal.getStudentSnapshotAsOf({
         query: { studentId, viewDate, entityTypes },
-      }),
-      'Failed to fetch student longitudinal snapshot',
-    );
+      });
+      return res as StudentLongitudinalSnapshot;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch student longitudinal snapshot',
+        error.status?.toString() || error.code || 'LONGITUDINAL_FETCH_FAILED',
+      );
+    }
   },
 };
 

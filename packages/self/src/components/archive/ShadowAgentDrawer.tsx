@@ -8,7 +8,7 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { Coffee, Moon, Sparkles, Sun, X, Zap } from '@repo/ui/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Modal } from 'react-native';
+import { Modal, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -19,8 +19,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 export default function ShadowAgentDrawer() {
+  const { height: SCREEN_HEIGHT } = useWindowDimensions();
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [currentSeed, setCurrentSeed] = useState('');

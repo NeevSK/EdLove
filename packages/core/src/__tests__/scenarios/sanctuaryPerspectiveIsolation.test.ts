@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage';
+import { useTenantStore } from '@repo/core/store/useTenantStore';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Sanctuary Perspectives & Partitioned Storage Engine', () => {
   beforeEach(() => {
@@ -26,10 +26,12 @@ describe('Sanctuary Perspectives & Partitioned Storage Engine', () => {
       roles: ['teacher'],
     };
 
-    useTenantStore.getState().setAvailablePerspectives([
-      { id: 'personal', kind: 'personal', displayName: 'Personal Sanctuary' },
-      schoolBond,
-    ]);
+    useTenantStore
+      .getState()
+      .setAvailablePerspectives([
+        { id: 'personal', kind: 'personal', displayName: 'Personal Sanctuary' },
+        schoolBond,
+      ]);
 
     // Switch to Royal College
     useTenantStore.getState().switchPerspective('bond:royal_college:teacher');
@@ -67,7 +69,6 @@ describe('Sanctuary Perspectives & Partitioned Storage Engine', () => {
       'bond:royal_college:teacher',
       mockBaseStorage,
     );
-
 
     // Write same key into personal vs school perspective
     personalScope.set('lesson_draft', 'My Personal Note');

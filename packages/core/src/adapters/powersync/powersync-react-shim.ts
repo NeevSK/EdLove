@@ -1,6 +1,6 @@
 /**
- * Compatibility barrel for older @repo/core imports.
- * The implementation now comes from the official PowerSync React v2 hooks;
- * keeping this path avoids a broad import migration across the app surface.
+ * @deprecated DISABLED LEGACY SHIM.
+ * Direct imports from '@powersync/react' are now used across all call sites.
+ * This file is retained as an inert stub and has 0 consumers across the monorepo.
  */
 export { PowerSyncContext, useQuery, useStatus } from '@powersync/react';

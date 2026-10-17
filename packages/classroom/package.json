@@ -76,30 +76,30 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query": "^5.104.3",
     "date-fns": "^4.4.0",
     "expo-clipboard": "~58.0.3",
     "expo-image-picker": "~58.0.10",
-    "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.15"
+    "expo-router": "~58.0.22",
+    "react-i18next": "^17.0.18"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.10.0",
-    "tailwindcss": "^4.3.3",
-    "typescript": "rc",
+    "eslint": "^10.12.0",
+    "tailwindcss": "4.3.0",
+    "typescript": "7.0.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.0.5"
   },
   "peerDependencies": {
-    "expo-observe": ">=58.0.13",
-    "react": "*",
-    "react-i18next": "*",
-    "react-native": "*",
-    "react-native-reanimated": ">=4.6.0",
-    "react-native-skia": ">=3.0.0"
+    "expo-observe": "~58.0.15",
+    "react": "19.3.0",
+    "react-i18next": "^17.0.18",
+    "react-native": "0.88.0",
+    "react-native-reanimated": "4.7.1",
+    "react-native-skia": "3.6.1"
   },
   "_originalScripts": {
     "check-types": "pnpm exec tsc --build --noEmit",
@@ -114,5 +114,3 @@
     "test:ui": "vitest --ui"
   }
 }
-
-

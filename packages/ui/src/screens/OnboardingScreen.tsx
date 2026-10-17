@@ -2,6 +2,7 @@ import { identityAPI, onboardingAPI } from '@repo/core/api/client';
 import {
   completeOnboarding as completeCanonicalOnboarding,
   createInitialBond as createCanonicalInitialBond,
+  createOnboardingCompletionKey,
 } from '@repo/core/api/onboardingClient';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';
@@ -49,7 +50,14 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
+import {
+  BackHandler,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput,
+} from 'react-native';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
@@ -606,6 +614,7 @@ const DevSandboxConsole =
 
 interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
+  onAbandon?: () => Promise<void>;
   isAnonymous?: boolean;
   userId?: string | null;
   suggestedName?: string;
@@ -614,12 +623,14 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen = memo(function OnboardingScreen({
   onComplete,
+  onAbandon,
   isAnonymous = false,
   userId = null,
   suggestedName,
   onboardingArtwork,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
+  const [isAbandoning, setIsAbandoning] = useState(false);
 
   const [state, dispatch] = useReducer(onboardingJourneyReducer, initialOnboardingJourneyState);
   const [resolvedSchoolName, setResolvedSchoolName] = useState<string | undefined>(undefined);
@@ -632,6 +643,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const resolvedCitizenRef = useRef<Awaited<
     ReturnType<typeof identityAPI.identifyActiveCitizen>
   > | null>(null);
+  const completionAttemptRef = useRef<{ subjectId: string; key: string } | null>(null);
   const anonymousBootstrapRequestedRef = useRef(false);
 
   const resolveOnboardingSubject = useCallback(async () => {
@@ -672,7 +684,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
         await onboardingAPI.completeOnboarding(internalId);
         return;
       }
-      await completeCanonicalOnboarding();
+      const attempt = completionAttemptRef.current;
+      const key = attempt?.subjectId === internalId ? attempt.key : createOnboardingCompletionKey();
+      completionAttemptRef.current = { subjectId: internalId, key };
+      await completeCanonicalOnboarding({ idempotencyKey: key });
+      completionAttemptRef.current = null;
     },
     [],
   );
@@ -1131,9 +1147,31 @@ const OnboardingScreen = memo(function OnboardingScreen({
     hapticLight();
   }, []);
   const handleBackToWelcome = useCallback(() => {
+    if (isAbandoning || isProcessing) return;
+
     hapticLight();
-    safeBack('/welcome');
-  }, []);
+    void (async () => {
+      setIsAbandoning(true);
+      try {
+        await clearSavedProgress();
+        await onAbandon?.();
+      } catch (error) {
+        console.error('[Onboarding] Could not fully discard abandoned setup:', error);
+      } finally {
+        setIsAbandoning(false);
+        safeBack('/welcome');
+      }
+    })();
+  }, [clearSavedProgress, isAbandoning, isProcessing, onAbandon]);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      handleBackToWelcome();
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [handleBackToWelcome]);
 
   const currentTourScreen = useMemo(() => {
     if (currentPhase === 'arrival' || currentPhase === 'identity') return null;
@@ -1222,7 +1260,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
                         void handleNext();
                       }}
                       canProceed={canProceed}
-                      isLoading={isProcessing}
+                      isLoading={isProcessing || isAbandoning}
                       onBackToWelcome={handleBackToWelcome}
                       artwork={onboardingArtwork}
                       userId={userId}

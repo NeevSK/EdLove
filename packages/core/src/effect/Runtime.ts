@@ -1,6 +1,6 @@
-import { Effect, Fiber } from 'effect';
 import { captureException } from '@repo/core/monitoring';
 import { APIError } from '@repo/core/types/API';
+import { Effect, Fiber } from 'effect';
 
 /**
  * Runtime execution boundary for @repo/core.
@@ -88,11 +88,19 @@ export function runToPromise<T, E extends { message?: string }>(
       Effect.catchDefect((defect: unknown) => {
         const err = normalizeError(defect);
         return Effect.sync(() => {
-          captureException(err, { operation: errorCode ?? 'EFFECT_DEFECT', boundary: 'effect-defect' });
+          captureException(err, {
+            operation: errorCode ?? 'EFFECT_DEFECT',
+            boundary: 'effect-defect',
+          });
         }).pipe(
           Effect.andThen(
             Effect.fail(
-              new APIError(err.message || 'Fatal defect encountered', errorCode ?? 'FATAL_DEFECT', err, true),
+              new APIError(
+                err.message || 'Fatal defect encountered',
+                errorCode ?? 'FATAL_DEFECT',
+                err,
+                true,
+              ),
             ),
           ),
         );

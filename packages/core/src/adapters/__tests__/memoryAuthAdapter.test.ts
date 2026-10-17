@@ -2,6 +2,18 @@ import { describe, expect, it, vi } from 'vitest';
 import { MemoryAuthAdapter } from '../memory/MemoryAuthAdapter';
 
 describe('MemoryAuthAdapter (G0 Unit Contract)', () => {
+  it('does not simulate phone OTP ownership', async () => {
+    const adapter = new MemoryAuthAdapter();
+
+    await expect(adapter.signInWithPhoneOtp({ phone: '+94771234567' })).rejects.toMatchObject({
+      code: 'AUTH_PHONE_UNAVAILABLE',
+    });
+    await expect(
+      adapter.verifyPhoneOtp({ phone: '+94771234567', token: '123456' }),
+    ).rejects.toMatchObject({ code: 'AUTH_PHONE_UNAVAILABLE' });
+    await expect(adapter.getSession()).resolves.toBeNull();
+  });
+
   it('manages sessions and emits auth events to subscribers', async () => {
     const adapter = new MemoryAuthAdapter();
     const listener = vi.fn();

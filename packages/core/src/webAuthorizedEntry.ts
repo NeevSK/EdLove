@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 /**
  * Browser-authorized entry contract.
  *
@@ -8,6 +10,7 @@
 export type AuthorizedEntryResult =
   | Readonly<{
       kind: 'ready';
+      accountId: string;
       authSubjectId: string;
       displayName: string;
       /** Compatibility label derived from the server-selected scope, never a profile fallback. */
@@ -35,6 +38,7 @@ export type AuthorizedEntryResult =
 export type AuthoritativeAuthorizedEntryFacts =
   | Readonly<{
       kind: 'active';
+      accountId: string;
       authSubjectId: string;
       displayName: string | null;
       onboardingCompleted: boolean;
@@ -77,7 +81,7 @@ export function mapAuthorizedEntry(
     return { kind: 'unavailable', reason: 'profile-unavailable', message: facts.message };
   }
 
-  if (!present(facts.authSubjectId)) {
+  if (!present(facts.authSubjectId) || !z.uuid().safeParse(facts.accountId).success) {
     return {
       kind: 'unavailable',
       reason: 'invalid-authoritative-entry',
@@ -101,6 +105,7 @@ export function mapAuthorizedEntry(
 
   return {
     kind: 'ready',
+    accountId: facts.accountId,
     authSubjectId: facts.authSubjectId,
     displayName: facts.displayName,
     activeCapacity: facts.activeCapacity,

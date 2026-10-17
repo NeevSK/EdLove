@@ -12,6 +12,10 @@ export const GURUDEVI_SANCTUARY_URL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_SANCTUARY_URL) ||
   'https://sanctuary.gurudevi.app';
 
+export const GURUDEVI_EXPLORE_URL =
+  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_EXPLORE_URL) ||
+  'https://explore.gurudevi.app';
+
 export const GURUDEVI_QR_URL = `${GURUDEVI_PLATFORM_URL}/qr`;
 
 export const GURUDEVI_SUPPORT_EMAIL =

@@ -1,66 +1,17 @@
 /* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
 
+export { accountTransition } from '@repo/core/accounts/accountTransition';
 export {
   type DeviceAccountProfile,
   type DeviceAccountRecord,
   deviceAccounts,
 } from '@repo/core/accounts/deviceAccounts';
-export { accountTransition } from '@repo/core/accounts/accountTransition';
-export type {
-  AccountTransitionDisposition,
-  AccountTransitionOutcome,
-  AccountTransitionPort,
-  AccountTransitionRequest,
-} from '@repo/core/logic/ports/accountTransition.port';
 export { isDemo } from '@repo/core/api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 export * from '@repo/core/efficiency';
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
-export {
-  createPersistenceIdentity,
-  derivePersistenceKey,
-  derivePersistenceNamespace,
-  PERSISTENCE_NAMESPACE_VERSION,
-  requestGuestToAccountMigration,
-  resolvePersistenceWriteDecision,
-} from '@repo/core/lib/persistenceBoundary';
-export {
-  createAccountPracticeScope,
-  deriveAccountPracticeKey,
-  resolveAccountPracticeWriteDecision,
-} from '@repo/core/lib/practiceBoundary';
-export type { AccountPracticeScope } from '@repo/core/lib/practiceBoundary';
-export { createPracticeController } from '@repo/core/lib/practiceContract';
-export type {
-  PracticeAdapter,
-  PracticeController,
-  PracticeResult,
-  SyncPracticeAdapter,
-  SyncPracticeController,
-  PracticeValue,
-} from '@repo/core/lib/practiceContract';
-export {
-  declaredCapabilities,
-  declaredPracticeCapability,
-  resolvePracticeAvailability,
-} from '@repo/core/logic/registry/capabilityManifest';
-export type {
-  CapabilityDeclaration,
-  CapabilityPracticePolicy,
-  PracticeAvailability,
-} from '@repo/core/logic/registry/capabilityManifest';
-export type {
-  ExplicitGuestToAccountMigration,
-  PersistenceExperience,
-  PersistenceIdentity,
-  PersistenceIdentityInput,
-  PersistencePrincipal,
-  PersistenceWriteDecision,
-  PersistenceWriteTarget,
-  ProductionWriteBlockReason,
-} from '@repo/core/lib/persistenceBoundary';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -85,10 +36,57 @@ export {
   getSchoolCapacityForUser,
   getWorkCapacitiesForUser,
 } from '@repo/core/lib/permissions';
+export type {
+  ExplicitGuestToAccountMigration,
+  PersistenceExperience,
+  PersistenceIdentity,
+  PersistenceIdentityInput,
+  PersistencePrincipal,
+  PersistenceWriteDecision,
+  PersistenceWriteTarget,
+  ProductionWriteBlockReason,
+} from '@repo/core/lib/persistenceBoundary';
+export {
+  createPersistenceIdentity,
+  derivePersistenceKey,
+  derivePersistenceNamespace,
+  PERSISTENCE_NAMESPACE_VERSION,
+  requestGuestToAccountMigration,
+  resolvePersistenceWriteDecision,
+} from '@repo/core/lib/persistenceBoundary';
+export type { AccountPracticeScope } from '@repo/core/lib/practiceBoundary';
+export {
+  createAccountPracticeScope,
+  deriveAccountPracticeKey,
+  resolveAccountPracticeWriteDecision,
+} from '@repo/core/lib/practiceBoundary';
+export type {
+  PracticeAdapter,
+  PracticeController,
+  PracticeResult,
+  PracticeValue,
+  SyncPracticeAdapter,
+  SyncPracticeController,
+} from '@repo/core/lib/practiceContract';
+export { createPracticeController } from '@repo/core/lib/practiceContract';
 export { StorageKeys, storage } from '@repo/core/lib/storage';
 export { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 export type { SanctuaryAPIError } from '@repo/core/logic/apiInterceptor';
 export { handleAPIError, withErrorHandling } from '@repo/core/logic/apiInterceptor';
+export * from '@repo/core/logic/capabilityDecision';
+export {
+  classifyRouteIntent,
+  classifyRouteIntentEffect,
+  formatClassroomDeepLink,
+  formatClassroomShareUrl,
+  type RouteIntent,
+} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+export {
+  isPendingIntentExpired,
+  type PendingDeepLinkIntent,
+  pendingIntentStore,
+  usePendingIntentStore,
+} from '@repo/core/logic/deeplink/pendingIntentStore';
 export {
   createDomainServices,
   type DomainServices,
@@ -140,21 +138,23 @@ export {
 } from '@repo/core/logic/experience/ActivityPulseContext';
 export { default as i18n } from '@repo/core/logic/i18n/config';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
+export type {
+  AccountTransitionDisposition,
+  AccountTransitionOutcome,
+  AccountTransitionPort,
+  AccountTransitionRequest,
+} from '@repo/core/logic/ports/accountTransition.port';
+export type {
+  CapabilityDeclaration,
+  CapabilityPracticePolicy,
+  PracticeAvailability,
+} from '@repo/core/logic/registry/capabilityManifest';
+export {
+  declaredCapabilities,
+  declaredPracticeCapability,
+  resolvePracticeAvailability,
+} from '@repo/core/logic/registry/capabilityManifest';
 export { coreRuntime } from '@repo/core/logic/runtimeRegistry';
-export {
-  classifyRouteIntent,
-  classifyRouteIntentEffect,
-  formatClassroomDeepLink,
-  formatClassroomShareUrl,
-  type RouteIntent,
-} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-export {
-  isPendingIntentExpired,
-  pendingIntentStore,
-  usePendingIntentStore,
-  type PendingDeepLinkIntent,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
-export * from '@repo/core/logic/capabilityDecision';
 export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';
@@ -268,8 +268,12 @@ export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { useTenantContext } from '@repo/core/hooks/useTenantContext';
 export { useTracking } from '@repo/core/hooks/useTracking';
+export {
+  type DeltaMetrics,
+  DeltaResonance,
+  type ThreeWayMergeResult,
+} from '@repo/core/lib/sync/delta';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-export { DeltaResonance, type DeltaMetrics, type ThreeWayMergeResult } from '@repo/core/lib/sync/delta';
 export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 export { default as SyncManager } from '@repo/core/lib/sync/sync/SyncManager';
 export type {
@@ -291,6 +295,7 @@ export type {
   IEntitlementPort,
 } from '@repo/core/logic';
 export { cryptoManager } from '@repo/core/logic';
+export * from '@repo/core/logic/agents';
 export type {
   EntityDefinition,
   EntityMode,
@@ -387,5 +392,4 @@ export { UserSchema } from '@repo/core/logic/schemas/user.schema';
 export { validateForm, validators } from '@repo/core/logic/utils/validators';
 export * from '@repo/core/logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
-export * from '@repo/core/logic/agents';
 export { z };

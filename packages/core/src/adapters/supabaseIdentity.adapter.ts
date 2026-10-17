@@ -1,13 +1,14 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
-import type { Identity } from '@repo/core/api/identity.generated';
+import { type Identity, IdentitySchema } from '@repo/core/api/identity.generated';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { storage } from '@repo/core/lib/storage';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { APIError } from '@repo/core/types/API';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
 import { strictRetryPolicy, tryPromise } from '@repo/core/utils/effect';
-import { Data, Duration, Effect, Option, pipe } from 'effect';
+import { Data, Duration, Effect, pipe } from 'effect';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
 
@@ -63,7 +64,9 @@ function supabaseCall<T>(
 function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Promise<T> {
   return Effect.runPromise(
     effect.pipe(
-      Effect.catch((e: SupabaseQueryError) => Effect.fail(new APIError(e.message, 'SUPABASE_ERROR'))),
+      Effect.catch((e: SupabaseQueryError) =>
+        Effect.fail(new APIError(e.message, 'SUPABASE_ERROR')),
+      ),
     ),
   );
 }
@@ -71,107 +74,48 @@ function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Prom
 // ─── Adapter ─────────────────────────────────────────────────────
 
 export class SupabaseIdentityAdapter implements IIdentityPort {
-  private cachedInternalId: string | null = null;
-  private activePerspective: Perspective | null = null;
-  private cachedAuthUid: string | null = null;
-
   async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
-    if (provider === 'supabaseClient' && this.cachedInternalId) {
-      return this.cachedInternalId;
+    if (provider !== 'supabase') return null;
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error) throw error;
+    if (data.user?.id !== providerUserId) return null;
+    const identity = await this.identifyActiveCitizen();
+    const current = await supabaseClient.auth.getUser();
+    if (current.error) throw current.error;
+    if (current.data.user?.id !== providerUserId) {
+      throw new APIError(
+        'The authenticated session changed during identity resolution.',
+        'AUTH_SESSION_CHANGED',
+      );
     }
-
-    const result = await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('auth_identities')
-          .select('user_id')
-          .eq('provider', provider)
-          .eq('provider_user_id', providerUserId)
-          .maybeSingle(),
-      ),
-    );
-
-    const resolvedId = (result as { user_id?: string } | null)?.user_id ?? null;
-
-    if (provider === 'supabaseClient' && resolvedId) {
-      this.cachedInternalId = resolvedId;
-    }
-
-    return resolvedId;
+    return identity?.id ?? null;
   }
 
   async linkIdentity(userId: string, provider: string, providerUserId: string): Promise<void> {
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient.from('auth_identities').upsert(
-          {
-            user_id: userId,
-            provider,
-            provider_user_id: providerUserId,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'provider,provider_user_id' },
-        ),
-      ),
-    );
-
-    if (provider === 'supabaseClient') {
-      this.cachedInternalId = userId;
+    const accountId = await this.resolveInternalId(provider, providerUserId);
+    if (!accountId || accountId !== userId) {
+      throw new APIError(
+        'Identity linking requires trusted provider provisioning.',
+        'IDENTITY_LINK_REQUIRED',
+      );
     }
   }
 
   async identifyActiveCitizen(): Promise<Identity | null> {
-    const { data } = await supabaseClient.auth.getUser();
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error) throw error;
     const user = data?.user;
-    if (!user) {
-      this.cachedInternalId = null;
-      return null;
+    if (!user) return null;
+    const identity = IdentitySchema.parse(await orpcClient.identity.identifyActiveCitizen({}));
+    const current = await supabaseClient.auth.getUser();
+    if (current.error) throw current.error;
+    if (current.data.user?.id !== user.id) {
+      throw new APIError(
+        'The authenticated session changed during identity resolution.',
+        'AUTH_SESSION_CHANGED',
+      );
     }
-    const authUid = user.id;
-
-    if (this.cachedInternalId && this.cachedAuthUid !== authUid) {
-      this.cachedInternalId = null;
-    }
-
-    let internalId = this.cachedInternalId;
-
-    if (!internalId) {
-      internalId = await this.resolveInternalId('supabaseClient', authUid);
-      this.cachedAuthUid = authUid;
-
-      if (!internalId) {
-        const legacyResult = await runEffect(
-          supabaseCall(() =>
-            supabaseClient.from('users').select('id').eq('id', authUid).maybeSingle(),
-          ).pipe(Effect.map(Option.fromNullishOr)),
-        );
-
-        if (Option.isSome(legacyResult)) {
-          const legacyId = (legacyResult.value as any).id;
-          await this.linkIdentity(legacyId, 'supabaseClient', authUid);
-          internalId = legacyId;
-        } else {
-          await this.linkIdentity(authUid, 'supabaseClient', authUid);
-          internalId = authUid;
-        }
-      }
-      this.cachedInternalId = internalId;
-    }
-
-    if (!internalId) return null;
-
-    const profile = await this.getProfile(internalId);
-    const perspective = await this.getActivePerspective();
-    if (!perspective) return null;
-
-    return {
-      id: internalId,
-      email: profile.email ?? null,
-      name: profile.display_name || undefined,
-      onboarding_completed: !!profile.onboarding_completed,
-      activeBond: (perspective.activeBond || null) as Bond | null,
-      availableBonds: (perspective.availableBonds || []) as Bond[],
-    };
+    return identity;
   }
 
   async getProfile(userId: string): Promise<User> {
@@ -225,42 +169,12 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async getActivePerspective(): Promise<Perspective | null> {
-    if (this.activePerspective) return this.activePerspective;
-
-    const { data } = await supabaseClient.auth.getUser();
-    if (!data?.user) return null;
-
-    let userId = this.cachedInternalId;
-    if (!userId) {
-      const authUid = data.user.id;
-      userId = await this.resolveInternalId('supabaseClient', authUid);
-      if (!userId) userId = authUid;
-    }
-
-    const bonds = await this.getBonds(userId);
-    if (bonds.length === 0) return null;
-
-    const persisted = await storage.getStringAsync(`active_perspective_${userId}`);
-    if (persisted) {
-      try {
-        const parsed = JSON.parse(persisted);
-        const activeBond = bonds.find((b) => b.id === parsed.activeBond?.id);
-        if (activeBond) {
-          this.activePerspective = { activeBond, availableBonds: bonds };
-          return this.activePerspective;
-        }
-      } catch {
-        // ignore JSON parse error
-      }
-    }
-
-    this.activePerspective = {
-      activeBond: bonds[0]!,
-      availableBonds: bonds,
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) return null;
+    return {
+      ...(identity.activeBond ? { activeBond: identity.activeBond } : {}),
+      availableBonds: identity.availableBonds,
     };
-    storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
-
-    return this.activePerspective;
   }
 
   async switchPerspective(entityId: string, capacity: Capacity): Promise<void> {
@@ -268,18 +182,34 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (!identity) throw new Error('Not authenticated');
     const userId = identity.id;
 
-    const bonds = await this.getBonds(userId);
+    const bonds = identity.availableBonds;
     const targetBond = bonds.find((b) => b.entity_id === entityId && b.capacity === capacity);
 
     if (!targetBond) {
       throw new Error(`User does not have a Bond for Entity ${entityId} with Capacity ${capacity}`);
     }
 
-    this.activePerspective = {
-      activeBond: targetBond,
-      availableBonds: bonds,
-    };
-    storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
+    const selected = IdentitySchema.parse(
+      await orpcClient.identity.selectActiveScope(
+        {
+          body: { bondId: targetBond.id },
+        },
+        { context: { expectedAccountId: userId, retry: 0 } },
+      ),
+    );
+    if (selected.id !== userId || selected.activeBond?.id !== targetBond.id) {
+      throw new APIError(
+        'Scope selection did not match the requested account and bond.',
+        'SCOPE_SELECTION_CONFLICT',
+      );
+    }
+    storage.set(
+      `active_perspective_${userId}`,
+      JSON.stringify({
+        activeBond: selected.activeBond,
+        availableBonds: selected.availableBonds,
+      }),
+    );
   }
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
@@ -411,8 +341,6 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
         ),
       ),
     );
-
-    this.activePerspective = null;
   }
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {

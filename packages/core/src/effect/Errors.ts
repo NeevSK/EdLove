@@ -20,7 +20,6 @@ export class OfflineMutationError extends Data.TaggedError('OfflineMutationError
   }
 }
 
-
 export class NetworkError extends Data.TaggedError('NetworkError')<{
   readonly cause: unknown;
   readonly url?: string;

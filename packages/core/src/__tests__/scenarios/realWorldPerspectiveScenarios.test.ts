@@ -1,23 +1,23 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage';
-import { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   CITIZENSHIP,
-  sanctuaryFeature,
-  type SanctuaryEvaluationContext,
   type FeatureRequirement,
+  type SanctuaryEvaluationContext,
+  sanctuaryFeature,
 } from '@repo/core/logic/permissions/sanctuaryFeature';
-import type {
-  SanctuaryPerspective,
-  PersonalPerspective,
-  InstitutionalBondPerspective,
-  GuardianBondPerspective,
-} from '@repo/core/types/Perspective';
+import { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import type { Bond } from '@repo/core/types/Identity';
+import type {
+  GuardianBondPerspective,
+  InstitutionalBondPerspective,
+  PersonalPerspective,
+  SanctuaryPerspective,
+} from '@repo/core/types/Perspective';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds & Primary/Secondary Capacities', () => {
   // Scenario Context: Dr. Maya is a teacher & department head at Royal College,
@@ -65,8 +65,6 @@ describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds &
     wardName: 'Maya Jr.',
     schoolId: 'school_central_high',
   };
-
-
 
   const bonds: Bond[] = [
     {
@@ -169,7 +167,6 @@ describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds &
       expect(instRes.reason).toBe('citizenship');
     }
   });
-
 
   it('Scenario 2: Primary vs Secondary Capacities in Institutional Bond (Teacher vs Admin)', async () => {
     // 1. Switch to Royal College Teacher Perspective

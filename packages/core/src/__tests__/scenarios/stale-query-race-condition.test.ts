@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { useLocalFirstQuery } from '@repo/core/hooks/useLocalFirstQuery';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Suite C: Out-of-Order Network Jitter & Stale Overwrite Race Suite', () => {
@@ -42,7 +42,7 @@ describe('Suite C: Out-of-Order Network Jitter & Stale Overwrite Race Suite', ()
     const p1 = dispatchRequest('req_1_slow', 100);
     // Fire fast request 2
     const p2 = new Promise((resolve) => setTimeout(resolve, 10)).then(() =>
-      dispatchRequest('req_2_fast', 20)
+      dispatchRequest('req_2_fast', 20),
     );
 
     await Promise.all([p1, p2]);

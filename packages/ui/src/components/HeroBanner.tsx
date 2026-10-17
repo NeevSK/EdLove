@@ -4,7 +4,7 @@ import { Theme } from '@repo/ui/theme/Theme';
 import { tokens } from '@repo/ui/tokens';
 import { Image } from 'expo-image';
 import type React from 'react';
-import { Dimensions, Platform, Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export interface HeroBannerProps {
@@ -14,8 +14,6 @@ export interface HeroBannerProps {
   onPress?: () => void;
   badge?: string;
 }
-
-const { width: screenWidth } = Dimensions.get('window');
 
 const NETFLIX_TOKENS = {
   canvas: '#000000',
@@ -27,6 +25,7 @@ const NETFLIX_TOKENS = {
 } as const;
 
 export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBannerProps) {
+  const { width: screenWidth } = useWindowDimensions();
   const visualCapabilities = useVisualCapabilities();
   return (
     <Animated.View
@@ -42,7 +41,7 @@ export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBa
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={title}
-        style={{ flex: 1 }}
+        style={styles.pressable}
       >
         <Image
           source={{ uri: imageUri }}
@@ -62,30 +61,12 @@ export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBa
             height: 280,
           }}
         />
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            paddingHorizontal: Theme.spacing.lg,
-            paddingVertical: Theme.spacing.xl,
-          }}
-        >
+        <View style={styles.overlay} />
+        <View style={styles.contentContainer}>
           {badge && (
             <Box
               className="bg-phase-danger px-3 py-1 rounded mb-2 self-start"
-              style={{ backgroundColor: NETFLIX_TOKENS.accent }}
+              style={styles.badge}
             >
               <Text className="text-white" style={tokens.typography.roles.label}>
                 {badge}
@@ -94,26 +75,14 @@ export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBa
           )}
           <Text
             className="text-white font-bold"
-            style={{
-              ...tokens.typography.roles.display,
-              color: NETFLIX_TOKENS.textPrimary,
-              textShadowColor: 'rgba(0,0,0,0.8)',
-              textShadowOffset: { width: 0, height: 1 },
-              textShadowRadius: 4,
-            }}
+            style={styles.title}
           >
             {title}
           </Text>
           {subtitle && (
             <Text
               className="text-white mt-1"
-              style={{
-                ...tokens.typography.roles.body,
-                color: NETFLIX_TOKENS.textSecondary,
-                textShadowColor: 'rgba(0,0,0,0.8)',
-                textShadowOffset: { width: 0, height: 1 },
-                textShadowRadius: 4,
-              }}
+              style={styles.subtitle}
             >
               {subtitle}
             </Text>
@@ -123,3 +92,42 @@ export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBa
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  pressable: {
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  contentContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.xl,
+  },
+  badge: {
+    backgroundColor: NETFLIX_TOKENS.accent,
+  },
+  title: {
+    ...tokens.typography.roles.display,
+    color: NETFLIX_TOKENS.textPrimary,
+    textShadowColor: 'rgba(0,0,0,0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  subtitle: {
+    ...tokens.typography.roles.body,
+    color: NETFLIX_TOKENS.textSecondary,
+    textShadowColor: 'rgba(0,0,0,0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+});

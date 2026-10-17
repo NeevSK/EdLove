@@ -1,6 +1,6 @@
-import { describe, expect, it, beforeEach } from 'vitest';
-import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Scenario 5: Temporal Boundary & Mutation Shielding', () => {

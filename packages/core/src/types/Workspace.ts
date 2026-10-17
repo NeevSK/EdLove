@@ -3,9 +3,19 @@ export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'pr
 export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night';
 export type WorkspaceAppearanceMotion = 'off' | 'subtle';
 
+/** A registered, remotely hosted image that may be used as a workspace wallpaper. */
+export interface WorkspaceWallpaper {
+  provider: 'cloudinary';
+  url: string;
+  publicId: string;
+  width: number;
+  height: number;
+}
+
 export interface WorkspaceAppearance {
   preset: WorkspaceAppearancePreset;
   motion: WorkspaceAppearanceMotion;
+  wallpaper?: WorkspaceWallpaper | null;
 }
 
 export type WorkspaceSwitcherTargetId =

@@ -127,6 +127,7 @@ export function useAIAgent() {
   );
   const [byokKey, setByokKeyState] = useState<string>('');
   const [privacyMode, setPrivacyModeState] = useState<'saved' | 'temporary' | 'incognito'>('saved');
+  const [aiSdk, setAiSdkState] = useState<'tanstack' | 'vercel'>('tanstack');
   const [authToken, setAuthToken] = useState<string | null>(null);
 
   // Load configuration from local secure storage on mount
@@ -149,12 +150,25 @@ export function useAIAgent() {
         ) {
           setPrivacyModeState(storedPrivacy);
         }
+        const storedSdk = await cryptoManager.getItemAsync('ai_sdk');
+        if (storedSdk === 'tanstack' || storedSdk === 'vercel') {
+          setAiSdkState(storedSdk);
+        }
       } catch (err) {
         console.warn('Failed to load AI secure store config:', err);
       }
     }
     // Self-contained try/catch; intentionally not awaited by the effect.
     void loadConfig();
+  }, []);
+
+  const setAiSdk = useCallback(async (sdk: 'tanstack' | 'vercel') => {
+    setAiSdkState(sdk);
+    try {
+      await cryptoManager.setItemAsync('ai_sdk', sdk);
+    } catch (err) {
+      console.warn('Failed to persist AI SDK preference:', err);
+    }
   }, []);
 
   const setBillingMode = useCallback(async (mode: 'baseline' | 'byok' | 'purchased') => {
@@ -212,11 +226,10 @@ export function useAIAgent() {
 
   // TanStack AI useChat hook integration (XHR-based NDJSON streaming)
   const connection = xhrHttpStream(`${apiBaseUrl}/api/ai/chat`, () => ({
-    headers: authToken
-      ? {
-          Authorization: `Bearer ${authToken}`,
-        }
-      : undefined,
+    headers: {
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+      'x-ai-sdk': aiSdk,
+    },
     body: {
       context: {
         role: userRole ?? 'teacher',
@@ -232,6 +245,7 @@ export function useAIAgent() {
         billingMode,
         byokKey: byokKey || undefined,
         privacyMode,
+        aiSdk,
       },
     },
   }));
@@ -343,6 +357,8 @@ export function useAIAgent() {
     setByokKey,
     privacyMode,
     setPrivacyMode,
+    aiSdk,
+    setAiSdk,
     error,
     // Workspace-aware quick actions for teacher workflow
     quickActions: {

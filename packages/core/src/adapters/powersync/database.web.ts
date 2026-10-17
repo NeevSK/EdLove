@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PowerSyncDatabase as PowerSyncDatabaseType } from '@repo/core/adapters/powersync/powersync-shim';
+import type { CommonPowerSyncDatabase } from '@powersync/common';
 import { createSecureDrizzleProxy } from './secureDrizzleProxy';
 
-let _instance: PowerSyncDatabaseType | null = null;
+let _instance: CommonPowerSyncDatabase | null = null;
 let _drizzleInstance: any = null;
 
-export function getPowerSyncDB(): PowerSyncDatabaseType {
+export function getPowerSyncDB(): CommonPowerSyncDatabase {
   if (!_instance) throw new Error('PowerSync web runtime is not initialized');
   return _instance;
 }
@@ -20,7 +20,7 @@ export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): vo
   _drizzleInstance = createSecureDrizzleProxy(nativeDrizzleDb);
 }
 
-export function getActivePowerSyncDB(): PowerSyncDatabaseType | null {
+export function getActivePowerSyncDB(): CommonPowerSyncDatabase | null {
   return _instance;
 }
 

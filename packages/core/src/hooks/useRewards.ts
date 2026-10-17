@@ -108,7 +108,6 @@ export function useRewards(
     retry: 1,
   });
 
-
   // Mutation to add points
   const addPointsMutation = useMutation({
     mutationFn: ({ points }: { points: number }) => {

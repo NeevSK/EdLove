@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api/client';
+import { api, interceptApiCall } from '@repo/core/api/client';
 import { type Assignment, type Lesson, type LessonMaterial, useAuthStore } from '@repo/core/logic';
 import type { Classroom } from '@repo/core/types';
 
@@ -59,7 +59,10 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
         api.classroomNotes.getAll(classroomId),
         userId
           ? api.assignments.getSubmissionHistoryForStudent(userId, classroomId)
-          : Promise.resolve([]),
+          : (interceptApiCall('assignments', 'getSubmissionHistoryForStudent', [
+              'sample-s1',
+              classroomId,
+            ]) ?? Promise.resolve([])),
       ]);
 
       setData({

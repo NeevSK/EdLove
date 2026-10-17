@@ -1,4 +1,3 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
@@ -9,7 +8,6 @@ import { APIError } from '@repo/core/types/API';
  * [BREAKING] Purged legacy Supabase library managers.
  */
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const libraryAPI = {
   async fetchLibraryCounts() {
@@ -138,11 +136,17 @@ export const libraryAPI = {
   },
 
   async reportBrokenLink(id: string) {
-    const res = await (client.api as any).library.resources[':id']['broken-link'].$post({
-      param: { id },
-    });
-    if (!res.ok) throw new APIError('Failed to report broken link', res.status.toString());
-    return await res.json();
+    try {
+      const res = await orpcClient.library.reportBrokenLink({
+        params: { id },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to report broken link',
+        error.status?.toString() || error.code || 'BROKEN_LINK_REPORT_FAILED',
+      );
+    }
   },
 
   async addToCollection(collectionId: string, resourceId: string) {

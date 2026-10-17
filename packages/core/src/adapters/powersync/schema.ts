@@ -511,4 +511,3 @@ export type InsertTuitionBatch = typeof tuitionBatches.$inferInsert;
 
 export type GuardianBond = typeof guardianBonds.$inferSelect;
 export type InsertGuardianBond = typeof guardianBonds.$inferInsert;
-

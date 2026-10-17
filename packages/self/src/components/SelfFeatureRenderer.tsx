@@ -116,6 +116,16 @@ const componentMap: Record<
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
+  DailyContentCard: React.lazy(() =>
+    import('@repo/self/components/DailyContentCard').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
+  DailyContentDidYouKnow: React.lazy(() =>
+    import('@repo/self/components/DailyContentCard').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
 };
 
 function Fallback({ label }: { label: string }) {

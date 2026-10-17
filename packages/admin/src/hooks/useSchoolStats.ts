@@ -42,7 +42,7 @@ export function useSchoolStats(schoolId: string) {
     try {
       let schoolData: School;
       let statsData: SchoolStats;
-      if (isDemoMode || isGuest || !schoolId) {
+      if (isDemoMode || isGuest || schoolId === 'demo-school') {
         schoolData = {
           id: 'sample-school',
           name: 'Wisdom Academy',
@@ -53,13 +53,16 @@ export function useSchoolStats(schoolId: string) {
           created_at: new Date(),
         } as School;
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
-      } else {
+      } else if (schoolId) {
         const [sData, stData] = await Promise.all([
           api.school.getSchool(schoolId),
           api.school.getSchoolStats(schoolId, viewDate),
         ]);
         schoolData = sData;
         statsData = stData;
+      } else {
+        setIsLoading(false);
+        return;
       }
       setSchool(schoolData);
       setStats(statsData);

@@ -3,6 +3,7 @@
  */
 
 import { identityAPI, onboardingAPI } from '@repo/core/api/client';
+import { createOnboardingCompletionKey } from '@repo/core/api/onboardingClient';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';
 import { isAnonymousIdentity } from '@repo/core/logic';
@@ -515,6 +516,7 @@ export default memo(function OnboardingScreenWeb({
   const resolvedCitizenRef = useRef<Awaited<
     ReturnType<typeof identityAPI.identifyActiveCitizen>
   > | null>(null);
+  const completionAttemptRef = useRef<{ subjectId: string; key: string } | null>(null);
 
   // ── Restore saved progress or pre-fill from existing auth & invites ──────────
   useEffect(() => {
@@ -678,6 +680,21 @@ export default memo(function OnboardingScreenWeb({
     [t],
   );
 
+  const completeOnboardingForSubject = useCallback(
+    async (internalId: string) => {
+      if (isAnonymous) {
+        await onboardingAPI.completeOnboarding(internalId);
+        return;
+      }
+      const attempt = completionAttemptRef.current;
+      const key = attempt?.subjectId === internalId ? attempt.key : createOnboardingCompletionKey();
+      completionAttemptRef.current = { subjectId: internalId, key };
+      await onboardingAPI.completeOnboarding(internalId, key);
+      completionAttemptRef.current = null;
+    },
+    [isAnonymous],
+  );
+
   const handleCompleteOnboarding = useCallback(async () => {
     if (state.isProcessing) return;
     dispatch({ type: 'BEGIN_COMPLETION' });
@@ -688,7 +705,7 @@ export default memo(function OnboardingScreenWeb({
       resolvedCitizenRef.current = citizen;
       const internalId = citizen?.id;
       if (internalId) {
-        await onboardingAPI.completeOnboarding(internalId);
+        await completeOnboardingForSubject(internalId);
         resolvedInternalIdRef.current = internalId;
       }
       if (internalId) {
@@ -725,7 +742,15 @@ export default memo(function OnboardingScreenWeb({
         dispatch({ type: 'SET_PROCESSING', isProcessing: false });
       }
     }
-  }, [name, selectedCapacity, onComplete, showToast, isAnonymous, state.isProcessing]);
+  }, [
+    name,
+    selectedCapacity,
+    onComplete,
+    showToast,
+    isAnonymous,
+    state.isProcessing,
+    completeOnboardingForSubject,
+  ]);
 
   const handleDevFastTrack = useCallback(
     async (
@@ -758,7 +783,7 @@ export default memo(function OnboardingScreenWeb({
           profile_completed: true,
         });
 
-        await onboardingAPI.completeOnboarding(internalId);
+        await completeOnboardingForSubject(internalId);
         storage.delete(getOnboardingProgressKey(internalId));
 
         hapticSuccess();
@@ -774,7 +799,7 @@ export default memo(function OnboardingScreenWeb({
         dispatch({ type: 'SET_PROCESSING', isProcessing: false });
       }
     },
-    [onComplete, showToast, isAnonymous],
+    [onComplete, showToast, isAnonymous, completeOnboardingForSubject],
   );
 
   const handleNext = useCallback(async () => {
@@ -829,7 +854,7 @@ export default memo(function OnboardingScreenWeb({
             profile_completed: true,
           });
 
-          await onboardingAPI.completeOnboarding(internalId);
+          await completeOnboardingForSubject(internalId);
           storage.delete(getOnboardingProgressKey(internalId));
 
           hapticSuccess();
@@ -887,6 +912,7 @@ export default memo(function OnboardingScreenWeb({
     state.schoolId,
     onComplete,
     isAnonymous,
+    completeOnboardingForSubject,
   ]);
 
   const handleNextPress = useCallback(() => {
@@ -919,10 +945,7 @@ export default memo(function OnboardingScreenWeb({
     if (!userId) return;
 
     try {
-      storage.set(
-        getOnboardingProgressKey(userId),
-        serializeOnboardingDraft({ userId, state }),
-      );
+      storage.set(getOnboardingProgressKey(userId), serializeOnboardingDraft({ userId, state }));
     } catch (storageError: unknown) {
       console.warn('[Onboarding] Failed to persist progress locally:', storageError);
     }

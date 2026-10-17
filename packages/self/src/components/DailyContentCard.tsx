@@ -24,10 +24,15 @@ import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 interface DailyContentCardProps {
-  type: 'motivation' | 'did_you_know';
+  type?: 'motivation' | 'did_you_know';
+  featureId?: string;
+  componentId?: string;
+  userId?: string;
+  compact?: boolean;
 }
 
-export default function DailyContentCard({ type }: DailyContentCardProps) {
+export default function DailyContentCard({ type, featureId }: DailyContentCardProps) {
+  const resolvedType = type ?? (featureId === 'did_you_know' ? 'did_you_know' : 'motivation');
   const { t } = useTranslation();
   const [content, setContent] = useState<DailyContent | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -35,7 +40,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
   const [loadError, setLoadError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
 
-  const isMotivation = type === 'motivation';
+  const isMotivation = resolvedType === 'motivation';
   const title = isMotivation
     ? t('self.dailyMotivation') || 'Daily Motivation'
     : t('self.didYouKnow') || 'Did You Know?';
@@ -52,7 +57,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
         setLoadError(false);
         const result = await dailyContentAPI.getTodaysContent();
         if (result) {
-          setContent(type === 'motivation' ? result.motivation : result.didYouKnow);
+          setContent(resolvedType === 'motivation' ? result.motivation : result.didYouKnow);
         }
       } catch (error) {
         console.error('Failed to load daily content:', error);
@@ -62,7 +67,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
       }
     };
     loadContent();
-  }, [retryKey, type]);
+  }, [retryKey, resolvedType]);
 
   if (loading) {
     return <SkeletonCard className="h-32 mb-4" />;

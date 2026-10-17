@@ -8,3 +8,9 @@ export interface IStorage {
   setItem(key: string, value: string): void | Promise<void>;
   removeItem(key: string): void | Promise<void>;
 }
+
+export type KeyValueStorage = IStorage;
+
+export interface LocalOnlyKeyValueStorage extends IStorage {
+  readonly isolation: 'local-only';
+}

@@ -1,8 +1,6 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/client';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { useStore } from '@repo/core/logic';
 import type { LearningReflection } from '@repo/core/logic/schemas/classroom.schema';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 function assertAuthenticated() {
   const state = useStore.getState();
@@ -16,30 +14,29 @@ export const learningReflectionAPI = {
     input: Omit<LearningReflection, 'id' | 'created_at' | 'user_id'>,
   ): Promise<LearningReflection> {
     assertAuthenticated();
-    const res = await client.api.classroom['learning-reflections'].$post({
-      json: {
-        classroom_id: input.classroom_id,
-        assignment_id: input.assignment_id,
-        thought: input.thought,
-        situation: input.situation,
-        emotion: input.emotion,
-        trap_ids: input.trap_ids,
-        evidence_for: input.evidence_for,
-        evidence_against: input.evidence_against,
-        reframe: input.reframe,
-        mood_before: input.mood_before,
-        mood_after: input.mood_after,
-        post_outcome: input.post_outcome,
-        follow_up: input.follow_up,
-      },
-    });
+    try {
+      const res = await orpcClient.learningReflections.saveLearningReflection({
+        body: {
+          classroom_id: input.classroom_id,
+          assignment_id: input.assignment_id,
+          thought: input.thought,
+          situation: input.situation,
+          emotion: input.emotion,
+          trap_ids: input.trap_ids,
+          evidence_for: input.evidence_for,
+          evidence_against: input.evidence_against,
+          reframe: input.reframe,
+          mood_before: input.mood_before,
+          mood_after: input.mood_after,
+          post_outcome: input.post_outcome,
+          follow_up: input.follow_up,
+        },
+      });
 
-    if (!res.ok) {
-      const error = (await res.json()) as any;
+      return res as LearningReflection;
+    } catch (error: any) {
       throw new Error(error.message || 'Failed to save learning reflection');
     }
-
-    return (await res.json()) as LearningReflection;
   },
 
   async getThoughtRecords(
@@ -48,19 +45,17 @@ export const learningReflectionAPI = {
     viewDate?: string,
   ): Promise<LearningReflection[]> {
     assertAuthenticated();
-    const res = await client.api.classroom['learning-reflections'].$get({
-      query: {
-        userId,
-        limit: limit.toString(),
-        viewDate,
-      },
-    });
+    try {
+      const res = await orpcClient.learningReflections.getLearningReflections({
+        query: {
+          limit,
+        },
+      });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch learning reflections');
+      return res as LearningReflection[];
+    } catch (error: any) {
+      throw new Error(error.message || 'Failed to fetch learning reflections');
     }
-
-    return (await res.json()) as LearningReflection[];
   },
 
   async completeThoughtRecordFollowUp(
@@ -68,19 +63,18 @@ export const learningReflectionAPI = {
     input: { post_outcome?: string; follow_up?: LearningReflection['follow_up'] },
   ): Promise<LearningReflection> {
     assertAuthenticated();
-    const res = await client.api.classroom['learning-reflections'][':id']['follow-up'].$patch({
-      param: { id },
-      json: {
-        post_outcome: input.post_outcome,
-        follow_up: input.follow_up,
-      },
-    });
+    try {
+      const res = await orpcClient.learningReflections.completeLearningReflectionFollowUp({
+        params: { id },
+        body: {
+          post_outcome: input.post_outcome,
+          follow_up: input.follow_up,
+        },
+      });
 
-    if (!res.ok) {
-      const error = (await res.json()) as any;
+      return res as LearningReflection;
+    } catch (error: any) {
       throw new Error(error.message || 'Failed to update learning reflection follow-up');
     }
-
-    return (await res.json()) as LearningReflection;
   },
 };

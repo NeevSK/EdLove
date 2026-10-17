@@ -64,7 +64,9 @@ export const createTenantSlice: StateCreator<TenantSlice, [], [], TenantSlice> =
         schoolId: id,
         schoolName: name,
         activePerspective: newInstPerspective,
-        availablePerspectives: state.availablePerspectives.some((p) => p.id === newInstPerspective.id)
+        availablePerspectives: state.availablePerspectives.some(
+          (p) => p.id === newInstPerspective.id,
+        )
           ? state.availablePerspectives
           : [...state.availablePerspectives, newInstPerspective],
       };
@@ -101,7 +103,10 @@ export const createTenantSlice: StateCreator<TenantSlice, [], [], TenantSlice> =
         activePerspective: target,
         schoolId: target.kind === 'institutional' ? target.schoolId : null,
         schoolName: target.kind === 'institutional' ? target.schoolName : null,
-        schoolType: target.kind === 'institutional' ? target.schoolType ?? state.schoolType : state.schoolType,
+        schoolType:
+          target.kind === 'institutional'
+            ? (target.schoolType ?? state.schoolType)
+            : state.schoolType,
       };
     }),
   resetToPersonalPerspective: () =>
@@ -111,4 +116,3 @@ export const createTenantSlice: StateCreator<TenantSlice, [], [], TenantSlice> =
       schoolName: null,
     }),
 });
-

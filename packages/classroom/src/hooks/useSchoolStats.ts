@@ -1,4 +1,4 @@
-import { api, MOCK_SCHOOL_STATS } from '@repo/core/api/client';
+import { api, MOCK_SCHOOL, MOCK_SCHOOL_STATS } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
@@ -19,6 +19,7 @@ export function useSchoolStats(schoolId: string) {
   const _isOnline = useStore((state) => state.isOnline);
   const { viewDate } = useTemporalStore();
   const isDemoMode = useStore((state) => state.isDemoMode);
+  const isExplorerMode = useStore((state) => state.isExplorerMode);
   const isGuest = useIsGuest();
   const [stats, setStats] = useState<SchoolStats | null>(null);
   const [school, setSchool] = useState<School | null>(null);
@@ -47,24 +48,20 @@ export function useSchoolStats(schoolId: string) {
   }, [schoolId, viewDate]);
   // Refresh from API
   const refreshData = useCallback(async () => {
-    // If no schoolId and not in demo mode (or explicitly guest), we still want to show SOMETHING
-    // Let's assume if schoolId is missing, we check if we should show mock data
-    if (!schoolId && !isDemoMode && !isGuest) {
+    const shouldProvideSample = isDemoMode || isGuest || isExplorerMode || !schoolId;
+    if (!schoolId && !shouldProvideSample) {
       setIsLoading(false);
       return;
     }
     try {
       let schoolData: School;
       let statsData: SchoolStats;
-      if (isDemoMode || isGuest || !schoolId) {
-        // Return mock data for demo/guest flow
-        schoolData = {
-          id: 'sample-school',
-          name: 'Wisdom Academy',
-          school_type: 'Primary',
-          status: 'active',
-          created_at: new Date().toISOString(),
-        } as any;
+      if (
+        shouldProvideSample &&
+        (!schoolId || schoolId === 'sample-school' || schoolId === 'sample-school-1')
+      ) {
+        // Return canonical mock data for demo/guest/explorer flow
+        schoolData = { ...MOCK_SCHOOL, is_sample: true } as any;
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as any;
       } else {
         [schoolData, statsData] = await Promise.all([
@@ -94,7 +91,7 @@ export function useSchoolStats(schoolId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [schoolId, isDemoMode, viewDate, isGuest]);
+  }, [schoolId, isDemoMode, isExplorerMode, viewDate, isGuest]);
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();

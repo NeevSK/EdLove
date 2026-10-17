@@ -1,19 +1,20 @@
 /** Warm Mirror: server-owned personal data points plus pure narrative helpers. */
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type { WarmMirrorDataPoints } from '@repo/core/api/warmMirror.contract';
 
 export type { WarmMirrorDataPoints };
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
 export const warmMirrorAPI = {
   async getDataPoints(userId: string, since?: string): Promise<WarmMirrorDataPoints> {
-    const response = await (client.api as any).warmMirror[':userId'].$get({
-      param: { userId },
-      query: since ? { since } : {},
-    });
-    if (!response.ok) throw new Error('Failed to fetch warm mirror data.');
-    return (await response.json()) as WarmMirrorDataPoints;
+    try {
+      const response = await orpcClient.warmMirror.getDataPoints({
+        params: { userId },
+        query: since ? { since } : {},
+      });
+      return response as WarmMirrorDataPoints;
+    } catch {
+      throw new Error('Failed to fetch warm mirror data.');
+    }
   },
 
   generateNarrativeEn(data: WarmMirrorDataPoints): string {

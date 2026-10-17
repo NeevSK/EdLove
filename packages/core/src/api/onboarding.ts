@@ -1,5 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import { trackProductEvent } from '@repo/core/monitoring';
@@ -12,8 +12,6 @@ import type {
   RequestStatus,
   SchoolJoinRequest,
 } from '@repo/core/types/Onboarding';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 /**
  * Onboarding API (Sovereign Orchestration)
@@ -51,16 +49,19 @@ export const onboardingAPI = {
       });
       return;
     }
-    const res = await (client.api as any).identity['initial-bond'].$post({
-      json: { orientation, context },
+    const res = await orpcClient.onboarding.createInitialBond({
+      body: {
+        orientation,
+        confirmCapacityChange: false,
+        context: (context as Record<string, unknown>) || {},
+      },
     });
-    if (!res.ok) {
-      throw new APIError('Failed to create initial bond', res.status.toString());
+    if (!res.success) {
+      throw new APIError('Failed to create initial bond', 'INITIAL_BOND_FAILED');
     }
-    await res.json();
   },
 
-  async completeOnboarding(userId: string): Promise<void> {
+  async completeOnboarding(userId: string, idempotencyKey?: string): Promise<void> {
     const { data: sessionData } = await supabaseClient.auth.getSession();
     if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === userId) {
       setGuestScope(userId);
@@ -75,38 +76,39 @@ export const onboardingAPI = {
       trackProductEvent('onboarding_completed');
       return;
     }
-    const res = await (client.api as any).identity['complete-onboarding'].$post({
-      json: { userId },
+    const res = await orpcClient.onboarding.completeOnboarding({
+      body: idempotencyKey ? { idempotencyKey } : {},
     });
-    if (!res.ok) {
-      throw new APIError('Failed to complete onboarding', res.status.toString());
+    if (!res.success) {
+      throw new APIError('Failed to complete onboarding', 'ONBOARDING_FAILED');
     }
-    await res.json();
     trackProductEvent('onboarding_completed');
   },
 
   /** Creates the founder's verified school bond after an official school is created. */
   async createFounderSchoolBond(userId: string, schoolId: string): Promise<string> {
-    const res = await (client.api as any).identity['school-founder-bond'].$post({
-      json: { schoolId },
-    });
-    const data = await res.json().catch(() => null);
-    if (!res.ok || !data?.success || typeof data.bondId !== 'string') {
+    try {
+      const res = await orpcClient.onboarding.createFounderSchoolBond({
+        body: { schoolId },
+      });
+      return res.bondId;
+    } catch (error: any) {
       throw new APIError(
-        data?.message || 'School founder bond was not established',
-        res.status.toString() || 'SCHOOL_BOND_NOT_CREATED',
+        error?.message || 'School founder bond was not established',
+        error?.code || 'SCHOOL_BOND_NOT_CREATED',
       );
     }
-    return data.bondId;
   },
 
   async revokeSchoolBond(userId: string, schoolId: string): Promise<void> {
-    const res = await (client.api as any).identity['school-bond'][schoolId].$delete();
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
+    try {
+      await orpcClient.onboarding.revokeSchoolBond({
+        params: { schoolId },
+      });
+    } catch (error: any) {
       throw new APIError(
-        data?.message || 'School bond was not revoked',
-        res.status.toString() || 'SCHOOL_BOND_NOT_REVOKED',
+        error?.message || 'School bond was not revoked',
+        error?.code || 'SCHOOL_BOND_NOT_REVOKED',
       );
     }
   },

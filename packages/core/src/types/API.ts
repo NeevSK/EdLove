@@ -3,9 +3,15 @@ import { SovereignError } from '@repo/core/types/Errors';
 export class APIError extends SovereignError {
   public readonly code: string;
   public readonly reportedToTelemetry: boolean;
-  public override readonly cause?: unknown;
+  public override readonly cause: unknown = undefined;
 
-  constructor(message: string, code = 'API_ERROR', details?: unknown, reportedToTelemetry = false, cause?: unknown) {
+  constructor(
+    message: string,
+    code = 'API_ERROR',
+    details?: unknown,
+    reportedToTelemetry = false,
+    cause?: unknown,
+  ) {
     const normalizedCode = code;
     super({
       title: message,

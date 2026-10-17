@@ -17,10 +17,10 @@ vi.mock('react', () => ({
   useState: <Value>(initial: Value) => [initial, vi.fn()] as const,
 }));
 
-
 vi.mock('@repo/core/store/useAuthStore', () => {
   const mockUseAuthStore = Object.assign(
-    <Value>(selector: (state: any) => Value) => selector({ user: mocks.user, showToast: mocks.showToast }),
+    <Value>(selector: (state: any) => Value) =>
+      selector({ user: mocks.user, showToast: mocks.showToast }),
     {
       getState: () => ({ user: mocks.user, showToast: mocks.showToast }),
       setState: (state: any) => {
@@ -53,8 +53,8 @@ vi.mock('@repo/core/lib/sync/MutationAuditLog', () => {
   return { useMutationAuditLog: mockUseMutationAuditLog };
 });
 
-import { useSafeMutation } from '../useSafeMutation';
 import { networkManager } from '../../logic/managers/NetworkManager';
+import { useSafeMutation } from '../useSafeMutation';
 
 describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
   beforeEach(() => {
@@ -211,4 +211,3 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
     expect(res2).toBeNull();
   });
 });
-

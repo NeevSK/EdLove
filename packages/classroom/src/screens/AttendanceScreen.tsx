@@ -4,6 +4,7 @@ import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
+import { parseInstitutionalQR, ScannerModal } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
@@ -20,6 +21,7 @@ export default function AttendanceScreen() {
   const [students, setStudents] = useState<StudentAttendance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
@@ -64,9 +66,13 @@ export default function AttendanceScreen() {
               (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('attendance_offline_fallback', {
                 attributes: { classroomId },
               } as unknown as never);
-            } catch {}
+            } catch (observeErr) {
+              console.warn('[AttendanceScreen] Failed to log attendance_offline_fallback event:', observeErr);
+            }
           }
-        } catch {}
+        } catch (dbErr) {
+          console.warn('[AttendanceScreen] Local Drizzle query failed during offline fallback:', dbErr);
+        }
         // if still no roster, rethrow to show error
         if (!roster) throw e;
       }
@@ -104,6 +110,7 @@ export default function AttendanceScreen() {
   }, [classroomId]);
 
   const schoolId = useStore((state) => state.schoolId);
+  const isOnline = useStore((state) => state.isOnline);
   const academicCycleId = useStore((state) => state.academicCycleId);
   const setAcademicCycleId = useStore((state) => state.setAcademicCycleId);
 
@@ -159,10 +166,14 @@ export default function AttendanceScreen() {
               (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('attendance_offline_queued', {
                 attributes: { classroomId, count: String(records.length) },
               } as unknown as never);
-            } catch {}
+            } catch (observeErr) {
+              console.warn('[AttendanceScreen] Failed to log attendance_offline_queued event:', observeErr);
+            }
             // store idempotencyKey for backgroundSync dedup (already generated)
             return { queuedOffline: true, idempotencyKey } as unknown as never;
-          } catch {}
+          } catch (dbErr) {
+            console.warn('[AttendanceScreen] Failed to queue attendance locally via Drizzle:', dbErr);
+          }
         }
         throw e;
       }
@@ -194,6 +205,29 @@ export default function AttendanceScreen() {
   const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {
     setStudents(updatedAttendance);
   };
+
+  const handleScanBadge = useCallback(
+    (scannedToken: string) => {
+      const parsed = parseInstitutionalQR(scannedToken);
+      if (parsed && (parsed.kind === 'attendance' || parsed.kind === 'student_id')) {
+        const studentId = parsed.studentId;
+        const target = students.find((s) => s.student_id === studentId || s.id === studentId);
+        if (target) {
+          hapticSuccess();
+          const updated = students.map((s) =>
+            s.id === target.id ? { ...s, status: 'present' as AttendanceStatus } : s,
+          );
+          setStudents(updated);
+          showToast(`Marked ${target.full_name} present`, 'success');
+        } else {
+          showToast('Student badge not enrolled in this classroom roster', 'warning');
+        }
+      } else {
+        showToast('Unrecognized student or attendance badge', 'error');
+      }
+    },
+    [students, showToast],
+  );
 
   const handleSave = () => {
     saveMutation.mutate(students);
@@ -228,10 +262,28 @@ export default function AttendanceScreen() {
 
   return (
     <VStack className="flex-1 bg-phase-surface-primary">
+      {!isOnline && (
+        <Box className="bg-phase-canvas border-b border-phase-border px-4 py-2 flex-row items-center justify-between">
+          <Text className="text-xs text-phase-text-secondary font-medium">
+            Offline mode — attendance will queue locally
+          </Text>
+          <Box className="w-2 h-2 rounded-full bg-templeGold" />
+        </Box>
+      )}
       <AttendanceSheet
         classroomId={classroomId}
         initialStudents={students}
         onAttendanceChange={handleAttendanceChange}
+        onScanBadgePress={() => setIsScannerOpen(true)}
+      />
+      <ScannerModal
+        visible={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={(token) => {
+          handleScanBadge(token);
+          setIsScannerOpen(false);
+        }}
+        title="Scan Student Badge"
       />
       <Box className="p-4 bg-phase-surface-primary pb-10 border-t border-phase-border">
         <Button

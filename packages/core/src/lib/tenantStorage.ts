@@ -133,5 +133,3 @@ export function createTenantStorageScope(
 ): IStorage {
   return new TenantPartitionedStorageAdapter(baseStorage, tenantId, userId);
 }
-
-

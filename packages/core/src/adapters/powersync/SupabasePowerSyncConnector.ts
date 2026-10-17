@@ -4,7 +4,7 @@ import type {
   PowerSyncCredentials,
 } from '@powersync/common';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { runEffect, strictRetryPolicy, tryPromise } from '@repo/core/effect';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
@@ -35,7 +35,11 @@ function fetchSession$(
       if (getActiveAccountId() !== expectedAccountId) {
         return Effect.fail(new PowerSyncAccountChangedError(0, 'account_changed'));
       }
-      return error || !session || !session.user || session.user.is_anonymous
+      return error ||
+        !session ||
+        !session.user ||
+        session.user.is_anonymous ||
+        session.user.id !== expectedAccountId
         ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
         : Effect.succeed({
             access_token: session.access_token,
@@ -62,13 +66,12 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
     const accountId = this.accountId;
 
     return runEffect(
-      Effect.gen(function* () {
+      (Effect.gen(function* () {
         const batch = yield* tryPromise(() => database.getCrudBatch(200));
         if (!batch || batch.crud.length === 0) return;
 
         const session = yield* fetchSession$(accountId);
 
-        const client = createSovereignClient(SOVEREIGN_API_URL);
         const idempotencyKey = yield* tryPromise(() =>
           getConsistentIdempotencyKey(batch.crud, `powersync:${session.user_id}`),
         );
@@ -83,48 +86,30 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           idempotencyKey,
         };
 
-        yield* tryPromise(() => {
-          const api = client.api as unknown as {
-            powersync: {
-              upload: {
-                $post: (
-                  req: { json: typeof body },
-                  options: { headers: Record<string, string> },
-                ) => Promise<Response>;
-              };
-            };
-          };
-          return api.powersync.upload.$post(
-            { json: body },
+        yield* tryPromise(() =>
+          orpcClient.sync.uploadBatch(
             {
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-                'X-Idempotency-Key': idempotencyKey,
-              },
+              body,
             },
-          );
-        }).pipe(
-          Effect.flatMap((res) => {
-            if (!res.ok) {
-              return tryPromise(() => res.json() as Promise<{ message?: string }>).pipe(
-                Effect.flatMap((errorData) =>
-                  Effect.fail(
-                    new PowerSyncUploadError(
-                      res.status,
-                      errorData?.message || `Sanctuary API sync failed with status ${res.status}`,
-                    ),
-                  ),
-                ),
-              );
-            }
-            return Effect.void;
-          }),
-          Effect.retry(strictRetryPolicy),
+            {
+              expectedAccountId: accountId,
+            },
+          ),
+        ).pipe(
+          Effect.retry({
+            schedule: strictRetryPolicy,
+            while: (error: any) => error?.status === 0 || (error?.status && error.status >= 500),
+          } as any),
           Effect.catch((e: unknown) => {
-            if (e instanceof PowerSyncUploadError) return Effect.fail(e);
-            return Effect.fail(new PowerSyncUploadError(0, String(e)));
+            const status = (e as any)?.status || 0;
+            const message = (e as any)?.message || String(e);
+            return Effect.fail(new PowerSyncUploadError(status, message));
           }),
         );
+
+        if (getActiveAccountId() !== accountId) {
+          return yield* Effect.fail(new PowerSyncAccountChangedError(0, 'account_changed'));
+        }
 
         const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
 
@@ -140,7 +125,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
             });
           }).pipe(Effect.andThen(Effect.fail(error))),
         ),
-      ),
+      ) as Effect.Effect<void, Error | PowerSyncUploadError, never>),
       'POWERSYNC_UPLOAD_FAILED',
     );
   }

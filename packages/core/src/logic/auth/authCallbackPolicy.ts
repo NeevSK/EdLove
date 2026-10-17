@@ -35,7 +35,11 @@ export function classifyAuthCallback(url: string): AuthCallbackIntent {
       ]);
 
       if (credentials.length > 1) return { kind: 'rejected', reason: 'mixed-credentials' } as const;
-      if (Array.from(URL_TOKEN_NAMES).some((name) => values(query, name).length || values(fragment, name).length)) {
+      if (
+        Array.from(URL_TOKEN_NAMES).some(
+          (name) => values(query, name).length || values(fragment, name).length,
+        )
+      ) {
         return { kind: 'rejected', reason: 'url-token' } as const;
       }
 

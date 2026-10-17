@@ -1,4 +1,4 @@
-import { assignmentsAPI, classroomsAPI } from '@repo/core/api/client';
+import { assignmentsAPI, classroomsAPI, echoAPI, interceptApiCall } from '@repo/core/api/client';
 import { type Assignment, type Echo, type TeacherStats, useAuthStore } from '@repo/core/logic';
 
 import { useQuery } from '@tanstack/react-query';
@@ -60,10 +60,22 @@ export function useTeacherEchoesPulse() {
 
   return useQuery<Echo[]>({
     queryKey: ['teacher-echoes', userId],
-    queryFn: () => {
-      // Mocking for now, as echoAPI is still being solidified
-      // but we have EchoSchema ready for it.
-      return Promise.resolve([]) as Promise<Echo[]>;
+    queryFn: async () => {
+      if (!userId) return [];
+      const classrooms = await classroomsAPI.getTeacherClassrooms(userId);
+      if (!classrooms || classrooms.length === 0) {
+        const intercepted = interceptApiCall('echo', 'getTeacherEchoes', [userId]);
+        return (intercepted ? await intercepted : []) as Echo[];
+      }
+      const allEchoes = await Promise.all(
+        classrooms.map((c: any) => echoAPI.getEchoesByClassroom(c.id)),
+      );
+      const flat = allEchoes.flat();
+      if (flat.length === 0) {
+        const intercepted = interceptApiCall('echo', 'getTeacherEchoes', [userId]);
+        return (intercepted ? await intercepted : []) as Echo[];
+      }
+      return flat as Echo[];
     },
     enabled: !!userId,
   });
@@ -78,9 +90,13 @@ export function useTeacherTemporalSnapshot() {
 
   return useQuery({
     queryKey: ['teacher-temporal-snapshot', userId],
-    queryFn: () => {
-      // Logic for temporal snapshots across sanctuaries
-      return Promise.resolve([]);
+    queryFn: async () => {
+      if (!userId) return [];
+      const intercepted = interceptApiCall('teacherDashboard', 'getTemporalSnapshot', [userId]);
+      if (intercepted) {
+        return intercepted;
+      }
+      return [];
     },
     enabled: !!userId,
   });

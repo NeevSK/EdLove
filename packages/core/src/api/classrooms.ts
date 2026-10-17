@@ -1,4 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
 /**
@@ -7,82 +7,111 @@ import { APIError } from '@repo/core/types/API';
  * This module siphons Classroom structural requests to the Sanctuary API.
  */
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
 export const classroomsAPI = {
   async getTeacherClassrooms(teacher_id: string) {
     return this.getByTeacher(teacher_id);
   },
 
   async update(id: string, updates: any) {
-    const res = await (client.api as any).educational.classrooms[':id'].$patch({
-      param: { id },
-      json: { id, ...updates },
-    });
-    if (!res.ok) throw new APIError('Failed to update classroom', res.status.toString());
-    return await res.json();
+    try {
+      const res = await orpcClient.educational.updateClassroom({
+        params: { id },
+        body: { id, ...updates },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to update classroom',
+        error.status?.toString() || error.code || 'CLASSROOM_UPDATE_FAILED',
+      );
+    }
   },
 
   async create(classroom: any) {
-    const res = await (client.api as any).educational.classrooms.$post({ json: classroom });
-    if (!res.ok) throw new APIError('Failed to create classroom', res.status.toString());
-    return await res.json();
+    try {
+      const res = await orpcClient.educational.createClassroom({
+        body: classroom,
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to create classroom',
+        error.status?.toString() || error.code || 'CLASSROOM_CREATE_FAILED',
+      );
+    }
   },
 
   async delete(id: string) {
-    const res = await (client.api as any).educational.classrooms[':id'].$delete({ param: { id } });
-    if (!res.ok) throw new APIError('Failed to delete classroom', res.status.toString());
-  },
-  async getByTeacher(teacher_id: string, params: { limit?: number; offset?: number } = {}) {
-    const res = await (client.api as any).educational.classrooms['by-teacher'].$get({
-      query: {
-        teacher_id,
-        limit: params.limit?.toString(),
-        offset: params.offset?.toString(),
-      },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch classrooms by teacher', res.status.toString());
+    try {
+      await orpcClient.educational.deleteClassroom({
+        params: { id },
+      });
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to delete classroom',
+        error.status?.toString() || error.code || 'CLASSROOM_DELETE_FAILED',
+      );
     }
+  },
 
-    return await res.json();
+  async getByTeacher(teacher_id: string, params: { limit?: number; offset?: number } = {}) {
+    try {
+      const res = await orpcClient.educational.getByTeacher({
+        query: {
+          teacher_id,
+          limit: params.limit,
+          offset: params.offset,
+        },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch classrooms by teacher',
+        error.status?.toString() || error.code || 'CLASSROOMS_FETCH_FAILED',
+      );
+    }
   },
 
   async getByStudent(student_id: string) {
-    const res = await (client.api as any).educational.classrooms['by-student'].$get({
-      query: { student_id },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch classrooms by student', res.status.toString());
+    try {
+      const res = await orpcClient.educational.getByStudent({
+        query: { student_id },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch classrooms by student',
+        error.status?.toString() || error.code || 'CLASSROOMS_FETCH_FAILED',
+      );
     }
-
-    return await res.json();
   },
 
   async getTeacherStats(id: string) {
-    const res = await (client.api as any).educational.classrooms.stats.teacher[':id'].$get({
-      param: { id },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch teacher statistics', res.status.toString());
+    try {
+      const res = await orpcClient.educational.getTeacherStats({
+        params: { id },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch teacher statistics',
+        error.status?.toString() || error.code || 'CLASSROOMS_STATS_FAILED',
+      );
     }
-
-    return await res.json();
   },
 
   async getById(id: string) {
-    const res = await (client.api as any).educational.classrooms[':id'].$get({
-      param: { id },
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      throw new APIError('Failed to fetch classroom', res.status.toString());
+    try {
+      const res = await orpcClient.educational.getById({
+        params: { id },
+      });
+      return res;
+    } catch (error: any) {
+      if (error?.status === 404 || error?.code === 'NOT_FOUND') return null;
+      throw new APIError(
+        error.message || 'Failed to fetch classroom',
+        error.status?.toString() || error.code || 'CLASSROOM_FETCH_FAILED',
+      );
     }
-
-    return await res.json();
   },
 };

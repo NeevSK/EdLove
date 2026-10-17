@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import type { UserContext } from '../../logic/schemas/user.schema';
 import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFeatureRollout.adapter';
 
+const growthBookInit = vi.hoisted(() => vi.fn());
+
 // Mock GrowthBook SDK internally to prevent network calls
 vi.mock('@growthbook/growthbook', () => {
   class MockGrowthBook {
@@ -10,7 +12,8 @@ vi.mock('@growthbook/growthbook', () => {
 
     constructor() {}
 
-    init() {
+    init(options: unknown) {
+      growthBookInit(options);
       return Promise.resolve({ success: true, source: 'network' });
     }
 
@@ -44,6 +47,15 @@ vi.mock('@growthbook/growthbook', () => {
 });
 
 describe('GrowthBookFeatureRolloutAdapter', () => {
+  it('uses polling instead of unsupported native EventSource streaming', () => {
+    new GrowthBookFeatureRolloutAdapter('http://mock', 'sdk-mock');
+
+    expect(growthBookInit).toHaveBeenCalledWith({
+      streaming: false,
+      pollingInterval: 15 * 60 * 1000,
+    });
+  });
+
   it('maps UserContext and resolves manifest flags by GrowthBook key', async () => {
     const adapter = new GrowthBookFeatureRolloutAdapter('http://mock', 'sdk-mock');
     const context = {

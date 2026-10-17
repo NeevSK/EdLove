@@ -1,4 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { communityAPI } from '@repo/core/api/community';
 import type { ICommunityRepository, PostFilters } from '@repo/core/logic/domains/community/ports';
 import { CommunityPostSchema } from '@repo/core/logic/schemas/community.schema';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
@@ -42,6 +43,19 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
     capacity: string;
     schoolId: string;
   }): Promise<Post> {
+    try {
+      const res = await communityAPI.createPost({
+        group_id: params.post.group_id || 'general',
+        content: params.post.content || '',
+        post_type: params.post.post_type || 'discussion',
+        visibility: params.post.visibility || 'public',
+        author_tier: params.capacity || 'standard',
+      });
+      if (res) return CommunityPostSchema.parse(res) as Post;
+    } catch {
+      // Offline fallback: write via direct Supabase client (preserved under Deletion Veto)
+    }
+
     const { data, error } = await this.client
       .from('community_posts')
       .insert([
@@ -62,6 +76,15 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   }
 
   async togglePostReaction(postId: string, userId: string): Promise<boolean> {
+    try {
+      const active = await communityAPI.togglePostReaction(postId, userId);
+      if (typeof active === 'boolean') {
+        return active;
+      }
+    } catch {
+      // Fallback
+    }
+
     const { data: existing } = await this.client
       .from('community_reactions')
       .select('user_id')
@@ -117,6 +140,16 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
     userId: string;
     isAnonymous?: boolean;
   }): Promise<Comment> {
+    try {
+      const res = await communityAPI.createComment(params.postId, {
+        content: params.content,
+        isAnonymous: params.isAnonymous,
+      });
+      if (res) return res as Comment;
+    } catch {
+      // Offline fallback: write via direct Supabase client (preserved under Deletion Veto)
+    }
+
     const { data, error } = await this.client
       .from('community_comments')
       .insert({
@@ -137,11 +170,27 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   }
 
   async deleteComment(commentId: string): Promise<void> {
+    try {
+      await communityAPI.deleteComment(commentId);
+      return;
+    } catch {
+      // Fallback
+    }
+
     const { error } = await this.client.from('community_comments').delete().eq('id', commentId);
     if (error) throw new APIError('Failed to delete comment', error.code, error);
   }
 
   async toggleCommentUpvote(commentId: string, userId: string): Promise<boolean> {
+    try {
+      const res = await communityAPI.toggleCommentUpvote(commentId);
+      if (typeof res?.hasUpvoted === 'boolean') {
+        return res.hasUpvoted;
+      }
+    } catch {
+      // Fallback
+    }
+
     const { data: existing } = await this.client
       .from('community_comment_upvotes')
       .select('comment_id')
@@ -167,6 +216,13 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   }
 
   async getPollStatus(postId: string, userId?: string): Promise<PollStatus> {
+    try {
+      const res = await communityAPI.getPollStatus(postId);
+      if (res) return res as PollStatus;
+    } catch {
+      // Fallback
+    }
+
     const { data: countData, error: countError } = await this.client
       .from('community_poll_votes')
       .select('option_id')
@@ -207,6 +263,15 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
     userId: string;
     allowMultiple?: boolean;
   }): Promise<string[]> {
+    try {
+      const res = await communityAPI.voteInPoll(params.postId, params.optionId);
+      if (Array.isArray(res?.selectedOptionIds)) {
+        return res.selectedOptionIds;
+      }
+    } catch {
+      // Fallback
+    }
+
     const { data: existing, error: fetchErr } = await this.client
       .from('community_poll_votes')
       .select('option_id')
@@ -259,6 +324,13 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   }
 
   async markOfficialAnswer(commentId: string, isOfficial: boolean): Promise<void> {
+    try {
+      await communityAPI.markOfficialAnswer(commentId, isOfficial);
+      return;
+    } catch {
+      // Fallback
+    }
+
     const { error } = await this.client
       .from('community_comments')
       .update({ is_official_answer: isOfficial })

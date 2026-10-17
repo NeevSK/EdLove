@@ -636,6 +636,7 @@ class PolymathPlatformServer {
           'hooks',
           'deprecations',
           'version_drift',
+          'seams',
           'memory_sinks',
           'cognitive_load',
           'push_audit',
@@ -667,6 +668,8 @@ class PolymathPlatformServer {
           hooks: (p) => this.audit.handleAuditHookViolations(p as any),
           deprecations: (p) => this.audit.handleAuditDeprecations(p as any),
           version_drift: (p) => this.audit.handleAuditVersionDrift(p as any),
+          seams: (p) => this.audit.handleAuditSeams(p as any),
+          tcdi: (p) => this.audit.handleCheckTcdi(p as any),
           memory_sinks: () => this.audit.handleCheckMemorySinks(),
           cognitive_load: (p) => this.audit.handleReportCognitiveLoad(p as any),
           push_audit: () => this.audit.handlePushAudit(),
@@ -705,11 +708,14 @@ class PolymathPlatformServer {
           'parse_pdf',
           'spellcheck',
           'disk_usage',
+          'affordance',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
         switch (action) {
+          case 'affordance':
+            return this.discovery.handleAffordance(params as any);
           case 'grep':
             return this.discovery.handleGrepCode(params as any);
           case 'scout':

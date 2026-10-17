@@ -19,3 +19,13 @@ export {
   type RuntimeNetworkSnapshot,
   type RuntimeNetworkType,
 } from './runtimeConditions';
+export {
+  type RuntimeVisualBudget,
+  type RuntimeVisualSignals,
+  resolveRuntimeVisualBudget,
+} from './visualBudget';
+export {
+  buildResponsiveWallpaperUrl,
+  resolveWallpaperPresentation,
+  type WallpaperPresentation,
+} from './wallpaper';

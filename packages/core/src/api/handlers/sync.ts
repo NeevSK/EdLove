@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { SyncDelegateError, SyncOperationError, SyncTableError } from '@repo/core/effect/Errors';
+import { SovereignError } from '@repo/core/types/Errors';
 import type { Context } from 'hono';
 
 const tableToModelMap: Record<string, string> = {
@@ -44,8 +45,17 @@ if (
   (globalThis as any).__powerSyncIdempotencyCleanupInterval = interval;
 }
 
-class IdempotencyConflictError extends Error {
-  readonly code = 'IDEMPOTENCY_CONFLICT';
+const idempotencyConflictMessage = 'Idempotency key was reused with a different batch payload';
+
+class IdempotencyConflictError extends SovereignError {
+  constructor() {
+    super({
+      ...SovereignError.conflict('IDEMPOTENCY_CONFLICT').details,
+      title: idempotencyConflictMessage,
+      detail: idempotencyConflictMessage,
+    });
+    this.name = 'IdempotencyConflictError';
+  }
 }
 
 const hashCrud = (crud: any[]) => createHash('sha256').update(JSON.stringify(crud)).digest('hex');
@@ -85,9 +95,7 @@ export async function applyPowerSyncBatch(
           `;
           const record = rows?.[0];
           if (record?.payload_hash !== payloadHash) {
-            throw new IdempotencyConflictError(
-              'Idempotency key was reused with a different batch payload',
-            );
+            throw new IdempotencyConflictError();
           }
           if (record?.status === 'completed') {
             throw new IdempotencyReplay(Number(record.processed_count ?? 0));
@@ -96,9 +104,7 @@ export async function applyPowerSyncBatch(
           const cached = localIdempotencyCache.get(scopedKey);
           if (cached) {
             if (cached.payloadHash !== payloadHash) {
-              throw new IdempotencyConflictError(
-                'Idempotency key was reused with a different batch payload',
-              );
+              throw new IdempotencyConflictError();
             }
             throw new IdempotencyReplay(cached.processedCount);
           }
@@ -163,6 +169,9 @@ export async function applyPowerSyncBatch(
   } catch (e) {
     if (e instanceof IdempotencyReplay) {
       return { success: true, processedCount: e.processedCount, idempotent: true };
+    }
+    if (e instanceof IdempotencyConflictError) {
+      throw e;
     }
     const err = e as Error | SyncTableError | SyncDelegateError | SyncOperationError;
     const message =

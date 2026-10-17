@@ -15,6 +15,8 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
     getSession: vi.fn(),
     getUser: vi.fn(),
     signInWithPassword: vi.fn(),
+    signInWithPhoneOtp: vi.fn(),
+    verifyPhoneOtp: vi.fn(),
     signInWithOAuth: vi.fn(),
     linkOAuthIdentity: vi.fn(),
     signInWithPasskey: vi.fn(),
@@ -66,6 +68,24 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
     expect(result).toEqual({ url: 'https://example.com/passkey' });
   });
 
+  it('delegates phone OTP without recording provider identity as an account audit', async () => {
+    authPort.signInWithPhoneOtp.mockResolvedValue(undefined);
+    const verified = { user: { id: 'provider-subject' }, session: { access_token: 'session' } };
+    authPort.verifyPhoneOtp.mockResolvedValue(verified);
+
+    await expect(manager.signInWithPhoneOtp({ phone: '+94771234567' })).resolves.toBeUndefined();
+    await expect(manager.verifyPhoneOtp({ phone: '+94771234567', token: '123456' })).resolves.toBe(
+      verified,
+    );
+
+    expect(authPort.signInWithPhoneOtp).toHaveBeenCalledWith({ phone: '+94771234567' });
+    expect(authPort.verifyPhoneOtp).toHaveBeenCalledWith({
+      phone: '+94771234567',
+      token: '123456',
+    });
+    expect(mockLogAuditEvent).not.toHaveBeenCalled();
+  });
+
   it('requires password sign-up to return an active session', async () => {
     authPort.signUp.mockResolvedValue({ user: { id: 'user-1' }, session: null });
 
@@ -102,7 +122,12 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
     authPort.updateUser.mockResolvedValue({ user: { id: 'supabase-user-1' } });
     identityPort.identifyActiveCitizen.mockResolvedValue({ id: 'internal-user-1' });
 
-    await manager.linkAnonymousToEmail('person@example.com', 'secure-password', 'Person', 'guardian');
+    await manager.linkAnonymousToEmail(
+      'person@example.com',
+      'secure-password',
+      'Person',
+      'guardian',
+    );
 
     expect(identityPort.updateProfile).toHaveBeenCalledWith(
       'internal-user-1',

@@ -85,7 +85,10 @@ describe('resolveAuthProfile', () => {
 
     await expect(
       resolveAuthProfile(session(), {
-        getAccountLifecycleStatus: async () => ({ ...deactivatedStatus, status: 'active' as const }),
+        getAccountLifecycleStatus: async () => ({
+          ...deactivatedStatus,
+          status: 'active' as const,
+        }),
         getSchoolType: vi.fn(),
         identifyActiveCitizen: async () => null,
       }),

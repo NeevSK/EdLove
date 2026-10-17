@@ -1,4 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
 /**
@@ -9,23 +9,23 @@ import { APIError } from '@repo/core/types/API';
  * [BREAKING] Renamed getAll -> getClassroomResources.
  */
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
 export const resourcesAPI = {
   /**
    * Fetches resources for a classroom.
    * [LOUD-FAILURE] Renamed from getAll.
    */
   async getClassroomResources(classroomId: string) {
-    const res = await (client.api as any).educational.classrooms[':classroomId'].resources.$get({
-      param: { classroomId },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch resources', res.status.toString());
+    try {
+      const res = await orpcClient.educational.getClassroomResources({
+        params: { classroomId },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch resources',
+        error.status?.toString() || error.code || 'RESOURCES_FETCH_FAILED',
+      );
     }
-
-    return await res.json();
   },
 
   /**

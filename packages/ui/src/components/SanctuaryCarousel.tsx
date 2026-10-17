@@ -1,6 +1,6 @@
 import { Theme } from '@repo/ui/theme/Theme';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, { withTiming } from 'react-native-reanimated';
 // @ts-expect-error - Module has no type declarations
 import Carousel from 'react-native-reanimated-carousel';
@@ -19,8 +19,6 @@ export interface SanctuaryCarouselProps<T> {
   parallax?: boolean;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
-
 /**
  * SanctuaryCarousel - Netflix-style horizontal card scroller with parallax.
  * Backed by react-native-reanimated-carousel for 60fps animations.
@@ -34,7 +32,17 @@ export function SanctuaryCarousel<T>({
   visibleCount = 4,
   parallax = true,
 }: SanctuaryCarouselProps<T>) {
+  const { width: screenWidth } = useWindowDimensions();
   const itemWidth = (screenWidth - paddingHorizontal * 2 - gap * (visibleCount - 1)) / visibleCount;
+
+  const itemStyle = React.useMemo(
+    () => ({ width: itemWidth, marginRight: gap }),
+    [itemWidth, gap],
+  );
+  const lastItemStyle = React.useMemo(
+    () => ({ width: itemWidth, marginRight: 0 }),
+    [itemWidth],
+  );
 
   return (
     <Carousel
@@ -42,7 +50,7 @@ export function SanctuaryCarousel<T>({
       renderItem={({ item, index }: { item: T; index: number }) => (
         <React.Fragment key={keyExtractor(item, index)}>
           <Animated.View
-            style={{ width: itemWidth, marginRight: index < data.length - 1 ? gap : 0 }}
+            style={index < data.length - 1 ? itemStyle : lastItemStyle}
           >
             {renderItem(item, index)}
           </Animated.View>

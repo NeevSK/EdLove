@@ -1,4 +1,5 @@
-import { assignmentsAPI } from '@repo/core/api/client';
+import { assignmentsAPI, getDemoGrades } from '@repo/core/api/client';
+import { useAuthStore } from '@repo/core/logic';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Award, BookMarked } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
@@ -19,25 +20,6 @@ interface StudentGradesOverviewProps {
   isDemo?: boolean;
 }
 
-const DEMO_GRADES: GradeRow[] = [
-  {
-    id: 'demo-grade-1',
-    grade: 86,
-    feedback: 'Clear reasoning and careful presentation.',
-    submitted_at: new Date().toISOString(),
-    assignments: { title: 'Wave Function Practice' },
-    classrooms: { name: 'Grade 10 Mathematics' },
-  },
-  {
-    id: 'demo-grade-2',
-    grade: 73,
-    feedback: 'Good improvement. Keep refining your lab conclusions.',
-    submitted_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-    assignments: { title: 'Photosynthesis Lab Report' },
-    classrooms: { name: 'Grade 11 Science' },
-  },
-];
-
 function resolveGradeColorClass(grade: number) {
   if (grade >= 75) return 'text-sanctuary-success';
   if (grade >= 50) return 'text-sanctuarySaffron';
@@ -51,21 +33,29 @@ function resolveGradeBgClass(grade: number) {
 }
 
 export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesOverviewProps) {
-  const [grades, setGrades] = useState<GradeRow[]>(isDemo ? DEMO_GRADES : []);
-  const [isLoading, setIsLoading] = useState(!isDemo);
+  const isExplorerMode = useAuthStore((state) => state.isExplorerMode);
+  const isGuest = useAuthStore((state) => state.isGuest);
+  const isDemoExperience = isDemo || isExplorerMode || isGuest;
+
+  const [grades, setGrades] = useState<GradeRow[]>(isDemoExperience ? (getDemoGrades() as any) : []);
+  const [isLoading, setIsLoading] = useState(!isDemoExperience);
   const [loadError, setLoadError] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     if (isDemo) {
-      setGrades(DEMO_GRADES);
+      setGrades(getDemoGrades() as any);
       setLoadError(false);
       setIsLoading(false);
       return;
     }
 
     if (!userId) {
-      setGrades([]);
+      if (isExplorerMode || isGuest) {
+        setGrades(getDemoGrades() as any);
+      } else {
+        setGrades([]);
+      }
       setLoadError(false);
       setIsLoading(false);
       return;
@@ -82,12 +72,22 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
 
         if (!isActive) return;
 
-        setGrades(
-          ((data as GradeRow[] | null) ?? []).filter((row) => typeof row.grade === 'number'),
-        );
+        const filtered = ((data as GradeRow[] | null) ?? []).filter((row) => typeof row.grade === 'number');
+        if (filtered.length > 0) {
+          setGrades(filtered);
+        } else if (isExplorerMode || isGuest) {
+          setGrades(getDemoGrades() as any);
+        } else {
+          setGrades([]);
+        }
       } catch {
         if (!isActive) return;
-        setLoadError(true);
+        if (isExplorerMode || isGuest) {
+          setGrades(getDemoGrades() as any);
+          setLoadError(false);
+        } else {
+          setLoadError(true);
+        }
       } finally {
         if (isActive) setIsLoading(false);
       }
@@ -98,7 +98,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     return () => {
       isActive = false;
     };
-  }, [isDemo, reloadToken, userId]);
+  }, [isDemo, isExplorerMode, isGuest, reloadToken, userId]);
 
   const summary = useMemo(() => {
     if (grades.length === 0) {

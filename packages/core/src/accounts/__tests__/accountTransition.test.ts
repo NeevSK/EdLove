@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({ clearPowerSyncAccount: vi.fn() }));
 
@@ -7,8 +7,8 @@ vi.mock('../../adapters/powersync/database', () => ({
   clearPowerSyncAccount: mocks.clearPowerSyncAccount,
 }));
 
-import { accountTransition } from '../accountTransition';
 import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+import { accountTransition } from '../accountTransition';
 
 function command(id: string, userId?: string): QueuedMutation {
   return {
@@ -33,7 +33,11 @@ describe('accountTransition', () => {
 
   it('quarantines only commands belonging to the outgoing principal', async () => {
     useMutationQueue.setState({
-      queue: [command('outgoing', 'account-a'), command('incoming', 'account-b'), command('legacy')],
+      queue: [
+        command('outgoing', 'account-a'),
+        command('incoming', 'account-b'),
+        command('legacy'),
+      ],
       isSyncing: true,
     });
 
@@ -59,8 +63,15 @@ describe('accountTransition', () => {
 
   it('discards only explicitly selected principal work, including its dead letters', async () => {
     useMutationQueue.setState({
-      queue: [command('outgoing', 'account-a'), command('incoming', 'account-b'), command('legacy')],
-      deadLetterQueue: [command('dead-outgoing', 'account-a'), command('dead-incoming', 'account-b')],
+      queue: [
+        command('outgoing', 'account-a'),
+        command('incoming', 'account-b'),
+        command('legacy'),
+      ],
+      deadLetterQueue: [
+        command('dead-outgoing', 'account-a'),
+        command('dead-incoming', 'account-b'),
+      ],
     });
 
     const outcome = await accountTransition.transition({
@@ -72,8 +83,13 @@ describe('accountTransition', () => {
 
     expect(mocks.clearPowerSyncAccount).not.toHaveBeenCalled();
     expect(outcome.discardedCommandCount).toBe(2);
-    expect(useMutationQueue.getState().queue.map((entry) => entry.id)).toEqual(['incoming', 'legacy']);
-    expect(useMutationQueue.getState().deadLetterQueue.map((entry) => entry.id)).toEqual(['dead-incoming']);
+    expect(useMutationQueue.getState().queue.map((entry) => entry.id)).toEqual([
+      'incoming',
+      'legacy',
+    ]);
+    expect(useMutationQueue.getState().deadLetterQueue.map((entry) => entry.id)).toEqual([
+      'dead-incoming',
+    ]);
   });
 
   it('does not change command ownership when clearing replicated data fails', async () => {

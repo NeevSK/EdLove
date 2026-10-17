@@ -6,6 +6,28 @@ import {
 } from '@repo/core/logic/schemas/classroom-note.schema';
 import { z } from 'zod';
 
+export const ASSIGNMENT_SUBMISSION_CAPABILITY = 'assignment.submit' as const;
+export const OperationReceiptResultSchema = z.object({ submissionId: z.uuid() });
+export const OperationReceiptResponseSchema = z.strictObject({
+  operationId: z.uuid(),
+  capability: z.literal(ASSIGNMENT_SUBMISSION_CAPABILITY),
+  status: z.enum(['pending', 'committed', 'failed', 'conflict']),
+  result: OperationReceiptResultSchema.nullable(),
+  errorCode: z.enum(['OPERATION_FAILED', 'OPERATION_CONFLICT']).nullable(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+});
+
+const classroomResponse = ClassroomSchema.extend({
+  teacher_name: z.string().nullable(),
+  student_count: z.number().int().nonnegative().optional(),
+  lesson_count: z.number().int().nonnegative().optional(),
+});
+
+const classroomNoteResponse = ClassroomNoteSchema.extend({
+  author_name: z.string().nullable(),
+});
+
 const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({
     policy: { action, subject: 'Classroom' },
@@ -90,6 +112,35 @@ const submission = z.object({
  * [LOUD-FAILURE] Methods must be explicitly mapped in the contract to be exposed via POA.
  */
 export const educationalContract = {
+  getOperationReceipt: {
+    method: 'get',
+    path: '/educational/operations/:operationId',
+    request: { params: z.strictObject({ operationId: z.uuid() }) },
+    responses: {
+      200: {
+        schema: OperationReceiptResponseSchema,
+        description: 'Account-owned operation outcome',
+      },
+    },
+    metadata: { policy: { action: 'read', subject: 'OperationReceipt' } },
+  },
+  getOperationReceiptByKey: {
+    method: 'get',
+    path: '/educational/operation-receipts/by-key',
+    request: {
+      query: z.strictObject({
+        capability: z.literal(ASSIGNMENT_SUBMISSION_CAPABILITY),
+        idempotencyKey: z.uuid(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: OperationReceiptResponseSchema,
+        description: 'Account-owned outcome by caller-known key',
+      },
+    },
+    metadata: { policy: { action: 'read', subject: 'OperationReceipt' } },
+  },
   getByTeacher: {
     method: 'get',
     path: '/educational/classrooms/by-teacher',
@@ -102,7 +153,7 @@ export const educationalContract = {
     },
     responses: {
       200: {
-        schema: z.array(ClassroomSchema),
+        schema: z.array(classroomResponse),
         description: 'Retrieve classrooms by teacher',
       },
     },
@@ -119,7 +170,7 @@ export const educationalContract = {
     },
     responses: {
       200: {
-        schema: z.array(ClassroomSchema),
+        schema: z.array(classroomResponse),
         description: 'Retrieve classrooms by student',
       },
     },
@@ -153,7 +204,7 @@ export const educationalContract = {
     },
     responses: {
       200: {
-        schema: ClassroomSchema,
+        schema: classroomResponse,
         description: 'Retrieve a single classroom',
       },
     },
@@ -177,7 +228,7 @@ export const educationalContract = {
         academicYear: z.string().optional().nullable(),
       }),
     },
-    responses: { 201: { schema: ClassroomSchema, description: 'Create classroom' } },
+    responses: { 201: { schema: classroomResponse, description: 'Create classroom' } },
     metadata: classroomAuthority('create'),
   },
 
@@ -199,7 +250,7 @@ export const educationalContract = {
         isArchived: z.boolean().optional(),
       }),
     },
-    responses: { 200: { schema: ClassroomSchema, description: 'Update classroom' } },
+    responses: { 200: { schema: classroomResponse, description: 'Update classroom' } },
     metadata: classroomAuthority('update'),
   },
 
@@ -324,7 +375,10 @@ export const educationalContract = {
   getMaterials: {
     method: 'get',
     path: '/educational/classrooms/:classroomId/materials',
-    request: { query: z.strictObject({ classroomId: z.uuid() }) },
+    request: {
+      params: z.strictObject({ classroomId: z.uuid() }),
+      query: z.strictObject({}).optional(),
+    },
     responses: { 200: { schema: z.array(material), description: 'Classroom materials' } },
     metadata: classroomAuthority('read'),
   },
@@ -332,7 +386,10 @@ export const educationalContract = {
   getLessonMaterials: {
     method: 'get',
     path: '/educational/lessons/:lessonId/materials',
-    request: { query: z.strictObject({ lessonId: z.uuid() }) },
+    request: {
+      params: z.strictObject({ lessonId: z.uuid() }),
+      query: z.strictObject({}).optional(),
+    },
     responses: { 200: { schema: z.array(material), description: 'Lesson materials' } },
     metadata: lessonAuthority('read'),
   },
@@ -387,7 +444,10 @@ export const educationalContract = {
   getAssignments: {
     method: 'get',
     path: '/educational/classrooms/:classroomId/assignments',
-    request: { query: z.strictObject({ classroomId: z.uuid() }) },
+    request: {
+      params: z.strictObject({ classroomId: z.uuid() }),
+      query: z.strictObject({}).optional(),
+    },
     responses: { 200: { schema: z.array(assignment), description: 'Classroom assignments' } },
     metadata: classroomAuthority('read'),
   },
@@ -395,7 +455,10 @@ export const educationalContract = {
   getLessonAssignments: {
     method: 'get',
     path: '/educational/lessons/:lessonId/assignments',
-    request: { query: z.strictObject({ lessonId: z.uuid() }) },
+    request: {
+      params: z.strictObject({ lessonId: z.uuid() }),
+      query: z.strictObject({}).optional(),
+    },
     responses: { 200: { schema: z.array(assignment), description: 'Lesson assignments' } },
     metadata: lessonAuthority('read'),
   },
@@ -448,7 +511,10 @@ export const educationalContract = {
   getStudentSubmissions: {
     method: 'get',
     path: '/educational/students/:studentId/submissions',
-    request: { query: z.strictObject({ studentId: z.uuid(), classroomId: z.uuid().optional() }) },
+    request: {
+      params: z.strictObject({ studentId: z.uuid() }),
+      query: z.strictObject({ classroomId: z.uuid().optional() }),
+    },
     responses: { 200: { schema: z.array(submission), description: 'Student submissions' } },
     metadata: classroomAuthority('read'),
   },
@@ -457,8 +523,8 @@ export const educationalContract = {
     method: 'get',
     path: '/educational/students/:studentId/assignments/upcoming',
     request: {
+      params: z.strictObject({ studentId: z.uuid() }),
       query: z.strictObject({
-        studentId: z.uuid(),
         limit: z.coerce.number().int().min(1).max(24).optional(),
       }),
     },
@@ -477,8 +543,8 @@ export const educationalContract = {
     method: 'post',
     path: '/educational/assignments/:assignmentId/submissions',
     request: {
+      params: z.strictObject({ assignmentId: z.uuid() }),
       body: z.strictObject({
-        assignmentId: z.uuid(),
         content: z.string().max(100_000).nullable().optional(),
         idempotencyKey: z.uuid().optional(),
       }),
@@ -491,8 +557,8 @@ export const educationalContract = {
     method: 'patch',
     path: '/educational/submissions/:id/grade',
     request: {
+      params: z.strictObject({ id: z.uuid() }),
       body: z.strictObject({
-        id: z.uuid(),
         grade: z.number().int().min(0).max(10_000).nullable(),
         feedback: z.string().max(20_000).nullable().optional(),
       }),
@@ -510,7 +576,7 @@ export const educationalContract = {
     },
     responses: {
       200: {
-        schema: z.array(ClassroomNoteSchema),
+        schema: z.array(classroomNoteResponse),
         description: 'Retrieve classroom notes',
       },
     },
@@ -526,7 +592,7 @@ export const educationalContract = {
     },
     responses: {
       200: {
-        schema: z.array(ClassroomNoteSchema),
+        schema: z.array(classroomNoteResponse),
         description: 'Retrieve classroom notes snapshot',
       },
     },
@@ -541,7 +607,7 @@ export const educationalContract = {
     },
     responses: {
       201: {
-        schema: ClassroomNoteSchema,
+        schema: classroomNoteResponse,
         description: 'Classroom note created successfully',
       },
     },
@@ -561,7 +627,7 @@ export const educationalContract = {
     },
     responses: {
       200: {
-        schema: ClassroomNoteSchema,
+        schema: classroomNoteResponse,
         description: 'Classroom note updated successfully',
       },
     },
@@ -575,6 +641,10 @@ export const educationalContract = {
       params: z.strictObject({ id: z.uuid() }),
     },
     responses: {
+      200: {
+        schema: z.strictObject({ success: z.literal(true) }),
+        description: 'Classroom note deletion acknowledged',
+      },
       204: {
         schema: z.null(),
         description: 'Classroom note deleted successfully',

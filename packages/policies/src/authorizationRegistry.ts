@@ -63,6 +63,7 @@ export const AUTHORIZATION_RESOURCES = [
   'ManifestoEndorsement',
   'UserRewards',
   'WhisperedMoment',
+  'OperationReceipt',
 ] as const;
 
 export const BOND_ENTITY_TYPES = [

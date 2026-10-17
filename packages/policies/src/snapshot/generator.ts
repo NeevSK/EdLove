@@ -48,9 +48,11 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     AIAssistant: ['school_id'],
     UserRewards: ['school_id', 'user_id'],
     WhisperedMoment: ['school_id', 'user_id'],
+    OperationReceipt: ['account_id'],
   };
 
   const allPossibleAttributes: Record<string, any> = {
+    account_id: user.id,
     school_id: user.school_id,
     teacher_id: user.id,
     user_id: user.id,

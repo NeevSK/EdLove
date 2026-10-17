@@ -15,7 +15,8 @@
  *   const rows = await db.select().from(students);
  */
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
-import { PowerSyncDatabase } from '@repo/core/adapters/powersync/powersync-shim';
+import type { CommonPowerSyncDatabase } from '@powersync/common';
+import { PowerSyncDatabase as MockPowerSyncDatabase } from '@repo/core/adapters/powersync/powersync-shim';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
 import { createSecureDrizzleProxy } from '@repo/core/adapters/powersync/secureDrizzleProxy';
 import { assertPowerSyncBootstrapReady } from '@repo/core/api/highways';
@@ -29,7 +30,7 @@ export {
   setActiveCapabilityToken,
 } from '@repo/core/adapters/powersync/secureDrizzleProxy';
 
-let _instance: PowerSyncDatabase | null = null;
+let _instance: CommonPowerSyncDatabase | null = null;
 let _drizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null = null;
 
 function assertBrowserPowerSyncReady() {
@@ -44,19 +45,24 @@ function assertBrowserPowerSyncReady() {
 
 /**
  * Returns the active PowerSync database instance.
- * Automatically initializes the mock database under server-side Node.js
- * unless a native JSI instance has been injected via setPowerSyncDB().
+ * Automatically initializes the mock database under server-side Node.js or test environments
+ * unless a native JSI instance has been injected via injectNativePowerSyncDB().
  */
-export function getPowerSyncDB(): PowerSyncDatabase {
+export function getPowerSyncDB(): CommonPowerSyncDatabase {
   assertBrowserPowerSyncReady();
   if (!_instance) {
-    _instance = new PowerSyncDatabase({
-      schema: AppSchema as any,
-      database: {
-        // The SQLite file — separate from expo-sqlite to avoid conflicts
-        dbFilename: 'gurudevi-powersync.db',
-      },
-    });
+    if (typeof window === 'undefined' || process.env.NODE_ENV === 'test') {
+      _instance = new MockPowerSyncDatabase({
+        schema: AppSchema as any,
+        database: {
+          dbFilename: 'gurudevi-powersync.db',
+        },
+      }) as unknown as CommonPowerSyncDatabase;
+    } else {
+      throw new Error(
+        'PowerSync runtime is not initialized. Inject the native or web database instance via injectNativePowerSyncDB() before calling getPowerSyncDB().',
+      );
+    }
   }
   return _instance;
 }
@@ -77,7 +83,7 @@ export function getDrizzleDB(): ReturnType<typeof wrapPowerSyncWithDrizzle<typeo
 
 /**
  * Injects the real native React Native JSI C++ database and Drizzle instances
- * at runtime when booting the mobile client. This bypasses the mock server shims.
+ * at runtime when booting the mobile client.
  */
 export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): void {
   _instance = nativeDb;
@@ -85,7 +91,7 @@ export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): vo
 }
 
 /** Returns the injected active runtime without creating a fallback database. */
-export function getActivePowerSyncDB(): PowerSyncDatabase | null {
+export function getActivePowerSyncDB(): CommonPowerSyncDatabase | null {
   return _instance;
 }
 

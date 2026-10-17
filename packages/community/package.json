@@ -164,31 +164,31 @@
     "@repo/ui": "workspace:*",
     "@supabase/postgrest-js": "2.117.2",
     "@supabase/supabase-js": "2.117.2",
-    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query": "^5.104.3",
     "date-fns": "^4.4.0",
     "expo-clipboard": "~58.0.3",
     "expo-image-picker": "~58.0.10",
-    "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.15",
-    "react-native-reanimated": "^4.6.0"
+    "expo-router": "~58.0.22",
+    "react-i18next": "^17.0.18",
+    "react-native-reanimated": "4.7.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.10.0",
-    "react-i18next": "^17.0.15",
-    "typescript": "rc",
+    "eslint": "^10.12.0",
+    "react-i18next": "^17.0.18",
+    "typescript": "7.0.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.0.5"
   },
   "peerDependencies": {
     "@repo/ui": "*",
     "@supabase/postgrest-js": "2.117.2",
     "@supabase/supabase-js": "2.117.2",
-    "react": "*",
-    "react-i18next": "*",
-    "react-native": "*"
+    "react": "19.3.0",
+    "react-i18next": "^17.0.18",
+    "react-native": "0.88.0"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -203,5 +203,3 @@
     "test:ui": "vitest --ui"
   }
 }
-
-

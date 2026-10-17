@@ -1,17 +1,33 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { setActiveAccountId } from '@repo/core/lib/accountScope';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
   MutationQueueCapacityError,
 } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { setActiveAccountId } from '@repo/core/lib/accountScope';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('useMutationQueue (G0 Unit / G1 State)', () => {
   beforeEach(() => {
     useMutationQueue.getState().clearQueue();
     useMutationQueue.getState().clearDeadLetterQueue();
     setActiveAccountId(null);
+  });
+
+  it('preserves an explicitly prepared operation identity and payload metadata', async () => {
+    const operationId = '123e4567-e89b-12d3-a456-426614174001';
+    await useMutationQueue.getState().addToQueue({
+      name: 'prepared-command',
+      scope: 'workspace',
+      type: 'UPDATE',
+      variables: { value: 'draft' },
+      operationId,
+      inputHash: 'a'.repeat(64),
+      clientRevision: 4,
+    });
+    const pending = useMutationQueue.getState().queue[0];
+    expect(pending).toMatchObject({ operationId, inputHash: 'a'.repeat(64), clientRevision: 4 });
+    expect(pending?.id).not.toBe(operationId);
   });
 
   it('isolates queued mutations by user account (Multi-tenant partition)', async () => {

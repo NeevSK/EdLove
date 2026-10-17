@@ -1,51 +1,52 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
 /**
- * COMMUNITY API (Sovereign RPC Proxy)
+ * COMMUNITY API (Sovereign oRPC Client)
  *
- * This module siphons Community requests (Posts, Reactions, Comments, Polls) to the Sanctuary API.
+ * This module routes Community requests (Posts, Reactions, Comments, Polls)
+ * directly through the typed Sanctuary oRPC client.
  */
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const communityAPI = {
   /**
    * Retrieves a list of posts based on filters.
    */
   async getPosts(filters: { limit: number; offset: number; groupId?: string; viewDate?: string }) {
-    const res = await (client.api as any).community.posts.$get({
-      query: {
-        groupId: filters.groupId,
-        limit: filters.limit.toString(),
-        offset: filters.offset.toString(),
-        viewDate: filters.viewDate,
-      },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch posts', res.status.toString());
+    try {
+      return await orpcClient.community.getPosts({
+        query: {
+          groupId: filters.groupId,
+          limit: filters.limit,
+          offset: filters.offset,
+          viewDate: filters.viewDate,
+        },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch posts', error?.code || 'POSTS_FETCH_FAILED');
     }
-
-    return await res.json();
   },
 
   async getGroupMessages(groupId: string, limit = 60, viewDate?: string) {
-    const res = await (client.api as any).community.groups[':groupId'].messages.$get({
-      param: { groupId },
-      query: { limit, viewDate },
-    });
-    if (!res.ok) throw new APIError('Failed to fetch group messages', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.getGroupMessages({
+        params: { groupId },
+        query: { limit, viewDate },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch group messages', error?.code || 'MESSAGES_FETCH_FAILED');
+    }
   },
 
   async sendGroupMessage(groupId: string, content: string) {
-    const res = await (client.api as any).community.groups[':groupId'].messages.$post({
-      param: { groupId },
-      json: { content },
-    });
-    if (!res.ok) throw new APIError('Failed to send group message', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.sendGroupMessage({
+        params: { groupId },
+        body: { content },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to send group message', error?.code || 'MESSAGE_SEND_FAILED');
+    }
   },
 
   async updateMemberStatus(
@@ -53,61 +54,68 @@ export const communityAPI = {
     userId: string,
     status: 'active' | 'rejected' | 'pending',
   ) {
-    const res = await (client.api as any).community.groups[':groupId'].members.status.$patch({
-      param: { groupId },
-      json: { groupId, userId, status },
-    });
-    if (!res.ok) throw new APIError('Failed to update member status', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.updateMemberStatus({
+        params: { groupId },
+        body: { userId, status },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to update member status', error?.code || 'MEMBER_STATUS_FAILED');
+    }
   },
 
   async updateGroupPolicy(groupId: string, joinPolicy: string) {
-    const res = await (client.api as any).community.groups[':groupId'].policy.$patch({
-      param: { groupId },
-      json: { groupId, joinPolicy },
-    });
-    if (!res.ok) throw new APIError('Failed to update group policy', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.updateGroupPolicy({
+        params: { groupId },
+        body: { joinPolicy },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to update group policy', error?.code || 'GROUP_POLICY_FAILED');
+    }
   },
 
   async getGroupMembers(groupId: string, status?: string) {
-    const res = await (client.api as any).community.groups[':groupId'].members.$get({
-      param: { groupId },
-      query: { status },
-    });
-    if (!res.ok) throw new APIError('Failed to fetch group members', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.getGroupMembers({
+        params: { groupId },
+        query: { status },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch group members', error?.code || 'GROUP_MEMBERS_FAILED');
+    }
   },
 
   async updateMemberRole(groupId: string, userId: string, role: string) {
-    const res = await (client.api as any).community.groups[':groupId'].members.role.$patch({
-      param: { groupId },
-      json: { groupId, userId, role },
-    });
-    if (!res.ok) throw new APIError('Failed to update member role', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.updateMemberRole({
+        params: { groupId },
+        body: { userId, role },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to update member role', error?.code || 'MEMBER_ROLE_FAILED');
+    }
   },
 
   async approveAllMembers(groupId: string) {
-    const res = await (client.api as any).community.groups[':groupId'].members['approve-all'].$post(
-      {
-        param: { groupId },
-        json: { groupId },
-      },
-    );
-    if (!res.ok) throw new APIError('Failed to approve group members', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.approveAllMembers({
+        params: { groupId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to approve group members', error?.code || 'APPROVE_MEMBERS_FAILED');
+    }
   },
 
   async getCommunityResonance(userId: string, options: { viewDate?: string } = {}) {
-    const res = await (client.api as any).community.resonance[':userId'].$get({
-      param: { userId },
-      query: { viewDate: options.viewDate },
-    });
-    if (!res.ok) {
-      throw new APIError('Failed to fetch community resonance', res.status.toString());
+    try {
+      return await orpcClient.community.getCommunityResonance({
+        params: { userId },
+        query: { viewDate: options.viewDate },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch community resonance', error?.code || 'RESONANCE_FETCH_FAILED');
     }
-    return await res.json();
   },
 
   async reportContent(params: {
@@ -119,13 +127,20 @@ export const communityAPI = {
     reporter_id?: string;
     details?: string;
   }) {
-    const res = await (client.api as any).community.report.$post({
-      json: params,
-    });
-    if (!res.ok) {
-      throw new APIError('Failed to report community content', res.status.toString());
+    try {
+      return await orpcClient.community.reportContent({
+        body: {
+          postId: params.postId,
+          groupId: params.groupId,
+          targetUserId: params.targetUserId ?? null,
+          reason: params.reason,
+          details: params.details ?? null,
+          reportTarget: params.report_target,
+        },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to report community content', error?.code || 'REPORT_FAILED');
     }
-    return await res.json();
   },
 
   /**
@@ -138,48 +153,46 @@ export const communityAPI = {
     visibility: string;
     author_tier: string;
   }) {
-    const res = await (client.api as any).community.posts.$post({
-      json: params,
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to create post', res.status.toString());
+    try {
+      return await orpcClient.community.createPost({
+        body: {
+          groupId: params.group_id,
+          content: params.content,
+          postType: params.post_type || 'discussion',
+          authorTier: params.author_tier || 'standard',
+        },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to create post', error?.code || 'POST_CREATE_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Toggles a reaction on a post.
    */
-  async togglePostReaction(postId: string, userId: string) {
-    const res = await (client.api as any).community.posts[':postId'].reactions.$post({
-      param: { postId },
-      json: { user_id: userId },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to toggle reaction', res.status.toString());
+  async togglePostReaction(postId: string, _userId?: string) {
+    try {
+      const res = await orpcClient.community.toggleReaction({
+        params: { postId },
+      });
+      return res.active;
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to toggle reaction', error?.code || 'REACTION_TOGGLE_FAILED');
     }
-
-    const { active } = await res.json();
-    return active;
   },
 
   /**
    * Retrieves comments for a post.
    */
   async getComments(postId: string, limit?: number) {
-    const res = await (client.api as any).community.posts[':postId'].comments.$get({
-      param: { postId },
-      query: { limit: limit?.toString() },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch comments', res.status.toString());
+    try {
+      return await orpcClient.community.getComments({
+        params: { postId },
+        query: { limit },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch comments', error?.code || 'COMMENTS_FETCH_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
@@ -189,116 +202,103 @@ export const communityAPI = {
     postId: string,
     params: { content: string; author_tier?: string; isAnonymous?: boolean },
   ) {
-    const res = await (client.api as any).community.posts[':postId'].comments.$post({
-      param: { postId },
-      json: {
-        postId,
-        content: params.content,
-        isAnonymous: params.isAnonymous,
-      },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to create comment', res.status.toString());
+    try {
+      return await orpcClient.community.createComment({
+        params: { postId },
+        body: {
+          content: params.content,
+          isAnonymous: params.isAnonymous ?? false,
+        },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to create comment', error?.code || 'COMMENT_CREATE_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Deletes a comment.
    */
   async deleteComment(commentId: string) {
-    const res = await (client.api as any).community.comments[':commentId'].$delete({
-      param: { commentId },
-      json: { commentId },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to delete comment', res.status.toString());
+    try {
+      return await orpcClient.community.deleteComment({
+        params: { commentId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to delete comment', error?.code || 'COMMENT_DELETE_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Toggles upvote on a comment.
    */
   async toggleCommentUpvote(commentId: string) {
-    const res = await (client.api as any).community.comments[':commentId'].upvote.$post({
-      param: { commentId },
-      json: { commentId },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to toggle upvote', res.status.toString());
+    try {
+      return await orpcClient.community.toggleCommentUpvote({
+        params: { commentId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to toggle upvote', error?.code || 'UPVOTE_TOGGLE_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Marks a comment as the official answer.
    */
-  async markOfficialAnswer(commentId: string, isOfficial?: boolean) {
-    const res = await (client.api as any).community.comments[':commentId'].official.$post({
-      param: { commentId },
-      json: { commentId, isOfficial },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to mark official answer', res.status.toString());
+  async markOfficialAnswer(commentId: string, _isOfficial?: boolean) {
+    try {
+      return await orpcClient.community.markOfficialAnswer({
+        params: { commentId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to mark official answer', error?.code || 'OFFICIAL_ANSWER_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Retrieves poll status for a post.
    */
   async getPollStatus(postId: string) {
-    const res = await (client.api as any).community.polls[':postId'].$get({
-      param: { postId },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch poll status', res.status.toString());
+    try {
+      return await orpcClient.community.getPollStatus({
+        params: { postId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch poll status', error?.code || 'POLL_STATUS_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Votes in a poll.
    */
   async voteInPoll(postId: string, optionId: string, allowMultiple = false) {
-    const res = await (client.api as any).community.polls[':postId'].vote.$post({
-      param: { postId },
-      json: { optionId, allowMultiple },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to record vote', res.status.toString());
+    try {
+      return await orpcClient.community.voteInPoll({
+        params: { postId },
+        body: { optionId, allowMultiple },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to record vote', error?.code || 'POLL_VOTE_FAILED');
     }
-
-    return await res.json();
   },
 
   async updatePost(postId: string, content: string) {
-    const res = await (client.api as any).community.posts[':postId'].$patch({
-      param: { postId },
-      json: { postId, content: content.trim() },
-    });
-    if (!res.ok) throw new APIError('Failed to update post', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.updatePost({
+        params: { postId },
+        body: { content: content.trim() },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to update post', error?.code || 'POST_UPDATE_FAILED');
+    }
   },
 
   async deletePost(postId: string) {
-    const res = await (client.api as any).community.posts[':postId'].$delete({
-      param: { postId },
-      json: { postId },
-    });
-    if (!res.ok) throw new APIError('Failed to delete post', res.status.toString());
-    return await res.json();
+    try {
+      return await orpcClient.community.deletePost({
+        params: { postId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to delete post', error?.code || 'POST_DELETE_FAILED');
+    }
   },
 };

@@ -1,3 +1,10 @@
+/**
+ * @deprecated DISABLED LEGACY SHIM.
+ * Real upstream packages ('@powersync/common', '@powersync/drizzle-driver', '@powersync/react', '@powersync/react-native')
+ * are now used across all call sites.
+ * This file is retained as an inert stub and has 0 consumers across the monorepo.
+ */
+
 export const column = {
   text: '' as string,
   integer: 0 as number,
@@ -66,7 +73,6 @@ export interface CommonPowerSyncDatabase {
     complete(): Promise<void>;
   }>;
 }
-
 
 export interface PowerSyncBackendConnector {
   fetchCredentials(): Promise<PowerSyncCredentials>;

@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
-import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Scenario 3: Optimistic Mutation Outbox, Conflict Fork & DLQ Replay', () => {
@@ -86,6 +86,10 @@ describe('Scenario 3: Optimistic Mutation Outbox, Conflict Fork & DLQ Replay', (
     expect(activeConflicts.length).toBe(1);
     expect(activeConflicts[0]?.scope).toBe('rewards');
     expect(activeConflicts[0]?.localData).toEqual({ rewardId: 'badge_101', tier: 'gold' });
-    expect(activeConflicts[0]?.remoteData).toEqual({ rewardId: 'badge_101', tier: 'silver', claimed: true });
+    expect(activeConflicts[0]?.remoteData).toEqual({
+      rewardId: 'badge_101',
+      tier: 'silver',
+      claimed: true,
+    });
   });
 });

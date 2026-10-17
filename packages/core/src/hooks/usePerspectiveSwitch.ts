@@ -19,7 +19,9 @@ export function usePerspectiveSwitch() {
   const isTransitioning = usePerspectiveStore((state) => state.isTransitioning);
   const switchPerspectiveState = usePerspectiveStore((state) => state.switchPerspective);
   const resetToPersonal = usePerspectiveStore((state) => state.resetToPersonalPerspective);
-  const setAvailablePerspectivesState = usePerspectiveStore((state) => state.setAvailablePerspectives);
+  const setAvailablePerspectivesState = usePerspectiveStore(
+    (state) => state.setAvailablePerspectives,
+  );
 
   const user = useStore((state) => state.user);
   const availableBonds = useStore((state) => state.availableBonds);
@@ -45,7 +47,10 @@ export function usePerspectiveSwitch() {
 
       // Synchronize active bond in root identity store
       const matchingBond = availableBonds?.find(
-        (b) => b.id === perspectiveId || `bond:${b.entity_id}` === perspectiveId || b.entity_id === perspectiveId,
+        (b) =>
+          b.id === perspectiveId ||
+          `bond:${b.entity_id}` === perspectiveId ||
+          b.entity_id === perspectiveId,
       );
       setPerspective({
         activeBond: matchingBond,
@@ -102,11 +107,14 @@ export function usePerspectiveSwitch() {
   );
 
   const hydratePerspectivesFromDatabase = useCallback(
-    async (userId: string, dependencies: {
-      getInstitutionalBonds?: () => Promise<SanctuaryPerspective[]>;
-      getCommercialBatches?: () => Promise<SanctuaryPerspective[]>;
-      getGuardianBonds?: () => Promise<SanctuaryPerspective[]>;
-    }) => {
+    async (
+      userId: string,
+      dependencies: {
+        getInstitutionalBonds?: () => Promise<SanctuaryPerspective[]>;
+        getCommercialBatches?: () => Promise<SanctuaryPerspective[]>;
+        getGuardianBonds?: () => Promise<SanctuaryPerspective[]>;
+      },
+    ) => {
       await hydratePerspectivesFromDatabaseState(userId, dependencies);
     },
     [hydratePerspectivesFromDatabaseState],
@@ -127,4 +135,3 @@ export function usePerspectiveSwitch() {
     hydratePerspectivesFromDatabase,
   };
 }
-

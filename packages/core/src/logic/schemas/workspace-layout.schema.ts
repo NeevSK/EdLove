@@ -2,9 +2,18 @@ import { z } from 'zod';
 
 export const WorkspaceLayoutVersionSchema = z.union([z.literal(1), z.literal(2)]);
 
+export const WorkspaceWallpaperSchema = z.object({
+  provider: z.literal('cloudinary'),
+  url: z.url(),
+  publicId: z.string().min(1),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
+
 export const WorkspaceAppearanceSchema = z.object({
   preset: z.enum(['default', 'dawn', 'garden', 'night']).default('default'),
   motion: z.enum(['off', 'subtle']).default('off'),
+  wallpaper: WorkspaceWallpaperSchema.optional(),
 });
 
 export const WorkspaceLayoutTargetSchema = z.enum(['shared', 'web', 'mobile']);

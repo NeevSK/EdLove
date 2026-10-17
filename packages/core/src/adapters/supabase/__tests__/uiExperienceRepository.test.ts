@@ -61,7 +61,12 @@ describe('UIExperienceRepository (G1 Adapter Boundary)', () => {
         }
         if (table === 'assignments') {
           return queryBuilder([
-            { id: 'assign-1', title: 'Algebra Homework', classroom_id: 'cls-1', due_date: '2026-09-20T18:00:00' },
+            {
+              id: 'assign-1',
+              title: 'Algebra Homework',
+              classroom_id: 'cls-1',
+              due_date: '2026-09-20T18:00:00',
+            },
           ]);
         }
         if (table === 'submissions') {
@@ -74,7 +79,9 @@ describe('UIExperienceRepository (G1 Adapter Boundary)', () => {
     const repo = createSupabaseUIExperienceRepository(supabase as never);
     const actions = await repo.getPendingActions('teacher-1');
 
-    expect(actions.attendancePending).toEqual([{ classroomId: 'cls-1', classroomName: 'Grade 5 Math' }]);
+    expect(actions.attendancePending).toEqual([
+      { classroomId: 'cls-1', classroomName: 'Grade 5 Math' },
+    ]);
     expect(actions.gradingPending).toEqual([
       {
         assignmentId: 'assign-1',

@@ -1,8 +1,8 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
-import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { assertMutationCommandTransition } from '@repo/core/lib/sync/commandLifecycle';
+import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
@@ -50,6 +50,7 @@ export const useMutationQueue = create<MutationQueueState>()(
         let accepted = false;
         set((state) => {
           if (state.queue.length >= MAX_MUTATION_QUEUE_SIZE) return state;
+          const commandId = uuidv7();
           const highestLogicalClock = state.queue.reduce(
             (max, item) => Math.max(max, item.logicalClock ?? 0),
             0,
@@ -61,7 +62,8 @@ export const useMutationQueue = create<MutationQueueState>()(
               {
                 ...mutation,
                 userId,
-                id: uuidv7(),
+                id: commandId,
+                operationId: mutation.operationId ?? commandId,
                 idempotencyKey,
                 timestamp: Date.now(),
                 retryCount: 0,

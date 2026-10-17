@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Storage Quota Exhaustion & Error Recovery Suite', () => {
@@ -11,9 +11,11 @@ describe('Storage Quota Exhaustion & Error Recovery Suite', () => {
 
   it('handles QuotaExceededError on setItem without throwing uncaught fatal exception', async () => {
     // Spy on setItem to simulate storage full (QuotaExceededError)
-    const setItemSpy = vi.spyOn(SafeZustandStorage, 'setItem').mockRejectedValueOnce(
-      new DOMException('The quota has been exceeded.', 'QuotaExceededError')
-    );
+    const setItemSpy = vi
+      .spyOn(SafeZustandStorage, 'setItem')
+      .mockRejectedValueOnce(
+        new DOMException('The quota has been exceeded.', 'QuotaExceededError'),
+      );
 
     let errorCaught = false;
     try {
@@ -33,7 +35,7 @@ describe('Storage Quota Exhaustion & Error Recovery Suite', () => {
 
     // Mock setItem throwing quota error
     vi.spyOn(SafeZustandStorage, 'setItem').mockRejectedValue(
-      new DOMException('Disk full', 'QuotaExceededError')
+      new DOMException('Disk full', 'QuotaExceededError'),
     );
 
     // Assert reads still succeed reliably

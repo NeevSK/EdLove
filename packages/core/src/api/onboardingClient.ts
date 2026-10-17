@@ -2,6 +2,7 @@ import { ScopeBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
 import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { Effect, Schema } from 'effect';
+import { v7 as uuidv7 } from 'uuid';
 import { z } from 'zod';
 
 const initialBondResponseSchema = z.strictObject({
@@ -9,7 +10,11 @@ const initialBondResponseSchema = z.strictObject({
   scopeBootstrap: ScopeBootstrapSchema,
 });
 
-const completeOnboardingResponseSchema = z.object({ success: z.boolean() });
+const completeOnboardingResponseSchema = z.object({
+  success: z.literal(true),
+  receiptId: z.uuid().nullable(),
+  replayed: z.boolean(),
+});
 
 export type InitialBondInput = z.infer<
   typeof onboardingORPCContract.createInitialBond.request.body
@@ -74,13 +79,20 @@ export function createInitialBondEffect(
 }
 
 /** Effect v4 program for completing onboarding from authenticated request context. */
-export function completeOnboardingEffect(): Effect.Effect<
-  CompleteOnboardingResult,
-  OnboardingCommandError
-> {
+export type CompleteOnboardingInput = z.infer<
+  typeof onboardingORPCContract.completeOnboarding.request.body
+>;
+
+export function createOnboardingCompletionKey(): string {
+  return uuidv7();
+}
+
+export function completeOnboardingEffect(
+  input: CompleteOnboardingInput = {},
+): Effect.Effect<CompleteOnboardingResult, OnboardingCommandError> {
   return Effect.gen(function* () {
     const result = yield* requestWithEffect('completeOnboarding.request', () =>
-      orpcClient.onboarding.completeOnboarding({}),
+      orpcClient.onboarding.completeOnboarding({ body: input }),
     );
     return yield* parseWithEffect('completeOnboarding.response', () =>
       completeOnboardingResponseSchema.parse(result),
@@ -94,6 +106,8 @@ export async function createInitialBond(input: InitialBondInput): Promise<Initia
 }
 
 /** Completion derives the account from the authenticated request context. */
-export async function completeOnboarding(): Promise<CompleteOnboardingResult> {
-  return Effect.runPromise(completeOnboardingEffect());
+export async function completeOnboarding(
+  input: CompleteOnboardingInput = {},
+): Promise<CompleteOnboardingResult> {
+  return Effect.runPromise(completeOnboardingEffect(input));
 }

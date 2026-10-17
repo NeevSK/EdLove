@@ -1,5 +1,5 @@
-import { describe, expect, it, beforeEach } from 'vitest';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 
 describe('Concurrent Outbox & Race Condition Stress Suite', () => {
@@ -20,7 +20,7 @@ describe('Concurrent Outbox & Race Condition Stress Suite', () => {
         scope: `domain_${idx % 3}`,
         name: `action_${idx}`,
         variables: { index: idx, timestamp: Date.now() },
-      })
+      }),
     );
 
     await Promise.all(mutationPromises);

@@ -1,5 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { type DomainServices, createDomainServices } from '@repo/core/logic/domains/factory';
+import { createDomainServices, type DomainServices } from '@repo/core/logic/domains/factory';
 import { useStore } from '@repo/core/store/useStore';
 
 let clientDomainServicesInstance: DomainServices | null = null;

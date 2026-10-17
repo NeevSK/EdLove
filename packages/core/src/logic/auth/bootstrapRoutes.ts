@@ -25,7 +25,10 @@ export type AuthRouteInput = {
   hasActiveAccessToken?: boolean;
   hasSession?: boolean;
   guestOnboardingIntent?: boolean;
+  appEntryPath?: AppEntryPath;
 };
+
+export type AppEntryPath = '/self' | '/workspace';
 
 export function getAuthRouteDecision(params: AuthRouteInput): RouteDecision {
   return getAuthRouteTarget(params).decision;
@@ -41,11 +44,10 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     pathname === '/onboarding' ||
     pathname.startsWith('/public-form');
   const isAppEntryPath =
-    pathname === '/' ||
-    pathname === '/auth' ||
-    pathname === '/auth/callback';
+    pathname === '/' || pathname === '/auth' || pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';
   const isAccountRecoveryPath = pathname === '/account-recovery';
+  const appEntryPath = params.appEntryPath ?? '/self';
 
   if (state === 'booting') {
     return {
@@ -79,12 +81,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     if (state === 'ready') {
       return {
         decision: 'app',
-        redirectTo: '/self',
+        redirectTo: appEntryPath,
         policy: {
           state: 'ready',
           entryPoint: 'app',
           reason: 'ready-for-app',
-          redirectTo: '/self',
+          redirectTo: appEntryPath,
           canRenderCurrentPath: false,
         },
       };
@@ -170,12 +172,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     // Welcome is an explicit public landing surface. Restoring a remembered
     // session must never move someone into the app before they choose a
     // sign-in or onboarding action.
-    redirectTo: isAppEntryPath || isOnboardingPath ? '/self' : null,
+    redirectTo: isAppEntryPath || isOnboardingPath ? appEntryPath : null,
     policy: {
       state: 'ready' satisfies BootstrapSessionState,
       entryPoint: isOnboardingPath ? 'onboarding' : isPublicPath ? 'auth' : 'app',
       reason: 'ready-for-app',
-      redirectTo: isAppEntryPath || isOnboardingPath ? '/self' : null,
+      redirectTo: isAppEntryPath || isOnboardingPath ? appEntryPath : null,
       canRenderCurrentPath: !isAppEntryPath && !isOnboardingPath,
     },
   };

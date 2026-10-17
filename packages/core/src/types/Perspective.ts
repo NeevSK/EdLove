@@ -1,7 +1,12 @@
-import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 
-export type PerspectiveKind = 'personal' | 'commercial' | 'institutional' | 'guardian' | 'community';
+export type PerspectiveKind =
+  | 'personal'
+  | 'commercial'
+  | 'institutional'
+  | 'guardian'
+  | 'community';
 
 export type MediumOfInstruction = 'sinhala' | 'english' | 'tamil';
 

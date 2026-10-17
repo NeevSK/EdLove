@@ -8,6 +8,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./qr/*": "./src/qr/*.ts",
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -26,37 +27,37 @@
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "expo-keep-awake": "~58.0.3",
-    "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.15"
+    "expo-router": "~58.0.22",
+    "react-i18next": "^17.0.18"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "buffer": "*",
     "expo-brightness": ">=58.0.2",
-    "expo-camera": "~58.0.8",
+    "expo-camera": "~58.0.10",
     "expo-clipboard": "~58.0.3",
-    "expo-file-system": "~58.0.5",
-    "expo-image-manipulator": "~58.0.12",
+    "expo-file-system": "~58.0.9",
+    "expo-image-manipulator": "~58.0.14",
     "expo-image-picker": "~58.0.10",
-    "expo-media-library": ">=58.0.6",
-    "expo-sharing": "~58.0.14",
+    "expo-media-library": "~58.0.10",
+    "expo-sharing": "~58.0.19",
     "jpeg-js": "*",
     "jsqr": "*",
     "qrcode": "*",
-    "react": "19.2.8",
-    "react-native": "0.86.3",
-    "react-native-svg": "15.15.5"
+    "react": "19.3.0",
+    "react-native": "0.88.0",
+    "react-native-svg": "15.16.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",
-    "eslint": "^10.10.0",
-    "tailwindcss": "^4.3.3",
-    "typescript": "rc",
+    "eslint": "^10.12.0",
+    "tailwindcss": "4.3.0",
+    "typescript": "7.0.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.0.5"
   },
   "_originalScripts": {
     "check-types": "pnpm exec tsc --build --noEmit",
@@ -71,4 +72,3 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
-

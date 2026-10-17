@@ -2,9 +2,16 @@ import { useTemporalStore } from '@repo/core/logic';
 import { Box, Text } from '@repo/ui/primitives';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  type GestureStateChangeEvent,
+  type GestureUpdateEvent,
+  type PanGestureChangeEventPayload,
+  type PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 
 /**
  * TemporalScrubber
@@ -33,21 +40,30 @@ export const TemporalScrubber: React.FC = () => {
     [setViewDate, viewDate],
   );
 
-  const panGesture = usePanGesture({
-    minDistance: 8,
-    maxPointers: 1,
-    onUpdate: (event) => {
-      'worklet';
-      pan.value = event.translationX;
-    },
-    onDeactivate: (event) => {
-      'worklet';
-      if (!event.canceled && Math.abs(pan.value) > 50) {
-        runOnJS(commitSwipe)(pan.value);
-      }
-      pan.value = withSpring(0);
-    },
-  });
+  const panGesture = React.useMemo(
+    () =>
+      Gesture.Pan()
+        .minDistance(8)
+        .maxPointers(1)
+        .onUpdate(
+          (event: GestureUpdateEvent<PanGestureHandlerEventPayload & PanGestureChangeEventPayload>) => {
+            'worklet';
+            pan.value = event.translationX;
+          },
+        )
+        .onEnd((_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
+          'worklet';
+          if (success && Math.abs(pan.value) > 50) {
+            scheduleOnRN(commitSwipe, pan.value);
+          }
+          pan.value = withSpring(0);
+        })
+        .onFinalize(() => {
+          'worklet';
+          pan.value = withSpring(0);
+        }),
+    [commitSwipe, pan],
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: pan.value }],

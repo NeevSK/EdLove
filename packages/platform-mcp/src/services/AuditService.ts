@@ -569,5 +569,20 @@ export class AuditService {
     const result = runCommand('node', cliArgs);
     return toText(result.combined, !result.ok);
   }
+
+  handleAuditSeams(args: { target?: string }) {
+    const target = args?.target || 'apps/gurudevi-mobile/src';
+    console.error(`Auditing Physical Native Seams for: ${target}...`);
+    const result = runCommand('node', ['scripts/audit-seams.mjs', target]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleCheckTcdi(args?: { strict?: boolean }) {
+    console.error('Auditing Temporal Convolutional Dependency Intelligence (TCDI)...');
+    const cliArgs = ['scripts/check-tcdi.mjs'];
+    if (args?.strict) cliArgs.push('--strict');
+    const result = runCommand('node', cliArgs);
+    return toText(result.combined, !result.ok);
+  }
 }
 

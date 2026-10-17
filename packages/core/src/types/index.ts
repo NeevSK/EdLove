@@ -211,6 +211,7 @@ export type {
   WorkspaceSwitcherDestination,
   WorkspaceSwitcherTarget,
   WorkspaceSwitcherTargetId,
+  WorkspaceWallpaper,
   WorkspaceZoneId,
 } from './Workspace';
 export { APIError };

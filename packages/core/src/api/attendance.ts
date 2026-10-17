@@ -34,7 +34,9 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpErro
 
 function toPromise<T>(effect: Effect.Effect<T, AttendanceHttpError, never>): Promise<T> {
   return Effect.runPromise(
-    effect.pipe(Effect.catch((e: AttendanceHttpError) => Effect.fail(new APIError(e.message, e.status)))),
+    effect.pipe(
+      Effect.catch((e: AttendanceHttpError) => Effect.fail(new APIError(e.message, e.status))),
+    ),
   );
 }
 

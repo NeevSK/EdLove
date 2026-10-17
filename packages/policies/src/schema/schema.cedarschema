@@ -101,7 +101,13 @@ entity GradeMark {
   term_id?: String,
   subject_id?: String,
   student_id?: String,
+  teacher_id?: String,
   graded_by?: String
+};
+
+entity OperationReceipt {
+  id: String,
+  account_id: String
 };
 
 entity Assignment {
@@ -374,12 +380,18 @@ type SecurityContext = {
   network_zone?: String
 };
 
+action "grade", "publish" appliesTo {
+  principal: [User],
+  resource: [GradeMark],
+  context: SecurityContext
+};
+
 action "read", "create", "update", "delete", "use_ai" appliesTo {
     principal: [User],
   resource: [
     User, Student, GratitudeGift, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
     StaffLeave, MoodLog, FireJournal, LearningReflection, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
-    Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
+    Guardian, SentinelAuditLog, OperationReceipt, JoyMoments, GratitudeEntries, EnergyForecasts,
     UserRewards, WhisperedMoment,
     PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent, DecisionJournal,
     Manifesto, ManifestoEndorsement, AssignmentSubmission, Calendar, Notification, PrincipalNote, Announcement,

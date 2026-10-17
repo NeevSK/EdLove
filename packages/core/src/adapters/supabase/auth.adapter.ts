@@ -1,4 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { requestPhoneOtp, verifyPhoneOtp } from '@repo/core/api/phoneAuth';
 import type {
   AuthChangeEvent,
   AuthMfaFactor,
@@ -110,6 +111,14 @@ export class SupabaseAuthAdapter implements IAuthPort {
     });
     if (error) throw new APIError('Failed to send magic link', error.code, error);
     return { user: data.user as any, session: data.session as any };
+  }
+
+  async signInWithPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest) {
+    return requestPhoneOtp(this.client.auth, params);
+  }
+
+  async verifyPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpVerification) {
+    return verifyPhoneOtp(this.client.auth, params);
   }
 
   private magicLinkRedirectUri(): string {

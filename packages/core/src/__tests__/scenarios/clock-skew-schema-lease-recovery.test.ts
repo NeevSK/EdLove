@@ -1,8 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  CURRENT_OUTBOX_SCHEMA_VERSION,
+  migrateQueuedMutation,
+} from '../../lib/sync/outboxMigration';
 import { MUTATION_REGISTRY } from '../../lib/sync/registry';
-import { migrateQueuedMutation, CURRENT_OUTBOX_SCHEMA_VERSION } from '../../lib/sync/outboxMigration';
 import type { QueuedMutation } from '../../lib/sync/types';
+import { useMutationQueue } from '../../lib/sync/useMutationQueue';
 
 describe('Disaster Suite 4: Clock Skew, Schema Migration & In-Flight Lease Recovery', () => {
   beforeEach(() => {

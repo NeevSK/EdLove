@@ -28,6 +28,7 @@ export interface SelfFeatureDefinition {
   timing?: { preferredPhase: 'morning' | 'afternoon' | 'night' };
   isPinnable: boolean;
   isHidable: boolean;
+  practiceDocument?: Readonly<{ schemaId: string }>;
 }
 
 /**
@@ -98,6 +99,22 @@ export const FEATURE_CATALOG: Record<string, SelfFeatureDefinition> = {
     defaultZone: 'today',
     defaultOrder: 22,
     energyVibe: ['#F5F3FF', '#EDE9FE'],
+    isPinnable: true,
+    isHidable: true,
+  },
+  daily_content: {
+    id: 'daily_content',
+    label: 'Daily Insight',
+    emoji: '✨',
+    componentId: 'DailyContentCard',
+    category: 'wellbeing',
+    domain: 'pulse',
+    requiredCapabilities: ['read:InnerPulse'],
+    minCitizenship: 3,
+    roleWeights: { student: 90, teacher: 80, guardian: 75, principal: 65, founder: 60, admin: 50 },
+    defaultZone: 'today',
+    defaultOrder: 15,
+    energyVibe: ['#FEF3C7', '#FDE68A'],
     isPinnable: true,
     isHidable: true,
   },
@@ -200,6 +217,7 @@ export const FEATURE_CATALOG: Record<string, SelfFeatureDefinition> = {
   },
   fire_journal: {
     id: 'fire_journal',
+    practiceDocument: { schemaId: 'fire-journal-practice-v1' },
     label: 'Fire Journal',
     emoji: '🔥',
     componentId: 'FireJournal',

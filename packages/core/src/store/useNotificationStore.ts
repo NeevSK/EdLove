@@ -1,4 +1,6 @@
+import { MOCK_NOTIFICATIONS } from '@repo/core/api/mockData';
 import { notification } from '@repo/core/logic/managers/factory';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { AppNotification } from '@repo/core/types';
 import { create } from 'zustand';
 
@@ -46,7 +48,20 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   loadNotifications: async () => {
     const { userId } = get();
-    if (!userId) return;
+    const { isExplorerMode, user } = useAuthStore.getState();
+    const isGuest = (user as any)?.is_anonymous ?? false;
+    const shouldProvideSamples = isExplorerMode || isGuest;
+
+    if (!userId) {
+      if (shouldProvideSamples) {
+        set({
+          notifications: MOCK_NOTIFICATIONS,
+          unreadCount: MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
+          isLoading: false,
+        });
+      }
+      return;
+    }
 
     set({ isLoading: true, error: null });
     try {
@@ -55,18 +70,49 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         notification.getUnreadCount(userId),
       ]);
 
-      set({
-        notifications: notifs,
-        unreadCount: count,
-        isLoading: false,
-      });
+      if (notifs.length > 0) {
+        set({
+          notifications: notifs,
+          unreadCount: count,
+          isLoading: false,
+        });
+      } else if (shouldProvideSamples) {
+        set({
+          notifications: MOCK_NOTIFICATIONS,
+          unreadCount: MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
+          isLoading: false,
+        });
+      } else {
+        set({
+          notifications: [],
+          unreadCount: 0,
+          isLoading: false,
+        });
+      }
     } catch (err: any) {
-      set({ error: err.message, isLoading: false });
+      if (shouldProvideSamples) {
+        set({
+          notifications: MOCK_NOTIFICATIONS,
+          unreadCount: MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
+          isLoading: false,
+        });
+      } else {
+        set({ error: err.message, isLoading: false });
+      }
     }
   },
 
   markAsRead: async (id) => {
     const { userId, notifications } = get();
+
+    if (id.startsWith('sample-') || id.startsWith('mock-')) {
+      set({
+        notifications: notifications.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
+        unreadCount: Math.max(0, get().unreadCount - 1),
+      });
+      return;
+    }
+
     if (!userId) return;
 
     try {
@@ -83,6 +129,18 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   markAllRead: async () => {
     const { userId, notifications } = get();
+
+    const hasOnlySamples = notifications.every(
+      (n) => n.id.startsWith('sample-') || n.id.startsWith('mock-'),
+    );
+    if (hasOnlySamples) {
+      set({
+        notifications: notifications.map((n) => ({ ...n, is_read: true })),
+        unreadCount: 0,
+      });
+      return;
+    }
+
     if (!userId) return;
 
     try {

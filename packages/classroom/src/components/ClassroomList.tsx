@@ -1,5 +1,5 @@
 import CreateClassroomModal from '@repo/classroom/components/CreateClassroomModal';
-import { api, identityAPI, MOCK_CLASSROOMS } from '@repo/core/api/client';
+import { api, identityAPI, MOCK_CLASSROOMS, getDemoClassrooms } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -61,7 +61,9 @@ export default function ClassroomList({
   const [fetchMoreError, setFetchMoreError] = useState(false);
   const PAGE_SIZE = 10;
   const toast = useToast();
-  const { dismissedSampleIds } = useStore();
+  const dismissedSampleIds = useStore((state) => state.dismissedSampleIds);
+  const isDemoMode = useStore((state) => state.isDemoMode);
+  const isExplorerMode = useStore((state) => state.isExplorerMode);
 
   useEffect(() => {
     let isMounted = true;
@@ -74,29 +76,13 @@ export default function ClassroomList({
 
         let data: WorkspaceClassroom[] = [];
 
-        if (isGuest) {
-          if (can('manage', 'TeacherDashboard')) {
-            const sampleId = 'sample-c1';
-            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-            if (sample && !dismissedSampleIds.includes(sampleId)) {
-              (sample as any).is_sample = true;
-              data = [sample];
-            }
-          } else if (can('manage', 'PrincipalDashboard')) {
-            const sampleSchoolId = 'sample-school-1';
-            const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
-            if (sampleSchool && !dismissedSampleIds.includes(sampleSchoolId)) {
-              (sampleSchool as any).is_sample = true;
-              data = [sampleSchool];
-            }
-          } else if (can('manage', 'StudentDashboard') || !hasRoleContext) {
-            const sampleId = 'sample-c1';
-            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-            if (sample && !dismissedSampleIds.includes(sampleId)) {
-              (sample as any).is_sample = true;
-              data = [sample];
-            }
-          }
+        if (isGuest || isDemoMode) {
+          const sampleClassrooms = getDemoClassrooms().filter(
+            (c: any) => !dismissedSampleIds.includes(c.id),
+          );
+          data = can('manage', 'PrincipalDashboard')
+            ? sampleClassrooms.filter((c: any) => c.is_school || c.id === 'sample-school-1')
+            : sampleClassrooms.filter((c: any) => !c.is_school);
           setHasMore(false);
         } else {
           const userId = await identityAPI.getMyInternalId();
@@ -115,10 +101,23 @@ export default function ClassroomList({
             realData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
           }
 
-          // Authenticated users must see the authoritative classroom list. An empty
-          // response is a real empty state, not an invitation to enter demo data.
-          data = realData;
-          setHasMore(realData.length === PAGE_SIZE);
+          if (realData.length > 0) {
+            // Authenticated users with real classrooms always see their real records.
+            data = realData;
+            setHasMore(realData.length === PAGE_SIZE);
+          } else if (isExplorerMode) {
+            // When real database is empty and explorer mode is active, provide rich sample classrooms.
+            const sampleClassrooms = getDemoClassrooms().filter(
+              (c: any) => !dismissedSampleIds.includes(c.id),
+            );
+            data = can('manage', 'PrincipalDashboard')
+              ? sampleClassrooms.filter((c: any) => c.is_school || c.id === 'sample-school-1')
+              : sampleClassrooms.filter((c: any) => !c.is_school);
+            setHasMore(false);
+          } else {
+            data = [];
+            setHasMore(false);
+          }
 
           setPage(1);
         }
@@ -144,7 +143,7 @@ export default function ClassroomList({
     return () => {
       isMounted = false;
     };
-  }, [hasRoleContext, isGuest, dismissedSampleIds, onDataLoaded, can]);
+  }, [hasRoleContext, isGuest, isDemoMode, isExplorerMode, dismissedSampleIds, onDataLoaded, can]);
 
   const handleRetry = () => {
     setInternalRefreshTrigger((prev) => prev + 1);
@@ -213,6 +212,8 @@ export default function ClassroomList({
 
   const keyExtractor = useCallback((item: WorkspaceClassroom) => item.id, []);
   const ItemSeparator = useCallback(() => <Box className="h-4" />, []);
+
+  const hasSampleClassrooms = classrooms.some((c: any) => (c as any).is_sample);
 
   if (loading) {
     return (
@@ -309,6 +310,21 @@ export default function ClassroomList({
               }
             }}
           />
+          {!isDemoMode && !isGuest && !isExplorerMode && (
+            <Box className="items-center mt-6">
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  useStore.getState().setExplorerMode(true);
+                }}
+                className="px-5 py-2.5 bg-templeGold/10 rounded-2xl border border-templeGold/20 active:opacity-80"
+              >
+                <Text className="text-xs font-bold text-templeGold">
+                  Explore with sample classrooms
+                </Text>
+              </Pressable>
+            </Box>
+          )}
         </Box>
       ) : (
         <>
@@ -321,6 +337,27 @@ export default function ClassroomList({
             showsVerticalScrollIndicator={false}
             onEndReached={fetchMore}
             onEndReachedThreshold={0.5}
+            ListHeaderComponent={
+              hasSampleClassrooms && !isDemoMode && !isGuest ? (
+                <Box className="mb-4 px-4 py-3 bg-templeGold/10 rounded-2xl border border-templeGold/20 flex-row items-center justify-between">
+                  <HStack className="items-center gap-2">
+                    <Icon as={Zap} size="xs" className="text-templeGold" />
+                    <Text className="text-xs font-semibold text-phaseText-primary">
+                      Exploring sample sanctuaries
+                    </Text>
+                  </HStack>
+                  <Pressable
+                    onPress={() => {
+                      hapticLight();
+                      useStore.getState().setExplorerMode(false);
+                    }}
+                    className="px-3 py-1 bg-phase-surface rounded-xl border border-phase-canvas/30 active:opacity-80"
+                  >
+                    <Text className="text-[11px] font-bold text-templeGold">Start Fresh</Text>
+                  </Pressable>
+                </Box>
+              ) : null
+            }
             ListFooterComponent={
               isFetchingMore ? (
                 <Box className="items-center py-4">

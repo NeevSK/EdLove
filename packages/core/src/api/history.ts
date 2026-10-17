@@ -4,7 +4,7 @@
  * Fetches version history/audit logs for records.
  */
 
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import {
   auditLogEntry,
   collectionMembershipAsOfEntry,
@@ -13,8 +13,6 @@ import {
   versionHistoryEntry,
 } from '@repo/core/api/history.contract';
 import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface AuditLogEntry {
   id: string;
@@ -78,11 +76,17 @@ export const historyAPI = {
   async getForRecord(tableName: string, recordId: string): Promise<AuditLogEntry[]> {
     if (tableName !== 'classroom_notes')
       throw new APIError('History is not available for this table', 'UNSUPPORTED_HISTORY_TABLE');
-    const res = await (client.api as any).history['classroom-notes'][':recordId'].$get({
-      param: { recordId },
-    });
-    if (!res.ok) throw new APIError('Failed to fetch record history', res.status.toString());
-    return (await res.json()).map((row: unknown) => auditLogEntry.parse(row)) as AuditLogEntry[];
+    try {
+      const res = await orpcClient.history.getClassroomNoteHistory({
+        params: { recordId },
+      });
+      return (res as unknown[]).map((row: unknown) => auditLogEntry.parse(row)) as AuditLogEntry[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch record history',
+        error.status?.toString() || error.code || 'HISTORY_FETCH_FAILED',
+      );
+    }
   },
 
   /**
@@ -92,13 +96,19 @@ export const historyAPI = {
     entityType: CommunityHistoryEntityType,
     entityId: string,
   ): Promise<VersionHistoryEntry[]> {
-    const res = await (client.api as any).history.community[':entityType'][':entityId'].$get({
-      param: { entityType, entityId },
-    });
-    if (!res.ok) throw new APIError('Failed to fetch community history', res.status.toString());
-    return (await res.json()).map((row: unknown) =>
-      versionHistoryEntry.parse(row),
-    ) as VersionHistoryEntry[];
+    try {
+      const res = await orpcClient.history.getCommunityEntityHistory({
+        params: { entityType, entityId },
+      });
+      return (res as unknown[]).map((row: unknown) =>
+        versionHistoryEntry.parse(row),
+      ) as VersionHistoryEntry[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch community history',
+        error.status?.toString() || error.code || 'HISTORY_FETCH_FAILED',
+      );
+    }
   },
 
   /**
@@ -108,13 +118,19 @@ export const historyAPI = {
     entityType: LibraryHistoryEntityType,
     entityId: string,
   ): Promise<VersionHistoryEntry[]> {
-    const res = await (client.api as any).history.library[':entityType'][':entityId'].$get({
-      param: { entityType, entityId },
-    });
-    if (!res.ok) throw new APIError('Failed to fetch library history', res.status.toString());
-    return (await res.json()).map((row: unknown) =>
-      versionHistoryEntry.parse(row),
-    ) as VersionHistoryEntry[];
+    try {
+      const res = await orpcClient.history.getLibraryEntityHistory({
+        params: { entityType, entityId },
+      });
+      return (res as unknown[]).map((row: unknown) =>
+        versionHistoryEntry.parse(row),
+      ) as VersionHistoryEntry[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch library history',
+        error.status?.toString() || error.code || 'HISTORY_FETCH_FAILED',
+      );
+    }
   },
 
   /**
@@ -123,14 +139,19 @@ export const historyAPI = {
   async getCollectionMembershipTimeline(
     collectionId: string,
   ): Promise<CollectionMembershipEvent[]> {
-    const res = await (client.api as any).history.collections[':collectionId'].membership.$get({
-      param: { collectionId },
-    });
-    if (!res.ok)
-      throw new APIError('Failed to fetch collection membership timeline', res.status.toString());
-    return (await res.json()).map((row: unknown) =>
-      collectionMembershipEvent.parse(row),
-    ) as CollectionMembershipEvent[];
+    try {
+      const res = await orpcClient.history.getCollectionMembershipTimeline({
+        params: { collectionId },
+      });
+      return (res as unknown[]).map((row: unknown) =>
+        collectionMembershipEvent.parse(row),
+      ) as CollectionMembershipEvent[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to fetch collection membership timeline',
+        error.status?.toString() || error.code || 'HISTORY_FETCH_FAILED',
+      );
+    }
   },
 
   /**
@@ -140,17 +161,20 @@ export const historyAPI = {
     collectionId: string,
     asOf: string,
   ): Promise<CollectionMembershipAsOfEntry[]> {
-    const res = await (client.api as any).history.collections[':collectionId'].membership[
-      'as-of'
-    ].$get({
-      param: { collectionId },
-      query: { asOf },
-    });
-    if (!res.ok)
-      throw new APIError('Failed to reconstruct collection membership', res.status.toString());
-    return (await res.json()).map((row: unknown) =>
-      collectionMembershipAsOfEntry.parse(row),
-    ) as CollectionMembershipAsOfEntry[];
+    try {
+      const res = await orpcClient.history.getCollectionMembershipAsOf({
+        params: { collectionId },
+        query: { asOf },
+      });
+      return (res as unknown[]).map((row: unknown) =>
+        collectionMembershipAsOfEntry.parse(row),
+      ) as CollectionMembershipAsOfEntry[];
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to reconstruct collection membership',
+        error.status?.toString() || error.code || 'HISTORY_FETCH_FAILED',
+      );
+    }
   },
 };
 

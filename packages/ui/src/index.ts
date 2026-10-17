@@ -92,3 +92,6 @@ export { VisualCapabilityInspector } from './components/VisualCapabilityInspecto
 export { WorkspaceRenderer } from './components/workspace/WorkspaceRenderer';
 export { ActiveSubTabStrip, type ActiveSubTabStripProps } from './components/ActiveSubTabStrip';
 export { DomainSubHeader, type DomainSubHeaderProps } from './components/DomainSubHeader';
+export { LayoutLoopSentinel, useLayoutSentinel, createLayoutSentinel, type LayoutLoopSentinelProps, type LayoutRecord } from './sentinels/LayoutLoopSentinel';
+export { SovereignVirtualList, type SovereignVirtualListProps } from './components/SovereignVirtualList';
+export { default as SanctuaryLegendList, type SanctuaryLegendListProps, type LegendListRef } from './components/SanctuaryLegendList';

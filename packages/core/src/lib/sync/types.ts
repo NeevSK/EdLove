@@ -2,13 +2,26 @@
  * Persistence Types for Offline Synchronization
  */
 
-import type { MutationType } from '@repo/core/logic/ports/database.port';
 import type { MutationCommandState } from '@repo/core/lib/sync/commandLifecycle';
+import type { MutationType } from '@repo/core/logic/ports/database.port';
 
 export type { MutationType };
 
+export type MutationReceipt = Readonly<{
+  operationId: string;
+  status: 'pending' | 'completed' | 'failed' | 'conflict';
+  receiptId: string;
+  serverRevision?: string;
+  error?: string;
+  conflictReason?: string;
+}>;
+
 export interface QueuedMutation {
   id: string;
+  /** Prepared operation identity; defaults to the queue id for new commands. */
+  operationId?: string;
+  inputHash?: string;
+  clientRevision?: number;
   idempotencyKey: string; // Deterministic hash to prevent duplicate writes
   type: MutationType;
   scope: string; // e.g., 'community', 'classroom', 'self'

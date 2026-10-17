@@ -184,10 +184,14 @@ export function check(request: AuthRequest): AuthResponse {
         mappedAction = 'read';
         break;
       case 'grade':
+        mappedAction = request.resource.type === 'GradeMark' ? 'grade' : 'create';
+        break;
       case 'submit':
         mappedAction = 'create';
         break;
       case 'publish':
+        mappedAction = request.resource.type === 'GradeMark' ? 'publish' : 'update';
+        break;
       case 'override':
       case 'verify':
       case 'manage':

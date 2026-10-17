@@ -1,4 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { educationalContract } from '@repo/core/api/educational.contract';
 import { useStore } from '@repo/core/store/useStore';
 import { APIError } from '@repo/core/types/API';
@@ -10,7 +10,6 @@ import { SovereignError } from '@repo/core/types/Errors';
  * Siphons lesson and student management to Sanctuary API.
  */
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const lessonsAPI = {
   async create(lesson: any) {
@@ -19,15 +18,17 @@ export const lessonsAPI = {
       throw SovereignError.unauthorized('create', 'Lesson');
     }
 
-    const res = await (client.api as any).educational.lessons.$post({
-      json: lesson,
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to create lesson', res.status.toString());
+    try {
+      const res = await orpcClient.educational.createLesson({
+        body: lesson,
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to create lesson',
+        error.status?.toString() || error.code || 'LESSON_CREATE_FAILED',
+      );
     }
-
-    return await res.json();
   },
 };
 
@@ -36,11 +37,8 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 // ... (Students API remains on local manager for now until educational.contract is fully expanded)
 export const studentsAPI = {
   async getAll(classroomId: string): Promise<any[]> {
-    const res = await (client.api as any).educational.classrooms[':classroomId'].students.$get({
-      param: { classroomId },
-    });
-    if (!res.ok) throw new APIError('Failed to fetch classroom students', res.status.toString());
-    return (await res.json()).map((item: any) => ({
+    const res = await orpcClient.educational.getClassroomStudents({ params: { classroomId } });
+    return (res as any[]).map((item: any) => ({
       ...item,
       class_id: item.classroom_id,
       full_name: item.full_name || 'Unregistered Student',
@@ -48,14 +46,8 @@ export const studentsAPI = {
   },
 
   async enroll(classroomId: string, studentId: string): Promise<any> {
-    const res = await (client.api as any).educational.classrooms[
-      ':classroomId'
-    ].students.enroll.$post({
-      param: { classroomId },
-      json: { studentId },
-    });
-    if (!res.ok) throw new APIError('Failed to enroll student', res.status.toString());
-    return await res.json();
+    const res = await orpcClient.educational.enrollStudent({ params: { classroomId }, body: { studentId } });
+    return res;
   },
 
   async remove(classroomId: string, studentId: string): Promise<void> {
@@ -71,17 +63,13 @@ export const studentsAPI = {
     notes?: string;
     classroom_id: string;
   }): Promise<any> {
-    const res = await (client.api as any).educational.classrooms[
-      ':classroomId'
-    ].students.shadow.$post({
-      param: { classroomId: input.classroom_id },
-      json: {
+    const data = (await orpcClient.educational.addShadowStudent({
+      params: { classroomId: input.classroom_id },
+      body: {
         fullName: input.full_name,
         rollNumber: input.roll_number ? Number(input.roll_number) : undefined,
       },
-    });
-    if (!res.ok) throw new APIError('Failed to add student to classroom', res.status.toString());
-    const data = await res.json();
+    })) as any;
     return {
       ...data,
       class_id: data.classroom_id,
@@ -92,15 +80,13 @@ export const studentsAPI = {
     id: string,
     updates: { full_name?: string; roll_number?: string; notes?: string },
   ): Promise<any> {
-    const res = await (client.api as any).educational['classroom-students'][':id'].$patch({
-      param: { id },
-      json: {
+    const data = (await orpcClient.educational.updateClassroomStudent({
+      params: { id },
+      body: {
         fullName: updates.full_name?.trim() || undefined,
         rollNumber: updates.roll_number ? Number(updates.roll_number) : undefined,
       },
-    });
-    if (!res.ok) throw new APIError('Failed to update classroom student', res.status.toString());
-    const data = await res.json();
+    })) as any;
     return {
       ...data,
       class_id: data.classroom_id,
@@ -108,11 +94,7 @@ export const studentsAPI = {
   },
 
   async removeById(id: string): Promise<void> {
-    const res = await (client.api as any).educational['classroom-students'][':id'].$delete({
-      param: { id },
-    });
-    if (!res.ok)
-      throw new APIError('Failed to remove student from classroom', res.status.toString());
+    await orpcClient.educational.removeClassroomStudent({ params: { id } });
   },
 
   async getSchoolLegacyHistory(schoolId: string): Promise<any[]> {

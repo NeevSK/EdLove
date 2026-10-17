@@ -92,34 +92,34 @@
     "@repo/core": "workspace:*",
     "@repo/profile": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query": "^5.104.3",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^0.45.3",
-    "expo-audio": "~58.0.5",
-    "expo-file-system": "~58.0.5",
-    "expo-haptics": "~58.0.4",
-    "expo-notifications": "~58.1.0",
-    "expo-router": "~58.0.13",
-    "expo-sqlite": "~58.0.9",
-    "react-native-reanimated": "^4.6.0",
+    "drizzle-orm": "0.45.4",
+    "expo-audio": "~58.0.9",
+    "expo-file-system": "~58.0.9",
+    "expo-haptics": "~58.0.7",
+    "expo-notifications": "~58.1.5",
+    "expo-router": "~58.0.22",
+    "expo-sqlite": "~58.0.13",
+    "react-native-reanimated": "4.7.1",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.10.0",
-    "react-i18next": "^17.0.15",
-    "typescript": "rc",
+    "eslint": "^10.12.0",
+    "react-i18next": "^17.0.18",
+    "typescript": "7.0.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.0.5"
   },
   "peerDependencies": {
     "@repo/ui": "*",
-    "react": "*",
-    "react-i18next": "*",
-    "react-native": "*",
-    "react-native-skia": ">=3.0.0"
+    "react": "19.3.0",
+    "react-i18next": "^17.0.18",
+    "react-native": "0.88.0",
+    "react-native-skia": "3.6.1"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -135,6 +135,3 @@
     "test:ui": "vitest --ui"
   }
 }
-
-
-

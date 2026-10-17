@@ -1,25 +1,25 @@
 import { Duration, Effect, Fiber, Queue } from 'effect';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { applyPowerSyncBatch } from '../../api/handlers/sync';
+import * as monitoring from '../../monitoring';
 import {
   DatabaseQueryError,
-  NetworkError,
-  OfflineMutationError,
-  SyncDelegateError,
-  SyncOperationError,
-  SyncTableError,
-  UnauthorizedError,
   defaultRetryPolicy,
   fireAndForget,
   fireAndForgetEffect,
   fromSupabase,
+  NetworkError,
   normalizeError,
+  OfflineMutationError,
   retryPolicy,
   runEffect,
+  SyncDelegateError,
+  SyncOperationError,
+  SyncTableError,
   strictRetryPolicy,
   tryPromise,
+  UnauthorizedError,
 } from '../index';
-import { applyPowerSyncBatch } from '../../api/handlers/sync';
-import * as monitoring from '../../monitoring';
 
 vi.mock('../../monitoring', () => ({
   captureException: vi.fn(),
@@ -492,9 +492,9 @@ describe('Effect-TS Production Resilience & Load-Breaking Tests', () => {
         { id: '2', op: 'PUT', table: 'INVALID_POISON_TABLE', opData: {} }, // POISON PILL
       ];
 
-      await expect(
-        applyPowerSyncBatch(mockDb, crudBatch, 'key-1', 'principal-1'),
-      ).rejects.toThrow('Unsupported sync table: INVALID_POISON_TABLE');
+      await expect(applyPowerSyncBatch(mockDb, crudBatch, 'key-1', 'principal-1')).rejects.toThrow(
+        'Unsupported sync table: INVALID_POISON_TABLE',
+      );
 
       expect(rolledBack).toBe(true);
     });
@@ -520,9 +520,9 @@ describe('Effect-TS Production Resilience & Load-Breaking Tests', () => {
         { id: '1', op: 'TRUNCATE_ILLEGAL_OP', table: 'bonds', opData: {} }, // POISON PILL
       ];
 
-      await expect(
-        applyPowerSyncBatch(mockDb, crudBatch, 'key-2', 'principal-1'),
-      ).rejects.toThrow('Unsupported operations mode: TRUNCATE_ILLEGAL_OP');
+      await expect(applyPowerSyncBatch(mockDb, crudBatch, 'key-2', 'principal-1')).rejects.toThrow(
+        'Unsupported operations mode: TRUNCATE_ILLEGAL_OP',
+      );
 
       expect(rolledBack).toBe(true);
     });

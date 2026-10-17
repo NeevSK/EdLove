@@ -1,5 +1,6 @@
 import { supabaseAuthStorage } from '@repo/core/lib/authStorage';
 import { createClient } from '@supabase/supabase-js';
+import { assertSecureApiUrl, secureApiFetch } from '../api/transportSecurity';
 
 type PublicRuntimeConfig = {
   supabaseUrl?: string;
@@ -24,8 +25,6 @@ let supabasePublishableKey =
   process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   process.env.SUPABASE_ANON_KEY ||
   publicRuntime?.supabasePublishableKey;
-const baseFetch = globalThis.fetch.bind(globalThis);
-
 const urlStringFromInput = (url: Parameters<typeof fetch>[0]): string =>
   typeof url === 'string'
     ? url
@@ -49,7 +48,7 @@ const sanitizeSupabaseUrl = (url: Parameters<typeof fetch>[0]): string => {
 };
 
 if (!supabaseUrl || !supabasePublishableKey) {
-  if (process.env.NODE_ENV === 'test' || typeof window === 'undefined') {
+  if (process.env.NODE_ENV === 'test') {
     supabaseUrl = supabaseUrl || 'https://mock-supabase-url.supabase.co';
     supabasePublishableKey = supabasePublishableKey || 'mock-supabase-key';
   } else {
@@ -60,6 +59,8 @@ if (!supabaseUrl || !supabasePublishableKey) {
   }
 }
 
+assertSecureApiUrl(supabaseUrl);
+
 const supabaseOptions: any = {
   auth: {
     storage: supabaseAuthStorage,
@@ -69,7 +70,8 @@ const supabaseOptions: any = {
   },
   global: {
     fetch: (url: Parameters<typeof fetch>[0], options?: Parameters<typeof fetch>[1]) => {
-      return baseFetch(sanitizeSupabaseUrl(url), options);
+      const sanitizedUrl = sanitizeSupabaseUrl(url);
+      return secureApiFetch(sanitizedUrl, options);
     },
   },
 };

@@ -185,10 +185,7 @@ describe('deviceAccounts', () => {
 
     await deviceAccounts.switchTo('account-1');
 
-    expect(mockSetSession).toHaveBeenCalledWith(
-      validAccessToken,
-      validRefreshToken,
-    );
+    expect(mockSetSession).toHaveBeenCalledWith(validAccessToken, validRefreshToken);
     expect(mockTouchCurrentDevice).toHaveBeenCalledWith('account-1');
   });
 
@@ -238,10 +235,12 @@ describe('deviceAccounts', () => {
       refresh_token: validRefreshToken,
     });
     mockSetSession.mockResolvedValue({ error: null });
-    mockGetString.mockReturnValue(JSON.stringify([
-      { accountId: 'account-1', lastUsedAt: '2026-01-01T00:00:00.000Z' },
-      { accountId: 'account-2', lastUsedAt: '2026-01-02T00:00:00.000Z' },
-    ]));
+    mockGetString.mockReturnValue(
+      JSON.stringify([
+        { accountId: 'account-1', lastUsedAt: '2026-01-01T00:00:00.000Z' },
+        { accountId: 'account-2', lastUsedAt: '2026-01-02T00:00:00.000Z' },
+      ]),
+    );
 
     await deviceAccounts.switchTo('account-2');
 

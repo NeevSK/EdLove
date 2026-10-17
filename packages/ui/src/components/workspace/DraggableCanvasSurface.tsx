@@ -2,13 +2,15 @@
 /* oxlint-disable */
 'use no memo';
 import { hapticMedium } from '@repo/ui/utils/haptics';
-import type React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import {
+  Gesture,
   GestureDetector,
-  useLongPressGesture,
-  usePanGesture,
-  useSimultaneousGestures,
+  type GestureStateChangeEvent,
+  type GestureUpdateEvent,
+  type PanGestureChangeEventPayload,
+  type PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -16,7 +18,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 import { resolveDragTranslation } from './reorder';
 
 interface DraggableCanvasSurfaceProps {
@@ -60,52 +62,74 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   const shadowOpacity = useSharedValue(0);
   const shadowRadius = useSharedValue(0);
 
-  const longPressGesture = useLongPressGesture({
-    minDuration: 260,
-    onActivate: () => {
-      'worklet';
-      isDragging.value = true;
-      scale.value = withSpring(1.025, { damping: 14, stiffness: 180 });
-      zIndex.value = 100;
-      shadowOpacity.value = withTiming(0.25, { duration: 150 });
-      shadowRadius.value = withTiming(16, { duration: 150 });
-      runOnJS(hapticMedium)();
-      if (onDragStart) runOnJS(onDragStart)();
-    },
-  });
+  const longPressGesture = useMemo(
+    () =>
+      Gesture.LongPress()
+        .minDuration(260)
+        .onStart(() => {
+          'worklet';
+          isDragging.value = true;
+          scale.value = withSpring(1.025, { damping: 14, stiffness: 180 });
+          zIndex.value = 100;
+          shadowOpacity.value = withTiming(0.25, { duration: 150 });
+          shadowRadius.value = withTiming(16, { duration: 150 });
+          scheduleOnRN(hapticMedium);
+          if (onDragStart) scheduleOnRN(onDragStart);
+        }),
+    [isDragging, onDragStart, scale, shadowOpacity, shadowRadius, zIndex],
+  );
 
-  const dragGesture = usePanGesture({
-    onUpdate: (event) => {
-      'worklet';
-      if (!isDragging.value) return;
-      const translation = resolveDragTranslation(dragAxis, {
-        x: event.translationX,
-        y: event.translationY,
-      });
-      translateX.value = translation.x;
-      translateY.value = translation.y;
-    },
-    onDeactivate: (event) => {
-      'worklet';
-      if (!isDragging.value) return;
+  const dragGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onUpdate(
+          (event: GestureUpdateEvent<PanGestureHandlerEventPayload & PanGestureChangeEventPayload>) => {
+            'worklet';
+            if (!isDragging.value) return;
+            const translation = resolveDragTranslation(dragAxis, {
+              x: event.translationX,
+              y: event.translationY,
+            });
+            translateX.value = translation.x;
+            translateY.value = translation.y;
+          },
+        )
+        .onEnd((_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
+          'worklet';
+          if (!isDragging.value) return;
 
-      if (!event.canceled && onDragEnd) {
-        runOnJS(onDragEnd)(id, { x: translateX.value, y: translateY.value });
-      }
+          if (success && onDragEnd) {
+            scheduleOnRN(onDragEnd, id, { x: translateX.value, y: translateY.value });
+          }
 
-      // Snap back animation
-      isDragging.value = false;
-      translateX.value = withSpring(0, { damping: 18, stiffness: 220 });
-      translateY.value = withSpring(0, { damping: 18, stiffness: 220 });
-      scale.value = withSpring(1, { damping: 18, stiffness: 220 });
-      zIndex.value = withTiming(1, { duration: 150 });
-      shadowOpacity.value = withTiming(0, { duration: 150 });
-      shadowRadius.value = withTiming(0, { duration: 150 });
-    },
-  });
+          // Snap back animation
+          isDragging.value = false;
+          translateX.value = withSpring(0, { damping: 18, stiffness: 220 });
+          translateY.value = withSpring(0, { damping: 18, stiffness: 220 });
+          scale.value = withSpring(1, { damping: 18, stiffness: 220 });
+          zIndex.value = withTiming(1, { duration: 150 });
+          shadowOpacity.value = withTiming(0, { duration: 150 });
+          shadowRadius.value = withTiming(0, { duration: 150 });
+        }),
+    [
+      dragAxis,
+      id,
+      isDragging,
+      onDragEnd,
+      scale,
+      shadowOpacity,
+      shadowRadius,
+      translateX,
+      translateY,
+      zIndex,
+    ],
+  );
 
   // Combine gestures using v3 hook API
-  const composed = useSimultaneousGestures(longPressGesture, dragGesture);
+  const composed = useMemo(
+    () => Gesture.Simultaneous(longPressGesture, dragGesture),
+    [longPressGesture, dragGesture],
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

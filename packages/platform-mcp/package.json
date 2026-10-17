@@ -21,24 +21,24 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_platform-mcp-clean\""
   },
   "dependencies": {
-    "@modelcontextprotocol/client": "^2.0.0",
-    "@modelcontextprotocol/core": "^2.0.0",
-    "@modelcontextprotocol/server": "^2.0.0",
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/core": "^2.3.1",
+    "@modelcontextprotocol/server": "^2.3.1",
     "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
-    "@swmansion/argent": "^0.23.0",
-    "agent-device": "^0.20.10",
+    "@swmansion/argent": "^0.29.0",
+    "agent-device": "^0.21.28",
     "dotenv": "^17.4.2",
     "zod": "4.6.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^25.9.6",
-    "eslint": "^10.10.0",
-    "mcp-remote": "^0.1.49",
-    "typescript": "rc",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "mcp-remote": "^0.15.1",
+    "typescript": "7.0.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.0.5"
   },
   "_originalScripts": {
     "build": "tsc",

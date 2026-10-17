@@ -837,7 +837,7 @@ const AuthScreen = memo(
                               <ButtonSpinner color="#000" />
                             ) : (
                               <ButtonText className="font-bold" style={{ color: '#000' }}>
-                                {isSignUp ? t('auth.signUp') : t('auth.signIn')}
+                                {isSignUp ? t('auth.signup') : t('auth.login')}
                               </ButtonText>
                             )}
                           </Button>

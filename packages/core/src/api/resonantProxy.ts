@@ -1,4 +1,4 @@
-import { interceptApiCall } from '@repo/core/api/demoProvider';
+import { interceptApiCall, processGhostData } from '@repo/core/api/demoProvider';
 
 /**
  * createResonantProxy
@@ -20,12 +20,10 @@ export function createResonantProxy<T extends object>(moduleName: string, target
           if (intercepted) return intercepted;
 
           // 2. Execute the real method
-          const result = await originalMethod.apply(obj, args);
+          let result = await originalMethod.apply(obj, args);
 
-          // 3. Optional: Post-process results (Ghost Seeding)
-          // if (processGhostData) {
-          //     result = processGhostData(moduleName, prop, result);
-          // }
+          // 3. Post-process results (Ghost Seeding for Explorer Mode)
+          result = processGhostData(moduleName, prop, result);
 
           return result;
         };

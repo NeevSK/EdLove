@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  declaredPracticeCapability,
+  resolvePracticeAvailability,
+} from '../logic/registry/capabilityManifest';
+import {
   createAccountPracticeScope,
   deriveAccountPracticeKey,
   resolveAccountPracticeWriteDecision,
 } from './practiceBoundary';
 import { createPracticeController } from './practiceContract';
-import {
-  declaredPracticeCapability,
-  resolvePracticeAvailability,
-} from '../logic/registry/capabilityManifest';
 
 describe('account practice boundary contracts (G0)', () => {
   it('isolates storage by account, feature, and practice workspace', () => {
@@ -57,12 +57,12 @@ describe('account practice boundary contracts (G0)', () => {
     expect(key).toContain('account%3A17');
     expect(key).toContain('sandbox');
     expect(key).not.toContain('daily roll call');
-    expect(() => createAccountPracticeScope({ accountId: 'a', featureId: ' ', workspaceId: 'w' })).toThrow(
-      'Practice feature id must not be empty.',
-    );
-    expect(() => createAccountPracticeScope({ accountId: 'a', featureId: 'f', workspaceId: ' ' })).toThrow(
-      'Practice workspace id must not be empty.',
-    );
+    expect(() =>
+      createAccountPracticeScope({ accountId: 'a', featureId: ' ', workspaceId: 'w' }),
+    ).toThrow('Practice feature id must not be empty.');
+    expect(() =>
+      createAccountPracticeScope({ accountId: 'a', featureId: 'f', workspaceId: ' ' }),
+    ).toThrow('Practice workspace id must not be empty.');
     expect(() => deriveAccountPracticeKey(scope, ' ')).toThrow('Practice key must not be empty.');
   });
 
@@ -91,6 +91,12 @@ describe('account practice boundary contracts (G0)', () => {
       effects: 'local-only',
       reset: 'feature-workspace',
       keep: 'disabled',
+      persistence: {
+        mode: 'local-isolated',
+        documentId: 'daily-roll-call',
+        documentSchemaId: 'attendance-daily-roll-call-v1',
+        lifecycle: { inactivityDays: 30, maxDocuments: 20, maxBytes: 256 * 1024 },
+      },
       capacities: [
         'teacher',
         'gradeHead',

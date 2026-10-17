@@ -67,9 +67,7 @@ async function bootstrapBrowserIdentity(client: SupabaseClient): Promise<Browser
  * Creates a browser-only Supabase boundary after persistent browser storage is registered.
  * Importing this module is SSR-safe; calling this factory is intentionally client-only.
  */
-export function createBrowserAuthRuntime(
-  config: BrowserAuthRuntimeConfig,
-): BrowserAuthRuntime {
+export function createBrowserAuthRuntime(config: BrowserAuthRuntimeConfig): BrowserAuthRuntime {
   requireBrowser();
   registerBrowserStorage();
 

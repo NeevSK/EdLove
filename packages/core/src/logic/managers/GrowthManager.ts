@@ -1,4 +1,5 @@
 import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '@repo/core/api/growthSignals.generated';
+import { fireAndForgetEffect, reportBestEffort, runEffect, tryPromise } from '@repo/core/effect';
 import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
 import type {
   BanyanStage,
@@ -15,12 +16,6 @@ import type {
   RiverStage,
   UserGrowthState,
 } from '@repo/core/types/Growth';
-import {
-  fireAndForgetEffect,
-  reportBestEffort,
-  runEffect,
-  tryPromise,
-} from '@repo/core/effect';
 import { Effect } from 'effect';
 
 export * from '@repo/core/types/Growth';

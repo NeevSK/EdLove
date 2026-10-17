@@ -5,7 +5,7 @@ import {
   policyVersion,
 } from '@repo/core/adapters/powersync/schema';
 import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
-import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localEvaluator';
+import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localResourceAttributes';
 import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import type { Action, Subject } from '@repo/core/types/authorization';

@@ -7,7 +7,7 @@ export interface PaymentIntent {
   status: PaymentStatus;
   provider: string;
   clientSecret?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PaymentMethod {
@@ -17,13 +17,17 @@ export interface PaymentMethod {
   lastFour?: string;
   expiry?: string;
   isDefault: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PaymentProvider {
   id: string;
   name: string;
-  initializePayment(amount: number, currency: string, metadata?: any): Promise<PaymentIntent>;
+  initializePayment(
+    amount: number,
+    currency: string,
+    metadata?: Record<string, unknown>,
+  ): Promise<PaymentIntent>;
   verifyPayment(paymentIntentId: string): Promise<PaymentStatus>;
   getFeeEstimate(amount: number): number;
 }

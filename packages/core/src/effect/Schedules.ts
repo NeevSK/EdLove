@@ -35,9 +35,5 @@ export const strictRetryPolicy = Schedule.max([
  * Use when the caller wants to tune retry depth without naming a new policy.
  */
 export function retryPolicy(maxRetries: number = 3) {
-  return Schedule.max([
-    Schedule.exponential(Duration.millis(200)),
-    Schedule.recurs(maxRetries),
-  ]);
+  return Schedule.max([Schedule.exponential(Duration.millis(200)), Schedule.recurs(maxRetries)]);
 }
-

@@ -36,35 +36,21 @@ export type {
 } from '@repo/core/logic/accountLifecycle';
 export * from '@repo/core/logic/apiInterceptor';
 export {
+  type AuthCallbackAttempt,
+  type AuthCallbackPurpose,
+  consumeAuthCallbackAttempt,
+  issueAuthCallbackAttempt,
+} from '@repo/core/logic/auth/authCallbackAttempt';
+export {
+  type AuthCallbackIntent,
+  classifyAuthCallback,
+} from '@repo/core/logic/auth/authCallbackPolicy';
+export {
   getAuthRouteDecision,
   getAuthRouteTarget,
   isPublicBootstrapRoute,
 } from '@repo/core/logic/auth/bootstrapRoutes';
 export { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
-export { classifyAuthCallback, type AuthCallbackIntent } from '@repo/core/logic/auth/authCallbackPolicy';
-export {
-  consumeAuthCallbackAttempt,
-  issueAuthCallbackAttempt,
-  type AuthCallbackAttempt,
-  type AuthCallbackPurpose,
-} from '@repo/core/logic/auth/authCallbackAttempt';
-export {
-  classifyRouteIntent,
-  classifyRouteIntentEffect,
-  decodeInstallReferrer,
-  decodeInstallReferrerEffect,
-  formatClassroomDeepLink,
-  formatClassroomShareUrl,
-  type RouteIntent,
-  type ValidatedReferrerIntent,
-} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-export {
-  isPendingIntentExpired,
-  pendingIntentStore,
-  usePendingIntentStore,
-  type PendingDeepLinkIntent,
-  type PendingIntentStoreState,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
 export {
   getSessionIdentityMode,
   type IdentityAvailability,
@@ -78,6 +64,23 @@ export {
   suggestDisplayName,
 } from '@repo/core/logic/auth/identityState';
 export * from '@repo/core/logic/capabilityDecision';
+export {
+  classifyRouteIntent,
+  classifyRouteIntentEffect,
+  decodeInstallReferrer,
+  decodeInstallReferrerEffect,
+  formatClassroomDeepLink,
+  formatClassroomShareUrl,
+  type RouteIntent,
+  type ValidatedReferrerIntent,
+} from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+export {
+  isPendingIntentExpired,
+  type PendingDeepLinkIntent,
+  type PendingIntentStoreState,
+  pendingIntentStore,
+  usePendingIntentStore,
+} from '@repo/core/logic/deeplink/pendingIntentStore';
 export * from '@repo/core/logic/domains';
 export * from '@repo/core/logic/entities';
 export * from '@repo/core/logic/events/bus';
@@ -107,6 +110,12 @@ export * from '@repo/core/logic/mediaReducer';
 export * from '@repo/core/logic/permissions/hooks/usePermissions';
 export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 export * from '@repo/core/logic/permissions/sanctuaryFeature';
+export type {
+  AccountTransitionDisposition,
+  AccountTransitionOutcome,
+  AccountTransitionPort,
+  AccountTransitionRequest,
+} from '@repo/core/logic/ports/accountTransition.port';
 export type { IAnalyticsPort } from '@repo/core/logic/ports/analytics.port';
 export type {
   AuthorizationDecision,
@@ -129,12 +138,6 @@ export {
   satisfiesEntitlementRequirement,
 } from '@repo/core/logic/ports/entitlement.port';
 export type { IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
-export type {
-  AccountTransitionDisposition,
-  AccountTransitionOutcome,
-  AccountTransitionPort,
-  AccountTransitionRequest,
-} from '@repo/core/logic/ports/accountTransition.port';
 export type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,

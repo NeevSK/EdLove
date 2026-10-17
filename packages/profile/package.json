@@ -100,32 +100,32 @@
     "@repo/people": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query": "^5.104.3",
     "expo-clipboard": "~58.0.3",
-    "expo-file-system": "~58.0.5",
-    "expo-image-manipulator": "~58.0.12",
+    "expo-file-system": "~58.0.9",
+    "expo-image-manipulator": "~58.0.14",
     "expo-image-picker": "~58.0.10",
-    "expo-router": "~58.0.13",
-    "react-i18next": "^17.0.15",
-    "react-native-reanimated": "^4.6.0"
+    "expo-router": "~58.0.22",
+    "react-i18next": "^17.0.18",
+    "react-native-reanimated": "4.7.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
     "@vitest/ui": "^5.0.0",
-    "eslint": "^10.10.0",
-    "i18next": "^26.4.2",
-    "typescript": "rc",
+    "eslint": "^10.12.0",
+    "i18next": "^26.4.6",
+    "typescript": "7.0.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.0.5"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "*",
     "@repo/ui": "*",
-    "react": "*",
-    "react-i18next": "*",
-    "react-native": "*"
+    "react": "19.3.0",
+    "react-i18next": "^17.0.18",
+    "react-native": "0.88.0"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -140,5 +140,3 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
-
-

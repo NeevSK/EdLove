@@ -56,10 +56,14 @@ describe('canonical onboarding compatibility client', () => {
   });
 
   it('completes onboarding without accepting a caller-selected user ID', async () => {
-    mocks.completeOnboarding.mockResolvedValue({ success: true });
+    mocks.completeOnboarding.mockResolvedValue({ success: true, receiptId: null, replayed: false });
 
-    await expect(completeOnboarding()).resolves.toEqual({ success: true });
-    expect(mocks.completeOnboarding).toHaveBeenCalledWith({});
+    await expect(completeOnboarding()).resolves.toEqual({
+      success: true,
+      receiptId: null,
+      replayed: false,
+    });
+    expect(mocks.completeOnboarding).toHaveBeenCalledWith({ body: {} });
   });
 
   it('propagates transport failures without converting them into success', async () => {

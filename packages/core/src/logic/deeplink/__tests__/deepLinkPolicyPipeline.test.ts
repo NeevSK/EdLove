@@ -124,9 +124,7 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
     });
 
     it('identifies canonical QR links correctly', () => {
-      expect(
-        isQRDeepLink('gurudevi://qr?v=1&action=join_class&classroom_id=class-1'),
-      ).toBe(true);
+      expect(isQRDeepLink('gurudevi://qr?v=1&action=join_class&classroom_id=class-1')).toBe(true);
       expect(
         isQRDeepLink(
           'https://gurudevi.app/qr?v=1&action=join_school&school_id=school-1&group_id=group-1',

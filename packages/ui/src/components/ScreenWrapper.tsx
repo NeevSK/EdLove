@@ -50,7 +50,7 @@ export default function ScreenWrapper({
 
   const safeAreaStyle = {
     paddingTop: noTopInset ? 0 : insets.top,
-    paddingBottom: insets.bottom,
+    paddingBottom: hasBottomTab ? 0 : insets.bottom,
     paddingLeft: insets.left,
     paddingRight: insets.right,
   };
@@ -59,7 +59,7 @@ export default function ScreenWrapper({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1 }}
+      style={styles.container}
     >
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
@@ -71,7 +71,7 @@ export default function ScreenWrapper({
       >
         {(scroll ?? scrollable) ? (
           <ScrollView
-            style={{ flex: 1 }}
+            style={styles.container}
             contentContainerStyle={[
               styles.contentContainer,
               isFullBleed

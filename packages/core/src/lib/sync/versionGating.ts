@@ -1,5 +1,5 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -31,8 +31,14 @@ export interface VersionGatingState {
  * Semver comparison helper: returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal.
  */
 export function compareSemver(v1: string, v2: string): number {
-  const parts1 = v1.replace(/[^0-9.]/g, '').split('.').map((p) => parseInt(p, 10) || 0);
-  const parts2 = v2.replace(/[^0-9.]/g, '').split('.').map((p) => parseInt(p, 10) || 0);
+  const parts1 = v1
+    .replace(/[^0-9.]/g, '')
+    .split('.')
+    .map((p) => parseInt(p, 10) || 0);
+  const parts2 = v2
+    .replace(/[^0-9.]/g, '')
+    .split('.')
+    .map((p) => parseInt(p, 10) || 0);
   const len = Math.max(parts1.length, parts2.length);
 
   for (let i = 0; i < len; i++) {
@@ -67,7 +73,10 @@ export const useVersionGatingStore = create<VersionGatingState>()(
         const current = get().currentInstalledVersion;
         let severity: UpdateSeverity = 'UP_TO_DATE';
 
-        if (manifest.isMaintenanceMode || compareSemver(current, manifest.minSupportedVersion) < 0) {
+        if (
+          manifest.isMaintenanceMode ||
+          compareSemver(current, manifest.minSupportedVersion) < 0
+        ) {
           severity = 'HARD_BLOCK';
         } else if (compareSemver(current, manifest.latestVersion) < 0) {
           severity = 'SOFT_NUDGE';

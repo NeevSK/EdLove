@@ -57,9 +57,7 @@ describe('pendingIntentStore (G0 Sovereign Intent Store Tests)', () => {
       timestamp: expiredTimestamp,
     });
 
-    expect(
-      isPendingIntentExpired(usePendingIntentStore.getState().pendingIntent, now),
-    ).toBe(true);
+    expect(isPendingIntentExpired(usePendingIntentStore.getState().pendingIntent, now)).toBe(true);
 
     // getPendingIntent automatically purges expired intents
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();

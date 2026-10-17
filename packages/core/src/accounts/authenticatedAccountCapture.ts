@@ -1,4 +1,4 @@
-import { deviceAccounts, type DeviceAccountProfile } from '@repo/core/accounts/deviceAccounts';
+import { type DeviceAccountProfile, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import type { ActiveCitizen } from '@repo/core/api/identity';
 import {
   getSessionIdentityMode,

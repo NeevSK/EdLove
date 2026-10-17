@@ -89,7 +89,12 @@ permit(
     (resource is Classroom && principal has classroom_ids && principal.classroom_ids.contains(resource.id)) ||
     (resource is Library) // Library reads/actions are generally permitted
   ) &&
-  // Optionally restrict Grade creation to highly trusted devices
+  (
+    if (resource is GradeMark && (action == Action::"grade" || action == Action::"publish"))
+    then (resource has teacher_id && resource.teacher_id == principal.id)
+    else true
+  ) &&
+  // Legacy Grade creation retains its existing device condition.
   (
     if (action == Action::"create" && (resource is Grade || resource is GradeMark)) then (context has device_trust && context.device_trust == "high") else true
   )

@@ -47,10 +47,12 @@ export function resolveWorkspaceSwitcherTargets({
   // Find matching perspective IDs from available perspectives
   const personalPerspective = availablePerspectives.find((p) => p.kind === 'personal');
   const institutionalPerspectives = availablePerspectives.filter(
-    (p): p is import('@repo/core/types/Perspective').InstitutionalBondPerspective => p.kind === 'institutional',
+    (p): p is import('@repo/core/types/Perspective').InstitutionalBondPerspective =>
+      p.kind === 'institutional',
   );
   const guardianPerspectives = availablePerspectives.filter(
-    (p): p is import('@repo/core/types/Perspective').GuardianBondPerspective => p.kind === 'guardian',
+    (p): p is import('@repo/core/types/Perspective').GuardianBondPerspective =>
+      p.kind === 'guardian',
   );
   const commercialPerspectives = availablePerspectives.filter(
     (p): p is CommercialPerspective => p.kind === 'commercial',
@@ -71,7 +73,10 @@ export function resolveWorkspaceSwitcherTargets({
     perspectiveId: personalPerspective?.id || 'personal',
     category: 'personal',
     badge: '🌿 Sanctuary',
-    status: activePerspectiveId === 'personal' || currentWorkspace === 'personal' ? 'current' : 'available',
+    status:
+      activePerspectiveId === 'personal' || currentWorkspace === 'personal'
+        ? 'current'
+        : 'available',
   });
 
   // 2. Commercial Batches
@@ -98,7 +103,8 @@ export function resolveWorkspaceSwitcherTargets({
     targets.push({
       id: 'founder',
       title: 'Founder workspace',
-      description: 'Platform-scale stewardship, cross-tenant signal, and founder-owned launch surfaces.',
+      description:
+        'Platform-scale stewardship, cross-tenant signal, and founder-owned launch surfaces.',
       destination: {
         kind: 'route',
         name: 'FounderDashboard',
@@ -113,7 +119,8 @@ export function resolveWorkspaceSwitcherTargets({
     targets.push({
       id: 'admin',
       title: 'Admin workspace',
-      description: 'Platform-system operations, tenant health, policy repair, and audit-driven interventions.',
+      description:
+        'Platform-system operations, tenant health, policy repair, and audit-driven interventions.',
       destination: {
         kind: 'route',
         name: 'AdminDashboard',
@@ -130,7 +137,11 @@ export function resolveWorkspaceSwitcherTargets({
       const isCurrent = activePerspectiveId === inst.id;
       const isPrincipal = inst.capacity === 'principal' || inst.roles?.includes('principal');
       targets.push({
-        id: (isPrincipal ? 'principal' : inst.capacity === 'student' ? 'student' : 'teacher') as WorkspaceSwitcherTargetId,
+        id: (isPrincipal
+          ? 'principal'
+          : inst.capacity === 'student'
+            ? 'student'
+            : 'teacher') as WorkspaceSwitcherTargetId,
         title: inst.schoolName || inst.displayName,
         description: `${inst.capacity.toUpperCase()} · ${inst.schoolName || 'Academic Institution'}`,
         destination: isPrincipal
@@ -149,7 +160,8 @@ export function resolveWorkspaceSwitcherTargets({
       targets.push({
         id: 'principal',
         title: 'Principal operations',
-        description: 'Institution-specific governance and operational drill-in for a chosen school.',
+        description:
+          'Institution-specific governance and operational drill-in for a chosen school.',
         destination: { kind: 'route', name: 'PrincipalDashboard' },
         enabled: true,
         category: 'institutional',
@@ -171,7 +183,8 @@ export function resolveWorkspaceSwitcherTargets({
       targets.push({
         id: 'student',
         title: 'Student workspace',
-        description: 'Learning-flow and progress surfaces currently composed through the classroom shell.',
+        description:
+          'Learning-flow and progress surfaces currently composed through the classroom shell.',
         destination: { kind: 'tab', name: 'Classroom' },
         enabled: true,
         category: 'institutional',
@@ -186,7 +199,7 @@ export function resolveWorkspaceSwitcherTargets({
       const isCurrent = activePerspectiveId === ward.id;
       targets.push({
         id: 'guardian',
-        title: ward.wardName ? `${ward.wardName}'s Progress` : (ward.displayName || 'Ward Overview'),
+        title: ward.wardName ? `${ward.wardName}'s Progress` : ward.displayName || 'Ward Overview',
         description: 'Child visibility, attendance tracking, and school communication.',
         destination: {
           kind: 'route',
@@ -217,4 +230,3 @@ export function resolveWorkspaceSwitcherTargets({
 
   return targets;
 }
-

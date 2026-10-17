@@ -1,13 +1,13 @@
 import { FormManager } from '@intuitui-labs/form-builder-engine/core';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import { CircleCheck, Share2 } from '@repo/ui/icons';
-import { Box, Center, ScrollView, Text, View } from '@repo/ui/primitives';
-import { useCallback, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
 } from '@repo/form-builder/apps/resilience-sensing-schema';
 import NativeForm from '@repo/form-builder/NativeForm';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { CircleCheck, Share2 } from '@repo/ui/icons';
+import { Box, Center, ScrollView, Text, View } from '@repo/ui/primitives';
+import { useCallback, useMemo, useState } from 'react';
 
 interface ClimateSensingScreenProps {
   schoolId: string;
@@ -89,3 +89,5 @@ export const ClimateSensingScreen = ({
     </ScrollView>
   );
 };
+
+export default ClimateSensingScreen;

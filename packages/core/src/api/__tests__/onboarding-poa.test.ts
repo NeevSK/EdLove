@@ -53,6 +53,8 @@ describe('onboarding POA coverage', () => {
     expect(route.method).toBe('post');
     expect(route.path).toBe('/identity/complete-onboarding');
     expect(route.responses[200]).toBeDefined();
-    expect('request' in route).toBe(false);
+    expect(route.request?.body.parse({ idempotencyKey: '123e4567-e89b-12d3-a456-426614174000' })).toEqual({
+      idempotencyKey: '123e4567-e89b-12d3-a456-426614174000',
+    });
   });
 });

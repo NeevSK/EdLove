@@ -441,5 +441,21 @@ except Exception as e:
       ],
     };
   }
+
+  handleAffordance(args: { package?: string; project?: string }) {
+    const pkg = args.package;
+    if (!pkg) {
+      return toText('Missing required argument: "package" (name of package to inspect, e.g. "react-native-reanimated").', true);
+    }
+    const targetProject = args.project || 'apps/gurudevi-mobile';
+    console.error(`[Platform MCP] Fetching physical affordance for: ${pkg} in ${targetProject}`);
+    const resolvedProject = path.resolve(ROOT_DIR, targetProject);
+    const output = runCommand(
+      'node',
+      ['c:/projects/rn-terrain/packages/rn-terrain/bin/rn-terrain.js', 'affordance', pkg],
+      { cwd: resolvedProject },
+    );
+    return toText(output.combined, !output.ok);
+  }
 }
 

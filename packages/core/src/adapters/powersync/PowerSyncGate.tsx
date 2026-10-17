@@ -15,7 +15,7 @@
  */
 
 import { getActivePowerSyncDB } from '@repo/core/adapters/powersync/database';
-import { PowerSyncContext } from '@repo/core/adapters/powersync/powersync-react-shim';
+import { PowerSyncContext } from '@powersync/react';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren } from 'react';

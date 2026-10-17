@@ -78,6 +78,7 @@ export const selfContract = {
       query: z.strictObject({
         userId: z.uuid().optional(),
         limit: z.coerce.number().optional(),
+        viewDate: z.string().datetime().optional(),
       }),
     },
     responses: {

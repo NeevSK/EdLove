@@ -30,6 +30,14 @@ export const authAPI = {
     return auth.signInWithMagicLink(email);
   },
 
+  async signInWithPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest) {
+    return auth.signInWithPhoneOtp(params);
+  },
+
+  async verifyPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpVerification) {
+    return auth.verifyPhoneOtp(params);
+  },
+
   async exchangeCodeForSession(code: string) {
     return auth.exchangeCodeForSession(code);
   },
@@ -81,7 +89,12 @@ export const authAPI = {
     return auth.signInAnonymously();
   },
 
-  async linkAnonymousToEmail(email: string, password: string, fullName: string, capacity: Capacity) {
+  async linkAnonymousToEmail(
+    email: string,
+    password: string,
+    fullName: string,
+    capacity: Capacity,
+  ) {
     return auth.linkAnonymousToEmail(email, password, fullName, capacity);
   },
 

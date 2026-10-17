@@ -4,10 +4,14 @@ import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Theme } from '@repo/ui/theme/Theme';
 import React, { useCallback, useMemo } from 'react';
 import {
+  Gesture,
   GestureDetector,
-  usePanGesture,
-  usePinchGesture,
-  useSimultaneousGestures,
+  type GestureStateChangeEvent,
+  type GestureUpdateEvent,
+  type PanGestureChangeEventPayload,
+  type PanGestureHandlerEventPayload,
+  type PinchGestureChangeEventPayload,
+  type PinchGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Text as SvgText } from 'react-native-svg';
@@ -96,40 +100,53 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
   const savedTranslateX = useSharedValue(0);
   const savedTranslateY = useSharedValue(100);
 
-  const pinchGesture = usePinchGesture({
-    onUpdate: (event) => {
-      'worklet';
-      scale.value = savedScale.value * event.scale;
-    },
-    onDeactivate: (event) => {
-      'worklet';
-      if (event.canceled) {
-        scale.value = withTiming(savedScale.value);
-        return;
-      }
-      savedScale.value = scale.value;
-    },
-  });
+  const pinchGesture = useMemo(
+    () =>
+      Gesture.Pinch()
+        .onUpdate(
+          (event: GestureUpdateEvent<PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload>) => {
+            'worklet';
+            scale.value = savedScale.value * event.scale;
+          },
+        )
+        .onEnd((_event: GestureStateChangeEvent<PinchGestureHandlerEventPayload>, success: boolean) => {
+          'worklet';
+          if (!success) {
+            scale.value = withTiming(savedScale.value);
+            return;
+          }
+          savedScale.value = scale.value;
+        }),
+    [savedScale, scale],
+  );
 
-  const panGesture = usePanGesture({
-    onUpdate: (event) => {
-      'worklet';
-      translateX.value = savedTranslateX.value + event.translationX;
-      translateY.value = savedTranslateY.value + event.translationY;
-    },
-    onDeactivate: (event) => {
-      'worklet';
-      if (event.canceled) {
-        translateX.value = withTiming(savedTranslateX.value);
-        translateY.value = withTiming(savedTranslateY.value);
-        return;
-      }
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
-    },
-  });
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onUpdate(
+          (event: GestureUpdateEvent<PanGestureHandlerEventPayload & PanGestureChangeEventPayload>) => {
+            'worklet';
+            translateX.value = savedTranslateX.value + event.translationX;
+            translateY.value = savedTranslateY.value + event.translationY;
+          },
+        )
+        .onEnd((_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
+          'worklet';
+          if (!success) {
+            translateX.value = withTiming(savedTranslateX.value);
+            translateY.value = withTiming(savedTranslateY.value);
+            return;
+          }
+          savedTranslateX.value = translateX.value;
+          savedTranslateY.value = translateY.value;
+        }),
+    [savedTranslateX, savedTranslateY, translateX, translateY],
+  );
 
-  const combinedGesture = useSimultaneousGestures(pinchGesture, panGesture);
+  const combinedGesture = useMemo(
+    () => Gesture.Simultaneous(pinchGesture, panGesture),
+    [pinchGesture, panGesture],
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

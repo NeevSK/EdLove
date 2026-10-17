@@ -1,5 +1,4 @@
 import type { SovereignContract } from '@repo/core/api/contracts';
-import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
 import {
   CalendarEventSchema,
   StaffLeaveSchema,
@@ -7,6 +6,13 @@ import {
   TeacherCarouselItemSchema,
 } from '@repo/core/logic/schemas/staff.schema';
 import { z } from 'zod';
+
+export const SchoolSummarySchema = z.strictObject({
+  id: z.uuid(),
+  name: z.string(),
+  classrooms_count: z.number().int().nonnegative(),
+  bonds_count: z.number().int().nonnegative(),
+});
 
 const adminAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
@@ -74,7 +80,7 @@ export const adminContract = {
       params: z.strictObject({ id: z.uuid() }),
     },
     responses: {
-      200: { schema: SchoolSchema, description: 'School details' },
+      200: { schema: SchoolSummarySchema, description: 'School summary' },
     },
     metadata: adminAuthority('read', 'School'),
   },

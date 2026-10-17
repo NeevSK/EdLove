@@ -1,9 +1,9 @@
+import { accountTransition } from '@repo/core/accounts/accountTransition';
 import { authAPI } from '@repo/core/api/auth';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
 import { accountPin } from '@repo/core/lib/accountPin';
-import { accountTransition } from '@repo/core/accounts/accountTransition';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';
 import {

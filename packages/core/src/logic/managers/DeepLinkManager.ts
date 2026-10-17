@@ -90,14 +90,20 @@ export class DeepLinkManager {
     }
   }
 
-  private async handleAuthCallback(url: string, params: Record<string, string>): Promise<DeepLinkResult> {
+  private async handleAuthCallback(
+    url: string,
+    params: Record<string, string>,
+  ): Promise<DeepLinkResult> {
     const callback = classifyAuthCallback(url);
     if (callback.kind !== 'code') {
       return {
         type: DeepLinkType.AUTH_CALLBACK,
         params,
         isHandled: false,
-        message: callback.kind === 'providerError' ? 'Sign-in was cancelled or denied' : 'This secure link cannot be used. Request a new link and try again.',
+        message:
+          callback.kind === 'providerError'
+            ? 'Sign-in was cancelled or denied'
+            : 'This secure link cannot be used. Request a new link and try again.',
       };
     }
 
@@ -105,7 +111,13 @@ export class DeepLinkManager {
       await this.authManager.exchangeCodeForSession(callback.code);
       return { type: DeepLinkType.AUTH_CALLBACK, params, isHandled: true };
     } catch {
-      return { type: DeepLinkType.AUTH_CALLBACK, params, isHandled: false, message: 'This secure link has expired or was already used. Request a new link and try again.' };
+      return {
+        type: DeepLinkType.AUTH_CALLBACK,
+        params,
+        isHandled: false,
+        message:
+          'This secure link has expired or was already used. Request a new link and try again.',
+      };
     }
   }
 

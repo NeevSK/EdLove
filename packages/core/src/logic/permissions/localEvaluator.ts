@@ -1,57 +1,16 @@
 import { getDrizzleDB, registerPermissionValidator } from '@repo/core/adapters/powersync/database';
-import { cedarPolicies, classrooms, schools } from '@repo/core/adapters/powersync/schema';
+import { cedarPolicies } from '@repo/core/adapters/powersync/schema';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { DeviceTrustEngine } from '@repo/core/lib/security/deviceTrust';
 import { isAnonymousIdentity } from '@repo/core/logic/auth/identityState';
 import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import type { Action, Subject } from '@repo/core/types/authorization';
-import { eq } from 'drizzle-orm';
+import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localResourceAttributes';
 
 const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
 
-/**
- * Retrieves dynamic attributes for a resource directly from the local SQLite/PowerSync cache.
- */
-export async function getLocalResourceAttributes(
-  resourceType: string,
-  resourceId: string,
-): Promise<Record<string, unknown>> {
-  const db = getDrizzleDB();
-
-  try {
-    switch (resourceType) {
-      case 'Classroom': {
-        const record = await db.query.classrooms.findFirst({
-          where: eq(classrooms.id, resourceId),
-        });
-        return {
-          school_id: record?.schoolId || '',
-          teacher_id: record?.teacherId || '',
-          grade_id: record?.gradeId || '',
-          section_id: record?.sectionId || '',
-        };
-      }
-      case 'School': {
-        const record = await db.query.schools.findFirst({
-          where: eq(schools.id, resourceId),
-        });
-        return {
-          subscription_tier: record?.subscriptionTier || 'FREE',
-          is_active: record?.isActive ?? true,
-        };
-      }
-      default:
-        return {};
-    }
-  } catch (error) {
-    console.warn(
-      `[LocalEvaluator] Failed to fetch dynamic attributes for ${resourceType}::${resourceId}:`,
-      error,
-    );
-    return {};
-  }
-}
+export { getLocalResourceAttributes } from '@repo/core/logic/permissions/localResourceAttributes';
 
 /**
  * checkLocalPermission
