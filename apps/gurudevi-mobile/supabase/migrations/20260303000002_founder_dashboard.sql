@@ -56,9 +56,9 @@ CREATE POLICY "Founders can manage all users"
     ON public.users FOR ALL
     USING (
         EXISTS (
-            SELECT 1 FROM public.users AS acting_user
-            WHERE acting_user.id = auth.uid()
-            AND acting_user.role IN ('founder', 'admin', 'developer')
+            SELECT 1 FROM public.users AS current_user
+            WHERE current_user.id = auth.uid()
+            AND current_user.role IN ('founder', 'admin', 'developer')
         )
     );
 

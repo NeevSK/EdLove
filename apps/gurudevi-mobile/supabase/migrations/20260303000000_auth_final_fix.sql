@@ -67,10 +67,10 @@ CREATE POLICY "Admins can view users in their school"
     ON public.users FOR SELECT
     USING (
         EXISTS (
-            SELECT 1 FROM public.users AS acting_user
-            WHERE acting_user.id = auth.uid()
-            AND acting_user.school_id = public.users.school_id
-            AND acting_user.role IN ('admin', 'principal')
+            SELECT 1 FROM public.users AS current_user
+            WHERE current_user.id = auth.uid()
+            AND current_user.school_id = public.users.school_id
+            AND current_user.role IN ('admin', 'principal')
         )
     );
 
