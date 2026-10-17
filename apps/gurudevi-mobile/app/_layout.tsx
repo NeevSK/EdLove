@@ -7,6 +7,10 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import { EntryStartupBoundary } from '@/entry/EntryStartupBoundary';
 
+// Native-owned transition: the visible React boot surface is already mounted
+// before the handoff service releases this splash.
+SplashScreen.setOptions({ duration: 220, fade: true });
+
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // The visible startup boundary owns recovery if the native call is unavailable.
 });

@@ -1,4 +1,4 @@
-import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+﻿import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Stack } from 'expo-router';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -9,6 +9,10 @@ export default function WorkspaceLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="editorial" options={{ title: 'Editorial' }} />
+        <Stack.Screen name="events" />
+        <Stack.Screen name="inventory" />
+        <Stack.Screen name="welfare" />
+        <Stack.Screen name="peers" />
         <Stack.Screen name="principal" />
         <Stack.Screen name="founder" />
         <Stack.Screen name="guardian" />

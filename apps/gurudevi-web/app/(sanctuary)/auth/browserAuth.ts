@@ -51,8 +51,8 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
       // This is non-fatal - session persistence works via default Supabase behavior.
       const duration = remember ? SESSION_DURATION_REMEMBER : SESSION_DURATION_DEFAULT;
       try {
-        await client.auth.updateUser({ 
-          data: { session_duration: duration } 
+        await client.auth.updateUser({
+          data: { session_duration: duration },
         });
       } catch {
         // Intentionally silent - auth flow continues regardless

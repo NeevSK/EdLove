@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   loadAccountAttendance: vi.fn(),
@@ -9,18 +9,20 @@ const mocks = vi.hoisted(() => ({
   openTask: vi.fn(() => ({ kind: 'ok' })),
   workbenchState: {
     domain: 'workspace',
-    tasks: [{
-      domain: 'workspace',
-      featureId: 'attendance',
-      route: '/workspace',
-      title: 'Daily attendance',
-      icon: '◷',
-      temporalBinding: { kind: 'none' },
-      localStatePolicy: 'restore-permitted',
-      taskKey: 'attendance-task',
-      openedAt: '2026-09-17T00:00:00.000Z',
-      lastFocusedAt: '2026-09-17T00:00:00.000Z',
-    }],
+    tasks: [
+      {
+        domain: 'workspace',
+        featureId: 'attendance',
+        route: '/workspace',
+        title: 'Daily attendance',
+        icon: '◷',
+        temporalBinding: { kind: 'none' },
+        localStatePolicy: 'restore-permitted',
+        taskKey: 'attendance-task',
+        openedAt: '2026-09-17T00:00:00.000Z',
+        lastFocusedAt: '2026-09-17T00:00:00.000Z',
+      },
+    ],
     focusedTaskKey: 'attendance-task',
     temporalHorizon: {
       anchor: { kind: 'date', date: '2026-09-17' },
@@ -95,7 +97,9 @@ describe('Workspace attendance Safe Try (G1 boundary / jsdom with mocked account
     );
     expect(
       storedKeys.some((key) =>
-        key?.includes('sandbox:account:practice-account-41:practice%3Aattendance%3Adaily-roll-call'),
+        key?.includes(
+          'sandbox:account:practice-account-41:practice%3Aattendance%3Adaily-roll-call',
+        ),
       ),
     ).toBe(true);
     expect(mocks.saveAccountAttendance).not.toHaveBeenCalled();
@@ -108,11 +112,14 @@ describe('Workspace attendance Safe Try (G1 boundary / jsdom with mocked account
   });
 
   it('ignores an in-flight live roster response after Safe Try starts', async () => {
-    let resolveClassrooms: ((classrooms: readonly { id: string; name: string; subject: null }[]) => void) | undefined;
+    let resolveClassrooms:
+      | ((classrooms: readonly { id: string; name: string; subject: null }[]) => void)
+      | undefined;
     mocks.loadAccountClassrooms.mockImplementation(
-      () => new Promise((resolve) => {
-        resolveClassrooms = resolve;
-      }),
+      () =>
+        new Promise((resolve) => {
+          resolveClassrooms = resolve;
+        }),
     );
     const user = userEvent.setup();
     render(

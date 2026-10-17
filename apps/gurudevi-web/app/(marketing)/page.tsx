@@ -1,3 +1,4 @@
+import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,8 +20,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Gurudevi | Education Ecology Support System and Sanctuary for Education',
-    description:
-      'An education ecology support system and sanctuary for education in Sri Lanka.',
+    description: 'An education ecology support system and sanctuary for education in Sri Lanka.',
     locale: 'en_LK',
     alternateLocale: ['si_LK', 'ta_LK'],
     type: 'website',
@@ -65,21 +65,27 @@ export default function MarketingPage() {
         <div className="intro-copy">
           <h2>Education is held together by people carrying too much alone.</h2>
           <p>
-            Gurudevi exists to make the relationships around learning easier to see, easier to support,
-            and worthy of care—replacing administrative exhaustion with calm, sovereign spaces.
+            Gurudevi exists to make the relationships around learning easier to see, easier to
+            support, and worthy of care—replacing administrative exhaustion with calm, sovereign
+            spaces.
           </p>
         </div>
       </section>
 
       {/* The Living Ecology / Workspaces */}
-      <section className="section section--workspaces" id="workspaces" aria-labelledby="workspaces-title">
+      <section
+        className="section section--workspaces"
+        id="workspaces"
+        aria-labelledby="workspaces-title"
+      >
         <div className="section__heading">
           <div>
             <p className="eyebrow">The Living Ecology</p>
             <h2 id="workspaces-title">Four spaces, one connected system.</h2>
           </div>
           <p>
-            Each space gives teachers, students, leaders, and families a dignified home—without surveillance or role flattening.
+            Each space gives teachers, students, leaders, and families a dignified home—without
+            surveillance or role flattening.
           </p>
         </div>
         <div className="workspace-list">
@@ -105,8 +111,8 @@ export default function MarketingPage() {
           <p className="eyebrow">The Promise</p>
           <h2 id="trust-title">Support should never become surveillance.</h2>
           <p className="trust-copy">
-            Gurudevi is engineered with local-first privacy: enough shared coordination to support an
-            entire school, with absolute cryptographic privacy for educators and learners.
+            Gurudevi is engineered with local-first privacy: enough shared coordination to support
+            an entire school, with absolute cryptographic privacy for educators and learners.
           </p>
           <Link className="text-link" href="/about">
             Read our epistemic foundation & research grounding <span aria-hidden="true">↗</span>
@@ -139,9 +145,9 @@ export default function MarketingPage() {
             <small>In active stewardship · Alpha Genesis</small>
           </div>
           <div className="launch-panel__actions">
-            <Link className="button button--dark" href="/explore/self">
+            <a className="button button--dark" href={`${GURUDEVI_EXPLORE_URL}/self`}>
               Open the platform <span aria-hidden="true">↗</span>
-            </Link>
+            </a>
             <Link className="text-link" href="/support">
               Talk to the team
             </Link>

@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { cookies } from 'next/headers';
 import { supabaseConfig } from './config';
 
@@ -10,6 +11,7 @@ export async function createServerSupabaseClient(): Promise<ServerSupabaseClient
 
   const cookieStore = await cookies();
   return createServerClient(config.url, config.publishableKey, {
+    global: { fetch: secureApiFetch },
     cookies: {
       getAll() {
         return cookieStore.getAll();

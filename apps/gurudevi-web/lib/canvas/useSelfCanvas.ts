@@ -84,7 +84,8 @@ export function useSelfCanvas({
     workspaceId: 'self',
   });
 
-  const pinnedIds = appearanceHook.pinnedIds.length > 0 ? appearanceHook.pinnedIds : [...DEFAULT_PINNED_IDS];
+  const pinnedIds =
+    appearanceHook.pinnedIds.length > 0 ? appearanceHook.pinnedIds : [...DEFAULT_PINNED_IDS];
 
   // Track responsive viewport
   useEffect(() => {

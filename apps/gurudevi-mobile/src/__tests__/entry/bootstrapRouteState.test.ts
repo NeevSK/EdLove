@@ -142,6 +142,14 @@ describe('bootstrap route-state adapter', () => {
     expect(target).toMatchObject({ decision: 'app', redirectTo: '/self' });
   });
 
+  it('routes an admitted institutional capacity to the existing workspace dispatcher', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({ activeCapacity: 'teacher', pathname: '/' }),
+    );
+
+    expect(target).toMatchObject({ decision: 'app', redirectTo: '/workspace' });
+  });
+
   it('returns an unauthenticated root launch to public step zero', () => {
     const target = getBootstrapRouteTarget(
       routeState({

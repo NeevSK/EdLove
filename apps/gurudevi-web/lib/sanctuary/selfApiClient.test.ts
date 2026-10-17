@@ -54,8 +54,24 @@ describe('account Self browser adapter', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
+        redirect: 'error',
       }),
     );
+  });
+
+  it('rejects an insecure API origin before session lookup or fetch', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://api.example.test');
+
+    await expect(
+      requestAccountSelfProcedure(
+        'getJournalHistory',
+        { query: { limit: 12 } },
+        (value): value is { id: string } => isRecord(value) && typeof value.id === 'string',
+        'Invalid journal response.',
+      ),
+    ).rejects.toThrow('not configured securely');
+    expect(getSession).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('serializes account writes using the server procedure body contract', async () => {

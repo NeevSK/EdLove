@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe.configure({ retries: 0 });
 
@@ -31,7 +31,9 @@ test.describe('Return Navigation & Deep Links', () => {
     await expect(signInLink).toBeVisible();
   });
 
-  test('deep link to sign-in with returnTo preserves destination @requires-auth', async ({ page }) => {
+  test('deep link to sign-in with returnTo preserves destination @requires-auth', async ({
+    page,
+  }) => {
     await page.goto('/sign-in?returnTo=%2Fworkspace');
     await expect(page).toHaveURL(/returnTo=%2Fworkspace/);
 

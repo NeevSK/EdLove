@@ -173,6 +173,7 @@
     "plugins": [
       "expo-font",
       "./plugins/withNdkVersion",
+      "./plugins/withProfileableBuild",
       "./plugins/withGradleProperties",
       "./plugins/withGradleWrapperVersion",
       "./plugins/withSubprojectsBuildConfig",

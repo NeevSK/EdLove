@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { GET as getAssetLinks } from '../assetlinks.json/route';
 import { GET as getAASA } from '../apple-app-site-association/route';
+import { GET as getAssetLinks } from '../assetlinks.json/route';
 
 describe('Web .well-known Endpoints (App Links & Universal Links)', () => {
   it('returns valid assetlinks.json with Content-Type application/json', async () => {

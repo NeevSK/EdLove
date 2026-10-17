@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
+import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from './config';
 
 /** Refreshes auth cookies before protected rendering. Authorization remains a route concern. */
@@ -9,12 +10,15 @@ export async function refreshSupabaseSession(request: NextRequest): Promise<Next
 
   let response = NextResponse.next({ request });
   const supabase = createServerClient(config.url, config.publishableKey, {
+    global: { fetch: secureApiFetch },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
       },
     },
   });

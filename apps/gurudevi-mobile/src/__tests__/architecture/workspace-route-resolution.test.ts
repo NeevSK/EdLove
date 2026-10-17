@@ -75,4 +75,18 @@ describe('workspace route resolution', () => {
       },
     });
   });
+
+  it.each([
+    ['parent', 'guardian'],
+    ['assistantPrincipal', 'principal'],
+    ['admin', 'principal'],
+    ['gradeHead', 'principal'],
+    ['sectionHead', 'principal'],
+    ['developer', 'founder'],
+  ] as const)('normalizes %s to the existing %s workspace target', (capacity, target) => {
+    expect(resolveWorkspaceRoute({ ...resolvedStudentInput, capacity })).toMatchObject({
+      kind: 'role-ready',
+      target: { kind: target },
+    });
+  });
 });

@@ -104,12 +104,22 @@ export function resolveWorkspaceRoute({
     return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
   }
 
-  if (resolvedCapacity.data === 'principal') {
+  if (
+    resolvedCapacity.data === 'principal' ||
+    resolvedCapacity.data === 'assistantPrincipal' ||
+    resolvedCapacity.data === 'admin' ||
+    resolvedCapacity.data === 'gradeHead' ||
+    resolvedCapacity.data === 'sectionHead'
+  ) {
     return { kind: 'role-ready', target: { kind: 'principal' }, ...backgroundStatus };
   }
 
-  if (resolvedCapacity.data === 'guardian') {
+  if (resolvedCapacity.data === 'guardian' || resolvedCapacity.data === 'parent') {
     return { kind: 'role-ready', target: { kind: 'guardian' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'developer') {
+    return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
   }
 
   if (resolvedCapacity.data === 'student') {

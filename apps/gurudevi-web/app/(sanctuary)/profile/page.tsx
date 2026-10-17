@@ -60,7 +60,7 @@ export default async function ProfilePage() {
 
   return (
     <ProfileFloor
-      accountId={entry.authSubjectId}
+      accountId={entry.accountId}
       displayName={entry.displayName}
       primaryScopeRole={entry.primaryScopeRole}
     />

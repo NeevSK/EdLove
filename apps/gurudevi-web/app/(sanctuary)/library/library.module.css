@@ -5,7 +5,11 @@
   gap: clamp(1.2rem, 3vw, 2.4rem);
   padding: clamp(1rem, 4vw, 3.5rem);
   background:
-    radial-gradient(circle at 88% 4%, color-mix(in srgb, var(--lotus) 10%, transparent), transparent 28rem),
+    radial-gradient(
+      circle at 88% 4%,
+      color-mix(in srgb, var(--lotus) 10%, transparent),
+      transparent 28rem
+    ),
     var(--paper);
 }
 
@@ -421,4 +425,3 @@
   font-weight: 500;
   cursor: pointer;
 }
-

@@ -1,6 +1,6 @@
+import { tokens } from '@repo/ui/tokens';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { tokens } from '@repo/ui/tokens';
 import './styles.css';
 
 const sharedTokenCss = [

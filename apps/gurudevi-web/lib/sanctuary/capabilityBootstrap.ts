@@ -1,4 +1,5 @@
 import { createBrowserSupabaseClient } from '../supabase/browser';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 
 export type BrowserCapabilityDomain = 'self' | 'workspace' | 'community' | 'library';
 export type BrowserCapabilityStatus = 'available' | 'locked' | 'unavailable';
@@ -10,7 +11,9 @@ export type BrowserCapability = Readonly<{
 
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
-  return value ? value.replace(/\/+$/, '') : null;
+  if (!value) return null;
+  assertSecureApiUrl(value);
+  return value.replace(/\/+$/, '');
 }
 
 function isCapability(value: unknown): value is BrowserCapability {
@@ -35,7 +38,12 @@ export async function loadAccountCapabilities(
   domain: BrowserCapabilityDomain,
   fetcher: typeof fetch = fetch,
 ): Promise<readonly BrowserCapability[]> {
-  const origin = apiOrigin();
+  let origin: string | null;
+  try {
+    origin = apiOrigin();
+  } catch {
+    return [];
+  }
   const supabase = createBrowserSupabaseClient();
   if (!origin || !supabase) return [];
   const { data, error } = await supabase.auth.getSession();
@@ -47,6 +55,7 @@ export async function loadAccountCapabilities(
     {
       headers: { Authorization: `Bearer ${session.access_token}` },
       cache: 'no-store',
+      redirect: 'error',
     },
   );
   if (!response.ok) return [];

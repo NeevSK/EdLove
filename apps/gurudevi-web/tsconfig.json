@@ -2,12 +2,30 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "allowJs": false,
-    "incremental": true,
+    "incremental": false,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@playwright/test": [
+        "../../node_modules/.pnpm/@playwright+test@1.62.1/node_modules/playwright/test.d.ts"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "app/**/*.ts", "app/**/*.tsx", "lib/**/*.ts", "lib/**/*.tsx", "components/**/*.ts", "components/**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "tests"]
+  "include": [
+    "next-env.d.ts",
+    "proxy.ts",
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/.well-known/**/*",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", ".next"]
 }

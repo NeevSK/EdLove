@@ -1,3 +1,4 @@
+import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SOCIAL_LINKS, WEB_LINKS } from '../../lib/site';
@@ -28,7 +29,7 @@ export function MarketingFooter() {
         <div>
           <p className="eyebrow footer-label">Elsewhere</p>
           <div className="footer-links">
-            <Link href="/explore/self">Open platform ↗</Link>
+            <a href={`${GURUDEVI_EXPLORE_URL}/self`}>Open platform ↗</a>
             <a href={WEB_LINKS.edlove} target="_blank" rel="noopener noreferrer">
               EdLove ↗
             </a>

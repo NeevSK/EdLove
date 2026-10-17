@@ -1,4 +1,5 @@
 import type { AccountDeletionRequest } from '@repo/core/logic/ports/auth.port';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '../../../lib/supabase/config';
@@ -14,6 +15,7 @@ async function authenticatedClient(request: NextRequest) {
   if (!config) return null;
 
   const supabase = createServerClient(config.url, config.publishableKey, {
+    global: { fetch: secureApiFetch },
     cookies: { getAll: () => request.cookies.getAll(), setAll: () => undefined },
   });
   const { data, error } = await supabase.auth.getUser();

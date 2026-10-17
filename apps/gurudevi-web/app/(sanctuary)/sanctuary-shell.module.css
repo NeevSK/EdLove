@@ -1,82 +1,412 @@
-.shell { --header-block-size: clamp(3.5rem, 8svh, 4.5rem); --bottom-tabs-block-size: 4.75rem; min-height: 100svh; color: var(--ink); background: var(--paper); font-family: Arial, sans-serif; }
-.skipLink { position: fixed; z-index: 10; top: .75rem; left: .75rem; padding: .7rem 1rem; background: var(--ink); color: var(--paper); transform: translateY(-160%); }
-.skipLink:focus { transform: translateY(0); }
-.header { position: sticky; z-index: 4; top: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); min-height: var(--header-block-size); container-name: sanctuary-header; container-type: inline-size; align-items: center; gap: 1rem; padding: max(env(safe-area-inset-top), 0px) max(env(safe-area-inset-right), 1rem) 0 max(env(safe-area-inset-left), 1rem); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(12px); }
-.wordmark { font-family: Georgia, serif; font-size: 1.15rem; font-weight: 700; letter-spacing: -.04em; text-decoration: none; }
-.wordmark span { color: var(--ink-soft); font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
-.pageTitle { margin: 0; font-family: Georgia, serif; font-size: 1rem; font-weight: 600; }
-.accountIsland { position: relative; display: flex; justify-self: end; align-items: center; gap: .3rem; }
-.accountLink, .avatarLink, .accountMenuTrigger { position: relative; display: inline-grid; width: 2.75rem; min-height: 2.75rem; place-items: center; border: 1px solid transparent; border-radius: 999px; background: transparent; color: inherit; font: inherit; text-decoration: none; }
-.accountLink:hover, .accountLink[aria-current='page'], .accountMenuTrigger:hover { background: var(--paper-light); border-color: var(--line); }
-.avatarLink { background: var(--ink); color: var(--paper); font-family: Georgia, serif; font-weight: 700; }
-.notificationBadge { position: absolute; top: -.15rem; right: -.1rem; min-width: 1.15rem; padding: .1rem .25rem; border: 2px solid var(--paper); border-radius: 999px; background: var(--lotus); color: white; font-size: .65rem; font-weight: 700; line-height: 1.1; }
-.accountMenuTrigger { display: none; cursor: pointer; }
-.accountMenu { position: absolute; z-index: 3; top: calc(100% + .5rem); right: 0; min-width: 12rem; padding: .4rem; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 .8rem 2rem rgb(0 0 0 / 12%); }
-.accountMenuItem { display: flex; min-height: 2.75rem; align-items: center; gap: .7rem; padding: 0 .7rem; text-decoration: none; }
-.accountMenuItem:hover, .accountMenuItem[aria-current='page'] { background: var(--paper-light); }
-.body { display: grid; grid-template-columns: clamp(4.5rem, 18vw, 15.5rem) minmax(0, 1fr); min-height: calc(100svh - var(--header-block-size)); container-name: sanctuary-canvas; container-type: inline-size; }
-.rail { display: flex; flex-direction: column; justify-content: space-between; padding: 1rem .75rem; border-right: 1px solid var(--line); background: var(--paper-light); }
-.navList { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }
-.navLink { display: flex; min-height: 2.75rem; align-items: center; gap: .7rem; padding: 0 .7rem; border: 1px solid transparent; border-radius: .65rem; color: var(--ink-soft); font-weight: 650; text-decoration: none; }
-.navLink:hover, .navLink[aria-current='page'] { border-color: var(--line); background: var(--paper); color: var(--ink); }
-.navLink[aria-current='page'] { box-shadow: inset .2rem 0 0 var(--lotus); }
-.navSymbol { width: 1.25rem; text-align: center; font-size: 1.1rem; }
-.navLabel { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.advanced { margin-top: 1rem; }
-.advancedTrigger { display: flex; width: 100%; min-height: 2.75rem; align-items: center; justify-content: space-between; padding: 0 .7rem; border: 1px dashed var(--line); border-radius: .65rem; background: transparent; color: var(--ink-soft); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
-.advancedPanel { padding: .6rem .7rem; color: var(--ink-soft); font-size: .8rem; }
-.advancedPanel p { margin: 0 0 .45rem; font-weight: 700; }
-.advancedPanel ul { display: grid; gap: .3rem; margin: 0; padding-left: 1rem; }
-.main { min-width: 0; min-height: 0; outline: none; }
-.canvasFrame { box-sizing: border-box; min-width: 0; min-height: 100%; padding: clamp(.75rem, 2cqi, 2rem); }
-.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.shell :is(a, button):focus-visible { outline: 3px solid var(--gd-border-focus); outline-offset: 3px; }
+.shell {
+  --header-block-size: clamp(3.5rem, 8svh, 4.5rem);
+  --bottom-tabs-block-size: 4.75rem;
+  min-height: 100svh;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: Arial, sans-serif;
+}
+.skipLink {
+  position: fixed;
+  z-index: 10;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.7rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  transform: translateY(-160%);
+}
+.skipLink:focus {
+  transform: translateY(0);
+}
+.header {
+  position: sticky;
+  z-index: 4;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  min-height: var(--header-block-size);
+  container-name: sanctuary-header;
+  container-type: inline-size;
+  align-items: center;
+  gap: 1rem;
+  padding: max(env(safe-area-inset-top), 0px) max(env(safe-area-inset-right), 1rem) 0
+    max(env(safe-area-inset-left), 1rem);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+.wordmark {
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+.wordmark span {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.pageTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.headerControls {
+  display: flex;
+  justify-self: end;
+  align-items: center;
+  gap: 0.5rem;
+}
+.accountIsland {
+  position: relative;
+  display: flex;
+  justify-self: end;
+  align-items: center;
+  gap: 0.3rem;
+}
+.accountLink,
+.avatarLink,
+.accountMenuTrigger {
+  position: relative;
+  display: inline-grid;
+  width: 2.75rem;
+  min-height: 2.75rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+}
+.accountLink:hover,
+.accountLink[aria-current="page"],
+.accountMenuTrigger:hover {
+  background: var(--paper-light);
+  border-color: var(--line);
+}
+.avatarLink {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: Georgia, serif;
+  font-weight: 700;
+}
+.notificationBadge {
+  position: absolute;
+  top: -0.15rem;
+  right: -0.1rem;
+  min-width: 1.15rem;
+  padding: 0.1rem 0.25rem;
+  border: 2px solid var(--paper);
+  border-radius: 999px;
+  background: var(--lotus);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.accountMenuTrigger {
+  display: none;
+  cursor: pointer;
+}
+.accountMenu {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 12rem;
+  padding: 0.4rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 12%);
+}
+.accountMenuItem {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 0.7rem;
+  text-decoration: none;
+}
+.accountMenuItem:hover,
+.accountMenuItem[aria-current="page"] {
+  background: var(--paper-light);
+}
+.body {
+  display: grid;
+  grid-template-columns: clamp(4.5rem, 18vw, 15.5rem) minmax(0, 1fr);
+  min-height: calc(100svh - var(--header-block-size));
+  container-name: sanctuary-canvas;
+  container-type: inline-size;
+}
+.rail {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 0.75rem;
+  border-right: 1px solid var(--line);
+  background: var(--paper-light);
+}
+.navList {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navLink {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  color: var(--ink-soft);
+  font-weight: 650;
+  text-decoration: none;
+}
+.navLink:hover,
+.navLink[aria-current="page"] {
+  border-color: var(--line);
+  background: var(--paper);
+  color: var(--ink);
+}
+.navLink[aria-current="page"] {
+  box-shadow: inset 0.2rem 0 0 var(--lotus);
+}
+.navSymbol {
+  width: 1.25rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+.navLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.advanced {
+  margin-top: 1rem;
+}
+.advancedTrigger {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.7rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.65rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.advancedPanel {
+  padding: 0.6rem 0.7rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+.advancedPanel p {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+}
+.advancedPanel ul {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding-left: 1rem;
+}
+.main {
+  min-width: 0;
+  min-height: 0;
+  outline: none;
+}
+.canvasFrame {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 100%;
+  padding: clamp(0.75rem, 2cqi, 2rem);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.shell :is(a, button):focus-visible {
+  outline: 3px solid var(--gd-border-focus);
+  outline-offset: 3px;
+}
 
 @container sanctuary-canvas (max-width: 68rem) {
-  .rail { align-items: center; padding-right: .5rem; padding-left: .5rem; }
-  .rail nav, .navList { width: 100%; }
-  .navLink { justify-content: center; padding: 0; }
-  .navLink[aria-current='page'] { box-shadow: inset 0 -.2rem 0 var(--lotus); }
-  .navLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .advanced { position: relative; width: 100%; }
-  .advancedTrigger { justify-content: center; padding: 0; font-size: 0; }
-  .advancedTrigger span { font-size: 1.1rem; }
-  .advancedPanel { position: absolute; z-index: 2; width: 13rem; margin-top: .4rem; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 .8rem 2rem rgb(0 0 0 / 12%); }
+  .rail {
+    align-items: center;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  .rail nav,
+  .navList {
+    width: 100%;
+  }
+  .navLink {
+    justify-content: center;
+    padding: 0;
+  }
+  .navLink[aria-current="page"] {
+    box-shadow: inset 0 -0.2rem 0 var(--lotus);
+  }
+  .navLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .advanced {
+    position: relative;
+    width: 100%;
+  }
+  .advancedTrigger {
+    justify-content: center;
+    padding: 0;
+    font-size: 0;
+  }
+  .advancedTrigger span {
+    font-size: 1.1rem;
+  }
+  .advancedPanel {
+    position: absolute;
+    z-index: 2;
+    width: 13rem;
+    margin-top: 0.4rem;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 12%);
+  }
 }
 
 @container sanctuary-header (max-width: 38rem) {
-  .header { grid-template-columns: minmax(0, 1fr) auto; }
-  .pageTitle { display: none; }
-  .accountLink, .avatarLink { display: none; }
-  .accountMenuTrigger { display: inline-grid; }
+  .header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .pageTitle,
+  .capacityPerspective {
+    display: none;
+  }
+  .accountLink,
+  .avatarLink {
+    display: none;
+  }
+  .accountMenuTrigger {
+    display: inline-grid;
+  }
 }
 
 /* A portrait canvas that cannot comfortably host a rail gets anchored tabs instead.
    The threshold is a content-fit constraint, not a device category. */
 @media (orientation: portrait) and (max-width: 48rem) {
-  .body { display: block; min-height: calc(100svh - var(--header-block-size)); }
-  .rail { position: fixed; z-index: 3; right: 0; bottom: 0; left: 0; display: block; padding: .35rem max(env(safe-area-inset-right), .5rem) max(env(safe-area-inset-bottom), .35rem) max(env(safe-area-inset-left), .5rem); border-top: 1px solid var(--line); border-right: 0; background: color-mix(in srgb, var(--paper-light) 94%, transparent); backdrop-filter: blur(12px); }
-  .rail nav { min-width: 0; }
-  .navList { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .2rem; }
-  .navLink { min-height: 3.5rem; flex-direction: column; justify-content: center; gap: .15rem; padding: .25rem; font-size: .7rem; }
-  .navLink[aria-current='page'] { box-shadow: inset 0 -.2rem 0 var(--lotus); }
-  .navSymbol { font-size: 1rem; }
-  .advanced { display: none; }
-  .main { padding-bottom: calc(var(--bottom-tabs-block-size) + env(safe-area-inset-bottom)); }
-  .canvasFrame { min-height: calc(100svh - var(--header-block-size) - var(--bottom-tabs-block-size)); }
+  .body {
+    display: block;
+    min-height: calc(100svh - var(--header-block-size));
+  }
+  .rail {
+    position: fixed;
+    z-index: 3;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    padding: 0.35rem max(env(safe-area-inset-right), 0.5rem)
+      max(env(safe-area-inset-bottom), 0.35rem) max(env(safe-area-inset-left), 0.5rem);
+    border-top: 1px solid var(--line);
+    border-right: 0;
+    background: color-mix(in srgb, var(--paper-light) 94%, transparent);
+    backdrop-filter: blur(12px);
+  }
+  .rail nav {
+    min-width: 0;
+  }
+  .navList {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.2rem;
+  }
+  .navLink {
+    min-height: 3.5rem;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.25rem;
+    font-size: 0.7rem;
+  }
+  .navLink[aria-current="page"] {
+    box-shadow: inset 0 -0.2rem 0 var(--lotus);
+  }
+  .navSymbol {
+    font-size: 1rem;
+  }
+  .advanced {
+    display: none;
+  }
+  .main {
+    padding-bottom: calc(var(--bottom-tabs-block-size) + env(safe-area-inset-bottom));
+  }
+  .canvasFrame {
+    min-height: calc(100svh - var(--header-block-size) - var(--bottom-tabs-block-size));
+  }
 }
 
 /* Short landscape canvases reserve vertical room for furniture: a compact rail
    preserves canvas height where a bottom bar would obscure it. */
 @media (orientation: landscape) and (max-height: 34rem) {
-  .body { grid-template-columns: 4.25rem minmax(0, 1fr); }
-  .rail { align-items: center; padding: .5rem; }
-  .rail nav, .navList { width: 100%; }
-  .navLink { justify-content: center; padding: 0; }
-  .navLink[aria-current='page'] { box-shadow: inset 0 -.2rem 0 var(--lotus); }
-  .navLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .advanced { display: none; }
-  .canvasFrame { padding: clamp(.5rem, 2cqi, 1.25rem); }
+  .body {
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+  }
+  .rail {
+    align-items: center;
+    padding: 0.5rem;
+  }
+  .rail nav,
+  .navList {
+    width: 100%;
+  }
+  .navLink {
+    justify-content: center;
+    padding: 0;
+  }
+  .navLink[aria-current="page"] {
+    box-shadow: inset 0 -0.2rem 0 var(--lotus);
+  }
+  .navLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .advanced {
+    display: none;
+  }
+  .canvasFrame {
+    padding: clamp(0.5rem, 2cqi, 1.25rem);
+  }
 }
 
-@container sanctuary-header (max-width: 24rem) { .wordmark span { display: none; } }
+@container sanctuary-header (max-width: 24rem) {
+  .wordmark span {
+    display: none;
+  }
+}

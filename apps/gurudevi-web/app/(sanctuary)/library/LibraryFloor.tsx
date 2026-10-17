@@ -168,7 +168,10 @@ export function LibraryFloor({
               </button>
             </div>
 
-            <section aria-labelledby="rail-collections-heading" className={styles.catalogRailSection}>
+            <section
+              aria-labelledby="rail-collections-heading"
+              className={styles.catalogRailSection}
+            >
               <h4 id="rail-collections-heading" className={styles.catalogRailSectionTitle}>
                 Collections
               </h4>
@@ -191,7 +194,11 @@ export function LibraryFloor({
                           </span>
                         </button>
                         <button
-                          aria-label={isPinned ? `Unpin ${collectionLabel(category)}` : `Pin ${collectionLabel(category)}`}
+                          aria-label={
+                            isPinned
+                              ? `Unpin ${collectionLabel(category)}`
+                              : `Pin ${collectionLabel(category)}`
+                          }
                           className={`${styles.catalogRailPinButton} ${isPinned ? styles.catalogRailPinButtonPinned : ''}`}
                           onClick={() => canvas.togglePin(category)}
                           type="button"
@@ -208,11 +215,7 @@ export function LibraryFloor({
 
           <div className={styles.activeResourceStage}>
             <div className={styles.backOverviewBar}>
-              <button
-                className={styles.streamBackButton}
-                onClick={returnToOverview}
-                type="button"
-              >
+              <button className={styles.streamBackButton} onClick={returnToOverview} type="button">
                 ← Back to Overview
               </button>
             </div>

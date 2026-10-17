@@ -1,0 +1,109 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 68rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+  gap: 1.5rem;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.metricCard {
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-soft, #453c35);
+  text-transform: uppercase;
+}
+
+.metricValue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-ink, #131e27);
+  font-family: var(--font-display, "Fraunces", serif);
+  margin: 0;
+}
+
+.chartCard {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.barList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.barLabel {
+  width: 8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink, #131e27);
+}
+
+.barTrack {
+  flex: 1;
+  height: 14px;
+  background: var(--color-paper, #f7f2e8);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, #1c4a5a, #a85022);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}

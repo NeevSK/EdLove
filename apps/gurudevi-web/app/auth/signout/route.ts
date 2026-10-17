@@ -1,5 +1,6 @@
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '../../../lib/supabase/config';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -9,10 +10,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!config) return response;
 
   const supabase = createServerClient(config.url, config.publishableKey, {
+    global: { fetch: secureApiFetch },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
       },
     },
   });

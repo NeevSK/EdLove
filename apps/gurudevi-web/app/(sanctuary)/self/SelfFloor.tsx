@@ -2,8 +2,8 @@
 
 import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
-import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import { resolveWorkspaceGroupOrder } from '@repo/core/logic/workspace/canvas';
+import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
@@ -19,7 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useSelfCanvas, type SelfCategory } from '../../../lib/canvas/useSelfCanvas';
+import { type SelfCategory, useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
 import {
   type BurnedJournalEntry,
@@ -34,9 +34,9 @@ import {
   type MoodValue,
 } from '../../../lib/sanctuary/selfWellbeing';
 import { useDomainWorkbench } from '../../../lib/workbench';
-import { TaskStrip, TemporalHorizon } from '../components/workbench';
 import { FloorAtmosphere, type FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import { FloorAtmospherePicker } from '../components/FloorAtmospherePicker';
+import { TaskStrip, TemporalHorizon } from '../components/workbench';
 import {
   BROWSER_SELF_FEATURES,
   getBrowserSelfFeature,
@@ -515,7 +515,9 @@ function SelfOverview({
   onOpenFireJournal: () => void;
   pinnedFeatures: readonly SelfFeatureManifestItem[];
 }>) {
-  const byCategory = SELF_FEATURE_MANIFEST.all.reduce<Record<SelfCategory, SelfFeatureManifestItem[]>>(
+  const byCategory = SELF_FEATURE_MANIFEST.all.reduce<
+    Record<SelfCategory, SelfFeatureManifestItem[]>
+  >(
     (groups, feature) => {
       (groups[feature.category] ??= []).push(feature);
       return groups;
@@ -820,7 +822,9 @@ function MoodLotusModal({ onClose }: Readonly<{ onClose: () => void }>) {
                     </span>
                     <div>
                       <p className={styles.moodLabel}>
-                        {entry.mood ? entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1) : 'Logged'}
+                        {entry.mood
+                          ? entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)
+                          : 'Logged'}
                       </p>
                       {entry.note ? <p className={styles.moodNote}>{entry.note}</p> : null}
                       <time dateTime={entry.created_at}>{formatDate(entry.created_at)}</time>

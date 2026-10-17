@@ -1,0 +1,197 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 76rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+}
+
+.headerBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.controlsArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.selectInput {
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background: var(--color-paper-light, #fffdf8);
+  color: var(--color-ink, #131e27);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.05));
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft, #453c35);
+  margin: 0 0 0.25rem;
+}
+
+.statValue {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  background: var(--color-paper-light, #fffdf8);
+  box-shadow: 0 4px 12px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.05));
+}
+
+.gradeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.gradeTable th {
+  padding: 0.75rem 1rem;
+  background: var(--color-paper, #f7f2e8);
+  color: var(--color-ink-soft, #453c35);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.gradeTable td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  color: var(--color-ink, #131e27);
+  vertical-align: middle;
+}
+
+.gradeTable tr:hover td {
+  background: rgba(168, 80, 34, 0.03);
+}
+
+.scoreInput {
+  min-height: 38px;
+  width: 4.5rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background: var(--color-paper-light, #fffdf8);
+  color: var(--color-ink, #131e27);
+  font-family: inherit;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* APCA-Calibrated Grade Badges (Lc >= 75) */
+.badgeA {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #e8f5e9;
+  border: 1px solid #81c784;
+  color: #1b5e20;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.badgeB {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  color: #0d47a1;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.badgeC {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #b78103;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.badgeS {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #fbe9e7;
+  border: 1px solid #ffab91;
+  color: #bf360c;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.badgeW {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  color: #b71c1c;
+  font-weight: 700;
+  font-size: 0.75rem;
+}

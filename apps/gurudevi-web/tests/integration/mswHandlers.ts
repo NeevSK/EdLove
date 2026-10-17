@@ -1,12 +1,28 @@
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 const API_ORIGIN = 'https://qzoawolfkuwiuyaoiybz.supabase.co';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+async function readProcedureInput(request: Request): Promise<Record<string, unknown>> {
+  const envelope: unknown = await request.json();
+  if (!isRecord(envelope) || !isRecord(envelope.json)) return {};
+  return envelope.json;
+}
+
+function queryLimit(input: Record<string, unknown>, fallback: number): number {
+  const query = isRecord(input.query) ? input.query : null;
+  const limit = query?.limit;
+  return typeof limit === 'number' && Number.isFinite(limit) && limit >= 0 ? limit : fallback;
+}
 
 export const selfJournalHandlers = [
   // GET /api/self/getJournalHistory
   http.post(`${API_ORIGIN}/api/self/getJournalHistory`, async ({ request }) => {
-    const body = await request.json();
-    const limit = body.json?.query?.limit ?? 12;
+    const input = await readProcedureInput(request);
+    const limit = queryLimit(input, 12);
 
     // Return mock burned journal entries
     const entries = Array.from({ length: Math.min(limit, 3) }, (_, i) => ({
@@ -21,14 +37,12 @@ export const selfJournalHandlers = [
 
   // POST /api/self/burnJournal
   http.post(`${API_ORIGIN}/api/self/burnJournal`, async ({ request }) => {
-    const body = await request.json();
-    const content = body.json?.body?.content;
+    const input = await readProcedureInput(request);
+    const body = isRecord(input.body) ? input.body : null;
+    const content = body?.content;
 
-    if (!content || content.trim().length === 0) {
-      return HttpResponse.json(
-        { json: { error: 'Content is required' } },
-        { status: 400 },
-      );
+    if (typeof content !== 'string' || content.trim().length === 0) {
+      return HttpResponse.json({ json: { error: 'Content is required' } }, { status: 400 });
     }
 
     const newEntry = {
@@ -43,19 +57,19 @@ export const selfJournalHandlers = [
 
   // POST /api/self/logMood
   http.post(`${API_ORIGIN}/api/self/logMood`, async ({ request }) => {
-    const body = await request.json();
-    const { mood, mood_score, note } = body.json?.body ?? {};
+    const input = await readProcedureInput(request);
+    const body = isRecord(input.body) ? input.body : null;
+    const mood = body?.mood;
+    const mood_score = body?.mood_score;
+    const note = body?.note;
 
     if (!mood || typeof mood_score !== 'number') {
-      return HttpResponse.json(
-        { json: { error: 'Invalid mood data' } },
-        { status: 400 },
-      );
+      return HttpResponse.json({ json: { error: 'Invalid mood data' } }, { status: 400 });
     }
 
     const newEntry = {
       id: `mood-${Date.now()}`,
-      user_id: body.json?.authenticatedUserId ?? 'test-user',
+      user_id: typeof body?.user_id === 'string' ? body.user_id : 'test-user',
       mood,
       mood_score,
       note: note ?? null,
@@ -67,8 +81,8 @@ export const selfJournalHandlers = [
 
   // GET /api/self/getMoodHistory
   http.post(`${API_ORIGIN}/api/self/getMoodHistory`, async ({ request }) => {
-    const body = await request.json();
-    const limit = body.json?.query?.limit ?? 8;
+    const input = await readProcedureInput(request);
+    const limit = queryLimit(input, 8);
 
     const entries = Array.from({ length: Math.min(limit, 2) }, (_, i) => ({
       id: `mood-${i + 1}`,
@@ -86,31 +100,19 @@ export const selfJournalHandlers = [
 // Error handlers for testing failure scenarios
 export const selfJournalErrorHandlers = [
   http.post(`${API_ORIGIN}/api/self/getJournalHistory`, () => {
-    return HttpResponse.json(
-      { json: { error: 'Service unavailable' } },
-      { status: 503 },
-    );
+    return HttpResponse.json({ json: { error: 'Service unavailable' } }, { status: 503 });
   }),
 
   http.post(`${API_ORIGIN}/api/self/burnJournal`, () => {
-    return HttpResponse.json(
-      { json: { error: 'Failed to burn journal' } },
-      { status: 500 },
-    );
+    return HttpResponse.json({ json: { error: 'Failed to burn journal' } }, { status: 500 });
   }),
 
   http.post(`${API_ORIGIN}/api/self/logMood`, () => {
-    return HttpResponse.json(
-      { json: { error: 'Failed to log mood' } },
-      { status: 500 },
-    );
+    return HttpResponse.json({ json: { error: 'Failed to log mood' } }, { status: 500 });
   }),
 
   http.post(`${API_ORIGIN}/api/self/getMoodHistory`, () => {
-    return HttpResponse.json(
-      { json: { error: 'Failed to load mood history' } },
-      { status: 503 },
-    );
+    return HttpResponse.json({ json: { error: 'Failed to load mood history' } }, { status: 503 });
   }),
 ];
 

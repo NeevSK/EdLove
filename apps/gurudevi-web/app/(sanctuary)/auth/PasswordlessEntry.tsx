@@ -2,6 +2,7 @@
 
 import { type FormEvent, useState } from 'react';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
+import { PhoneOtpEntry } from './PhoneOtpEntry';
 
 type Provider = 'google' | 'apple';
 type PendingAction = 'email' | Provider | null;
@@ -131,6 +132,10 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
           </button>
         ))}
       </div>
+
+      {process.env.NEXT_PUBLIC_PHONE_AUTH_ENABLED === 'true' ? (
+        <PhoneOtpEntry returnTo={returnTo} />
+      ) : null}
 
       {message ? (
         <p className="font-sans text-sm text-green-800" role="status">

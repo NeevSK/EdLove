@@ -132,11 +132,7 @@ export function FloorAtmosphere({
   }
 
   return (
-    <div
-      aria-hidden="true"
-      className={styles.atmosphereContainer}
-      data-testid="floor-atmosphere"
-    >
+    <div aria-hidden="true" className={styles.atmosphereContainer} data-testid="floor-atmosphere">
       {kind === 'washi-grain' ? <div className={styles.washiGrain} /> : null}
       {kind === 'aurora-mesh' ? <div className={styles.auroraMesh} /> : null}
       {kind === 'celestial-embers' ? (

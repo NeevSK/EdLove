@@ -1,0 +1,190 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+}
+
+.headerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.bursarActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.actionButton {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-action, #a85022);
+  color: #ffffff;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.actionButton:hover {
+  opacity: 0.9;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-soft, #453c35);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.statValue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-ink, #131e27);
+  font-family: var(--font-display, "Fraunces", serif);
+  margin: 0;
+}
+
+.tableCard {
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+}
+
+.tableToolbar {
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+}
+
+.filterTabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filterTab {
+  min-height: 44px;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background: var(--color-paper, #f7f2e8);
+  color: var(--color-ink, #131e27);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterTab[data-active="true"] {
+  background: var(--color-action, #a85022);
+  color: #ffffff;
+  border-color: var(--color-action, #a85022);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.feeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.feeTable th {
+  padding: 0.85rem 1.25rem;
+  font-weight: 700;
+  color: var(--color-ink-soft, #453c35);
+  background: var(--color-paper, #f7f2e8);
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+}
+
+.feeTable td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.08));
+  color: var(--color-ink, #131e27);
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.statusPaid {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.statusPending {
+  background: #fef7e0;
+  color: #b06000;
+}
+
+.statusOverdue {
+  background: #fce8e6;
+  color: #c5221f;
+}
+
+.recordPaymentModal {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  max-width: 32rem;
+  width: 90%;
+  margin: 10vh auto;
+}

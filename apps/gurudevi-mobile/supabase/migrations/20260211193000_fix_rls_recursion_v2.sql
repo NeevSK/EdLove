@@ -20,6 +20,7 @@ DROP POLICY IF EXISTS "Users can see school members" ON public.users;
 -- This allows:
 --  a) Seeing your own profile
 --  b) Seeing other members of your school
+DROP POLICY IF EXISTS "Users can select own and school members" ON public.users;
 CREATE POLICY "Users can select own and school members" 
 ON public.users 
 FOR SELECT 

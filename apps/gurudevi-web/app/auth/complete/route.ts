@@ -1,8 +1,9 @@
 import { classifyAuthCallback } from '@repo/core/logic/auth/authCallbackPolicy';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-import { safeReturnPath } from '../../(sanctuary)/auth/routeSafety';
+import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '../../../lib/supabase/config';
+import { safeReturnPath } from '../../(sanctuary)/auth/routeSafety';
 
 function signInRedirect(request: NextRequest, returnTo: string): NextResponse {
   const url = new URL('/sign-in', request.url);
@@ -26,10 +27,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const response = NextResponse.redirect(destination);
   response.headers.set('Cache-Control', 'private, no-store');
   const supabase = createServerClient(config.url, config.publishableKey, {
+    global: { fetch: secureApiFetch },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
       },
     },
   });

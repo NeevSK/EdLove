@@ -27,6 +27,7 @@ DROP POLICY IF EXISTS "Strictly private mood logs" ON mood_logs;
 -- Create separated policies for better control
 
 -- 1. Allow users to insert their own logs
+DROP POLICY IF EXISTS "Users can insert their own mood logs" ON mood_logs;
 CREATE POLICY "Users can insert their own mood logs"
 ON mood_logs
 FOR INSERT
@@ -34,6 +35,7 @@ TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
 -- 2. Allow users to view their own logs
+DROP POLICY IF EXISTS "Users can view their own mood logs" ON mood_logs;
 CREATE POLICY "Users can view their own mood logs"
 ON mood_logs
 FOR SELECT
@@ -41,6 +43,7 @@ TO authenticated
 USING (auth.uid() = user_id);
 
 -- 3. Allow users to update their own logs
+DROP POLICY IF EXISTS "Users can update their own mood logs" ON mood_logs;
 CREATE POLICY "Users can update their own mood logs"
 ON mood_logs
 FOR UPDATE

@@ -17,6 +17,7 @@ import {
   getSessionRouteReadiness,
   hasUsableOfflineCapabilitySnapshot,
 } from '@/boot/sessionRouteReadiness';
+import { getFirstValueRoute } from '@/entry/firstValueRoute';
 
 export type BootstrapRouteState = {
   hasActiveAccessToken: boolean;
@@ -29,6 +30,7 @@ export type BootstrapRouteState = {
   session: AuthSession | null;
   hasLiveCapacity: boolean;
   hasProfileName: boolean;
+  activeCapacity?: string | null;
   isProfileForSession: boolean;
   entitlement: Pick<
     ReturnType<typeof useEntitlementStore.getState>,
@@ -107,6 +109,7 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
     profile?.id && isResolvedAuthSubjectCurrent(resolvedAuthSubjectId, session?.user.id),
   );
   const hasLiveCapacity = Boolean(profileBelongsToSession && activeBond?.capacity);
+  const activeCapacity = profileBelongsToSession ? (activeBond?.capacity ?? null) : null;
   const hasProfileName = Boolean(profileBelongsToSession && profile?.display_name?.trim());
   const { manifestLoaded, readiness, snapshotUserId } = useEntitlementStore();
   const localGuest = useLocalGuestRouteState(session, onboardingCompleted);
@@ -127,6 +130,7 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
     profileError,
     session,
     hasLiveCapacity,
+    activeCapacity,
     hasProfileName,
     isProfileForSession: profileBelongsToSession,
     entitlement: { manifestLoaded, readiness, snapshotUserId },
@@ -152,6 +156,7 @@ export function getBootstrapRouteTarget(
       pathname: state.pathname,
       sessionMode: getSessionIdentityMode(state.session),
       guestOnboardingIntent: options.guestOnboardingIntent,
+      appEntryPath: getFirstValueRoute(state.activeCapacity),
     });
   }
   const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
@@ -182,5 +187,6 @@ export function getBootstrapRouteTarget(
     pathname: state.pathname,
     sessionMode: getSessionIdentityMode(state.session),
     guestOnboardingIntent: options.guestOnboardingIntent,
+    appEntryPath: getFirstValueRoute(state.activeCapacity),
   });
 }

@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { useCommunityCanvas } from '../../lib/canvas/useCommunityCanvas';
 import { useLibraryCanvas } from '../../lib/canvas/useLibraryCanvas';
-import { useWorkspaceCanvas } from '../../lib/canvas/useWorkspaceCanvas';
 import { useProfileCanvas } from '../../lib/canvas/useProfileCanvas';
+import { useWorkspaceCanvas } from '../../lib/canvas/useWorkspaceCanvas';
 
 describe('Domain Canvases Headless Engine (G1)', () => {
   beforeEach(() => {

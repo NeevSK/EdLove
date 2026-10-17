@@ -39,7 +39,10 @@ vi.mock('@repo/ui/primitives', () => ({
   Text: 'Text',
 }));
 
-import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import {
+  DEFAULT_PENDING_INTENT_TTL_MS,
+  pendingIntentStore,
+} from '@repo/core/logic/deeplink/pendingIntentStore';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 
 function AppServices() {
@@ -234,6 +237,30 @@ describe('SessionRouteGate account isolation', () => {
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
+  it('replays a validated QR payload exactly once after session admission', async () => {
+    const payload = JSON.stringify({ v: 1, action: 'join_class', classroom_id: 'c123' });
+    const targetPath = `/qr?payload=${encodeURIComponent(payload)}`;
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath,
+      intentKind: 'qr',
+      params: { payload },
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = { decision: 'app', redirectTo: null };
+
+    await act(async () => {
+      create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith(targetPath);
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
   it('does NOT trigger redundant replace when pathname matches target base route', async () => {
     pendingIntentStore.getState().setPendingIntent({
       targetPath: '/community?inviteCode=ALREADY_HERE',
@@ -247,6 +274,29 @@ describe('SessionRouteGate account isolation', () => {
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('discards an expired deferred intent instead of replaying it into the app', async () => {
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath: '/community?inviteCode=EXPIRED',
+      intentKind: 'classroomInvite',
+      params: { inviteCode: 'EXPIRED' },
+      timestamp: Date.now() - DEFAULT_PENDING_INTENT_TTL_MS - 1,
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = { decision: 'app', redirectTo: null };
+
+    await act(async () => {
+      create(
         <SessionRouteGate>
           <>{'app-shell'}</>
         </SessionRouteGate>,

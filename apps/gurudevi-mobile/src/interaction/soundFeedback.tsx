@@ -20,7 +20,9 @@ function createSoundPlayer(sources: SoundCueSources, maxConcurrentSounds: number
 
   function play(cue: SoundCue) {
     const source = sources[cue];
-    if (source === undefined || maxConcurrentSounds === 0) return;
+    if (source === undefined || maxConcurrentSounds === 0) {
+      return;
+    }
 
     if (players.size >= maxConcurrentSounds) {
       const oldest = players.values().next().value;
@@ -37,7 +39,9 @@ function createSoundPlayer(sources: SoundCueSources, maxConcurrentSounds: number
       });
       players.add(player);
       const subscription = player.addListener('playbackStatusUpdate', (status) => {
-        if (!status.didJustFinish) return;
+        if (!status.didJustFinish) {
+          return;
+        }
         subscription.remove();
         players.delete(player);
         player.remove();
@@ -49,7 +53,9 @@ function createSoundPlayer(sources: SoundCueSources, maxConcurrentSounds: number
   }
 
   function dispose() {
-    for (const player of players) player.remove();
+    for (const player of players) {
+      player.remove();
+    }
     players.clear();
   }
 
@@ -76,7 +82,9 @@ export function SoundFeedbackProvider({
 
   const play = useCallback(
     (cue: SoundCue) => {
-      if (!soundEnabled || quietMode) return;
+      if (!soundEnabled || quietMode) {
+        return;
+      }
       soundPlayer.play(cue);
     },
     [quietMode, soundEnabled, soundPlayer],
@@ -92,7 +100,9 @@ export function SoundFeedbackProvider({
 
 export function useSoundFeedback(): SoundFeedbackContextValue {
   const context = useContext(SoundFeedbackContext);
-  if (!context) throw new Error('useSoundFeedback must be used within a SoundFeedbackProvider');
+  if (!context) {
+    throw new Error('useSoundFeedback must be used within a SoundFeedbackProvider');
+  }
   return context;
 }
 

@@ -1,9 +1,15 @@
-import { nextJsConfig } from '@repo/eslint-config/next-js';
+import { config } from '@repo/eslint-config/base';
 
-/** @type {import('eslint').Linter.Config[]} */
+/** @type {import("eslint").Linter.Config[]} */
 export default [
-  ...nextJsConfig,
+  ...config,
   {
-    ignores: ['.next/**', 'out/**', 'build/**', 'dist/**', 'tests/**'],
+    // `astro:*` modules are injected by the Astro build/runtime and have no
+    // on-disk entry for the import resolver to find; TypeScript resolves them
+    // through ambient types instead.
+    files: ['**/*.{ts,tsx,mjs,js}'],
+    rules: {
+      'import-x/no-unresolved': ['error', { ignore: ['astro:'] }],
+    },
   },
 ];

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 
 const mocks = vi.hoisted(() => ({ getUser: vi.fn(), rpc: vi.fn(), createServerClient: vi.fn() }));
 
@@ -29,6 +30,9 @@ describe('account deletion route', () => {
     const response = await GET(new NextRequest('https://sanctuary.gurudevi.app/auth/deletion'));
 
     expect(mocks.rpc).toHaveBeenCalledWith('get_account_deletion_request_status');
+    expect(mocks.createServerClient.mock.calls[0]?.[2]).toMatchObject({
+      global: { fetch: secureApiFetch },
+    });
     expect(await response.json()).toMatchObject({ status: 'pending_verification' });
     expect(response.headers.get('cache-control')).toBe('private, no-store');
   });

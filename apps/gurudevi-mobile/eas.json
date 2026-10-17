@@ -1,11 +1,11 @@
 {
   "cli": {
-    "version": ">= 16.0.0",
+    "version": "25.0.0",
     "appVersionSource": "remote"
   },
   "build": {
     "development": {
-      "node": "22.23.2",
+      "node": "24.21.0",
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
@@ -13,7 +13,7 @@
         "NODE_ENV": "development"
       },
       "android": {
-        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
+        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-58",
         "resourceClass": "medium",
         "buildType": "apk",
         "gradleCommand": ":app:assembleDebug"
@@ -24,11 +24,11 @@
       }
     },
     "preview": {
-      "node": "22.23.2",
+      "node": "24.21.0",
       "distribution": "internal",
       "channel": "preview",
       "android": {
-        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
+        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-58",
         "resourceClass": "medium",
         "buildType": "apk"
       },
@@ -39,8 +39,16 @@
         "NODE_ENV": "production"
       }
     },
+    "performance": {
+      "extends": "preview",
+      "channel": "performance",
+      "env": {
+        "NODE_ENV": "production",
+        "GURUDEVI_PROFILEABLE_BUILD": "true"
+      }
+    },
     "production": {
-      "node": "22.23.2",
+      "node": "24.21.0",
       "channel": "production",
       "autoIncrement": true,
       "env": {
@@ -48,7 +56,7 @@
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       },
       "android": {
-        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
+        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-58",
         "resourceClass": "medium",
         "buildType": "app-bundle"
       }

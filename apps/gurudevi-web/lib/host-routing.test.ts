@@ -1,27 +1,53 @@
 import { describe, expect, it } from 'vitest';
 import {
-  PUBLIC_GURUDEVI_HOST,
-  SANCTUARY_GURUDEVI_HOST,
   classifyGurudeviHost,
+  EXPLORE_GURUDEVI_HOST,
   isSanctuaryPath,
+  PUBLIC_GURUDEVI_HOST,
   resolveHostRouting,
+  SANCTUARY_GURUDEVI_HOST,
 } from './host-routing';
 
 describe('Gurudevi hostname policy', () => {
-  it('recognizes only the two canonical production hosts', () => {
+  it('recognizes all canonical production hosts', () => {
     expect(classifyGurudeviHost('GURUDEVI.APP.')).toBe('public');
     expect(classifyGurudeviHost(SANCTUARY_GURUDEVI_HOST)).toBe('sanctuary');
+    expect(classifyGurudeviHost(EXPLORE_GURUDEVI_HOST)).toBe('explore');
     expect(classifyGurudeviHost('localhost')).toBe('other');
   });
 
   it('routes browser auth and product paths to Sanctuary', () => {
     expect(isSanctuaryPath('/auth/complete')).toBe(true);
-    expect(isSanctuaryPath('/explore/self')).toBe(true);
     expect(isSanctuaryPath('/self/journal')).toBe(true);
     expect(isSanctuaryPath('/api/community/groups')).toBe(true);
     expect(resolveHostRouting(PUBLIC_GURUDEVI_HOST, '/sign-in', 'GET')).toEqual({
       kind: 'redirect',
       host: SANCTUARY_GURUDEVI_HOST,
+    });
+  });
+
+  it('retires legacy Explore routes instead of retaining a second route family', () => {
+    expect(resolveHostRouting(PUBLIC_GURUDEVI_HOST, '/explore/self', 'GET')).toEqual({
+      kind: 'not-found',
+    });
+    expect(resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/explore', 'HEAD')).toEqual({
+      kind: 'not-found',
+    });
+  });
+
+  it('maps Explore-only GET requests to internal routes and denies privileged paths', () => {
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'GET')).toEqual({
+      kind: 'rewrite',
+      pathname: '/explore-internal/self',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/api/identity', 'GET')).toEqual({
+      kind: 'not-found',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/sign-in', 'GET')).toEqual({
+      kind: 'not-found',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'POST')).toEqual({
+      kind: 'not-found',
     });
   });
 

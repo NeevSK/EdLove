@@ -2,6 +2,7 @@ import {
   createPersistenceIdentity,
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 type ORPCResponse<T> = Readonly<{ json?: T }>;
@@ -22,7 +23,9 @@ type AccountSelfProcedureInputs = Readonly<{
 
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
-  return value ? value.replace(/\/+$/, '') : null;
+  if (!value) return null;
+  assertSecureApiUrl(value);
+  return value.replace(/\/+$/, '');
 }
 
 function decodeORPCResponse<T>(
@@ -49,7 +52,12 @@ export async function requestAccountSelfProcedure<
   predicate: (value: unknown) => value is T,
   invalidResponseMessage: string,
 ): Promise<T> {
-  const origin = apiOrigin();
+  let origin: string | null;
+  try {
+    origin = apiOrigin();
+  } catch {
+    throw new Error('Sanctuary services are not configured securely in this browser.');
+  }
   const supabase = createBrowserSupabaseClient();
   if (!origin || !supabase)
     throw new Error('This Self practice is not configured in this browser.');
@@ -79,6 +87,7 @@ export async function requestAccountSelfProcedure<
       },
       cache: 'no-store',
       method: 'POST',
+      redirect: 'error',
     });
   } catch {
     throw new Error('We could not reach Sanctuary. Please check your connection and retry.');

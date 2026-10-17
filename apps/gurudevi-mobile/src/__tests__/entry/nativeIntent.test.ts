@@ -1,6 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { redirectSystemPath } from '../../../app/+native-intent';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { redirectSystemPath } from '../../../app/+native-intent';
 
 describe('Expo Router +native-intent Middleware', () => {
   beforeEach(() => {
@@ -56,6 +57,23 @@ describe('Expo Router +native-intent Middleware', () => {
     expect(result).toContain('/qr?payload=');
     expect(decodeURIComponent(result)).toContain('join_class');
     expect(decodeURIComponent(result)).toContain('c123');
+
+    const pending = pendingIntentStore.getState().getPendingIntent();
+    expect(pending).toMatchObject({
+      intentKind: 'qr',
+      targetPath: result,
+      params: { payload: JSON.stringify({ v: 1, action: 'join_class', classroom_id: 'c123' }) },
+    });
+  });
+
+  it('does not persist a QR action whose payload fails validation', async () => {
+    const result = await redirectSystemPath({
+      path: 'gurudevi://qr?v=1&action=steal_credentials&token=bad',
+      initial: true,
+    });
+
+    expect(result).toBe('/');
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
   it('fails closed and returns safe fallback route "/" for path traversal attempts', async () => {

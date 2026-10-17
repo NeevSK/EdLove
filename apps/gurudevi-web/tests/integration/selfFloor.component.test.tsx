@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import * as React from 'react';
+import { resolveSelfFeatureManifest } from '@repo/self/features/featureManifest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
-import { resolveSelfFeatureManifest } from '@repo/self/features/featureManifest';
+import * as React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BROWSER_SELF_FEATURES } from '@/app/(sanctuary)/self/browserFeatureRegistry';
+import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
 import { requestAccountSelfProcedure } from '@/lib/sanctuary/selfApiClient';
 
 vi.mock('@repo/self/features/featureManifest', () => ({
@@ -79,7 +79,13 @@ vi.mock('@/app/(sanctuary)/self/browserFeatureRegistry', () => ({
     fire_journal: { renderer: 'fire-journal', taskKind: 'task' },
     mood_lotus: { renderer: 'mood-lotus', taskKind: 'modal' },
   },
-  getBrowserSelfFeature: vi.fn((id) => ({ fire_journal: { renderer: 'fire-journal', taskKind: 'task' }, mood_lotus: { renderer: 'mood-lotus', taskKind: 'modal' } })[id] ?? null),
+  getBrowserSelfFeature: vi.fn(
+    (id: string) => {
+      if (id === 'fire_journal') return { renderer: 'fire-journal', taskKind: 'task' };
+      if (id === 'mood_lotus') return { renderer: 'mood-lotus', taskKind: 'modal' };
+      return null;
+    },
+  ),
   isBrowserSelfFeatureDelivered: vi.fn((id) => ['fire_journal', 'mood_lotus'].includes(id)),
 }));
 
@@ -178,7 +184,10 @@ describe('SelfFloor Component Integration (G2 — jsdom)', () => {
     render(<SelfFloor displayName="Test User" />);
 
     await user.click(screen.getByRole('button', { name: /open fire journal/i }));
-    await user.type(screen.getByRole('textbox', { name: /a private reflection/i }), 'This will fail');
+    await user.type(
+      screen.getByRole('textbox', { name: /a private reflection/i }),
+      'This will fail',
+    );
     await user.click(screen.getByRole('button', { name: /release to fire journal/i }));
 
     await waitFor(() => {

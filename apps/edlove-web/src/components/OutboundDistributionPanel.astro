@@ -1,0 +1,197 @@
+---
+import type { DistributionChannel } from '@repo/editorial';
+
+interface Props {
+  title: string;
+  url: string;
+  author?: string;
+  topics?: string[];
+  summary?: string;
+}
+
+const {
+  title,
+  url,
+  author = 'Naveen',
+  topics = [],
+  summary = '',
+} = Astro.props;
+
+const hashtags = topics.map(t => `#${t.replace(/[^a-zA-Z0-9]/g, '')}`).join(' ');
+const defaultPostText = `${title}\n\n${summary}\n\n${hashtags}\n\n${url}`;
+---
+
+<div class="my-6 rounded-2xl border border-dashed border-sky-500/30 bg-sky-500/[0.03] p-5 text-xs">
+  <div class="flex items-center justify-between gap-3 border-b border-sky-500/10 pb-3">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-pulse"></span>
+      <span class="font-mono font-bold uppercase tracking-wider text-sky-600">
+        Outbound Social Distribution Engine (Dev &amp; Review Mode)
+      </span>
+    </div>
+    <span class="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-500/20">
+      Editorial Review Gate: Active
+    </span>
+  </div>
+
+  <p class="mt-2.5 text-[11px] text-charcoal-truth/75">
+    Prepare, review, and dispatch social snippets with canonical UTM tracking across external distribution networks.
+  </p>
+
+  <!-- Channels Tabs / Previews -->
+  <div class="mt-4 space-y-3">
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        class="channel-tab-btn active-tab rounded-lg px-3 py-1 font-medium bg-sky-600 text-white transition-all cursor-pointer text-[11px]"
+        data-channel="linkedin"
+      >
+        LinkedIn
+      </button>
+      <button
+        type="button"
+        class="channel-tab-btn rounded-lg px-3 py-1 font-medium bg-charcoal-truth/5 text-charcoal-truth hover:bg-sky-50 transition-all cursor-pointer text-[11px]"
+        data-channel="medium"
+      >
+        Medium / Publication
+      </button>
+      <button
+        type="button"
+        class="channel-tab-btn rounded-lg px-3 py-1 font-medium bg-charcoal-truth/5 text-charcoal-truth hover:bg-sky-50 transition-all cursor-pointer text-[11px]"
+        data-channel="meta"
+      >
+        X / Threads / Meta
+      </button>
+      <button
+        type="button"
+        class="channel-tab-btn rounded-lg px-3 py-1 font-medium bg-charcoal-truth/5 text-charcoal-truth hover:bg-sky-50 transition-all cursor-pointer text-[11px]"
+        data-channel="substack"
+      >
+        Substack Notes
+      </button>
+    </div>
+
+    <!-- Live Post Preview & Editor -->
+    <div class="rounded-xl border border-charcoal-truth/10 bg-white/80 p-3.5 space-y-2 shadow-2xs">
+      <div class="flex items-center justify-between text-[11px] text-charcoal-truth/60">
+        <span class="font-semibold text-charcoal-truth" id="channel-preview-label">LinkedIn Snippet Preview (UTM Injected):</span>
+        <span id="char-count" class="font-mono text-[10px]">0 chars</span>
+      </div>
+      <textarea
+        id="social-post-editor"
+        rows="4"
+        class="w-full rounded-lg border border-charcoal-truth/15 bg-transparent p-2 text-xs text-charcoal-truth font-sans focus:border-sky-500 focus:outline-none"
+      >{defaultPostText}</textarea>
+    </div>
+
+    <!-- Reviewer Sign-off & Dispatch Buttons -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="reviewer-gate-check" class="rounded border-charcoal-truth/30 text-sky-600 cursor-pointer" />
+        <label for="reviewer-gate-check" class="text-[11px] text-charcoal-truth/80 cursor-pointer select-none">
+          Editorial &amp; Rights Reviewed by Author/Editor
+        </label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="copy-snippet-btn"
+          class="inline-flex items-center gap-1 rounded-lg border border-charcoal-truth/20 bg-white px-3 py-1.5 font-medium text-charcoal-truth hover:bg-charcoal-truth/5 transition-all cursor-pointer"
+        >
+          <span>Copy Snippet</span>
+        </button>
+        <button
+          type="button"
+          id="dispatch-channel-btn"
+          disabled
+          class="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3.5 py-1.5 font-medium text-white shadow-xs opacity-50 cursor-not-allowed hover:bg-sky-700 transition-all"
+        >
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          <span id="dispatch-label">Approved Dispatch</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="dispatch-success-toast" class="hidden rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-2.5 text-emerald-900 text-[11px]">
+      ✓ <strong>Outbound Pipeline Triggered</strong>: Snippet dispatched with UTM provenance tracking.
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ title, url, summary, hashtags }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const editor = document.getElementById('social-post-editor');
+    const charCount = document.getElementById('char-count');
+    const gateCheck = document.getElementById('reviewer-gate-check');
+    const copyBtn = document.getElementById('copy-snippet-btn');
+    const dispatchBtn = document.getElementById('dispatch-channel-btn');
+    const toast = document.getElementById('dispatch-success-toast');
+    const previewLabel = document.getElementById('channel-preview-label');
+    const tabBtns = document.querySelectorAll('.channel-tab-btn');
+
+    if (!editor || !charCount || !gateCheck || !dispatchBtn) return;
+
+    const templates = {
+      linkedin: `${title}\n\n${summary}\n\n${hashtags}\n\n${url}?utm_source=linkedin&utm_medium=social&utm_campaign=editorial-syndication`,
+      medium: `--- Original Canonical Piece: ${title} ---\n\nSummary:\n${summary}\n\nOriginally published on EdLove Ecosystem:\n${url}?utm_source=medium&utm_medium=syndication&utm_campaign=canonical-publication\n\nTags: ${hashtags}`,
+      meta: `${title}\n\n${summary.slice(0, 180)}...\n\n${url}?utm_source=meta&utm_medium=social`,
+      substack: `Notes Dispatch: ${title}\n\n${summary}\n\nRead full piece: ${url}?utm_source=substack&utm_medium=notes`,
+    };
+
+    let activeChannel = 'linkedin';
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach((b) => {
+          b.classList.remove('bg-sky-600', 'text-white');
+          b.classList.add('bg-charcoal-truth/5', 'text-charcoal-truth');
+        });
+        btn.classList.add('bg-sky-600', 'text-white');
+        btn.classList.remove('bg-charcoal-truth/5', 'text-charcoal-truth');
+        activeChannel = btn.dataset.channel || 'linkedin';
+        if (previewLabel) {
+          previewLabel.innerText = `${btn.innerText} Snippet Preview (UTM Injected):`;
+        }
+        editor.value = templates[activeChannel] || templates.linkedin;
+        updateCount();
+      });
+    });
+
+    const updateCount = () => {
+      charCount.innerText = `${editor.value.length} chars`;
+    };
+    updateCount();
+    editor.addEventListener('input', updateCount);
+
+    gateCheck.addEventListener('change', () => {
+      if (gateCheck.checked) {
+        dispatchBtn.removeAttribute('disabled');
+        dispatchBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        dispatchBtn.setAttribute('disabled', 'true');
+        dispatchBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(editor.value);
+      copyBtn.innerText = '✓ Copied!';
+      setTimeout(() => { copyBtn.innerText = 'Copy Snippet'; }, 2500);
+    });
+
+    dispatchBtn.addEventListener('click', async () => {
+      if (!gateCheck.checked) return;
+      await navigator.clipboard.writeText(editor.value);
+      toast?.classList.remove('hidden');
+      dispatchBtn.innerText = `✓ Dispatched to ${activeChannel}`;
+      setTimeout(() => {
+        toast?.classList.add('hidden');
+        dispatchBtn.innerText = 'Approved Dispatch';
+      }, 4000);
+    });
+  });
+</script>

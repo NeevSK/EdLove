@@ -13,12 +13,16 @@ import {
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import { AccountSignOut } from './AccountSignOut';
+import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
   displayName: string;
   navigationPrefix: string;
+  /** Server-authorized capacity; it is display context, never an authorization decision. */
+  activeCapacity?: string | null;
   unreadNotifications?: number;
+  showAccountNavigation?: boolean;
 }>;
 
 const showAdvancedTools = process.env.NODE_ENV !== 'production';
@@ -27,7 +31,9 @@ export function SanctuaryShell({
   children,
   displayName,
   navigationPrefix,
+  activeCapacity,
   unreadNotifications = 0,
+  showAccountNavigation = true,
 }: SanctuaryShellProps) {
   const pathname = usePathname();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -45,7 +51,7 @@ export function SanctuaryShell({
   const notifications = accountItems[1];
   const settings = accountItems[2];
 
-  if (!profile || !notifications || !settings) {
+  if (showAccountNavigation && (!profile || !notifications || !settings)) {
     throw new Error('Sanctuary account navigation is incomplete.');
   }
 
@@ -85,45 +91,58 @@ export function SanctuaryShell({
         <p className={styles.pageTitle} aria-live="polite">
           {title}
         </p>
-        <div className={styles.accountIsland} aria-label="Account navigation">
-          <AccountLink item={notifications} pathname={pathname} unreadCount={unreadNotifications} />
-          <AccountLink item={settings} pathname={pathname} />
-          <Link
-            aria-current={isSanctuaryNavActive(pathname, profile.href) ? 'page' : undefined}
-            aria-label={`Profile: ${displayName}`}
-            className={styles.avatarLink}
-            href={profile.href}
-            title={profile.label}
-          >
-            {initial}
-          </Link>
-          <button
-            ref={accountTriggerRef}
-            aria-controls={accountMenuId}
-            aria-expanded={accountMenuOpen}
-            className={styles.accountMenuTrigger}
-            onClick={() => setAccountMenuOpen((open) => !open)}
-            type="button"
-          >
-            <span aria-hidden="true">☰</span>
-            <span className={styles.srOnly}>Open account menu</span>
-          </button>
-          {accountMenuOpen ? (
-            <nav aria-label="Account menu" className={styles.accountMenu} id={accountMenuId}>
-              {accountItems.map((item) => (
-                <Link
-                  aria-current={isSanctuaryNavActive(pathname, item.href) ? 'page' : undefined}
-                  className={styles.accountMenuItem}
-                  href={item.href}
-                  key={item.id}
-                  onClick={() => setAccountMenuOpen(false)}
-                >
-                  <span aria-hidden="true">{item.symbol}</span>
-                  {item.label}
-                </Link>
-              ))}
-              {!navigationPrefix ? <AccountSignOut /> : null}
-            </nav>
+        <div className={styles.headerControls}>
+          {activeCapacity ? (
+            <div className={styles.capacityPerspective}>
+              <CapacityPerspectiveSwitcher activeCapacity={activeCapacity} mode="account" />
+            </div>
+          ) : null}
+          {showAccountNavigation && profile && notifications && settings ? (
+            <div className={styles.accountIsland} aria-label="Account navigation">
+              <AccountLink
+                item={notifications}
+                pathname={pathname}
+                unreadCount={unreadNotifications}
+              />
+              <AccountLink item={settings} pathname={pathname} />
+              <Link
+                aria-current={isSanctuaryNavActive(pathname, profile.href) ? 'page' : undefined}
+                aria-label={`Profile: ${displayName}`}
+                className={styles.avatarLink}
+                href={profile.href}
+                title={profile.label}
+              >
+                {initial}
+              </Link>
+              <button
+                ref={accountTriggerRef}
+                aria-controls={accountMenuId}
+                aria-expanded={accountMenuOpen}
+                className={styles.accountMenuTrigger}
+                onClick={() => setAccountMenuOpen((open) => !open)}
+                type="button"
+              >
+                <span aria-hidden="true">☰</span>
+                <span className={styles.srOnly}>Open account menu</span>
+              </button>
+              {accountMenuOpen ? (
+                <nav aria-label="Account menu" className={styles.accountMenu} id={accountMenuId}>
+                  {accountItems.map((item) => (
+                    <Link
+                      aria-current={isSanctuaryNavActive(pathname, item.href) ? 'page' : undefined}
+                      className={styles.accountMenuItem}
+                      href={item.href}
+                      key={item.id}
+                      onClick={() => setAccountMenuOpen(false)}
+                    >
+                      <span aria-hidden="true">{item.symbol}</span>
+                      {item.label}
+                    </Link>
+                  ))}
+                  {!navigationPrefix ? <AccountSignOut /> : null}
+                </nav>
+              ) : null}
+            </div>
           ) : null}
         </div>
       </header>

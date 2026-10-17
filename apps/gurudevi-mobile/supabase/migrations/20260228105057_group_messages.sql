@@ -17,6 +17,10 @@ CREATE INDEX IF NOT EXISTS idx_group_messages_group_created
     ON public.group_messages (group_id, created_at ASC);
 
 -- ── Row Level Security ────────────────────────────────────────
+ALTER TABLE public.community_group_members
+    ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active'
+    CHECK (status IN ('active', 'pending', 'banned'));
+
 ALTER TABLE public.group_messages ENABLE ROW LEVEL SECURITY;
 
 -- Members can read messages in groups they belong to

@@ -25,9 +25,21 @@
   width: 140%;
   height: 140%;
   background:
-    radial-gradient(ellipse at 70% 15%, color-mix(in srgb, var(--lotus, #d97706) 18%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 80%, color-mix(in srgb, #0ea5e9 14%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 75%, color-mix(in srgb, #10b981 12%, transparent) 0%, transparent 50%);
+    radial-gradient(
+      ellipse at 70% 15%,
+      color-mix(in srgb, var(--lotus, #d97706) 18%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 20% 80%,
+      color-mix(in srgb, #0ea5e9 14%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 85% 75%,
+      color-mix(in srgb, #10b981 12%, transparent) 0%,
+      transparent 50%
+    );
   filter: blur(48px);
   animation: aurora-drift 28s ease-in-out infinite alternate;
 }
@@ -63,7 +75,11 @@
 .vignetteOverlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 40%, color-mix(in srgb, var(--paper, #fff) 45%, transparent) 100%);
+  background: radial-gradient(
+    circle at center,
+    transparent 40%,
+    color-mix(in srgb, var(--paper, #fff) 45%, transparent) 100%
+  );
   pointer-events: none;
 }
 

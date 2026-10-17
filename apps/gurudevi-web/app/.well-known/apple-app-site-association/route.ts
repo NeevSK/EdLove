@@ -15,12 +15,7 @@ export async function GET() {
       details: [
         {
           appID: `${teamId}.${bundleId}`,
-          paths: [
-            '/qr*',
-            '/invite/*',
-            '/c/*',
-            '/auth/callback*',
-          ],
+          paths: ['/qr*', '/invite/*', '/c/*', '/auth/callback*'],
         },
       ],
     },

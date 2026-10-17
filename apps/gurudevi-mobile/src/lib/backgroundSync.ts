@@ -12,7 +12,7 @@
 import { evaluateEfficiency, normalizeNetworkConditions } from '@repo/core/efficiency';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
-import { MUTATION_REGISTRY, sovereignBus, type QueuedMutation } from '@repo/core/sync';
+import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
 import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
@@ -146,8 +146,7 @@ export async function runBackgroundSyncTask() {
     setSyncing,
     updateMutation,
     tryAcquireMutationLease,
-  } =
-    useMutationQueue.getState();
+  } = useMutationQueue.getState();
   const activeUserId = getActiveAccountId();
 
   if (!activeUserId || queue.length === 0) {
@@ -200,7 +199,11 @@ export async function runBackgroundSyncTask() {
           continue;
         }
 
-        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
+        await mutationFn(item.variables, {
+          idempotencyKey: item.idempotencyKey,
+          commandId: item.id,
+          userId: item.userId,
+        });
         removeFromQueue(item.id);
         drained++;
       } catch (error) {
@@ -294,8 +297,7 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
     setSyncing,
     updateMutation,
     tryAcquireMutationLease,
-  } =
-    useMutationQueue.getState();
+  } = useMutationQueue.getState();
   const activeUserId = getActiveAccountId();
 
   if (!activeUserId || queue.length === 0) return { drained: 0, failed: 0 };
@@ -344,7 +346,11 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
           continue;
         }
 
-        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
+        await mutationFn(item.variables, {
+          idempotencyKey: item.idempotencyKey,
+          commandId: item.id,
+          userId: item.userId,
+        });
         removeFromQueue(item.id);
         drained++;
       } catch (error) {

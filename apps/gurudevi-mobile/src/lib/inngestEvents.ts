@@ -1,38 +1,75 @@
+/**
+ * Gurudevi Mobile Sovereign Event Bridge
+ *
+ * Emits and drains offline queue mutations through the sovereign oRPC client
+ * without direct dependency on third-party event queues or public event keys.
+ */
 import {
   injectWorkflowEventBridge,
   type SchoolClassroomCreatedPayload,
   type SchoolGradePublishedPayload,
   type SyncMutationQueuedPayload,
-  sendSchoolClassroomCreated,
-  sendSchoolGradePublished,
-  sendSyncMutationQueued,
-  sendWellbeingMoodLogged,
   type WellbeingMoodLoggedPayload,
 } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/sync';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import { getInngest } from '@/lib/inngest';
 
 const REMOTE_SYNC_MUTATIONS = new Set(['saveJournalEntry', 'saveDecision', 'updateAttendance']);
 
-export function emitWellbeingMoodLogged(payload: WellbeingMoodLoggedPayload) {
-  return getInngest().then((inngest) => sendWellbeingMoodLogged(inngest, payload));
+export async function emitWellbeingMoodLogged(payload: WellbeingMoodLoggedPayload): Promise<void> {
+  try {
+    await orpcClient.events.dispatch({
+      body: {
+        name: 'wellbeing/mood.logged',
+        data: payload as unknown as Record<string, unknown>,
+      },
+    });
+  } catch (error) {
+    console.warn('[EventBridge] Failed to dispatch wellbeing/mood.logged:', error);
+  }
 }
 
-export function emitSyncMutationQueued(payload: SyncMutationQueuedPayload) {
-  return getInngest().then((inngest) => sendSyncMutationQueued(inngest, payload));
+export async function emitSyncMutationQueued(payload: SyncMutationQueuedPayload): Promise<void> {
+  try {
+    await orpcClient.events.dispatch({
+      body: {
+        name: 'sync/mutation.queued',
+        data: payload as unknown as Record<string, unknown>,
+      },
+    });
+  } catch (error) {
+    console.warn('[EventBridge] Failed to dispatch sync/mutation.queued:', error);
+  }
 }
 
-export function emitSchoolGradePublished(payload: SchoolGradePublishedPayload) {
-  return getInngest().then((inngest) => sendSchoolGradePublished(inngest, payload));
+export async function emitSchoolGradePublished(payload: SchoolGradePublishedPayload): Promise<void> {
+  try {
+    await orpcClient.events.dispatch({
+      body: {
+        name: 'school/grade.published',
+        data: payload as unknown as Record<string, unknown>,
+      },
+    });
+  } catch (error) {
+    console.warn('[EventBridge] Failed to dispatch school/grade.published:', error);
+  }
 }
 
-export function emitSchoolClassroomCreated(payload: SchoolClassroomCreatedPayload) {
-  return getInngest().then((inngest) => sendSchoolClassroomCreated(inngest, payload));
+export async function emitSchoolClassroomCreated(payload: SchoolClassroomCreatedPayload): Promise<void> {
+  try {
+    await orpcClient.events.dispatch({
+      body: {
+        name: 'school/classroom.created',
+        data: payload as unknown as Record<string, unknown>,
+      },
+    });
+  } catch (error) {
+    console.warn('[EventBridge] Failed to dispatch school/classroom.created:', error);
+  }
 }
 
-export function installMobileWorkflowEventBridge() {
+export function installMobileWorkflowEventBridge(): void {
   injectWorkflowEventBridge({
     sendSchoolClassroomCreated: emitSchoolClassroomCreated,
     sendSchoolGradePublished: emitSchoolGradePublished,
@@ -53,28 +90,27 @@ export async function dispatchQueuedMutationToSovereignBus(
     throw new Error('Cannot dispatch a queued mutation without an authenticated actor.');
   }
 
-  await emitSyncMutationQueued({
-    mutationId: mutation.id,
-    action: mutation.name,
-    actorId,
-    scope: mutation.scope,
-    idempotencyKey: mutation.idempotencyKey,
-    payload: mutation.variables,
-    tenantId: undefined,
-    eventId: mutation.id,
-    correlationId: mutation.id,
-    causationId: mutation.id,
-  });
-
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const receipt = await orpcClient.sync.getMutationReceipt({
-      params: { mutationId: mutation.id },
+  try {
+    const response = await orpcClient.sync.uploadBatch({
+      body: {
+        idempotencyKey: mutation.idempotencyKey || mutation.id,
+        crud: [
+          {
+            id: mutation.id,
+            op: 'PUT',
+            table: mutation.scope || 'generic_mutations',
+            opData: (mutation.variables as Record<string, unknown>) || {},
+          },
+        ],
+      },
     });
-    if (receipt.status === 'completed') return 'dispatched';
-    if (receipt.status === 'failed') {
-      throw new Error(receipt.error || 'Queued mutation workflow failed.');
+
+    if (response.success) {
+      return 'dispatched';
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  } catch (error) {
+    console.warn('[Sync] Sovereign batch upload deferred to retry:', error);
+    return 'pending';
   }
 
   return 'pending';

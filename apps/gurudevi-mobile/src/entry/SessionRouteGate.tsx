@@ -1,4 +1,4 @@
-import { isPublicBootstrapRoute, useAuth } from '@repo/core/logic';
+import { useAuth } from '@repo/core/logic';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Mascot } from '@repo/ui/components/Mascot';
@@ -7,6 +7,8 @@ import { useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect } from 'react';
 
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
+import { getEntryNavigationAction } from '@/entry/entryNavigation';
+import { getEntryPresentation } from '@/entry/entryPresentation';
 
 export function SessionRouteGate({
   children,
@@ -23,38 +25,37 @@ export function SessionRouteGate({
   const routeTarget = getBootstrapRouteTarget(routeState, {
     guestOnboardingIntent: pathname === '/onboarding' && params.entry === 'guest',
   });
+  const presentation = getEntryPresentation({
+    pathname,
+    profileError: routeState.profileError,
+    routeTarget,
+  });
 
   console.log('[SessionRouteGate]', {
     pathname,
     redirectTo: routeTarget.redirectTo,
     decision: routeTarget.decision,
-    sessionMode: routeState.session ? (routeState.session.user.is_anonymous ? 'anonymous' : 'auth') : 'none',
+    sessionMode: routeState.session
+      ? routeState.session.user.is_anonymous
+        ? 'anonymous'
+        : 'auth'
+      : 'none',
     onboardingCompleted: routeState.onboardingCompleted,
     isLocalGuestReady: routeState.isLocalGuestReady,
   });
 
   useEffect(() => {
-    // Post-authentication/onboarding resumption of deferred deep links
-    if (routeTarget.decision === 'app') {
-      const pending = pendingIntentStore?.getState?.()?.drainPendingIntent?.();
-      if (pending?.targetPath) {
-        const targetBase = pending.targetPath.split(/[?#]/)[0];
-        if (pathname !== targetBase && pathname !== pending.targetPath) {
-          router.replace(pending.targetPath as any);
-          return;
-        }
-      }
-    }
-
-    if (!routeTarget.redirectTo) return;
-    if (pathname !== routeTarget.redirectTo) router.replace(routeTarget.redirectTo as any);
+    const pendingIntent = pendingIntentStore.getState().getPendingIntent();
+    const action = getEntryNavigationAction({ pathname, pendingIntent, routeTarget });
+    if (action.consumePendingIntent) pendingIntentStore.getState().drainPendingIntent();
+    if (action.target) router.replace(action.target as any);
   }, [pathname, routeTarget.decision, routeTarget.redirectTo, router]);
 
   // router.replace() updates the browser location before Expo Router commits
   // the destination tree. Keeping children mounted in that gap can show the
   // previous route at the new URL (for example, Welcome at /self).
-  if (routeTarget.decision === 'booting' && !isPublicBootstrapRoute(pathname)) {
-    if (routeState.profileError) {
+  if (presentation.kind === 'restoring') {
+    if (presentation.message) {
       return (
         <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
           <Mascot mode="offline" state="interrupted" size={140} podVariant="raw" />
@@ -62,7 +63,7 @@ export function SessionRouteGate({
             Sanctuary Connection Paused
           </Text>
           <Text className="mt-2 text-center text-sm text-phase-text-muted">
-            {routeState.profileError}
+            {presentation.message}
           </Text>
           <Pressable
             accessibilityRole="button"
@@ -94,16 +95,13 @@ export function SessionRouteGate({
     );
   }
 
-  const transition = routeTarget.redirectTo && pathname !== routeTarget.redirectTo;
   const content = (
     <>
       {children}
-      {routeTarget.decision === 'app' && !isPublicBootstrapRoute(pathname)
-        ? appServices
-        : null}
+      {presentation.kind === 'content' && presentation.mountProtectedServices ? appServices : null}
     </>
   );
-  if (!transition) return content;
+  if (presentation.kind !== 'transition') return content;
   return (
     <Box className="flex-1">
       {content}

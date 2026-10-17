@@ -1,0 +1,42 @@
+---
+interface Props {
+  showVideo?: boolean;
+}
+
+const { showVideo = false } = Astro.props;
+---
+
+<div class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-[#FAF7F2] overflow-hidden">
+    
+    { !showVideo && (
+        <>
+            <div class="absolute inset-0 z-10 bg-white/10"></div>
+            <div class="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-white/10"></div>
+        </>
+    )}
+
+    <!-- The "Malick" Projector -->
+    <!-- 
+      INSTRUCTION: Drop your video file (e.g. 'tree-of-life.mp4') 
+      into 'public/assets/' and rename it to 'nature-loop.mp4' 
+    -->
+    {showVideo && (
+      <video
+          autoplay
+          loop
+          muted
+          playsinline
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-30 z-0"
+      >
+          <source src="/assets/nature-loop.mp4" type="video/mp4" />
+      </video>
+    )}
+
+    <!-- Fallback Gradient (Visible if video fails or keeps loading) -->
+    <div class="-z-20 absolute inset-0 bg-gradient-to-br from-forestGreen/40 via-warmGold/20 to-deepIndigo"></div>
+
+</div>
+
+<script>
+  // Parallax removed to prevent "sliding" effect
+</script>

@@ -1,0 +1,117 @@
+---
+---
+<aside 
+  id="global-side-panel" 
+  class="fixed inset-y-0 left-0 w-full md:w-[600px] bg-[var(--color-warmPaper)]/95 backdrop-blur-xl border-r border-[var(--color-midnightInk)]/10 shadow-2xl z-[100] transform -translate-x-full transition-transform duration-500 ease-out"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between px-8 py-6 border-b border-[var(--color-midnightInk)]/10 bg-white/20 sticky top-0 z-10">
+    <div class="flex items-center gap-3">
+        <span id="panel-icon" class="text-2xl"></span>
+        <h2 id="panel-title" class="font-serif text-2xl text-[var(--color-midnightInk)]"></h2>
+    </div>
+    <button 
+      id="close-panel-btn"
+      class="p-2 rounded-full hover:bg-[var(--color-midnightInk)]/5 text-[var(--color-midnightInk)]/60 hover:text-[var(--color-agedGold)] transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Content Scroll Area -->
+  <div class="h-full overflow-y-auto p-8 pb-32 bg-white">
+     <div id="panel-subtitle" class="font-sans text-xs text-[var(--color-agedGold)] uppercase tracking-widest font-bold mb-6"></div>
+     <div id="panel-content" class="prose prose-slate prose-lg max-w-none font-sans text-slate-800 leading-relaxed">
+        <!-- Dynamic Content Injected Here -->
+     </div>
+  </div>
+</aside>
+
+<!-- Backdrop -->
+<div 
+  id="panel-backdrop" 
+  class="fixed inset-0 bg-[#0f111a]/60 backdrop-blur-sm z-[90] opacity-0 pointer-events-none transition-opacity duration-500"
+></div>
+
+<script>
+  function initSidePanel() {
+    const panel = document.getElementById('global-side-panel');
+    const backdrop = document.getElementById('panel-backdrop');
+    const closeBtn = document.getElementById('close-panel-btn');
+    
+    // Safety
+    if(!panel || !backdrop) return;
+    
+    const els = {
+      title: document.getElementById('panel-title'),
+      subtitle: document.getElementById('panel-subtitle'),
+      icon: document.getElementById('panel-icon'),
+      content: document.getElementById('panel-content')
+    };
+
+    function openPanel(data: any) {
+      // Populate
+      if(els.title) els.title.textContent = data.title || '';
+      if(els.subtitle) els.subtitle.textContent = data.subtitle || '';
+      if(els.icon) els.icon.textContent = data.icon || '';
+      if(els.content) els.content.innerHTML = data.content || '';
+
+      // Animate In
+      panel?.classList.remove('-translate-x-full');
+      backdrop?.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePanel() {
+      // Animate Out
+      panel?.classList.add('-translate-x-full');
+      backdrop?.classList.add('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = '';
+    }
+
+    // Attach local listeners
+    closeBtn?.addEventListener('click', closePanel);
+    backdrop?.addEventListener('click', closePanel);
+
+    // Escape Key
+    const escHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') closePanel();
+    };
+    window.addEventListener('keydown', escHandler);
+
+    // Global Event Listener
+    // Re-bind to ensure closure uses FRESH elements
+    // Note: We need to handle potential duplicate window listeners if we aren't careful.
+    // A clean way is to set a property on window or use a named function.
+    // For now, simpler: The DOM elements are fresh, so we listen.
+    
+    // CRITICAL: We need to listen to the event, but we must use the CURRENTLY scoped openPanel function
+    // which has closure over the CURRENT DOM elements.
+    // This is solved by `document.addEventListener('astro:page-load', ...)` re-running this script.
+    
+    // HOWEVER: `window.addEventListener` persists across navigations. Adding it again creates duplicates.
+    // FIX: Attach the custom event listener to `document` (which is cleared/reset?) 
+    // OR: Clean up previous listener? 
+    // BETTER FIX: Use a unique handler reference or check if attached.
+    
+    // SIMPLEST ROBUST FIX for Astro:
+    // Attach listener to BODY or DOCUMENT, and inside, query the DOM *dynamically*.
+    // But here we are inside `initSidePanel`.
+    
+    // Actually, `window.addEventListener('open-side-panel', ...)` *will* stack up if we run this on every page load.
+    // We should probably define the window listener *outside* initSidePanel?
+    // But then it won't have access to the closure variables (panel, backdrop) which change on swap.
+    
+    // HYBRID APPROACH:
+    // 1. Define a global handler on window that just dispatches a DOM Event or calls a helper?
+    // 2. OR: Just remove the old listener.
+    
+    window.removeEventListener('open-side-panel', (window as any)._sidePanelHandler);
+    (window as any)._sidePanelHandler = (e: any) => openPanel(e.detail);
+    window.addEventListener('open-side-panel', (window as any)._sidePanelHandler);
+  }
+
+  document.addEventListener('astro:page-load', initSidePanel);
+</script>

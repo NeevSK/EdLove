@@ -1,0 +1,127 @@
+---
+import { getCollection, render } from 'astro:content';
+import { absoluteUrl } from '../../lib/site';
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ExpandableContent from '../../components/ExpandableContent.astro';
+
+const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
+
+const thinkers = libraryEntries
+  .filter((e) => e.data.category === 'thinker')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const frameworks = libraryEntries
+  .filter((e) => e.data.category === 'framework')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const stories = libraryEntries
+  .filter((e) => e.data.category === 'story')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'The Epistemic Core | EdLove',
+  description:
+    'A browsable library of thinkers, frameworks, and stories shaping the educational transformation ecosystem.',
+  url: absoluteUrl('/library'),
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: libraryEntries.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.data.title,
+      url: absoluteUrl('/library'),
+    })),
+  },
+};
+---
+
+<Layout
+    title="The Library | EdLove"
+    description="Explore the epistemic core of EdLove through thinkers, frameworks, stories, and practical educational wisdom."
+    structuredData={structuredData}
+>
+    <CinematicBackground />
+
+    <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+        <!-- Header: The Core -->
+        <section class="text-center space-y-12 mb-32 animate-fade-in-up">
+            <div class="space-y-4">
+                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">Domain VI</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">The Epistemic Core</h1>
+            </div>
+
+            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
+
+            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-3xl mx-auto leading-relaxed italic">
+                "Where we explore the temporal dimensions of wisdom. <br/> From ancient history to the future of cognition."
+            </p>
+        </section>
+
+        <!-- Dynamic Collection -->
+        <section class="max-w-4xl mx-auto space-y-24">
+            <nav aria-label="Library articles" class="grid gap-3 md:grid-cols-2">
+                {libraryEntries.map((entry) => (
+                    <a href={`/library/${entry.id}`} class="group rounded-2xl border border-[var(--color-gold)]/15 bg-white/30 p-5 transition hover:border-[var(--color-gold)]/40 hover:bg-white/50">
+                        <span class="block text-[10px] uppercase tracking-[0.25em] text-[var(--color-gold)]">{entry.data.category.replace('-', ' ')}</span>
+                        <span class="mt-2 block font-heading text-xl font-bold text-[var(--color-midnightInk)] group-hover:text-[var(--color-gold)]">{entry.data.title}</span>
+                        <span class="mt-1 block text-sm text-[var(--color-midnightInk)]/50">Read the full piece →</span>
+                    </a>
+                ))}
+            </nav>
+            
+            <!-- Thinkers -->
+            <div class="space-y-12">
+                <h2 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]/80 border-b border-[var(--color-gold)]/20 pb-4">Thinkers</h2>
+                <div class="space-y-8">
+                    {thinkers.map(async (entry) => {
+                        const { Content } = await render(entry);
+                        return (
+                            <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                    <Content />
+                                </div>
+                            </ExpandableContent>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <!-- Frameworks -->
+            <div class="space-y-12">
+                <h2 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]/80 border-b border-[var(--color-gold)]/20 pb-4">Frameworks</h2>
+                <div class="space-y-8">
+                    {frameworks.map(async (entry) => {
+                        const { Content } = await render(entry);
+                        return (
+                            <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                    <Content />
+                                </div>
+                            </ExpandableContent>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <!-- Stories -->
+            {stories.length > 0 && (
+                <div class="space-y-12">
+                    <h2 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]/80 border-b border-[var(--color-gold)]/20 pb-4">Stories</h2>
+                    <div class="space-y-8">
+                        {stories.map(async (entry) => {
+                            const { Content } = await render(entry);
+                            return (
+                                <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                    <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                        <Content />
+                                    </div>
+                                </ExpandableContent>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </section>
+    </main>
+</Layout>

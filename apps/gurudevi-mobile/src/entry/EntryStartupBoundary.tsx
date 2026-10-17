@@ -2,10 +2,12 @@ import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
 import { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { Text, View, Pressable } from '@repo/ui/primitives';
 
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 
+import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
@@ -17,10 +19,11 @@ type StartupState =
 
 function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => void }) {
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      void import('expo-splash-screen').then(({ hideAsync }) => hideAsync());
+    return handoffNativeSplashAfterCommit({
+      onError: (cause: unknown) => {
+        console.warn('[startup] native splash handoff unavailable:', cause);
+      },
     });
-    return () => cancelAnimationFrame(frame);
   }, []);
 
   return (
@@ -28,40 +31,28 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
       <View
         accessibilityRole={error ? 'alert' : 'progressbar'}
         accessibilityLabel={error ? 'Gurudevi could not start' : 'Preparing Gurudevi'}
-        style={{
-          alignItems: 'center',
-          backgroundColor: '#20140E',
-          flex: 1,
-          justifyContent: 'center',
-          padding: 32,
-        }}
+        style={styles.container}
       >
         {error ? (
           <Mascot mode="offline" state="interrupted" size={120} podVariant="raw" />
         ) : (
           <BrandPulse size={32} tintColor="#D4843A" />
         )}
-        <Text style={{ color: '#F5EDD6', fontSize: 16, marginTop: 16, textAlign: 'center' }}>
+        <Text style={styles.primaryText}>
           {error ? 'Gurudevi could not finish starting.' : 'Preparing your sanctuary…'}
         </Text>
         {error ? (
           <>
-            <Text style={{ color: '#D8C8B8', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
+            <Text style={styles.errorMessage}>
               {error.message}
             </Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Retry starting Gurudevi"
               onPress={onRetry}
-              style={{
-                backgroundColor: '#D4843A',
-                borderRadius: 10,
-                marginTop: 20,
-                paddingHorizontal: 20,
-                paddingVertical: 12,
-              }}
+              style={styles.retryButton}
             >
-              <Text style={{ color: '#20140E', fontWeight: '700' }}>Try again</Text>
+              <Text style={styles.retryButtonText}>Try again</Text>
             </Pressable>
           </>
         ) : null}
@@ -74,9 +65,11 @@ function startDeferredServices(): void {
   void import('@/lib/inngestEvents')
     .then(({ installMobileWorkflowEventBridge }) => installMobileWorkflowEventBridge())
     .catch((error: unknown) => console.warn('[startup] workflow bridge deferred:', error));
-  void import('@/lib/googleSignIn')
-    .then(({ configureGoogleOneTap }) => configureGoogleOneTap())
-    .catch((error: unknown) => console.warn('[startup] Google Sign-In deferred:', error));
+  if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
+    void import('@/lib/googleSignIn')
+      .then(({ configureGoogleOneTap }) => configureGoogleOneTap())
+      .catch((error: unknown) => console.warn('[startup] Google Sign-In deferred:', error));
+  }
   void import('@/lib/backgroundSync')
     .then(({ registerBackgroundSync }) => registerBackgroundSync())
     .catch((error: unknown) => console.warn('[startup] background sync deferred:', error));
@@ -131,3 +124,36 @@ export function EntryStartupBoundary() {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#20140E',
+    flex: 1,
+    justifyContent: 'center',
+    padding: 32,
+  },
+  primaryText: {
+    color: '#F5EDD6',
+    fontSize: 16,
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    color: '#D8C8B8',
+    fontSize: 13,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#D4843A',
+    borderRadius: 10,
+    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  retryButtonText: {
+    color: '#20140E',
+    fontWeight: '700',
+  },
+});

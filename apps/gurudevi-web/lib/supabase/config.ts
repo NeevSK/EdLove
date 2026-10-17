@@ -1,3 +1,5 @@
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+
 export type SupabaseConfig = Readonly<{
   url: string;
   publishableKey: string;
@@ -14,8 +16,7 @@ export function supabaseConfig(): SupabaseConfig | null {
 
   if (!url || !publishableKey) return null;
   try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    assertSecureApiUrl(url);
   } catch {
     return null;
   }

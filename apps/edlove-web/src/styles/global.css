@@ -1,0 +1,342 @@
+/* Import Google Fonts - EdLove Typography */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Fira+Code&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  /* Typography */
+  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Lora", "Georgia", "Times New Roman", serif;
+  --font-mono: "Fira Code", "Courier New", monospace;
+
+  /* Type Scale (Universal Balance - Adult Proportions) */
+  --text-xs: 0.75rem;
+  /* 12px */
+  --text-sm: 0.875rem;
+  /* 14px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-3xl: 1.875rem;
+  /* 30px */
+  --text-4xl: 2.25rem;
+  /* 36px */
+  --text-5xl: 3rem;
+  /* 48px */
+  --text-6xl: 3.75rem;
+  /* 60px */
+  --text-7xl: 4.5rem;
+  /* 72px */
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* Spacing Scale (8px base) */
+  --space-0: 0;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 2.5rem;
+  --space-6: 3rem;
+  --space-7: 4rem;
+  --space-8: 6rem;
+  --space-9: 8rem;
+  --space-10: 12rem;
+
+  /* Content Widths */
+  --content-xs: 20rem;
+  --content-sm: 30rem;
+  --content-md: 45rem;
+  --content-lg: 65rem;
+  --content-xl: 80rem;
+
+  /* Animation Durations */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+  --duration-slowest: 1200ms;
+
+  /* Colors - Foundation */
+  --color-gold: #e7cb16ff;
+
+  /* Legacy mapping for compatibility during transition */
+  --color-midnightInk: #2d3561;
+  --color-warmPaper: #faf9f6;
+  --color-agedGold: #e7cb16ff;
+
+  --font-serif: var(--font-body);
+  --font-sans: var(--font-heading);
+
+  /* Navigation height for fixed header */
+  --spacing-nav-height: 80px;
+}
+
+/* Base Styles */
+html {
+  background-color: var(--color-warmPaper);
+  color: var(--color-midnightInk);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  line-height: var(--leading-normal);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.025em;
+}
+
+p {
+  margin-bottom: var(--space-3);
+}
+
+/* Editorial Sanctuary Typography */
+.prose-drop-cap > p:first-of-type::first-letter {
+  font-family: var(--font-body);
+  font-size: 3.75rem;
+  line-height: 0.85;
+  float: left;
+  margin-top: 0.15em;
+  margin-right: 0.15em;
+  margin-bottom: -0.1em;
+  font-weight: 700;
+  color: var(--color-midnightInk);
+}
+
+.prose hr {
+  border: 0;
+  text-align: center;
+  margin: 3.5rem 0;
+  position: relative;
+}
+
+.prose hr::before {
+  content: "✦  ·  ✦  ·  ✦";
+  font-family: var(--font-heading);
+  letter-spacing: 0.4em;
+  font-size: 0.875rem;
+  color: var(--color-gold);
+  opacity: 0.8;
+  display: inline-block;
+}
+
+/* Contextual States (added to parent container or body) */
+
+/* Cosmic Context */
+.context-cosmic {
+  --theme-bg: #0a1f3d;
+  --theme-text: #ffffff;
+  --theme-accent: #4a90e2;
+  --theme-gold: #d4a574;
+  background: linear-gradient(180deg, #0a1f3d 0%, #1e3a5f 100%);
+  color: var(--theme-text);
+}
+
+/* Diagnostic Context */
+.context-diagnostic {
+  --theme-bg: #f5f5f5;
+  --theme-text: #2c3e50;
+  --theme-accent: #3498db;
+  --theme-gold: #d4a574;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Library Context */
+.context-library {
+  --theme-bg: #faf9f6;
+  --theme-text: #333333;
+  --theme-accent: #a8c5d6;
+  --theme-gold: #d4a574;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Community Context */
+.context-community {
+  --theme-bg: #fff8f0;
+  --theme-text: #2d2d2d;
+  --theme-accent: #e8b4b8;
+  --theme-gold: #d4a574;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Gurudevi Context */
+.context-gurudevi {
+  --theme-bg: #1e3a5f;
+  --theme-text: #ffffff;
+  --theme-accent: #008b8b;
+  --theme-gold: #d4a574;
+  background: linear-gradient(180deg, #1e3a5f 0%, #1e5a5a 100%);
+  color: var(--theme-text);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+  }
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Utilities */
+/* The Floating Pill - Refined for Operational Identity */
+.floating-pill {
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(45, 53, 97, 0.1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.floating-pill:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--color-gold);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.sanctuary-container {
+  max-width: var(--content-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up var(--duration-slower) cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Domain I: Journey Path Styles */
+.journey-container {
+  position: relative;
+  padding-left: 1rem;
+}
+
+@media (min-width: 768px) {
+  .journey-container {
+    padding-left: 4rem;
+  }
+}
+
+.journey-path {
+  position: absolute;
+  left: 17px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(231, 203, 22, 0.4) 5%,
+    rgba(231, 203, 22, 0.4) 95%,
+    transparent
+  );
+  z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .journey-path {
+    left: 31px;
+  }
+}
+
+.journey-node {
+  position: relative;
+  z-index: 10;
+}
+
+.journey-dot {
+  position: absolute;
+  left: -1.45rem;
+  top: 1.5rem;
+  width: 16px;
+  height: 16px;
+  background: #0a1f3d;
+  border: 2px solid #e7cb16;
+  border-radius: 50%;
+  z-index: 20;
+  box-shadow: 0 0 15px #e7cb16;
+}
+
+@media (min-width: 768px) {
+  .journey-dot {
+    left: -2.55rem;
+  }
+}
+
+.journey-dot::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid #e7cb16;
+  opacity: 0.5;
+  animation: pulse-ring 3s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

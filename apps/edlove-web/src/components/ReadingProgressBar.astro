@@ -1,0 +1,38 @@
+---
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div
+  id="reading-progress"
+  class:list={[
+    "fixed top-0 left-0 h-[2px] w-0 bg-[var(--color-gold)] z-50 transition-all duration-75 pointer-events-none",
+    className
+  ]}
+  aria-hidden="true"
+></div>
+
+<script>
+  function updateProgress() {
+    const progressBar = document.getElementById('reading-progress');
+    if (!progressBar) return;
+    
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (docHeight <= 0) {
+      progressBar.style.width = '0%';
+      return;
+    }
+    
+    const scrollPos = window.scrollY || document.documentElement.scrollTop;
+    const progress = Math.min(100, Math.max(0, (scrollPos / docHeight) * 100));
+    progressBar.style.width = `${progress}%`;
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress, { passive: true });
+  document.addEventListener('astro:page-load', updateProgress);
+  updateProgress();
+</script>

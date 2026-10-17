@@ -1,0 +1,137 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 76rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+}
+
+.headerBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.dayTabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.dayTab {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background: var(--color-paper-light, #fffdf8);
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.dayTab:hover {
+  border-color: var(--color-lotus, #a85022);
+  color: var(--color-ink, #131e27);
+}
+
+.dayTab[aria-selected="true"] {
+  background: var(--color-action, #a85022);
+  border-color: var(--color-action, #a85022);
+  color: #ffffff;
+}
+
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+}
+
+.periodCard {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.periodHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  padding-bottom: 0.5rem;
+}
+
+.periodNumber {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-action, #a85022);
+  font-family: monospace;
+}
+
+.periodTime {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft, #453c35);
+}
+
+.subjectTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.teacherName {
+  font-size: 0.8rem;
+  color: var(--color-ink-soft, #453c35);
+  margin: 0;
+}
+
+.roomTag {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--color-paper, #f7f2e8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+  color: var(--color-ink-soft, #453c35);
+}
+
+.intervalCard {
+  grid-column: 1 / -1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: rgba(168, 80, 34, 0.05);
+  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.2));
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink-soft, #453c35);
+}

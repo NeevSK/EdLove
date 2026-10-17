@@ -1,7 +1,7 @@
 'use client';
 
-import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
+import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import { useDomainWorkbench } from '../../../lib/workbench';
@@ -445,10 +445,7 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
               ? 'Loading workspace…'
               : 'Open attendance'}
           </button>
-          {mode === 'account' &&
-          !practiceMode &&
-          subjectId &&
-          practiceAvailability.available ? (
+          {mode === 'account' && !practiceMode && subjectId && practiceAvailability.available ? (
             <button
               className={styles.secondary}
               onClick={() => {

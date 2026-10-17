@@ -1,19 +1,19 @@
-import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from 'vitest';
-import * as React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the selfApiClient module
 vi.mock('@/lib/sanctuary/selfApiClient', () => ({
   requestAccountSelfProcedure: vi.fn(),
 }));
 
-import { requestAccountSelfProcedure } from '@/lib/sanctuary/selfApiClient';
-import { loadBurnedJournalHistory, burnJournal } from '@/lib/sanctuary/selfJournal';
-import { logMood, loadMoodHistory } from '@/lib/sanctuary/selfWellbeing';
-import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
 import { resolveSelfFeatureManifest } from '@repo/self/features/featureManifest';
 import { BROWSER_SELF_FEATURES } from '@/app/(sanctuary)/self/browserFeatureRegistry';
+import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
+import { requestAccountSelfProcedure } from '@/lib/sanctuary/selfApiClient';
+import { burnJournal, loadBurnedJournalHistory } from '@/lib/sanctuary/selfJournal';
+import { loadMoodHistory, logMood } from '@/lib/sanctuary/selfWellbeing';
 
 vi.mock('@repo/self/features/featureManifest', () => ({
   resolveSelfFeatureManifest: vi.fn(() => ({
@@ -87,7 +87,13 @@ vi.mock('@/app/(sanctuary)/self/browserFeatureRegistry', () => ({
     fire_journal: { renderer: 'fire-journal', taskKind: 'task' },
     mood_lotus: { renderer: 'mood-lotus', taskKind: 'modal' },
   },
-  getBrowserSelfFeature: vi.fn((id) => ({ fire_journal: { renderer: 'fire-journal', taskKind: 'task' }, mood_lotus: { renderer: 'mood-lotus', taskKind: 'modal' } })[id] ?? null),
+  getBrowserSelfFeature: vi.fn(
+    (id: string) => {
+      if (id === 'fire_journal') return { renderer: 'fire-journal', taskKind: 'task' };
+      if (id === 'mood_lotus') return { renderer: 'mood-lotus', taskKind: 'modal' };
+      return null;
+    },
+  ),
   isBrowserSelfFeatureDelivered: vi.fn((id) => ['fire_journal', 'mood_lotus'].includes(id)),
 }));
 
@@ -141,8 +147,18 @@ describe('Self Journal G1 Boundary Tests — API Functions', () => {
   describe('loadBurnedJournalHistory', () => {
     it('loads journal history successfully', async () => {
       const mockEntries = [
-        { id: 'entry-1', content_preview: 'Test entry 1', created_at: '2026-01-01T00:00:00Z', is_burned: true },
-        { id: 'entry-2', content_preview: 'Test entry 2', created_at: '2026-01-02T00:00:00Z', is_burned: true },
+        {
+          id: 'entry-1',
+          content_preview: 'Test entry 1',
+          created_at: '2026-01-01T00:00:00Z',
+          is_burned: true,
+        },
+        {
+          id: 'entry-2',
+          content_preview: 'Test entry 2',
+          created_at: '2026-01-02T00:00:00Z',
+          is_burned: true,
+        },
       ];
 
       vi.mocked(requestAccountSelfProcedure).mockResolvedValue(mockEntries);
@@ -195,7 +211,12 @@ describe('Self Journal G1 Boundary Tests — API Functions', () => {
     });
 
     it('passes content correctly', async () => {
-      vi.mocked(requestAccountSelfProcedure).mockResolvedValue({ id: 'entry-1', content_preview: 'test', created_at: '2026-01-01T00:00:00Z', is_burned: true });
+      vi.mocked(requestAccountSelfProcedure).mockResolvedValue({
+        id: 'entry-1',
+        content_preview: 'test',
+        created_at: '2026-01-01T00:00:00Z',
+        is_burned: true,
+      });
 
       await burnJournal('Custom reflection content');
 
@@ -211,7 +232,14 @@ describe('Self Journal G1 Boundary Tests — API Functions', () => {
   describe('loadMoodHistory', () => {
     it('loads mood history successfully', async () => {
       const mockEntries = [
-        { id: 'mood-1', user_id: 'test-user', mood: 'calm', mood_score: 7, note: 'Feeling centered', created_at: '2026-01-01T00:00:00Z' },
+        {
+          id: 'mood-1',
+          user_id: 'test-user',
+          mood: 'calm',
+          mood_score: 7,
+          note: 'Feeling centered',
+          created_at: '2026-01-01T00:00:00Z',
+        },
       ];
 
       vi.mocked(requestAccountSelfProcedure).mockResolvedValue(mockEntries);
@@ -251,7 +279,8 @@ describe('Self Journal G1 Boundary Tests — API Functions', () => {
       );
       const request = vi.mocked(requestAccountSelfProcedure).mock.calls[0]?.[1];
       expect(request).toBeTypeOf('function');
-      if (typeof request !== 'function') throw new Error('Expected logMood to supply an authenticated request factory.');
+      if (typeof request !== 'function')
+        throw new Error('Expected logMood to supply an authenticated request factory.');
       expect(request('test-user')).toEqual({
         body: expect.objectContaining({
           user_id: 'test-user',
@@ -283,7 +312,9 @@ describe('Self Journal Error Handling (G1)', () => {
   });
 
   it('handles mood history load failure gracefully', async () => {
-    vi.mocked(requestAccountSelfProcedure).mockRejectedValue(new Error('Failed to load mood history'));
+    vi.mocked(requestAccountSelfProcedure).mockRejectedValue(
+      new Error('Failed to load mood history'),
+    );
 
     await expect(loadMoodHistory()).rejects.toThrow('Failed to load mood history');
   });
@@ -350,13 +381,18 @@ describe('SelfFloor Component Boundary Tests (G1)', () => {
   });
 
   it('shows error state when burn fails', async () => {
-    vi.mocked(requestAccountSelfProcedure).mockRejectedValueOnce(new Error('We could not release that reflection.'));
+    vi.mocked(requestAccountSelfProcedure).mockRejectedValueOnce(
+      new Error('We could not release that reflection.'),
+    );
 
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
     await user.click(screen.getByRole('button', { name: /open fire journal/i }));
-    await user.type(screen.getByRole('textbox', { name: /a private reflection/i }), 'This will fail');
+    await user.type(
+      screen.getByRole('textbox', { name: /a private reflection/i }),
+      'This will fail',
+    );
     await user.click(screen.getByRole('button', { name: /release to fire journal/i }));
 
     await waitFor(() => {

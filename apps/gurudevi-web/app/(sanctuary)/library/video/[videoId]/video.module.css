@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 64rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+  gap: 1.5rem;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.playerCard {
+  background: #000000;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.videoElement {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  outline: none;
+}
+
+.controlsBar {
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: #ffffff;
+}
+
+.ctrlBtn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.375rem;
+  background: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444444;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ctrlBtn:hover {
+  background: #3a3a3a;
+  border-color: var(--color-action, #a85022);
+}
+
+.speedSelector {
+  min-height: 44px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.375rem;
+  background: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444444;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.chaptersCard {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chaptersList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chapterItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.375rem;
+  background: var(--color-paper, #f7f2e8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chapterItem:hover {
+  background: color-mix(in srgb, var(--color-action, #a85022) 10%, #f7f2e8);
+  border-color: var(--color-action, #a85022);
+}

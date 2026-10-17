@@ -3,6 +3,7 @@ import {
   type AuthorizedEntryResult,
   mapAuthorizedEntry,
 } from '@repo/core/web-authorized-entry';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import type { ServerSupabaseClient } from '../supabase/server';
 
 export type AuthorizedEntry = AuthorizedEntryResult | Readonly<{ kind: 'signed-out' }>;
@@ -16,6 +17,7 @@ type IdentityPayload = Readonly<{
 }>;
 
 type ScopeBootstrapPayload = Readonly<{
+  userId?: unknown;
   primaryCapacity?: unknown;
   selection?: unknown;
   activeScope?: unknown;
@@ -41,7 +43,9 @@ function isIdentityPayload(value: unknown): value is IdentityPayload {
 
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
-  return value ? value.replace(/\/+$/, '') : null;
+  if (!value) return null;
+  assertSecureApiUrl(value);
+  return value.replace(/\/+$/, '');
 }
 
 function unavailable(message: string): AuthorizedEntryResult {
@@ -92,16 +96,16 @@ function authoritativeFacts(
   payload: IdentityPayload,
   subject: string,
 ): AuthoritativeAuthorizedEntryFacts {
-  if (payload.id !== subject || typeof payload.onboarding_completed !== 'boolean') {
+  if (typeof payload.onboarding_completed !== 'boolean') {
     return {
       kind: 'unavailable',
-      message:
-        'The authoritative sanctuary response was incomplete or belonged to another account.',
+      message: 'The authoritative sanctuary response was incomplete.',
     };
   }
 
   return {
     kind: 'active',
+    accountId: typeof payload.id === 'string' ? payload.id : '',
     authSubjectId: subject,
     displayName: displayName(payload),
     onboardingCompleted: payload.onboarding_completed,
@@ -109,6 +113,13 @@ function authoritativeFacts(
     primaryScopeRole: primaryScopeRole(payload),
     activeScope: activeScope(payload),
   };
+}
+
+function hasCanonicalAccountConsistency(payload: IdentityPayload): boolean {
+  if (typeof payload.id !== 'string') return false;
+  const bootstrap = payload.scopeBootstrap;
+  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return true;
+  return (bootstrap as ScopeBootstrapPayload).userId === payload.id;
 }
 
 /**
@@ -125,10 +136,13 @@ export async function resolveAuthorizedEntry(
   if (claimsError) return unavailable('We could not verify your secure session. Please try again.');
   if (typeof subject !== 'string' || !subject) return { kind: 'signed-out' };
 
-  const origin = apiOrigin();
-  // If sanctuary API is not configured, treat as signed-out to show sign-in prompt
-  // instead of "unavailable" which blocks access entirely.
-  if (!origin) return { kind: 'signed-out' };
+  let origin: string | null;
+  try {
+    origin = apiOrigin();
+  } catch {
+    return unavailable('Sanctuary services are not configured securely. Please try again later.');
+  }
+  if (!origin) return unavailable('Sanctuary services are not configured in this browser.');
 
   // getSession is intentionally used only after cryptographic claim verification
   // and only to forward the API's required bearer credential.
@@ -143,6 +157,7 @@ export async function resolveAuthorizedEntry(
       headers: { Authorization: `Bearer ${session.access_token}` },
       method: 'GET',
       cache: 'no-store',
+      redirect: 'error',
     });
 
     if (!response.ok)
@@ -151,6 +166,30 @@ export async function resolveAuthorizedEntry(
     const payload: unknown = await response.json();
     if (!isIdentityPayload(payload))
       return unavailable('The authoritative sanctuary service returned an invalid response.');
+
+    if (!hasCanonicalAccountConsistency(payload)) {
+      return {
+        kind: 'unavailable',
+        reason: 'invalid-authoritative-entry',
+        message: 'The authoritative sanctuary response contained inconsistent account identity.',
+      };
+    }
+
+    const [currentClaims, currentSession] = await Promise.all([
+      supabase.auth.getClaims(),
+      supabase.auth.getSession(),
+    ]);
+    if (
+      currentClaims.error ||
+      currentClaims.data?.claims?.sub !== subject ||
+      currentSession.error ||
+      currentSession.data.session?.user.id !== subject
+    ) {
+      return unavailable(
+        'Your secure session changed while entry was being verified. Please try again.',
+      );
+    }
+
     return mapAuthorizedEntry(authoritativeFacts(payload, subject));
   } catch {
     return unavailable('We could not reach the authoritative sanctuary service. Please try again.');

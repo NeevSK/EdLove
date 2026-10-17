@@ -1,0 +1,133 @@
+---
+import { getCollection, render } from 'astro:content';
+import { absoluteUrl } from '../../lib/site';
+import Layout from '../../layouts/Layout.astro';
+import ExpandableContent from '../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+
+const resourceEntries = await getCollection('resources', ({ data }) => !data.draft);
+resourceEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Resource Ecosystem | EdLove',
+  description:
+    'A machine-readable and human-readable view of the EdLove resource ecosystem, including the Global Gallery and pattern-based resource flows.',
+  url: absoluteUrl('/resources'),
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: resourceEntries.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.data.title,
+      url: absoluteUrl(entry.id === 'global-gallery.md' ? '/resources/gallery' : '/resources'),
+    })),
+  },
+};
+---
+
+<Layout
+    title="Resource Ecosystem | EdLove"
+    description="Trace the resource layer of EdLove, from global educational innovations to pattern languages and practical infrastructure for transformation."
+    theme="library"
+    structuredData={structuredData}
+>
+    <div class="relative z-10 pb-32 sanctuary-container">
+        <!-- Header: The Ecosystem -->
+        <section class="text-center space-y-12 mb-32 animate-fade-in-up">
+            <div class="space-y-4 pt-16">
+                <span class="font-heading text-[10px] uppercase tracking-[0.5em] font-bold text-[var(--color-gold)] opacity-80">Domain IV: Action & Flow</span>
+                <h1 class="text-5xl md:text-7xl font-heading font-bold text-slate-800 leading-none tracking-tighter">Resource Ecosystem</h1>
+            </div>
+
+            <div class="h-px w-32 bg-[var(--color-gold)]/30 mx-auto"></div>
+
+            <p class="font-body text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed italic">
+                "Resource flow determines reality. We propose a direct inversion: resources flow to where they are needed most."
+            </p>
+
+            <div class="pt-4">
+                <ProvenanceColophon
+                    cadence="living-document"
+                    author="Naveen"
+                    createdDate={new Date('2026-08-01')}
+                    updatedDate={new Date('2026-09-01')}
+                    version="Resource Registry v1.2"
+                    canonicalUrl="https://edlove.org/resources"
+                    readingTime={3}
+                    customNote="Living resource catalogue. Curated open-source pedagogical tools and frameworks."
+                />
+            </div>
+        </section>
+
+        <!-- The Global Gallery Feature -->
+        <section class="max-w-5xl mx-auto mb-32 animate-fade-in-up" style="animation-delay: 200ms;">
+            <div class="p-12 bg-white rounded-[40px] shadow-xl border border-slate-100 group hover:border-[var(--color-gold)] transition-all duration-500 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-cover bg-center opacity-5 group-hover:opacity-10 transition-opacity"></div>
+                
+                <div class="flex flex-col md:flex-row gap-12 items-center relative z-10">
+                    <div class="flex-1 space-y-6">
+                        <div class="w-16 h-16 rounded-2xl bg-sky-50 flex items-center justify-center text-3xl">🌍</div>
+                        <h2 class="text-4xl font-heading font-bold text-slate-900">The Global Gallery</h2>
+                        <p class="text-lg text-slate-600 font-body leading-relaxed">
+                            A curated scan of educational innovations from the favelas of Brazil to the forest schools of Scandinavia.
+                        </p>
+                        
+                        <a href="/resources/gallery" class="inline-flex items-center gap-2 bg-[var(--color-gold)] text-slate-900 px-8 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-yellow-400 transition-colors shadow-lg hover:shadow-xl">
+                            <span>Explore the Map</span>
+                            <span>→</span>
+                        </a>
+                    </div>
+                    
+                    <div class="flex-1 grid grid-cols-2 gap-4 opacity-60">
+                        {['M-Pesa', 'Barefoot College', 'Reggio Emilia', 'High Tech High'].map(item => (
+                            <div class="p-4 bg-slate-50 rounded-xl text-center text-xs font-bold uppercase tracking-wider text-slate-500 border border-slate-100">
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Nodes (Pattern Language & Others) -->
+        <section class="max-w-4xl mx-auto space-y-16">
+            {resourceEntries.map(async (entry) => {
+                // Skip the gallery entry as it's now a feature above
+                if (entry.id === 'global-gallery.md') return null;
+
+                const { Content } = await render(entry);
+                return (
+                    <div class="animate-fade-in-up">
+                        <ExpandableContent 
+                            title={entry.data.title} 
+                            subtitle={entry.data.subtitle} 
+                            icon={entry.data.icon}
+                        >
+                            <div class="py-10 space-y-8 text-slate-700">
+                                <div class="prose prose-slate max-w-none prose-p:leading-relaxed prose-headings:text-slate-900">
+                                     <Content />
+                                </div>
+                                
+                                <div class="pt-8 border-t border-slate-100 flex flex-wrap gap-4">
+                                     <button class="px-8 py-3 bg-slate-900 text-white rounded-full font-heading text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg">
+                                         Contribute to {entry.data.title}
+                                     </button>
+                                     <button class="px-8 py-3 bg-white border border-slate-200 text-slate-800 rounded-full font-heading text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all">
+                                         Download Dataset
+                                     </button>
+                                </div>
+                            </div>
+                        </ExpandableContent>
+                    </div>
+                );
+            })}
+        </section>
+
+        <!-- Footer Note -->
+        <section class="mt-24 text-center">
+            <p class="text-xs uppercase tracking-[0.3em] font-bold text-slate-300">Phase 1 Launch: Q3 2026</p>
+        </section>
+    </div>
+</Layout>

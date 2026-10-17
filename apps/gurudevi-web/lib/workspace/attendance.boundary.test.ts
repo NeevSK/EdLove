@@ -67,6 +67,7 @@ describe('Workspace attendance account boundary', () => {
       `https://sanctuary.example/api/openapi/educational/classrooms/by-teacher?teacher_id=${subject}&limit=100`,
     );
     expect(new Headers(request?.headers).get('Authorization')).toBe('Bearer session-token');
+    expect(request?.redirect).toBe('error');
   });
 
   it('rejects a session that changed accounts before issuing a request', async () => {
@@ -76,6 +77,16 @@ describe('Workspace attendance account boundary', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(loadAccountClassrooms(subject)).rejects.toThrow('Your secure session has ended');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects an insecure API origin before session lookup or fetch', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://api.example.test');
+    const fetchMock = vi.fn<typeof fetch>();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(loadAccountClassrooms(subject)).rejects.toThrow('not configured securely');
+    expect(mocks.getSession).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

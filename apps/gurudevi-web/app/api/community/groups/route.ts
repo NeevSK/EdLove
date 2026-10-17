@@ -1,5 +1,5 @@
-import { COMMUNITY_GROUP_PAGE_SIZE } from '../../../../lib/community/groups-contract';
 import { loadCommunityGroups } from '../../../../lib/community/groups';
+import { COMMUNITY_GROUP_PAGE_SIZE } from '../../../../lib/community/groups-contract';
 import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 
@@ -29,23 +29,38 @@ export async function GET(request: Request) {
   if (entry.kind === 'signed-out')
     return Response.json({ error: 'Sign in to access Community.' }, { status: 401, headers });
   if (entry.kind === 'onboarding-required' || entry.kind === 'inactive')
-    return Response.json({ error: 'Community is unavailable in this account state.' }, { status: 403, headers });
+    return Response.json(
+      { error: 'Community is unavailable in this account state.' },
+      { status: 403, headers },
+    );
   if (entry.kind === 'unavailable')
-    return Response.json({ error: 'Community access could not be verified.' }, { status: 503, headers });
+    return Response.json(
+      { error: 'Community access could not be verified.' },
+      { status: 503, headers },
+    );
 
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   const session = sessionData.session;
   if (sessionError || !session?.access_token || session.user.id !== entry.authSubjectId) {
-    return Response.json({ error: 'Community access could not be verified.' }, { status: 401, headers });
+    return Response.json(
+      { error: 'Community access could not be verified.' },
+      { status: 401, headers },
+    );
   }
 
   const result = await loadCommunityGroups(session.access_token, {
     query: { limit, offset, search },
   });
   if (result.kind === 'denied')
-    return Response.json({ error: 'Community access is not available in this scope.' }, { status: 403, headers });
+    return Response.json(
+      { error: 'Community access is not available in this scope.' },
+      { status: 403, headers },
+    );
   if (result.kind === 'unavailable')
-    return Response.json({ error: 'Community groups could not be loaded.' }, { status: 503, headers });
+    return Response.json(
+      { error: 'Community groups could not be loaded.' },
+      { status: 503, headers },
+    );
   return Response.json(result, { status: 200, headers });
 }
 

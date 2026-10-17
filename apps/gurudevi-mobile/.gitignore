@@ -69,4 +69,11 @@ public/@powersync/
 
 # temporary check files
 .tmp/
-
+# @generated expo skills start
+.agents/skills/ai-core
+.agents/skills/devtools-bidirectional
+.agents/skills/devtools-event-client
+.agents/skills/devtools-instrumentation
+.agents/skills/expo-sqlite
+.agents/skills/react-native-nitro-google-signin
+# @generated expo skills end

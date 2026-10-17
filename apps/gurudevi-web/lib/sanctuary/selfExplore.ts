@@ -94,15 +94,21 @@ function parseCollection<T>(
       'Explore data could not be read. It was left untouched; reset Explore to begin again.',
     );
   }
-  if (
-    !isRecord(parsed) ||
-    parsed.version !== LOCAL_SCHEMA_VERSION ||
-    !Array.isArray(parsed.entries)
-  ) {
+  if (!isRecord(parsed) || !Array.isArray(parsed.entries)) {
     throw new Error('Explore data uses an unsupported format. It was left untouched.');
   }
   if (!parsed.entries.every(isEntry)) {
     throw new Error('Explore data failed validation. It was left untouched.');
+  }
+
+  // The first Safe Try document stored the same entry collection before the
+  // version envelope existed. Read it without data loss; the next write stores
+  // the current envelope.
+  if (parsed.version === undefined) {
+    return { version: LOCAL_SCHEMA_VERSION, entries: parsed.entries };
+  }
+  if (parsed.version !== LOCAL_SCHEMA_VERSION) {
+    throw new Error('Explore data uses an unsupported format. It was left untouched.');
   }
   return { version: LOCAL_SCHEMA_VERSION, entries: parsed.entries };
 }

@@ -3,8 +3,9 @@ import { isSanctuaryPath, resolveHostRouting } from './lib/host-routing';
 import { refreshSupabaseSession } from './lib/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
+  const hostname = request.headers.get('host') ?? request.nextUrl.hostname;
   const hostRouting = resolveHostRouting(
-    request.nextUrl.hostname,
+    hostname,
     request.nextUrl.pathname,
     request.method,
   );
@@ -16,6 +17,11 @@ export async function proxy(request: NextRequest) {
     destination.hostname = hostRouting.host;
     destination.port = '';
     return NextResponse.redirect(destination, 307);
+  }
+  if (hostRouting.kind === 'rewrite') {
+    const destination = request.nextUrl.clone();
+    destination.pathname = hostRouting.pathname;
+    return NextResponse.rewrite(destination);
   }
 
   return isSanctuaryPath(request.nextUrl.pathname)

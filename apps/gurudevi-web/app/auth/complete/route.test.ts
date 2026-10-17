@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 
 const mocks = vi.hoisted(() => ({
   exchangeCodeForSession: vi.fn(),
@@ -29,6 +30,9 @@ describe('GET /auth/complete', () => {
     );
 
     expect(mocks.exchangeCodeForSession).toHaveBeenCalledWith('one-time-code');
+    expect(mocks.createServerClient.mock.calls[0]?.[2]).toMatchObject({
+      global: { fetch: secureApiFetch },
+    });
     expect(response.headers.get('location')).toBe('https://sanctuary.gurudevi.app/self');
     expect(response.headers.get('cache-control')).toBe('private, no-store');
   });

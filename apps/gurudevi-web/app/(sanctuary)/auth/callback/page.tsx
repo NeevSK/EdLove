@@ -1,9 +1,11 @@
-import { safeReturnPath } from '../routeSafety';
 import { redirect } from 'next/navigation';
+import { safeReturnPath } from '../routeSafety';
 
 export const metadata = { title: 'Confirming your account' };
 
-export default async function CallbackPage({ searchParams }: Readonly<{ searchParams: Promise<Record<string, string | string[] | undefined>> }>) {
+export default async function CallbackPage({
+  searchParams,
+}: Readonly<{ searchParams: Promise<Record<string, string | string[] | undefined>> }>) {
   const params = await searchParams;
   const complete = new URLSearchParams({
     next: safeReturnPath(typeof params.next === 'string' ? params.next : null),

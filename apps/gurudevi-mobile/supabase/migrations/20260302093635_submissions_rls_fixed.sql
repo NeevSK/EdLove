@@ -25,8 +25,11 @@ CREATE POLICY "Teachers can read submissions in their classrooms"
     TO authenticated
     USING (
         EXISTS (
-            SELECT 1 FROM public.classrooms
-            WHERE id = classroom_id AND teacher_id = auth.uid()
+            SELECT 1
+            FROM public.assignments AS a
+            JOIN public.classrooms AS c ON c.id = a.classroom_id
+            WHERE a.id = public.submissions.assignment_id
+              AND c.teacher_id = auth.uid()
         )
     );
 
@@ -37,13 +40,19 @@ CREATE POLICY "Teachers can grade submissions in their classrooms"
     TO authenticated
     USING (
         EXISTS (
-            SELECT 1 FROM public.classrooms
-            WHERE id = classroom_id AND teacher_id = auth.uid()
+            SELECT 1
+            FROM public.assignments AS a
+            JOIN public.classrooms AS c ON c.id = a.classroom_id
+            WHERE a.id = public.submissions.assignment_id
+              AND c.teacher_id = auth.uid()
         )
     )
     WITH CHECK (
         EXISTS (
-            SELECT 1 FROM public.classrooms
-            WHERE id = classroom_id AND teacher_id = auth.uid()
+            SELECT 1
+            FROM public.assignments AS a
+            JOIN public.classrooms AS c ON c.id = a.classroom_id
+            WHERE a.id = public.submissions.assignment_id
+              AND c.teacher_id = auth.uid()
         )
     );

@@ -1,4 +1,4 @@
 'use client';
 
-export { ExploreSelfCanvas as SelfReflectionCanvas } from '../explore/self/ExploreSelfCanvas';
-export type { SelfReflectionCanvasProps } from '../explore/self/ExploreSelfCanvas';
+export type { SelfReflectionCanvasProps } from '../explore-internal/self/ExploreSelfCanvas';
+export { ExploreSelfCanvas as SelfReflectionCanvas } from '../explore-internal/self/ExploreSelfCanvas';

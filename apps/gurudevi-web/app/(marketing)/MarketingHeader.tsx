@@ -1,5 +1,6 @@
 'use client';
 
+import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -58,13 +59,19 @@ export function MarketingHeader() {
 
         <div className="header-actions">
           <nav aria-label="Choose language" className="hidden gap-2 font-sans text-xs sm:flex">
-            <Link href="/" aria-label="English">EN</Link>
-            <Link href="/si" lang="si" aria-label="සිංහල">සි</Link>
-            <Link href="/ta" lang="ta" aria-label="தமிழ்">த</Link>
+            <Link href="/" aria-label="English">
+              EN
+            </Link>
+            <Link href="/si" lang="si" aria-label="සිංහල">
+              සි
+            </Link>
+            <Link href="/ta" lang="ta" aria-label="தமிழ்">
+              த
+            </Link>
           </nav>
-          <Link className="header-platform" href="/explore/self">
+          <a className="header-platform" href={`${GURUDEVI_EXPLORE_URL}/self`}>
             Open platform <span aria-hidden="true">↗</span>
-          </Link>
+          </a>
           <button
             className="menu-toggle"
             type="button"
@@ -97,24 +104,26 @@ export function MarketingHeader() {
         </div>
         <nav aria-label="Mobile navigation">
           {navItems.map((item) => (
-            <Link
-              href={item.href}
-              key={item.name}
-              onClick={() => setIsMenuOpen(false)}
-            >
+            <Link href={item.href} key={item.name} onClick={() => setIsMenuOpen(false)}>
               {item.name}
             </Link>
           ))}
-          <Link
-            href="/explore/self"
-            onClick={() => setIsMenuOpen(false)}
-          >
+          <a href={`${GURUDEVI_EXPLORE_URL}/self`} onClick={() => setIsMenuOpen(false)}>
             Open platform ↗
-          </Link>
-          <div className="mt-6 flex gap-5 border-t border-line pt-5 font-sans text-sm" aria-label="Choose language">
-            <Link href="/" onClick={() => setIsMenuOpen(false)}>English</Link>
-            <Link href="/si" lang="si" onClick={() => setIsMenuOpen(false)}>සිංහල</Link>
-            <Link href="/ta" lang="ta" onClick={() => setIsMenuOpen(false)}>தமிழ்</Link>
+          </a>
+          <div
+            className="mt-6 flex gap-5 border-t border-line pt-5 font-sans text-sm"
+            aria-label="Choose language"
+          >
+            <Link href="/" onClick={() => setIsMenuOpen(false)}>
+              English
+            </Link>
+            <Link href="/si" lang="si" onClick={() => setIsMenuOpen(false)}>
+              සිංහල
+            </Link>
+            <Link href="/ta" lang="ta" onClick={() => setIsMenuOpen(false)}>
+              தமிழ்
+            </Link>
           </div>
         </nav>
       </div>

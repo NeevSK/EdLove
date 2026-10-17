@@ -1,12 +1,10 @@
-import { describe, expect, it } from 'vitest';
 import { NextRequest } from 'next/server';
+import { describe, expect, it } from 'vitest';
 import { proxy } from './proxy';
 
 describe('Next host proxy', () => {
   it('preserves path and query when moving a safe request to Sanctuary', async () => {
-    const response = await proxy(
-      new NextRequest('https://gurudevi.app/sign-in?returnTo=%2Fself'),
-    );
+    const response = await proxy(new NextRequest('https://gurudevi.app/sign-in?returnTo=%2Fself'));
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(
@@ -20,6 +18,26 @@ describe('Next host proxy', () => {
     );
 
     expect(response.status).toBe(404);
+    expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('rewrites public Explore paths without refreshing a Sanctuary session', async () => {
+    const response = await proxy(
+      new NextRequest('http://localhost:3210/self', {
+        headers: { host: 'explore.gurudevi.app:3210' },
+      }),
+    );
+
+    expect(response.headers.get('x-middleware-rewrite')).toContain('/explore-internal/self');
+  });
+
+  it('does not route from forwarded host when the direct Host header is unrelated', async () => {
+    const response = await proxy(
+      new NextRequest('https://gurudevi.app/sign-in', {
+        headers: { host: 'untrusted.example', 'x-forwarded-host': 'explore.gurudevi.app' },
+      }),
+    );
+
     expect(response.headers.get('location')).toBeNull();
   });
 });

@@ -4,6 +4,7 @@ import 'react-native-reanimated';
 import 'react-native-get-random-values';
 import '@azure/core-asynciterator-polyfill'; // Required for PowerSync watched queries
 import './src/shims/node-globals-shim';
+import './src/lib/backgroundSyncTask';
 import '@repo/ui/global.css';
 
 // Expo Router owns the live app shell in SDK 56+.

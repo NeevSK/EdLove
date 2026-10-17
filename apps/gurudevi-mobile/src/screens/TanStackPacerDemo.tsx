@@ -5,7 +5,9 @@ import { useDebouncedValue, useThrottledInvalidate } from '@/hooks/usePacer';
 
 // Mock API function to simulate a network call
 const fetchMockSearchResults = async (query: string): Promise<string[]> => {
-  if (!query) return [];
+  if (!query) {
+    return [];
+  }
   // Simulate network latency
   await new Promise((resolve) => setTimeout(resolve, 300));
   return [`Result 1 for "${query}"`, `Result 2 for "${query}"`, `Result 3 for "${query}"`];
@@ -47,7 +49,7 @@ export default function TanStackPacerDemo() {
       {/* Section 1: Debounced Search */}
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>1. Debounced Search (useDebouncedValue)</Text>
-        <TextInput
+        <TextInput testID="pacer-demo-input"
           accessibilityLabel="Search term input"
           accessibilityHint="Enter a term to search query cache mock results"
           style={styles.input}
@@ -62,8 +64,8 @@ export default function TanStackPacerDemo() {
         {isFetching && <Text style={styles.fetching}>Fetching results...</Text>}
         {searchResults && searchResults.length > 0 && (
           <View style={styles.resultsContainer}>
-            {searchResults.map((result, idx) => (
-              <Text key={idx} style={styles.resultItem}>
+            {searchResults.map((result) => (
+              <Text key={result} style={styles.resultItem}>
                 • {result}
               </Text>
             ))}

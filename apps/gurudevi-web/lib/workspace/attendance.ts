@@ -1,5 +1,7 @@
+import { SOVEREIGN_ORPC_URL } from '@repo/core/api/base';
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import {
   createPersistenceIdentity,
   derivePersistenceKey,
@@ -72,15 +74,23 @@ function practiceStorageKey(accountId: string): string {
 function readPracticeMarks(accountId: string): Record<string, Record<string, AttendanceStatus>> {
   const key = practiceStorageKey(accountId);
   try {
-    const value: unknown = JSON.parse(window.localStorage.getItem(key) ?? '{"version":1,"dates":{}}');
+    const value: unknown = JSON.parse(
+      window.localStorage.getItem(key) ?? '{"version":1,"dates":{}}',
+    );
     if (!isRecord(value) || value.version !== practiceVersion || !isRecord(value.dates))
-      throw new Error('The saved attendance practice workspace is unreadable. It has not been removed.');
+      throw new Error(
+        'The saved attendance practice workspace is unreadable. It has not been removed.',
+      );
     const dates = Object.entries(value.dates).map(([date, marks]) => {
       if (!isRecord(marks))
-        throw new Error('The saved attendance practice workspace is unreadable. It has not been removed.');
+        throw new Error(
+          'The saved attendance practice workspace is unreadable. It has not been removed.',
+        );
       const validMarks = statusMap(marks);
       if (Object.keys(validMarks).length !== Object.keys(marks).length)
-        throw new Error('The saved attendance practice workspace has invalid marks. It has not been removed.');
+        throw new Error(
+          'The saved attendance practice workspace has invalid marks. It has not been removed.',
+        );
       return [date, validMarks] as const;
     });
     return Object.fromEntries(dates);
@@ -90,7 +100,10 @@ function readPracticeMarks(accountId: string): Record<string, Record<string, Att
   }
 }
 
-export function loadAccountPracticeAttendance(accountId: string, date: string): Readonly<{
+export function loadAccountPracticeAttendance(
+  accountId: string,
+  date: string,
+): Readonly<{
   classroom: WorkspaceClassroom;
   students: readonly WorkspaceStudent[];
 }> {
@@ -126,7 +139,9 @@ export function saveAccountPracticeAttendance(
       JSON.stringify({ version: practiceVersion, dates: { ...allDates, [date]: marks } }),
     );
   } catch {
-    throw new Error('The browser could not keep this local attendance practice. Free storage and retry.');
+    throw new Error(
+      'The browser could not keep this local attendance practice. Free storage and retry.',
+    );
   }
 }
 
@@ -292,6 +307,12 @@ export function restoreAccountAttendanceDraft(
 function apiOrigin(): string {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, '');
   if (!value) throw new Error('Workspace services are not configured in this browser.');
+  try {
+    assertSecureApiUrl(value);
+    assertSecureApiUrl(SOVEREIGN_ORPC_URL);
+  } catch {
+    throw new Error('Workspace services are not configured securely in this browser.');
+  }
   return value;
 }
 
@@ -329,6 +350,7 @@ async function accountFetch(
   expectedSubjectId: string,
   init?: RequestInit,
 ): Promise<unknown> {
+  const origin = apiOrigin();
   const supabase = createBrowserSupabaseClient();
   if (!supabase) throw new Error('Sign in to use your Workspace.');
   const { data, error } = await supabase.auth.getSession();
@@ -344,7 +366,7 @@ async function accountFetch(
 
   let response: Response;
   try {
-    response = await fetch(`${apiOrigin()}${path}`, {
+    response = await fetch(`${origin}${path}`, {
       ...init,
       headers: {
         Authorization: `Bearer ${session.access_token}`,
@@ -352,6 +374,7 @@ async function accountFetch(
         ...init?.headers,
       },
       cache: 'no-store',
+      redirect: 'error',
     });
   } catch {
     throw new Error('Workspace could not reach Sanctuary. Check your connection and retry.');
@@ -425,6 +448,7 @@ export async function saveAccountAttendance(
   students: readonly WorkspaceStudent[],
   expectedSubjectId: string,
 ): Promise<void> {
+  apiOrigin();
   const supabase = createBrowserSupabaseClient();
   if (!supabase) throw new Error('Sign in to save attendance to your Workspace.');
   const { data, error } = await supabase.auth.getSession();

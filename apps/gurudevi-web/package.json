@@ -22,32 +22,33 @@
     "test:e2e:desktop": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --project=desktop-chrome\" --name \"apps_gurudevi-web-test_e2e_desktop\" --evidence-level G4"
   },
   "dependencies": {
-    "@orpc/client": "1.15.4",
+    "@orpc/client": "2.0.0-beta.44",
     "@repo/core": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
     "@supabase/ssr": "0.12.7",
+    "@tanstack/react-pacer": "^0.22.1",
+    "@tanstack/react-query": "^5.104.3",
     "next": "16.3.8",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "^1.64.1",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "4.3.0",
     "dotenv": "^17.4.2",
-    "@testing-library/react": "^16.0.0",
+    "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.5.0",
-    "@types/node": "^26.4.1",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.1",
-    "eslint": "^10.10.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "^10.12.0",
     "msw": "^2.4.0",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.30",
     "tailwindcss": "4.3.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.0"
+    "vitest": "5.0.5"
   }
 }
-

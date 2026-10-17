@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 
 const mocks = vi.hoisted(() => ({ signOut: vi.fn(), createServerClient: vi.fn() }));
 
@@ -22,6 +23,9 @@ describe('POST /auth/signout', () => {
     );
 
     expect(mocks.signOut).toHaveBeenCalledWith({ scope: 'local' });
+    expect(mocks.createServerClient.mock.calls[0]?.[2]).toMatchObject({
+      global: { fetch: secureApiFetch },
+    });
     expect(response.status).toBe(204);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
   });

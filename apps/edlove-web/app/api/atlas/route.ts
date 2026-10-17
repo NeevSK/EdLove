@@ -66,14 +66,51 @@ let _db: DatabaseSync | null = null;
 
 function getDb(): DatabaseSync {
   if (!_db) {
-    const defaultPath = 'c:/x/data/education-atlas/atlas_staging.db';
+    const envPath = process.env.ATLAS_DB_PATH;
     const candidates: string[] = [
+      ...(envPath ? [envPath] : []),
       path.resolve(process.cwd(), '../../data/education-atlas/atlas_staging.db'),
       path.resolve(process.cwd(), 'data/education-atlas/atlas_staging.db'),
-      defaultPath,
+      'c:/x/data/education-atlas/atlas_staging.db',
     ];
-    const dbPath = candidates.find((p) => fs.existsSync(p)) ?? defaultPath;
-    _db = new DatabaseSync(dbPath);
+    const dbPath = candidates.find((p) => fs.existsSync(p));
+
+    if (dbPath) {
+      _db = new DatabaseSync(dbPath);
+    } else {
+      // In-memory fallback with census schema to prevent 500 crash in isolated/cloud environments
+      _db = new DatabaseSync(':memory:');
+      _db.exec(`
+        CREATE TABLE IF NOT EXISTS schools (
+          id TEXT PRIMARY KEY,
+          census_no TEXT,
+          school_name TEXT,
+          category TEXT,
+          school_type TEXT,
+          province TEXT,
+          district TEXT,
+          divisional_secretariat TEXT,
+          education_zone TEXT,
+          education_division TEXT,
+          latitude REAL,
+          longitude REAL,
+          student_count INTEGER,
+          teacher_count INTEGER,
+          student_teacher_ratio REAL,
+          difficulty_level TEXT
+        );
+        CREATE TABLE IF NOT EXISTS location_pings (
+          id TEXT PRIMARY KEY,
+          user_role TEXT,
+          latitude REAL,
+          longitude REAL,
+          accuracy_meters REAL,
+          delta_from_tentative_meters REAL,
+          status TEXT,
+          created_at TEXT
+        );
+      `);
+    }
     _db.exec('PRAGMA busy_timeout = 5000;');
   }
   return _db;

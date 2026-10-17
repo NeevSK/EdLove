@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 
 type ResetState = 'checking' | 'ready' | 'submitting' | 'unavailable' | 'error';
@@ -28,7 +28,9 @@ export function ResetPasswordForm({ returnTo }: Readonly<{ returnTo: string }>) 
         setMessage('This recovery link has expired or is invalid. Request a new link to continue.');
       }
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function resetPassword(event: FormEvent<HTMLFormElement>) {
@@ -57,7 +59,51 @@ export function ResetPasswordForm({ returnTo }: Readonly<{ returnTo: string }>) 
     window.location.assign(safeReturnPath(returnTo));
   }
 
-  if (state === 'checking') return <p className="font-sans text-lg text-ink-soft" role="status">Verifying your recovery link…</p>;
-  if (state === 'unavailable' || state === 'error') return <p className="font-sans text-sm text-red-700" role="alert">{message}</p>;
-  return <form className="space-y-5" onSubmit={(event) => void resetPassword(event)}><label className="block font-sans text-sm font-semibold" htmlFor="new-password">New password</label><input autoComplete="new-password" className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water" id="new-password" minLength={8} name="password" required type="password" /><label className="block font-sans text-sm font-semibold" htmlFor="confirm-password">Confirm new password</label><input autoComplete="new-password" className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water" id="confirm-password" minLength={8} name="confirmation" required type="password" /><button className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water" disabled={state === 'submitting'} type="submit">{state === 'submitting' ? 'Saving…' : 'Save new password'}</button></form>;
+  if (state === 'checking')
+    return (
+      <p className="font-sans text-lg text-ink-soft" role="status">
+        Verifying your recovery link…
+      </p>
+    );
+  if (state === 'unavailable' || state === 'error')
+    return (
+      <p className="font-sans text-sm text-red-700" role="alert">
+        {message}
+      </p>
+    );
+  return (
+    <form className="space-y-5" onSubmit={(event) => void resetPassword(event)}>
+      <label className="block font-sans text-sm font-semibold" htmlFor="new-password">
+        New password
+      </label>
+      <input
+        autoComplete="new-password"
+        className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
+        id="new-password"
+        minLength={8}
+        name="password"
+        required
+        type="password"
+      />
+      <label className="block font-sans text-sm font-semibold" htmlFor="confirm-password">
+        Confirm new password
+      </label>
+      <input
+        autoComplete="new-password"
+        className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
+        id="confirm-password"
+        minLength={8}
+        name="confirmation"
+        required
+        type="password"
+      />
+      <button
+        className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
+        disabled={state === 'submitting'}
+        type="submit"
+      >
+        {state === 'submitting' ? 'Saving…' : 'Save new password'}
+      </button>
+    </form>
+  );
 }

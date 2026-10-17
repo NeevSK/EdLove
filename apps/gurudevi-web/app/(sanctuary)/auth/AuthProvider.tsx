@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { browserAuthRuntime, type BrowserAuthRuntime, type BrowserSession } from './browserAuth';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { type BrowserAuthRuntime, type BrowserSession, browserAuthRuntime } from './browserAuth';
 
 type AuthState = Readonly<{
   status: 'loading' | 'authenticated' | 'signed-out' | 'unavailable';
@@ -56,9 +56,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   };
 
   return (
-    <AuthContext.Provider value={{ state, refresh, signOut }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ state, refresh, signOut }}>{children}</AuthContext.Provider>
   );
 }
 

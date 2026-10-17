@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">EdLove — Education as an act of love</title>
+  <desc id="description">EdLove is an educational transformation ecosystem rooted in care, philosophy, and Sri Lankan realities.</desc>
+  <rect width="1200" height="630" fill="#faf9f6"/>
+  <circle cx="1040" cy="-30" r="300" fill="#e7cb16" opacity="0.18"/>
+  <circle cx="1050" cy="640" r="360" fill="#2d3561" opacity="0.08"/>
+  <path d="M100 470C240 360 330 250 440 150" stroke="#e7cb16" stroke-width="6" fill="none" opacity="0.7"/>
+  <text x="100" y="260" fill="#2d3561" font-family="Georgia, serif" font-size="92" font-weight="600">EdLove</text>
+  <text x="105" y="340" fill="#4a6357" font-family="Arial, sans-serif" font-size="30">Education as an act of love.</text>
+  <text x="105" y="410" fill="#2d3561" opacity="0.65" font-family="Arial, sans-serif" font-size="22">Philosophy · research · practice · Sri Lanka</text>
+</svg>

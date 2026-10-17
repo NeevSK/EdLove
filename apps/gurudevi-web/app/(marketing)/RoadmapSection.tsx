@@ -9,7 +9,8 @@ export function RoadmapSection() {
           <h2 id="roadmap-title">From conceptual genesis to living sanctuary.</h2>
         </div>
         <p>
-          Built for enduring transformation in Sri Lanka—progressing with care, dignity, and relationship across three distinct phases.
+          Built for enduring transformation in Sri Lanka—progressing with care, dignity, and
+          relationship across three distinct phases.
         </p>
       </div>
 
@@ -35,7 +36,9 @@ export function RoadmapSection() {
               <ul>
                 {milestone.deliverables.map((item) => (
                   <li key={item}>
-                    <span className="roadmap-card__check" aria-hidden="true">✦</span>
+                    <span className="roadmap-card__check" aria-hidden="true">
+                      ✦
+                    </span>
                     <span>{item}</span>
                   </li>
                 ))}

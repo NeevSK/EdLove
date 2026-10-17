@@ -198,7 +198,14 @@ export function useBrowserWorkspaceAppearance({
     return () => {
       cancelled = true;
     };
-  }, [accountId, defaultGroupOrderKey, defaultPinnedIdsKey, enableRemoteSync, layoutTarget, workspaceId]);
+  }, [
+    accountId,
+    defaultGroupOrderKey,
+    defaultPinnedIdsKey,
+    enableRemoteSync,
+    layoutTarget,
+    workspaceId,
+  ]);
 
   const setAppearance = useCallback(
     async (next: WorkspaceAppearance) => {

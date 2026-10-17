@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ProfileFloor } from '@/app/(sanctuary)/profile/ProfileFloor';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CommunityFeedFloor } from '@/app/(sanctuary)/community/CommunityFeedFloor';
 import { LibraryFloor } from '@/app/(sanctuary)/library/LibraryFloor';
+import { ProfileFloor } from '@/app/(sanctuary)/profile/ProfileFloor';
 import type { CommunityGroupsResult } from '@/lib/community/groups-contract';
 
 vi.mock('next/navigation', () => ({
@@ -24,14 +24,12 @@ const mockCommunityResult: CommunityGroupsResult = {
       name: 'General Sanctuary',
       description: 'Universal discussions and fellowship',
       memberCount: 42,
-      role: 'member',
     },
     {
       id: 'practice',
       name: 'Practice Circle',
       description: 'Daily rhythm and mindfulness',
       memberCount: 15,
-      role: 'member',
     },
   ],
   hasMore: false,
@@ -59,7 +57,9 @@ describe('Responsive Floors Master-Detail & Stage Switching (G1 boundary / jsdom
       );
 
       // Verify header and initial identity section
-      expect(screen.getByRole('heading', { level: 1, name: /your sanctuary persona/i })).toBeTruthy();
+      expect(
+        screen.getByRole('heading', { level: 1, name: /your sanctuary persona/i }),
+      ).toBeTruthy();
       expect(screen.getByText('Aria Star')).toBeTruthy();
       expect(screen.getByText('Learner')).toBeTruthy();
 
@@ -85,7 +85,9 @@ describe('Responsive Floors Master-Detail & Stage Switching (G1 boundary / jsdom
       // Switch to Security section
       const securityTab = screen.getByRole('button', { name: /security & data/i });
       await user.click(securityTab);
-      expect(screen.getByRole('heading', { level: 2, name: /account safety & data/i })).toBeTruthy();
+      expect(
+        screen.getByRole('heading', { level: 2, name: /account safety & data/i }),
+      ).toBeTruthy();
     });
   });
 
@@ -131,7 +133,9 @@ describe('Responsive Floors Master-Detail & Stage Switching (G1 boundary / jsdom
       render(<LibraryFloor accountId="test-account" displayName="Test User" />);
 
       // In initial overview mode, verify greeting and prompt
-      expect(screen.getByRole('heading', { level: 1, name: /a place to find what helps you grow/i })).toBeTruthy();
+      expect(
+        screen.getByRole('heading', { level: 1, name: /a place to find what helps you grow/i }),
+      ).toBeTruthy();
 
       // Open catalog/master-detail stage
       const browseButton = screen.getByRole('button', { name: /browse resources/i });

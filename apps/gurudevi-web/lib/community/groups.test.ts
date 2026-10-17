@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadCommunityGroups } from './groups';
 import { parseCommunityGroups, parseCommunityGroupsResult } from './groups-contract';
 
@@ -53,5 +53,28 @@ describe('parseCommunityGroups', () => {
         endpoint: 'https://api.test/api',
       }),
     ).resolves.toEqual({ kind: 'unavailable' });
+  });
+
+  it('rejects an insecure endpoint override before sending the bearer token', async () => {
+    const fetcher = vi.fn<typeof fetch>();
+    await expect(
+      loadCommunityGroups('verified-session-token', {
+        fetcher,
+        endpoint: 'http://api.example.test/api',
+      }),
+    ).resolves.toEqual({ kind: 'unavailable' });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it('forces redirect errors on the oRPC fetch boundary', async () => {
+    let requestInit: RequestInit | undefined;
+    await loadCommunityGroups('verified-session-token', {
+      endpoint: 'https://api.test/api',
+      fetcher: async (_request, init) => {
+        requestInit = init;
+        return new Response(JSON.stringify({ json: [] }), { status: 200 });
+      },
+    });
+    expect(requestInit?.redirect).toBe('error');
   });
 });

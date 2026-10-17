@@ -1,0 +1,2992 @@
+[
+  {
+    "id": "posthog-react-native-4.78.5-SurveyAppearanceTheme-severed",
+    "package": "posthog-react-native",
+    "symbol": "SurveyAppearanceTheme",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-react-native@4.78.5 migration guide",
+    "message": "'SurveyAppearanceTheme' was severed in posthog-react-native@4.78.5 (last present in 4.71.0).",
+    "sourceFile": "dist\\surveys\\surveys-utils.d.ts"
+  },
+  {
+    "id": "-expo-ui-58.0.12-LazyHStackProps-severed",
+    "package": "@expo/ui",
+    "symbol": "LazyHStackProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @expo/ui@58.0.12 migration guide",
+    "message": "'LazyHStackProps' was severed in @expo/ui@58.0.12 (last present in 57.0.18).",
+    "sourceFile": "build\\swift-ui\\LazyHStack\\index.d.ts"
+  },
+  {
+    "id": "-expo-ui-58.0.12-LazyHStack-severed",
+    "package": "@expo/ui",
+    "symbol": "LazyHStack",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @expo/ui@58.0.12 migration guide",
+    "message": "'LazyHStack' was severed in @expo/ui@58.0.12 (last present in 57.0.18).",
+    "sourceFile": "build\\swift-ui\\LazyHStack\\index.d.ts"
+  },
+  {
+    "id": "-expo-ui-58.0.12-LazyVStackProps-severed",
+    "package": "@expo/ui",
+    "symbol": "LazyVStackProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @expo/ui@58.0.12 migration guide",
+    "message": "'LazyVStackProps' was severed in @expo/ui@58.0.12 (last present in 57.0.18).",
+    "sourceFile": "build\\swift-ui\\LazyVStack\\index.d.ts"
+  },
+  {
+    "id": "-expo-ui-58.0.12-LazyVStack-severed",
+    "package": "@expo/ui",
+    "symbol": "LazyVStack",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @expo/ui@58.0.12 migration guide",
+    "message": "'LazyVStack' was severed in @expo/ui@58.0.12 (last present in 57.0.18).",
+    "sourceFile": "build\\swift-ui\\LazyVStack\\index.d.ts"
+  },
+  {
+    "id": "-expo-ui-58.0.12-ToolbarContentProps-severed",
+    "package": "@expo/ui",
+    "symbol": "ToolbarContentProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @expo/ui@58.0.12 migration guide",
+    "message": "'ToolbarContentProps' was severed in @expo/ui@58.0.12 (last present in 57.0.18).",
+    "sourceFile": "build\\swift-ui\\Toolbar\\index.d.ts"
+  },
+  {
+    "id": "-stripe-stripe-react-native-0.76.0-UpiResult-severed",
+    "package": "@stripe/stripe-react-native",
+    "symbol": "UpiResult",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @stripe/stripe-react-native@0.76.0 migration guide",
+    "message": "'UpiResult' was severed in @stripe/stripe-react-native@0.76.0 (last present in 0.64.0).",
+    "sourceFile": "lib\\typescript\\src\\types\\PaymentMethod.d.ts"
+  },
+  {
+    "id": "expo-58.0.3-installAbortSignalPatch-severed",
+    "package": "expo",
+    "symbol": "installAbortSignalPatch",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo@58.0.3 migration guide",
+    "message": "'installAbortSignalPatch' was severed in expo@58.0.3 (last present in 57.0.23).",
+    "sourceFile": "build\\winter\\AbortSignal.d.ts"
+  },
+  {
+    "id": "expo-58.0.3-TextDecoder-severed",
+    "package": "expo",
+    "symbol": "TextDecoder",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo@58.0.3 migration guide",
+    "message": "'TextDecoder' was severed in expo@58.0.3 (last present in 57.0.23).",
+    "sourceFile": "build\\winter\\TextDecoder.d.ts"
+  },
+  {
+    "id": "expo-cellular-58.0.2-allowsVoipAsync-severed",
+    "package": "expo-cellular",
+    "symbol": "allowsVoipAsync",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-cellular documentation for modern alternative",
+    "message": "Voip technology is not widely used and Google is removing it from the Android platform. This method will be removed in a future release.",
+    "sourceFile": "build\\Cellular.d.ts"
+  },
+  {
+    "id": "expo-clipboard-58.0.3-ClipboardImage-severed",
+    "package": "expo-clipboard",
+    "symbol": "ClipboardImage",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-clipboard@58.0.3 migration guide",
+    "message": "'ClipboardImage' was severed in expo-clipboard@58.0.3 (last present in 57.0.2).",
+    "sourceFile": "build\\Clipboard.types.d.ts"
+  },
+  {
+    "id": "expo-clipboard-58.0.3-GetStringOptions-severed",
+    "package": "expo-clipboard",
+    "symbol": "GetStringOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-clipboard@58.0.3 migration guide",
+    "message": "'GetStringOptions' was severed in expo-clipboard@58.0.3 (last present in 57.0.2).",
+    "sourceFile": "build\\Clipboard.types.d.ts"
+  },
+  {
+    "id": "expo-clipboard-58.0.3-SetStringOptions-severed",
+    "package": "expo-clipboard",
+    "symbol": "SetStringOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-clipboard@58.0.3 migration guide",
+    "message": "'SetStringOptions' was severed in expo-clipboard@58.0.3 (last present in 57.0.2).",
+    "sourceFile": "build\\Clipboard.types.d.ts"
+  },
+  {
+    "id": "expo-document-picker-58.0.4-IosProps-severed",
+    "package": "expo-document-picker",
+    "symbol": "IosProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-document-picker@58.0.4 migration guide",
+    "message": "'IosProps' was severed in expo-document-picker@58.0.4 (last present in 57.0.2).",
+    "sourceFile": "plugin\\build\\withDocumentPickerIOS.d.ts"
+  },
+  {
+    "id": "expo-media-library-58.0.6-AssetInfo-severed",
+    "package": "expo-media-library",
+    "symbol": "AssetInfo",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-media-library@58.0.6 migration guide",
+    "message": "'AssetInfo' was severed in expo-media-library@58.0.6 (last present in 57.0.5).",
+    "sourceFile": "build\\types\\AssetInfo.d.ts"
+  },
+  {
+    "id": "expo-media-library-58.0.6-Location-severed",
+    "package": "expo-media-library",
+    "symbol": "Location",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-media-library@58.0.6 migration guide",
+    "message": "'Location' was severed in expo-media-library@58.0.6 (last present in 57.0.5).",
+    "sourceFile": "build\\types\\Location.d.ts"
+  },
+  {
+    "id": "expo-media-library-58.0.6-Shape-severed",
+    "package": "expo-media-library",
+    "symbol": "Shape",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-media-library@58.0.6 migration guide",
+    "message": "'Shape' was severed in expo-media-library@58.0.6 (last present in 57.0.5).",
+    "sourceFile": "build\\types\\Shape.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createMemoryHistory-severed",
+    "package": "expo-router",
+    "symbol": "createMemoryHistory",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createMemoryHistory' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\fork\\createMemoryHistory.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-handleUrlParams-severed",
+    "package": "expo-router",
+    "symbol": "handleUrlParams",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'handleUrlParams' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\fork\\getStateFromPath-forks.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useDocumentTitle-severed",
+    "package": "expo-router",
+    "symbol": "useDocumentTitle",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useDocumentTitle' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\fork\\useDocumentTitle.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-series-severed",
+    "package": "expo-router",
+    "symbol": "series",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'series' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\fork\\useLinking.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getDevServer-severed",
+    "package": "expo-router",
+    "symbol": "getDevServer",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getDevServer' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\getDevServer\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getCachedRouteInfo-severed",
+    "package": "expo-router",
+    "symbol": "getCachedRouteInfo",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getCachedRouteInfo' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routeInfoCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-setCachedRouteInfo-severed",
+    "package": "expo-router",
+    "symbol": "setCachedRouteInfo",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'setCachedRouteInfo' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routeInfoCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-routeInfoSubscribers-severed",
+    "package": "expo-router",
+    "symbol": "routeInfoSubscribers",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'routeInfoSubscribers' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routeInfoCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-routeInfoSubscribe-severed",
+    "package": "expo-router",
+    "symbol": "routeInfoSubscribe",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'routeInfoSubscribe' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routeInfoCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-store-severed",
+    "package": "expo-router",
+    "symbol": "store",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'store' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\router-store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useStore-severed",
+    "package": "expo-router",
+    "symbol": "useStore",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useStore' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\router-store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-routingQueue-severed",
+    "package": "expo-router",
+    "symbol": "routingQueue",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'routingQueue' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routing.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-findDivergentState-severed",
+    "package": "expo-router",
+    "symbol": "findDivergentState",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'findDivergentState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routing.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getPayloadFromStateRoute-severed",
+    "package": "expo-router",
+    "symbol": "getPayloadFromStateRoute",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getPayloadFromStateRoute' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routing.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-LinkAction-severed",
+    "package": "expo-router",
+    "symbol": "LinkAction",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'LinkAction' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\routingQueue.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getSortedRoutes-severed",
+    "package": "expo-router",
+    "symbol": "getSortedRoutes",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getSortedRoutes' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\sort-routes.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-RouterStore-severed",
+    "package": "expo-router",
+    "symbol": "RouterStore",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'RouterStore' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-storeRef-severed",
+    "package": "expo-router",
+    "symbol": "storeRef",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'storeRef' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getSplashScreenAnimationFrame-severed",
+    "package": "expo-router",
+    "symbol": "getSplashScreenAnimationFrame",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getSplashScreenAnimationFrame' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-setSplashScreenAnimationFrame-severed",
+    "package": "expo-router",
+    "symbol": "setSplashScreenAnimationFrame",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'setSplashScreenAnimationFrame' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-setHasAttemptedToHideSplash-severed",
+    "package": "expo-router",
+    "symbol": "setHasAttemptedToHideSplash",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'setHasAttemptedToHideSplash' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\store.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-StoreContext-severed",
+    "package": "expo-router",
+    "symbol": "StoreContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'StoreContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\storeContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useExpoRouterStore-severed",
+    "package": "expo-router",
+    "symbol": "useExpoRouterStore",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useExpoRouterStore' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\global-state\\storeContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useImperativeApiEmitter-severed",
+    "package": "expo-router",
+    "symbol": "useImperativeApiEmitter",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useImperativeApiEmitter' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\imperative-api.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createExperimentalStackNavigator-severed",
+    "package": "expo-router",
+    "symbol": "createExperimentalStackNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createExperimentalStackNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\experimental-stack\\createExperimentalStackNavigator.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExperimentalStackNavigatorProps-severed",
+    "package": "expo-router",
+    "symbol": "ExperimentalStackNavigatorProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExperimentalStackNavigatorProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\experimental-stack\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExperimentalStackDescriptor-severed",
+    "package": "expo-router",
+    "symbol": "ExperimentalStackDescriptor",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExperimentalStackDescriptor' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\experimental-stack\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExperimentalStackDescriptorMap-severed",
+    "package": "expo-router",
+    "symbol": "ExperimentalStackDescriptorMap",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExperimentalStackDescriptorMap' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\experimental-stack\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-IsWithinLayoutContext-severed",
+    "package": "expo-router",
+    "symbol": "IsWithinLayoutContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'IsWithinLayoutContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\IsWithinLayoutContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-RootModalContext-severed",
+    "package": "expo-router",
+    "symbol": "RootModalContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'RootModalContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\RootModal.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-RootModalProvider-severed",
+    "package": "expo-router",
+    "symbol": "RootModalProvider",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'RootModalProvider' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\RootModal.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExtendedStackNavigationOptions-severed",
+    "package": "expo-router",
+    "symbol": "ExtendedStackNavigationOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExtendedStackNavigationOptions' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\StackClient.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-BottomTabNavigator-severed",
+    "package": "expo-router",
+    "symbol": "BottomTabNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'BottomTabNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\layouts\\TabsClient.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-TabPath-severed",
+    "package": "expo-router",
+    "symbol": "TabPath",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'TabPath' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\link\\preview\\native.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useNextScreenId-severed",
+    "package": "expo-router",
+    "symbol": "useNextScreenId",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useNextScreenId' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\link\\preview\\useNextScreenId.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getTabPathFromRootStateByHref-severed",
+    "package": "expo-router",
+    "symbol": "getTabPathFromRootStateByHref",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getTabPathFromRootStateByHref' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\link\\preview\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getPreloadedRouteFromRootStateByHref-severed",
+    "package": "expo-router",
+    "symbol": "getPreloadedRouteFromRootStateByHref",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getPreloadedRouteFromRootStateByHref' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\link\\preview\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-deepEqual-severed",
+    "package": "expo-router",
+    "symbol": "deepEqual",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'deepEqual' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\link\\preview\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getLoaderData-severed",
+    "package": "expo-router",
+    "symbol": "getLoaderData",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getLoaderData' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\loaders\\getLoaderData.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-LoaderCache-severed",
+    "package": "expo-router",
+    "symbol": "LoaderCache",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'LoaderCache' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\loaders\\LoaderCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-defaultLoaderCache-severed",
+    "package": "expo-router",
+    "symbol": "defaultLoaderCache",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'defaultLoaderCache' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\loaders\\LoaderCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-LoaderCacheContext-severed",
+    "package": "expo-router",
+    "symbol": "LoaderCacheContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'LoaderCacheContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\loaders\\LoaderCache.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getNormalizedStatePath-severed",
+    "package": "expo-router",
+    "symbol": "getNormalizedStatePath",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getNormalizedStatePath' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\LocationProvider.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-RouterModal-severed",
+    "package": "expo-router",
+    "symbol": "RouterModal",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'RouterModal' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\ModalStack.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-RouterModalScreen-severed",
+    "package": "expo-router",
+    "symbol": "RouterModalScreen",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'RouterModalScreen' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\ModalStack.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ModalStackRouteDrawer-severed",
+    "package": "expo-router",
+    "symbol": "ModalStackRouteDrawer",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ModalStackRouteDrawer' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\ModalStackRouteDrawer.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-TransparentModalStackRouteDrawer-severed",
+    "package": "expo-router",
+    "symbol": "TransparentModalStackRouteDrawer",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'TransparentModalStackRouteDrawer' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\TransparentModalStackRouteDrawer.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ModalStackNavigatorProps-severed",
+    "package": "expo-router",
+    "symbol": "ModalStackNavigatorProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ModalStackNavigatorProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ModalStackViewProps-severed",
+    "package": "expo-router",
+    "symbol": "ModalStackViewProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ModalStackViewProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-CSSWithVars-severed",
+    "package": "expo-router",
+    "symbol": "CSSWithVars",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'CSSWithVars' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PresentationOptions-severed",
+    "package": "expo-router",
+    "symbol": "PresentationOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PresentationOptions' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-isTransparentModalPresentation-severed",
+    "package": "expo-router",
+    "symbol": "isTransparentModalPresentation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'isTransparentModalPresentation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useIsDesktop-severed",
+    "package": "expo-router",
+    "symbol": "useIsDesktop",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useIsDesktop' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-convertStackStateToNonModalState-severed",
+    "package": "expo-router",
+    "symbol": "convertStackStateToNonModalState",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'convertStackStateToNonModalState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-findLastNonModalIndex-severed",
+    "package": "expo-router",
+    "symbol": "findLastNonModalIndex",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'findLastNonModalIndex' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\modal\\web\\utils.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NativeTabsNavigator-severed",
+    "package": "expo-router",
+    "symbol": "NativeTabsNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NativeTabsNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\native-tabs\\NativeBottomTabsNavigator.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-handleNavigationOnReady-severed",
+    "package": "expo-router",
+    "symbol": "handleNavigationOnReady",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'handleNavigationOnReady' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\navigationEvents\\navigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PreloadProps-severed",
+    "package": "expo-router",
+    "symbol": "PreloadProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PreloadProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\Prefetch.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createBottomTabNavigator-severed",
+    "package": "expo-router",
+    "symbol": "createBottomTabNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createBottomTabNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\bottom-tabs\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-LabelPosition-severed",
+    "package": "expo-router",
+    "symbol": "LabelPosition",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'LabelPosition' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\bottom-tabs\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-BottomTabNavigationHelpers-severed",
+    "package": "expo-router",
+    "symbol": "BottomTabNavigationHelpers",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'BottomTabNavigationHelpers' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\bottom-tabs\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-BottomTabNavigatorProps-severed",
+    "package": "expo-router",
+    "symbol": "BottomTabNavigatorProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'BottomTabNavigatorProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\bottom-tabs\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-arrayStartsWith-severed",
+    "package": "expo-router",
+    "symbol": "arrayStartsWith",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'arrayStartsWith' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\arrayStartsWith.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-DeprecatedNavigationInChildContext-severed",
+    "package": "expo-router",
+    "symbol": "DeprecatedNavigationInChildContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'DeprecatedNavigationInChildContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\DeprecatedNavigationInChildContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getActionFromState-severed",
+    "package": "expo-router",
+    "symbol": "getActionFromState",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getActionFromState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\getActionFromState.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationIndependentTree-severed",
+    "package": "expo-router",
+    "symbol": "NavigationIndependentTree",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationIndependentTree' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PreventRemoveContext-severed",
+    "package": "expo-router",
+    "symbol": "PreventRemoveContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PreventRemoveContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PreventRemoveProvider-severed",
+    "package": "expo-router",
+    "symbol": "PreventRemoveProvider",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PreventRemoveProvider' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Expo Router builds components from the file-based route tree. Will be removed in a future SDK.\n */\ncreateComponentForStaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Expo Router builds components from the file-based route tree. Will be removed in a future SDK.\n */\ncreateComponentForStaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Expo Router builds components from the file-based route tree. Will be removed in a future SDK.\n */\ncreateComponentForStaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Expo Router generates path config from the file-based route tree. Will be removed in a future SDK.\n */\ncreatePathConfigForStaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Expo Router generates path config from the file-based route tree. Will be removed in a future SDK.\n */\ncreatePathConfigForStaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Expo Router generates path config from the file-based route tree. Will be removed in a future SDK.\n */\ncreatePathConfigForStaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Expo Router infers route types from the file-based route tree. Will be removed in a future SDK.\n */\ntype StaticConfig-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Expo Router infers route types from the file-based route tree. Will be removed in a future SDK.\n */\ntype StaticConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Expo Router infers route types from the file-based route tree. Will be removed in a future SDK.\n */\ntype StaticConfig' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticConfigGroup-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticConfigGroup",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticConfigGroup' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticConfigScreens-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticConfigScreens",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticConfigScreens' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Use the typed routes API from `expo-router`. Will be removed in a future SDK.\n */\ntype StaticParamList-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Use the typed routes API from `expo-router`. Will be removed in a future SDK.\n */\ntype StaticParamList",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Use the typed routes API from `expo-router`. Will be removed in a future SDK.\n */\ntype StaticParamList' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticScreenProps-severed",
+    "package": "expo-router",
+    "symbol": "/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticScreenProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'/**\n * @deprecated Will be removed in a future SDK.\n */\ntype StaticScreenProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useNavigationIndependentTree-severed",
+    "package": "expo-router",
+    "symbol": "useNavigationIndependentTree",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useNavigationIndependentTree' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-usePreventRemoveContext-severed",
+    "package": "expo-router",
+    "symbol": "usePreventRemoveContext",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'usePreventRemoveContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-KeyedListenerMap-severed",
+    "package": "expo-router",
+    "symbol": "KeyedListenerMap",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'KeyedListenerMap' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\NavigationBuilderContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-AddKeyedListener-severed",
+    "package": "expo-router",
+    "symbol": "AddKeyedListener",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'AddKeyedListener' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\NavigationBuilderContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ChildActionListener-severed",
+    "package": "expo-router",
+    "symbol": "ChildActionListener",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ChildActionListener' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\NavigationBuilderContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-GetStateListener-severed",
+    "package": "expo-router",
+    "symbol": "GetStateListener",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'GetStateListener' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\NavigationBuilderContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ChildBeforeRemoveListener-severed",
+    "package": "expo-router",
+    "symbol": "ChildBeforeRemoveListener",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ChildBeforeRemoveListener' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\NavigationBuilderContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationIndependentTreeContext-severed",
+    "package": "expo-router",
+    "symbol": "NavigationIndependentTreeContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationIndependentTreeContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\NavigationIndependentTreeContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PreventedRoutes-severed",
+    "package": "expo-router",
+    "symbol": "PreventedRoutes",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PreventedRoutes' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\PreventRemoveContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-StaticScreenProps-severed",
+    "package": "expo-router",
+    "symbol": "StaticScreenProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'StaticScreenProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\StaticNavigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-StaticParamList-severed",
+    "package": "expo-router",
+    "symbol": "StaticParamList",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'StaticParamList' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\StaticNavigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-StaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "StaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'StaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\StaticNavigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createComponentForStaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "createComponentForStaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createComponentForStaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\StaticNavigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createPathConfigForStaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "createPathConfigForStaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createPathConfigForStaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\StaticNavigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-EventMapBase-severed",
+    "package": "expo-router",
+    "symbol": "EventMapBase",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'EventMapBase' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-EventMapCore-severed",
+    "package": "expo-router",
+    "symbol": "EventMapCore",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'EventMapCore' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-EventArg-severed",
+    "package": "expo-router",
+    "symbol": "EventArg",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'EventArg' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-EventListenerCallback-severed",
+    "package": "expo-router",
+    "symbol": "EventListenerCallback",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'EventListenerCallback' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-EventConsumer-severed",
+    "package": "expo-router",
+    "symbol": "EventConsumer",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'EventConsumer' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-EventEmitter-severed",
+    "package": "expo-router",
+    "symbol": "EventEmitter",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'EventEmitter' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PrivateValueStore-severed",
+    "package": "expo-router",
+    "symbol": "PrivateValueStore",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PrivateValueStore' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationHelpers-severed",
+    "package": "expo-router",
+    "symbol": "NavigationHelpers",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationHelpers' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationContainerProps-severed",
+    "package": "expo-router",
+    "symbol": "NavigationContainerProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationContainerProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationProp-severed",
+    "package": "expo-router",
+    "symbol": "NavigationProp",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationProp' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-RouteProp-severed",
+    "package": "expo-router",
+    "symbol": "RouteProp",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'RouteProp' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-CompositeNavigationProp-severed",
+    "package": "expo-router",
+    "symbol": "CompositeNavigationProp",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'CompositeNavigationProp' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-CompositeScreenProps-severed",
+    "package": "expo-router",
+    "symbol": "CompositeScreenProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'CompositeScreenProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ScreenLayoutArgs-severed",
+    "package": "expo-router",
+    "symbol": "ScreenLayoutArgs",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ScreenLayoutArgs' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigatorScreenParams-severed",
+    "package": "expo-router",
+    "symbol": "NavigatorScreenParams",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigatorScreenParams' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-UnhandledActionContext-severed",
+    "package": "expo-router",
+    "symbol": "UnhandledActionContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'UnhandledActionContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\UnhandledActionContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useKeyedChildListeners-severed",
+    "package": "expo-router",
+    "symbol": "useKeyedChildListeners",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useKeyedChildListeners' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useKeyedChildListeners.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationStateListenerProvider-severed",
+    "package": "expo-router",
+    "symbol": "NavigationStateListenerProvider",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationStateListenerProvider' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useNavigationState.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useOnAction-severed",
+    "package": "expo-router",
+    "symbol": "useOnAction",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useOnAction' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useOnAction.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useOnGetState-severed",
+    "package": "expo-router",
+    "symbol": "useOnGetState",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useOnGetState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useOnGetState.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-shouldPreventRemove-severed",
+    "package": "expo-router",
+    "symbol": "shouldPreventRemove",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'shouldPreventRemove' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useOnPreventRemove.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useOnPreventRemove-severed",
+    "package": "expo-router",
+    "symbol": "useOnPreventRemove",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useOnPreventRemove' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useOnPreventRemove.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useOnRouteFocus-severed",
+    "package": "expo-router",
+    "symbol": "useOnRouteFocus",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useOnRouteFocus' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useOnRouteFocus.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useScheduleUpdate-severed",
+    "package": "expo-router",
+    "symbol": "useScheduleUpdate",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useScheduleUpdate' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useScheduleUpdate.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useSyncState-severed",
+    "package": "expo-router",
+    "symbol": "useSyncState",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useSyncState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\core\\useSyncState.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createDrawerNavigator-severed",
+    "package": "expo-router",
+    "symbol": "createDrawerNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createDrawerNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\drawer\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createMaterialTopTabNavigator-severed",
+    "package": "expo-router",
+    "symbol": "createMaterialTopTabNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createMaterialTopTabNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\material-top-tabs\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-MaterialTopTabNavigationHelpers-severed",
+    "package": "expo-router",
+    "symbol": "MaterialTopTabNavigationHelpers",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'MaterialTopTabNavigationHelpers' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\material-top-tabs\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-MaterialTopTabNavigatorProps-severed",
+    "package": "expo-router",
+    "symbol": "MaterialTopTabNavigatorProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'MaterialTopTabNavigatorProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\material-top-tabs\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createStaticNavigation-severed",
+    "package": "expo-router",
+    "symbol": "createStaticNavigation",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createStaticNavigation' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\createStaticNavigation.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-extractPathFromURL-severed",
+    "package": "expo-router",
+    "symbol": "extractPathFromURL",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'extractPathFromURL' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\extractPathFromURL.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-UNSTABLE_UnhandledLinkingContext-severed",
+    "package": "expo-router",
+    "symbol": "UNSTABLE_UnhandledLinkingContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'UNSTABLE_UnhandledLinkingContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useLinkProps-severed",
+    "package": "expo-router",
+    "symbol": "useLinkProps",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useLinkProps' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\index.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-DocumentTitleOptions-severed",
+    "package": "expo-router",
+    "symbol": "DocumentTitleOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router documentation for modern alternative",
+    "message": "Will be removed in a future SDK.",
+    "sourceFile": "build\\react-navigation\\native\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-UnhandledLinkingContext-severed",
+    "package": "expo-router",
+    "symbol": "UnhandledLinkingContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'UnhandledLinkingContext' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\UnhandledLinkingContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createStackNavigator-severed",
+    "package": "expo-router",
+    "symbol": "createStackNavigator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createStackNavigator' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\__stubs__\\createStackNavigator.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-window-severed",
+    "package": "expo-router",
+    "symbol": "window",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'window' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\native\\__stubs__\\window.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-navigateDeprecated-severed",
+    "package": "expo-router",
+    "symbol": "navigateDeprecated",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'navigateDeprecated' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\CommonActions.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-createParamsFromAction-severed",
+    "package": "expo-router",
+    "symbol": "createParamsFromAction",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'createParamsFromAction' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\createParamsFromAction.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-InitialState-severed",
+    "package": "expo-router",
+    "symbol": "InitialState",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'InitialState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PartialRoute-severed",
+    "package": "expo-router",
+    "symbol": "PartialRoute",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PartialRoute' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-PartialState-severed",
+    "package": "expo-router",
+    "symbol": "PartialState",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'PartialState' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ParamListBase-severed",
+    "package": "expo-router",
+    "symbol": "ParamListBase",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ParamListBase' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-NavigationAction-severed",
+    "package": "expo-router",
+    "symbol": "NavigationAction",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'NavigationAction' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ActionCreators-severed",
+    "package": "expo-router",
+    "symbol": "ActionCreators",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ActionCreators' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-DefaultRouterOptions-severed",
+    "package": "expo-router",
+    "symbol": "DefaultRouterOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'DefaultRouterOptions' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-Router-severed",
+    "package": "expo-router",
+    "symbol": "Router",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'Router' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\react-navigation\\routers\\types.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-getPreloadedRoutes-severed",
+    "package": "expo-router",
+    "symbol": "getPreloadedRoutes",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'getPreloadedRoutes' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\standard-navigation\\getPreloadedRoutes.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-useProjectedDescriptors-severed",
+    "package": "expo-router",
+    "symbol": "useProjectedDescriptors",
+    "type": "call",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'useProjectedDescriptors' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\standard-navigation\\useProjectedDescriptors.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-triggersToScreens-severed",
+    "package": "expo-router",
+    "symbol": "triggersToScreens",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'triggersToScreens' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\ui\\common.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-stateToAction-severed",
+    "package": "expo-router",
+    "symbol": "stateToAction",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'stateToAction' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\ui\\common.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExpoTabsNavigatorOptions-severed",
+    "package": "expo-router",
+    "symbol": "ExpoTabsNavigatorOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExpoTabsNavigatorOptions' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\ui\\TabContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExpoTabsNavigationProp-severed",
+    "package": "expo-router",
+    "symbol": "ExpoTabsNavigationProp",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExpoTabsNavigationProp' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\ui\\TabContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-ExpoTabsScreenOptions-severed",
+    "package": "expo-router",
+    "symbol": "ExpoTabsScreenOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'ExpoTabsScreenOptions' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\ui\\TabContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-TabNavigationEventMap-severed",
+    "package": "expo-router",
+    "symbol": "TabNavigationEventMap",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'TabNavigationEventMap' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\ui\\TabContext.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-isRoutePreloadedInStack-severed",
+    "package": "expo-router",
+    "symbol": "isRoutePreloadedInStack",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'isRoutePreloadedInStack' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\utils\\stack.d.ts"
+  },
+  {
+    "id": "expo-router-58.0.13-safeDecodeURI-severed",
+    "package": "expo-router",
+    "symbol": "safeDecodeURI",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-router@58.0.13 migration guide",
+    "message": "'safeDecodeURI' was severed in expo-router@58.0.13 (last present in 57.0.21).",
+    "sourceFile": "build\\utils\\url.d.ts"
+  },
+  {
+    "id": "expo-sqlite-58.0.9-flattenOpenOptions-severed",
+    "package": "expo-sqlite",
+    "symbol": "flattenOpenOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-sqlite@58.0.9 migration guide",
+    "message": "'flattenOpenOptions' was severed in expo-sqlite@58.0.9 (last present in 57.0.3).",
+    "sourceFile": "build\\NativeDatabase.d.ts"
+  },
+  {
+    "id": "expo-sqlite-58.0.9-MemoryVFS-severed",
+    "package": "expo-sqlite",
+    "symbol": "MemoryVFS",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-sqlite@58.0.9 migration guide",
+    "message": "'MemoryVFS' was severed in expo-sqlite@58.0.9 (last present in 57.0.3).",
+    "sourceFile": "web\\wa-sqlite\\types\\index.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-StatusBarPropsAndroid-severed",
+    "package": "react-native",
+    "symbol": "StatusBarPropsAndroid",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'StatusBarPropsAndroid' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "Libraries\\Components\\StatusBar\\StatusBar.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-InteractionManagerStatic-severed",
+    "package": "react-native",
+    "symbol": "InteractionManagerStatic",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native documentation for modern alternative",
+    "message": "'InteractionManagerStatic' is deprecated in react-native.",
+    "sourceFile": "Libraries\\Interaction\\InteractionManager.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-InteractionManager-severed",
+    "package": "react-native",
+    "symbol": "InteractionManager",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'InteractionManager' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "Libraries\\Interaction\\InteractionManager.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-StatusBarPropertiesAndroid-severed",
+    "package": "react-native",
+    "symbol": "StatusBarPropertiesAndroid",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "StatusBarPropsAndroid",
+    "message": "Use StatusBarPropsAndroid",
+    "sourceFile": "types\\public\\DeprecatedPropertiesAlias.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-NativeDialogManagerAndroid-severed",
+    "package": "react-native",
+    "symbol": "NativeDialogManagerAndroid",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'NativeDialogManagerAndroid' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\index.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-DrawerStates-severed",
+    "package": "react-native",
+    "symbol": "DrawerStates",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'DrawerStates' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Components\\DrawerAndroid\\DrawerLayoutAndroidTypes.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-DrawerSlideEvent-severed",
+    "package": "react-native",
+    "symbol": "DrawerSlideEvent",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'DrawerSlideEvent' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Components\\DrawerAndroid\\DrawerLayoutAndroidTypes.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-__INTERNAL_VIEW_CONFIG-severed",
+    "package": "react-native",
+    "symbol": "__INTERNAL_VIEW_CONFIG",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'__INTERNAL_VIEW_CONFIG' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Components\\ScrollView\\ScrollViewNativeComponent.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-ScrollViewNativeProps-severed",
+    "package": "react-native",
+    "symbol": "ScrollViewNativeProps",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'ScrollViewNativeProps' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Components\\ScrollView\\ScrollViewNativeComponentType.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-ViewNativeComponentType-severed",
+    "package": "react-native",
+    "symbol": "ViewNativeComponentType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'ViewNativeComponentType' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Components\\View\\ViewNativeComponent.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-SimpleTask-severed",
+    "package": "react-native",
+    "symbol": "SimpleTask",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'SimpleTask' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Interaction\\InteractionManager.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-PromiseTask-severed",
+    "package": "react-native",
+    "symbol": "PromiseTask",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'PromiseTask' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Interaction\\InteractionManager.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-Task-severed",
+    "package": "react-native",
+    "symbol": "Task",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'Task' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Interaction\\InteractionManager.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-Handle-severed",
+    "package": "react-native",
+    "symbol": "Handle",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'Handle' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Interaction\\InteractionManager.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-PublicModalInstance-severed",
+    "package": "react-native",
+    "symbol": "PublicModalInstance",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'PublicModalInstance' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\Libraries\\Modal\\Modal.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-DialogOptions-severed",
+    "package": "react-native",
+    "symbol": "DialogOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'DialogOptions' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\src\\private\\specs_DEPRECATED\\modules\\NativeDialogManagerAndroid.d.ts"
+  },
+  {
+    "id": "react-native-0.88.0-rc.3-LegacyHostInstanceMethods-severed",
+    "package": "react-native",
+    "symbol": "LegacyHostInstanceMethods",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native@0.88.0-rc.3 migration guide",
+    "message": "'LegacyHostInstanceMethods' was severed in react-native@0.88.0-rc.3 (last present in 0.86.2).",
+    "sourceFile": "types_generated\\src\\private\\types\\HostInstance.d.ts"
+  },
+  {
+    "id": "react-native-reanimated-4.7.1-AnimatedRefOnUI-severed",
+    "package": "react-native-reanimated",
+    "symbol": "AnimatedRefOnUI",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native-reanimated@4.7.1 migration guide",
+    "message": "'AnimatedRefOnUI' was severed in react-native-reanimated@4.7.1 (last present in 4.6.0).",
+    "sourceFile": "lib\\typescript\\hook\\commonTypes.d.ts"
+  },
+  {
+    "id": "react-native-worklets-0.13.0-initializeNetworking-severed",
+    "package": "react-native-worklets",
+    "symbol": "initializeNetworking",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native-worklets@0.13.0 migration guide",
+    "message": "'initializeNetworking' was severed in react-native-worklets@0.13.0 (last present in 0.12.1).",
+    "sourceFile": "lib\\typescript\\bundleMode\\network.native.d.ts"
+  },
+  {
+    "id": "react-native-worklets-0.13.0-pushMicrotask-severed",
+    "package": "react-native-worklets",
+    "symbol": "pushMicrotask",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native-worklets@0.13.0 migration guide",
+    "message": "'pushMicrotask' was severed in react-native-worklets@0.13.0 (last present in 0.12.1).",
+    "sourceFile": "lib\\typescript\\runLoop\\workletRuntime\\taskQueue.d.ts"
+  },
+  {
+    "id": "react-native-worklets-0.13.0-setupMicrotasks-severed",
+    "package": "react-native-worklets",
+    "symbol": "setupMicrotasks",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult react-native-worklets@0.13.0 migration guide",
+    "message": "'setupMicrotasks' was severed in react-native-worklets@0.13.0 (last present in 0.12.1).",
+    "sourceFile": "lib\\typescript\\threads.native.d.ts"
+  },
+  {
+    "id": "expo-doctor-1.21.4-setNodeEnv-severed",
+    "package": "expo-doctor",
+    "symbol": "setNodeEnv",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult expo-doctor@1.21.4 migration guide",
+    "message": "'setNodeEnv' was severed in expo-doctor@1.21.4 (last present in 1.20.1).",
+    "sourceFile": "build\\utils\\nodeEnv.d.ts"
+  },
+  {
+    "id": "nativewind-5.0.0-rc.0-NativewindRenderOptions-severed",
+    "package": "nativewind",
+    "symbol": "NativewindRenderOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult nativewind@5.0.0-rc.0 migration guide",
+    "message": "'NativewindRenderOptions' was severed in nativewind@5.0.0-rc.0 (last present in 5.0.0-preview.4).",
+    "sourceFile": "dist\\typescript\\commonjs\\src\\test-utils.d.ts"
+  },
+  {
+    "id": "nativewind-5.0.0-rc.0-renderCurrentTest-severed",
+    "package": "nativewind",
+    "symbol": "renderCurrentTest",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult nativewind@5.0.0-rc.0 migration guide",
+    "message": "'renderCurrentTest' was severed in nativewind@5.0.0-rc.0 (last present in 5.0.0-preview.4).",
+    "sourceFile": "dist\\typescript\\commonjs\\src\\test-utils.d.ts"
+  },
+  {
+    "id": "-powersync-web-2.3.1-RemoteOperationAbortController-severed",
+    "package": "@powersync/web",
+    "symbol": "RemoteOperationAbortController",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult @powersync/web@2.3.1 migration guide",
+    "message": "'RemoteOperationAbortController' was severed in @powersync/web@2.3.1 (last present in 2.2.0).",
+    "sourceFile": "lib\\worker\\sync\\SharedSyncImplementation.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ActionStepStringMatching-severed",
+    "package": "posthog-js",
+    "symbol": "ActionStepStringMatching",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ActionStepStringMatching' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ActionStepType-severed",
+    "package": "posthog-js",
+    "symbol": "ActionStepType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ActionStepType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-BasicSurveyQuestion-severed",
+    "package": "posthog-js",
+    "symbol": "BasicSurveyQuestion",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'BasicSurveyQuestion' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ConversationsRemoteConfig-severed",
+    "package": "posthog-js",
+    "symbol": "ConversationsRemoteConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ConversationsRemoteConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ErrorTrackingSuppressionRule-severed",
+    "package": "posthog-js",
+    "symbol": "ErrorTrackingSuppressionRule",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ErrorTrackingSuppressionRule' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ErrorTrackingSuppressionRuleValue-severed",
+    "package": "posthog-js",
+    "symbol": "ErrorTrackingSuppressionRuleValue",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ErrorTrackingSuppressionRuleValue' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FlagVariant-severed",
+    "package": "posthog-js",
+    "symbol": "FlagVariant",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FlagVariant' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-LinkSurveyQuestion-severed",
+    "package": "posthog-js",
+    "symbol": "LinkSurveyQuestion",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'LinkSurveyQuestion' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MultipleSurveyQuestion-severed",
+    "package": "posthog-js",
+    "symbol": "MultipleSurveyQuestion",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MultipleSurveyQuestion' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-NetworkRecordOptions-severed",
+    "package": "posthog-js",
+    "symbol": "NetworkRecordOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'NetworkRecordOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-PropertyFilters-severed",
+    "package": "posthog-js",
+    "symbol": "PropertyFilters",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'PropertyFilters' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-PropertyMatchType-severed",
+    "package": "posthog-js",
+    "symbol": "PropertyMatchType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'PropertyMatchType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-PropertyOperator-severed",
+    "package": "posthog-js",
+    "symbol": "PropertyOperator",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'PropertyOperator' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RatingSurveyQuestion-severed",
+    "package": "posthog-js",
+    "symbol": "RatingSurveyQuestion",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RatingSurveyQuestion' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RemoteConfig-severed",
+    "package": "posthog-js",
+    "symbol": "RemoteConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RemoteConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingEventTrigger-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingEventTrigger",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingEventTrigger' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingRemoteConfig-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingRemoteConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingRemoteConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingTriggerGroup-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingTriggerGroup",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingTriggerGroup' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingTriggerPropertyFilter-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingTriggerPropertyFilter",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingTriggerPropertyFilter' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingUrlTrigger-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingUrlTrigger",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingUrlTrigger' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-Survey-severed",
+    "package": "posthog-js",
+    "symbol": "Survey",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'Survey' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyActionType-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyActionType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyActionType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyAppearance-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyAppearance",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyAppearance' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyEventWithFilters-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyEventWithFilters",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyEventWithFilters' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyQuestion-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyQuestion",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyQuestion' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyQuestionDescriptionContentType-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyQuestionDescriptionContentType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyQuestionDescriptionContentType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyWithTypeAndAppearance-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyWithTypeAndAppearance",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyWithTypeAndAppearance' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-WidgetPosition-severed",
+    "package": "posthog-js",
+    "symbol": "WidgetPosition",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'WidgetPosition' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-AutocaptureCompatibleElement-severed",
+    "package": "posthog-js",
+    "symbol": "AutocaptureCompatibleElement",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'AutocaptureCompatibleElement' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-BeforeSendFn-severed",
+    "package": "posthog-js",
+    "symbol": "BeforeSendFn",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'BeforeSendFn' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-BeforeSendMetricFn-severed",
+    "package": "posthog-js",
+    "symbol": "BeforeSendMetricFn",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'BeforeSendMetricFn' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-BootstrapConfig-severed",
+    "package": "posthog-js",
+    "symbol": "BootstrapConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'BootstrapConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-CaptureLogOptions-severed",
+    "package": "posthog-js",
+    "symbol": "CaptureLogOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'CaptureLogOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-CaptureMetricOptions-severed",
+    "package": "posthog-js",
+    "symbol": "CaptureMetricOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'CaptureMetricOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-CaptureOptions-severed",
+    "package": "posthog-js",
+    "symbol": "CaptureOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'CaptureOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-CapturePageviewOptions-severed",
+    "package": "posthog-js",
+    "symbol": "CapturePageviewOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'CapturePageviewOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-CaptureResult-severed",
+    "package": "posthog-js",
+    "symbol": "CaptureResult",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'CaptureResult' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-CapturedNetworkRequest-severed",
+    "package": "posthog-js",
+    "symbol": "CapturedNetworkRequest",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'CapturedNetworkRequest' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ConfigDefaults-severed",
+    "package": "posthog-js",
+    "symbol": "ConfigDefaults",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ConfigDefaults' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-DeadClickCandidate-severed",
+    "package": "posthog-js",
+    "symbol": "DeadClickCandidate",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'DeadClickCandidate' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-DeadClicksAutoCaptureConfig-severed",
+    "package": "posthog-js",
+    "symbol": "DeadClicksAutoCaptureConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'DeadClicksAutoCaptureConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-DomAutocaptureEvents-severed",
+    "package": "posthog-js",
+    "symbol": "DomAutocaptureEvents",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'DomAutocaptureEvents' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-EarlyAccessFeature-severed",
+    "package": "posthog-js",
+    "symbol": "EarlyAccessFeature",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'EarlyAccessFeature' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-EarlyAccessFeatureCallback-severed",
+    "package": "posthog-js",
+    "symbol": "EarlyAccessFeatureCallback",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'EarlyAccessFeatureCallback' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-EarlyAccessFeatureResponse-severed",
+    "package": "posthog-js",
+    "symbol": "EarlyAccessFeatureResponse",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'EarlyAccessFeatureResponse' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-EarlyAccessFeatureStage-severed",
+    "package": "posthog-js",
+    "symbol": "EarlyAccessFeatureStage",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'EarlyAccessFeatureStage' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ErrorTrackingOptions-severed",
+    "package": "posthog-js",
+    "symbol": "ErrorTrackingOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ErrorTrackingOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-EvaluationReason-severed",
+    "package": "posthog-js",
+    "symbol": "EvaluationReason",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'EvaluationReason' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-EventName-severed",
+    "package": "posthog-js",
+    "symbol": "EventName",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'EventName' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ExceptionAutoCaptureConfig-severed",
+    "package": "posthog-js",
+    "symbol": "ExceptionAutoCaptureConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ExceptionAutoCaptureConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ExceptionStepsConfig-severed",
+    "package": "posthog-js",
+    "symbol": "ExceptionStepsConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ExceptionStepsConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ExternalIntegrationKind-severed",
+    "package": "posthog-js",
+    "symbol": "ExternalIntegrationKind",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ExternalIntegrationKind' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagDetail-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagDetail",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagDetail' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagMetadata-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagMetadata",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagMetadata' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagOptions-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagOverrideOptions-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagOverrideOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagOverrideOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagOverrides-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagOverrides",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagOverrides' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagPayloadOverrides-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagPayloadOverrides",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagPayloadOverrides' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagResult-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagResult",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagResult' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-FeatureFlagsCallback-severed",
+    "package": "posthog-js",
+    "symbol": "FeatureFlagsCallback",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'FeatureFlagsCallback' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-Headers-severed",
+    "package": "posthog-js",
+    "symbol": "Headers",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'Headers' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-HeatmapConfig-severed",
+    "package": "posthog-js",
+    "symbol": "HeatmapConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'HeatmapConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-InitiatorType-severed",
+    "package": "posthog-js",
+    "symbol": "InitiatorType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'InitiatorType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-IsFeatureEnabledOptions-severed",
+    "package": "posthog-js",
+    "symbol": "IsFeatureEnabledOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'IsFeatureEnabledOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-JsonRecord-severed",
+    "package": "posthog-js",
+    "symbol": "JsonRecord",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'JsonRecord' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-JsonType-severed",
+    "package": "posthog-js",
+    "symbol": "JsonType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'JsonType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-KnownEventName-severed",
+    "package": "posthog-js",
+    "symbol": "KnownEventName",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'KnownEventName' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-LogAttributeValue-severed",
+    "package": "posthog-js",
+    "symbol": "LogAttributeValue",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'LogAttributeValue' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-LogAttributes-severed",
+    "package": "posthog-js",
+    "symbol": "LogAttributes",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'LogAttributes' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-LogSeverityLevel-severed",
+    "package": "posthog-js",
+    "symbol": "LogSeverityLevel",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'LogSeverityLevel' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MaskInputOptions-severed",
+    "package": "posthog-js",
+    "symbol": "MaskInputOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MaskInputOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MetricAttributeValue-severed",
+    "package": "posthog-js",
+    "symbol": "MetricAttributeValue",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MetricAttributeValue' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MetricAttributes-severed",
+    "package": "posthog-js",
+    "symbol": "MetricAttributes",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MetricAttributes' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MetricSample-severed",
+    "package": "posthog-js",
+    "symbol": "MetricSample",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MetricSample' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MetricType-severed",
+    "package": "posthog-js",
+    "symbol": "MetricType",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MetricType' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-MetricsConfig-severed",
+    "package": "posthog-js",
+    "symbol": "MetricsConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'MetricsConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-NetworkRequest-severed",
+    "package": "posthog-js",
+    "symbol": "NetworkRequest",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'NetworkRequest' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpAnyValue-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpAnyValue",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpAnyValue' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpKeyValue-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpKeyValue",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpKeyValue' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpLogRecord-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpLogRecord",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpLogRecord' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpLogsPayload-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpLogsPayload",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpLogsPayload' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpMetricsPayload-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpMetricsPayload",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpMetricsPayload' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpSeverityEntry-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpSeverityEntry",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpSeverityEntry' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OtlpSeverityText-severed",
+    "package": "posthog-js",
+    "symbol": "OtlpSeverityText",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OtlpSeverityText' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-OverrideFeatureFlagsOptions-severed",
+    "package": "posthog-js",
+    "symbol": "OverrideFeatureFlagsOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'OverrideFeatureFlagsOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-PerformanceCaptureConfig-severed",
+    "package": "posthog-js",
+    "symbol": "PerformanceCaptureConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'PerformanceCaptureConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-Properties-severed",
+    "package": "posthog-js",
+    "symbol": "Properties",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'Properties' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-Property-severed",
+    "package": "posthog-js",
+    "symbol": "Property",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'Property' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RageclickConfig-severed",
+    "package": "posthog-js",
+    "symbol": "RageclickConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RageclickConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RemoteConfigFeatureFlagCallback-severed",
+    "package": "posthog-js",
+    "symbol": "RemoteConfigFeatureFlagCallback",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RemoteConfigFeatureFlagCallback' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RequestCallback-severed",
+    "package": "posthog-js",
+    "symbol": "RequestCallback",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RequestCallback' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RequestQueueConfig-severed",
+    "package": "posthog-js",
+    "symbol": "RequestQueueConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RequestQueueConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-RequestResponse-severed",
+    "package": "posthog-js",
+    "symbol": "RequestResponse",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'RequestResponse' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ResetOptions-severed",
+    "package": "posthog-js",
+    "symbol": "ResetOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ResetOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionIdChangedCallback-severed",
+    "package": "posthog-js",
+    "symbol": "SessionIdChangedCallback",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionIdChangedCallback' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingCanvasOptions-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingCanvasOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingCanvasOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingOptions-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SessionRecordingSamplingConfig-severed",
+    "package": "posthog-js",
+    "symbol": "SessionRecordingSamplingConfig",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SessionRecordingSamplingConfig' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SeverityLevel-severed",
+    "package": "posthog-js",
+    "symbol": "SeverityLevel",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SeverityLevel' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SlimDOMOptions-severed",
+    "package": "posthog-js",
+    "symbol": "SlimDOMOptions",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SlimDOMOptions' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SupportedWebVitalsMetrics-severed",
+    "package": "posthog-js",
+    "symbol": "SupportedWebVitalsMetrics",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SupportedWebVitalsMetrics' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-SurveyRenderReason-severed",
+    "package": "posthog-js",
+    "symbol": "SurveyRenderReason",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'SurveyRenderReason' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ToolbarParams-severed",
+    "package": "posthog-js",
+    "symbol": "ToolbarParams",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ToolbarParams' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ToolbarSource-severed",
+    "package": "posthog-js",
+    "symbol": "ToolbarSource",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ToolbarSource' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ToolbarUserIntent-severed",
+    "package": "posthog-js",
+    "symbol": "ToolbarUserIntent",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ToolbarUserIntent' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-ToolbarVersion-severed",
+    "package": "posthog-js",
+    "symbol": "ToolbarVersion",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'ToolbarVersion' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-KnownUnsafeEditableEvent-severed",
+    "package": "posthog-js",
+    "symbol": "KnownUnsafeEditableEvent",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'KnownUnsafeEditableEvent' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  },
+  {
+    "id": "posthog-js-1.430.2-LogSdkContext-severed",
+    "package": "posthog-js",
+    "symbol": "LogSdkContext",
+    "type": "import",
+    "severity": "hard",
+    "replacement": "Consult posthog-js@1.430.2 migration guide",
+    "message": "'LogSdkContext' was severed in posthog-js@1.430.2 (last present in 1.422.5).",
+    "sourceFile": "dist\\main.d.ts"
+  }
+]

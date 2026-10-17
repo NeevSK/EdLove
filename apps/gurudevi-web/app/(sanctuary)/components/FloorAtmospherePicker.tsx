@@ -1,9 +1,6 @@
 'use client';
 
-import type {
-  WorkspaceAppearanceMotion,
-  WorkspaceAppearancePreset,
-} from '@repo/core/types';
+import type { WorkspaceAppearanceMotion, WorkspaceAppearancePreset } from '@repo/core/types';
 import React, { useState } from 'react';
 import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import styles from './floor-atmosphere.module.css';
@@ -41,10 +38,7 @@ export function FloorAtmospherePicker({
       </button>
 
       {isOpen ? (
-        <aside
-          aria-label="Floor Atmosphere Configuration"
-          className={styles.atmospherePanel}
-        >
+        <aside aria-label="Floor Atmosphere Configuration" className={styles.atmospherePanel}>
           <header className={styles.panelHeader}>
             <h3 className={styles.panelTitle}>Floor Atmosphere</h3>
             <button

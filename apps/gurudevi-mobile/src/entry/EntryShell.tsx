@@ -9,15 +9,15 @@ import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@r
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
-import { MascotProvider } from '@repo/ui';
+import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
+import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
@@ -37,12 +37,14 @@ import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 export function EntryShell() {
   useEffect(() => {
     console.log('[entry-shell] mounted');
-    const frame = requestAnimationFrame(() => {
-      console.log('[entry-shell] first frame committed; hiding native splash');
-      void SplashScreen.hideAsync();
+    return handoffNativeSplashAfterCommit({
+      onCommit: () => {
+        console.log('[entry-shell] first frame committed; hiding native splash');
+      },
+      onError: (error: unknown) => {
+        console.warn('[entry-shell] native splash handoff unavailable:', error);
+      },
     });
-
-    return () => cancelAnimationFrame(frame);
   }, []);
 
   return (
@@ -60,28 +62,30 @@ export function EntryShell() {
                           <AuthQueryCacheBoundary />
                           <FABProvider>
                             <MascotProvider config={fireflyMascotConfig}>
-                              <Box className="flex-1 bg-phase-canvas">
-                                <AppVersionGateOverlay />
-                                <GuestLeaseBoundary>
-                                  <GuestPersistenceNotice />
-                                  <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                    <Stack screenOptions={{ headerShown: false }}>
-                                    <Stack.Screen name="index" />
-                                    <Stack.Screen name="welcome" />
-                                    <Stack.Screen name="auth" />
-                                    <Stack.Screen name="account-recovery" />
-                                    <Stack.Screen name="onboarding" />
-                                    <Stack.Screen name="public-form/[slug]" />
-                                    <Stack.Screen name="(tabs)" />
-                                    <Stack.Screen
-                                      name="(modal)"
-                                      options={{ presentation: 'modal' }}
-                                    />
-                                    </Stack>
-                                  </SessionRouteGate>
-                                </GuestLeaseBoundary>
-                                <LotusPetalFAB />
-                              </Box>
+                              <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                <Box className="flex-1 bg-phase-canvas">
+                                  <AppVersionGateOverlay />
+                                  <GuestLeaseBoundary>
+                                    <GuestPersistenceNotice />
+                                    <SessionRouteGate appServices={<AuthenticatedAppServices />}>
+                                      <Stack screenOptions={{ headerShown: false }}>
+                                      <Stack.Screen name="index" />
+                                      <Stack.Screen name="welcome" />
+                                      <Stack.Screen name="auth" />
+                                      <Stack.Screen name="account-recovery" />
+                                      <Stack.Screen name="onboarding" />
+                                      <Stack.Screen name="public-form/[slug]" />
+                                      <Stack.Screen name="(tabs)" />
+                                      <Stack.Screen
+                                        name="(modal)"
+                                        options={{ presentation: 'modal' }}
+                                      />
+                                      </Stack>
+                                    </SessionRouteGate>
+                                  </GuestLeaseBoundary>
+                                  <LotusPetalFAB />
+                                </Box>
+                              </LayoutLoopSentinel>
                             </MascotProvider>
                           </FABProvider>
                         </DeepLinkProvider>
