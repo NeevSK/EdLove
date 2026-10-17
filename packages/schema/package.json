@@ -29,18 +29,18 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules src/generated\" --name \"packages_schema-clean\""
   },
   "dependencies": {
-    "@zenstackhq/orm": "3.8.3",
-    "@zenstackhq/zod": "3.8.3",
+    "@zenstackhq/orm": "3.9.7",
+    "@zenstackhq/zod": "3.9.7",
     "decimal.js": "^10.6.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@zenstackhq/cli": "3.8.3",
-    "@zenstackhq/language": "3.8.3",
-    "@zenstackhq/plugin-policy": "^3.9.4",
-    "@zenstackhq/sdk": "3.8.3",
-    "typescript": "rc"
+    "@zenstackhq/cli": "3.9.7",
+    "@zenstackhq/language": "3.9.7",
+    "@zenstackhq/plugin-policy": "3.9.7",
+    "@zenstackhq/sdk": "3.9.7",
+    "typescript": "7.0.2"
   },
   "_originalScripts": {
     "generate": "zenstack generate --schema schema.zmodel -o src/generated/orm",
@@ -48,4 +48,3 @@
     "clean": "rm -rf .turbo node_modules src/generated"
   }
 }
-

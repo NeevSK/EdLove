@@ -69,6 +69,15 @@ model User {
   reactions CommunityReaction[]
   messages  GroupMessage[]
   ai_messages AiMessage[]
+  community_comments CommunityComment[] @relation("CommunityCommentAuthor")
+  community_comment_upvotes CommunityCommentUpvote[] @relation("CommunityCommentUpvoteUser")
+  direct_conversations_user1 DirectConversation[] @relation("DirectConversationUser1")
+  direct_conversations_user2 DirectConversation[] @relation("DirectConversationUser2")
+  direct_messages DirectMessage[] @relation("DirectMessageAuthor")
+  principal_notes PrincipalNote[] @relation("PrincipalNotesAuthored")
+  context_teacher_notes PrincipalNote[] @relation("PrincipalNotesContextTeacher")
+  blocked_users UserBlock[] @relation("UserBlocksInitiated")
+  blocked_by_users UserBlock[] @relation("UserBlocksReceived")
   mood_logs MoodLog[]
   journal_entries FireJournalEntry[]
   thought_records ThoughtRecord[]
@@ -96,6 +105,7 @@ model User {
   // Guardian & Relationship
   student_guardian_links StudentGuardianRelationship[] @relation("StudentGuardians")
   student_guardian_links_as_guardian StudentGuardianRelationship[] @relation("GuardianStudents")
+  guardian_identities GuardianIdentity[] @relation("UserGuardianIdentities")
 
   // Accounting & Payments
   invoices Invoice[]
@@ -253,6 +263,7 @@ model Classroom {
   attendance       AttendanceRecord[]
   inventory        InventoryItem[]
   notes            ClassroomNote[]
+  principal_notes  PrincipalNote[] @relation("PrincipalNotesContextClassroom")
   join_requests    ClassroomJoinRequest[]
   legacy_records   ClassroomLegacyRecord[]
 
@@ -425,12 +436,13 @@ model AssignmentSubmission {
   grade           Int?
   feedback        String?
   graded_at       DateTime?
-  idempotency_key String?  @unique
+  idempotency_key String?
 
   assignment Assignment @relation(fields: [assignment_id], references: [id])
   student    User       @relation("StudentSubmissions", fields: [student_id], references: [id])
 
   @@unique([assignment_id, student_id])
+  @@unique([student_id, idempotency_key])
   @@index([student_id, submitted_at])
   @@index([assignment_id, submitted_at])
 
@@ -570,6 +582,7 @@ model Post {
   group            Group    @relation(fields: [group_id], references: [id])
   author           User     @relation(fields: [author_id], references: [id])
   reactions        CommunityReaction[]
+  comments         CommunityComment[]
 
   // Authors can manage their own posts
   @@allow('all', auth() != null && author_id == auth().id)
@@ -640,6 +653,139 @@ model CommunityReaction {
   @@allow('all', user_id == auth().id)
 
   @@map("community_reactions")
+}
+
+model CommunityComment {
+  id                 String   @id @default(uuid())
+  post_id            String
+  author_id          String?
+  content            String
+  is_anonymous       Boolean  @default(false)
+  is_official_answer Boolean  @default(false)
+  upvote_count       Int      @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now()) @updatedAt
+
+  post               Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  author             User?    @relation("CommunityCommentAuthor", fields: [author_id], references: [id], onDelete: SetNull)
+  upvotes            CommunityCommentUpvote[]
+
+  @@index([post_id, created_at])
+  @@index([author_id, created_at])
+
+  @@allow('read', post.group.is_public || post.group.members?[user_id == auth().id])
+  @@allow('create', auth() != null)
+  @@allow('update', auth() != null && author_id == auth().id)
+  @@allow('delete', auth() != null && (author_id == auth().id || post.author_id == auth().id))
+
+  @@map("community_comments")
+}
+
+model CommunityCommentUpvote {
+  comment_id String
+  user_id    String
+  created_at DateTime @default(now())
+
+  comment    CommunityComment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  user       User             @relation("CommunityCommentUpvoteUser", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([comment_id, user_id])
+  @@allow('all', auth() != null && user_id == auth().id)
+
+  @@map("community_comment_upvotes")
+}
+
+model DirectConversation {
+  id         String   @id @default(uuid())
+  user1_id   String
+  user2_id   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  user1      User     @relation("DirectConversationUser1", fields: [user1_id], references: [id], onDelete: Cascade)
+  user2      User     @relation("DirectConversationUser2", fields: [user2_id], references: [id], onDelete: Cascade)
+  messages   DirectMessage[]
+
+  @@unique([user1_id, user2_id])
+  @@index([user1_id])
+  @@index([user2_id])
+
+  @@allow('read', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+  @@allow('create', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+  @@allow('update', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+  @@allow('delete', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+
+  @@map("direct_conversations")
+}
+
+model DirectMessage {
+  id              String   @id @default(uuid())
+  conversation_id String
+  author_id       String
+  content         String
+  created_at      DateTime @default(now())
+
+  conversation    DirectConversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  author          User               @relation("DirectMessageAuthor", fields: [author_id], references: [id], onDelete: Cascade)
+
+  @@index([conversation_id, created_at])
+
+  @@allow('read', auth() != null && (conversation.user1_id == auth().id || conversation.user2_id == auth().id))
+  @@allow('create', auth() != null && author_id == auth().id && (conversation.user1_id == auth().id || conversation.user2_id == auth().id))
+  @@allow('delete', auth() != null && author_id == auth().id)
+
+  @@map("direct_messages")
+}
+
+model PrincipalNote {
+  id                   String    @id @default(uuid())
+  school_id            String
+  author_id            String
+  content              String
+  note_type            String    @default("note")
+  is_pinned            Boolean   @default(false)
+  is_done              Boolean   @default(false)
+  context_teacher_id   String?
+  context_classroom_id String?
+  target_date          DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @default(now()) @updatedAt
+
+  school               School     @relation("SchoolPrincipalNotes", fields: [school_id], references: [id], onDelete: Cascade)
+  author               User       @relation("PrincipalNotesAuthored", fields: [author_id], references: [id], onDelete: Cascade)
+  context_teacher      User?      @relation("PrincipalNotesContextTeacher", fields: [context_teacher_id], references: [id], onDelete: SetNull)
+  context_classroom    Classroom? @relation("PrincipalNotesContextClassroom", fields: [context_classroom_id], references: [id], onDelete: SetNull)
+
+  @@index([school_id, created_at])
+  @@index([school_id, target_date])
+  @@index([author_id, school_id])
+
+  @@allow('read', auth() != null && author_id == auth().id)
+  @@allow('create', auth() != null && author_id == auth().id)
+  @@allow('update', auth() != null && author_id == auth().id)
+  @@allow('delete', auth() != null && author_id == auth().id)
+
+  @@map("principal_notes")
+}
+
+model UserBlock {
+  id         String   @id @default(uuid())
+  blocker_id String
+  blocked_id String
+  created_at DateTime @default(now())
+
+  blocker    User     @relation("UserBlocksInitiated", fields: [blocker_id], references: [id], onDelete: Cascade)
+  blocked    User     @relation("UserBlocksReceived", fields: [blocked_id], references: [id], onDelete: Cascade)
+
+  @@unique([blocker_id, blocked_id])
+  @@index([blocker_id])
+  @@index([blocked_id])
+
+  @@allow('read', auth() != null && blocker_id == auth().id)
+  @@allow('create', auth() != null && blocker_id == auth().id)
+  @@allow('delete', auth() != null && blocker_id == auth().id)
+
+  @@map("user_blocks")
 }
 
 model Lesson {
@@ -746,6 +892,7 @@ model School {
   teacher_daily_attendance TeacherDailyAttendance[] @relation("SchoolTeacherDailyAttendance")
   teacher_attendance_sessions TeacherAttendanceSession[]
   grade_marks GradeMark[]
+  principal_notes PrincipalNote[] @relation("SchoolPrincipalNotes")
 
   // HR & Staff
   staff_leaves StaffLeave[]
@@ -1889,6 +2036,71 @@ model GuardianAssessmentReadAuditEvent {
 
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_assessment_read_audit_events")
+}
+
+model GuardianIdentity {
+  id                  String   @id @default(uuid())
+  user_id             String
+  relationship_type   String   @default("parent")
+  contact_info        Json?
+  verification_status String   @default("pending")
+  custody_info        Json?
+  emergency_contact   Json?
+  school_id           String?
+  tenant_id           String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  user                User     @relation("UserGuardianIdentities", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@allow('read', auth() != null && (user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("guardian_identities")
+}
+
+model GuardianNotification {
+  id          String   @id @default(uuid())
+  guardian_id String
+  student_id  String?
+  type        String
+  title       String
+  message     String
+  is_read     Boolean  @default(false)
+  action_url  String?
+  created_at  DateTime @default(now())
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("guardian_notifications")
+}
+
+model GuardianNotificationSetting {
+  id          String   @id @default(uuid())
+  guardian_id String   @unique
+  settings    Json
+  updated_at  DateTime @updatedAt
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth() != null)
+  @@map("guardian_notification_settings")
+}
+
+model SchoolEvent {
+  id            String   @id @default(uuid())
+  school_id     String?
+  title         String
+  description   String?
+  date          DateTime
+  time          String?
+  location      String?
+  type          String   @default("general")
+  requires_rsvp Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_events")
 }
 
 // ============================================================================
