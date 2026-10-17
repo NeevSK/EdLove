@@ -21,6 +21,9 @@ const isProductSource = (file) => {
     norm.includes('/supabase/') ||
     norm.includes('/reports/') ||
     norm.includes('/diagnostics/') ||
+    // ZenStack output (packages/schema/src/generated) is machine-written and
+    // repeats by design; lint and dedupe the .zmodel source instead.
+    norm.includes('/generated/') ||
     norm.endsWith('.d.ts') ||
     norm.endsWith('.config.js') ||
     norm.endsWith('.config.ts') ||

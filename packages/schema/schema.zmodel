@@ -106,6 +106,7 @@ model User {
   student_guardian_links StudentGuardianRelationship[] @relation("StudentGuardians")
   student_guardian_links_as_guardian StudentGuardianRelationship[] @relation("GuardianStudents")
   guardian_identities GuardianIdentity[] @relation("UserGuardianIdentities")
+  announcements_authored Announcement[] @relation("AnnouncementAuthor")
 
   // Accounting & Payments
   invoices Invoice[]
@@ -870,8 +871,14 @@ model School {
   deleted_at DateTime?
   deleted_by String?
   deletion_reason String?
+  // IANA zone for plans, quiet hours and notice release (plan-and-bridge).
+  timezone   String   @default("Asia/Colombo")
+  // Opt-in, aggregate-only usage counts (school_mode_usage_daily).
+  usage_signal_opt_in Boolean @default(false)
 
   classrooms Classroom[]
+  announcements Announcement[]
+  mode_policies SchoolModePolicy[]
   groups     Group[]
   manifestos SanctuaryManifesto[]
   sections   Section[]
@@ -1973,6 +1980,102 @@ model StaffLeave {
   @@map("staff_leaves")
 }
 
+// plan-and-bridge PB0: live table (master_baseline) + notice columns
+// (20261017210000). Reads go through sanctuary-api; RLS shows school-wide
+// rows only once sent, grade-class rows only to that class's audience.
+model Announcement {
+  id                     String    @id @default(uuid())
+  school_id              String
+  author_id              String?
+  title                  String    @default("")
+  content                String
+  is_pinned              Boolean   @default(false)
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @default(now())
+  audience_scope         String    @default("school")
+  grade_class_id         String?
+  status                 String    @default("sent")
+  send_at                DateTime?
+  sent_at                DateTime?
+  calendar_event_id      String?
+  held_by_mode           String?
+  drafted_in_quiet_hours Boolean   @default(false)
+  override_reason        String?
+  overridden_by          String?
+  overridden_at          DateTime?
+  schedule_version       Int       @default(0)
+  recipient_count        Int?
+  failure_code           String?
+
+  school                 School    @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  author                 User?     @relation("AnnouncementAuthor", fields: [author_id], references: [id], onDelete: SetNull)
+
+  @@index([send_at])
+  @@index([grade_class_id, created_at])
+  @@allow('read', auth() != null && (author_id == auth().id || (status == 'sent' && audience_scope == 'school' && auth().bonds?[entity_id == this.school_id])))
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("announcements")
+}
+
+// Modes engine v0 (school side). Configurable over closed decisions: a missing
+// row = PROVISIONAL defaults (packages/core/src/logic/modes/provisionalDefaults.ts).
+model SchoolModePolicy {
+  id                     String   @id @default(uuid())
+  school_id              String
+  mode_key               String
+  capacities             String[]
+  // locked | suggested | off. No default: a row is an explicit school choice.
+  lock                   String
+  schedule               Json
+  trigger                Json     @default("{\"source\":\"schedule\"}")
+  effects                Json     @default("{}")
+  override_roles         String[]
+  override_rate_limit_per_day Int?
+  version                Int      @default(1)
+  created_by             String?
+  updated_by             String?
+  created_at             DateTime @default(now())
+  updated_at             DateTime @default(now())
+
+  school                 School   @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@unique([school_id, mode_key])
+  @@allow('read', auth() != null && auth().bonds?[entity_id == this.school_id])
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_mode_policies")
+}
+
+// Opt-in aggregate usage signal: counts only, no content or user ids. Read
+// via read_school_mode_usage() (k >= 5 suppression). Server-only.
+model SchoolModeUsageDaily {
+  school_id String
+  day       DateTime @db.Date
+  mode_key  String
+  event     String
+  capacity  String
+  count     Int      @default(0)
+
+  @@id([school_id, day, mode_key, event, capacity])
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_mode_usage_daily")
+}
+
+// Append-only notice log (created, scheduled, rescheduled, override,
+// cancelled, released, failed). Server-only; no client policy.
+model SchoolNoticeEvent {
+  id         String   @id @default(uuid())
+  notice_id  String
+  school_id  String
+  actor_id   String?
+  event      String
+  detail     Json     @default("{}")
+  created_at DateTime @default(now())
+
+  @@index([notice_id, created_at])
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_notice_events")
+}
+
 model CalendarEvent {
   id           String   @id @default(uuid())
   school_id    String
@@ -1983,10 +2086,18 @@ model CalendarEvent {
   is_public    Boolean  @default(true)
   created_by   String?
   created_at   DateTime @default(now())
+  // plan-and-bridge: audience (model A grade class; null = whole school) and
+  // how many days before the event its notice should go out.
+  grade_class_id   String?
+  notice_lead_days Int?
+  description      String?
 
   school       School   @relation(fields: [school_id], references: [id])
 
-  @@allow('read', auth() != null && (is_public || auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@index([grade_class_id, start_date])
+  // Postgres RLS (20261017210000) is the enforced rule; grade-class rows are
+  // limited to class staff, enrolled students and verified guardians.
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("calendar_events")
 }
@@ -2001,12 +2112,19 @@ model StudentGuardianRelationship {
   guardian_id       String
   relationship_type String
   created_at        DateTime @default(now())
+  // pending | verified | revoked. Only a school leader verifies (sanctuary-api).
+  verification_status String   @default("pending")
+  verified_by         String?
+  verified_at         DateTime?
 
   student           User     @relation("StudentGuardians", fields: [student_id], references: [id])
   guardian          User     @relation("GuardianStudents", fields: [guardian_id], references: [id])
 
   @@unique([student_id, guardian_id])
   @@allow('read', auth().id == student_id || auth().id == guardian_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  // A guardian may request a link, never self-verify it.
+  @@allow('create', auth().id == guardian_id && verification_status == 'pending' && verified_by == null)
+  @@allow('delete', auth().id == guardian_id)
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("student_guardian_relationships")
 }
@@ -2054,7 +2172,11 @@ model GuardianIdentity {
   user                User     @relation("UserGuardianIdentities", fields: [user_id], references: [id], onDelete: Cascade)
 
   @@allow('read', auth() != null && (user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
-  @@allow('all', auth() != null && (user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // Owners create pending identities and may delete them; they cannot edit
+  // verification_status (was 'all' for the owner: self-verification).
+  @@allow('create', auth() != null && user_id == auth().id && verification_status == 'pending')
+  @@allow('delete', auth() != null && user_id == auth().id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_identities")
 }
 
@@ -2069,7 +2191,9 @@ model GuardianNotification {
   action_url  String?
   created_at  DateTime @default(now())
 
-  @@allow('read', auth() != null)
+  // Was read for any signed-in user.
+  @@allow('read', auth() != null && guardian_id == auth().id)
+  @@allow('update', auth() != null && guardian_id == auth().id)
   @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_notifications")
 }
@@ -2080,8 +2204,8 @@ model GuardianNotificationSetting {
   settings    Json
   updated_at  DateTime @updatedAt
 
-  @@allow('read', auth() != null)
-  @@allow('all', auth() != null)
+  // Was read + write for any signed-in user.
+  @@allow('all', auth() != null && guardian_id == auth().id)
   @@map("guardian_notification_settings")
 }
 

@@ -89,6 +89,16 @@
       "import": "./src/logic/omnichannel/*.ts",
       "default": "./src/logic/omnichannel/*.ts"
     },
+    "./logic/modes": {
+      "types": "./src/logic/modes/index.ts",
+      "import": "./src/logic/modes/index.ts",
+      "default": "./src/logic/modes/index.ts"
+    },
+    "./logic/modes/*": {
+      "types": "./src/logic/modes/*.ts",
+      "import": "./src/logic/modes/*.ts",
+      "default": "./src/logic/modes/*.ts"
+    },
     "./logic/registry/*": {
       "types": "./src/logic/registry/*.ts",
       "import": "./src/logic/registry/*.ts",

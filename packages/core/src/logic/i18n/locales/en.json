@@ -1717,5 +1717,90 @@
     "saveLocal": "Save a local copy instead",
     "configured": "Configuration saved",
     "uploaded": "Upload complete"
+  },
+  "planBridge": {
+    "title": "Plan & notices",
+    "subtitle": "Plan ahead. Notices reach families at calm hours.",
+    "loading": "Loading your classes",
+    "loadFailed": "Your classes could not be loaded.",
+    "offline": "You are offline. Planning and notices need a connection; nothing is queued.",
+    "class": "Class",
+    "students": "students",
+    "verifiedGuardians": "verified guardians",
+    "date": "Date",
+    "time": "Time",
+    "empty": {
+      "title": "No classes yet",
+      "body": "Plans and notices are for grade classes you are assigned to. Ask your principal to add you as a class teacher."
+    },
+    "event": {
+      "title": "Plan an event",
+      "name": "What",
+      "leadDays": "Tell families this many days before",
+      "save": "Save event",
+      "saved": "Event planned.",
+      "failed": "The event was not saved. Try again.",
+      "none": "Nothing planned yet for this class.",
+      "noticeDue": "notice due",
+      "writeNotice": "Write notice"
+    },
+    "eventType": {
+      "event": "Event",
+      "exam": "Exam",
+      "sports": "Sports",
+      "meeting": "Meeting",
+      "holiday": "Holiday"
+    },
+    "compose": {
+      "title": "Write a notice",
+      "for": "For",
+      "subject": "Title",
+      "body": "Message",
+      "now": "As soon as allowed",
+      "later": "Pick a time",
+      "review": "Check send time",
+      "badTime": "Use YYYY-MM-DD and HH:MM for the send time.",
+      "previewFailed": "Could not check the send time.",
+      "goesTo": "Goes to",
+      "noRecipients": "No verified guardians in this class yet. It will be saved, but no one will receive it.",
+      "sendNow": "Send now",
+      "scheduleFor": "Schedule for",
+      "edit": "Keep editing",
+      "failed": "The notice was not saved. Nothing was sent."
+    },
+    "quiet": {
+      "banner": "School quiet hours",
+      "custom": "custom schedule",
+      "nudge": "School quiet hours are {{window}}. Send at {{when}}?",
+      "accept": "Send at",
+      "settings": "School quiet hours",
+      "explain": "Staff notices written in these hours wait until the morning. Families still see them in the app; nothing rings at night.",
+      "from": "From",
+      "to": "Until",
+      "save": "Save quiet hours",
+      "saved": "Quiet hours updated.",
+      "saveFailed": "Use HH:MM, for example 20:00 and 06:30.",
+      "provisional": "default, not yet set by your school",
+      "sendAnyway": "Send as planned"
+    },
+    "override": {
+      "open": "This is an emergency",
+      "reason": "Why can this not wait? (logged, seen by the principal)",
+      "send": "Send now anyway",
+      "ask": "For an emergency, ask the principal to send it."
+    },
+    "list": {
+      "title": "Notices",
+      "loading": "Loading notices",
+      "failed": "Notices could not be loaded.",
+      "empty": "No notices for this class yet.",
+      "cancel": "Cancel",
+      "cancelFailed": "Could not cancel."
+    },
+    "lock": {
+      "suggested": "Suggest (staff decide)",
+      "locked": "Hold until morning",
+      "off": "Off"
+    }
   }
 }

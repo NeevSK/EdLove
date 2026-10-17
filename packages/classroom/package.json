@@ -29,6 +29,11 @@
       "import": "./src/entrypoints/attendance.ts",
       "default": "./src/entrypoints/attendance.ts"
     },
+    "./planBridge": {
+      "types": "./src/planBridge/index.ts",
+      "import": "./src/planBridge/index.ts",
+      "default": "./src/planBridge/index.ts"
+    },
     "./gradebook": {
       "types": "./src/entrypoints/gradebook.ts",
       "import": "./src/entrypoints/gradebook.ts",

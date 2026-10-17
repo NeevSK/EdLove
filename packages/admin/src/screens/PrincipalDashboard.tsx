@@ -1,3 +1,10 @@
+import { PrincipalNativeDashboardShell } from '@repo/admin/bridge/PrincipalNativeDashboardShell';
+import { CreateSchoolModal, PrincipalNotes } from '@repo/admin/components';
+import { useSchoolStats } from '@repo/admin/hooks/useSchoolStats';
+import { usePrincipalWorkspaceSurfaces } from '@repo/admin/principal/usePrincipalWorkspaceSurfaces';
+import type { PrincipalWorkspaceView, PrincipalZoneId } from '@repo/admin/principal/workspace';
+import AcademicCycleManager from '@repo/admin/screens/AcademicCycleManager';
+import { PrincipalNativeWorkspace } from '@repo/admin/screens/PrincipalNativeWorkspace';
 import { useIsGuest } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import type { TotalState } from '@repo/core/store';
@@ -6,20 +13,12 @@ import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
-import { Building2, LayoutGrid, NotebookPen } from '@repo/ui/icons';
+import { Building2, LayoutGrid, NotebookPen, Send } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PrincipalNativeDashboardShell } from '@repo/admin/bridge/PrincipalNativeDashboardShell';
-import { CreateSchoolModal, PrincipalNotes } from '@repo/admin/components';
-import { useSchoolStats } from '@repo/admin/hooks/useSchoolStats';
-import { usePrincipalWorkspaceSurfaces } from '@repo/admin/principal/usePrincipalWorkspaceSurfaces';
-import type { PrincipalWorkspaceView, PrincipalZoneId } from '@repo/admin/principal/workspace';
-import AcademicCycleManager from '@repo/admin/screens/AcademicCycleManager';
-import { PrincipalNativeWorkspace } from '@repo/admin/screens/PrincipalNativeWorkspace';
 
 interface PrincipalDashboardProps {
   schoolId: string;
@@ -90,6 +89,15 @@ export default function PrincipalDashboard({
         onPress: () => setActiveView('notes'),
         icon: NotebookPen,
       },
+      ...(can('create', 'Announcement')
+        ? [
+            {
+              label: t('planBridge.title', 'Plan & notices'),
+              onPress: () => router.push('/workspace/plan'),
+              icon: Send,
+            },
+          ]
+        : []),
     ],
   });
 
