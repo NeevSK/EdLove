@@ -44,10 +44,22 @@ describe('workspace classroom domain slice contracts', () => {
       'AttendanceScreen.tsx',
     );
 
+    const gradeClassRegister = read(
+      'packages',
+      'classroom',
+      'src',
+      'logic',
+      'gradeClassRegister.ts',
+    );
+
     expect(attendanceSheet).not.toContain('Anura Kumara');
     expect(attendanceSheet).not.toContain('api.attendance.record');
-    expect(attendanceScreen).toContain('api.attendance.batchRecord');
-    expect(attendanceScreen).toContain('generateIdempotencyKey');
-    expect(attendanceScreen).toContain('idempotencyKey');
+    // Model A: one batch write to daily_attendance per grade class. The server upsert is
+    // keyed by (student_id, grade_class_id, attendance_date), so a retried save is idempotent.
+    expect(attendanceScreen).toContain('saveGradeClassRegister');
+    expect(gradeClassRegister).toContain('attendanceAPI.batchRecord');
+    expect(gradeClassRegister).not.toContain('upsertAttendanceRecord');
+    // No fake offline success: nothing synced the old local SQLite queue.
+    expect(attendanceScreen).not.toContain('queuedOffline');
   });
 });

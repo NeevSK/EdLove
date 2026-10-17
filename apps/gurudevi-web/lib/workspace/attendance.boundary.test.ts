@@ -27,7 +27,7 @@ import {
 const subject = '00000000-0000-4000-8000-000000000001';
 const classroom: WorkspaceClassroom = {
   id: '00000000-0000-4000-8000-000000000010',
-  name: 'Learning group',
+  name: '5A',
   subject: null,
 };
 
@@ -52,20 +52,25 @@ afterEach(() => {
 });
 
 describe('Workspace attendance account boundary', () => {
-  it('uses verified browser credentials for the server-owned classroom list', async () => {
+  it('uses verified browser credentials for the server-owned grade class list', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
     setSession();
-    const fetchMock = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(jsonResponse([{ id: classroom.id, name: classroom.name, subject: null }]));
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      jsonResponse([
+        {
+          id: classroom.id,
+          name: classroom.name,
+          academic_cycle_id: '00000000-0000-4000-8000-000000000040',
+          role: 'class_teacher',
+        },
+      ]),
+    );
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(loadAccountClassrooms(subject)).resolves.toEqual([classroom]);
 
     const [url, request] = fetchMock.mock.calls[0] ?? [];
-    expect(url).toBe(
-      `https://sanctuary.example/api/openapi/educational/classrooms/by-teacher?teacher_id=${subject}&limit=100`,
-    );
+    expect(url).toBe('https://sanctuary.example/api/openapi/attendance/my-grade-classes');
     expect(new Headers(request?.headers).get('Authorization')).toBe('Bearer session-token');
     expect(request?.redirect).toBe('error');
   });
@@ -98,16 +103,16 @@ describe('Workspace attendance account boundary', () => {
       .mockResolvedValueOnce(
         jsonResponse([
           {
-            id: '00000000-0000-4000-8000-000000000020',
+            enrollment_id: '00000000-0000-4000-8000-000000000020',
             student_id: '00000000-0000-4000-8000-000000000030',
             full_name: 'Mina',
-            roll_number: 2,
+            avatar_url: null,
           },
           {
-            id: '00000000-0000-4000-8000-000000000021',
+            enrollment_id: '00000000-0000-4000-8000-000000000021',
             student_id: null,
             full_name: null,
-            roll_number: null,
+            avatar_url: null,
           },
         ]),
       )
@@ -128,7 +133,7 @@ describe('Workspace attendance account boundary', () => {
         id: '00000000-0000-4000-8000-000000000020',
         studentId: '00000000-0000-4000-8000-000000000030',
         name: 'Mina',
-        rollNumber: 2,
+        rollNumber: null,
         status: 'late',
       },
       {
@@ -140,6 +145,9 @@ describe('Workspace attendance account boundary', () => {
       },
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      `https://sanctuary.example/api/openapi/attendance/grade-class-roster?gradeClassId=${classroom.id}&date=2026-09-17`,
+    );
   });
 
   it('sends a batch for linked students only and rechecks identity for mutation credentials', async () => {
@@ -153,7 +161,7 @@ describe('Workspace attendance account boundary', () => {
         id: '00000000-0000-4000-8000-000000000020',
         studentId: '00000000-0000-4000-8000-000000000030',
         name: 'Mina',
-        rollNumber: 2,
+        rollNumber: null,
         status: 'late',
       },
       {

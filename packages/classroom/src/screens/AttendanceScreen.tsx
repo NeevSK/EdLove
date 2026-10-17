@@ -1,113 +1,66 @@
 import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
-import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api/client';
-import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
+import {
+  loadGradeClassRegister,
+  localDate,
+  PICK_GRADE_CLASS_NOTICE,
+  SHADOW_STUDENT_NOTICE,
+  saveGradeClassRegister,
+} from '@repo/classroom/logic/gradeClassRegister';
+import { attendanceAPI } from '@repo/core/api/attendance';
+import { academicCyclesAPI, growthSignalsAPI } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
-import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
 import { parseInstitutionalQR, ScannerModal } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
-import { Observe } from 'expo-observe';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+
+type GradeClassOption = { id: string; name: string };
 
 export default function AttendanceScreen() {
-  const { classroomId = '' } = useLocalSearchParams<{ classroomId?: string }>();
+  // Model A: the register belongs to a grade class (grade_classes.id), not a classroom.
+  // A legacy `classroomId` param is not mapped to a grade class; the teacher picks one.
+  const { gradeClassId: gradeClassParam = '' } = useLocalSearchParams<{
+    gradeClassId?: string;
+    classroomId?: string;
+  }>();
   const { triggerReview } = useAppStoreReview();
 
+  const [gradeClassId, setGradeClassId] = useState(gradeClassParam);
+  const [gradeClasses, setGradeClasses] = useState<GradeClassOption[] | null>(null);
   const [students, setStudents] = useState<StudentAttendance[]>([]);
+  const [excludedWithoutAccount, setExcludedWithoutAccount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [attendanceDate] = useState(() => localDate());
+
+  useEffect(() => {
+    setGradeClassId(gradeClassParam);
+  }, [gradeClassParam]);
 
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      if (!classroomId) {
-        setError('No classroom selected');
+      if (!gradeClassId) {
+        const options = await attendanceAPI.getMyGradeClasses();
+        setGradeClasses(options.map((option) => ({ id: option.id, name: option.name })));
         setStudents([]);
         return;
       }
-
-      const today = new Date().toISOString().split('T')[0];
-
-      // The register is local until the explicit batch save below. This keeps
-      // one idempotent write path and avoids saving each swipe twice.
-      // Offline-first: try server snapshot, fallback to local PowerSync Drizzle (<500ms reads).
-      let roster: unknown;
-      let snapshot: { records: unknown[] } = { records: [] };
-      try {
-        [roster, snapshot] = await Promise.all([
-          api.classroomStudents.getAll(classroomId),
-          api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
-        ]);
-      } catch (e) {
-        // Offline fallback via Drizzle (PowerSync) — never block TTI
-        try {
-          if (Platform.OS !== 'web') {
-            const db = getDrizzleDB() as unknown as { execute: (sql: string, params?: unknown[]) => Promise<{ rows?: unknown[] }> };
-            const local = await db.execute('SELECT student_id, status FROM attendance WHERE classroom_id = ? AND date = ?', [
-              classroomId,
-              today,
-            ]);
-            snapshot = { records: local?.rows ?? [] };
-            // roster fallback: use local classroom_students if available
-            if (!roster) {
-              const r = await db.execute('SELECT student_id as student_id, id, full_name, roll_number FROM classroom_students WHERE classroom_id = ?', [
-                classroomId,
-              ]);
-              roster = r?.rows ?? [];
-            }
-            try {
-              (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('attendance_offline_fallback', {
-                attributes: { classroomId },
-              } as unknown as never);
-            } catch (observeErr) {
-              console.warn('[AttendanceScreen] Failed to log attendance_offline_fallback event:', observeErr);
-            }
-          }
-        } catch (dbErr) {
-          console.warn('[AttendanceScreen] Local Drizzle query failed during offline fallback:', dbErr);
-        }
-        // if still no roster, rethrow to show error
-        if (!roster) throw e;
-      }
-
-      // Build a lookup map: student_id -> saved status
-      const savedStatus = new Map<string, AttendanceStatus>(
-        (snapshot.records as { student_id: string; status: AttendanceStatus }[]).map((r) => [
-          r.student_id,
-          r.status,
-        ]),
-      );
-
-      const attendanceData: StudentAttendance[] = (roster as any[]).flatMap((student) => {
-        const studentId = student.student_id || student.id;
-        if (!studentId || !student.full_name) return [];
-
-        return [
-          {
-            id: student.id,
-            student_id: studentId,
-            full_name: student.full_name,
-            roll_number: student.roll_number || null,
-            // Unmarked students begin present locally; only the explicit batch save persists it.
-            status: (savedStatus.get(studentId) as AttendanceStatus) ?? 'present',
-          } satisfies StudentAttendance,
-        ];
-      });
-
-      setStudents(attendanceData);
+      const register = await loadGradeClassRegister(gradeClassId, attendanceDate);
+      setStudents(register.students);
+      setExcludedWithoutAccount(register.excludedWithoutAccount);
     } catch (_err) {
-      setError('Failed to load student list');
+      setError(gradeClassId ? 'Failed to load the class register' : 'Failed to load your classes');
     } finally {
       setIsLoading(false);
     }
-  }, [classroomId]);
+  }, [gradeClassId, attendanceDate]);
 
   const schoolId = useStore((state) => state.schoolId);
   const isOnline = useStore((state) => state.isOnline);
@@ -132,72 +85,33 @@ export default function AttendanceScreen() {
   const currentUser = useStore((state) => state.user);
 
   const saveMutation = useSafeMutation(
-    async (updatedAttendance: StudentAttendance[]) => {
-      const now = getCurrentTimestamp();
-      const today = new Date().toISOString().split('T')[0] || '';
-      const records = updatedAttendance.map((s) => ({
-        classroom_id: classroomId,
-        student_id: s.student_id,
-        status: s.status,
-        date: today,
-        occurred_at: now,
-        academic_cycle_id: academicCycleId, // Tagging with academic cycle
-      }));
-      const idempotencyKey = generateIdempotencyKey('attendance');
-      try {
-        return await api.attendance.batchRecord(records, {
-          actorId: currentUser?.id,
-          reason: 'daily_roll_call',
-          accessKind: 'teacher_marking',
-          idempotencyKey,
-        });
-      } catch (e) {
-        // Offline: queue locally via PowerSync and backgroundSync (expose as offline success)
-        if (Platform.OS !== 'web') {
-          try {
-            const db = getDrizzleDB() as unknown as { execute: (sql: string, params?: unknown[]) => Promise<unknown> };
-            for (const r of records) {
-              await db.execute(
-                'INSERT OR REPLACE INTO attendance (id, classroom_id, student_id, status, date, occurred_at, academic_cycle_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [`att_${r.student_id}_${today}`, r.classroom_id, r.student_id, r.status, r.date, r.occurred_at, r.academic_cycle_id ?? null],
-              );
-            }
-            try {
-              (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('attendance_offline_queued', {
-                attributes: { classroomId, count: String(records.length) },
-              } as unknown as never);
-            } catch (observeErr) {
-              console.warn('[AttendanceScreen] Failed to log attendance_offline_queued event:', observeErr);
-            }
-            // store idempotencyKey for backgroundSync dedup (already generated)
-            return { queuedOffline: true, idempotencyKey } as unknown as never;
-          } catch (dbErr) {
-            console.warn('[AttendanceScreen] Failed to queue attendance locally via Drizzle:', dbErr);
-          }
-        }
-        throw e;
-      }
-    },
+    // No offline queue here: the old local SQLite fallback reported "Saved offline" but
+    // nothing ever synced it. A failed save now stays on screen as an error.
+    async (updatedAttendance: StudentAttendance[]) =>
+      saveGradeClassRegister(gradeClassId, attendanceDate, updatedAttendance),
     {
       mutationKey: 'batchRecordAttendance',
       scope: 'classroom',
       mutationType: 'CREATE',
-      onSuccess: (data: unknown) => {
+      onSuccess: () => {
         hapticSuccess();
-        const isQueued = (data as { queuedOffline?: boolean })?.queuedOffline;
-        showToast(isQueued ? 'Saved offline — will sync when online' : 'Attendance saved successfully', 'success');
-        // Growth signal  fire-and-forget
+        showToast('Attendance saved', 'success');
         if (currentUser?.id) {
           growthSignalsAPI.emitSilent({
             user_id: currentUser.id,
             event_type: 'attendance_marked',
-            event_metadata: { classroom_id: classroomId },
+            event_metadata: { grade_class_id: gradeClassId },
           });
         }
         void triggerReview('attendance_marked', { minActions: 2, probability: 0.5 });
       },
       onError: (err: any) => {
-        showToast(err.message || 'Failed to save attendance', 'error');
+        showToast(
+          err?.message
+            ? `Attendance not saved: ${err.message}`
+            : 'Attendance not saved. Check your connection and try again.',
+          'error',
+        );
       },
     },
   );
@@ -220,7 +134,7 @@ export default function AttendanceScreen() {
           setStudents(updated);
           showToast(`Marked ${target.full_name} present`, 'success');
         } else {
-          showToast('Student badge not enrolled in this classroom roster', 'warning');
+          showToast('Student badge is not on this class register', 'warning');
         }
       } else {
         showToast('Unrecognized student or attendance badge', 'error');
@@ -236,9 +150,9 @@ export default function AttendanceScreen() {
   if (isLoading) {
     return (
       <Box className="flex-1 justify-center items-center bg-phase-surface-primary">
-        <BrandPulse size={28} accessibilityLabel="Loading classroom roster" />
+        <BrandPulse size={28} accessibilityLabel="Loading class register" />
         <Text className="text-phase-text-secondary mt-4 font-black">
-          Loading classroom roster...
+          Loading class register...
         </Text>
       </Box>
     );
@@ -251,12 +165,36 @@ export default function AttendanceScreen() {
         <Button
           variant="outline"
           onPress={() => void fetchStudents()}
-          accessibilityLabel="Retry loading attendance roster"
-          accessibilityHint="Attempts to load the classroom roster again"
+          accessibilityLabel="Retry loading attendance register"
+          accessibilityHint="Attempts to load the class register again"
         >
           <ButtonText>Try again</ButtonText>
         </Button>
       </Box>
+    );
+  }
+
+  if (!gradeClassId) {
+    return (
+      <VStack className="flex-1 bg-phase-surface-primary p-6 gap-4">
+        <Text className="text-phase-text-secondary">{PICK_GRADE_CLASS_NOTICE}</Text>
+        {(gradeClasses ?? []).length === 0 ? (
+          <Text className="text-phase-text-secondary font-black">
+            No classes are assigned to you for the current academic year.
+          </Text>
+        ) : (
+          (gradeClasses ?? []).map((option) => (
+            <Button
+              key={option.id}
+              variant="outline"
+              onPress={() => setGradeClassId(option.id)}
+              accessibilityLabel={`Open the ${option.name} register`}
+            >
+              <ButtonText>{option.name}</ButtonText>
+            </Button>
+          ))
+        )}
+      </VStack>
     );
   }
 
@@ -265,13 +203,21 @@ export default function AttendanceScreen() {
       {!isOnline && (
         <Box className="bg-phase-canvas border-b border-phase-border px-4 py-2 flex-row items-center justify-between">
           <Text className="text-xs text-phase-text-secondary font-medium">
-            Offline mode — attendance will queue locally
+            Offline: attendance can't be saved until you're back online
           </Text>
           <Box className="w-2 h-2 rounded-full bg-templeGold" />
         </Box>
       )}
+      <Box className="px-4 py-2 border-b border-phase-border">
+        <Text className="text-xs text-phase-text-secondary">
+          {excludedWithoutAccount > 0
+            ? `${excludedWithoutAccount} enrolled student(s) have no account and are not shown. `
+            : ''}
+          {SHADOW_STUDENT_NOTICE}
+        </Text>
+      </Box>
       <AttendanceSheet
-        classroomId={classroomId}
+        classroomId={gradeClassId}
         initialStudents={students}
         onAttendanceChange={handleAttendanceChange}
         onScanBadgePress={() => setIsScannerOpen(true)}

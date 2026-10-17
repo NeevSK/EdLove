@@ -43,7 +43,23 @@ const recordInput = z
   })
   .merge(sessionInput);
 
+const rosterStudent = z.object({
+  enrollment_id: z.string().uuid(),
+  student_id: z.string().uuid(),
+  full_name: z.string().nullable(),
+  avatar_url: z.string().nullable(),
+});
+
+const gradeClassSummary = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  academic_cycle_id: z.string().uuid(),
+  role: z.string().nullable(),
+});
+
 const attendanceRead = { policy: { action: 'read', subject: 'DailyAttendance' } } as const;
+// Listing the caller's own grade classes is school-scoped; the handler filters to the caller.
+const ownSchoolRead = { policy: { action: 'read', subject: 'School' } } as const;
 const attendanceWrite = { policy: { action: 'create', subject: 'DailyAttendance' } } as const;
 
 export const attendanceORPCContract = {
@@ -126,5 +142,28 @@ export const attendanceORPCContract = {
       },
     },
     metadata: attendanceRead,
+  },
+  getGradeClassRoster: {
+    method: 'get',
+    path: '/attendance/grade-class-roster',
+    request: {
+      query: z.strictObject({
+        gradeClassId: z.string().uuid(),
+        date: z.string().optional(),
+      }),
+    },
+    responses: {
+      200: { schema: z.array(rosterStudent), description: 'Active grade class enrollments' },
+    },
+    metadata: attendanceRead,
+  },
+  getMyGradeClasses: {
+    method: 'get',
+    path: '/attendance/my-grade-classes',
+    request: {},
+    responses: {
+      200: { schema: z.array(gradeClassSummary), description: 'Grade classes the caller may mark' },
+    },
+    metadata: ownSchoolRead,
   },
 };

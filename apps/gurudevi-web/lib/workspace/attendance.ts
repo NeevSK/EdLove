@@ -389,18 +389,20 @@ async function openApiGet(path: string, expectedSubjectId: string): Promise<unkn
   return accountFetch(`/api/openapi${path}`, expectedSubjectId);
 }
 
+/**
+ * Attendance model A: the "classrooms" offered here are the caller's grade classes
+ * (grade_classes, e.g. 5A), because daily_attendance is keyed by grade_class_id.
+ * Subject classrooms (classrooms.id) are not attendance targets.
+ */
 export async function loadAccountClassrooms(
   subjectId: string,
 ): Promise<readonly WorkspaceClassroom[]> {
-  const result = await openApiGet(
-    `/educational/classrooms/by-teacher?teacher_id=${encodeURIComponent(subjectId)}&limit=100`,
-    subjectId,
-  );
-  if (!Array.isArray(result)) throw new Error('Workspace received an invalid classroom list.');
+  const result = await openApiGet('/attendance/my-grade-classes', subjectId);
+  if (!Array.isArray(result)) throw new Error('Workspace received an invalid class list.');
   return result.filter(isRecord).map((row) => ({
-    id: requiredString(row.id, 'classroom identity'),
-    name: requiredString(row.name, 'classroom name'),
-    subject: typeof row.subject === 'string' ? row.subject : null,
+    id: requiredString(row.id, 'grade class identity'),
+    name: requiredString(row.name, 'grade class name'),
+    subject: null,
   }));
 }
 
@@ -409,10 +411,14 @@ export async function loadAccountAttendance(
   date: string,
   subjectId: string,
 ): Promise<readonly WorkspaceStudent[]> {
+  const gradeClassId = encodeURIComponent(classroom.id);
   const [rosterValue, attendanceValue] = await Promise.all([
-    openApiGet(`/educational/classrooms/${encodeURIComponent(classroom.id)}/students`, subjectId),
     openApiGet(
-      `/attendance/classroom?gradeClassId=${encodeURIComponent(classroom.id)}&date=${encodeURIComponent(date)}`,
+      `/attendance/grade-class-roster?gradeClassId=${gradeClassId}&date=${encodeURIComponent(date)}`,
+      subjectId,
+    ),
+    openApiGet(
+      `/attendance/classroom?gradeClassId=${gradeClassId}&date=${encodeURIComponent(date)}`,
       subjectId,
     ),
   ]);
@@ -426,17 +432,17 @@ export async function loadAccountAttendance(
     );
   }
   return rosterValue.filter(isRecord).map((row) => {
-    const id = requiredString(row.id, 'roster identity');
+    const id = requiredString(row.enrollment_id, 'enrollment identity');
+    // Enrollments always reference an account; the guard keeps any unlinked row unmarkable.
     const studentId = typeof row.student_id === 'string' && row.student_id ? row.student_id : null;
-    const rollNumber = typeof row.roll_number === 'number' ? row.roll_number : null;
     return {
       id,
       studentId,
       name:
         typeof row.full_name === 'string' && row.full_name.trim()
           ? row.full_name
-          : `Learner ${rollNumber ?? id.slice(0, 6)}`,
-      rollNumber,
+          : `Learner ${id.slice(0, 6)}`,
+      rollNumber: null,
       status: studentId ? (attendanceByStudent.get(studentId) ?? 'present') : 'present',
     };
   });

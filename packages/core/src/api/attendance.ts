@@ -40,7 +40,75 @@ function toPromise<T>(effect: Effect.Effect<T, AttendanceHttpError, never>): Pro
   );
 }
 
+/** One daily_attendance row to write. `gradeClassId` is a grade_classes.id (model A). */
+export type GradeClassAttendanceInput = {
+  gradeClassId: string;
+  studentId: string;
+  status: 'present' | 'absent' | 'late' | 'excused';
+  date: string;
+};
+
+export type GradeClassOption = {
+  id: string;
+  name: string;
+  academic_cycle_id: string;
+  role: string | null;
+};
+
+export type GradeClassRosterRow = {
+  enrollment_id: string;
+  student_id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+};
+
+/** A daily_attendance row as returned by the server contract. */
+export type DailyAttendanceRow = {
+  id: string;
+  student_id: string;
+  grade_class_id: string;
+  status: GradeClassAttendanceInput['status'];
+  attendance_date: string;
+  student_name: string | null;
+};
+
 export const attendanceAPI = {
+  /** Grade classes the signed-in teacher (or school leader) may mark. */
+  async getMyGradeClasses(): Promise<GradeClassOption[]> {
+    return toPromise(apiEffect(() => orpcClient.attendance.getMyGradeClasses())) as Promise<
+      GradeClassOption[]
+    >;
+  },
+
+  /** Active enrollments (student_grade_class_enrollments) for a grade class on a date. */
+  async getGradeClassRoster(gradeClassId: string, date?: string): Promise<GradeClassRosterRow[]> {
+    return toPromise(
+      apiEffect(() => orpcClient.attendance.getGradeClassRoster({ query: { gradeClassId, date } })),
+    ) as Promise<GradeClassRosterRow[]>;
+  },
+
+  /**
+   * Saved daily_attendance for a grade class and date, shaped as `{ records }`.
+   * The id must be a grade_classes.id: legacy classrooms.id values match no rows
+   * (the classroom → grade class mapping is intentionally not implemented).
+   */
+  async getClassroomAttendanceSnapshot(
+    gradeClassId: string,
+    date?: string,
+  ): Promise<{ records: DailyAttendanceRow[] }> {
+    const records = (await toPromise(
+      apiEffect(() => orpcClient.attendance.getByClassroom({ query: { gradeClassId, date } })),
+    )) as DailyAttendanceRow[];
+    return { records };
+  },
+
+  /** Writes a roll call in one transaction. All rows should share one grade class. */
+  async batchRecord(records: GradeClassAttendanceInput[]): Promise<DailyAttendanceRow[]> {
+    return toPromise(
+      apiEffect(() => orpcClient.attendance.batchRecord({ body: records })),
+    ) as Promise<DailyAttendanceRow[]>;
+  },
+
   async upsertAttendanceRecord(
     classroom_id: string,
     student_id: string,
