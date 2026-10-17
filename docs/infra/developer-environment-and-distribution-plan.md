@@ -289,9 +289,9 @@ the root cause of "pnpm breaks" more than any platform bug.
 | Source | Node | pnpm |
 |---|---|---|
 | `package.json` `engines` | `>=22.23.0 <23` | — |
-| `package.json` `packageManager` | — | `12.4.2` |
+| `package.json` `packageManager` | — | `12.10.1` |
 | `.nvmrc` | `22.23.2` | — |
-| `mise.toml` | `"22"` (any 22.x) | `12.4.2` |
+| `mise.toml` | `"22"` (any 22.x) | `12.10.1` |
 | `apps/gurudevi-mobile/eas.json` (×3) | `22.23.2` | — |
 | CI workflows (5 of them) | — | **`11.21.0`** |
 | CI workflows (4 of them) | — | **`12.1.0`** |
@@ -309,7 +309,7 @@ never invoked. Remove it, or add the one script that needs it.
 
 ### 5.2 Decide how pnpm gets installed — and know the deadline
 
-`packageManager: pnpm@12.4.2` currently works because **Corepack**, which ships
+`packageManager: pnpm@12.10.1` currently works because **Corepack**, which ships
 with Node, reads that field. But:
 
 > **Corepack will no longer be distributed starting with Node.js v25.**
@@ -328,7 +328,7 @@ Pick one, now, and write it in the README:
 | B. Corepack | `corepack enable` — bundled, zero install, but dies with Node 25 | future breakage |
 | C. pnpm self-management | install pnpm directly; `devEngines.packageManager` + `pmOnFail: ignore` in `pnpm-workspace.yaml` makes pnpm check itself | least familiar |
 
-Whichever you choose, `pnpm` must arrive at exactly `12.4.2`, including in CI.
+Whichever you choose, `pnpm` must arrive at exactly `12.10.1`, including in CI.
 
 ---
 
@@ -504,7 +504,7 @@ manifests.
 
 ### Phase 2 — One toolchain version
 
-> **Status: complete.** Node `22.23.2` and pnpm `12.4.2` are pinned in
+> **Status: complete.** Node `22.23.2` and pnpm `12.10.1` are pinned in
 > `.nvmrc`, `mise.toml`, `package.json`, and all 16 active CI `pnpm/action-setup`
 > steps. `bun` was **retained**, not removed: `apps/sanctuary-api` still needs it.
 

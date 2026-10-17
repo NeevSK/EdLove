@@ -93,7 +93,7 @@ dialect_rules:
   rngh_legacy_handler:
     category: "RNGH 3.3"
     name: "Legacy RNGH Handlers"
-    pattern: <(Pan|Tap|Fling|LongPress|Pinch|Rotation)GestureHandler
+    pattern: <(Pan|Tap|Fling|LongPress|Pinch|Rotation)GestureHandler(\s|>|/)
     severity: "HIGH"
     message: "Legacy JSX handlers are deprecated in RNGH v3. Use GestureDetector with Gesture.*."
   effect_v3_catch_all:

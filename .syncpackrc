@@ -5,14 +5,88 @@
   "semverGroups": [
     {
       "range": "~",
-      "dependencies": ["expo", "expo-*", "react-native"],
+      "dependencies": ["expo", "expo-*", "@expo/*"],
       "packages": ["**"],
-      "label": "Expo SDK 55 Pinning"
+      "label": "Expo SDK 58 Runtime Matrix"
     }
   ],
   "versionGroups": [
     {
-      "dependencies": ["@repo/*", "@types/react-native"],
+      "dependencies": [
+        "react-native-gesture-handler",
+        "react-native-reanimated",
+        "react-native-worklets",
+        "react-native-mmkv",
+        "react-native-nitro-modules",
+        "react-native-skia",
+        "@shopify/react-native-skia",
+        "typescript"
+      ],
+      "packages": ["**"],
+      "label": "Sacred Native Architecture (AGENTS.md Rule 2)"
+    },
+    {
+      "dependencies": [
+        "react",
+        "react-dom",
+        "react-test-renderer",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "packages": ["**"],
+      "label": "React 19 Platform Engine"
+    },
+    {
+      "dependencies": [
+        "react-native",
+        "react-native-screens",
+        "react-native-safe-area-context",
+        "react-native-webview",
+        "react-native-pager-view",
+        "@shopify/flash-list"
+      ],
+      "packages": ["**"],
+      "label": "Expo SDK 58 Mobile Matrix"
+    },
+    {
+      "dependencies": [
+        "@zenstackhq/*",
+        "zenstack"
+      ],
+      "packages": ["**"],
+      "label": "ZenStack V3 Database Cohort"
+    },
+    {
+      "dependencies": [
+        "zod",
+        "zod-validation-error"
+      ],
+      "packages": ["**"],
+      "label": "Validation & Contract Schemas"
+    },
+    {
+      "dependencies": [
+        "tailwindcss",
+        "@tailwindcss/postcss",
+        "nativewind"
+      ],
+      "packages": ["**"],
+      "label": "Tailwind & NativeWind Styling Engine"
+    },
+    {
+      "dependencies": [
+        "@tanstack/react-query",
+        "@tanstack/query-core",
+        "zustand"
+      ],
+      "packages": ["**"],
+      "label": "TanStack State & Data Fetching"
+    },
+    {
+      "dependencies": [
+        "@repo/*",
+        "@types/react-native"
+      ],
       "packages": ["**"],
       "label": "Internal Workspace Packages"
     }

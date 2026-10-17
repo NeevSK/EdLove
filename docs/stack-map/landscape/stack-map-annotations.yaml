@@ -2,7 +2,7 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-10-05
+  updated: 2026-10-13
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
 
 package_entries:
@@ -120,6 +120,10 @@ package_entries:
   apps-gurudevi-marketing-web:
     layer: "app (web)"
     summary: "Gurudevi marketing site (gurudevi.edlove.org) — landings, forms, analytics."
+    floating: undecided
+  edlove-web:
+    layer: "app (web)"
+    summary: "EdLove browser application — Next.js shell for EdLove platform journeys."
     floating: undecided
   gurudevi-mobile:
     layer: "app (mobile)"

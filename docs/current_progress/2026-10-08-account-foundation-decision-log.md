@@ -12,6 +12,22 @@ These decisions reflect the user's current product clarification on 2026-10-08.
 They override older conflicting intent only after the user confirms the open
 questions below.
 
+## How provisional decisions govern implementation
+
+These are intentionally provisional product policies, not irreversible schema
+or release commitments. Implementation may proceed against a small, explicit
+current contract while preserving compatibility seams and recording the
+assumptions that can change later. A future decision may revise a boundary or
+capability without invalidating the evidence for an earlier contract, provided
+the migration includes characterization tests, a compatibility decision, and a
+rollback or reconciliation path. “Provisional” therefore means revisable with
+evidence; it does not mean that each caller may invent a different policy.
+
+The reusable engineering rule, hardening priorities, and change protocol live
+in the [Provisional Product Policy and Current Implementation Contract](../architecture/provisional-policy-and-implementation-contract.md)
+guide. This decision log records the current product choices; the guide records
+how to implement and revise them safely.
+
 ## Confirmed product direction
 
 ### D-001 — User-centered product
@@ -21,15 +37,23 @@ as an independent user before any school exists. Users may later create or join
 school platforms, but school infrastructure is an extension of the user's
 account rather than the product's starting identity.
 
+The product metaphor is a person entering Sanctuary first. Sanctuary is the
+whole authenticated Gurudevi app. Inside Sanctuary, Self is the primary home
+tab; Workspace, Library, and Community are additional tabs/domains.
+Institutions, classes, and other participation contexts arise later from that
+person's participation. A school is never a prerequisite for having a
+Gurudevi account or entering Self.
+
 ### D-002 — First trustworthy journey
 
 The first release journey is:
 
 ```text
-sign up → complete name/capacity onboarding → enter the product → do useful work
+sign up → complete name/capacity onboarding → enter Sanctuary → Self home → do useful work
 ```
 
-The journey must feel smooth before expanding account or domain scope.
+Sanctuary is the app; Self is its primary home tab. The journey must feel
+smooth before expanding institutional relationships or organization scope.
 
 ### D-003 — Guest scope differs by platform
 
@@ -74,11 +98,15 @@ The first trustworthy release must offer at least one coherent useful action
 in each primary domain:
 
 - **Self:** personal features, including reflection and wellbeing journal work.
-- **Workspace:** role-based tasks; principals may create schools and teachers
-  may create or join classes.
-- **Library:** at least one real library task with durable user value.
-- **Community:** at least one real community task with clear membership and
-  privacy boundaries.
+- **Workspace:** role-based tasks are available according to the user's
+  declared capacity; a new user may enter Workspace and begin setup without
+  already belonging to a school or class. Principals may create schools and
+  teachers may create or join classes.
+- **Library:** public/open discovery and at least one real library task that
+  does not require institutional membership.
+- **Community:** open community discovery and participation available to an
+  eligible user without a school, with private/scoped membership rules added
+  separately.
 
 The acceptance question is useful account-to-domain flow, not historical
 feature count.
@@ -89,11 +117,28 @@ Teachers may create a new class or join an existing class. Joining may occur
 through an invitation or another official relationship workflow. Class access
 must be relationship-based rather than granted by a submitted client ID.
 
+The initial class entity may be personal/standalone and later attach to a
+school, or may be created directly inside a selected school context. This is
+an entity-model choice that remains provisional; it must not be turned into an
+access barrier. The current implementation should therefore keep class
+creation and later school attachment separable, with server-owned relationship
+records and an explicit migration path when the model is narrowed.
+
+These are participation contexts and capability targets, not entry barriers.
+They must not gate Sanctuary, Self, Workspace entry, open Community, or public
+Library experiences. A relationship is required only when operating on a
+specific existing organization, class, or other scoped entity.
+
 ### D-011 — Explicit first-release exclusions
 
 Student-focused product flows and multi-account device support are deferred
 from the first trustworthy release. Existing code for those areas is not
 automatically a release requirement.
+
+The current web onboarding form does not offer Student as a first-release
+capacity. The capacity vocabulary remains available in the domain contract for
+the later student slice; this is a product-scope deferral, not deletion of the
+underlying model.
 
 ### D-012 — Domain-based data custody
 
@@ -122,12 +167,13 @@ is complete:
 - **Self:** one durable reflection or wellbeing practice, with Fire Journal as
   the leading candidate and Mood Lotus as the adjacent candidate.
 - **Workspace:** school creation for a principal and class creation/join for a
-  teacher; classroom attendance follows only after the relationship exists.
-- **Library:** authenticated resource discovery and opening a validated
-  resource link; collections and curator workflows remain later slices.
-- **Community:** scoped circle discovery and entry as the first slice;
-  posting, membership mutation, moderation, and safety are separate work and
-  must not be implied by the directory.
+  teacher; classroom attendance follows only after the relationship exists and
+  is not part of the initial Sanctuary gate.
+- **Library:** public/open resource discovery and opening a validated resource
+  link; collections and curator workflows remain later slices.
+- **Community:** open discovery and a safe public participation boundary first;
+  private circle membership, posting, moderation, and safety are separate work
+  and must not be implied by the directory.
 
 These slices are selected because they align with the user's product direction
 and have the clearest existing implementation seams. They still require

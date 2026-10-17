@@ -19,6 +19,12 @@ node_modules
 
 # Temporary files
 _tmp_*
+*.tmp
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+data/
 
 # Doppler fallback files are encrypted, machine-bound cache artifacts.
 # They must not be committed or used as the workspace source of truth.
@@ -70,6 +76,10 @@ yarn-error.log*
 ## IDEs
 .vscode/
 .idea/
+.cursor/
+.codex/
+**/.codex/
+**/.agents/state/
 .claude/*
 !.claude/skills/
 .devin/

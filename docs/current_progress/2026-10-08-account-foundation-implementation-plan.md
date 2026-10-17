@@ -77,28 +77,33 @@ Exit: request lifecycle has G0/G1 coverage and a support/recovery procedure.
 
 ## Phase C — First domain value slices
 
-### C1. Self
+### C1. Sanctuary and Self
 
-Deliver one durable reflection or wellbeing practice, beginning with Fire
-Journal or Mood Lotus. Prove personal ownership, retry, offline behavior where
-supported, and account separation.
+Make Sanctuary the post-onboarding app destination, with Self as its primary
+home tab, and deliver one durable personal reflection or wellbeing practice,
+beginning with Fire Journal or Mood Lotus. Prove personal ownership, retry,
+offline behavior where supported, and account separation. This slice must not
+depend on school membership.
 
 ### C2. Workspace
 
-Deliver relationship creation first: principal creates a school; teacher
-creates or joins a class. Only then promote attendance or other classroom work.
+Deliver relationship creation as a later participation context: principal
+creates a school; teacher creates or joins a class. Only then promote
+attendance or other classroom work. Do not make this relationship a gate for
+Sanctuary, Self, open Community, or public Library.
 
 ### C3. Library
 
-Deliver authenticated resource discovery and safe opening of validated links.
+Deliver public/open resource discovery and safe opening of validated links for
+any eligible user, independent of institutional membership.
 Do not count local Explore or broad curator/collection UI as durable Library
 coverage.
 
 ### C4. Community
 
-Deliver scoped circle discovery and entry only if membership/privacy boundaries
-are explicit. Keep posting, moderation, safety, and membership mutation as
-separate slices until their server contracts exist.
+Deliver open community discovery and a safe public participation boundary for
+eligible users. Scoped circle membership, posting, moderation, safety, and
+membership mutation remain separate slices until their server contracts exist.
 
 ## Phase D — Platform evidence promotion
 
@@ -127,11 +132,12 @@ boundary proof.
 1. Characterize current onboarding and session callers.
 2. Select and document the canonical onboarding/session seam.
 3. Correct lifecycle state semantics, especially premature onboarding status.
-4. Model school/class relationships and invitations.
-5. Build the custody matrix and deletion request status contract.
-6. Implement and prove the first Self slice.
-7. Implement and prove relationship creation for Workspace.
-8. Promote Library and Community narrow slices.
+4. Build the custody matrix and deletion request status contract.
+5. Implement Sanctuary entry and prove the first Self slice.
+6. Promote open Library and Community slices without institutional gating.
+7. Model school/class relationships and invitations.
+8. Implement and prove relationship creation for Workspace, then scoped
+   institutional tasks.
 
 The repository is not ready for broad feature expansion until steps 1–5 are
 complete.

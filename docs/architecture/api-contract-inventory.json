@@ -6,9 +6,7 @@
       "handlerFile": "self.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ]
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"]
     },
     {
       "name": "profile",
@@ -16,9 +14,7 @@
       "handlerFile": "profile.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/profile.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/profile.ts"]
     },
     {
       "name": "identity",
@@ -26,9 +22,7 @@
       "handlerFile": "identity.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/identity.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/identity.ts"]
     },
     {
       "name": "onboarding",
@@ -36,9 +30,7 @@
       "handlerFile": "onboarding.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/onboarding.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/onboarding.ts"]
     },
     {
       "name": "principalNotes",
@@ -46,9 +38,7 @@
       "handlerFile": "principalNotes.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/principalNotes.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/principalNotes.ts"]
     },
     {
       "name": "sync",
@@ -68,9 +58,7 @@
       "handlerFile": "tracking.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/tracking.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/tracking.ts"]
     },
     {
       "name": "warmMirror",
@@ -78,9 +66,7 @@
       "handlerFile": "warmMirror.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/warmMirror.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/warmMirror.ts"]
     },
     {
       "name": "presence",
@@ -88,9 +74,7 @@
       "handlerFile": "presence.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/presence.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/presence.ts"]
     },
     {
       "name": "dailyContent",
@@ -98,9 +82,7 @@
       "handlerFile": "dailyContent.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/dailyContent.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/dailyContent.ts"]
     },
     {
       "name": "decisionJournal",
@@ -116,9 +98,7 @@
       "handlerFile": "journalEntries.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/journalEntries.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/journalEntries.ts"]
     },
     {
       "name": "learningReflections",
@@ -134,9 +114,7 @@
       "handlerFile": "sacredMissions.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/sacredMissions.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/sacredMissions.ts"]
     },
     {
       "name": "library",
@@ -144,9 +122,7 @@
       "handlerFile": "library.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/library.ts"]
     },
     {
       "name": "authorization",
@@ -154,9 +130,7 @@
       "handlerFile": "permissionSnapshot.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/authorization.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/authorization.ts"]
     },
     {
       "name": "educational",
@@ -177,9 +151,7 @@
       "handlerFile": "grading.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/grading.ts"]
     },
     {
       "name": "attendance",
@@ -187,9 +159,7 @@
       "handlerFile": "attendance.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/attendance.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/attendance.ts"]
     },
     {
       "name": "community",
@@ -197,10 +167,7 @@
       "handlerFile": "community.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"]
     },
     {
       "name": "admin",
@@ -208,9 +175,7 @@
       "handlerFile": "admin.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"]
     },
     {
       "name": "messaging",
@@ -218,9 +183,7 @@
       "handlerFile": "messaging.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/messaging.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/messaging.ts"]
     },
     {
       "name": "social",
@@ -239,9 +202,7 @@
       "handlerFile": "announcements.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/announcements.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/announcements.ts"]
     },
     {
       "name": "guardianAssessment",
@@ -257,9 +218,7 @@
       "handlerFile": "agent.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/agent.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/agent.ts"]
     },
     {
       "name": "thuthimal",
@@ -267,9 +226,7 @@
       "handlerFile": "thuthimal.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/thuthimal.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/thuthimal.ts"]
     },
     {
       "name": "erp",
@@ -277,9 +234,7 @@
       "handlerFile": "erp.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/erp.ts"]
     },
     {
       "name": "forms",
@@ -287,9 +242,7 @@
       "handlerFile": "forms.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"]
     },
     {
       "name": "mapping",
@@ -297,9 +250,7 @@
       "handlerFile": "mapping.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/mapping.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/mapping.ts"]
     },
     {
       "name": "inventory",
@@ -307,9 +258,7 @@
       "handlerFile": "inventory.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/inventory.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/inventory.ts"]
     },
     {
       "name": "history",
@@ -317,9 +266,7 @@
       "handlerFile": "history.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/history.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/history.ts"]
     },
     {
       "name": "longitudinal",
@@ -327,9 +274,7 @@
       "handlerFile": "longitudinal.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/longitudinal.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/longitudinal.ts"]
     },
     {
       "name": "schoolForest",
@@ -337,9 +282,7 @@
       "handlerFile": "schoolForest.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/schoolForest.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/schoolForest.ts"]
     },
     {
       "name": "privacy",
@@ -347,9 +290,7 @@
       "handlerFile": "privacy.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/privacy.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/privacy.ts"]
     },
     {
       "name": "studentPotential",
@@ -357,9 +298,7 @@
       "handlerFile": "studentPotential.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/studentPotential.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/studentPotential.ts"]
     },
     {
       "name": "rewards",
@@ -367,9 +306,7 @@
       "handlerFile": "rewards.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/rewards.ts"]
     },
     {
       "name": "echoes",
@@ -377,9 +314,7 @@
       "handlerFile": "echo.ts",
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ]
+      "clientFiles": ["packages/core/src/api/echo.ts"]
     }
   ],
   "routes": [
@@ -394,15 +329,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -417,15 +351,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -440,15 +373,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -463,15 +395,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -486,15 +417,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -509,15 +439,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -532,15 +461,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -555,15 +483,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -578,15 +505,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -601,15 +527,14 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/lib/sync/registry.ts"
-      ],
+      "clientFiles": ["packages/core/src/lib/sync/registry.ts"],
       "clientCalls": [
         "client.api as any).self.journal.burn.$post",
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -624,9 +549,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/profile.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/profile.ts"],
       "clientCalls": [
         "client.api as any).profile.schools[':id'].pulse.$get",
         "client.api as any).profile.users[':id'].$get",
@@ -646,9 +569,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/profile.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/profile.ts"],
       "clientCalls": [
         "client.api as any).profile.schools[':id'].pulse.$get",
         "client.api as any).profile.users[':id'].$get",
@@ -668,9 +589,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/profile.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/profile.ts"],
       "clientCalls": [
         "client.api as any).profile.schools[':id'].pulse.$get",
         "client.api as any).profile.users[':id'].$get",
@@ -690,9 +609,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/profile.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/profile.ts"],
       "clientCalls": [
         "client.api as any).profile.schools[':id'].pulse.$get",
         "client.api as any).profile.users[':id'].$get",
@@ -712,9 +629,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/identity.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/identity.ts"],
       "clientCalls": [
         "orpcClient.identity.fetchUserProfile",
         "orpcClient.identity.identifyActiveCitizen",
@@ -734,9 +649,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/identity.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/identity.ts"],
       "clientCalls": [
         "orpcClient.identity.fetchUserProfile",
         "orpcClient.identity.identifyActiveCitizen",
@@ -756,9 +669,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/identity.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/identity.ts"],
       "clientCalls": [
         "orpcClient.identity.fetchUserProfile",
         "orpcClient.identity.identifyActiveCitizen",
@@ -778,9 +689,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/identity.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/identity.ts"],
       "clientCalls": [
         "orpcClient.identity.fetchUserProfile",
         "orpcClient.identity.identifyActiveCitizen",
@@ -800,9 +709,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/onboarding.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/onboarding.ts"],
       "clientCalls": [
         "client.api as any).identity['complete-onboarding'].$post",
         "client.api as any).identity['initial-bond'].$post",
@@ -821,9 +728,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/onboarding.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/onboarding.ts"],
       "clientCalls": [
         "client.api as any).identity['complete-onboarding'].$post",
         "client.api as any).identity['initial-bond'].$post",
@@ -842,9 +747,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/onboarding.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/onboarding.ts"],
       "clientCalls": [
         "client.api as any).identity['complete-onboarding'].$post",
         "client.api as any).identity['initial-bond'].$post",
@@ -863,9 +766,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/onboarding.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/onboarding.ts"],
       "clientCalls": [
         "client.api as any).identity['complete-onboarding'].$post",
         "client.api as any).identity['initial-bond'].$post",
@@ -884,9 +785,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/principalNotes.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/principalNotes.ts"],
       "clientCalls": [
         "orpcClient.principalNotes.create",
         "orpcClient.principalNotes.delete",
@@ -907,9 +806,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/principalNotes.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/principalNotes.ts"],
       "clientCalls": [
         "orpcClient.principalNotes.create",
         "orpcClient.principalNotes.delete",
@@ -930,9 +827,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/principalNotes.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/principalNotes.ts"],
       "clientCalls": [
         "orpcClient.principalNotes.create",
         "orpcClient.principalNotes.delete",
@@ -953,9 +848,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/principalNotes.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/principalNotes.ts"],
       "clientCalls": [
         "orpcClient.principalNotes.create",
         "orpcClient.principalNotes.delete",
@@ -976,9 +869,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/principalNotes.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/principalNotes.ts"],
       "clientCalls": [
         "orpcClient.principalNotes.create",
         "orpcClient.principalNotes.delete",
@@ -1010,7 +901,8 @@
         "client.api as any).self.mood.$post",
         "client.api as any).self.thoughtRecord.$post",
         "client.api as any).self.thoughtRecord[':id'].$patch",
-        "orpcClient.sync.uploadBatch"
+        "orpcClient.sync.uploadBatch",
+        "orpcClient.sync.upsertWorkspaceLayout"
       ],
       "hasResponses": true
     },
@@ -1025,9 +917,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/tracking.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/tracking.ts"],
       "clientCalls": [
         "client.api as any).tracking.features.$get",
         "client.api as any).tracking.features.$post"
@@ -1045,9 +935,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/tracking.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/tracking.ts"],
       "clientCalls": [
         "client.api as any).tracking.features.$get",
         "client.api as any).tracking.features.$post"
@@ -1065,12 +953,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/warmMirror.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).warmMirror[':userId'].$get"
-      ],
+      "clientFiles": ["packages/core/src/api/warmMirror.ts"],
+      "clientCalls": ["client.api as any).warmMirror[':userId'].$get"],
       "hasResponses": true
     },
     {
@@ -1084,13 +968,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/presence.ts"
-      ],
-      "clientCalls": [
-        "orpcClient.presence.getFallbackCount",
-        "orpcClient.presence.markSeen"
-      ],
+      "clientFiles": ["packages/core/src/api/presence.ts"],
+      "clientCalls": ["orpcClient.presence.getFallbackCount", "orpcClient.presence.markSeen"],
       "hasResponses": true
     },
     {
@@ -1104,13 +983,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/presence.ts"
-      ],
-      "clientCalls": [
-        "orpcClient.presence.getFallbackCount",
-        "orpcClient.presence.markSeen"
-      ],
+      "clientFiles": ["packages/core/src/api/presence.ts"],
+      "clientCalls": ["orpcClient.presence.getFallbackCount", "orpcClient.presence.markSeen"],
       "hasResponses": true
     },
     {
@@ -1124,9 +998,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/dailyContent.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/dailyContent.ts"],
       "clientCalls": [
         "orpcClient.dailyContent.getForDate",
         "orpcClient.dailyContent.getRecent",
@@ -1145,9 +1017,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/dailyContent.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/dailyContent.ts"],
       "clientCalls": [
         "orpcClient.dailyContent.getForDate",
         "orpcClient.dailyContent.getRecent",
@@ -1166,9 +1036,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/dailyContent.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/dailyContent.ts"],
       "clientCalls": [
         "orpcClient.dailyContent.getForDate",
         "orpcClient.dailyContent.getRecent",
@@ -1232,13 +1100,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/journalEntries.ts"
-      ],
-      "clientCalls": [
-        "orpcClient.journalEntries.create",
-        "orpcClient.journalEntries.list"
-      ],
+      "clientFiles": ["packages/core/src/api/journalEntries.ts"],
+      "clientCalls": ["orpcClient.journalEntries.create", "orpcClient.journalEntries.list"],
       "hasResponses": true
     },
     {
@@ -1252,13 +1115,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/journalEntries.ts"
-      ],
-      "clientCalls": [
-        "orpcClient.journalEntries.create",
-        "orpcClient.journalEntries.list"
-      ],
+      "clientFiles": ["packages/core/src/api/journalEntries.ts"],
+      "clientCalls": ["orpcClient.journalEntries.create", "orpcClient.journalEntries.list"],
       "hasResponses": true
     },
     {
@@ -1317,9 +1175,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/sacredMissions.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/sacredMissions.ts"],
       "clientCalls": [
         "orpcClient.sacredMissions.create",
         "orpcClient.sacredMissions.endorse",
@@ -1339,9 +1195,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/sacredMissions.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/sacredMissions.ts"],
       "clientCalls": [
         "orpcClient.sacredMissions.create",
         "orpcClient.sacredMissions.endorse",
@@ -1361,9 +1215,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/sacredMissions.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/sacredMissions.ts"],
       "clientCalls": [
         "orpcClient.sacredMissions.create",
         "orpcClient.sacredMissions.endorse",
@@ -1383,9 +1235,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/sacredMissions.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/sacredMissions.ts"],
       "clientCalls": [
         "orpcClient.sacredMissions.create",
         "orpcClient.sacredMissions.endorse",
@@ -1405,9 +1255,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1443,9 +1291,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1481,9 +1327,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1519,9 +1363,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1557,9 +1399,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1595,9 +1435,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1633,9 +1471,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1671,9 +1507,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1709,9 +1543,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1747,9 +1579,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1785,9 +1615,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1823,9 +1651,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1861,9 +1687,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1899,9 +1723,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1937,9 +1759,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -1975,9 +1795,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -2013,9 +1831,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -2051,9 +1867,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -2089,9 +1903,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -2127,9 +1939,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/library.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/library.ts"],
       "clientCalls": [
         "client.api as any).library.resources[':id']['broken-link'].$post",
         "orpcClient.library.addToCollection",
@@ -2165,12 +1975,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/authorization.ts"
-      ],
-      "clientCalls": [
-        "client.api.authorization['permission-snapshot'].$get"
-      ],
+      "clientFiles": ["packages/core/src/api/authorization.ts"],
+      "clientCalls": ["client.api.authorization['permission-snapshot'].$get"],
       "hasResponses": true
     },
     {
@@ -4074,9 +3880,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/grading.ts"],
       "clientCalls": [
         "orpcClient.grading.getClassroomGrades",
         "orpcClient.grading.getGradingSettings",
@@ -4098,9 +3902,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/grading.ts"],
       "clientCalls": [
         "orpcClient.grading.getClassroomGrades",
         "orpcClient.grading.getGradingSettings",
@@ -4122,9 +3924,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/grading.ts"],
       "clientCalls": [
         "orpcClient.grading.getClassroomGrades",
         "orpcClient.grading.getGradingSettings",
@@ -4146,9 +3946,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/grading.ts"],
       "clientCalls": [
         "orpcClient.grading.getClassroomGrades",
         "orpcClient.grading.getGradingSettings",
@@ -4170,9 +3968,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/grading.ts"],
       "clientCalls": [
         "orpcClient.grading.getClassroomGrades",
         "orpcClient.grading.getGradingSettings",
@@ -4194,9 +3990,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/grading.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/grading.ts"],
       "clientCalls": [
         "orpcClient.grading.getClassroomGrades",
         "orpcClient.grading.getGradingSettings",
@@ -4218,9 +4012,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/attendance.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/attendance.ts"],
       "clientCalls": [
         "orpcClient.attendance.getByClassroom",
         "orpcClient.attendance.getReport",
@@ -4240,9 +4032,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/attendance.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/attendance.ts"],
       "clientCalls": [
         "orpcClient.attendance.getByClassroom",
         "orpcClient.attendance.getReport",
@@ -4262,9 +4052,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/attendance.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/attendance.ts"],
       "clientCalls": [
         "orpcClient.attendance.getByClassroom",
         "orpcClient.attendance.getReport",
@@ -4284,9 +4072,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/attendance.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/attendance.ts"],
       "clientCalls": [
         "orpcClient.attendance.getByClassroom",
         "orpcClient.attendance.getReport",
@@ -4306,9 +4092,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/attendance.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/attendance.ts"],
       "clientCalls": [
         "orpcClient.attendance.getByClassroom",
         "orpcClient.attendance.getReport",
@@ -4328,10 +4112,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4372,10 +4153,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4416,10 +4194,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4460,10 +4235,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4504,10 +4276,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4548,10 +4317,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4592,10 +4358,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4636,10 +4399,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4680,10 +4440,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4724,10 +4481,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4768,10 +4522,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4812,10 +4563,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4856,10 +4604,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4900,10 +4645,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4944,10 +4686,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -4988,10 +4727,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5032,10 +4768,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5076,10 +4809,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5120,10 +4850,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5164,10 +4891,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5208,10 +4932,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5252,10 +4973,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5296,10 +5014,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5340,10 +5055,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5384,10 +5096,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5428,10 +5137,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/community.ts", "packages/core/src/api/groups.ts"],
       "clientCalls": [
         "client.api as any).community.comments[':commentId'].$delete",
         "client.api as any).community.comments[':commentId'].official.$post",
@@ -5472,9 +5178,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5497,9 +5201,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5522,9 +5224,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5547,9 +5247,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5572,9 +5270,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5597,9 +5293,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5622,9 +5316,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5647,9 +5339,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/staffManagement.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/staffManagement.ts"],
       "clientCalls": [
         "orpcClient.admin.approveLeave",
         "orpcClient.admin.createCalendarEvent",
@@ -5672,9 +5362,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/messaging.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/messaging.ts"],
       "clientCalls": [
         "orpcClient.messaging.getConversations",
         "orpcClient.messaging.getMessages",
@@ -5694,9 +5382,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/messaging.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/messaging.ts"],
       "clientCalls": [
         "orpcClient.messaging.getConversations",
         "orpcClient.messaging.getMessages",
@@ -5716,9 +5402,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/messaging.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/messaging.ts"],
       "clientCalls": [
         "orpcClient.messaging.getConversations",
         "orpcClient.messaging.getMessages",
@@ -5738,9 +5422,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/messaging.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/messaging.ts"],
       "clientCalls": [
         "orpcClient.messaging.getConversations",
         "orpcClient.messaging.getMessages",
@@ -5976,9 +5658,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/announcements.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/announcements.ts"],
       "clientCalls": [
         "orpcClient.announcements.createAnnouncement",
         "orpcClient.announcements.getAnnouncements"
@@ -5996,9 +5676,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/announcements.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/announcements.ts"],
       "clientCalls": [
         "orpcClient.announcements.createAnnouncement",
         "orpcClient.announcements.getAnnouncements"
@@ -6031,12 +5709,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/agent.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).agent['system-status'].$get"
-      ],
+      "clientFiles": ["packages/core/src/api/agent.ts"],
+      "clientCalls": ["client.api as any).agent['system-status'].$get"],
       "hasResponses": true
     },
     {
@@ -6050,9 +5724,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/thuthimal.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/thuthimal.ts"],
       "clientCalls": [
         "orpcClient.thuthimal.claimGift",
         "orpcClient.thuthimal.createGift",
@@ -6072,9 +5744,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/thuthimal.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/thuthimal.ts"],
       "clientCalls": [
         "orpcClient.thuthimal.claimGift",
         "orpcClient.thuthimal.createGift",
@@ -6094,9 +5764,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/thuthimal.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/thuthimal.ts"],
       "clientCalls": [
         "orpcClient.thuthimal.claimGift",
         "orpcClient.thuthimal.createGift",
@@ -6116,9 +5784,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/thuthimal.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/thuthimal.ts"],
       "clientCalls": [
         "orpcClient.thuthimal.claimGift",
         "orpcClient.thuthimal.createGift",
@@ -6138,9 +5804,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/erp.ts"],
       "clientCalls": [
         "orpcClient.erp.createPaymentIntent",
         "orpcClient.erp.getAccounts",
@@ -6161,9 +5825,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/erp.ts"],
       "clientCalls": [
         "orpcClient.erp.createPaymentIntent",
         "orpcClient.erp.getAccounts",
@@ -6184,9 +5846,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/erp.ts"],
       "clientCalls": [
         "orpcClient.erp.createPaymentIntent",
         "orpcClient.erp.getAccounts",
@@ -6207,9 +5867,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/erp.ts"],
       "clientCalls": [
         "orpcClient.erp.createPaymentIntent",
         "orpcClient.erp.getAccounts",
@@ -6230,9 +5888,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/erp.ts"],
       "clientCalls": [
         "orpcClient.erp.createPaymentIntent",
         "orpcClient.erp.getAccounts",
@@ -6253,9 +5909,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/erp.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/erp.ts"],
       "clientCalls": [
         "orpcClient.erp.createPaymentIntent",
         "orpcClient.erp.getAccounts",
@@ -6276,9 +5930,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6302,9 +5954,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6328,9 +5978,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6354,9 +6002,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6380,9 +6026,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6406,9 +6050,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6432,9 +6074,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6458,9 +6098,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/formTemplates.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/formTemplates.ts"],
       "clientCalls": [
         "client.api as any).forms.owners[':ownerId'].templates.$get",
         "client.api as any).forms.responses.$post",
@@ -6484,9 +6122,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/mapping.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/mapping.ts"],
       "clientCalls": [
         "client.api as any).mapping.schools[':schoolId'].pulse.$get",
         "client.api as any).mapping.topologies[':id'].$get",
@@ -6506,9 +6142,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/mapping.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/mapping.ts"],
       "clientCalls": [
         "client.api as any).mapping.schools[':schoolId'].pulse.$get",
         "client.api as any).mapping.topologies[':id'].$get",
@@ -6528,9 +6162,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/mapping.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/mapping.ts"],
       "clientCalls": [
         "client.api as any).mapping.schools[':schoolId'].pulse.$get",
         "client.api as any).mapping.topologies[':id'].$get",
@@ -6550,9 +6182,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/mapping.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/mapping.ts"],
       "clientCalls": [
         "client.api as any).mapping.schools[':schoolId'].pulse.$get",
         "client.api as any).mapping.topologies[':id'].$get",
@@ -6572,9 +6202,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/inventory.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/inventory.ts"],
       "clientCalls": [
         "client.api as any).inventory.classrooms[':classroomId'].items.$get",
         "client.api as any).inventory.items[':id'].$patch",
@@ -6595,9 +6223,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/inventory.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/inventory.ts"],
       "clientCalls": [
         "client.api as any).inventory.classrooms[':classroomId'].items.$get",
         "client.api as any).inventory.items[':id'].$patch",
@@ -6618,9 +6244,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/inventory.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/inventory.ts"],
       "clientCalls": [
         "client.api as any).inventory.classrooms[':classroomId'].items.$get",
         "client.api as any).inventory.items[':id'].$patch",
@@ -6641,9 +6265,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/inventory.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/inventory.ts"],
       "clientCalls": [
         "client.api as any).inventory.classrooms[':classroomId'].items.$get",
         "client.api as any).inventory.items[':id'].$patch",
@@ -6664,9 +6286,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/inventory.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/inventory.ts"],
       "clientCalls": [
         "client.api as any).inventory.classrooms[':classroomId'].items.$get",
         "client.api as any).inventory.items[':id'].$patch",
@@ -6687,9 +6307,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/history.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/history.ts"],
       "clientCalls": [
         "client.api as any).history.collections[':collectionId'].membership.$get",
         "client.api as any).history.community[':entityType'][':entityId'].$get",
@@ -6709,9 +6327,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/history.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/history.ts"],
       "clientCalls": [
         "client.api as any).history.collections[':collectionId'].membership.$get",
         "client.api as any).history.community[':entityType'][':entityId'].$get",
@@ -6731,9 +6347,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/history.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/history.ts"],
       "clientCalls": [
         "client.api as any).history.collections[':collectionId'].membership.$get",
         "client.api as any).history.community[':entityType'][':entityId'].$get",
@@ -6753,9 +6367,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/history.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/history.ts"],
       "clientCalls": [
         "client.api as any).history.collections[':collectionId'].membership.$get",
         "client.api as any).history.community[':entityType'][':entityId'].$get",
@@ -6775,9 +6387,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/history.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/history.ts"],
       "clientCalls": [
         "client.api as any).history.collections[':collectionId'].membership.$get",
         "client.api as any).history.community[':entityType'][':entityId'].$get",
@@ -6797,9 +6407,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/longitudinal.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/longitudinal.ts"],
       "clientCalls": [
         "client.api as any).longitudinal.student.snapshot.$get",
         "client.api as any).longitudinal.student.timeline.$get"
@@ -6817,9 +6425,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/longitudinal.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/longitudinal.ts"],
       "clientCalls": [
         "client.api as any).longitudinal.student.snapshot.$get",
         "client.api as any).longitudinal.student.timeline.$get"
@@ -6837,9 +6443,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/schoolForest.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/schoolForest.ts"],
       "clientCalls": [
         "client.api as any)['school-forest'].gifts.$post",
         "client.api as any)['school-forest'].gifts[':giftId'].deliver.$patch",
@@ -6859,9 +6463,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/schoolForest.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/schoolForest.ts"],
       "clientCalls": [
         "client.api as any)['school-forest'].gifts.$post",
         "client.api as any)['school-forest'].gifts[':giftId'].deliver.$patch",
@@ -6881,9 +6483,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/schoolForest.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/schoolForest.ts"],
       "clientCalls": [
         "client.api as any)['school-forest'].gifts.$post",
         "client.api as any)['school-forest'].gifts[':giftId'].deliver.$patch",
@@ -6903,9 +6503,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/schoolForest.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/schoolForest.ts"],
       "clientCalls": [
         "client.api as any)['school-forest'].gifts.$post",
         "client.api as any)['school-forest'].gifts[':giftId'].deliver.$patch",
@@ -6925,9 +6523,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/schoolForest.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/schoolForest.ts"],
       "clientCalls": [
         "client.api as any)['school-forest'].gifts.$post",
         "client.api as any)['school-forest'].gifts[':giftId'].deliver.$patch",
@@ -6947,13 +6543,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/privacy.ts"
-      ],
-      "clientCalls": [
-        "orpcClient.privacy.getPrivacyLedger",
-        "orpcClient.privacy.logPrivacyEvent"
-      ],
+      "clientFiles": ["packages/core/src/api/privacy.ts"],
+      "clientCalls": ["orpcClient.privacy.getPrivacyLedger", "orpcClient.privacy.logPrivacyEvent"],
       "hasResponses": true
     },
     {
@@ -6967,13 +6558,8 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/privacy.ts"
-      ],
-      "clientCalls": [
-        "orpcClient.privacy.getPrivacyLedger",
-        "orpcClient.privacy.logPrivacyEvent"
-      ],
+      "clientFiles": ["packages/core/src/api/privacy.ts"],
+      "clientCalls": ["orpcClient.privacy.getPrivacyLedger", "orpcClient.privacy.logPrivacyEvent"],
       "hasResponses": true
     },
     {
@@ -6987,9 +6573,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/studentPotential.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/studentPotential.ts"],
       "clientCalls": [
         "client.api as any).ai['student-potential'].$post",
         "orpcClient.studentPotential.getForClassroom",
@@ -7009,9 +6593,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/studentPotential.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/studentPotential.ts"],
       "clientCalls": [
         "client.api as any).ai['student-potential'].$post",
         "orpcClient.studentPotential.getForClassroom",
@@ -7031,9 +6613,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/studentPotential.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/studentPotential.ts"],
       "clientCalls": [
         "client.api as any).ai['student-potential'].$post",
         "orpcClient.studentPotential.getForClassroom",
@@ -7053,9 +6633,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7079,9 +6657,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7105,9 +6681,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7131,9 +6705,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7157,9 +6729,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7183,9 +6753,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7209,9 +6777,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7235,9 +6801,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7261,9 +6825,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/rewards.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/rewards.ts"],
       "clientCalls": [
         "orpcClient.rewards.addPoints",
         "orpcClient.rewards.awardBadge",
@@ -7287,9 +6849,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/echo.ts"],
       "clientCalls": [
         "client.api as any).echoes.$post",
         "client.api as any).echoes.classrooms[':classroomId'].$get",
@@ -7311,9 +6871,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/echo.ts"],
       "clientCalls": [
         "client.api as any).echoes.$post",
         "client.api as any).echoes.classrooms[':classroomId'].$get",
@@ -7335,9 +6893,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/echo.ts"],
       "clientCalls": [
         "client.api as any).echoes.$post",
         "client.api as any).echoes.classrooms[':classroomId'].$get",
@@ -7359,9 +6915,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/echo.ts"],
       "clientCalls": [
         "client.api as any).echoes.$post",
         "client.api as any).echoes.classrooms[':classroomId'].$get",
@@ -7383,9 +6937,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/echo.ts"],
       "clientCalls": [
         "client.api as any).echoes.$post",
         "client.api as any).echoes.classrooms[':classroomId'].$get",
@@ -7407,9 +6959,7 @@
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/echo.ts"
-      ],
+      "clientFiles": ["packages/core/src/api/echo.ts"],
       "clientCalls": [
         "client.api as any).echoes.$post",
         "client.api as any).echoes.classrooms[':classroomId'].$get",

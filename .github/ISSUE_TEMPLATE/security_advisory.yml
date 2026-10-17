@@ -131,7 +131,7 @@ body:
         - Commit: abc1234
         - Environment: production
         - Node: 22.23.2
-        - pnpm: 12.4.2
+        - pnpm: 12.14.0
         - OS: Ubuntu 22.04
     validations:
       required: false

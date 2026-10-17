@@ -12,12 +12,23 @@ This document is the product-level contract for a trustworthy Gurudevi account.
 It is intentionally platform-neutral. Mobile and web may differ in Explore and
 guest behavior, but they must not disagree about the durable account state.
 
+This contract is a versioned implementation target, not a claim that all future
+product policy is permanent. Later policy changes must update the contract,
+characterize affected callers, and preserve a compatibility or migration path.
+
 ## 1. Core invariant
 
 One person has one durable Gurudevi account identity, initially independent of
 any school. A provider subject, internal account, profile, role/capacity, and
 school/class relationships are separate concepts. A client-selected role,
 school ID, class ID, or scope never grants authority by itself.
+
+Sanctuary is the whole authenticated Gurudevi app. After onboarding, the user
+enters Sanctuary and Self is the primary home tab inside it. Workspace,
+Library, and Community are additional domains. Institutional relationships are
+later participation contexts; they are not prerequisites for Sanctuary or
+Self, and open/public Library and Community experiences must not be
+institution-gated.
 
 ## 2. Canonical states
 
@@ -27,8 +38,8 @@ school ID, class ID, or scope never grants authority by itself.
 | `guest` | Temporary mobile-local identity that may accumulate eligible personal work. | Limited to guest-capable mobile surfaces | Local only |
 | `identity_created` | Provider identity and internal account exist, but required profile/capacity onboarding is incomplete. | No, except onboarding/recovery | Only lifecycle-safe setup writes |
 | `onboarding` | Account is actively completing required name and primary role/capacity details. | No, except onboarding | Profile/onboarding writes only |
-| `active_personal` | Required onboarding is complete; user can use independent personal domains. | Yes | User-owned writes allowed by capability |
-| `active_scoped` | Active account also has a server-verified school/class/community relationship and selected scope. | Yes, for the verified scope | Entity-scoped writes allowed by authorization |
+| `active_personal` | Required onboarding is complete; the user enters Sanctuary and can use Self, Workspace, open Community, and public Library according to capacity and capability. No institution is required. | Yes | Personal/open writes and role-appropriate setup actions allowed by capability |
+| `active_scoped` | Active account also has a server-verified school/class/community relationship and selected participation scope. | Yes, with additional scoped capabilities | Entity-scoped reads/writes allowed by authorization |
 | `deletion_requested` | A deletion request exists; final deletion has not occurred. | Policy-controlled, with truthful restrictions | No new writes where policy forbids; status/support writes remain |
 | `deactivated` | Access is intentionally disabled without representing final erasure. | No | No ordinary domain writes |
 | `deleted` | Terminal account state after the approved deletion process. | No | No account-authenticated writes |
@@ -44,7 +55,7 @@ visitor ──mobile guest──> guest
 visitor ──signup/callback──> identity_created
 guest ──account conversion──> identity_created
 identity_created ──begin onboarding──> onboarding
-onboarding ──name + primary capacity accepted──> active_personal
+onboarding ──name + primary capacity accepted──> active_personal (Sanctuary)
 active_personal ──verified school/class/community relationship──> active_scoped
 active_scoped ──relationship ends──> active_personal
 active_personal/active_scoped ──deletion request──> deletion_requested
@@ -72,8 +83,15 @@ Forbidden implicit transitions:
 3. The user is sent to onboarding until name and primary capacity are valid.
 4. The server records onboarding completion atomically with the required
    profile facts.
-5. The user enters the personal product surface.
-6. Role-specific relationship actions are offered only after personal entry.
+5. The user enters Sanctuary, the whole authenticated app, with Self as the
+   primary home tab.
+6. Self, Workspace, open Community, and public Library actions are available
+   according to capacity and capability without a school or class relationship.
+7. Role-specific setup actions are offered from personal entry: a principal
+   can create a school, and a teacher can create or join a class.
+8. Operations against an existing organization or class require the matching
+   server-verified relationship; relationship absence does not block Workspace
+   entry.
 
 Failure behavior: expired callback, duplicate submission, unavailable API,
 invalid role, and interrupted onboarding each return a recoverable state. None
@@ -89,27 +107,44 @@ may strand the user in a false `active` state.
    reported to the user.
 5. A retry cannot duplicate the transfer.
 
-### 4.3 Principal school creation
+### 4.3 Open Sanctuary domains
 
-1. An `active_personal` user chooses to create a school platform.
+An onboarded user can enter Self and Workspace and access the open/public
+portions of Community and Library without first creating or joining an
+institution. Capacity controls available actions; institutional membership is
+required only for operations against an existing scoped entity.
+Those domains still enforce their own visibility, safety, contribution, and
+moderation rules. “Open” does not mean unauthenticated or unrestricted.
+
+For implementation, “open” means eligible authenticated users may use the
+capability without an institutional relationship. “Public” means an anonymous
+visitor may read or open the specifically approved resource. “Account-required”
+means sign-in is required even when no school or class is required. “Scoped”
+means an accepted server-verified relationship is required. Each Library and
+Community capability must declare one of these access classes rather than using
+one global gate.
+
+### 4.4 Principal school creation
+
+1. An `active_personal` principal chooses to create a school platform.
 2. The server creates the school entity and an owner relationship atomically.
 3. The resulting scope is server-derived and becomes `active_scoped` only after
    the relationship is confirmed.
 4. Failure leaves either no school or a recoverable, idempotently retryable
    creation request; it must not create an ownerless partial school.
 
-### 4.4 Teacher class creation or joining
+### 4.5 Teacher class creation or joining
 
-1. An onboarded teacher chooses create-class or join-class.
-2. Create-class requires an authorized school scope and creates the class plus
-   teacher relationship together.
+1. An onboarded teacher enters Workspace and chooses create-class or join-class.
+2. Create-class creates the class plus teacher relationship together; creating
+   a new class does not require prior membership in an existing class.
 3. Join-class requires an invitation or official join workflow; submitted IDs
    are lookup inputs, not authority.
 4. The relationship is visible with a truthful pending/accepted/denied state.
 5. Classroom tasks become available only after accepted membership is returned
    by the server.
 
-### 4.5 Session lifecycle
+### 4.6 Session lifecycle
 
 - Initial load resolves the current session and account state.
 - Auth state changes, refresh, expiry, sign-out, and cross-tab changes are
@@ -118,7 +153,7 @@ may strand the user in a false `active` state.
 - Retry after reauthentication returns the user to the intended safe point when
   possible, without replaying a non-idempotent mutation blindly.
 
-### 4.6 Deletion request
+### 4.7 Deletion request
 
 1. User submits a deletion request.
 2. Server returns a request receipt and current status.
@@ -168,4 +203,3 @@ This contract is ready for implementation only when the following are recorded:
 
 Until then, existing code remains compatibility surface, not permission to
 delete or silently replace behavior.
-

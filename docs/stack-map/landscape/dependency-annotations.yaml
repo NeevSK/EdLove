@@ -95,6 +95,7 @@ dependency_entries:
   effect:
     category: resilience
     purpose: "Resilience, retries, and typed error channels for @repo/core"
+    status: held
     notes: "Monorepo baseline is Effect v4.0.2. Encapsulated inside packages/core."
   "@supabase/supabase-js":
     category: data-sync
@@ -265,10 +266,6 @@ dependency_entries:
     category: native
     purpose: "CSS prefixer required by react-native-web"
     notes: "v5 pinned as direct peer dependency of react-native-web runtime."
-  effect:
-    category: architecture
-    purpose: "Functional programming & Effect TS runtime"
-    notes: "v3.22 pinned; gradual migration toward Effect v4 in progress."
   vercel:
     category: tooling
     purpose: "Deployment CLI for Vercel"
@@ -408,9 +405,6 @@ dependency_entries:
   apca-w3:
     category: graphics
     purpose: "APCA contrast algorithm"
-  effect:
-    category: utility
-    purpose: "Typed functional runtime"
   react-native-blur:
     category: ui-kit
     purpose: "Blur views"

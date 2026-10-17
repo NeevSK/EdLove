@@ -2,7 +2,7 @@
 title: "Safe Exploration and Reversible Work Model"
 status: "active"
 created: 2026-09-28
-updated: 2026-10-04
+updated: 2026-10-11
 decision_owner: "Naveen"
 tags: [architecture, explore, guest, sandbox, demo, drafts, safety, product]
 ---
@@ -72,7 +72,7 @@ platform; Safe Try remains shared across signed-in platforms:
 
 | Surface | Intended entry/presentation | Identity and persistence | Product continuity gap |
 | --- | --- | --- | --- |
-| Gurudevi web `/explore/*` | Public route at `https://sanctuary.gurudevi.app/explore/*`; anyone can open it without signing in. | No Supabase identity; baseline fixtures and browser-local persistence. | Public Explore must remain outside account authorization and must not acquire live account data through session restoration. |
+| Gurudevi web Explore | Public routes at `https://explore.gurudevi.app`; anyone can open them without signing in. The old `/explore/*` paths are retired. | No Supabase identity; baseline fixtures and browser-local persistence. | Public Explore must remain outside account authorization and must not acquire live account data through session restoration. |
 | Gurudevi mobile Guest | Explicit Guest choice in the native welcome flow. | Supabase anonymous subject identifies the guest; fifteen-day feature data remains local-first. | Preserve this path and its identity meaning; it is not required to use the web Explore route name. |
 | Authenticated web Sanctuary | Signed-in application at `https://sanctuary.gurudevi.app`. | Authenticated account and account-authorized data. | Account-holder Safe Try must be reachable here from features at any tenure. |
 
@@ -84,7 +84,7 @@ and persistence adapters do not need to be identical.
 
 | Term | User meaning | Technical boundary |
 | --- | --- | --- |
-| **Explore** | “See what is possible and try safely.” | Public web journey at `/explore/*`. Uses browser-local data and fixtures; no cloud identity. |
+| **Explore** | “See what is possible and try safely.” | Public web journey at `explore.gurudevi.app`. It uses browser-local data and fixtures; no cloud identity. |
 | **Safe Try** | A clear action label: “You can try this without affecting live work.” | The promise shown before a reversible/local/simulated action. It is not a hidden global mode. |
 | **Demo** | A quick, curated tour. | Baseline sample content; normally read-only or lightly interactive. It must disclose any reset/non-persistence. |
 | **Draft** | Private work that is not yet live, shared, or final. | A state within an Explore, guest, or account adapter; retention and conversion are feature-specific. |
@@ -144,7 +144,7 @@ and consequential integration tests.
 
 ```text
 Web visitor
-  └─ /explore/* → public Explore, browser-local sample workspace
+  └─ explore.gurudevi.app/* → public Explore, browser-local sample workspace
        ├─ reset / leave
        └─ create or sign into account → explicit import of eligible Explore work
 
@@ -167,7 +167,7 @@ feature. Explore and Guest conversion are independent: web Explore work may be
 explicitly imported where supported; mobile Guest work follows the Guest claim
 and migration contract. Neither path silently imports sample fixtures.
 
-- **Explore** is public web access at `sanctuary.gurudevi.app/explore/*`, with
+- **Explore** is public web access at `explore.gurudevi.app`, with
   fictional baseline data and reversible browser-local interaction. Opening it
   creates no Supabase identity.
 - **Guest** is explicit mobile-only temporary continuity. Its Supabase
@@ -196,7 +196,7 @@ Guest tier, or generic global practice mode.
 2. For candidate feature slices, record renderer, live query/command, current
    Explore adapter, current Guest store (mobile), account drafts, reset, external
    effects, and migration eligibility. Trace every caller of the command. For
-   web `/explore/*`, inspect host routing, proxy session refresh, and the
+   web `explore.gurudevi.app`, inspect host routing, proxy session refresh, and the
    sanctuary layout/auth provider to verify no account feature data hydrates. Key
    seams include `apps/gurudevi-web/lib/explore/storage.ts`,
    `apps/gurudevi-web/lib/explore/self-reflection.ts`, web feature canvases,
@@ -225,7 +225,7 @@ mobile Explore mode remains in active plans.
 
 ### Phase 1 — Finish the public web Explore contract
 
-1. Keep `/explore/*` public on `sanctuary.gurudevi.app`, outside account-only
+1. Keep `explore.gurudevi.app` public, outside account-only
    authorization. Web welcome/visitor actions say **Explore** and route there;
    remove Guest wording from the web visitor path. Explore routes must not hydrate live account feature data
    from a restored browser session.
@@ -531,3 +531,29 @@ does not claim implementation is complete.
   Keep, the Simple/Full presentation profiles, a product-edition policy, or
   feature-wide rollout. Those remain in the ordered plan above.
 
+### Implementation checkpoint (2026-10-09)
+
+- The shared controller is now the lifecycle seam for both web and native
+  adapters. It accepts synchronous or asynchronous feature-owned storage and
+  enforces account practice scope, local-only writes, and discard lifecycle
+  transitions without importing native storage into `@repo/core`.
+- Browser Fire Journal and Workspace attendance now use that controller. Their
+  adapters keep fictional records in account + feature + workspace namespaces;
+  live account commands remain on their existing path and are not reachable from
+  Safe Try writes.
+- Attendance practice is declared for browser capacities `teacher`,
+  `gradeHead`, `sectionHead`, `principal`, `assistantPrincipal`, and `admin`.
+  Unsupported capacities and missing selected scope do not receive the Safe Try
+  affordance.
+- G0 contract evidence covers namespace isolation, production-write denial,
+  role/scope gating, and failed-discard recovery. G1 boundary evidence covers
+  Fire Journal, attendance, and preservation of the live attendance path.
+- Native feature adapters are not claimed as delivered yet. Mobile can consume
+  the same contract through its platform storage adapter; the shared
+  `createFeatureRuntime` selector and `nativeFeatureStorage` bridge are now in
+  place, while native Safe Try UI is still added feature by feature. The
+  capability manifest now carries route, renderer, and canvas placement
+  metadata, and the canonical canvas helper is consumed by the native Self
+  canvas. This makes feature identity and placement reusable while floors and
+  renderers remain platform-owned. Server-backed Sandbox remains deferred
+  until a feature contract requires it.

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://terrain.intuitui.org/schema.json",
+  "preset": "expo",
+  "strictNativeFloating": true,
+  "rules": {
+    "disallowFloatingNativeRanges": "warn",
+    "enforcePeerMatrixAlignment": "error",
+    "enforceNewArchitectureCompatibility": "warn",
+    "sacredPins": "warn"
+  },
+  "aliases": {
+    "@repo/ui": "react-native"
+  }
+}

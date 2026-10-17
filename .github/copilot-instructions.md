@@ -1,16 +1,6 @@
----
-title: "Unified Developer Copilot Instructions"
-status: "active"
-created: 2026-05-31
-updated: 2026-10-15
-author: "Naveen"
-scribe: "Antigravity"
-tags: [.github, generated]
----
-
 # Unified Developer Copilot Instructions
 
-Generated automatically by the EdLove & Gurudevi Gateway. Do not edit directly.
+Generated automatically by the Polymath Platform Gateway. Do not edit directly.
 
 
 <!-- START SYSTEM RULES (.cursorrules) -->

@@ -1,0 +1,11 @@
+secret:
+  ignored_paths:
+  - reports/**
+  - tests/**
+  - docs/**
+  - '**/*.md'
+  - '**/__tests__/**'
+  - docs/research/edu-audit/**
+  - scratch/**
+  - report/**
+version: 2
