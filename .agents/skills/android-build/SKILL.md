@@ -23,6 +23,8 @@ Authoritative engineering SOP for compiling native Android Debug and Release bui
 3. **ALWAYS Build Inside WSL 2 (Ubuntu)**:
    **NEVER** build native Android on the Windows host directly. Windows paths exceed limits (`CMAKE_OBJECT_PATH_MAX`) and trigger Ninja manifest timestamp loops (`build.ninja dirty after 100 tries`).
 
+4. **Preserve the generated Android project during routine prebuilds**: for this Expo CLI, `prebuild` without `--no-clean` clears and recreates the native directory. Use `--no-clean` when syncing ordinary app-config/plugin changes so the generated project and local Gradle state are retained. A clean regeneration or deleting `android/` is destructive and requires explicit user approval under the repo's `AGENTS.md`.
+
 ---
 
 ## 2. One-Command Unified Execution from Windows
@@ -77,12 +79,11 @@ cd "$POLYMATH_WSL_DIR/apps/gurudevi-mobile/android"
 
 ## 4. Troubleshooting & Clean Regeneration
 
-If Gradle builds fail due to stale ephemeral state:
+For ordinary config/plugin synchronization, layer changes onto the generated project:
 ```bash
-# Delete android artifact folder and regenerate prebuild cleanly:
-Remove-Item -Path "apps\gurudevi-mobile\android" -Recurse -Force
-npx expo prebuild --no-install --platform android
+pnpm --filter gurudevi-mobile exec expo prebuild --no-install --platform android --no-clean
 ```
+- If a build failure appears to require deleting or cleanly regenerating `android/`, stop and get explicit user approval first. The previous APK, project-local Gradle state, and generated files may be removed.
 - Never hand-edit files in `apps/gurudevi-mobile/android/` directly.
 - All native configuration belongs in `app.json` or config plugins under `apps/gurudevi-mobile/plugins/`.
 
