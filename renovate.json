@@ -24,8 +24,5 @@
       "automerge": true
     }
   ],
-  "pnpm": {
-    "enabled": true
-  },
   "rangeStrategy": "bump"
 }
