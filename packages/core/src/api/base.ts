@@ -42,7 +42,7 @@ export function ensureSecureUrl(url: string): string {
  */
 export const SOVEREIGN_API_URL =
   ensureSecureUrl(SOVEREIGN_API_PUBLIC_URL) ||
-  (localDevelopmentFallbackAllowed ? 'http://localhost:3000' : 'https://api.gurudevi.app');
+  (localDevelopmentFallbackAllowed ? 'http://localhost:3000' : '');
 
 /**
  * ORPC procedures are mounted under the API prefix, whereas Hono clients use

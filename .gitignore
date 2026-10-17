@@ -163,6 +163,7 @@ scripts/*.js
 
 # research works 
 docs/research
+docs/atlas/
 
 # Multi-agent teamwork scratch & ephemeral orchestration state
 .agents/teamwork/
@@ -176,3 +177,5 @@ reports/*.png
 
 # Bundle visualizer and route bundle analysis reports
 apps/gurudevi-mobile/reports/
+
+.vercel

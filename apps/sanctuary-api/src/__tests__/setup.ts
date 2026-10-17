@@ -66,6 +66,20 @@ export function setMockClassroomNoteRead(row: Record<string, unknown> | null | u
 }
 let mockClassrooms: any[] = [];
 let mockClassroomStudents: any[] = [];
+let mockGradeClassAssignments: any[] = [];
+let mockGradeClassEnrollments: any[] = [];
+
+/** Academic lifecycle (model A) rows: teacher assignments and student enrollments. */
+export function setMockGradeClassLifecycle({
+  assignments = [],
+  enrollments = [],
+}: {
+  assignments?: any[];
+  enrollments?: any[];
+}) {
+  mockGradeClassAssignments = assignments;
+  mockGradeClassEnrollments = enrollments;
+}
 const mockEducationalRows = new Map<string, Record<string, unknown>>();
 let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
 
@@ -201,11 +215,99 @@ export function setMockClassroomRelationships({
 }) {
   mockClassrooms = classrooms;
   mockClassroomStudents = students ?? [];
+  mockGradeClassAssignments = [];
+  mockGradeClassEnrollments = [];
   mockEducationalRows.clear();
 }
 
 export function getMockLibraryCollectionFindManyArgs() {
   return mockLibraryCollectionFindManyArgs;
+}
+
+function filterCollectionNodeEvents(args: any = {}) {
+  const where = args?.where;
+  let results = mockCollectionNodeEvents;
+  if (where?.collection_id) {
+    results = where.collection_id.in
+      ? results.filter((e: any) => where.collection_id.in.includes(e.collection_id))
+      : results.filter((e: any) => e.collection_id === where.collection_id);
+  }
+  if (where?.node_id) {
+    results = results.filter((e: any) => e.node_id === where.node_id);
+  }
+  if (where?.event_type) {
+    results = results.filter((e: any) => e.event_type === where.event_type);
+  }
+  if (where?.actor_id) {
+    results = results.filter((e: any) => e.actor_id === where.actor_id);
+  }
+  if (where?.occurred_at?.lte) {
+    const cutoff = new Date(where.occurred_at.lte);
+    results = results.filter((e: any) => new Date(e.occurred_at) <= cutoff);
+  }
+  if (where?.occurred_at?.gte) {
+    const cutoff = new Date(where.occurred_at.gte);
+    results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
+  }
+  if (args?.orderBy?.occurred_at === 'desc') {
+    results = [...results].sort(
+      (a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime(),
+    );
+  } else if (args?.orderBy?.occurred_at === 'asc') {
+    results = [...results].sort(
+      (a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime(),
+    );
+  }
+  if (args?.take) {
+    results = results.slice(0, args.take);
+  }
+  return results;
+}
+
+function filterUserRewardsVersions(args: any = {}) {
+  const where = args?.where;
+  let results = mockUserRewardsVersions;
+  if (where?.user_id) {
+    results = results.filter((v: any) => v.user_id === where.user_id);
+  }
+  if (where?.recorded_at?.lte) {
+    const cutoff = new Date(where.recorded_at.lte);
+    results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
+  }
+  if (where?.recorded_at?.gte) {
+    const cutoff = new Date(where.recorded_at.gte);
+    results = results.filter((v: any) => new Date(v.recorded_at) >= cutoff);
+  }
+  if (args?.orderBy?.recorded_at === 'desc') {
+    results = [...results].sort(
+      (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
+    );
+  } else if (args?.orderBy?.recorded_at === 'asc') {
+    results = [...results].sort(
+      (a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
+    );
+  }
+  if (args?.take) {
+    results = results.slice(0, args.take);
+  }
+  return results;
+}
+
+function filterWhisperedMoments(args: any = {}) {
+  const where = args?.where;
+  let results = mockWhisperedMoments;
+  if (where?.user_id) {
+    results = results.filter((w: any) => w.user_id === where.user_id);
+  }
+  if (args?.orderBy?.created_at === 'desc') {
+    results = [...results].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+  }
+  if (args?.take) {
+    results = results.slice(0, args.take);
+  }
+  return results;
 }
 
 function createMockDelegate(name: string): any {
@@ -407,45 +509,7 @@ function createMockDelegate(name: string): any {
             };
           }
           if (name === 'collectionNodeEvent') {
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockCollectionNodeEvents;
-              if (where?.collection_id) {
-                results = where.collection_id.in
-                  ? results.filter((e: any) => where.collection_id.in.includes(e.collection_id))
-                  : results.filter((e: any) => e.collection_id === where.collection_id);
-              }
-              if (where?.node_id) {
-                results = results.filter((e: any) => e.node_id === where.node_id);
-              }
-              if (where?.event_type) {
-                results = results.filter((e: any) => e.event_type === where.event_type);
-              }
-              if (where?.actor_id) {
-                results = results.filter((e: any) => e.actor_id === where.actor_id);
-              }
-              if (where?.occurred_at?.lte) {
-                const cutoff = new Date(where.occurred_at.lte);
-                results = results.filter((e: any) => new Date(e.occurred_at) <= cutoff);
-              }
-              if (where?.occurred_at?.gte) {
-                const cutoff = new Date(where.occurred_at.gte);
-                results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
-              }
-              if (args?.orderBy?.occurred_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime(),
-                );
-              } else if (args?.orderBy?.occurred_at === 'asc') {
-                results = [...results].sort(
-                  (a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime(),
-                );
-              }
-              if (args?.take) {
-                results = results.slice(0, args.take);
-              }
-              return results;
-            };
+            return async (args: any = {}) => filterCollectionNodeEvents(args);
           }
           if (name === 'userRewards') {
             return async (args: any = {}) => {
@@ -457,48 +521,10 @@ function createMockDelegate(name: string): any {
             };
           }
           if (name === 'userRewardsVersions') {
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockUserRewardsVersions;
-              if (where?.user_id) {
-                results = results.filter((v: any) => v.user_id === where.user_id);
-              }
-              if (where?.recorded_at?.lte) {
-                const cutoff = new Date(where.recorded_at.lte);
-                results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
-              }
-              if (args?.orderBy?.recorded_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
-                );
-              } else if (args?.orderBy?.recorded_at === 'asc') {
-                results = [...results].sort(
-                  (a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
-                );
-              }
-              if (args?.take) {
-                results = results.slice(0, args.take);
-              }
-              return results;
-            };
+            return async (args: any = {}) => filterUserRewardsVersions(args);
           }
           if (name === 'whisperedMoment') {
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockWhisperedMoments;
-              if (where?.user_id) {
-                results = results.filter((w: any) => w.user_id === where.user_id);
-              }
-              if (args?.orderBy?.created_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-                );
-              }
-              if (args?.take) {
-                results = results.slice(0, args.take);
-              }
-              return results;
-            };
+            return async (args: any = {}) => filterWhisperedMoments(args);
           }
           if (name === 'classroomNote') {
             return async (args: any = {}) => {
@@ -522,6 +548,16 @@ function createMockDelegate(name: string): any {
           prop === 'deleteMany' ||
           prop === 'updateMany'
         ) {
+          if (name === 'dailyAttendance' && prop === 'upsert') {
+            return async (args: any = {}) => ({
+              id: '123e4567-e89b-12d3-a456-426614174099',
+              ...(args?.create ?? {}),
+              created_at: new Date('2026-10-17T00:00:00.000Z'),
+              updated_at: new Date('2026-10-17T00:00:00.000Z'),
+              student: { full_name: null, avatar_url: null },
+              sessions: [],
+            });
+          }
           if (name === 'libraryCollection' && prop === 'update') {
             return async (args: { where: { id: string }; data: Record<string, unknown> }) => {
               const existing =
@@ -1028,45 +1064,7 @@ function createMockDelegate(name: string): any {
             };
           if (name === 'libraryResource') return async () => mockLibraryResources;
           if (name === 'collectionNodeEvent')
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockCollectionNodeEvents;
-              if (where?.collection_id) {
-                results = where.collection_id.in
-                  ? results.filter((e: any) => where.collection_id.in.includes(e.collection_id))
-                  : results.filter((e: any) => e.collection_id === where.collection_id);
-              }
-              if (where?.node_id) {
-                results = results.filter((e: any) => e.node_id === where.node_id);
-              }
-              if (where?.event_type) {
-                results = results.filter((e: any) => e.event_type === where.event_type);
-              }
-              if (where?.actor_id) {
-                results = results.filter((e: any) => e.actor_id === where.actor_id);
-              }
-              if (where?.occurred_at?.lte) {
-                const cutoff = new Date(where.occurred_at.lte);
-                results = results.filter((e: any) => new Date(e.occurred_at) <= cutoff);
-              }
-              if (where?.occurred_at?.gte) {
-                const cutoff = new Date(where.occurred_at.gte);
-                results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
-              }
-              if (args?.orderBy?.occurred_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime(),
-                );
-              } else if (args?.orderBy?.occurred_at === 'asc') {
-                results = [...results].sort(
-                  (a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime(),
-                );
-              }
-              if (args?.take) {
-                results = results.slice(0, args.take);
-              }
-              return results;
-            };
+            return async (args: any = {}) => filterCollectionNodeEvents(args);
           if (name === 'userRewards')
             return async (args: any = {}) => {
               const where = args?.where;
@@ -1077,51 +1075,9 @@ function createMockDelegate(name: string): any {
               return results;
             };
           if (name === 'userRewardsVersions')
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockUserRewardsVersions;
-              if (where?.user_id) {
-                results = results.filter((v: any) => v.user_id === where.user_id);
-              }
-              if (where?.recorded_at?.lte) {
-                const cutoff = new Date(where.recorded_at.lte);
-                results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
-              }
-              if (where?.recorded_at?.gte) {
-                const cutoff = new Date(where.recorded_at.gte);
-                results = results.filter((v: any) => new Date(v.recorded_at) >= cutoff);
-              }
-              if (args?.orderBy?.recorded_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
-                );
-              } else if (args?.orderBy?.recorded_at === 'asc') {
-                results = [...results].sort(
-                  (a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
-                );
-              }
-              if (args?.take) {
-                results = results.slice(0, args.take);
-              }
-              return results;
-            };
+            return async (args: any = {}) => filterUserRewardsVersions(args);
           if (name === 'whisperedMoment')
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockWhisperedMoments;
-              if (where?.user_id) {
-                results = results.filter((w: any) => w.user_id === where.user_id);
-              }
-              if (args?.orderBy?.created_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-                );
-              }
-              if (args?.take) {
-                results = results.slice(0, args.take);
-              }
-              return results;
-            };
+            return async (args: any = {}) => filterWhisperedMoments(args);
           if (name === 'classroomNote')
             return async (args: any = {}) => {
               const where = args?.where;
@@ -1136,6 +1092,19 @@ function createMockDelegate(name: string): any {
               mockLibraryCollectionFindManyArgs = args;
               return mockLibraryCollections;
             };
+          if (name === 'gradeClassTeacherAssignment')
+            return async (args: any = {}) =>
+              mockGradeClassAssignments.filter(
+                (row) => !args?.where?.teacher_id || row.teacher_id === args.where.teacher_id,
+              );
+          if (name === 'studentGradeClassEnrollment')
+            return async (args: any = {}) =>
+              mockGradeClassEnrollments.filter(
+                (row) =>
+                  (!args?.where?.grade_class_id ||
+                    row.grade_class_id === args.where.grade_class_id) &&
+                  (!args?.where?.status || row.status === args.where.status),
+              );
           return async () => [];
         }
         if (prop === 'findFirst') {
@@ -1160,7 +1129,8 @@ function createMockDelegate(name: string): any {
             return async (args: any = {}) => ({
               id: 'gcta-mock-1',
               grade_class_id: args?.where?.grade_class_id ?? '123e4567-e89b-12d3-a456-426614174004',
-              academic_cycle_id: args?.where?.academic_cycle_id ?? '123e4567-e89b-12d3-a456-426614174010',
+              academic_cycle_id:
+                args?.where?.academic_cycle_id ?? '123e4567-e89b-12d3-a456-426614174010',
               teacher_id: args?.where?.teacher_id ?? '123e4567-e89b-12d3-a456-426614174000',
               status: 'active',
               effective_from: new Date('2020-01-01'),
@@ -1188,23 +1158,7 @@ function createMockDelegate(name: string): any {
           }
           if (name === 'communityPollVote') return async () => null;
           if (name === 'userRewardsVersions') {
-            return async (args: any = {}) => {
-              const where = args?.where;
-              let results = mockUserRewardsVersions;
-              if (where?.user_id) {
-                results = results.filter((v: any) => v.user_id === where.user_id);
-              }
-              if (where?.recorded_at?.lte) {
-                const cutoff = new Date(where.recorded_at.lte);
-                results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
-              }
-              if (args?.orderBy?.recorded_at === 'desc') {
-                results = [...results].sort(
-                  (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
-                );
-              }
-              return results[0] || null;
-            };
+            return async (args: any = {}) => filterUserRewardsVersions(args)[0] || null;
           }
           return async () => null;
         }

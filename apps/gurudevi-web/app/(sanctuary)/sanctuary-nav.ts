@@ -31,6 +31,15 @@ export const accountNavigation = [
   { id: 'settings', href: '/settings', label: 'Settings', symbol: '⚙' },
 ] as const satisfies readonly SanctuaryNavItem[];
 
+export const workspaceNavigation = [
+  { id: 'attendance', href: '/workspace', label: 'Attendance', symbol: '◷' },
+  { id: 'plan', href: '/workspace/plan', label: 'Plan & Notices', symbol: '✉' },
+  { id: 'notices', href: '/workspace/notices', label: 'Circulars', symbol: '📢' },
+  { id: 'events', href: '/workspace/events', label: 'Events ERP', symbol: '◈' },
+  { id: 'timetable', href: '/workspace/timetable', label: 'Timetable', symbol: '▦' },
+  { id: 'gradebook', href: '/workspace/gradebook', label: 'Gradebook', symbol: '▥' },
+] as const;
+
 export const advancedTools = ['Agent Lab', 'Editorial', 'UI Showcase', 'Icon Lab'] as const;
 
 export function withSanctuaryRoutePrefix(

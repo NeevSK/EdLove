@@ -185,4 +185,78 @@ export const attendanceRouter = impl.router({
       totalAbsences: rows.filter((row: any) => row.status === 'absent').length,
     };
   }),
+  getGradeClassRoster: impl.getGradeClassRoster
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      const db = context.db as any;
+      const gradeClass = await db.gradeClass.findUnique({
+        where: { id: input.query.gradeClassId },
+        select: { id: true, school_id: true },
+      });
+      if (!gradeClass || String(gradeClass.school_id) !== String(context.schoolId)) {
+        throw new ORPCError('NOT_FOUND', { message: 'Grade class not found' });
+      }
+      const on = input.query.date ? new Date(`${input.query.date}T23:59:59.999Z`) : new Date();
+      const rows = await db.studentGradeClassEnrollment.findMany({
+        where: {
+          grade_class_id: input.query.gradeClassId,
+          status: 'active',
+          effective_from: { lte: on },
+          OR: [{ effective_to: null }, { effective_to: { gte: on } }],
+        },
+        include: { student: { select: { full_name: true, avatar_url: true } } },
+        orderBy: { created_at: 'asc' },
+      });
+      return rows.map((row: any) => ({
+        enrollment_id: String(row.id),
+        student_id: String(row.student_id),
+        full_name: row.student?.full_name ?? null,
+        avatar_url: row.student?.avatar_url ?? null,
+      }));
+    }),
+  getMyGradeClasses: impl.getMyGradeClasses
+    .use(doubleGateMiddleware)
+    .handler(async ({ context }) => {
+      const db = context.db as any;
+      if (!context.schoolId) return [];
+      const leader = ['principal', 'admin', 'section_head', 'grade_head'].includes(
+        String(context.capacity),
+      );
+      if (leader) {
+        const rows = await db.gradeClass.findMany({
+          where: { school_id: context.schoolId, status: 'active' },
+          select: { id: true, name: true, academic_cycle_id: true },
+          orderBy: { name: 'asc' },
+        });
+        return rows.map((row: any) => ({
+          id: String(row.id),
+          name: String(row.name),
+          academic_cycle_id: String(row.academic_cycle_id),
+          role: null,
+        }));
+      }
+      const now = new Date();
+      const rows = await db.gradeClassTeacherAssignment.findMany({
+        where: {
+          teacher_id: context.user.id,
+          status: 'active',
+          effective_from: { lte: now },
+          OR: [{ effective_to: null }, { effective_to: { gte: now } }],
+          grade_class: { school_id: context.schoolId, status: 'active' },
+        },
+        include: { grade_class: { select: { id: true, name: true, academic_cycle_id: true } } },
+      });
+      const seen = new Map<string, any>();
+      for (const row of rows) {
+        const gc = row.grade_class;
+        if (!gc || seen.has(String(gc.id))) continue;
+        seen.set(String(gc.id), {
+          id: String(gc.id),
+          name: String(gc.name),
+          academic_cycle_id: String(gc.academic_cycle_id),
+          role: row.role ?? null,
+        });
+      }
+      return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+    }),
 });

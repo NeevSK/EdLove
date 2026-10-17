@@ -1,15 +1,15 @@
 'use client';
 
 import {
-  replayAssignmentSubmissionWithTransport,
   type AssignmentSubmissionReplayTransport,
+  replayAssignmentSubmissionWithTransport,
 } from '@repo/core/api/assignmentSubmissionReplay';
 import {
-  createAssignmentSubmissionTransport,
   type AssignmentSubmissionTransportFetch,
+  createAssignmentSubmissionTransport,
 } from '@repo/core/api/assignmentSubmissionTransport';
-import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { educationalContract } from '@repo/core/api/educational.contract';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
@@ -101,7 +101,10 @@ async function assertBrowserAccountBinding(
   );
 }
 
-export async function loadBrowserAssignments(accountId: string, authSubjectId: string): Promise<readonly BrowserAssignment[]> {
+export async function loadBrowserAssignments(
+  accountId: string,
+  authSubjectId: string,
+): Promise<readonly BrowserAssignment[]> {
   const raw = await requestAccountJson(
     `/api/openapi/educational/students/${encodeURIComponent(accountId)}/assignments/upcoming?limit=24`,
     authSubjectId,
@@ -117,7 +120,10 @@ export async function loadBrowserAssignments(accountId: string, authSubjectId: s
   }));
 }
 
-export async function loadBrowserSubmissions(accountId: string, authSubjectId: string): Promise<readonly BrowserSubmission[]> {
+export async function loadBrowserSubmissions(
+  accountId: string,
+  authSubjectId: string,
+): Promise<readonly BrowserSubmission[]> {
   const raw = await requestAccountJson(
     `/api/openapi/educational/students/${encodeURIComponent(accountId)}/submissions`,
     authSubjectId,
@@ -139,18 +145,23 @@ function sameIntent(value: unknown, intent: SubmissionIntent): boolean {
   return candidate.assignmentId === intent.assignmentId && candidate.content === intent.content;
 }
 
-async function browserTransportFetch(authSubjectId: string): Promise<AssignmentSubmissionTransportFetch> {
-  return async (request, init, options) => {
-    if (!options.context?.expectedAccountId) throw new Error('Assignment submission requires an account scope.');
-    assertSecureApiUrl(request.url);
+async function browserTransportFetch(
+  authSubjectId: string,
+): Promise<AssignmentSubmissionTransportFetch> {
+  return async (requestUrl, init, options) => {
+    if (!options.context?.expectedAccountId)
+      throw new Error('Assignment submission requires an account scope.');
+    assertSecureApiUrl(requestUrl);
     const session = await requireBrowserSession(authSubjectId);
-    const headers = new Headers(request.headers);
+    const headers = new Headers(init?.headers);
     headers.set('Authorization', `Bearer ${session.access_token}`);
-    return fetch(request, { ...init, headers, redirect: 'error' });
+    return fetch(requestUrl, { ...init, headers, redirect: 'error' });
   };
 }
 
-async function createBrowserTransport(authSubjectId: string): Promise<AssignmentSubmissionReplayTransport> {
+async function createBrowserTransport(
+  authSubjectId: string,
+): Promise<AssignmentSubmissionReplayTransport> {
   return createAssignmentSubmissionTransport({
     url: orpcUrl(),
     fetch: await browserTransportFetch(authSubjectId),
@@ -158,7 +169,12 @@ async function createBrowserTransport(authSubjectId: string): Promise<Assignment
 }
 
 async function findOrCreateCommand(accountId: string, intent: SubmissionIntent) {
-  const before = new Set(useMutationQueue.getState().getQueueForUser(accountId).map((item) => item.id));
+  const before = new Set(
+    useMutationQueue
+      .getState()
+      .getQueueForUser(accountId)
+      .map((item) => item.id),
+  );
   const existing = useMutationQueue
     .getState()
     .getQueueForUser(accountId)
@@ -177,9 +193,12 @@ async function findOrCreateCommand(accountId: string, intent: SubmissionIntent) 
     .getQueueForUser(accountId)
     .find(
       (item) =>
-        !before.has(item.id) && item.name === 'assignment.submit' && sameIntent(item.variables, intent),
+        !before.has(item.id) &&
+        item.name === 'assignment.submit' &&
+        sameIntent(item.variables, intent),
     );
-  if (!created) throw new Error('The submission command could not be stored. Your draft is still intact.');
+  if (!created)
+    throw new Error('The submission command could not be stored. Your draft is still intact.');
   return created;
 }
 

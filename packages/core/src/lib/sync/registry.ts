@@ -160,7 +160,15 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     return api.students.create(vars);
   },
   updateAttendance: async (vars) => {
-    return api.attendance.record(vars.classroomId, vars.studentId, vars.status, vars.date);
+    // `api.attendance.record` never existed, so replays threw. The server writes
+    // daily_attendance keyed by grade_classes.id; legacy queued items that carry a
+    // classrooms.id will be rejected by the server (mapping pending a product decision).
+    return api.attendance.upsertAttendanceRecord(
+      vars.gradeClassId ?? vars.classroomId,
+      vars.studentId,
+      vars.status,
+      vars.date,
+    );
   },
   updateStudent: async (vars) => {
     return api.students.update(vars.id, vars.updates);

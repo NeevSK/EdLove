@@ -1,7 +1,7 @@
-import { VStack } from '@repo/ui/primitives';
-import type React from 'react';
 import { usePrincipalWorkspaceShell } from '@repo/admin/bridge/principalWorkspaceShell';
+import CalmPolicySection from '@repo/admin/components/principal/CalmPolicySection';
 import DashboardEcho from '@repo/admin/components/principal/DashboardEcho';
+import GuardianApprovalsSection from '@repo/admin/components/principal/GuardianApprovalsSection';
 import InstitutionalCalendarSection from '@repo/admin/components/principal/InstitutionalCalendarSection';
 import LeaveApprovalSection from '@repo/admin/components/principal/LeaveApprovalSection';
 import MorningSituationalBrief from '@repo/admin/components/principal/MorningSituationalBrief';
@@ -10,6 +10,8 @@ import PulseDashboard from '@repo/admin/components/principal/PulseDashboard';
 import ResourceNeedsDashboard from '@repo/admin/components/principal/ResourceNeedsDashboard';
 import TeacherCarousel from '@repo/admin/components/principal/TeacherCarousel';
 import type { PrincipalWorkspaceView, PrincipalZoneId } from '@repo/admin/principal/workspace';
+import { VStack } from '@repo/ui/primitives';
+import type React from 'react';
 
 type ZoneSurfaceArgs = {
   schoolId: string;
@@ -70,6 +72,8 @@ export function usePrincipalWorkspaceSurfaces({
     renderOutlookContent: () => (
       <VStack className="gap-6">
         <PulseDashboard schoolId={schoolId} />
+        <CalmPolicySection schoolId={schoolId} principalId={userId} />
+        <GuardianApprovalsSection schoolId={schoolId} principalId={userId} />
         <ResourceNeedsDashboard schoolId={schoolId} />
         <DashboardEcho schoolId={schoolId} />
       </VStack>

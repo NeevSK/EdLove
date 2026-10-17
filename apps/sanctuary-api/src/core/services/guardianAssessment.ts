@@ -119,6 +119,8 @@ export async function readGuardianPublishedAssessmentSummary(
         guardian_id: input.guardianId,
         student_id: input.studentId,
         relationship_type: { in: [...VALID_RELATIONSHIP_TYPES] },
+        // Open guardian policy: unrevoked guardians can read published assessments.
+        verification_status: { not: 'revoked' },
       },
       select: { id: true },
     });

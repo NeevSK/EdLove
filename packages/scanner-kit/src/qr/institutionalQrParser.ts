@@ -3,6 +3,7 @@ export type ParsedInstitutionalQR =
   | { kind: 'aswesuma'; certificateHash: string; householdId?: string }
   | { kind: 'meal'; studentId: string }
   | { kind: 'attendance'; studentId: string; classroomId?: string }
+  | { kind: 'student_id'; studentId: string }
   | { kind: 'unknown'; raw: string };
 
 /**

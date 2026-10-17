@@ -25,7 +25,10 @@ async function resolveClassroomIds(
             : { school_id: schoolId },
         select: { id: true },
       });
-      return rows.map((row: { id: unknown }) => String(row.id));
+      const ids = rows.map((row: { id: unknown }) => String(row.id));
+      // Academic lifecycle (model A): grade classes join the same relationship set,
+      // because teacher.cedar matches resource.grade_class_id against classroom_ids.
+      return [...ids, ...(await resolveGradeClassIds(db, userId, capacity, schoolId))];
     }
     if (capacity === 'student') {
       const rows = await db.classroomStudent.findMany({
@@ -38,6 +41,53 @@ async function resolveClassroomIds(
     console.warn('[AUTHZ] Classroom relationship lookup failed; denying relationship scope.');
   }
   return [];
+}
+
+// Grade classes a staff member may act on. Isolated from the classroom lookup so a
+// missing/unmigrated lifecycle table never removes the caller's classroom scope.
+async function resolveGradeClassIds(
+  db: any,
+  userId: string,
+  capacity: string,
+  schoolId: string,
+): Promise<string[]> {
+  try {
+    if (capacity === 'teacher') {
+      const now = new Date();
+      const rows = await db.gradeClassTeacherAssignment.findMany({
+        where: {
+          teacher_id: userId,
+          status: 'active',
+          effective_from: { lte: now },
+          OR: [{ effective_to: null }, { effective_to: { gte: now } }],
+          grade_class: { school_id: schoolId, status: 'active' },
+        },
+        select: { grade_class_id: true },
+      });
+      return [
+        ...new Set<string>(
+          rows.map((row: { grade_class_id: unknown }) => String(row.grade_class_id)),
+        ),
+      ];
+    }
+    const rows = await db.gradeClass.findMany({
+      where: { school_id: schoolId, status: 'active' },
+      select: { id: true },
+    });
+    return rows.map((row: { id: unknown }) => String(row.id));
+  } catch (error) {
+    console.warn('[AUTHZ] Grade class relationship lookup failed; keeping classroom scope only.');
+    return [];
+  }
+}
+
+/** Signed-in requests need the per-user DB to build an authorization context. */
+function assertAuthorizationDbAvailable(userId: string, db: unknown): void {
+  if (userId !== 'anonymous' && !db) {
+    throw new ORPCError('SERVICE_UNAVAILABLE', {
+      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
+    });
+  }
 }
 
 // Context Builder for oRPC from incoming HTTP headers/request
@@ -56,11 +106,7 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
 
   const db = canUseZenStackDb(dbUrl) ? createZenStackDb(user, dbUrl) : undefined;
 
-  if (user.id !== 'anonymous' && !db) {
-    throw new ORPCError('SERVICE_UNAVAILABLE', {
-      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
-    });
-  }
+  assertAuthorizationDbAvailable(user.id, db);
 
   let schoolId = '';
   let capacity: string | null = null;
@@ -142,11 +188,7 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
   const db = c.get('db');
   const requestId = c.get('requestId') || 'unknown';
 
-  if (user.id !== 'anonymous' && !db) {
-    throw new ORPCError('SERVICE_UNAVAILABLE', {
-      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
-    });
-  }
+  assertAuthorizationDbAvailable(user.id, db);
 
   let schoolId = '';
   let capacity: string | null = null;
@@ -238,6 +280,7 @@ import { mediaRouter } from './handlers/media';
 import { messagingRouter } from './handlers/messaging';
 import { onboardingRouter } from './handlers/onboarding';
 import { permissionSnapshotRouter } from './handlers/permissionSnapshot';
+import { planBridgeRouter } from './handlers/planBridge';
 import { presenceRouter } from './handlers/presence';
 import { principalNotesRouter } from './handlers/principalNotes';
 import { privacyRouter } from './handlers/privacy';
@@ -297,4 +340,5 @@ export const router = o.router({
   echoes: echoRouter,
   studentPotential: studentPotentialRouter,
   forms: formsRouter,
+  planBridge: planBridgeRouter,
 });

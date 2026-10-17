@@ -10,6 +10,7 @@ export default function WorkspaceLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="editorial" options={{ title: 'Editorial' }} />
         <Stack.Screen name="events" />
+        <Stack.Screen name="plan" options={{ title: 'Plan & notices' }} />
         <Stack.Screen name="inventory" />
         <Stack.Screen name="welfare" />
         <Stack.Screen name="peers" />

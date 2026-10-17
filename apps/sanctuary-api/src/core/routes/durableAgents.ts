@@ -3,7 +3,12 @@ import { SovereignError } from '@repo/core/types/Errors';
 import { queryDatabaseRows } from '@repo/database/client';
 import { Hono } from 'hono';
 import { serve } from 'inngest/hono';
-import { durableAgentFunctions, platformEventFunctions, sanctuaryInngest } from '../../agents';
+import {
+  durableAgentFunctions,
+  noticeFunctions,
+  platformEventFunctions,
+  sanctuaryInngest,
+} from '../../agents';
 
 const getUser = (c: any) => c.get('user') as { id: string } | undefined;
 const requireUser = (c: any) => {
@@ -370,7 +375,7 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
   if (options.includeInngest !== false) {
     const inngestHandler = serve({
       client: sanctuaryInngest,
-      functions: [...durableAgentFunctions, ...platformEventFunctions] as any,
+      functions: [...durableAgentFunctions, ...platformEventFunctions, ...noticeFunctions] as any,
     });
     routes.all('/api/inngest', (c: any) => inngestHandler(c));
   }
