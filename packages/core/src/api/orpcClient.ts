@@ -1,4 +1,5 @@
-import { createORPCClient, MalformedResponseError, ORPCError } from '@orpc/client';
+import * as orpcClientPkg from '@orpc/client';
+import { createORPCClient, ORPCError } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import {
   BatchLinkPlugin,
@@ -52,7 +53,8 @@ if (!('status' in ORPCError.prototype)) {
   };
 }
 
-if (!('status' in MalformedResponseError.prototype)) {
+const MalformedResponseError = (orpcClientPkg as any).MalformedResponseError;
+if (MalformedResponseError && !('status' in MalformedResponseError.prototype)) {
   Object.defineProperty(MalformedResponseError.prototype, 'status', {
     get() {
       return (this as any).response?.status;
@@ -80,8 +82,7 @@ const sovereignOrigin = SOVEREIGN_ORPC_URL.startsWith('http')
   : undefined;
 
 const link = new RPCLink<ClientContext>({
-  url: '/api',
-  origin: sovereignOrigin,
+  url: sovereignOrigin ? `${sovereignOrigin}/api` : '/api',
   method: ({ context }) => {
     if (context?.cache) {
       return 'GET';
@@ -93,7 +94,7 @@ const link = new RPCLink<ClientContext>({
       default: {
         retry: isDevelopmentRuntime ? 0 : 2,
         retryDelay: (options) =>
-          options.lastEventRetry ?? Math.min(250 * 2 ** options.attempt, 5000),
+          options.lastEventRetry ?? Math.min(250 * 2 ** options.attemptIndex, 5000),
         shouldRetry: (options) => {
           if (!options.error) return false;
           const status = (options.error as any)?.status;
@@ -114,7 +115,8 @@ const link = new RPCLink<ClientContext>({
       filter: ({ request }) => request.method === 'GET',
     }),
     new BatchLinkPlugin({
-      filter: ({ context }) => context.expectedAccountId === undefined,
+      exclude: ({ context }: { context: ClientContext }) =>
+        context?.expectedAccountId !== undefined,
       groups: [
         {
           condition: ({ context }) => context?.cache === 'force-cache',

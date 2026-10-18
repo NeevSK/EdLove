@@ -83,7 +83,7 @@ describe('Workspace attendance Safe Try (G1 boundary / jsdom with mocked account
     await screen.findByRole('button', { name: /try attendance safely/i });
     await user.click(screen.getByRole('button', { name: /try attendance safely/i }));
 
-    expect(await screen.findByText('Practice Learning Circle')).toBeTruthy();
+    expect((await screen.findAllByText('Practice Learning Circle')).length).toBeGreaterThan(0);
     expect(screen.getByText('Nila Sen')).toBeTruthy();
     expect(screen.getByText(/fictional sample students/i)).toBeTruthy();
     expect(mocks.loadAccountAttendance).not.toHaveBeenCalled();
@@ -132,7 +132,7 @@ describe('Workspace attendance Safe Try (G1 boundary / jsdom with mocked account
     );
 
     await user.click(await screen.findByRole('button', { name: /try attendance safely/i }));
-    expect(await screen.findByText('Practice Learning Circle')).toBeTruthy();
+    expect((await screen.findAllByText('Practice Learning Circle')).length).toBeGreaterThan(0);
 
     resolveClassrooms?.([{ id: 'live-classroom', name: 'Live classroom', subject: null }]);
 

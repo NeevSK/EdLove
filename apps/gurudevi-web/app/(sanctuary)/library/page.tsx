@@ -21,11 +21,9 @@ export default async function LibraryPage() {
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out')
     return (
-      <LibraryState
-        action={<Link href={signInPath('/library')}>Sign in</Link>}
-        detail="Sign in to browse resources available to your account and selected Sanctuary scope."
-        title="Your Library is ready when you are"
-      />
+      <SanctuaryShell displayName="Guest" navigationPrefix="">
+        <LibraryFloor accountId="guest" displayName="Guest" mode="explore" />
+      </SanctuaryShell>
     );
   if (entry.kind === 'onboarding-required')
     return (
@@ -48,15 +46,18 @@ function LibraryState({
   action,
   detail,
   title,
-}: Readonly<{ action?: ReactNode; detail: string; title: string }>) {
+  displayName = 'Guest',
+}: Readonly<{ action?: ReactNode; detail: string; title: string; displayName?: string }>) {
   return (
-    <main id="main-content">
-      <section aria-live="polite">
-        <p>Library</p>
-        <h1>{title}</h1>
-        <p>{detail}</p>
-        {action}
-      </section>
-    </main>
+    <SanctuaryShell displayName={displayName} navigationPrefix="">
+      <main id="main-content" className="sanctuary-container">
+        <section aria-live="polite">
+          <p>Library</p>
+          <h1>{title}</h1>
+          <p>{detail}</p>
+          {action}
+        </section>
+      </main>
+    </SanctuaryShell>
   );
 }

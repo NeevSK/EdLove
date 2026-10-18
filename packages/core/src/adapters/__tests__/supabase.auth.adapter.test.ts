@@ -5,6 +5,7 @@ const mockAuth = vi.hoisted(() => ({
   getUser: vi.fn(),
   signInWithPassword: vi.fn(),
   signInWithOtp: vi.fn(),
+  resetPasswordForEmail: vi.fn(),
   signInWithOAuth: vi.fn(),
   linkIdentity: vi.fn(),
   setSession: vi.fn(),
@@ -162,6 +163,42 @@ describe('SupabaseAuthAdapter', () => {
     expect(resultWithOptions.user?.id).toBe('anon-1');
   });
 
+  it('passes email credentials directly to Supabase password sign-in', async () => {
+    mockAuth.signInWithPassword.mockResolvedValue({
+      data: {
+        user: { id: 'member-1', email: 'member@example.com' },
+        session: { access_token: 'access', refresh_token: 'refresh' },
+      },
+      error: null,
+    });
+
+    const result = await adapter.signInWithPassword('member@example.com', 'correct horse battery');
+
+    expect(mockAuth.signInWithPassword).toHaveBeenCalledWith({
+      email: 'member@example.com',
+      password: 'correct horse battery',
+    });
+    expect(result.user?.id).toBe('member-1');
+  });
+
+  it('forwards the app callback when linking an email identity', async () => {
+    mockAuth.updateUser.mockResolvedValue({
+      data: { user: { id: 'guest-1', is_anonymous: true } },
+      error: null,
+    });
+
+    const result = await adapter.updateUser({
+      email: 'member@example.com',
+      options: { emailRedirectTo: 'gurudevi://auth/callback' },
+    });
+
+    expect(mockAuth.updateUser).toHaveBeenCalledWith(
+      { email: 'member@example.com' },
+      { emailRedirectTo: 'gurudevi://auth/callback' },
+    );
+    expect(result.user?.id).toBe('guest-1');
+  });
+
   it('uses the web auth callback for magic links', async () => {
     vi.stubGlobal('window', { location: { origin: 'https://gurudevi.app' } });
     mockAuth.signInWithOtp.mockResolvedValue({ data: { user: null, session: null }, error: null });
@@ -170,7 +207,17 @@ describe('SupabaseAuthAdapter', () => {
 
     expect(mockAuth.signInWithOtp).toHaveBeenCalledWith({
       email: 'member@example.com',
-      options: { emailRedirectTo: 'https://gurudevi.app/auth/callback' },
+      options: { emailRedirectTo: 'https://gurudevi.app/auth/callback', shouldCreateUser: true },
+    });
+  });
+
+  it('sends password recovery through the supplied app callback', async () => {
+    mockAuth.resetPasswordForEmail.mockResolvedValue({ data: {}, error: null });
+
+    await adapter.resetPasswordForEmail('member@example.com', 'gurudevi://auth/callback');
+
+    expect(mockAuth.resetPasswordForEmail).toHaveBeenCalledWith('member@example.com', {
+      redirectTo: 'gurudevi://auth/callback',
     });
   });
 });

@@ -180,6 +180,75 @@ Reject a change if it answers any of these with “probably”:
 4. Can a low-RAM Android device render it without a continuous GPU/JS loop?
 5. What G-level evidence proves this exact path rather than a nearby happy path?
 
+## Auth conversion hardening addendum
+
+The unified entry owns one visible choice: email, an existing password, or
+Google. It does not expose a sign-up/login fork or disclose whether an email
+already exists. A password remains a supported return path for people who
+already established one.
+
+### Cross-platform identity-promotion parity
+
+Both entry clients now preserve an anonymous Supabase subject when a guest
+chooses email or a supported OAuth identity. Mobile records the guest scope
+before the external round-trip and calls the authenticated identity-link path;
+web detects the anonymous browser session and uses `updateUser({ email })` or
+`linkIdentity(...)` rather than passwordless sign-in. The confirmation then
+verifies a credential for the same subject, so server-owned work is not split
+into a newly-created account. Guest exploration itself remains unrestricted:
+anonymous sessions continue through the normal guest flow and promotion is
+optional. If an identity is already owned by another account, no automatic
+merge occurs; the existing-account path remains available and local work is
+only migrated through the explicit migration surface.
+
+Password recovery is deliberately separate from entry. The request sends a
+generic recovery response to prevent account enumeration; Supabase emits
+`PASSWORD_RECOVERY` only after it validates the recovery link, and the mobile
+entry shell then opens the password-update modal. The password is never stored
+in callback state or device recovery intent.
+
+An external email or OAuth callback is not a completed transition on its own.
+Before leaving an anonymous session, the client persists only the opaque guest
+subject id in a local conversion ledger. Once a permanent identity has been
+resolved by the existing lifecycle owner, the entry shell restores that guest
+scope and offers the existing migration modal. The ledger clears only after a
+successful migration, an explicit confirmed discard, or explicit guest
+abandonment. It never contains a callback URL, token, email address, or
+profile.
+
+### Required operational configuration
+
+- Supabase must allow the exact mobile callback URI and the production HTTPS
+  callback URI. Callback URLs must not use broad wildcard patterns in
+  production.
+- Supabase manual identity linking must be enabled before guest-to-Google
+  promotion can work. Linking a provider already owned by another subject must
+  remain a visible conflict, never an automatic account merge.
+- Email confirmation and password recovery templates must be configured and
+  exercised against real mail clients. Link-prefetching scanners can consume
+  one-time links; use a user-initiated bridge or email OTP template before
+  treating passwordless email as release-complete.
+- Anonymous email promotion must use Supabase's email-identity linking path
+  (`updateUser({ email })`) rather than creating a second account. Existing
+  accounts require an explicit data-merge choice, never an automatic merge.
+- Rate limits, CAPTCHA, manual identity linking, and audit/security
+  notifications are Supabase-project settings and require release-owner
+  verification; they cannot be truthfully inferred from this repository.
+- The Expo config now declares the installed Sentry config plugin. A normal
+  native regeneration/build must apply it before source-map upload and native
+  crash reporting can be attested; do not hand-edit generated Android or iOS
+  output to silence this warning.
+
+### Required hostile scenarios
+
+| Scenario | Required outcome |
+| --- | --- |
+| Guest starts email, process dies, callback opens cold | Durable ledger restores only that guest's local scope and offers migration after identity resolution. |
+| Guest signs into existing password/Google account | Existing account remains authoritative; guest data is explicitly migrated or discarded. |
+| Expired/replayed/corrupt callback | No session or migration is claimed; the callback shows a retry surface. |
+| Guest abandons onboarding | Guest data, lease, identity, and conversion ledger are removed before the session is revoked. |
+| Different account arrives after an interrupted conversion | No automatic cross-account merge; migration remains a conscious action under the authenticated target. |
+
 ## Current operational goal
 
 P0, P1, P2, and P4 now have source-level contracts. P3 has an approved,

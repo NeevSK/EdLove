@@ -1,7 +1,6 @@
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
-import { Platform } from 'react-native';
 import {
   SanctuaryWelcomeScreen,
   SpatialSanctuaryWelcomeScreen,
@@ -9,6 +8,7 @@ import {
 } from '@repo/ui/screens';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
+import { Platform } from 'react-native';
 import { fireflyPrototypeArtwork } from '@/brand/mascotArtwork';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 
@@ -28,7 +28,7 @@ export default function WelcomeRoute() {
   const routeState = useBootstrapRouteState('/welcome');
 
   const handleLogin = useCallback(() => {
-    router.push('/auth?mode=login');
+    router.push('/auth');
   }, [router]);
 
   const handleGuest = useCallback(() => {

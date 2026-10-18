@@ -1,38 +1,15 @@
 'use client';
 
-import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
-import { resolveWorkspaceGroupOrder } from '@repo/core/logic/workspace/canvas';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
-import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
-import {
-  type Dispatch,
-  type FormEvent,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { type SelfCategory, useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
-import {
-  type BurnedJournalEntry,
-  burnJournal,
-  loadBurnedJournalHistory,
-} from '../../../lib/sanctuary/selfJournal';
-import {
-  loadMoodHistory,
-  logMood,
-  MOOD_CHOICES,
-  type MoodLog,
-  type MoodValue,
-} from '../../../lib/sanctuary/selfWellbeing';
+import { burnJournal, loadBurnedJournalHistory } from '../../../lib/sanctuary/selfJournal';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { FloorAtmosphere, type FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import { FloorAtmospherePicker } from '../components/FloorAtmospherePicker';
@@ -42,27 +19,12 @@ import {
   getBrowserSelfFeature,
   isBrowserSelfFeatureDelivered,
 } from './browserFeatureRegistry';
+import { FireJournal, initialScreen, type ScreenState } from './components/FireJournal';
+import { MoodLotusModal } from './components/MoodLotusModal';
+import { SelfCatalogRail } from './components/SelfCatalogRail';
+import { SelfOverview } from './components/SelfOverview';
+import { UnavailableTask } from './components/UnavailableTask';
 import styles from './self-floor.module.css';
-
-type ScreenState = Readonly<{
-  draft: string;
-  entries: readonly BurnedJournalEntry[];
-  error: string | null;
-  historyStatus: 'loading' | 'ready' | 'error';
-  isBurning: boolean;
-  notice: string | null;
-}>;
-
-const initialScreen: ScreenState = {
-  draft: '',
-  entries: [],
-  error: null,
-  historyStatus: 'loading',
-  isBurning: false,
-  notice: null,
-};
-
-type SelfGroup = SelfFeatureManifestItem['category'];
 
 const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
   null,
@@ -121,19 +83,13 @@ function formatHorizon(horizon: DomainTemporalHorizon): string {
   );
 }
 
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.valueOf())
-    ? 'Recently'
-    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
-}
-
 export function SelfFloor({
   accountId,
   displayName,
-}: Readonly<{ accountId?: string; displayName: string }>) {
+  initialPracticing = false,
+}: Readonly<{ accountId?: string; displayName: string; initialPracticing?: boolean }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
-  const [isPracticing, setIsPracticing] = useState(false);
+  const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
   const [moodModalOpen, setMoodModalOpen] = useState(false);
   const workbench = useDomainWorkbench('self');
   const [showOverview, setShowOverview] = useState(true);
@@ -187,13 +143,10 @@ export function SelfFloor({
 
   useEffect(() => {
     if (!workbench.state.temporalHorizon) workbench.setTemporalHorizon(todayHorizon());
-  }, [workbench, workbench.state.temporalHorizon]);
-
-  useEffect(() => {
-    if (focusedTask) setShowOverview(false);
-  }, [focusedTask]);
+  }, [workbench]);
 
   const loadHistory = useCallback(async () => {
+    await Promise.resolve();
     setScreen((current) => ({ ...current, error: null, historyStatus: 'loading' }));
     try {
       const rawEntries = isPracticing
@@ -295,11 +248,21 @@ export function SelfFloor({
     setShowOverview(result.kind === 'overview');
   }
 
+  const [moodModalInitialTab, setMoodModalInitialTab] = useState<'mood' | 'breath'>('mood');
+
   function openFeature(feature: SelfFeatureManifestItem) {
     const delivery = getBrowserSelfFeature(feature.id);
-    if (delivery?.taskKind === 'modal' && delivery.renderer === 'mood-lotus') {
-      setMoodModalOpen(true);
-      return;
+    if (delivery?.taskKind === 'modal') {
+      if (delivery.renderer === 'mood-lotus') {
+        setMoodModalInitialTab('mood');
+        setMoodModalOpen(true);
+        return;
+      }
+      if (delivery.renderer === 'breath-guide') {
+        setMoodModalInitialTab('breath');
+        setMoodModalOpen(true);
+        return;
+      }
     }
     if (feature.id === fireJournalFeature.id && isBrowserSelfFeatureDelivered(feature.id)) {
       openFireJournal();
@@ -314,8 +277,31 @@ export function SelfFloor({
   const journalActive = !showOverview && focusedTask?.featureId === fireJournalFeature.id;
 
   useEffect(() => {
-    if (journalActive) void loadHistory();
-  }, [journalActive, isPracticing, loadHistory]);
+    if (!journalActive) return;
+    let active = true;
+    (async () => {
+      try {
+        const rawEntries = isPracticing
+          ? await practiceAdapter?.loadJournal()
+          : await loadBurnedJournalHistory();
+        if (!active) return;
+        const entries = Array.isArray(rawEntries) ? rawEntries : [];
+        setScreen((current) => ({ ...current, entries, historyStatus: 'ready' }));
+      } catch (error) {
+        if (!active) return;
+        setScreen((current) => ({
+          ...current,
+          error:
+            error instanceof Error ? error.message : 'We could not load your Fire Journal history.',
+          historyStatus: 'error',
+        }));
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [journalActive, isPracticing, practiceAdapter]);
 
   const practiceContent = journalActive ? (
     <FireJournal
@@ -364,113 +350,23 @@ export function SelfFloor({
         <SelfOverview
           displayName={displayName}
           groupOrder={canvas.groupOrder}
+          manifestAll={SELF_FEATURE_MANIFEST.all}
           onOpenFeature={openFeature}
           onOpenFireJournal={openFireJournal}
           pinnedFeatures={canvas.pinnedFeatures}
+          fireJournalId={fireJournalFeature.id}
         />
       ) : (
         <div className={styles.masterDetailLayout} data-layout-mode={canvas.layoutMode}>
-          <aside aria-label="Self Practices" className={styles.catalogRail}>
-            <div className={styles.catalogRailHeader}>
-              <h3 className={styles.catalogRailTitle}>Self Practices</h3>
-              <button
-                className={styles.returnOverviewButton}
-                onClick={() => {
-                  if (focusedTask) closeTask(focusedTask);
-                  setShowOverview(true);
-                }}
-                type="button"
-              >
-                Full Overview
-              </button>
-            </div>
-
-            {canvas.pinnedFeatures.length > 0 ? (
-              <section aria-labelledby="rail-pinned-heading" className={styles.catalogRailSection}>
-                <h4 id="rail-pinned-heading" className={styles.catalogRailSectionTitle}>
-                  Pinned
-                </h4>
-                <ul className={styles.catalogRailList}>
-                  {canvas.pinnedFeatures.map((f) => (
-                    <li key={f.id}>
-                      <div className={styles.catalogRailRow}>
-                        <button
-                          className={`${styles.catalogRailItem} ${
-                            focusedTask?.featureId === f.id ? styles.catalogRailItemActive : ''
-                          }`}
-                          onClick={() => openFeature(f)}
-                          type="button"
-                        >
-                          <span className={styles.catalogRailItemEmoji}>{f.emoji}</span>
-                          <span className={styles.catalogRailItemLabel}>{f.label}</span>
-                        </button>
-                        <button
-                          aria-label={`Unpin ${f.label}`}
-                          className={`${styles.catalogRailPinButton} ${styles.catalogRailPinButtonPinned}`}
-                          onClick={() => canvas.togglePin(f.id)}
-                          title="Unpin practice"
-                          type="button"
-                        >
-                          📌
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-
-            <section aria-labelledby="rail-catalog-heading" className={styles.catalogRailSection}>
-              <h4 id="rail-catalog-heading" className={styles.catalogRailSectionTitle}>
-                Practice Catalog
-              </h4>
-              {canvas.groupOrder.map((category) => {
-                const categoryFeatures = canvas.featuresByCategory.get(category) ?? [];
-                if (categoryFeatures.length === 0) return null;
-
-                return (
-                  <div key={category} className={styles.catalogRailSection}>
-                    <span className={styles.catalogRailSectionTitle}>
-                      {categoryTitle(category)}
-                    </span>
-                    <ul className={styles.catalogRailList}>
-                      {categoryFeatures.map((f) => {
-                        const isPinned = canvas.pinnedIds.includes(f.id);
-                        const isCurrentActive = focusedTask?.featureId === f.id;
-                        return (
-                          <li key={f.id}>
-                            <div className={styles.catalogRailRow}>
-                              <button
-                                className={`${styles.catalogRailItem} ${
-                                  isCurrentActive ? styles.catalogRailItemActive : ''
-                                }`}
-                                onClick={() => openFeature(f)}
-                                type="button"
-                              >
-                                <span className={styles.catalogRailItemEmoji}>{f.emoji}</span>
-                                <span className={styles.catalogRailItemLabel}>{f.label}</span>
-                              </button>
-                              <button
-                                aria-label={isPinned ? `Unpin ${f.label}` : `Pin ${f.label}`}
-                                className={`${styles.catalogRailPinButton} ${
-                                  isPinned ? styles.catalogRailPinButtonPinned : ''
-                                }`}
-                                onClick={() => canvas.togglePin(f.id)}
-                                title={isPinned ? 'Unpin practice' : 'Pin practice'}
-                                type="button"
-                              >
-                                {isPinned ? '📌' : '📍'}
-                              </button>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })}
-            </section>
-          </aside>
+          <SelfCatalogRail
+            canvas={canvas}
+            focusedTask={focusedTask}
+            onOpenFeature={openFeature}
+            onReturnToOverview={() => {
+              if (focusedTask) closeTask(focusedTask);
+              setShowOverview(true);
+            }}
+          />
 
           <div className={styles.activePracticeStage}>
             <div className={styles.backOverviewBar}>
@@ -489,7 +385,9 @@ export function SelfFloor({
           </div>
         </div>
       )}
-      {moodModalOpen ? <MoodLotusModal onClose={() => setMoodModalOpen(false)} /> : null}
+      {moodModalOpen ? (
+        <MoodLotusModal initialTab={moodModalInitialTab} onClose={() => setMoodModalOpen(false)} />
+      ) : null}
       <FloorAtmospherePicker
         currentPreset={canvas.appearance.preset}
         currentMotion={canvas.appearance.motion}
@@ -500,518 +398,4 @@ export function SelfFloor({
       />
     </article>
   );
-}
-
-function SelfOverview({
-  displayName,
-  groupOrder,
-  onOpenFeature,
-  onOpenFireJournal,
-  pinnedFeatures,
-}: Readonly<{
-  displayName: string;
-  groupOrder: readonly SelfCategory[];
-  onOpenFeature: (feature: SelfFeatureManifestItem) => void;
-  onOpenFireJournal: () => void;
-  pinnedFeatures: readonly SelfFeatureManifestItem[];
-}>) {
-  const byCategory = SELF_FEATURE_MANIFEST.all.reduce<
-    Record<SelfCategory, SelfFeatureManifestItem[]>
-  >(
-    (groups, feature) => {
-      (groups[feature.category] ??= []).push(feature);
-      return groups;
-    },
-    {
-      identity: [],
-      wellbeing: [],
-      growth: [],
-      practice: [],
-      professional: [],
-    },
-  );
-
-  const primaryPinned = pinnedFeatures[0];
-
-  return (
-    <>
-      <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Self · Overview</p>
-        <h1 id="self-floor-title">A place to notice what is asking for your care.</h1>
-        <p>
-          {displayName}, this is your orientation floor. Open a practice when it is useful, then
-          return here without losing your place.
-        </p>
-      </header>
-
-      <section aria-labelledby="self-pinned-title" className={styles.catalog}>
-        <div>
-          <p className={styles.eyebrow}>Pinned practice</p>
-          <h2 id="self-pinned-title">{primaryPinned?.label ?? 'Fire Journal'}</h2>
-          <p>
-            {primaryPinned && primaryPinned.id !== 'fire_journal'
-              ? featureDescription(primaryPinned)
-              : 'Release a private reflection. Only a short preview and the day remain in your history.'}
-          </p>
-        </div>
-        <button
-          className={styles.burnButton}
-          onClick={() => {
-            if (!primaryPinned || primaryPinned.id === 'fire_journal') {
-              onOpenFireJournal();
-            } else {
-              onOpenFeature(primaryPinned);
-            }
-          }}
-          type="button"
-        >
-          Open {primaryPinned?.label ?? 'Fire Journal'}
-        </button>
-      </section>
-      <section aria-labelledby="self-catalog-title" className={styles.catalog}>
-        <p className={styles.eyebrow}>Practice catalog</p>
-        <h2 id="self-catalog-title">Practices, held in one place</h2>
-        <p className={styles.catalogIntroduction}>
-          This catalog is the shared Self inventory. A practice opens only when its browser delivery
-          is real; the rest remain visible without pretending to be ready.
-        </p>
-        <div className={styles.catalogZones}>
-          {groupOrder.map((zone) => (
-            <section
-              aria-labelledby={`self-category-${zone}`}
-              className={styles.catalogZone}
-              key={zone}
-            >
-              <h3 id={`self-category-${zone}`}>{categoryTitle(zone)}</h3>
-              <div className={styles.catalogGrid}>
-                {(byCategory[zone] ?? []).map((feature) => (
-                  <FeatureCatalogCard
-                    feature={feature}
-                    key={feature.id}
-                    onOpen={() => onOpenFeature(feature)}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
-function categoryTitle(category: SelfGroup): string {
-  const labels: Record<SelfGroup, string> = {
-    identity: 'Identity',
-    wellbeing: 'Wellbeing',
-    growth: 'Growth',
-    practice: 'Practice & rhythm',
-    professional: 'Professional',
-  };
-  return labels[category] ?? category;
-}
-
-function FeatureCatalogCard({
-  feature,
-  onOpen,
-}: Readonly<{ feature: SelfFeatureManifestItem; onOpen: () => void }>) {
-  const runnable = isBrowserSelfFeatureDelivered(feature.id);
-  const status = runnable
-    ? feature.availability === 'authorization-unresolved'
-      ? 'Available after secure check'
-      : 'Open practice'
-    : 'Not yet delivered in browser';
-
-  return (
-    <article className={styles.catalogItem} data-runnable={runnable}>
-      <p aria-hidden="true" className={styles.catalogEmoji}>
-        {feature.emoji}
-      </p>
-      <h4>{feature.label}</h4>
-      <p>{featureDescription(feature)}</p>
-      {runnable ? (
-        <button className={styles.catalogOpen} onClick={onOpen} type="button">
-          {status}
-        </button>
-      ) : (
-        <span className={styles.catalogStatus}>{status}</span>
-      )}
-    </article>
-  );
-}
-
-function featureDescription(feature: SelfFeatureManifestItem): string {
-  if (feature.id === fireJournalFeature.id)
-    return 'Release a private reflection. Only a short preview and the day remain in history.';
-  return `${feature.category} practice · ${feature.timing?.preferredPhase ?? 'any time'}`;
-}
-
-function MoodLotusModal({ onClose }: Readonly<{ onClose: () => void }>) {
-  const [history, setHistory] = useState<readonly MoodLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [selectedMood, setSelectedMood] = useState<MoodValue | null>(null);
-  const [note, setNote] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const savingRef = useRef(false);
-
-  useEffect(() => {
-    savingRef.current = saving;
-  }, [saving]);
-
-  const refreshHistory = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const entries = await loadMoodHistory();
-      setHistory(Array.isArray(entries) ? entries : []);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'We could not load your mood history.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void refreshHistory();
-    const previousFocus =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    dialogRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !savingRef.current) onClose();
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => {
-      document.removeEventListener('keydown', closeOnEscape);
-      previousFocus?.focus();
-    };
-  }, [onClose, refreshHistory]);
-
-  const latest = history[0] ?? null;
-  const selectedChoice = MOOD_CHOICES.find((choice) => choice.value === selectedMood) ?? null;
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedMood || saving) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const entry = await logMood({ mood: selectedMood, note });
-      setHistory((current) => [entry, ...(Array.isArray(current) ? current : [])].slice(0, 8));
-      setNote('');
-      setSelectedMood(null);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'We could not save this check-in.');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div
-      className={styles.modalBackdrop}
-      onMouseDown={(event) => {
-        if (event.currentTarget === event.target && !saving) onClose();
-      }}
-    >
-      <section
-        aria-describedby="mood-lotus-description"
-        aria-labelledby="mood-lotus-title"
-        aria-modal="true"
-        className={styles.moodModal}
-        ref={dialogRef}
-        role="dialog"
-        tabIndex={-1}
-      >
-        <header className={styles.modalHeader}>
-          <div>
-            <p className={styles.eyebrow}>Mood Lotus</p>
-            <h2 id="mood-lotus-title">How are you arriving?</h2>
-            <p id="mood-lotus-description">
-              A brief check-in for this moment. It is saved to your private history, not opened as a
-              task.
-            </p>
-          </div>
-          <button
-            aria-label="Close Mood Lotus"
-            className={styles.modalClose}
-            disabled={saving}
-            onClick={onClose}
-            type="button"
-          >
-            Close
-          </button>
-        </header>
-
-        <form className={styles.moodForm} onSubmit={(event) => void submit(event)}>
-          <fieldset disabled={saving}>
-            <legend>Choose what feels closest</legend>
-            <div className={styles.moodChoices}>
-              {MOOD_CHOICES.map((choice) => (
-                <button
-                  aria-pressed={selectedMood === choice.value}
-                  className={styles.moodChoice}
-                  data-selected={selectedMood === choice.value}
-                  key={choice.value}
-                  onClick={() => setSelectedMood(choice.value)}
-                  type="button"
-                >
-                  <span aria-hidden="true">{choice.emoji}</span>
-                  {choice.label}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <label htmlFor="mood-lotus-note">A few words, if useful</label>
-          <textarea
-            disabled={saving}
-            id="mood-lotus-note"
-            maxLength={500}
-            onChange={(event) => setNote(event.target.value)}
-            placeholder="Optional. Keep this gentle and brief."
-            rows={3}
-            value={note}
-          />
-          <div className={styles.actions}>
-            <button
-              className={styles.burnButton}
-              disabled={!selectedChoice || saving}
-              type="submit"
-            >
-              {saving
-                ? 'Saving…'
-                : selectedChoice
-                  ? `Save ${selectedChoice.label}`
-                  : 'Choose a feeling'}
-            </button>
-            {latest ? (
-              <span className={styles.hint}>Last check-in: {formatDate(latest.created_at)}</span>
-            ) : null}
-          </div>
-        </form>
-        {error ? (
-          <p className={styles.error} role="alert">
-            {error}
-          </p>
-        ) : null}
-        <section aria-labelledby="mood-history-title" className={styles.moodHistory}>
-          <div className={styles.historyHeader}>
-            <h3 id="mood-history-title">Recent check-ins</h3>
-            {error && !saving ? (
-              <button
-                className={styles.retryButton}
-                onClick={() => void refreshHistory()}
-                type="button"
-              >
-                Retry
-              </button>
-            ) : null}
-          </div>
-          {loading ? <p className={styles.empty}>Gathering the recent pattern…</p> : null}
-          {!loading && history.length === 0 ? (
-            <p className={styles.empty}>Your first check-in can begin here.</p>
-          ) : null}
-          {!loading && history.length > 0 ? (
-            <ol className={styles.moodHistoryList}>
-              {history.map((entry) => (
-                <li key={entry.id}>
-                  <div className={styles.moodHistoryEntry}>
-                    <span aria-hidden="true" className={styles.moodEmoji}>
-                      {MOOD_CHOICES.find((choice) => choice.value === entry.mood)?.emoji ?? '•'}
-                    </span>
-                    <div>
-                      <p className={styles.moodLabel}>
-                        {entry.mood
-                          ? entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)
-                          : 'Logged'}
-                      </p>
-                      {entry.note ? <p className={styles.moodNote}>{entry.note}</p> : null}
-                      <time dateTime={entry.created_at}>{formatDate(entry.created_at)}</time>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          ) : null}
-        </section>
-      </section>
-    </div>
-  );
-}
-
-function UnavailableTask({
-  task,
-  onReturnToOverview,
-}: Readonly<{
-  task: WorkbenchTaskDescriptor | null;
-  onReturnToOverview: () => void;
-}>) {
-  return (
-    <section aria-labelledby="unavailable-task-title" className={styles.unavailableTask}>
-      <h2 id="unavailable-task-title">{task?.title ?? 'Practice'} is not delivered here</h2>
-      <p>
-        This task is present in your workbench, but its full browser surface is not yet delivered in
-        this release.
-      </p>
-      <button className={styles.burnButton} onClick={onReturnToOverview} type="button">
-        Return to overview
-      </button>
-    </section>
-  );
-}
-
-function FireJournal({
-  isPracticing,
-  practiceStorageKind,
-  onDiscardPractice,
-  onEnterPractice,
-  screen,
-  setScreen,
-  loadHistory,
-  submit,
-}: Readonly<{
-  isPracticing: boolean;
-  practiceStorageKind: 'local-storage' | 'memory';
-  onDiscardPractice: () => void;
-  onEnterPractice: () => void;
-  screen: ScreenState;
-  setScreen: Dispatch<SetStateAction<ScreenState>>;
-  loadHistory: () => Promise<void>;
-  submit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
-}>) {
-  const historySnapshot = journalHistorySnapshot(screen);
-
-  return (
-    <>
-      <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Self · Fire Journal</p>
-        <h1 id="self-floor-title">Make room for what needs to be released.</h1>
-        <p>
-          {isPracticing
-            ? practiceStorageKind === 'local-storage'
-              ? 'Safe Try uses fictional sample data and saves only on this browser. Your account journal is untouched.'
-              : 'Safe Try uses fictional sample data in this page session only. Your account journal is untouched.'
-            : 'Write freely. When you release an entry, the full text is not retained.'}
-        </p>
-        <div className={styles.actions}>
-          {isPracticing ? (
-            <button className={styles.retryButton} onClick={onDiscardPractice} type="button">
-              End Safe Try and discard
-            </button>
-          ) : (
-            <button className={styles.retryButton} onClick={onEnterPractice} type="button">
-              Try this safely
-            </button>
-          )}
-        </div>
-      </header>
-      <div className={styles.grid}>
-        <section className={styles.alcove} aria-labelledby="fire-journal-compose-title">
-          <p className={styles.eyebrow}>Reflection</p>
-          <h2 id="fire-journal-compose-title">What can leave your hands today?</h2>
-          <form
-            className={styles.form}
-            onSubmit={(event) => {
-              void submit(event);
-            }}
-          >
-            <label htmlFor="fire-journal-entry">A private reflection</label>
-            <textarea
-              disabled={screen.isBurning}
-              id="fire-journal-entry"
-              maxLength={10_000}
-              onChange={(event) =>
-                setScreen((current) => ({ ...current, draft: event.target.value }))
-              }
-              placeholder="Write without needing to carry every word forward."
-              required
-              rows={7}
-              value={screen.draft}
-            />
-            <div className={styles.actions}>
-              <button className={styles.burnButton} disabled={screen.isBurning} type="submit">
-                {screen.isBurning
-                  ? 'Releasing…'
-                  : isPracticing
-                    ? 'Practice release'
-                    : 'Release to Fire Journal'}
-              </button>
-              <span className={styles.hint}>
-                {isPracticing
-                  ? 'This only changes the local practice copy.'
-                  : 'The full reflection is not saved.'}
-              </span>
-            </div>
-          </form>
-          {screen.notice ? (
-            <p className={styles.status} role="status">
-              {screen.notice}
-            </p>
-          ) : null}
-          {screen.error ? (
-            <p className={styles.error} role="alert">
-              {screen.error}
-            </p>
-          ) : null}
-        </section>
-
-        <section className={styles.history} aria-labelledby="fire-journal-history-title">
-          <div className={styles.historyHeader}>
-            <div>
-              <p className={styles.eyebrow}>What remains</p>
-              <h2 id="fire-journal-history-title">Burned history</h2>
-            </div>
-          </div>
-          <FeatureStateBoundary
-            emptyTitle="Nothing has been released here yet"
-            onRetry={() => void loadHistory()}
-            snapshot={historySnapshot}
-          >
-            <ol className={styles.historyList}>
-              {screen.entries.map((entry) => (
-                <li key={entry.id}>
-                  <article className={styles.entry}>
-                    <p>{entry.content_preview}</p>
-                    <footer>
-                      <time dateTime={entry.created_at}>{formatDate(entry.created_at)}</time>
-                      <span className={styles.burned}>Released</span>
-                    </footer>
-                  </article>
-                </li>
-              ))}
-            </ol>
-          </FeatureStateBoundary>
-        </section>
-      </div>
-    </>
-  );
-}
-
-function journalHistorySnapshot(screen: ScreenState): FeatureSurfaceStateSnapshot {
-  const state =
-    screen.historyStatus === 'loading'
-      ? 'loading'
-      : screen.historyStatus === 'error'
-        ? 'retryable_error'
-        : (screen.entries?.length ?? 0) === 0
-          ? 'empty'
-          : 'ready';
-
-  return {
-    state,
-    lastKnownGoodAt: null,
-    pendingMutationCount: 0,
-    canRetry: state === 'retryable_error',
-    canEdit: true,
-    isSensitive: true,
-    safeMessage:
-      state === 'loading'
-        ? 'Gathering your history…'
-        : state === 'retryable_error'
-          ? (screen.error ?? 'We could not load your Fire Journal history.')
-          : state === 'empty'
-            ? 'Your released reflections will appear here.'
-            : 'Your Fire Journal history is ready.',
-  };
 }

@@ -21,11 +21,9 @@ export default async function SelfPage() {
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <SelfState
-        action={<Link href={signInPath('/self')}>Sign in</Link>}
-        detail="Sign in to enter your private Self space."
-        title="Your Self space is private"
-      />
+      <SanctuaryShell displayName="Guest" navigationPrefix="">
+        <SelfFloor accountId="guest" displayName="Guest" initialPracticing={true} />
+      </SanctuaryShell>
     );
   }
   if (entry.kind === 'onboarding-required')
@@ -54,15 +52,18 @@ function SelfState({
   action,
   detail,
   title,
-}: Readonly<{ action?: ReactNode; detail: string; title: string }>) {
+  displayName = 'Guest',
+}: Readonly<{ action?: ReactNode; detail: string; title: string; displayName?: string }>) {
   return (
-    <main id="main-content">
-      <section aria-live="polite">
-        <p>Self</p>
-        <h1>{title}</h1>
-        <p>{detail}</p>
-        {action}
-      </section>
-    </main>
+    <SanctuaryShell displayName={displayName} navigationPrefix="">
+      <main id="main-content" className="sanctuary-container">
+        <section aria-live="polite">
+          <p>Self</p>
+          <h1>{title}</h1>
+          <p>{detail}</p>
+          {action}
+        </section>
+      </main>
+    </SanctuaryShell>
   );
 }

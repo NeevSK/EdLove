@@ -15,6 +15,7 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
     getSession: vi.fn(),
     getUser: vi.fn(),
     signInWithPassword: vi.fn(),
+    resetPasswordForEmail: vi.fn(),
     signInWithPhoneOtp: vi.fn(),
     verifyPhoneOtp: vi.fn(),
     signInWithOAuth: vi.fn(),
@@ -137,6 +138,53 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
       'AUTH_LINK_ANONYMOUS_TO_EMAIL',
       expect.objectContaining({ capacity: 'guardian' }),
       'internal-user-1',
+    );
+  });
+
+  it('links an email to the current anonymous subject instead of creating a second session', async () => {
+    authPort.getSession.mockResolvedValue({ user: { id: 'guest-1', is_anonymous: true } });
+    authPort.updateUser.mockResolvedValue({ user: { id: 'guest-1' } });
+
+    await manager.linkAnonymousEmail('person@example.com', 'gurudevi://auth/callback');
+
+    expect(authPort.updateUser).toHaveBeenCalledWith({
+      email: 'person@example.com',
+      options: { emailRedirectTo: 'gurudevi://auth/callback' },
+    });
+    expect(authPort.signInWithPassword).not.toHaveBeenCalled();
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      'AUTH_LINK_ANONYMOUS_EMAIL_STARTED',
+      expect.objectContaining({ method: 'email_link', outcome: 'initiated' }),
+      'guest-1',
+    );
+  });
+
+  it('refuses anonymous-email linking without an anonymous session', async () => {
+    authPort.getSession.mockResolvedValue({ user: { id: 'member-1', is_anonymous: false } });
+
+    await expect(manager.linkAnonymousEmail('person@example.com')).rejects.toMatchObject({
+      code: 'AUTH_GUEST_REQUIRED',
+    });
+    expect(authPort.updateUser).not.toHaveBeenCalled();
+  });
+
+  it('keeps password recovery separate from sign-in and records completion only after update', async () => {
+    authPort.resetPasswordForEmail.mockResolvedValue(undefined);
+    authPort.updateUser.mockResolvedValue({ user: { id: 'member-1' } });
+
+    await manager.requestPasswordRecovery('member@example.com', 'gurudevi://auth/callback');
+    await manager.updatePassword('new-secure-password');
+
+    expect(authPort.resetPasswordForEmail).toHaveBeenCalledWith(
+      'member@example.com',
+      'gurudevi://auth/callback',
+    );
+    expect(authPort.signInWithPassword).not.toHaveBeenCalled();
+    expect(authPort.updateUser).toHaveBeenCalledWith({ password: 'new-secure-password' });
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      'AUTH_PASSWORD_RECOVERY_COMPLETED',
+      expect.objectContaining({ outcome: 'success' }),
+      'member-1',
     );
   });
 

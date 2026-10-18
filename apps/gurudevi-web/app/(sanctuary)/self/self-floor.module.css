@@ -651,3 +651,109 @@
   font-weight: 500;
   cursor: pointer;
 }
+
+/* Modal Tab Bar */
+.modalTabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabButton {
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  background: color-mix(in srgb, var(--lotus) 10%, var(--paper-light));
+  color: var(--ink);
+}
+
+.tabButtonActive {
+  background: var(--lotus);
+  border-color: var(--lotus);
+  color: #fff;
+  box-shadow: 0 2px 10px -2px rgba(212, 132, 58, 0.4);
+}
+
+/* Catharsis / Release Screen */
+.catharsisCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2.5rem 2rem;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at 50% 25%, color-mix(in srgb, #ffeedd 70%, var(--paper-light)) 0%, var(--paper) 100%);
+  border: 1px solid color-mix(in srgb, #d4843a 40%, var(--line));
+  box-shadow: 0 10px 35px -5px rgba(212, 132, 58, 0.15);
+  text-align: center;
+  animation: fadeInCatharsis 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.catharsisEmoji {
+  font-size: 3.5rem;
+  line-height: 1;
+  animation: flameFlicker 2s ease-in-out infinite alternate;
+}
+
+.catharsisTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.catharsisText {
+  margin: 0;
+  max-width: 26rem;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.burnGlow {
+  position: relative;
+  overflow: hidden;
+}
+
+.burnGlow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(212, 132, 58, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  animation: pulseGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes fadeInCatharsis {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes flameFlicker {
+  0% { transform: scale(1) rotate(-1deg); filter: drop-shadow(0 0 12px rgba(255, 120, 0, 0.4)); }
+  100% { transform: scale(1.08) rotate(1deg); filter: drop-shadow(0 0 22px rgba(255, 80, 0, 0.7)); }
+}
+
+@keyframes pulseGlow {
+  from { opacity: 0.3; }
+  to { opacity: 0.8; }
+}
+

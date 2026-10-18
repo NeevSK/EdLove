@@ -12,6 +12,8 @@ interface GuestDataSyncModalProps {
   onClose: () => void;
   userId: string;
   onSyncComplete: () => void;
+  onSkipEmpty?: () => void | Promise<void>;
+  onDiscard?: () => void | Promise<void>;
 }
 
 type SyncStatus = 'idle' | 'loading' | 'ready' | 'confirm_skip' | 'syncing' | 'completed' | 'error';
@@ -95,6 +97,8 @@ export default function GuestDataSyncModal({
   onClose,
   userId,
   onSyncComplete,
+  onSkipEmpty,
+  onDiscard,
 }: GuestDataSyncModalProps) {
   const { t } = useTranslation();
   const [state, dispatch] = useReducer(syncReducer, initialState);
@@ -148,8 +152,27 @@ export default function GuestDataSyncModal({
       dispatch({ type: 'TRIGGER_CONFIRM_SKIP' });
       return;
     }
-    onClose();
-  }, [state.summary.total, state.status, onClose]);
+    Promise.resolve(onSkipEmpty?.())
+      .then(onClose)
+      .catch((error: unknown) => {
+        dispatch({
+          type: 'SET_ERROR',
+          message: error instanceof Error ? error.message : 'Could not close the migration safely.',
+        });
+      });
+  }, [state.summary.total, state.status, onClose, onSkipEmpty]);
+
+  const handleDiscard = useCallback(() => {
+    Promise.resolve(onDiscard?.())
+      .then(onClose)
+      .catch((error: unknown) => {
+        dispatch({
+          type: 'SET_ERROR',
+          message:
+            error instanceof Error ? error.message : 'Could not discard the saved guest data.',
+        });
+      });
+  }, [onClose, onDiscard]);
 
   const footer =
     state.status !== 'completed' ? (
@@ -219,7 +242,7 @@ export default function GuestDataSyncModal({
               <SanctuaryButton
                 variant="solid"
                 action="negative"
-                onPress={onClose}
+                onPress={handleDiscard}
                 className="flex-1"
               >
                 {t('sync.discardButton') || 'Discard data'}

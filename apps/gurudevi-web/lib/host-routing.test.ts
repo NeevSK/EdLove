@@ -27,24 +27,47 @@ describe('Gurudevi hostname policy', () => {
   });
 
   it('retires legacy Explore routes instead of retaining a second route family', () => {
+    expect(isSanctuaryPath('/explore')).toBe(false);
     expect(resolveHostRouting(PUBLIC_GURUDEVI_HOST, '/explore/self', 'GET')).toEqual({
       kind: 'not-found',
     });
     expect(resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/explore', 'HEAD')).toEqual({
       kind: 'not-found',
     });
+    expect(resolveHostRouting('platform.gurudevi.app', '/', 'GET')).toEqual({
+      kind: 'redirect',
+      host: SANCTUARY_GURUDEVI_HOST,
+      pathname: '/self',
+    });
+    expect(resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/', 'GET')).toEqual({
+      kind: 'redirect',
+      host: SANCTUARY_GURUDEVI_HOST,
+      pathname: '/self',
+    });
+    expect(resolveHostRouting('gurudevi.lk', '/anything', 'GET')).toEqual({
+      kind: 'redirect',
+      host: PUBLIC_GURUDEVI_HOST,
+    });
   });
 
-  it('maps Explore-only GET requests to internal routes and denies privileged paths', () => {
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'GET')).toEqual({
+  it('maps Explore-only GET requests to canonical routes and denies privileged paths', () => {
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/', 'GET')).toEqual({
       kind: 'rewrite',
-      pathname: '/explore-internal/self',
+      pathname: '/self',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'GET')).toEqual({
+      kind: 'allow',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/workspace', 'GET')).toEqual({
+      kind: 'allow',
     });
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/api/identity', 'GET')).toEqual({
       kind: 'not-found',
     });
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/sign-in', 'GET')).toEqual({
-      kind: 'not-found',
+      kind: 'redirect',
+      host: SANCTUARY_GURUDEVI_HOST,
+      pathname: '/sign-in',
     });
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'POST')).toEqual({
       kind: 'not-found',
@@ -73,5 +96,17 @@ describe('Gurudevi hostname policy', () => {
     expect(resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/support', 'POST')).toEqual({
       kind: 'not-found',
     });
+  });
+
+  it('allows .well-known verification endpoints directly on all hosts without redirection', () => {
+    expect(
+      resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/.well-known/assetlinks.json', 'GET'),
+    ).toEqual({ kind: 'allow' });
+    expect(resolveHostRouting(PUBLIC_GURUDEVI_HOST, '/.well-known/assetlinks.json', 'GET')).toEqual(
+      { kind: 'allow' },
+    );
+    expect(
+      resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/.well-known/apple-app-site-association', 'GET'),
+    ).toEqual({ kind: 'allow' });
   });
 });

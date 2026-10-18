@@ -1,14 +1,32 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { loadCommunityGroups } from '../../../lib/community/groups';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
-import { signInPath } from '../auth/routeSafety';
 import { SanctuaryShell } from '../components/SanctuaryShell';
-import { CommunityFeedFloor } from './CommunityFeedFloor';
+import { CommunityFeedFloor, EXPLORE_COMMUNITY_GROUPS } from './CommunityFeedFloor';
 import styles from './community.module.css';
 
 export const metadata = { title: 'Community | Gurudevi Sanctuary' };
+
+function CommunityState({
+  action,
+  detail,
+  title,
+  displayName = 'Guest',
+}: Readonly<{ action?: ReactNode; detail: string; title: string; displayName?: string }>) {
+  return (
+    <SanctuaryShell displayName={displayName} navigationPrefix="">
+      <main className={styles.floor} id="main-content">
+        <section className={styles.state} aria-live="polite">
+          <p className={styles.eyebrow}>Community</p>
+          <h1>{title}</h1>
+          <p>{detail}</p>
+          {action}
+        </section>
+      </main>
+    </SanctuaryShell>
+  );
+}
 
 export default async function CommunityPage() {
   const supabase = await createServerSupabaseClient();
@@ -23,15 +41,13 @@ export default async function CommunityPage() {
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <CommunityState
-        action={
-          <Link className={styles.action} href={signInPath('/community')}>
-            Sign in
-          </Link>
-        }
-        detail="Sign in to see Community activity authorized for your selected scope."
-        title="Community participation belongs to you"
-      />
+      <SanctuaryShell displayName="Guest" navigationPrefix="">
+        <CommunityFeedFloor
+          accountId="guest"
+          mode="explore"
+          result={{ kind: 'ready', groups: [...EXPLORE_COMMUNITY_GROUPS], hasMore: false }}
+        />
+      </SanctuaryShell>
     );
   }
   if (entry.kind === 'onboarding-required')
@@ -60,22 +76,5 @@ export default async function CommunityPage() {
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
       <CommunityFeedFloor accountId={entry.accountId} result={result} />
     </SanctuaryShell>
-  );
-}
-
-function CommunityState({
-  action,
-  detail,
-  title,
-}: Readonly<{ action?: ReactNode; detail: string; title: string }>) {
-  return (
-    <main className={styles.floor} id="main-content">
-      <section className={styles.state} aria-live="polite">
-        <p className={styles.eyebrow}>Community</p>
-        <h1>{title}</h1>
-        <p>{detail}</p>
-        {action}
-      </section>
-    </main>
   );
 }

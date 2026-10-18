@@ -49,7 +49,10 @@ describe('G1: Adversarial Transport & Auth Boundaries', () => {
     expect(result).toMatchObject({
       type: DeepLinkType.AUTH_CALLBACK,
       isHandled: false,
-      message: 'Failed to exchange magic-link code',
+      // The callback intentionally avoids reflecting Supabase token details;
+      // the actionable recovery message is part of the anti-enumeration contract.
+      message:
+        'This secure link has expired or was already used. Request a new link and try again.',
     });
   });
 

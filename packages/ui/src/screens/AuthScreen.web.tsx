@@ -90,6 +90,7 @@ interface HeroPanelProps {
 
 const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
   const { isDark, accent, accentRgb, textOnAccent } = useTheme();
+  const eyebrowStyle = useMemo(() => ({ color: accent.action }), [accent.action]);
   return (
     <div
       className={`flex flex-col justify-between p-5 sm:p-7 md:p-8 rounded-[32px] md:rounded-[40px] border backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full transition-all duration-300 ${
@@ -130,7 +131,7 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
           <div className="flex flex-col gap-1.5 min-w-0">
             <span
               className="text-[11px] font-extrabold tracking-[0.14em] uppercase"
-              style={{ color: accent.action }}
+              style={eyebrowStyle}
             >
               {modeCopy.eyebrow}
             </span>
@@ -244,7 +245,7 @@ export const AuthScreenWeb = memo(
 
     useEffect(() => {
       dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
-    }, [myProfile?.id]);
+    }, [myProfile]);
 
     const applyPendingInvite = useCallback(
       async (successMessage: string) => {
@@ -369,7 +370,7 @@ export const AuthScreenWeb = memo(
           const isAnonymousUser = isAnonymousIdentity(currentUser);
 
           if (isAnonymousUser) {
-            if (currentUser) GuestDataSync.rememberGuestSession(currentUser.id);
+            if (currentUser) await GuestDataSync.rememberGuestSession(currentUser.id);
             const existingName =
               (currentUser?.display_name && String(currentUser.display_name).trim()) ||
               'Sanctuary User';
@@ -438,7 +439,7 @@ export const AuthScreenWeb = memo(
       } finally {
         dispatch({ type: 'SET_LOADING', loading: false });
       }
-    }, [email, password, mode, t, showToast, onSuccess, currentUser, applyPendingInvite]);
+    }, [email, password, mode, showToast, onSuccess, currentUser, applyPendingInvite]);
 
     const handleGuest = useCallback(async () => {
       dispatch({ type: 'SET_LOADING', loading: true });
@@ -455,19 +456,19 @@ export const AuthScreenWeb = memo(
     }, [onContinueAsGuest, showToast]);
 
     const handleGooglePress = useCallback(() => {
-      void handleGoogleAuth();
+      handleGoogleAuth().catch(() => {});
     }, [handleGoogleAuth]);
 
     const handlePasskeyPress = useCallback(() => {
-      void handlePasskeyAuth();
+      handlePasskeyAuth().catch(() => {});
     }, [handlePasskeyAuth]);
 
     const handleEmailPress = useCallback(() => {
-      void handleEmailAuth();
+      handleEmailAuth().catch(() => {});
     }, [handleEmailAuth]);
 
     const handleGuestPress = useCallback(() => {
-      void handleGuest();
+      handleGuest().catch(() => {});
     }, [handleGuest]);
 
     const switchToSignup = useCallback(() => {

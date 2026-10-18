@@ -1,6 +1,6 @@
 # Sovereign Dependency Intelligence & Cohort Audit Report
 
-Generated: 2026-10-17T05:29:47.722Z
+Generated: 2026-10-17T17:56:24.615Z
 Threshold: \Delta_{\text{major}} \ge 2
 
 ## 1. Ecosystem Cohorts & External Registry Drift
@@ -25,8 +25,8 @@ Threshold: \Delta_{\text{major}} \ge 2
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | ⚠️ **`UNANNOTATED`** | `@tanstack/ai-client` | `0.23.3` | `0.39.3` | +16 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `@tanstack/ai-react` | `0.19.3` | `0.30.4` | +11 min (0.x break) | - |
-| ⚠️ **`UNANNOTATED`** | `@zip.js/zip.js` | `2.14.0` | `2.23.0` | +9 min | - |
-| ⚠️ **`UNANNOTATED`** | `@eslint-react/eslint-plugin` | `5.19.0` | `5.27.2` | +8 min | - |
+| ⚠️ **`UNANNOTATED`** | `@zip.js/zip.js` | `2.14.0` | `2.24.0` | +10 min | - |
+| ⚠️ **`UNANNOTATED`** | `@eslint-react/eslint-plugin` | `5.19.0` | `5.28.0` | +9 min | - |
 | ⚠️ **`UNANNOTATED`** | `@sentry/react-native` | `8.23.0` | `8.31.0` | +8 min | - |
 | ⚠️ **`UNANNOTATED`** | `posthog-js` | `1.430.2` | `1.438.12` | +8 min | - |
 | ⚠️ **`UNANNOTATED`** | `@lottiefiles/dotlottie-react` | `0.13.5` | `0.20.0` | +7 min (0.x break) | - |
@@ -46,169 +46,20 @@ Threshold: \Delta_{\text{major}} \ge 2
 
 ## 2. Framework Dialect & Code Deprecation Drift
 
-### zod: z.ZodTypeAny (8 occurrences) — `Live Substrate Deprecation`
+### zod: z.ZodTypeAny (1 occurrences) — `Live Substrate Deprecation`
 > **Advice:** Use z.ZodType (without generics) instead. (Replacement: z)
 
-- [apps/sanctuary-api/src/core/orpc.ts:75](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L75)
+- [packages/core/src/api/planBridge.ts:21](file:///C:/x/packages/core/src/api/planBridge.ts#L21)
   ```typescript
-  function transformSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:181](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L181)
-  ```typescript
-  z.ZodTypeAny,
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:182](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L182)
-  ```typescript
-  z.ZodTypeAny,
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:183](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L183)
-  ```typescript
-  ...z.ZodTypeAny[],
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:192](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L192)
-  ```typescript
-  params?: z.ZodTypeAny;
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:193](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L193)
-  ```typescript
-  query?: z.ZodTypeAny;
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:194](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L194)
-  ```typescript
-  body?: z.ZodTypeAny;
-  ```
-- [apps/sanctuary-api/src/core/orpc.ts:198](file:///C:/x/apps/sanctuary-api/src/core/orpc.ts#L198)
-  ```typescript
-  const envelope: Record<string, z.ZodTypeAny> = {};
+  body: infer B extends z.ZodTypeAny;
   ```
 
-### zod: z.uuid (120 occurrences) — `Live Substrate Deprecation`
-> **Advice:** Use `z.uuid()` instead. (Replacement: z.uuid)
+### zod: z.input (1 occurrences) — `Live Substrate Deprecation`
+> **Advice:** Use `ctx.value` (Replacement: ctx.value)
 
-- [packages/core/src/api/admin.contract.ts:11](file:///C:/x/packages/core/src/api/admin.contract.ts#L11)
+- [packages/core/src/api/planBridge.ts:23](file:///C:/x/packages/core/src/api/planBridge.ts#L23)
   ```typescript
-  id: z.uuid(),
-  ```
-- [packages/core/src/api/admin.contract.ts:34](file:///C:/x/packages/core/src/api/admin.contract.ts#L34)
-  ```typescript
-  params: z.strictObject({ schoolId: z.uuid() }),
-  ```
-- [packages/core/src/api/admin.contract.ts:47](file:///C:/x/packages/core/src/api/admin.contract.ts#L47)
-  ```typescript
-  params: z.strictObject({ schoolId: z.uuid() }),
-  ```
-- [packages/core/src/api/admin.contract.ts:61](file:///C:/x/packages/core/src/api/admin.contract.ts#L61)
-  ```typescript
-  schoolId: z.uuid(),
-  ```
-- [packages/core/src/api/admin.contract.ts:63](file:///C:/x/packages/core/src/api/admin.contract.ts#L63)
-  ```typescript
-  userId: z.uuid().optional(),
-  ```
-- [packages/core/src/api/admin.contract.ts:80](file:///C:/x/packages/core/src/api/admin.contract.ts#L80)
-  ```typescript
-  params: z.strictObject({ id: z.uuid() }),
-  ```
-- [packages/core/src/api/admin.contract.ts:92](file:///C:/x/packages/core/src/api/admin.contract.ts#L92)
-  ```typescript
-  params: z.strictObject({ schoolId: z.uuid() }),
-  ```
-- [packages/core/src/api/admin.contract.ts:104](file:///C:/x/packages/core/src/api/admin.contract.ts#L104)
-  ```typescript
-  params: z.strictObject({ leaveId: z.uuid() }),
-  ```
-- [packages/core/src/api/admin.contract.ts:107](file:///C:/x/packages/core/src/api/admin.contract.ts#L107)
-  ```typescript
-  reviewedBy: z.uuid().optional(),
-  ```
-- [packages/core/src/api/admin.contract.ts:121](file:///C:/x/packages/core/src/api/admin.contract.ts#L121)
-  ```typescript
-  params: z.strictObject({ schoolId: z.uuid() }),
-  ```
-- *(...and 110 more occurrences)*
-
-### zod: z.url (4 occurrences) — `Live Substrate Deprecation`
-> **Advice:** Use `z.url()` instead. (Replacement: z.url)
-
-- [packages/core/src/api/educational.contract.ts:406](file:///C:/x/packages/core/src/api/educational.contract.ts#L406)
-  ```typescript
-  url: z.url().nullable().optional(),
-  ```
-- [packages/core/src/api/educational.contract.ts:424](file:///C:/x/packages/core/src/api/educational.contract.ts#L424)
-  ```typescript
-  url: z.url().nullable().optional(),
-  ```
-- [packages/core/src/api/profile.contract.ts:18](file:///C:/x/packages/core/src/api/profile.contract.ts#L18)
-  ```typescript
-  url: z.string(), // z.url() is deprecated in v4, use refinements if needed
-  ```
-- [packages/core/src/logic/schemas/workspace-layout.schema.ts:7](file:///C:/x/packages/core/src/logic/schemas/workspace-layout.schema.ts#L7)
-  ```typescript
-  url: z.url(),
-  ```
-
-### react-native-gesture-handler: Gesture.Tap (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.Tap()` is deprecated and will be removed in the future. Please use `useTapGesture` instead. (Replacement: useTapGesture)
-
-- [packages/ui/src/components/LotusPetalFAB.tsx:313](file:///C:/x/packages/ui/src/components/LotusPetalFAB.tsx#L313)
-  ```typescript
-  Gesture.Tap()
-  ```
-
-### react-native-gesture-handler: Gesture.Pan (4 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.Pan()` is deprecated and will be removed in the future. Please use `usePanGesture` instead. (Replacement: usePanGesture)
-
-- [packages/ui/src/components/LotusPetalFAB.tsx:257](file:///C:/x/packages/ui/src/components/LotusPetalFAB.tsx#L257)
-  ```typescript
-  Gesture.Pan()
-  ```
-- [packages/ui/src/components/TemporalScrubber.tsx:45](file:///C:/x/packages/ui/src/components/TemporalScrubber.tsx#L45)
-  ```typescript
-  Gesture.Pan()
-  ```
-- [packages/ui/src/components/visualization/AstroView.tsx:125](file:///C:/x/packages/ui/src/components/visualization/AstroView.tsx#L125)
-  ```typescript
-  Gesture.Pan()
-  ```
-- [packages/ui/src/components/workspace/DraggableCanvasSurface.tsx:84](file:///C:/x/packages/ui/src/components/workspace/DraggableCanvasSurface.tsx#L84)
-  ```typescript
-  Gesture.Pan()
-  ```
-
-### react-native-gesture-handler: Gesture.Exclusive (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.Exclusive()` is deprecated and will be removed in the future. Please use `useExclusiveGestures` instead. (Replacement: useExclusiveGestures)
-
-- [packages/ui/src/components/LotusPetalFAB.tsx:324](file:///C:/x/packages/ui/src/components/LotusPetalFAB.tsx#L324)
-  ```typescript
-  () => Gesture.Exclusive(tapGesture, dragGesture),
-  ```
-
-### react-native-gesture-handler: Gesture.Pinch (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.Pinch()` is deprecated and will be removed in the future. Please use `usePinchGesture` instead. (Replacement: usePinchGesture)
-
-- [packages/ui/src/components/visualization/AstroView.tsx:105](file:///C:/x/packages/ui/src/components/visualization/AstroView.tsx#L105)
-  ```typescript
-  Gesture.Pinch()
-  ```
-
-### react-native-gesture-handler: Gesture.Simultaneous (2 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.Simultaneous()` is deprecated and will be removed in the future. Please use `useSimultaneousGestures` instead. (Replacement: useSimultaneousGestures)
-
-- [packages/ui/src/components/visualization/AstroView.tsx:147](file:///C:/x/packages/ui/src/components/visualization/AstroView.tsx#L147)
-  ```typescript
-  () => Gesture.Simultaneous(pinchGesture, panGesture),
-  ```
-- [packages/ui/src/components/workspace/DraggableCanvasSurface.tsx:130](file:///C:/x/packages/ui/src/components/workspace/DraggableCanvasSurface.tsx#L130)
-  ```typescript
-  () => Gesture.Simultaneous(longPressGesture, dragGesture),
-  ```
-
-### react-native-gesture-handler: Gesture.LongPress (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.LongPress()` is deprecated and will be removed in the future. Please use `useLongPressGesture` instead. (Replacement: useLongPressGesture)
-
-- [packages/ui/src/components/workspace/DraggableCanvasSurface.tsx:67](file:///C:/x/packages/ui/src/components/workspace/DraggableCanvasSurface.tsx#L67)
-  ```typescript
-  Gesture.LongPress()
+  ? z.input<B>
   ```
 
 ## 3. Internal Workspace Version Alignment Drift
@@ -220,6 +71,9 @@ Threshold: \Delta_{\text{major}} \ge 2
 | `@supabase/postgrest-js` | `2.117.2` vs `2.118.0` | `2.117.2`: `gurudevi-mobile`, `@repo/community`<br>`2.118.0`: `@repo/core` | Run `pnpm run deps:harmonize` |
 | `@supabase/supabase-js` | `2.117.2` vs `2.118.0` | `2.117.2`: `gurudevi-mobile`, `@repo/accounting`, `@repo/community`, `@repo/graphics`<br>`2.118.0`: `@repo/core` | Run `pnpm run deps:harmonize` |
 | `effect` | `^4.0.2` vs `^4.0.5` | `^4.0.2`: `gurudevi-mobile`<br>`^4.0.5`: `@repo/core` | Run `pnpm run deps:harmonize` |
+| `@orpc/client` | `2.0.0-beta.44` vs `1.15.7` | `2.0.0-beta.44`: `gurudevi-web`, `@repo/sanctuary-api`<br>`1.15.7`: `@repo/core` | Run `pnpm run deps:harmonize` |
+| `@orpc/contract` | `2.0.0-beta.44` vs `1.15.7` | `2.0.0-beta.44`: `@repo/sanctuary-api`<br>`1.15.7`: `@repo/core` | Run `pnpm run deps:harmonize` |
+| `@orpc/server` | `2.0.0-beta.44` vs `1.15.7` | `2.0.0-beta.44`: `@repo/sanctuary-api`<br>`1.15.7`: `@repo/core` | Run `pnpm run deps:harmonize` |
 | `inngest` | `^4.24.0` vs `^4.21.1` | `^4.24.0`: `@repo/sanctuary-api`<br>`^4.21.1`: `@repo/core` | Run `pnpm run deps:harmonize` |
 
 ## 4. Sovereign Command Center & Proactive Workflows

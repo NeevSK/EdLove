@@ -9,9 +9,37 @@ import {
   type CommunityGroupsResult,
   parseCommunityGroupsResult,
 } from '../../../lib/community/groups-contract';
+import { LivingCard } from '../components/LivingCard';
 import styles from './community.module.css';
 
-type CommunityFloorMode = 'account' | 'explore';
+export const EXPLORE_COMMUNITY_GROUPS: readonly CommunityGroup[] = [
+  {
+    id: 'compassion-circle',
+    name: 'Compassion & Mindfulness',
+    description: 'Daily reflections on mindful practice, grounding exercises, and calm focus.',
+    memberCount: 42,
+  },
+  {
+    id: 'educators-hearth',
+    name: 'Educators Hearth',
+    description: 'Pedagogy, quiet classroom spaces, and contemplative dialogue for teachers.',
+    memberCount: 28,
+  },
+  {
+    id: 'wisdom-dialogues',
+    name: 'Wisdom & Philosophy',
+    description: 'Exploring contemplative texts, ancient thought, and ethical living.',
+    memberCount: 35,
+  },
+  {
+    id: 'reflective-inquiry',
+    name: 'Reflective Inquiry',
+    description: 'Peer discussions on honest self-inquiry, ethics, and mindful living.',
+    memberCount: 19,
+  },
+];
+
+export type CommunityFloorMode = 'account' | 'explore';
 
 export function CommunityFeedFloor({
   mode = 'account',
@@ -38,21 +66,12 @@ export function CommunityFeedFloor({
   const [retrySearch, setRetrySearch] = useState(0);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setResult(initialResult);
-    setResolvedQuery('');
-  }, [initialResult]);
+  const isSearchActive = mode === 'account' && Boolean(query.trim());
+  const effectiveResult = isSearchActive ? result : initialResult;
 
   useEffect(() => {
-    if (mode !== 'account') return;
+    if (!isSearchActive) return;
     const search = query.trim();
-    if (!search) {
-      setResult(initialResult);
-      setResolvedQuery('');
-      setSearchError(null);
-      setIsSearching(false);
-      return;
-    }
 
     const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
@@ -76,7 +95,7 @@ export function CommunityFeedFloor({
       window.clearTimeout(timeout);
       controller.abort();
     };
-  }, [initialResult, mode, query, retrySearch]);
+  }, [isSearchActive, query, retrySearch]);
 
   const localGroups = useMemo(() => {
     if (mode !== 'explore' || initialResult.kind !== 'ready') return [];
@@ -87,32 +106,39 @@ export function CommunityFeedFloor({
     );
   }, [initialResult, mode, query]);
 
-  const visibleResult = mode === 'explore' ? initialResult : result;
+  const visibleResult = mode === 'explore' ? initialResult : effectiveResult;
   const visibleGroups =
-    mode === 'explore' ? localGroups : result.kind === 'ready' ? result.groups : [];
-  const selectedGroup = useMemo(
-    () => visibleGroups.find((g) => g.id === selectedGroupId) ?? null,
-    [selectedGroupId, visibleGroups],
-  );
+    mode === 'explore'
+      ? localGroups
+      : effectiveResult.kind === 'ready'
+        ? effectiveResult.groups
+        : [];
+  const selectedGroup = visibleGroups.find((g) => g.id === selectedGroupId) ?? null;
   const searchIsPending =
     mode === 'account' && query.trim() !== resolvedQuery && query.trim() !== '';
 
   async function loadMore() {
-    if (mode !== 'account' || result.kind !== 'ready' || !result.hasMore || isLoadingMore) return;
+    if (
+      mode !== 'account' ||
+      effectiveResult.kind !== 'ready' ||
+      !effectiveResult.hasMore ||
+      isLoadingMore
+    )
+      return;
     setIsLoadingMore(true);
     setLoadMoreError(null);
     try {
       const page = await requestPage(
         resolvedQuery,
-        result.groups.length,
+        effectiveResult.groups.length,
         new AbortController().signal,
       );
       if (page.kind !== 'ready') throw new Error('Circle directory is unavailable. Try again.');
-      const existingIds = new Set(result.groups.map((group) => group.id));
+      const existingIds = new Set(effectiveResult.groups.map((group) => group.id));
       const nextGroups = page.groups.filter((group) => !existingIds.has(group.id));
       setResult({
         kind: 'ready',
-        groups: [...result.groups, ...nextGroups],
+        groups: [...effectiveResult.groups, ...nextGroups],
         hasMore: page.hasMore,
       });
     } catch (error) {
@@ -370,7 +396,7 @@ function CommunityGroupCard({
   onSelect?: () => void;
 }>) {
   return (
-    <article className={styles.group}>
+    <LivingCard className={styles.group} variant="vellum" elevation="floating">
       <div className={styles.groupMark} aria-hidden="true">
         {group.name.trim().charAt(0).toLocaleUpperCase() || '○'}
       </div>
@@ -386,6 +412,6 @@ function CommunityGroupCard({
       <footer className={styles.meta}>
         <span>{group.memberCount} members</span>
       </footer>
-    </article>
+    </LivingCard>
   );
 }

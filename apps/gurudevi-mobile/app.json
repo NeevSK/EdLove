@@ -11,10 +11,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "app.gurudevi.sanctuary",
       "buildNumber": "1",
-      "associatedDomains": [
-        "applinks:sanctuary.gurudevi.app",
-        "applinks:gurudevi.app"
-      ]
+      "associatedDomains": ["applinks:sanctuary.gurudevi.app", "applinks:gurudevi.app"]
     },
     "android": {
       "package": "app.gurudevi.sanctuary",
@@ -35,10 +32,7 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -48,10 +42,7 @@
               "host": "qr"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -61,10 +52,7 @@
               "host": "invite"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -74,10 +62,7 @@
               "host": "c"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -124,10 +109,7 @@
               "pathPrefix": "/auth/callback"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -157,9 +139,7 @@
                   "targetName": "ExpoWidgetsTarget",
                   "bundleIdentifier": "app.gurudevi.sanctuary.ExpoWidgetsTarget",
                   "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.app.gurudevi.sanctuary"
-                    ]
+                    "com.apple.security.application-groups": ["group.app.gurudevi.sanctuary"]
                   }
                 }
               ]
@@ -215,6 +195,7 @@
       ],
       "expo-widgets",
       "expo-router",
+      "@sentry/react-native/expo",
       "react-native-enriched-markdown",
       "react-native-nano-icons",
       "expo-background-task",

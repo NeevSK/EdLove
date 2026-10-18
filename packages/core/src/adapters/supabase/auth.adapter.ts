@@ -107,10 +107,20 @@ export class SupabaseAuthAdapter implements IAuthPort {
     const redirectTo = this.magicLinkRedirectUri();
     const { data, error } = await this.client.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectTo },
+      // This is deliberately explicit: the unified entry has no separate
+      // registration branch. Supabase owns the verified new-vs-returning
+      // identity decision and suppresses account enumeration responses.
+      options: { emailRedirectTo: redirectTo, shouldCreateUser: true },
     });
     if (error) throw new APIError('Failed to send magic link', error.code, error);
     return { user: data.user as any, session: data.session as any };
+  }
+
+  async resetPasswordForEmail(email: string, redirectTo?: string): Promise<void> {
+    const { error } = await this.client.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectTo ?? this.magicLinkRedirectUri(),
+    });
+    if (error) throw new APIError('Failed to send password recovery email', error.code, error);
   }
 
   async signInWithPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest) {
@@ -287,8 +297,14 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
-  async updateUser(params: { email?: string; password?: string; data?: Record<string, any> }) {
-    const { data, error } = await this.client.auth.updateUser(params);
+  async updateUser(params: {
+    email?: string;
+    password?: string;
+    data?: Record<string, any>;
+    options?: { emailRedirectTo?: string };
+  }) {
+    const { options, ...attributes } = params;
+    const { data, error } = await this.client.auth.updateUser(attributes, options);
     if (error) throw new APIError('Failed to update user', error.code, error);
     return data as any;
   }

@@ -55,12 +55,14 @@ export async function loadCommunityGroups(
   }
 
   let responseStatus: number | null = null;
+  const parsedEndpoint = new URL(endpoint);
   const link = new RPCLink<Record<never, never>>({
-    url: endpoint,
+    origin: parsedEndpoint.origin as `http://${string}` | `https://${string}`,
+    url: (parsedEndpoint.pathname === '/' ? '/api' : parsedEndpoint.pathname) as `/${string}`,
     headers: { Authorization: `Bearer ${accessToken}` },
-    fetch: async (request, init) => {
-      assertSecureApiUrl(request.url);
-      const response = await fetcher(request, {
+    fetch: async (url, init) => {
+      assertSecureApiUrl(url);
+      const response = await fetcher(url, {
         ...init,
         cache: 'no-store',
         redirect: 'error',

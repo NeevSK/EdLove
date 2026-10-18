@@ -15,9 +15,7 @@ import { signInWithGoogleNative } from '@/lib/googleSignIn';
  *
  * By assembling it here, we keep the packages clean and avoid circular dependencies.
  */
-type AuthScreenProps = Omit<ComponentProps<typeof UIAuthScreen>, 'Scanner' | 'onGoogleNative'> & {
-  onContinueAsGuest?: () => void | Promise<void>;
-};
+type AuthScreenProps = Omit<ComponentProps<typeof UIAuthScreen>, 'Scanner' | 'onGoogleNative'>;
 
 export default function AuthScreen(props: AuthScreenProps) {
   // Native only. On the off chance this wrapper is imported on web, fall back

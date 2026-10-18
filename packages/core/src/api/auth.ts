@@ -30,6 +30,18 @@ export const authAPI = {
     return auth.signInWithMagicLink(email);
   },
 
+  async requestPasswordRecovery(email: string, redirectTo?: string) {
+    return auth.requestPasswordRecovery(email, redirectTo);
+  },
+
+  async updatePassword(password: string) {
+    return auth.updatePassword(password);
+  },
+
+  async linkAnonymousEmail(email: string, emailRedirectTo?: string) {
+    return auth.linkAnonymousEmail(email, emailRedirectTo);
+  },
+
   async signInWithPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest) {
     return auth.signInWithPhoneOtp(params);
   },

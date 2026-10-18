@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
+import { SanctuaryShell } from '../components/SanctuaryShell';
 import { ProfileFloor } from './ProfileFloor';
 import styles from './profile.module.css';
 
@@ -59,11 +60,13 @@ export default async function ProfilePage() {
   }
 
   return (
-    <ProfileFloor
-      accountId={entry.accountId}
-      displayName={entry.displayName}
-      primaryScopeRole={entry.primaryScopeRole}
-    />
+    <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
+      <ProfileFloor
+        accountId={entry.accountId}
+        displayName={entry.displayName}
+        primaryScopeRole={entry.primaryScopeRole}
+      />
+    </SanctuaryShell>
   );
 }
 
@@ -84,13 +87,24 @@ function ProfileState({
   detail,
   eyebrow,
   title,
-}: Readonly<{ action?: ReactNode; detail: string; eyebrow: string; title: string }>) {
+  displayName = 'Explorer',
+}: Readonly<{
+  action?: ReactNode;
+  detail: string;
+  eyebrow: string;
+  title: string;
+  displayName?: string;
+}>) {
   return (
-    <section className={styles.state} aria-live="polite" aria-labelledby="profile-state-title">
-      <p className={styles.eyebrow}>{eyebrow}</p>
-      <h1 id="profile-state-title">{title}</h1>
-      <p>{detail}</p>
-      {action}
-    </section>
+    <SanctuaryShell displayName={displayName} navigationPrefix="">
+      <main id="main-content" className="sanctuary-container">
+        <section className={styles.state} aria-live="polite" aria-labelledby="profile-state-title">
+          <p className={styles.eyebrow}>{eyebrow}</p>
+          <h1 id="profile-state-title">{title}</h1>
+          <p>{detail}</p>
+          {action}
+        </section>
+      </main>
+    </SanctuaryShell>
   );
 }

@@ -5,6 +5,7 @@ import { PasswordlessEntry } from './PasswordlessEntry';
 
 const browserAuthRuntime = vi.hoisted(() => vi.fn());
 const signInWithOtp = vi.hoisted(() => vi.fn());
+const updateUser = vi.hoisted(() => vi.fn());
 
 vi.mock('./browserAuth', () => ({
   browserAuthRuntime,
@@ -15,7 +16,10 @@ describe('PasswordlessEntry email magic link', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     browserAuthRuntime.mockReturnValue({
-      client: { auth: { signInWithOtp } },
+      client: { auth: { signInWithOtp, updateUser } },
+      bootstrapIdentity: vi
+        .fn()
+        .mockResolvedValue({ status: 'signed-out', session: null, user: null }),
     });
   });
 
@@ -49,5 +53,32 @@ describe('PasswordlessEntry email magic link', () => {
     expect(
       screen.getByRole('button', { name: 'Continue with email' }).hasAttribute('disabled'),
     ).toBe(false);
+  });
+
+  it('links an anonymous guest email to its existing subject instead of creating another account', async () => {
+    updateUser.mockResolvedValue({ error: null });
+    browserAuthRuntime.mockReturnValue({
+      client: { auth: { signInWithOtp, updateUser } },
+      bootstrapIdentity: vi.fn().mockResolvedValue({
+        status: 'authenticated',
+        session: { user: { id: 'guest-1', is_anonymous: true } },
+      }),
+    });
+    const user = userEvent.setup();
+    render(<PasswordlessEntry returnTo="/onboarding" />);
+
+    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
+    await user.click(screen.getByRole('button', { name: 'Continue with email' }));
+
+    expect(updateUser).toHaveBeenCalledWith(
+      { email: 'learner@example.org' },
+      {
+        emailRedirectTo: `${window.location.origin}/auth/complete?next=%2Fonboarding&returnTo=%2Fonboarding`,
+      },
+    );
+    expect(signInWithOtp).not.toHaveBeenCalled();
+    expect((await screen.findByRole('status')).textContent).toMatch(
+      /existing work stays attached/i,
+    );
   });
 });

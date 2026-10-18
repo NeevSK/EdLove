@@ -147,6 +147,58 @@ export class AuthManager {
     return result;
   }
 
+  async requestPasswordRecovery(email: string, redirectTo?: string): Promise<void> {
+    await this.authPort.resetPasswordForEmail(email, redirectTo);
+    await this.recordAuthMethodUsage('AUTH_PASSWORD_RECOVERY_STARTED', {
+      method: 'email_recovery',
+      outcome: 'initiated',
+      email_domain: email.includes('@') ? (email.split('@')[1] ?? null) : null,
+    });
+  }
+
+  async updatePassword(password: string) {
+    const { user } = await this.authPort.updateUser({ password });
+    if (!user) throw new APIError('Password update returned no user.', 'AUTH_ERROR');
+    await this.recordAuthMethodUsage(
+      'AUTH_PASSWORD_RECOVERY_COMPLETED',
+      { method: 'email_recovery', outcome: 'success' },
+      user.id,
+    );
+    return { user };
+  }
+
+  /**
+   * Converts the current anonymous subject into an email identity. This must
+   * not be replaced by ordinary passwordless sign-in: doing so can create a
+   * different Auth user and split the guest's server-owned work.
+   */
+  async linkAnonymousEmail(email: string, emailRedirectTo?: string) {
+    const session = await this.authPort.getSession();
+    if (!session?.user?.is_anonymous) {
+      throw new APIError(
+        'An anonymous session is required to secure guest work.',
+        'AUTH_GUEST_REQUIRED',
+      );
+    }
+
+    const { user } = await this.authPort.updateUser({
+      email,
+      options: { emailRedirectTo },
+    });
+    if (!user) throw new APIError('Email identity update returned no user.', 'AUTH_ERROR');
+
+    await this.recordAuthMethodUsage(
+      'AUTH_LINK_ANONYMOUS_EMAIL_STARTED',
+      {
+        method: 'email_link',
+        outcome: 'initiated',
+        email_domain: email.includes('@') ? (email.split('@')[1] ?? null) : null,
+      },
+      user.id,
+    );
+    return { user };
+  }
+
   signInWithPhoneOtp(params: PhoneOtpRequest): Promise<void> {
     return this.authPort.signInWithPhoneOtp(params);
   }

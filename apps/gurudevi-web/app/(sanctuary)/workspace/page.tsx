@@ -22,12 +22,9 @@ export default async function WorkspacePage() {
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out')
     return (
-      <WorkspaceState
-        action={<Link href={signInPath('/workspace')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to open work connected to your classroom or school bonds."
-        title="Your Workspace is private to its bonds"
-      />
+      <SanctuaryShell displayName="Guest" navigationPrefix="">
+        <WorkspaceFloor capacity="TEACHER" mode="explore" />
+      </SanctuaryShell>
     );
   if (entry.kind === 'onboarding-required')
     return (

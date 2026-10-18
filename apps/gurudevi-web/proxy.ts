@@ -1,14 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { isSanctuaryPath, resolveHostRouting } from './lib/host-routing';
+import { classifyGurudeviHost, isSanctuaryPath, resolveHostRouting } from './lib/host-routing';
 import { refreshSupabaseSession } from './lib/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') ?? request.nextUrl.hostname;
-  const hostRouting = resolveHostRouting(
-    hostname,
-    request.nextUrl.pathname,
-    request.method,
-  );
+  const hostRouting = resolveHostRouting(hostname, request.nextUrl.pathname, request.method);
 
   if (hostRouting.kind === 'not-found') return new NextResponse(null, { status: 404 });
   if (hostRouting.kind === 'redirect') {
@@ -16,6 +12,9 @@ export async function proxy(request: NextRequest) {
     destination.protocol = 'https:';
     destination.hostname = hostRouting.host;
     destination.port = '';
+    if (hostRouting.pathname) {
+      destination.pathname = hostRouting.pathname;
+    }
     return NextResponse.redirect(destination, 307);
   }
   if (hostRouting.kind === 'rewrite') {
@@ -24,7 +23,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.rewrite(destination);
   }
 
-  return isSanctuaryPath(request.nextUrl.pathname)
+  const incomingHost = hostRouting.kind === 'allow' ? classifyGurudeviHost(hostname) : 'other';
+  return incomingHost !== 'explore' && isSanctuaryPath(request.nextUrl.pathname)
     ? refreshSupabaseSession(request)
     : NextResponse.next({ request });
 }

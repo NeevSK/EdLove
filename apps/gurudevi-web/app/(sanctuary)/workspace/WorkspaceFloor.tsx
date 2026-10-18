@@ -2,6 +2,7 @@
 
 import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import { useDomainWorkbench } from '../../../lib/workbench';
@@ -25,6 +26,7 @@ import {
   type WorkspaceClassroom,
   type WorkspaceStudent,
 } from '../../../lib/workspace/attendance';
+import { LivingCard } from '../components/LivingCard';
 import { TaskStrip, TemporalHorizon } from '../components/workbench';
 import styles from './workspace.module.css';
 
@@ -67,7 +69,23 @@ function statusCounts(students: readonly WorkspaceStudent[]) {
   );
 }
 
+function buildAccountDraftScope(
+  subjectId: string,
+  scope: AuthorizedEntryScope,
+  classroomId: string,
+  selectedDate: string,
+): AccountAttendanceDraftScope {
+  return {
+    accountId: subjectId,
+    bondId: scope.bondId,
+    entityId: scope.entityId,
+    classroomId,
+    date: selectedDate,
+  };
+}
+
 export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFloorProps) {
+  const normalizedCapacity = capacity?.toLowerCase();
   const [overview, setOverview] = useState(true);
   const canvas = useWorkspaceCanvas({
     accountId: subjectId ?? 'explore',
@@ -79,7 +97,11 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   const [classroom, setClassroom] = useState<WorkspaceClassroom | null>(null);
   const selectedClassroomRef = useRef<WorkspaceClassroom | null>(null);
   const [students, setStudents] = useState<readonly WorkspaceStudent[]>([]);
-  const [date, setDate] = useState(today());
+  const [localDate, setLocalDate] = useState(today());
+  const date =
+    workbench.state.temporalHorizon?.anchor.kind === 'date'
+      ? workbench.state.temporalHorizon.anchor.date
+      : localDate;
   const [loadState, setLoadState] = useState<LoadState>(mode === 'explore' ? 'ready' : 'loading');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -96,7 +118,8 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   );
 
   const load = useCallback(
-    async (selectedDate: string, selectedClassroom?: WorkspaceClassroom) => {
+    async (selectedDate: string, selectedClassroom?: WorkspaceClassroom | null) => {
+      await Promise.resolve();
       const loadId = ++latestLoadRef.current;
       setLoadState('loading');
       setError(null);
@@ -132,7 +155,9 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
           if (selected) {
             const roster = await loadAccountAttendance(selected, selectedDate, subjectId);
             if (loadId !== latestLoadRef.current) return;
-            const draft = loadAccountAttendanceDraft(accountDraftScope(selected.id, selectedDate));
+            const draft = loadAccountAttendanceDraft(
+              buildAccountDraftScope(subjectId, scope, selected.id, selectedDate),
+            );
             const restored = restoreAccountAttendanceDraft(roster, draft);
             setStudents(restored.students);
             setUnsynced(draft !== null);
@@ -157,18 +182,11 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
     [mode, practiceMode, scope, subjectId],
   );
 
-  function accountDraftScope(
-    classroomId: string,
-    selectedDate: string,
-  ): AccountAttendanceDraftScope {
-    if (!subjectId || !scope) throw new Error('The selected account scope is unavailable.');
-    return {
-      accountId: subjectId,
-      bondId: scope.bondId,
-      entityId: scope.entityId,
-      classroomId,
-      date: selectedDate,
-    };
+  function accountDraftScope(classroomId: string, selectedDate: string) {
+    if (!subjectId || !scope) {
+      throw new Error('The selected account scope is unavailable.');
+    }
+    return buildAccountDraftScope(subjectId, scope, classroomId, selectedDate);
   }
 
   function persistAccountDraft(nextStudents: readonly WorkspaceStudent[]) {
@@ -188,7 +206,17 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   }
 
   useEffect(() => {
-    void load(date);
+    let active = true;
+    const fetchAttendance = async () => {
+      await Promise.resolve();
+      if (active) {
+        await load(date);
+      }
+    };
+    fetchAttendance().catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [date, load]);
 
   function openAttendance() {
@@ -312,15 +340,13 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   const horizon = workbench.state.temporalHorizon ?? todayHorizon();
 
   useEffect(() => {
-    if (workbench.state.temporalHorizon?.anchor.kind === 'date') {
-      setDate(workbench.state.temporalHorizon.anchor.date);
-    } else if (!workbench.state.temporalHorizon) {
+    if (!workbench.state.temporalHorizon) {
       workbench.setTemporalHorizon(horizon);
     }
-  }, [workbench.state.temporalHorizon]);
+  }, [horizon, workbench]);
 
   function selectDate(nextDate: string) {
-    setDate(nextDate);
+    setLocalDate(nextDate);
     workbench.setTemporalHorizon({
       anchor: { kind: 'date', date: nextDate },
       scale: 'day',
@@ -347,7 +373,7 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
           tasks={workbench.state.tasks}
         />
         <TemporalHorizon
-          dateLabel={new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(
+          dateLabel={new Intl.DateTimeFormat([], { dateStyle: 'full' }).format(
             new Date(`${date}T12:00:00`),
           )}
           onNext={() => selectDate(moveDate(date, 1))}
@@ -377,9 +403,13 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
         <div className={styles.error} role="alert">
           <p>{error}</p>
           <button
-            onClick={() =>
-              void (loadState === 'error' ? load(date, classroom ?? undefined) : save())
-            }
+            onClick={() => {
+              if (loadState === 'error') {
+                load(date, classroom).catch(() => {});
+              } else {
+                save().catch(() => {});
+              }
+            }}
             type="button"
           >
             {loadState === 'error' ? 'Retry loading' : 'Retry save'}
@@ -413,66 +443,142 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
       ) : null}
 
       {overview || !activeAttendance ? (
-        <section aria-labelledby="workspace-overview-title" className={styles.overview}>
-          <div>
-            <p className={styles.eyebrow}>Overview · Classroom practice</p>
-            <h2 id="workspace-overview-title">Daily attendance</h2>
-            <p>Take a classroom roll call and keep each student’s mark for the selected day.</p>
-          </div>
-          {loadState === 'loading' && mode === 'account' ? (
-            <p className={styles.loading} role="status">
-              Checking the selected classroom scope…
-            </p>
-          ) : null}
-          {loadState === 'ready' ? (
-            <div className={styles.summary} aria-label="Attendance summary">
-              <span>
-                <strong>{classrooms.length}</strong> classrooms
-              </span>
-              <span>
-                <strong>{students.length}</strong> students in today’s roster
-              </span>
-              {mode === 'explore' ? <span className={styles.localTag}>Local demo data</span> : null}
-            </div>
-          ) : null}
-          <button
-            className={styles.primary}
-            disabled={mode === 'account' && loadState !== 'ready'}
-            onClick={openAttendance}
-            type="button"
+        normalizedCapacity === 'principal' ? (
+          <LivingCard
+            className={styles.overview}
+            variant="glass"
+            elevation="floating"
+            style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
           >
-            {loadState === 'loading' && mode === 'account'
-              ? 'Loading workspace…'
-              : 'Open attendance'}
-          </button>
-          {mode === 'account' && !practiceMode && subjectId && practiceAvailability.available ? (
+            <div>
+              <p className={styles.eyebrow}>Overview · School coordination</p>
+              <h2 id="workspace-overview-title">School presence & attendance</h2>
+              <p>
+                Coordinate whole-school presence, attendance patterns, and staff communications.
+              </p>
+            </div>
+            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link href="/workspace/climate" className={styles.primary}>
+                Classroom climate pulse
+              </Link>
+            </div>
+          </LivingCard>
+        ) : normalizedCapacity === 'student' ? (
+          <LivingCard
+            className={styles.overview}
+            variant="lotus"
+            elevation="floating"
+            style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
+          >
+            <div>
+              <p className={styles.eyebrow}>Overview · Student reflection</p>
+              <h2 id="workspace-overview-title">Learning Studio</h2>
+              <p>
+                Your quiet space for self-guided study, journal reflections, and personal discovery.
+              </p>
+            </div>
+            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link href="/self" className={styles.primary}>
+                Open quiet journal
+              </Link>
+              <Link href="/library" className={styles.secondary}>
+                Browse library
+              </Link>
+            </div>
+          </LivingCard>
+        ) : normalizedCapacity === 'guardian' ? (
+          <LivingCard
+            className={styles.overview}
+            variant="vellum"
+            elevation="floating"
+            style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
+          >
+            <div>
+              <p className={styles.eyebrow}>Overview · Family circle</p>
+              <h2 id="workspace-overview-title">Family Space</h2>
+              <p>
+                Connect with your child’s learning circle, dialogue with teachers, and explore
+                family guides.
+              </p>
+            </div>
+            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link href="/community" className={styles.primary}>
+                Open community dialogues
+              </Link>
+              <Link href="/library" className={styles.secondary}>
+                Family guides
+              </Link>
+            </div>
+          </LivingCard>
+        ) : (
+          <LivingCard
+            className={styles.overview}
+            variant="vellum"
+            elevation="floating"
+            style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
+          >
+            <div>
+              <p className={styles.eyebrow}>Overview · Classroom practice</p>
+              <h2 id="workspace-overview-title">Daily attendance</h2>
+              <p>Take a classroom roll call and keep each student’s mark for the selected day.</p>
+            </div>
+            {loadState === 'loading' && mode === 'account' ? (
+              <p className={styles.loading} role="status">
+                Checking the selected classroom scope…
+              </p>
+            ) : null}
+            {loadState === 'ready' ? (
+              <div className={styles.summary} aria-label="Attendance summary">
+                <span>
+                  <strong>{classrooms.length}</strong> classrooms
+                </span>
+                <span>
+                  <strong>{students.length}</strong> students in today’s roster
+                </span>
+                {mode === 'explore' ? (
+                  <span className={styles.localTag}>Local demo data</span>
+                ) : null}
+              </div>
+            ) : null}
             <button
-              className={styles.secondary}
-              onClick={() => {
-                latestLoadRef.current += 1;
-                setPracticeMode(true);
-                setOverview(false);
-                const result = workbench.open(attendanceTask);
-                if (result.kind === 'at-capacity') {
-                  setPracticeMode(false);
-                  setOverview(true);
-                  setError(
-                    'Close another Workspace task before opening daily attendance practice.',
-                  );
-                }
-              }}
+              className={styles.primary}
+              disabled={mode === 'account' && loadState !== 'ready'}
+              onClick={openAttendance}
               type="button"
             >
-              Try attendance safely
+              {loadState === 'loading' && mode === 'account'
+                ? 'Loading workspace…'
+                : 'Open attendance'}
             </button>
-          ) : null}
-          {mode === 'account' && loadState === 'ready' && classrooms.length === 0 ? (
-            <p className={styles.muted}>
-              No classrooms are connected to this account yet. A school or classroom bond is
-              required before shared classroom work appears.
-            </p>
-          ) : null}
-        </section>
+            {mode === 'account' && !practiceMode && subjectId && practiceAvailability.available ? (
+              <button
+                className={styles.secondary}
+                onClick={() => {
+                  latestLoadRef.current += 1;
+                  setPracticeMode(true);
+                  setOverview(false);
+                  const result = workbench.open(attendanceTask);
+                  if (result.kind === 'at-capacity') {
+                    setPracticeMode(false);
+                    setOverview(true);
+                    setError(
+                      'Close another Workspace task before opening daily attendance practice.',
+                    );
+                  }
+                }}
+                type="button"
+              >
+                Try attendance safely
+              </button>
+            ) : null}
+            {mode === 'account' && loadState === 'ready' && classrooms.length === 0 ? (
+              <p className={styles.muted}>
+                No classrooms are connected to this account yet. A school or classroom bond is
+                required before shared classroom work appears.
+              </p>
+            ) : null}
+          </LivingCard>
+        )
       ) : (
         <div className={styles.masterDetailLayout}>
           <aside className={styles.catalogRail} aria-label="Classroom navigation rail">
@@ -498,7 +604,7 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
                         className={`${styles.catalogRailItem} ${classroom?.id === item.id ? styles.catalogRailItemActive : ''}`}
                         onClick={() => {
                           selectedClassroomRef.current = item;
-                          void load(date, item);
+                          load(date, item).catch(() => {});
                         }}
                       >
                         <span className={styles.catalogRailItemLabel}>{item.name}</span>
@@ -532,7 +638,7 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
                         className={`${styles.catalogRailItem} ${classroom?.id === item.id ? styles.catalogRailItemActive : ''}`}
                         onClick={() => {
                           selectedClassroomRef.current = item;
-                          void load(date, item);
+                          load(date, item).catch(() => {});
                         }}
                       >
                         <span className={styles.catalogRailItemLabel}>{item.name}</span>
@@ -580,7 +686,7 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
                         const next = classrooms.find((item) => item.id === event.target.value);
                         if (next) {
                           selectedClassroomRef.current = next;
-                          void load(date, next);
+                          load(date, next).catch(() => {});
                         }
                       }}
                     >
@@ -658,7 +764,9 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
                   <button
                     className={styles.primary}
                     disabled={!markableCount || saving}
-                    onClick={() => void save()}
+                    onClick={() => {
+                      save().catch(() => {});
+                    }}
                     type="button"
                   >
                     {saving

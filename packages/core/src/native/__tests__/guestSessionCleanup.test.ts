@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   clearGuestLeaseData: vi.fn(),
   clearLocalGuestIdentity: vi.fn(),
   clearAllGuestData: vi.fn(),
+  clearPendingGuestSession: vi.fn(),
   removeItem: vi.fn(),
   signOut: vi.fn(),
 }));
@@ -14,6 +15,9 @@ vi.mock('@repo/core/lib/storageWrapper', () => ({
 }));
 vi.mock('@repo/core/native/guestDataManager', () => ({
   GuestDataManager: { clearAllGuestData: mocks.clearAllGuestData },
+}));
+vi.mock('@repo/core/native/guestDataSync', () => ({
+  GuestDataSync: { clearPendingGuestSession: mocks.clearPendingGuestSession },
 }));
 vi.mock('@repo/core/native/guestIdentity', () => ({
   clearLocalGuestIdentity: mocks.clearLocalGuestIdentity,
@@ -27,6 +31,7 @@ import { discardLocalGuestSession } from '@repo/core/native/guestSessionCleanup'
 describe('discardLocalGuestSession', () => {
   beforeEach(() => {
     mocks.clearAllGuestData.mockReset().mockResolvedValue(undefined);
+    mocks.clearPendingGuestSession.mockReset().mockResolvedValue(undefined);
     mocks.clearGuestLeaseData.mockReset().mockResolvedValue(undefined);
     mocks.clearLocalGuestIdentity.mockReset().mockResolvedValue(undefined);
     mocks.removeItem.mockReset().mockResolvedValue(undefined);
@@ -37,6 +42,7 @@ describe('discardLocalGuestSession', () => {
     await discardLocalGuestSession('guest-a');
 
     expect(mocks.clearAllGuestData).toHaveBeenCalledTimes(1);
+    expect(mocks.clearPendingGuestSession).toHaveBeenCalledTimes(1);
     expect(mocks.clearGuestLeaseData).toHaveBeenCalledWith('guest-a');
     expect(mocks.clearLocalGuestIdentity).toHaveBeenCalledWith('guest-a');
     expect(mocks.removeItem).toHaveBeenCalledWith('self:canvas-preferences:guest-a');

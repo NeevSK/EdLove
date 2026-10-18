@@ -1,6 +1,6 @@
 type BrowserFeatureRegistration = Readonly<{
   taskKind: 'task' | 'modal';
-  renderer: 'fire-journal' | 'mood-lotus';
+  renderer: 'fire-journal' | 'mood-lotus' | 'breath-guide';
 }>;
 
 /**
@@ -15,6 +15,10 @@ export const BROWSER_SELF_FEATURES: Readonly<Record<string, BrowserFeatureRegist
   },
   mood_lotus: {
     renderer: 'mood-lotus',
+    taskKind: 'modal',
+  },
+  breath_guide: {
+    renderer: 'breath-guide',
     taskKind: 'modal',
   },
 };

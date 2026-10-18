@@ -1,10 +1,19 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { GuestDataManager } from '@repo/core/native/guestDataManager';
 import { setGuestScope } from '@repo/core/native/guestScope';
 
 let pendingConversionGuestUserId: string | null = null;
+const PENDING_GUEST_CONVERSION_KEY = 'auth:pending-guest-conversion';
+const isValidGuestId = (value: string): boolean => {
+  if (value.length === 0 || value.length > 256 || value.trim() !== value) return false;
+  for (let i = 0; i < value.length; i++) {
+    if (value.charCodeAt(i) < 32) return false;
+  }
+  return true;
+};
 
 export interface SyncProgress {
   total: number;
@@ -16,9 +25,47 @@ export interface SyncProgress {
 export type SyncProgressCallback = (progress: SyncProgress) => void;
 
 export class GuestDataSync {
-  static rememberGuestSession(userId: string): void {
+  static async rememberGuestSession(userId: string): Promise<void> {
+    if (!isValidGuestId(userId)) {
+      throw new Error('Cannot preserve an invalid guest identity.');
+    }
     pendingConversionGuestUserId = userId;
     setGuestScope(userId);
+    await SafeZustandStorage.setItem(PENDING_GUEST_CONVERSION_KEY, userId);
+  }
+
+  /**
+   * Restores the source guest scope after an external authentication callback.
+   * Only an opaque Supabase user id is retained; credentials never leave Auth.
+   */
+  static async restorePendingGuestSession(): Promise<string | null> {
+    if (pendingConversionGuestUserId) {
+      setGuestScope(pendingConversionGuestUserId);
+      return pendingConversionGuestUserId;
+    }
+
+    const raw = await SafeZustandStorage.getItem(PENDING_GUEST_CONVERSION_KEY);
+    if (!raw || !isValidGuestId(raw)) {
+      if (raw) await SafeZustandStorage.removeItem(PENDING_GUEST_CONVERSION_KEY);
+      return null;
+    }
+
+    pendingConversionGuestUserId = raw;
+    setGuestScope(raw);
+    return raw;
+  }
+
+  static async clearPendingGuestSession(): Promise<void> {
+    pendingConversionGuestUserId = null;
+    setGuestScope(null);
+    await SafeZustandStorage.removeItem(PENDING_GUEST_CONVERSION_KEY);
+  }
+
+  static async discardPendingGuestData(): Promise<void> {
+    const guestUserId = await GuestDataSync.restorePendingGuestSession();
+    if (!guestUserId) return;
+    await GuestDataManager.clearAllGuestData();
+    await GuestDataSync.clearPendingGuestSession();
   }
   /**
    * Syncs all guest data to Supabase for the authenticated user
@@ -197,8 +244,7 @@ export class GuestDataSync {
       // Clear guest data after successful sync
       if (errors.length === 0) {
         await GuestDataManager.clearAllGuestData();
-        pendingConversionGuestUserId = null;
-        setGuestScope(null);
+        await GuestDataSync.clearPendingGuestSession();
       }
 
       return {
@@ -221,7 +267,7 @@ export class GuestDataSync {
    */
   static async hasGuestData(sourceGuestUserId?: string): Promise<boolean> {
     if (sourceGuestUserId) {
-      GuestDataSync.rememberGuestSession(sourceGuestUserId);
+      await GuestDataSync.rememberGuestSession(sourceGuestUserId);
     }
     const summary = await GuestDataManager.getDataSummary();
     return (

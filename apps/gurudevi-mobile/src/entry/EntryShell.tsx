@@ -3,29 +3,32 @@ import {
   GlobalProvider,
   useCapabilityHydration,
 } from '@repo/core/logic';
+import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import LotusPetalFAB from '@repo/ui/components/LotusPetalFAB';
+import { LotusPetalFAB } from '@repo/ui/components/LotusPetalFAB';
 import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
-import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
+import { fireflyMascotConfig } from '@/brand/mascotArtwork';
+import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
 import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
-import { fireflyMascotConfig } from '@/brand/mascotArtwork';
-import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
+import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestLeaseBoundary } from '@/entry/GuestLeaseBoundary';
+import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
+import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
+import WelcomeConceptPreview from '@/screens/WelcomeConceptPreview';
 
 /**
  * The deliberately small route host for first paint.
@@ -35,6 +38,9 @@ import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
  * turn a public launch into a blank surface.
  */
 export function EntryShell() {
+  const pathname = usePathname();
+  const params = useGlobalSearchParams<{ preview?: string }>();
+
   useEffect(() => {
     console.log('[entry-shell] mounted');
     return handoffNativeSplashAfterCommit({
@@ -46,6 +52,14 @@ export function EntryShell() {
       },
     });
   }, []);
+
+  if (__DEV__ && pathname === '/welcome' && params.preview === 'concepts') {
+    return (
+      <SafeAreaProvider>
+        <WelcomeConceptPreview />
+      </SafeAreaProvider>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={styles.root}>
@@ -67,19 +81,21 @@ export function EntryShell() {
                                   <AppVersionGateOverlay />
                                   <GuestLeaseBoundary>
                                     <GuestPersistenceNotice />
+                                    <GuestConversionBoundary />
+                                    <PasswordRecoveryBoundary />
                                     <SessionRouteGate appServices={<AuthenticatedAppServices />}>
                                       <Stack screenOptions={{ headerShown: false }}>
-                                      <Stack.Screen name="index" />
-                                      <Stack.Screen name="welcome" />
-                                      <Stack.Screen name="auth" />
-                                      <Stack.Screen name="account-recovery" />
-                                      <Stack.Screen name="onboarding" />
-                                      <Stack.Screen name="public-form/[slug]" />
-                                      <Stack.Screen name="(tabs)" />
-                                      <Stack.Screen
-                                        name="(modal)"
-                                        options={{ presentation: 'modal' }}
-                                      />
+                                        <Stack.Screen name="index" />
+                                        <Stack.Screen name="welcome" />
+                                        <Stack.Screen name="auth" />
+                                        <Stack.Screen name="account-recovery" />
+                                        <Stack.Screen name="onboarding" />
+                                        <Stack.Screen name="public-form/[slug]" />
+                                        <Stack.Screen name="(tabs)" />
+                                        <Stack.Screen
+                                          name="(modal)"
+                                          options={{ presentation: 'modal' }}
+                                        />
                                       </Stack>
                                     </SessionRouteGate>
                                   </GuestLeaseBoundary>

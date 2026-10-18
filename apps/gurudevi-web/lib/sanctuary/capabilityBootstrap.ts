@@ -1,5 +1,5 @@
-import { createBrowserSupabaseClient } from '../supabase/browser';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+import { createBrowserSupabaseClient } from '../supabase/browser';
 
 export type BrowserCapabilityDomain = 'self' | 'workspace' | 'community' | 'library';
 export type BrowserCapabilityStatus = 'available' | 'locked' | 'unavailable';
@@ -46,9 +46,10 @@ export async function loadAccountCapabilities(
   }
   const supabase = createBrowserSupabaseClient();
   if (!origin || !supabase) return [];
-  const { data, error } = await supabase.auth.getSession();
-  const session = data.session;
-  if (error || !session?.access_token || session.user.is_anonymous) return [];
+  const supabaseResult = await supabase.auth.getSession();
+  if (!supabaseResult || supabaseResult.error) return [];
+  const session = supabaseResult.data?.session;
+  if (!session?.access_token || session.user?.is_anonymous) return [];
 
   const response = await fetcher(
     `${origin}/api/identity/capabilities/bootstrap/v1?domain=${encodeURIComponent(domain)}&platform=browser`,

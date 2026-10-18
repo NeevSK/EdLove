@@ -38,17 +38,24 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
 
     const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
     setPending('email');
-    const { error: authError } = await runtime.client.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: callbackUrl(), shouldCreateUser: true },
-    });
+    const identity = await runtime.bootstrapIdentity();
+    const isAnonymousGuest =
+      identity.status === 'authenticated' && identity.session.user.is_anonymous === true;
+    const { error: authError } = isAnonymousGuest
+      ? await runtime.client.auth.updateUser({ email }, { emailRedirectTo: callbackUrl() })
+      : await runtime.client.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: callbackUrl(), shouldCreateUser: true },
+        });
     setPending(null);
     if (authError) {
       setError('We could not send an email link. Check the address and try again.');
       return;
     }
     setMessage(
-      'Check your email for a secure link. If this address is new, confirming it creates your account.',
+      isAnonymousGuest
+        ? 'Check your email to secure this guest sanctuary. Your existing work stays attached to it.'
+        : 'Check your email for a secure link. If this address is new, confirming it creates your account.',
     );
   }
 
@@ -64,14 +71,22 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
     }
 
     setPending(provider);
-    const { data, error: authError } = await runtime.client.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: callbackUrl() },
-    });
+    const identity = await runtime.bootstrapIdentity();
+    const isAnonymousGuest =
+      identity.status === 'authenticated' && identity.session.user.is_anonymous === true;
+    const authResult = isAnonymousGuest
+      ? await runtime.client.auth.linkIdentity({ provider, options: { redirectTo: callbackUrl() } })
+      : await runtime.client.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: callbackUrl() },
+        });
+    const { data, error: authError } = authResult;
     if (authError) {
       setPending(null);
       setError(
-        `${providerName(provider)} sign in could not start. Check the provider connection and try again.`,
+        isAnonymousGuest
+          ? `${providerName(provider)} could not be linked to this guest sanctuary. You can keep exploring as a guest, or sign in to that existing account from a fresh entry.`
+          : `${providerName(provider)} sign in could not start. Check the provider connection and try again.`,
       );
       return;
     }
@@ -87,10 +102,15 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
 
   return (
     <div className="space-y-7">
-      <form className="space-y-5" onSubmit={(event) => void sendMagicLink(event)}>
+      <form
+        className="space-y-5"
+        onSubmit={(event) => {
+          sendMagicLink(event);
+        }}
+      >
         <div>
           <label className="block font-sans text-sm font-semibold" htmlFor="passwordless-email">
-            Email address
+            {'Email address'}
           </label>
           <input
             autoComplete="email"
@@ -109,13 +129,13 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
           {pending === 'email' ? 'Sending…' : 'Continue with email'}
         </button>
         <p className="font-sans text-sm leading-6 text-ink-soft">
-          If this address is new, we will create your account after you confirm the email link.
+          {'If this address is new, we will create your account after you confirm the email link.'}
         </p>
       </form>
 
       <div className="flex items-center gap-3 font-sans text-xs uppercase tracking-[0.14em] text-ink-soft">
         <span className="h-px flex-1 bg-line" />
-        <span>Or continue with</span>
+        <span>{'Or continue with'}</span>
         <span className="h-px flex-1 bg-line" />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -125,7 +145,9 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
             className="inline-flex min-h-12 items-center justify-center border border-line px-4 font-sans text-sm font-bold text-ink hover:border-lotus hover:text-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
             disabled={pending !== null}
             key={provider}
-            onClick={() => void continueWithProvider(provider)}
+            onClick={() => {
+              continueWithProvider(provider);
+            }}
             type="button"
           >
             {pending === provider ? 'Continuing…' : `Continue with ${providerName(provider)}`}

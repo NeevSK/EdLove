@@ -136,6 +136,8 @@ export class MemoryAuthAdapter implements IAuthPort {
     return { user: null, session: null };
   }
 
+  async resetPasswordForEmail(_email: string, _redirectTo?: string): Promise<void> {}
+
   async signInWithPhoneOtp(
     _params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest,
   ): Promise<void> {
@@ -294,6 +296,7 @@ export class MemoryAuthAdapter implements IAuthPort {
     email?: string;
     password?: string;
     data?: Record<string, any>;
+    options?: { emailRedirectTo?: string };
   }): Promise<{ user: AuthUser | null }> {
     if (this.currentUser) {
       if (params.email) this.currentUser.email = params.email;

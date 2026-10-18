@@ -6,6 +6,7 @@ import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
+import { LivingCard } from '../components/LivingCard';
 import { TaskStrip } from '../components/workbench';
 import styles from './library.module.css';
 import {
@@ -25,6 +26,49 @@ const CATALOG_TASK = {
   localStatePolicy: 'none',
 } as const;
 
+export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = [
+  {
+    id: 'res-contemplative-pedagogy',
+    title: 'Mindfulness & Contemplative Pedagogy',
+    description:
+      'A foundational guide on stillness, deep inquiry, and intentional study in modern learning environments.',
+    type: 'Guide',
+    verified: true,
+    subjects: ['Pedagogy', 'Mindfulness'],
+    url: 'https://gurudevi.app',
+  },
+  {
+    id: 'res-dialogues-truth',
+    title: 'Dialogues on Living and Truth',
+    description:
+      'Selections and commentaries exploring ethical living, personal reflection, and the quiet mind.',
+    type: 'Manuscript',
+    verified: true,
+    subjects: ['Philosophy', 'Ethics'],
+    url: 'https://gurudevi.app',
+  },
+  {
+    id: 'res-reflective-journaling',
+    title: 'Principles of Reflective Journaling',
+    description:
+      'Techniques for capturing daily observations, self-discovery, and cultivating honest self-awareness.',
+    type: 'Practice',
+    verified: true,
+    subjects: ['Self', 'Reflection'],
+    url: 'https://gurudevi.app',
+  },
+  {
+    id: 'res-quiet-classrooms',
+    title: 'The Quiet Classroom: Space for Inquiry',
+    description:
+      'Designing classroom rhythms that balance shared collaboration with restorative personal quiet.',
+    type: 'Guide',
+    verified: true,
+    subjects: ['Classroom', 'Restoration'],
+    url: 'https://gurudevi.app',
+  },
+];
+
 function collectionLabel(category: string): string {
   const map: Record<string, string> = {
     discovery: 'Discovery & Search',
@@ -35,12 +79,21 @@ function collectionLabel(category: string): string {
   return map[category] ?? category;
 }
 
+export type LibraryFloorMode = 'account' | 'explore';
+
 export function LibraryFloor({
   accountId,
   displayName,
-}: Readonly<{ accountId: string; displayName: string }>) {
+  mode = 'account',
+}: Readonly<{
+  accountId: string;
+  displayName: string;
+  mode?: LibraryFloorMode;
+}>) {
   const canvas = useLibraryCanvas({
     accountId,
+    enableRemoteSync:
+      mode === 'account' && Boolean(accountId) && accountId !== 'explore' && accountId !== 'guest',
   });
   const workbench = useDomainWorkbench('library');
   const [query, setQuery] = useState('');
@@ -55,54 +108,127 @@ export function LibraryFloor({
     catalogTask && catalogTask.taskKey === workbench.state.focusedTaskKey,
   );
 
-  const loadResources = useCallback(async (search: string) => {
-    setStatus('loading');
-    setNotice(null);
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
-      setStatus('error');
-      setNotice('Library sign-in is not configured in this browser.');
-      return;
-    }
+  const loadResources = useCallback(
+    async (search: string) => {
+      await Promise.resolve();
+      setStatus('loading');
+      setNotice(null);
 
-    registerTokenResolver(async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      return data.session?.access_token ?? null;
-    });
-
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      if (!data.session?.access_token) {
-        setStatus('denied');
-        setNotice('Your secure session has ended. Sign in again to browse your Library.');
+      if (mode === 'explore') {
+        const q = search.trim().toLowerCase();
+        if (!q) {
+          setResources(EXPLORE_LIBRARY_RESOURCES);
+        } else {
+          setResources(
+            EXPLORE_LIBRARY_RESOURCES.filter(
+              (r) =>
+                r.title.toLowerCase().includes(q) ||
+                (r.description && r.description.toLowerCase().includes(q)) ||
+                r.subjects.some((s) => s.toLowerCase().includes(q)),
+            ),
+          );
+        }
+        setStatus('ready');
         return;
       }
 
-      const next = await orpcClient.library.getResources({
-        query: {
-          limit: 30,
-          offset: 0,
-          search: search.trim() || undefined,
-          sort_by: 'recent',
-        },
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        setStatus('error');
+        setNotice('Library sign-in is not configured in this browser.');
+        return;
+      }
+
+      registerTokenResolver(async () => {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        return data.session?.access_token ?? null;
       });
-      setResources(parseBrowserLibraryResources(next));
-      setStatus('ready');
-    } catch (error) {
-      setStatus(classifyLibraryFailure(error));
-      setNotice(
-        classifyLibraryFailure(error) === 'denied'
-          ? 'Your account or selected Sanctuary scope cannot access these resources.'
-          : 'We could not reach the Library service. Check your connection and try again.',
-      );
-    }
-  }, []);
+
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!data.session?.access_token) {
+          setStatus('denied');
+          setNotice('Your secure session has ended. Sign in again to browse your Library.');
+          return;
+        }
+
+        const next = await orpcClient.library.getResources({
+          query: {
+            limit: 30,
+            offset: 0,
+            search: search.trim() || undefined,
+            sort_by: 'recent',
+          },
+        });
+        setResources(parseBrowserLibraryResources(next));
+        setStatus('ready');
+      } catch (error) {
+        setStatus(classifyLibraryFailure(error));
+        setNotice(
+          classifyLibraryFailure(error) === 'denied'
+            ? 'Your account or selected Sanctuary scope cannot access these resources.'
+            : 'We could not reach the Library service. Check your connection and try again.',
+        );
+      }
+    },
+    [mode],
+  );
 
   useEffect(() => {
-    void loadResources('');
-  }, [loadResources]);
+    let active = true;
+    (async () => {
+      try {
+        if (mode === 'explore') {
+          if (!active) return;
+          setResources(EXPLORE_LIBRARY_RESOURCES);
+          setStatus('ready');
+          return;
+        }
+
+        const supabase = createBrowserSupabaseClient();
+        if (!supabase) {
+          if (!active) return;
+          setStatus('error');
+          setNotice('Library sign-in is not configured in this browser.');
+          return;
+        }
+
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!data.session?.access_token) {
+          if (!active) return;
+          setStatus('denied');
+          setNotice('Your secure session has ended. Sign in again to browse your Library.');
+          return;
+        }
+
+        const next = await orpcClient.library.getResources({
+          query: {
+            limit: 30,
+            offset: 0,
+            sort_by: 'recent',
+          },
+        });
+        if (!active) return;
+        setResources(parseBrowserLibraryResources(next));
+        setStatus('ready');
+      } catch (error) {
+        if (!active) return;
+        setStatus(classifyLibraryFailure(error));
+        setNotice(
+          classifyLibraryFailure(error) === 'denied'
+            ? 'Your account or selected Sanctuary scope cannot access these resources.'
+            : 'We could not reach the Library service. Check your connection and try again.',
+        );
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [mode]);
 
   function openCatalog() {
     const existing = workbench.state.tasks.find(
@@ -136,11 +262,14 @@ export function LibraryFloor({
       aria-labelledby="library-title"
     >
       <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Library · account collection</p>
+        <p className={styles.eyebrow}>
+          {mode === 'explore' ? 'Library · Local collection' : 'Library · Account collection'}
+        </p>
         <h1 id="library-title">A place to find what helps you grow.</h1>
         <p>
-          Welcome, {displayName}. Browse public resources and resources you created. The Library
-          server applies the account's access rules to every request.
+          {mode === 'explore'
+            ? `Welcome, ${displayName}. Browse sample resources locally while you explore. No cloud account or external connection is required.`
+            : `Welcome, ${displayName}. Browse public resources and resources you created. The Library server applies the account's access rules to every request.`}
         </p>
       </header>
 
@@ -185,7 +314,7 @@ export function LibraryFloor({
                           className={styles.catalogRailItem}
                           onClick={() => {
                             setQuery(category === 'discovery' ? '' : category);
-                            void loadResources(category === 'discovery' ? '' : category);
+                            loadResources(category === 'discovery' ? '' : category);
                           }}
                           type="button"
                         >
@@ -267,25 +396,33 @@ export function LibraryFloor({
                   {resources.map((resource) => {
                     const url = safeResourceUrl(resource.url);
                     return (
-                      <li className={styles.resourceCard} key={resource.id}>
-                        <div className={styles.resourceMeta}>
-                          <span>{resource.type || 'Resource'}</span>
-                          {resource.verified ? <span>Verified</span> : null}
-                        </div>
-                        <h3>{resource.title}</h3>
-                        <p>{resource.description || 'No description provided.'}</p>
-                        <div className={styles.tags}>
-                          {resource.subjects.slice(0, 2).map((subject) => (
-                            <span key={subject}>{subject}</span>
-                          ))}
-                        </div>
-                        {url ? (
-                          <a href={url} rel="noreferrer" target="_blank">
-                            Open resource <span aria-hidden="true">↗</span>
-                          </a>
-                        ) : (
-                          <span className={styles.unavailableLink}>Resource link unavailable</span>
-                        )}
+                      <li key={resource.id}>
+                        <LivingCard
+                          className={styles.resourceCard}
+                          variant="glass"
+                          elevation="floating"
+                        >
+                          <div className={styles.resourceMeta}>
+                            <span>{resource.type || 'Resource'}</span>
+                            {resource.verified ? <span>Verified</span> : null}
+                          </div>
+                          <h3>{resource.title}</h3>
+                          <p>{resource.description || 'No description provided.'}</p>
+                          <div className={styles.tags}>
+                            {resource.subjects.slice(0, 2).map((subject) => (
+                              <span key={subject}>{subject}</span>
+                            ))}
+                          </div>
+                          {url ? (
+                            <a href={url} rel="noreferrer" target="_blank">
+                              Open resource <span aria-hidden="true">↗</span>
+                            </a>
+                          ) : (
+                            <span className={styles.unavailableLink}>
+                              Resource link unavailable
+                            </span>
+                          )}
+                        </LivingCard>
                       </li>
                     );
                   })}
