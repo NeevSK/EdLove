@@ -317,16 +317,45 @@ function createMockDelegate(name: string): any {
       get(_target, prop) {
         if (prop === 'findUnique') {
           if (name === 'classroomStudent')
-            return async (args: {
-              where: { classroom_id_student_id: { classroom_id: string; student_id: string } };
-            }) => {
-              const key = args.where.classroom_id_student_id;
-              return (
-                mockClassroomStudents.find(
+            return async (args: any) => {
+              const key = args?.where?.classroom_id_student_id;
+              if (key) {
+                const found = mockClassroomStudents.find(
                   (row) =>
                     row.classroom_id === key.classroom_id && row.student_id === key.student_id,
-                ) ?? null
-              );
+                );
+                if (found) return found;
+                for (const [k, v] of mockEducationalRows.entries()) {
+                  if (
+                    k.startsWith('classroomStudent:') &&
+                    (v as any).classroom_id === key.classroom_id &&
+                    (v as any).student_id === key.student_id
+                  ) {
+                    return v;
+                  }
+                }
+                return null;
+              }
+              const inviteCode = args?.where?.invite_code;
+              if (inviteCode) {
+                const found = mockClassroomStudents.find((row) => row.invite_code === inviteCode);
+                if (found) return found;
+                for (const [k, v] of mockEducationalRows.entries()) {
+                  if (k.startsWith('classroomStudent:') && (v as any).invite_code === inviteCode) {
+                    return v;
+                  }
+                }
+                return null;
+              }
+              const id = args?.where?.id;
+              if (id) {
+                return (
+                  mockEducationalRows.get(`classroomStudent:${id}`) ??
+                  mockClassroomStudents.find((row) => row.id === id) ??
+                  null
+                );
+              }
+              return null;
             };
           if (name === 'classroom')
             return async (args: { where: { id: string } }) =>

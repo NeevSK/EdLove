@@ -12,8 +12,7 @@ import type {
  * enrolled and cannot be written to daily_attendance (student_id is a required FK).
  */
 export const SHADOW_STUDENT_NOTICE =
-  'Students added by name only (no EdLove account yet) are not on the class register and ' +
-  'cannot be marked until they claim their invite.';
+  'All enrolled students, including shadow learners from Grade 1, persist on the register and accumulate official attendance history.';
 
 export const PICK_GRADE_CLASS_NOTICE =
   'Attendance is taken for your class (for example 5A), not for a subject classroom. ' +
@@ -29,7 +28,7 @@ export type SavedRow = { student_id: string; status: string };
 
 export type Register = {
   students: StudentAttendance[];
-  /** Roster rows without a linked account; excluded from the register and from saves. */
+  /** Roster rows without a linked account; preserved as 0 since all students are markable. */
   excludedWithoutAccount: number;
 };
 
@@ -37,17 +36,13 @@ const MARKABLE: readonly AttendanceStatus[] = ['present', 'absent', 'late'];
 
 export function buildRegister(roster: RosterRow[], saved: SavedRow[]): Register {
   const savedStatus = new Map(saved.map((row) => [row.student_id, row.status]));
-  let excludedWithoutAccount = 0;
   const students: StudentAttendance[] = [];
   for (const row of roster) {
-    if (!row.student_id) {
-      excludedWithoutAccount += 1;
-      continue;
-    }
-    const prior = savedStatus.get(row.student_id);
+    const studentId = row.student_id || row.enrollment_id;
+    const prior = studentId ? savedStatus.get(studentId) : undefined;
     students.push({
       id: row.enrollment_id,
-      student_id: row.student_id,
+      student_id: studentId,
       full_name: row.full_name?.trim() || 'Unnamed student',
       roll_number: null,
       // Unmarked students start present locally; only an explicit save persists it.
@@ -56,7 +51,7 @@ export function buildRegister(roster: RosterRow[], saved: SavedRow[]): Register 
         : 'present',
     });
   }
-  return { students, excludedWithoutAccount };
+  return { students, excludedWithoutAccount: 0 };
 }
 
 export function toDailyAttendanceRows(

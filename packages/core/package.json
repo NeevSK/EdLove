@@ -79,6 +79,11 @@
       "import": "./src/logic/index.ts",
       "default": "./src/logic/index.ts"
     },
+    "./logic/classroomResolver": {
+      "types": "./src/logic/classroomResolver.ts",
+      "import": "./src/logic/classroomResolver.ts",
+      "default": "./src/logic/classroomResolver.ts"
+    },
     "./logic/omnichannel": {
       "types": "./src/logic/omnichannel/index.ts",
       "import": "./src/logic/omnichannel/index.ts",

@@ -499,6 +499,29 @@ function extractPackageBindings(content, pkgName) {
         const allObjectPrefixes = new Set([...bindings.namespaces, ...bindings.namedSymbols.keys()]);
         for (const prefix of allObjectPrefixes) {
           for (const [sym, item] of symbolMap.entries()) {
+            const repClean = (item.replacement || '').replace(/[`'()]/g, '').trim();
+
+            // If the recommended replacement is this exact prefix.sym or namespace member (e.g. z.uuid, z.iso.datetime),
+            // then prefix.sym is the modern replacement, NOT the deprecated API.
+            if (repClean === `${prefix}.${sym}` || (repClean.startsWith(`${prefix}.`) && repClean.endsWith(`.${sym}`))) {
+              // Check if legacy chained format was used instead (e.g. z.string().uuid())
+              const chainedRegex = new RegExp(`\\b${prefix}\\s*\\.\\s*string\\s*\\([^)]*\\)\\s*\\.\\s*${sym}\\b`);
+              for (let i = 0; i < lines.length; i++) {
+                if (chainedRegex.test(lines[i])) {
+                  matches.push({
+                    rule: `${pkg}: ${prefix}.string().${sym}`,
+                    category: 'Live Substrate Deprecation',
+                    severity: 'CRITICAL',
+                    advice: item.message + (item.replacement ? ` (Replacement: ${item.replacement})` : ''),
+                    file: relFile,
+                    line: i + 1,
+                    snippet: lines[i].trim(),
+                  });
+                }
+              }
+              continue;
+            }
+
             const accessRegex = new RegExp(`\\b${prefix}\\s*\\.\\s*${sym}\\b`);
             for (let i = 0; i < lines.length; i++) {
               if (accessRegex.test(lines[i])) {

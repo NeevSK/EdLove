@@ -10,6 +10,7 @@ import { attendanceAPI } from '@repo/core/api/attendance';
 import { academicCyclesAPI, growthSignalsAPI } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
+import { resolveGradeClassFromClassroom } from '@repo/core/logic/classroomResolver';
 import { parseInstitutionalQR, ScannerModal } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
@@ -21,9 +22,9 @@ import { useCallback, useEffect, useState } from 'react';
 type GradeClassOption = { id: string; name: string };
 
 export default function AttendanceScreen() {
-  // Model A: the register belongs to a grade class (grade_classes.id), not a classroom.
-  // A legacy `classroomId` param is not mapped to a grade class; the teacher picks one.
-  const { gradeClassId: gradeClassParam = '' } = useLocalSearchParams<{
+  // Model A: the register belongs to a grade class (grade_classes.id).
+  // If a legacy `classroomId` is passed, resolveGradeClassFromClassroom bridges to gradeClassId.
+  const { gradeClassId: gradeClassParam = '', classroomId = '' } = useLocalSearchParams<{
     gradeClassId?: string;
     classroomId?: string;
   }>();
@@ -54,21 +55,31 @@ export default function AttendanceScreen() {
     let cancelled = false;
     const execute = async () => {
       try {
-        if (!gradeClassId) {
+        let activeId = gradeClassId;
+        if (!activeId && classroomId) {
+          const resolved = await resolveGradeClassFromClassroom(classroomId, schoolId ?? undefined);
+          if (resolved && resolved !== classroomId) {
+            activeId = resolved;
+            if (!cancelled) setSelectedGradeClassId(resolved);
+          }
+        }
+        if (!activeId) {
           const options = await attendanceAPI.getMyGradeClasses();
           if (cancelled) return;
           setGradeClasses(options.map((option) => ({ id: option.id, name: option.name })));
           setStudents([]);
           return;
         }
-        const register = await loadGradeClassRegister(gradeClassId, attendanceDate);
+        const register = await loadGradeClassRegister(activeId, attendanceDate);
         if (cancelled) return;
         setStudents(register.students);
         setExcludedWithoutAccount(register.excludedWithoutAccount);
       } catch (_err) {
         if (cancelled) return;
         setError(
-          gradeClassId ? 'Failed to load the class register' : 'Failed to load your classes',
+          gradeClassId || classroomId
+            ? 'Failed to load the class register'
+            : 'Failed to load your classes',
         );
       } finally {
         if (!cancelled) {
@@ -80,7 +91,7 @@ export default function AttendanceScreen() {
     return () => {
       cancelled = true;
     };
-  }, [gradeClassId, attendanceDate, reloadToken]);
+  }, [gradeClassId, classroomId, attendanceDate, reloadToken, schoolId]);
 
   useEffect(() => {
     const syncCycle = async () => {
@@ -96,10 +107,13 @@ export default function AttendanceScreen() {
   const currentUser = useStore((state) => state.user);
 
   const saveMutation = useSafeMutation(
-    // No offline queue here: the old local SQLite fallback reported "Saved offline" but
-    // nothing ever synced it. A failed save now stays on screen as an error.
-    async (updatedAttendance: StudentAttendance[]) =>
-      saveGradeClassRegister(gradeClassId, attendanceDate, updatedAttendance),
+    async (updatedAttendance: StudentAttendance[]) => {
+      let activeId = gradeClassId;
+      if (!activeId && classroomId) {
+        activeId = await resolveGradeClassFromClassroom(classroomId, schoolId ?? undefined);
+      }
+      return saveGradeClassRegister(activeId, attendanceDate, updatedAttendance);
+    },
     {
       mutationKey: 'batchRecordAttendance',
       scope: 'classroom',
@@ -111,7 +125,7 @@ export default function AttendanceScreen() {
           growthSignalsAPI.emitSilent({
             user_id: currentUser.id,
             event_type: 'attendance_marked',
-            event_metadata: { grade_class_id: gradeClassId },
+            event_metadata: { grade_class_id: selectedGradeClassId ?? gradeClassId ?? classroomId },
           });
         }
         void triggerReview('attendance_marked', { minActions: 2, probability: 0.5 });

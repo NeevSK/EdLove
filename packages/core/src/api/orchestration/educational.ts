@@ -17,7 +17,15 @@ const _classroomsCoverage = assertContractCoverage(
   defineContractCoverage({
     moduleName: 'classrooms',
     contract: educationalContract,
-    internalMethods: ['update', 'create', 'delete', 'getTeacherClassrooms'],
+    internalMethods: [
+      'update',
+      'create',
+      'delete',
+      'getTeacherClassrooms',
+      'getBySchool',
+      'getAvailableByGrade',
+      'getClassroomCapacitySummary',
+    ],
   }),
 );
 

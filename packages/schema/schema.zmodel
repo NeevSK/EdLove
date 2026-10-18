@@ -1727,6 +1727,8 @@ model GradeClass {
 
   @@unique([academic_cycle_id, grade_level_id, name])
   @@index([school_id, academic_cycle_id, status])
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_classes")
 }
 
@@ -1794,6 +1796,8 @@ model StudentGradeClassEnrollment {
 
   @@index([student_id, effective_from])
   @@index([grade_class_id, status])
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("student_grade_class_enrollments")
 }
 
@@ -1818,6 +1822,8 @@ model DailyAttendance {
 
   @@unique([student_id, grade_class_id, attendance_date])
   @@index([grade_class_id, attendance_date])
+  @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
+  @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("daily_attendance")
 }
 
@@ -1849,6 +1855,8 @@ model AttendanceSession {
 
   @@index([daily_attendance_id, session_at])
   @@index([grade_class_id, session_at])
+  @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
+  @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("attendance_sessions")
 }
 
@@ -1871,6 +1879,8 @@ model TeacherDailyAttendance {
 
   @@unique([teacher_id, attendance_date])
   @@index([school_id, attendance_date])
+  @@allow('read', auth() != null && (auth().id == teacher_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'admin')]))
+  @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'admin')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("teacher_daily_attendance")
 }
 

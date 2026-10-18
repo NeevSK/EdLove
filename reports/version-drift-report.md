@@ -1,6 +1,6 @@
 # Sovereign Dependency Intelligence & Cohort Audit Report
 
-Generated: 2026-10-17T17:56:24.615Z
+Generated: 2026-10-18T02:55:31.110Z
 Threshold: \Delta_{\text{major}} \ge 2
 
 ## 1. Ecosystem Cohorts & External Registry Drift
@@ -31,7 +31,7 @@ Threshold: \Delta_{\text{major}} \ge 2
 | ⚠️ **`UNANNOTATED`** | `posthog-js` | `1.430.2` | `1.438.12` | +8 min | - |
 | ⚠️ **`UNANNOTATED`** | `@lottiefiles/dotlottie-react` | `0.13.5` | `0.20.0` | +7 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `oxlint` | `1.81.0` | `1.88.0` | +7 min | - |
-| 📝 `WAIVED` | `vercel` | `59.23.2` | `64.3.1` | +5 maj | v59 pinned for monorepo build deployment workflows. |
+| 📝 `WAIVED` | `vercel` | `59.23.2` | `64.5.0` | +5 maj | v59 pinned for monorepo build deployment workflows. |
 | ⚠️ **`UNANNOTATED`** | `@rnx-kit/eslint-plugin` | `0.5.3` | `0.9.9` | +4 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `@react-navigation/core` | `7.21.13` | `7.24.0` | +3 min | - |
 | ⚠️ **`UNANNOTATED`** | `@supabase/mcp-server-supabase` | `0.11.0` | `0.14.0` | +3 min (0.x break) | - |
@@ -46,21 +46,7 @@ Threshold: \Delta_{\text{major}} \ge 2
 
 ## 2. Framework Dialect & Code Deprecation Drift
 
-### zod: z.ZodTypeAny (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** Use z.ZodType (without generics) instead. (Replacement: z)
-
-- [packages/core/src/api/planBridge.ts:21](file:///C:/x/packages/core/src/api/planBridge.ts#L21)
-  ```typescript
-  body: infer B extends z.ZodTypeAny;
-  ```
-
-### zod: z.input (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** Use `ctx.value` (Replacement: ctx.value)
-
-- [packages/core/src/api/planBridge.ts:23](file:///C:/x/packages/core/src/api/planBridge.ts#L23)
-  ```typescript
-  ? z.input<B>
-  ```
+✅ Zero deprecated framework dialects detected across source code.
 
 ## 3. Internal Workspace Version Alignment Drift
 

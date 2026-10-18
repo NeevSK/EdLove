@@ -38,6 +38,11 @@ const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
     policy: { action, subject: 'Lesson' },
   }) as const;
 
+const userAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'User' },
+  }) as const;
+
 const classroomNoteCreate = ClassroomNoteSchema.omit({
   id: true,
   created_at: true,
@@ -369,7 +374,7 @@ export const educationalContract = {
       body: z.strictObject({ inviteCode: z.string().trim().min(8).max(128) }),
     },
     responses: { 200: { schema: classroomStudent, description: 'Claimed classroom student' } },
-    metadata: classroomAuthority('create'),
+    metadata: userAuthority('update'),
   },
 
   getMaterials: {
@@ -472,7 +477,7 @@ export const educationalContract = {
         lessonId: z.uuid().nullable().optional(),
         title: z.string().trim().min(1).max(240),
         description: z.string().max(20_000).nullable().optional(),
-        dueDate: z.string().datetime().nullable().optional(),
+        dueDate: z.iso.datetime().nullable().optional(),
         maxPoints: z.number().int().positive().max(10_000).optional(),
       }),
     },
@@ -489,7 +494,7 @@ export const educationalContract = {
         .strictObject({
           title: z.string().trim().min(1).max(240).optional(),
           description: z.string().max(20_000).nullable().optional(),
-          dueDate: z.string().datetime().nullable().optional(),
+          dueDate: z.iso.datetime().nullable().optional(),
           maxPoints: z.number().int().positive().max(10_000).optional(),
         })
         .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),

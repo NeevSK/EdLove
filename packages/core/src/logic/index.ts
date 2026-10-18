@@ -189,3 +189,5 @@ export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTempor
 export type { Bond } from '@repo/core/types';
 export type { APIError } from '@repo/core/types/API';
 export type { LessonMaterial } from '@repo/core/types/LessonMaterial';
+
+export * from './classroomResolver';

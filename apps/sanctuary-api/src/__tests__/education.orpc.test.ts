@@ -149,6 +149,22 @@ describe('Sanctuary API: education via native oRPC', () => {
       body: { fullName: 'Shadow Learner' },
     });
     expect(shadow).toMatchObject({ classroom_id: classroomId, full_name: 'Shadow Learner' });
+    expect(shadow.student_id).toBeTruthy();
+    expect(shadow.invite_code).toMatch(/^EDL-/);
+
+    const claimingStudentId = '223e4567-e89b-12d3-a456-426614174002';
+    const studentClient = createTestORPCClient({
+      Authorization: `Bearer ${claimingStudentId}`,
+    }).educational;
+    const claimed = await studentClient.claimShadowStudent({
+      body: { inviteCode: shadow.invite_code! },
+    });
+    expect(claimed).toMatchObject({
+      classroom_id: classroomId,
+      student_id: claimingStudentId,
+      full_name: 'Shadow Learner',
+    });
+    expect(claimed.claimed_at).toBeTruthy();
     const enrollmentId = enrolled.id;
     expect(
       await client.updateClassroomStudent({

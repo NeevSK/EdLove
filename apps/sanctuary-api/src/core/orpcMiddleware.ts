@@ -305,8 +305,8 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
             classroom_id: facts.classroomId,
           }),
         ...(['DailyAttendance', 'AttendanceSession'].includes(resourceType) &&
-          typeof procedureInput.gradeClassId === 'string' && {
-            grade_class_id: procedureInput.gradeClassId,
+          typeof (procedureInput.gradeClassId ?? procedureInput.classroomId) === 'string' && {
+            grade_class_id: (procedureInput.gradeClassId ?? procedureInput.classroomId) as string,
           }),
         ...(resourceType === 'GradeMark' &&
           typeof facts.gradeClassId === 'string' && {

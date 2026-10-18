@@ -23,7 +23,7 @@ describe('grade-class register (attendance model A)', () => {
     ]);
   });
 
-  it('excludes rows without an account and counts them', () => {
+  it('includes shadow students without explicit account on register and marks them markable', () => {
     const register = buildRegister(
       [
         { enrollment_id: 'e1', student_id: s1, full_name: 'Nimal' },
@@ -31,8 +31,10 @@ describe('grade-class register (attendance model A)', () => {
       ],
       [],
     );
-    expect(register.students).toHaveLength(1);
-    expect(register.excludedWithoutAccount).toBe(1);
+    expect(register.students).toHaveLength(2);
+    expect(register.students[1].student_id).toBe('e3');
+    expect(register.students[1].full_name).toBe('Shadow Student');
+    expect(register.excludedWithoutAccount).toBe(0);
   });
 
   it('writes grade_class_id rows for daily_attendance', () => {
