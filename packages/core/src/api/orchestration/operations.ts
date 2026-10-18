@@ -3,13 +3,14 @@ import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/c
 import { inventoryAPI as rawInventoryAPI } from '@repo/core/api/inventory';
 import { operationsContract } from '@repo/core/api/operations.contract';
 import { schoolAPI as rawSchoolAPI } from '@repo/core/api/school';
-import { staffManagementAPI as _staffManagementAPI } from '@repo/core/api/staffManagement';
+import { staffManagementAPI as rawStaffManagementAPI } from '@repo/core/api/staffManagement';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
-export const staffManagementAPI = createTemporalProxy('staffManagement', _staffManagementAPI);
+export const staffManagementAPI = createTemporalProxy('staffManagement', rawStaffManagementAPI);
 
-const _attendanceCoverage = assertContractCoverage(
+assertContractCoverage(
   rawAttendanceAPI,
+
   defineContractCoverage({
     moduleName: 'attendance',
     contract: operationsContract,
@@ -23,20 +24,23 @@ const _attendanceCoverage = assertContractCoverage(
       getSchoolAttendancePulse: 'getSchoolAttendancePulse',
       getAttendanceReport: 'getAttendanceReport',
     },
-    // Served by the oRPC attendanceORPCContract (model A), not the legacy operations contract.
     internalMethods: [
       'logAttendanceAudit',
       'getMyGradeClasses',
       'getGradeClassRoster',
       'getGradeClassAttendanceSnapshot',
       'getClassroomAttendanceSnapshot',
+      'upsertDailyRecord',
+      'record',
+      'getForStudent',
+      'getStudentAttendanceTimeline',
     ],
   }),
 );
 
 export const attendanceAPI = createTemporalProxy('attendance', rawAttendanceAPI);
 
-const _schoolCoverage = assertContractCoverage(
+assertContractCoverage(
   rawSchoolAPI,
   defineContractCoverage({
     moduleName: 'school',
@@ -76,7 +80,7 @@ const _schoolCoverage = assertContractCoverage(
 
 export const schoolAPI = createTemporalProxy('school', rawSchoolAPI);
 
-const _inventoryCoverage = assertContractCoverage(
+assertContractCoverage(
   rawInventoryAPI,
   defineContractCoverage({
     moduleName: 'inventory',

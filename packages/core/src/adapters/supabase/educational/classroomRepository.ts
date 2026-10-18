@@ -1,3 +1,4 @@
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { type Classroom, ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
 import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -96,3 +97,5 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     if (error) throw new APIError('Failed to delete classroom', error.code, error);
   },
 });
+
+export const classroomRepository = createClassroomRepository(supabaseClient);

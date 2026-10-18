@@ -133,6 +133,34 @@ export const attendanceAPI = {
     );
   },
 
+  /** Alias for upsertAttendanceRecord. */
+  async upsertDailyRecord(classroom_id: string, student_id: string, status: string, date: string) {
+    return this.upsertAttendanceRecord(classroom_id, student_id, status, date);
+  },
+
+  /** Alias for sync queue record handler. */
+  async record(classroom_id: string, student_id: string, status: string, date: string) {
+    return this.upsertAttendanceRecord(classroom_id, student_id, status, date);
+  },
+
+  /** Queries attendance records for a student. */
+  async getForStudent(student_id: string, date?: string) {
+    return toPromise(
+      apiEffect(() =>
+        orpcClient.attendance.getByClassroom({ query: { studentId: student_id, date } }),
+      ),
+    );
+  },
+
+  /** Queries attendance timeline for a student. */
+  async getStudentAttendanceTimeline(student_id: string, limit?: number) {
+    return toPromise(
+      apiEffect(() =>
+        orpcClient.attendance.getByClassroom({ query: { studentId: student_id, limit } }),
+      ),
+    );
+  },
+
   async fetchClassroomAttendance(classroom_id: string, date?: string) {
     return toPromise(
       apiEffect(() =>
@@ -187,6 +215,30 @@ export const attendanceAPI$ = {
       orpcClient.attendance.record({
         body: { gradeClassId: classroom_id, studentId: student_id, status: status as any, date },
       }),
+    ),
+
+  upsertDailyRecord: (classroom_id: string, student_id: string, status: string, date: string) =>
+    apiEffect(() =>
+      orpcClient.attendance.record({
+        body: { gradeClassId: classroom_id, studentId: student_id, status: status as any, date },
+      }),
+    ),
+
+  record: (classroom_id: string, student_id: string, status: string, date: string) =>
+    apiEffect(() =>
+      orpcClient.attendance.record({
+        body: { gradeClassId: classroom_id, studentId: student_id, status: status as any, date },
+      }),
+    ),
+
+  getForStudent: (student_id: string, date?: string) =>
+    apiEffect(() =>
+      orpcClient.attendance.getByClassroom({ query: { studentId: student_id, date } }),
+    ),
+
+  getStudentAttendanceTimeline: (student_id: string, limit?: number) =>
+    apiEffect(() =>
+      orpcClient.attendance.getByClassroom({ query: { studentId: student_id, limit } }),
     ),
 
   fetchClassroomAttendance: (classroom_id: string, date?: string) =>

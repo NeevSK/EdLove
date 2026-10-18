@@ -20,29 +20,29 @@ import guideArtwork from '../../assets/mascot/Gemini_Generated_Image_ezd4cqezd4c
 /** The supplied Gemini artwork remains the guide fallback for unassigned states. */
 export const fireflyGuideArtwork: MascotArtworkSource = {
   source: guideArtwork,
-  accessibilityLabel: 'Gurudevi firefly guide with a welcoming gesture',
+  accessibilityLabel: 'Tutii, Gurudevi’s firefly guide, welcoming the learner',
 };
 
 export const fireflyArtworkByState = {
   guiding: {
     source: welcomeArtwork,
-    accessibilityLabel: 'Gurudevi firefly opening the sanctuary',
+    accessibilityLabel: 'Tutii opening the sanctuary',
   },
   curious: {
     source: emptyArtwork,
-    accessibilityLabel: 'Gurudevi firefly tending an unopened lotus',
+    accessibilityLabel: 'Tutii tending an unopened lotus',
   },
   resting: {
     source: offlineArtwork,
-    accessibilityLabel: 'Gurudevi firefly resting beside a lotus lantern',
+    accessibilityLabel: 'Tutii resting beside a lotus lantern',
   },
   interrupted: {
     source: errorArtwork,
-    accessibilityLabel: 'Gurudevi firefly pausing at an interrupted path',
+    accessibilityLabel: 'Tutii pausing at an interrupted path',
   },
   complete: {
     source: welcomeArtwork,
-    accessibilityLabel: 'Gurudevi firefly celebrating a completed journey',
+    accessibilityLabel: 'Tutii celebrating a completed journey',
   },
 } satisfies Partial<Record<MascotState, MascotArtworkSource>>;
 
@@ -54,30 +54,30 @@ export const fireflyArtworkByRole = {
 export const fireflyProductArtwork = {
   comingSoon: {
     source: comingSoonArtwork,
-    accessibilityLabel: 'Gurudevi firefly tending a lotus that is not yet open',
+    accessibilityLabel: 'Tutii tending a lotus that is not yet open',
   },
   pro: {
     source: proArtwork,
-    accessibilityLabel: 'Gurudevi firefly opening a deeper sanctuary doorway',
+    accessibilityLabel: 'Tutii opening a deeper sanctuary doorway',
   },
   onboarding: {
     source: onboardingArtwork,
-    accessibilityLabel: 'Gurudevi firefly welcoming the learner onto a new path',
+    accessibilityLabel: 'Tutii welcoming the learner onto a new path',
   },
   explore: {
     source: exploreArtwork,
-    accessibilityLabel: 'Gurudevi firefly following a trail of light through lotus leaves',
+    accessibilityLabel: 'Tutii following a trail of light through lotus leaves',
   },
 } satisfies Record<'comingSoon' | 'pro' | 'onboarding' | 'explore', MascotArtworkSource>;
 
 export const fireflyPrototypeArtwork: MascotArtworkSource = {
   source: exploreArtwork,
-  accessibilityLabel: 'Gurudevi firefly guiding the learner with a living light',
+  accessibilityLabel: 'Tutii guiding the learner with a living light',
 };
 
 export const fireflyMascotConfig: MascotConfig = {
   id: 'firefly',
-  name: 'Gurudevi Firefly',
+  name: 'Tutii',
   artwork: fireflyGuideArtwork,
   artworkByState: fireflyArtworkByState,
   artworkByRole: fireflyArtworkByRole,
@@ -87,35 +87,35 @@ export const fireflyMascotConfig: MascotConfig = {
 export const fireflyProductSceneArtwork = {
   comingSoon: {
     source: comingSoonSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly beside a lotus that is not yet open',
+    accessibilityLabel: 'Tutii beside a lotus that is not yet open',
   },
   pro: {
     source: proSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly opening a deeper sanctuary doorway',
+    accessibilityLabel: 'Tutii opening a deeper sanctuary doorway',
   },
   onboarding: {
     source: onboardingSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly welcoming the learner onto a new path',
+    accessibilityLabel: 'Tutii welcoming the learner onto a new path',
   },
   explore: {
     source: exploreSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly following a trail of light through lotus leaves',
+    accessibilityLabel: 'Tutii following a trail of light through lotus leaves',
   },
   welcome: {
     source: welcomeSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly opening the sanctuary',
+    accessibilityLabel: 'Tutii opening the sanctuary',
   },
   empty: {
     source: emptySceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly tending an unopened lotus',
+    accessibilityLabel: 'Tutii tending an unopened lotus',
   },
   error: {
     source: errorSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly pausing at an interrupted path',
+    accessibilityLabel: 'Tutii pausing at an interrupted path',
   },
   offline: {
     source: offlineSceneArtwork,
-    accessibilityLabel: 'Gurudevi firefly resting beside a lotus lantern',
+    accessibilityLabel: 'Tutii resting beside a lotus lantern',
   },
 } satisfies Record<
   'comingSoon' | 'pro' | 'onboarding' | 'explore' | 'welcome' | 'empty' | 'error' | 'offline',

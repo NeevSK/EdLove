@@ -1,3 +1,4 @@
+import { classroomRepository } from '@repo/core/adapters/supabase/educational/classroomRepository';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
@@ -84,6 +85,18 @@ export const classroomsAPI = {
         error.status?.toString() || error.code || 'CLASSROOMS_FETCH_FAILED',
       );
     }
+  },
+
+  async getBySchool(school_id: string, params: { limit?: number; offset?: number } = {}) {
+    return classroomRepository.getClassroomsBySchool(school_id, params);
+  },
+
+  async getAvailableByGrade(grade_id: string) {
+    return classroomRepository.getAvailableClassroomsByGrade(grade_id);
+  },
+
+  async getClassroomCapacitySummary(id: string) {
+    return orpcClient.identity.resolveWorkspaceContext({ params: { id } });
   },
 
   async getTeacherStats(id: string) {

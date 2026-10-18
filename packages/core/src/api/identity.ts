@@ -90,7 +90,7 @@ export const identityAPI = {
     const { data: sessionData } = await supabaseClient.auth.getSession();
     if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === id) {
       return updateLocalGuestIdentity(id, {
-        ...(updates.display_name !== undefined && {
+        ...(typeof updates.display_name !== 'undefined' && {
           display_name: String(updates.display_name ?? ''),
         }),
       });
@@ -104,6 +104,13 @@ export const identityAPI = {
   async resolveWorkspaceContext(id: string) {
     assertHighway('workspace_sync', 'direct-api');
     return orpcClient.identity.resolveWorkspaceContext({ params: { id } });
+  },
+
+  /**
+   * Resolves classroom capacity summary by delegating to resolveWorkspaceContext.
+   */
+  async getClassroomCapacitySummary(id: string) {
+    return this.resolveWorkspaceContext(id);
   },
 
   async updateProfile(id: string, updates: Record<string, unknown>) {
