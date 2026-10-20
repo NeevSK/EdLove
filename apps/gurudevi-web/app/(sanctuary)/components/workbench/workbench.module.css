@@ -296,6 +296,16 @@
   .contextMeaning p {
     display: none;
   }
+  /* The date control is wider than a phone's header column; let it take its own
+     line instead of overflowing past the viewport edge. */
+  .contextDetailRow {
+    flex-wrap: wrap;
+  }
+  .contextDate {
+    flex: 1 1 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
 }
 
 @keyframes featureContentIn {

@@ -1,10 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import styles from './timetable.module.css';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
 type Day = (typeof DAYS)[number];
+
+// Weekends have no school day, so they fall back to the start of the week.
+export function schoolDayFor(date: Date): Day {
+  const weekday = date.getDay();
+  if (weekday < 1 || weekday > DAYS.length) return 'Monday';
+  return DAYS.at(weekday - 1) ?? 'Monday';
+}
+
+const noSubscription = () => () => {};
+// The server cannot know the visitor's local weekday; it renders Monday and the
+// client settles on today during hydration without a mismatch.
+const readTodaySchoolDay = (): Day => schoolDayFor(new Date());
+const readServerSchoolDay = (): Day => 'Monday';
 
 type Period = {
   number: number;
@@ -278,7 +291,13 @@ interface TimetableFloorProps {
 }
 
 export function TimetableFloor({ displayName }: TimetableFloorProps) {
-  const [selectedDay, setSelectedDay] = useState<Day>('Monday');
+  const todaySchoolDay = useSyncExternalStore(
+    noSubscription,
+    readTodaySchoolDay,
+    readServerSchoolDay,
+  );
+  const [chosenDay, setSelectedDay] = useState<Day | null>(null);
+  const selectedDay = chosenDay ?? todaySchoolDay;
   const periods = weeklySchedule[selectedDay] || [];
 
   return (

@@ -252,15 +252,24 @@
   z-index: 80;
   left: max(20px, env(safe-area-inset-left));
   bottom: max(16px, env(safe-area-inset-bottom));
-  padding: 8px 0;
-  border: 0;
+  /* A floating control sits above page content, so it carries its own surface;
+     bare underlined text read as part of whichever card it drifted over. */
+  padding: 8px 14px;
+  border: 1px solid rgb(54 93 73 / 22%);
+  border-radius: 999px;
   color: #496450;
-  background: transparent;
+  background: #fbf8f1;
+  box-shadow: 0 4px 14px rgb(32 31 26 / 12%);
   font: inherit;
   font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reopenLink:hover,
+.reopenLink:focus-visible {
   text-decoration: underline;
   text-underline-offset: 4px;
-  cursor: pointer;
 }
 
 :global([data-appearance='night']) .backdrop {
@@ -282,6 +291,11 @@
 :global([data-appearance='night']) .sanctuaryLink,
 :global([data-appearance='night']) .reopenLink {
   color: #bdd0bc;
+}
+
+:global([data-appearance='night']) .reopenLink {
+  border-color: rgb(189 208 188 / 24%);
+  background: #201f1a;
 }
 
 @keyframes arrive {
