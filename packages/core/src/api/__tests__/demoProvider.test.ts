@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getDemoAssignments,
   getDemoClassrooms,
@@ -10,6 +10,8 @@ import {
   processGhostData,
 } from '../demoProvider';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useStore } from '@repo/core/store/useStore';
+import { createResonantProxy } from '../resonantProxy';
 
 describe('Canonical demoProvider and Ghost Seeding', () => {
   beforeEach(() => {
@@ -19,6 +21,7 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
       dismissedSampleIds: [],
       isBridging: false,
     });
+    useStore.getState().setDemoMode(false);
   });
 
   describe('interceptApiCall', () => {
@@ -61,6 +64,31 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     it('does not intercept real database queries when not in demo mode', async () => {
       const result = await interceptApiCall('classrooms', 'getByTeacher', ['real-user-uuid']);
       expect(result).toBeNull();
+    });
+
+    it('serves Library browse data and counts in demo mode without a backend call', async () => {
+      useStore.getState().setDemoMode(true);
+
+      const resources = await interceptApiCall('library', 'getResources');
+      const collections = await interceptApiCall('library', 'getCollections');
+      const resourceCount = await interceptApiCall('library', 'getResourcesCount');
+      const collectionCount = await interceptApiCall('library', 'getCollectionsCount');
+
+      expect(resources).toHaveLength(3);
+      expect(collections).toHaveLength(1);
+      expect(resourceCount).toBe(3);
+      expect(collectionCount).toBe(1);
+    });
+
+    it('short-circuits Library API reads through the resonant proxy in demo mode', async () => {
+      useStore.getState().setDemoMode(true);
+      const getResources = vi.fn(async () => [{ id: 'live-resource' }]);
+      const api = createResonantProxy('library', { getResources });
+
+      const resources = await api.getResources();
+
+      expect(resources.map((resource) => resource.id)).toEqual(['v-r1', 'v-r2', 'v-r3']);
+      expect(getResources).not.toHaveBeenCalled();
     });
   });
 

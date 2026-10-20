@@ -32,6 +32,16 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  usePathname: () => '/workspace',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock('@/lib/workspace/attendance', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/workspace/attendance')>();
   return {

@@ -1,0 +1,131 @@
+.roleLensContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--paper, #fdfbf7);
+  border: 1px solid var(--line, rgba(44, 40, 37, 0.12));
+  border-radius: 9999px;
+  padding: 0.2rem 0.35rem;
+  box-shadow: 0 1px 3px rgba(44, 40, 37, 0.04);
+}
+
+.roleLensLabel {
+  font-size: 0.75rem;
+  font-family: inherit;
+  color: var(--ink-soft, #6b645d);
+  padding: 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.roleMenu {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 2.65rem;
+  align-items: center;
+  padding: 0 0.7rem;
+  border: 1px solid var(--line, rgba(44, 40, 37, 0.14));
+  border-radius: 0.75rem;
+  background: var(--paper-light, #fffdfa);
+  color: var(--ink, #29251f);
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(44, 40, 37, 0.04);
+}
+
+.roleMenuLabel {
+  color: var(--ink-soft, #6b645d);
+  font-size: 0.72rem;
+}
+
+.roleMenu select {
+  max-width: 9rem;
+  min-height: 2.55rem;
+  padding: 0 1.15rem 0 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink, #29251f);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.roleMenu select:focus-visible {
+  outline: 2px solid var(--gd-border-focus);
+  outline-offset: 2px;
+  border-radius: 0.35rem;
+}
+
+.roleMenu:focus-within {
+  border-color: var(--gd-border-focus);
+}
+
+.roleMenuChevron {
+  position: absolute;
+  right: 0.65rem;
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+
+.rolePills {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.rolePill {
+  font-size: 0.8rem;
+  font-family: inherit;
+  background: transparent;
+  color: var(--ink-soft, #6b645d);
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease-out;
+  line-height: 1.2;
+}
+
+.rolePill:hover {
+  color: var(--ink, #1f1b18);
+  background: rgba(44, 40, 37, 0.04);
+}
+
+.rolePill[data-active='true'] {
+  background: var(--surface, #ffffff);
+  color: var(--ink, #1f1b18);
+  border-color: var(--line, rgba(44, 40, 37, 0.15));
+  box-shadow: 0 1px 2px rgba(44, 40, 37, 0.06);
+  font-weight: 600;
+}
+
+.roleEmoji {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .roleLensContainer {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rolePill {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
+}

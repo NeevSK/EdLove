@@ -233,9 +233,6 @@ export default function AttendanceScreen() {
       )}
       <Box className="px-4 py-2 border-b border-phase-border">
         <Text className="text-xs text-phase-text-secondary">
-          {excludedWithoutAccount > 0
-            ? `${excludedWithoutAccount} enrolled student(s) have no account and are not shown. `
-            : ''}
           {SHADOW_STUDENT_NOTICE}
         </Text>
       </Box>

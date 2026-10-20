@@ -1,7 +1,8 @@
 'use client';
 
 import { useOfflineStatus } from '@repo/core/offline/resilience';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
 import {
   academicHexagonalService,
@@ -11,24 +12,27 @@ import type { AcademicSubmissionView, AssignmentQuest } from '../ports/academic.
 
 export function useAcademicDomain() {
   const { isOnline } = useOfflineStatus();
-  const [assignments, setAssignments] = useState<AssignmentQuest[]>(DEFAULT_CANONICAL_ASSIGNMENTS);
-  const [submissions, setSubmissions] = useState<AcademicSubmissionView[]>([]);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('asg-wetland-study');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const throttledRefresh = useThrottledInvalidate(500);
 
-  useEffect(() => {
-    async function loadData() {
-      const loadedAssignments = await academicHexagonalService.getAssignments();
-      setAssignments(loadedAssignments);
+  // TanStack Query: Assignments catalog
+  const { data: assignments = DEFAULT_CANONICAL_ASSIGNMENTS } = useQuery({
+    queryKey: ['academic', 'assignments'],
+    queryFn: () => academicHexagonalService.getAssignments(),
+    initialData: DEFAULT_CANONICAL_ASSIGNMENTS,
+    staleTime: 60_000,
+  });
 
-      const loadedSubmissions = await academicHexagonalService.getSubmissions();
-      setSubmissions(loadedSubmissions);
-    }
-    void loadData();
-  }, []);
+  // TanStack Query: Student submissions
+  const { data: submissions = [] } = useQuery({
+    queryKey: ['academic', 'submissions'],
+    queryFn: () => academicHexagonalService.getSubmissions(),
+    initialData: [],
+    staleTime: 30_000,
+  });
 
   const filteredSubmissions = useMemo(() => {
     if (!debouncedSearch.trim()) return submissions;
@@ -53,9 +57,8 @@ export function useAcademicDomain() {
           photoUrl,
         });
 
-        const refreshed = await academicHexagonalService.getSubmissions();
-        setSubmissions(refreshed);
-
+        // Throttle query invalidation using TanStack Pacer
+        void throttledRefresh(['academic', 'submissions']);
         void throttledRefresh(['academic', 'submissions', assignmentId]);
 
         return result;
@@ -81,14 +84,8 @@ export function useAcademicDomain() {
         feedback,
       });
 
-      setSubmissions((prev) =>
-        prev.map((s) =>
-          s.id === submissionId
-            ? { ...s, status: 'graded', marks, grade: letterGrade, feedback }
-            : s,
-        ),
-      );
-
+      // Throttle query invalidation using TanStack Pacer
+      void throttledRefresh(['academic', 'submissions']);
       void throttledRefresh(['academic', 'submissions', targetSub.assignment_id]);
 
       return result;

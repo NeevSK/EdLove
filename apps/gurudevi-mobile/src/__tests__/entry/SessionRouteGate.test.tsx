@@ -6,8 +6,12 @@ const mocks = vi.hoisted(() => ({
   searchParams: {} as { entry?: string },
   replace: vi.fn(),
   refreshProfile: vi.fn(),
-  routeTarget: { decision: 'booting', redirectTo: null as string | null },
-  routeState: {} as { profileError?: string | null },
+  routeTarget: {
+    decision: 'booting',
+    redirectTo: null as string | null,
+    policy: { canRenderCurrentPath: false },
+  },
+  routeState: {} as { profileError?: string | null; session?: { user: { id: string; is_anonymous?: boolean } } },
 }));
 
 vi.mock('expo-router', () => ({
@@ -56,7 +60,11 @@ describe('SessionRouteGate account isolation', () => {
     mocks.searchParams = {};
     mocks.replace.mockReset();
     mocks.refreshProfile.mockReset();
-    mocks.routeTarget = { decision: 'booting', redirectTo: null };
+    mocks.routeTarget = {
+      decision: 'booting',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: false },
+    };
     mocks.routeState = {};
   });
 
@@ -103,7 +111,7 @@ describe('SessionRouteGate account isolation', () => {
 
   it('mounts authenticated services only after the session policy enters the app', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'public', redirectTo: null };
+    mocks.routeTarget = { decision: 'public', redirectTo: null, policy: { canRenderCurrentPath: true } };
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -116,7 +124,7 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
     await act(async () => {
       tree!.update(
         <SessionRouteGate appServices={<AppServices />}>
@@ -130,7 +138,7 @@ describe('SessionRouteGate account isolation', () => {
 
   it('does not mount authenticated services on the welcome route', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -144,7 +152,25 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
   });
 
-  it('replaces stale route content with a transition while redirecting', async () => {
+  it('keeps a real account on Welcome until the user chooses an entry action', async () => {
+    mocks.pathname = '/welcome';
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeState = { session: { user: { id: 'real-account-001' } } };
+
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'welcome-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.toJSON()).toBe('welcome-shell');
+    expect(mocks.replace).not.toHaveBeenCalled();
+  });
+
+  it('hides blocked route content and offers a retry while redirecting', async () => {
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -157,7 +183,11 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.toJSON()).not.toBeNull();
     expect(mocks.replace).not.toHaveBeenCalled();
 
-    mocks.routeTarget = { decision: 'public', redirectTo: '/welcome' };
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: { canRenderCurrentPath: false },
+    };
     await act(async () => {
       tree!.update(
         <SessionRouteGate>
@@ -167,9 +197,13 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(tree!.toJSON()).not.toBe('protected-shell');
-    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
+    expect(JSON.stringify(tree!.toJSON())).toContain('Continue to Welcome');
+    expect(JSON.stringify(tree!.toJSON())).not.toContain('protected-shell');
     expect(mocks.replace).toHaveBeenCalledTimes(1);
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+    const continueButton = tree!.root.findByProps({ accessibilityLabel: 'Continue to Welcome' });
+    await act(async () => continueButton.props.onPress());
+    expect(mocks.replace).toHaveBeenCalledTimes(2);
 
     mocks.pathname = '/welcome';
     await act(async () => {
@@ -180,7 +214,7 @@ describe('SessionRouteGate account isolation', () => {
       );
     });
 
-    expect(mocks.replace).toHaveBeenCalledTimes(1);
+    expect(mocks.replace).toHaveBeenCalledTimes(2);
     expect(tree!.toJSON()).toBe('protected-shell');
   });
 
@@ -214,6 +248,28 @@ describe('SessionRouteGate account isolation', () => {
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
   });
 
+  it('offers retry and a safe route out while profile restoration is still pending', async () => {
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    const retry = tree!.root.findByProps({ accessibilityLabel: 'Retry restoring your sanctuary' });
+    const escapeHatch = tree!.root.findByProps({ accessibilityLabel: 'Return to Welcome' });
+    expect(retry.props.accessibilityRole).toBe('button');
+    expect(escapeHatch.props.accessibilityRole).toBe('button');
+
+    await act(async () => {
+      escapeHatch.props.onPress();
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+  });
+
   it('drains pending intent store and navigates to deferred route when session enters app', async () => {
     pendingIntentStore.getState().setPendingIntent({
       targetPath: '/community?inviteCode=RESUME123',
@@ -222,7 +278,7 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
 
     let tree: ReturnType<typeof create>;
     await act(async () => {
@@ -247,7 +303,31 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+
+    await act(async () => {
+      create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith(targetPath);
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('drains an internal route intent and navigates to target after session admission', async () => {
+    const targetPath = '/library/resource/bio-101';
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath,
+      intentKind: 'generic',
+      params: { path: targetPath },
+      originalUrl: 'https://sanctuary.gurudevi.app/library/resource/bio-101',
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
 
     await act(async () => {
       create(
@@ -269,7 +349,7 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/community';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
 
     let tree: ReturnType<typeof create>;
     await act(async () => {
@@ -293,7 +373,7 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
 
     await act(async () => {
       create(

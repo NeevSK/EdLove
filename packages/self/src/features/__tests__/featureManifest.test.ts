@@ -24,7 +24,7 @@ describe('resolveSelfFeatureManifest', () => {
       'browser',
     );
 
-    expect(manifest.all).toHaveLength(21);
+    expect(manifest.all).toHaveLength(22);
     expect(manifest.all.find((feature) => feature.id === 'fire_journal')).toMatchObject({
       availability: 'available',
       delivery: 'runnable',

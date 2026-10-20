@@ -13,23 +13,28 @@ export default async function NoticesPage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <WorkspaceState
-        displayName="Explorer"
-        title="Notices are unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <NoticesFloor displayName="Guest Explorer" initialCapacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <WorkspaceState
-        action={<Link href={signInPath('/workspace/notices')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to view school circulars and announcements for your children and classes."
-        title="Notices are private to institutional bonds"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <NoticesFloor displayName="Guest Explorer" initialCapacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 

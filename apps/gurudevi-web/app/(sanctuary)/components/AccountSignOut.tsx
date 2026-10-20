@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { executeSovereignSignOut } from '../../../lib/sanctuary/signOut';
 
 export function AccountSignOut() {
   const [message, setMessage] = useState<string | null>(null);
@@ -10,14 +11,11 @@ export function AccountSignOut() {
     setIsSigningOut(true);
     setMessage(null);
     try {
-      const response = await fetch('/auth/signout', { method: 'POST', credentials: 'same-origin' });
-      if (!response.ok) throw new Error('Sign-out request failed');
+      await executeSovereignSignOut('/');
     } catch {
       setIsSigningOut(false);
-      setMessage('We could not sign you out. Please try again.');
-      return;
+      setMessage('We could not complete sign out. Please try again.');
     }
-    window.location.replace('/');
   }
 
   return (

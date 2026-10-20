@@ -33,6 +33,13 @@
   line-height: 0.98;
 }
 
+.roleContext {
+  margin: 0 0 0.45rem;
+  color: var(--color-sanctuary-saffron, #a85022);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
 .arrival p:last-child {
   max-width: 39rem;
   margin: 0;

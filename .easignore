@@ -1,0 +1,301 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.pnpm-store
+.pnpm-store/
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.docker
+.env.*.local
+.env.*
+
+# Temporary files
+_tmp_*
+*.tmp
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Doppler fallback files are encrypted, machine-bound cache artifacts.
+# They must not be committed or used as the workspace source of truth.
+**/doppler.json
+.doppler/
+
+# Testing
+coverage
+**/playwright-report/
+**/test-results/
+**/.astro/
+
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Build Outputs
+.next/
+out/
+build
+dist
+dist-*
+output/
+**/output/
+
+
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Misc
+*.txt
+!**/public/robots.txt
+!llms.txt
+!**/llms.txt
+.DS_Store
+*.pem
+.claude/settings.local.json
+
+# Anti-slop tooling local state (never committed)
+.aislop/
+.fallow/
+
+## IDEs
+.vscode/
+.idea/
+.cursor/
+.codex/
+**/.codex/
+**/.agents/state/
+.claude/*
+!.claude/skills/
+.devin/
+.opencode
+
+
+## Generated audit artifacts
+audit-results.json
+report_final.json
+report-*.json
+eslint-report.json
+apps/gurudevi-mobile/temp
+
+# Database drift snapshots and reports
+**/reports/db-drift/
+
+
+
+# Geo Archive Artifacts
+.geo_archive/
+
+# Local scratch, diagnostics, and lint results
+diagnostics/
+scratch/
+packages/library/lint_results.json
+
+# TypeScript Build Info
+*.tsbuildinfo
+
+# Rust test
+rust-lab/
+native-capabilities/
+
+*.zip
+*.apk
+*.aab
+
+# Local test outputs and reports
+apps/gurudevi-mobile/web-firewall-report.md
+apps/gurudevi-mobile/web-runtime-smoke.png
+apps/gurudevi-mobile/web-smoke.png
+reports/playwright/
+
+# Backup and one-off artifacts
+*.bak
+/profile.*
+scan.json
+scan-viewer.html
+.viewer.html
+.shell.html
+
+# Stray nested pnpm lockfiles (root lockfile is canonical)
+**/pnpm-lock.yaml
+!/pnpm-lock.yaml
+
+# JS shadow files are NEVER the source of truth in this repo.
+# All source is TypeScript (.ts / .tsx). Plain .js files next to .ts
+# are either:
+#   (a) AI-agent "I'll strip types so Node can run it" pollution, or
+#   (b) Expo Router ephemeral build twins.
+# Both must be invisible to git. Use .mjs for Node-runnable ESM scripts.
+apps/**/*.js
+packages/**/*.js
+docs/**/*.js
+tests/**/*.js
+tooling/**/*.js
+!tooling/**/src/**/*.js
+# scripts/ uses .mjs for Node scripts — plain .js is always phantom
+scripts/*.js
+
+# Stray tool outputs
+/tsc-*.txt
+/style-stack-audit.txt
+
+# pnpm local store (never commit - use global auto-managed store)
+.pnpm-store/
+
+
+# Local VSCode / Cursor multi-root workspace
+*.code-workspace
+
+# research works 
+docs/research
+docs/atlas/
+
+# Multi-agent teamwork scratch & ephemeral orchestration state
+.agents/teamwork/
+.tmp/
+.tmp-*/
+PROJECT.md
+TEST_INFRA.md
+TEST_READY.md
+DEAD_ENDS.md
+reports/*.png
+
+# Bundle visualizer and route bundle analysis reports
+apps/gurudevi-mobile/reports/
+
+.vercel
+
+# EAS upload boundary: package the monorepo workspace needed by the mobile app,
+# not local tooling, generated captures, or unrelated documentation/reports.
+.git/
+.git
+**/.git/
+**/.git
+.agents/
+**/.agents/
+.claude/
+**/.claude/
+.codex/
+**/.codex/
+.cursor/
+**/.cursor/
+.trae/
+**/.trae/
+.argent/
+**/.argent/
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+.github/
+.devcontainer/
+.idx/
+.husky/
+docs/
+docs
+apps/gurudevi-mobile/docs/
+apps/gurudevi-mobile/docs
+reports/
+reports
+apps/gurudevi-mobile/reports/
+apps/gurudevi-mobile/reports
+apps/gurudevi-mobile/report/
+apps/gurudevi-mobile/report
+apps/gurudevi-mobile/dist/
+apps/gurudevi-mobile/dist-*/
+apps/gurudevi-mobile/build/
+apps/gurudevi-mobile/web-build/
+apps/gurudevi-mobile/output/
+apps/gurudevi-mobile/.tmp/
+apps/gurudevi-mobile/.tmp-*/
+apps/gurudevi-mobile/.expo/
+apps/gurudevi-mobile/.expo
+apps/gurudevi-mobile/android/
+apps/gurudevi-mobile/android
+apps/gurudevi-mobile/ios/
+apps/gurudevi-mobile/ios
+apps/gurudevi-mobile/public/@powersync/
+
+# Preserve the mobile app's nested ignore rules because EAS uses this root
+# .easignore instead of discovering nested .gitignore files.
+apps/gurudevi-mobile/.kotlin/
+apps/gurudevi-mobile/*.orig.*
+apps/gurudevi-mobile/*.jks
+apps/gurudevi-mobile/*.p8
+apps/gurudevi-mobile/*.p12
+apps/gurudevi-mobile/*.key
+apps/gurudevi-mobile/*.mobileprovision
+apps/gurudevi-mobile/.metro-health-check*
+apps/gurudevi-mobile/bundle_root.js
+apps/gurudevi-mobile/bundle_error.json
+apps/gurudevi-mobile/tsc_output*.txt
+apps/gurudevi-mobile/tsc_errors*.txt
+apps/gurudevi-mobile/.env*
+apps/gurudevi-mobile/*.tsbuildinfo
+apps/gurudevi-mobile/assets/*
+!apps/gurudevi-mobile/assets/icon.png
+!apps/gurudevi-mobile/assets/splash-icon.png
+!apps/gurudevi-mobile/assets/adaptive-icon.png
+!apps/gurudevi-mobile/assets/favicon.png
+!apps/gurudevi-mobile/assets/splash-animation.json
+!apps/gurudevi-mobile/assets/images/
+!apps/gurudevi-mobile/assets/images
+!apps/gurudevi-mobile/assets/images/**
+!apps/gurudevi-mobile/assets/splash-poster-line-draw-transparent.png
+!apps/gurudevi-mobile/assets/animations/
+!apps/gurudevi-mobile/assets/animations
+!apps/gurudevi-mobile/assets/animations/tutii-happy-dance.json
+!apps/gurudevi-mobile/assets/animations/tutii-dance.png
+!apps/gurudevi-mobile/assets/design-preview/
+!apps/gurudevi-mobile/assets/design-preview
+!apps/gurudevi-mobile/assets/design-preview/garden-path.jpg
+!apps/gurudevi-mobile/assets/mascot/
+!apps/gurudevi-mobile/assets/mascot
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-coming-soon-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-coming-soon-light-v2.png
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-empty-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-empty-light-scene.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-error-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-error-light-scene.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-explore-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-explore-light-v2.png
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-offline-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-offline-light-scene.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-onboarding-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-onboarding-light-v2.png
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-pro-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-pro-light-v2.png
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-welcome-light-cutout-v2.webp
+!apps/gurudevi-mobile/assets/mascot/firefly-guide-welcome-light-scene.webp
+!apps/gurudevi-mobile/assets/mascot/Gemini_Generated_Image_ezd4cqezd4cqezd4.webp
+
+# Root .gitignore hides app JavaScript broadly. Re-include only Metro/Babel/Expo
+# config, native config, plugins named by app.json plus their helper, and the two
+# JavaScript shims imported directly from index.ts. Keep other JS shadow files out.
+!apps/gurudevi-mobile/app.config.js
+!apps/gurudevi-mobile/babel.config.js
+!apps/gurudevi-mobile/metro.config.js
+!apps/gurudevi-mobile/react-native.config.js
+!apps/gurudevi-mobile/plugins/withNdkVersion.js
+!apps/gurudevi-mobile/plugins/withProfileableBuild.js
+!apps/gurudevi-mobile/plugins/withGradleProperties.js
+!apps/gurudevi-mobile/plugins/withGradleWrapperVersion.js
+!apps/gurudevi-mobile/plugins/withSubprojectsBuildConfig.js
+!apps/gurudevi-mobile/plugins/lib/buildGradleBlock.js
+!apps/gurudevi-mobile/src/shims/early-bootstrap.js
+!apps/gurudevi-mobile/src/shims/node-globals-shim.js

@@ -2,13 +2,23 @@
 
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { useQuery } from '@tanstack/react-query';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { LivingCard } from '../components/LivingCard';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { TaskStrip } from '../components/workbench';
 import styles from './library.module.css';
+
+const LIBRARY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
+  { id: 'arrival', label: 'Library Welcome & Posture', icon: '📖' },
+  { id: 'taskstrip', label: 'Reading Tasks Strip', icon: '🧭' },
+  { id: 'shelf', label: 'Catalog Shelf & Search', icon: '📚' },
+  { id: 'invitations', label: 'Curated Study Invitations', icon: '📜' },
+];
 import {
   type BrowserLibraryResource,
   classifyLibraryFailure,
@@ -176,59 +186,67 @@ export function LibraryFloor({
     [mode],
   );
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        if (mode === 'explore') {
-          if (!active) return;
-          setResources(EXPLORE_LIBRARY_RESOURCES);
-          setStatus('ready');
-          return;
-        }
-
-        const supabase = createBrowserSupabaseClient();
-        if (!supabase) {
-          if (!active) return;
-          setStatus('error');
-          setNotice('Library sign-in is not configured in this browser.');
-          return;
-        }
-
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (!data.session?.access_token) {
-          if (!active) return;
-          setStatus('denied');
-          setNotice('Your secure session has ended. Sign in again to browse your Library.');
-          return;
-        }
-
-        const next = await orpcClient.library.getResources({
-          query: {
-            limit: 30,
-            offset: 0,
-            sort_by: 'recent',
-          },
-        });
-        if (!active) return;
-        setResources(parseBrowserLibraryResources(next));
-        setStatus('ready');
-      } catch (error) {
-        if (!active) return;
-        setStatus(classifyLibraryFailure(error));
-        setNotice(
-          classifyLibraryFailure(error) === 'denied'
-            ? 'Your account or selected Sanctuary scope cannot access these resources.'
-            : 'We could not reach the Library service. Check your connection and try again.',
-        );
+  const { data: queryResult, error: queryError } = useQuery({
+    queryKey: ['library', 'resources', mode],
+    queryFn: async () => {
+      if (mode === 'explore') {
+        return {
+          resources: EXPLORE_LIBRARY_RESOURCES,
+          status: 'ready' as const,
+          notice: null as string | null,
+        };
       }
-    })();
 
-    return () => {
-      active = false;
-    };
-  }, [mode]);
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return {
+          resources: [] as readonly BrowserLibraryResource[],
+          status: 'error' as const,
+          notice: 'Library sign-in is not configured in this browser.',
+        };
+      }
+
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      if (!data.session?.access_token) {
+        return {
+          resources: [] as readonly BrowserLibraryResource[],
+          status: 'denied' as const,
+          notice: 'Your secure session has ended. Sign in again to browse your Library.',
+        };
+      }
+
+      const next = await orpcClient.library.getResources({
+        query: {
+          limit: 30,
+          offset: 0,
+          sort_by: 'recent',
+        },
+      });
+
+      return {
+        resources: parseBrowserLibraryResources(next),
+        status: 'ready' as const,
+        notice: null as string | null,
+      };
+    },
+    staleTime: 60_000,
+  });
+
+  useEffect(() => {
+    if (queryResult) {
+      setResources(queryResult.resources);
+      setStatus(queryResult.status);
+      setNotice(queryResult.notice);
+    } else if (queryError) {
+      setStatus(classifyLibraryFailure(queryError));
+      setNotice(
+        classifyLibraryFailure(queryError) === 'denied'
+          ? 'Your account or selected Sanctuary scope cannot access these resources.'
+          : 'We could not reach the Library service. Check your connection and try again.',
+      );
+    }
+  }, [queryResult, queryError]);
 
   function openCatalog() {
     const existing = workbench.state.tasks.find(
@@ -254,12 +272,16 @@ export function LibraryFloor({
   }
 
   return (
-    <article
-      className={styles.floor}
-      data-appearance={canvas.appearance.preset}
-      data-domain="library"
-      data-motion={canvas.appearance.motion}
-      aria-labelledby="library-title"
+    <SanctuaryFloorCanvas
+      appearance={canvas.appearance}
+      domain="library"
+      furnitureItems={LIBRARY_FURNITURE_ITEMS}
+      groupOrder={canvas.groupOrder.length > 0 ? (canvas.groupOrder as string[]) : ['arrival', 'taskstrip', 'shelf', 'invitations']}
+      onReorderFurniture={(order) => canvas.setGroupOrder(order as any)}
+      onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
+      pinnedIds={canvas.pinnedCategories as string[]}
+      setAppearance={canvas.setAppearance}
+      titleId="library-title"
     >
       <header className={styles.arrival}>
         <p className={styles.eyebrow}>
@@ -279,8 +301,8 @@ export function LibraryFloor({
         overviewActive={!catalogIsOpen}
         onFocusTask={(task) => workbench.focus(task.taskKey)}
         onCloseTask={(task) => workbench.close(task.taskKey)}
+        onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={returnToOverview}
-        onOpenCatalog={openCatalog}
       />
 
       {catalogIsOpen ? (
@@ -459,6 +481,6 @@ export function LibraryFloor({
           ) : null}
         </section>
       )}
-    </article>
+    </SanctuaryFloorCanvas>
   );
 }

@@ -7,6 +7,7 @@ import {
   WelcomeScreen,
 } from '@repo/ui/screens';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { Suspense, useCallback } from 'react';
 import { Platform } from 'react-native';
 import { fireflyPrototypeArtwork } from '@/brand/mascotArtwork';
@@ -64,6 +65,7 @@ export default function WelcomeRoute() {
             onGuest={handleGuest}
           />
         )}
+        <ObserveInteractiveMarker params={{ entry_surface: 'welcome' }} />
       </Suspense>
     </ErrorBoundary>
   );

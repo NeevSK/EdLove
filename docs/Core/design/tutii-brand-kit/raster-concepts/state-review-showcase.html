@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f4ee" />
+    <title>Tutii state review · Gurudevi</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #26352f;
+        --muted: #718078;
+        --line: #e8ebe5;
+        --paper: #fbfbf8;
+        --canvas: transparent;
+        --green: #557a63;
+        --green-dark: #345440;
+        --soft-green: #edf2e9;
+        --blue: #496779;
+        --serif: Georgia, 'Times New Roman', serif;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--paper); color: var(--ink); }
+      button { font: inherit; }
+      .review { min-height: 100vh; }
+      .review-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 30px clamp(18px, 4vw, 56px) 18px; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid #c8d4c9; border-radius: 50%; color: var(--green-dark); font-size: 15px; }
+      .brand-name { margin: 0; font-size: 13px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+      .review-title { margin: 4px 0 0; font: 500 clamp(22px, 2.3vw, 31px)/1.1 var(--serif); letter-spacing: -.025em; }
+      .review-note { max-width: 370px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: right; }
+
+      .workbench { display: grid; grid-template-columns: minmax(190px, 235px) minmax(0, 1fr); gap: clamp(18px, 3vw, 44px); padding: 26px clamp(18px, 4vw, 56px) 40px; }
+      .state-nav { padding-top: 4px; }
+      .nav-heading { margin: 20px 0 6px; color: #87928a; font-size: 10px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+      .nav-heading:first-child { margin-top: 0; }
+      .state-button { display: block; width: 100%; padding: 8px 10px; border: 0; border-left: 2px solid transparent; background: transparent; color: #56665d; text-align: left; font-size: 13px; cursor: pointer; transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease; }
+      .state-button:hover { color: var(--green-dark); }
+      .state-button[aria-pressed="true"] { border-left-color: var(--green); color: var(--green-dark); font-weight: 620; }
+      :focus-visible { outline: 3px solid #8ba98e; outline-offset: 3px; }
+
+      .preview { min-width: 0; }
+      .preview-tools { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 12px; }
+      .state-context { min-width: 0; }
+      .eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 11px; letter-spacing: .07em; text-transform: uppercase; }
+      .state-name { margin: 0; font: 500 22px/1.15 var(--serif); }
+      .viewport-switch { display: flex; flex: none; gap: 18px; }
+      .viewport-button { padding: 7px 0; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; }
+      .viewport-button:hover, .viewport-button[aria-pressed="true"] { border-bottom-color: var(--green); color: var(--green-dark); }
+      .viewport-button span { color: #98a29a; }
+
+      .canvas-wrap { min-height: 560px; padding: 0; overflow: auto; }
+      .app-screen { width: 100%; min-height: 680px; margin: 0 auto; overflow: hidden; border: 0; border-radius: 0; background: var(--canvas); box-shadow: none; transition: width 220ms ease, min-height 220ms ease; }
+      .app-screen[data-size="phone"] { width: 390px; min-height: 760px; }
+      .app-screen[data-size="tablet"] { width: 768px; min-height: 820px; }
+      .app-screen[data-size="desktop"] { border-radius: 0; box-shadow: none; }
+      .app-topbar { display: flex; height: 58px; align-items: center; justify-content: space-between; padding: 0 24px; }
+      .app-brand { display: flex; align-items: center; gap: 9px; font: 600 17px var(--serif); }
+      .app-brand-dot { width: 9px; height: 9px; border-radius: 50%; background: #829d79; }
+      .workspace-label { color: var(--muted); font-size: 11px; }
+      .user-greeting { color: #627268; font-size: 12px; }
+      .app-body { display: grid; min-height: 620px; grid-template-columns: 172px minmax(0, 1fr); }
+      .app-sidebar { padding: 25px 16px 25px 0; }
+      .sidebar-label { margin: 0 0 12px; color: #9aa49d; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+      .sidebar-link { display: block; padding: 9px 8px; color: #708077; font-size: 12px; }
+      .sidebar-link.active { color: var(--green-dark); font-weight: 620; }
+      .screen-content { display: flex; min-width: 0; min-height: 620px; align-items: center; justify-content: center; padding: clamp(24px, 5vw, 68px); }
+      .state-layout { display: grid; width: min(100%, 940px); grid-template-columns: minmax(0, 1fr) minmax(260px, .9fr); align-items: center; gap: clamp(24px, 5vw, 72px); animation: arrive 260ms ease both; }
+      .state-layout.no-image { display: block; max-width: 560px; }
+      .state-copy { max-width: 455px; }
+      .state-layout figure { margin: 0; }
+      .state-kicker { margin: 0 0 12px; color: var(--green); font-size: 11px; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; }
+      .state-copy h2 { margin: 0 0 14px; font: 500 clamp(29px, 3vw, 44px)/1.05 var(--serif); letter-spacing: -.035em; }
+      .state-copy p { max-width: 430px; margin: 0; color: #68766d; font-size: 14px; line-height: 1.7; }
+      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 25px; }
+      .action-primary { min-height: 44px; padding: 0 18px; border: 0; border-radius: 7px; background: var(--green-dark); color: white; font-size: 13px; font-weight: 600; cursor: pointer; }
+      .action-primary:hover { background: #273f31; }
+      .action-secondary { padding: 9px 0; border: 0; border-bottom: 1px solid #b5c1b5; background: transparent; color: var(--green-dark); font-size: 13px; cursor: pointer; }
+      .state-art { display: block; width: 100%; max-height: 390px; object-fit: contain; mix-blend-mode: multiply; animation: art-arrive 420ms ease both; }
+      .state-caption { margin: 8px 0 0; color: #87938a; font-size: 10px; text-align: center; }
+      .plain-status { display: flex; align-items: center; gap: 13px; margin: 24px 0; color: #68766d; font-size: 13px; }
+      .spinner { width: 18px; height: 18px; border: 2px solid #d8e2d8; border-top-color: var(--green); border-radius: 50%; animation: spin 850ms linear infinite; }
+      .skeletons { display: grid; gap: 12px; width: min(100%, 410px); margin-top: 25px; }
+      .skeleton { height: 12px; border-radius: 2px; background: linear-gradient(90deg, #eef1ec 0%, #f6f7f3 45%, #eef1ec 100%); background-size: 200% 100%; animation: shimmer 1.8s ease-in-out infinite; }
+      .skeleton:nth-child(2) { width: 82%; }
+      .skeleton:nth-child(3) { width: 65%; }
+      .form-line { display: block; width: min(100%, 350px); margin-top: 24px; padding: 13px 0; border: 0; border-bottom: 1px solid #aebbb0; background: transparent; color: #53635a; font: inherit; }
+      .field-error { display: block; margin-top: 8px; color: #9b5148; font-size: 12px; }
+      .confirm-actions { display: flex; gap: 20px; margin-top: 24px; }
+      .action-danger { min-height: 44px; padding: 0 18px; border: 0; border-radius: 7px; background: #9b5148; color: white; font-size: 13px; cursor: pointer; }
+      .review-foot { display: flex; justify-content: space-between; gap: 20px; padding: 13px 0 0; color: #849087; font-size: 11px; }
+      .review-foot a { color: var(--green-dark); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+      @keyframes arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes art-arrive { from { opacity: .65; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @keyframes shimmer { to { background-position: -200% 0; } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+      @media (max-width: 760px) {
+        .review-head { align-items: start; flex-direction: column; gap: 10px; }
+        .review-note { text-align: left; }
+        .workbench { grid-template-columns: 1fr; gap: 18px; }
+        .state-nav { display: flex; gap: 8px; padding: 0 0 8px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+        .nav-group { display: flex; flex: none; align-items: center; gap: 4px; }
+        .nav-heading { display: none; }
+        .state-button { width: auto; flex: none; padding: 9px 8px; border-bottom: 2px solid transparent; border-left: 0; white-space: nowrap; font-size: 12px; }
+        .state-button[aria-pressed="true"] { border-bottom-color: var(--green); background: transparent; }
+        .preview-tools { align-items: start; flex-direction: column; gap: 8px; }
+        .canvas-wrap { min-height: 480px; padding: 0; }
+        .app-screen, .app-screen[data-size="tablet"], .app-screen[data-size="desktop"] { width: 100%; min-height: 700px; }
+        .app-topbar { height: 52px; padding: 0 15px; }
+        .workspace-label, .user-greeting, .app-sidebar { display: none; }
+        .app-body { display: block; min-height: 648px; }
+        .screen-content { min-height: 648px; padding: 27px 22px; }
+        .state-layout { grid-template-columns: 1fr; gap: 14px; }
+        .state-art { width: min(100%, 320px); max-height: 245px; margin: 0 auto; grid-row: 1; }
+        .state-caption { margin-top: 4px; }
+        .state-copy h2 { font-size: 31px; }
+        .state-copy p { font-size: 13px; }
+        .actions { gap: 13px; margin-top: 18px; }
+        .review-foot { flex-direction: column; gap: 7px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="review">
+      <header class="review-head">
+        <div>
+          <div class="brand"><span class="brand-mark" aria-hidden="true">g</span><p class="brand-name">Gurudevi · Design review</p></div>
+          <h1 class="review-title">Tutii across the app states</h1>
+        </div>
+        <p class="review-note">Concept art only. Switch state and viewport to review the experience; nothing here is connected to product data or actions.</p>
+      </header>
+
+      <div class="workbench">
+        <nav class="state-nav" aria-label="Choose an app state">
+          <div class="nav-group"><span class="nav-heading">Empty and complete</span>
+            <button class="state-button" data-state="first-empty" aria-pressed="true">First-use empty</button>
+            <button class="state-button" data-state="search-empty" aria-pressed="false">No search matches</button>
+            <button class="state-button" data-state="caught-up" aria-pressed="false">All caught up</button>
+          </div>
+          <div class="nav-group"><span class="nav-heading">Loading and network</span>
+            <button class="state-button" data-state="loading" aria-pressed="false">Loading</button>
+            <button class="state-button" data-state="long-wait" aria-pressed="false">Long wait</button>
+            <button class="state-button" data-state="offline" aria-pressed="false">Offline</button>
+            <button class="state-button" data-state="queued" aria-pressed="false">Queued to sync</button>
+            <button class="state-button" data-state="syncing" aria-pressed="false">Syncing</button>
+            <button class="state-button" data-state="maintenance" aria-pressed="false">Unavailable</button>
+          </div>
+          <div class="nav-group"><span class="nav-heading">Recovery</span>
+            <button class="state-button" data-state="error" aria-pressed="false">Retry an action</button>
+            <button class="state-button" data-state="not-found" aria-pressed="false">Not found</button>
+            <button class="state-button" data-state="access" aria-pressed="false">Access needed</button>
+          </div>
+          <div class="nav-group"><span class="nav-heading">Completion and forms</span>
+            <button class="state-button" data-state="partial" aria-pressed="false">Partly complete</button>
+            <button class="state-button" data-state="success" aria-pressed="false">Saved</button>
+            <button class="state-button" data-state="field-error" aria-pressed="false">Field needs attention</button>
+            <button class="state-button" data-state="destructive" aria-pressed="false">Confirm deletion</button>
+          </div>
+        </nav>
+
+        <section class="preview" aria-label="Responsive screen preview">
+          <div class="preview-tools">
+            <div class="state-context"><p class="eyebrow">State preview</p><h2 class="state-name" id="state-name">First-use empty</h2></div>
+            <div class="viewport-switch" role="group" aria-label="Preview width">
+              <button class="viewport-button" data-size="phone" aria-pressed="true">Phone <span>390</span></button>
+              <button class="viewport-button" data-size="tablet" aria-pressed="false">Tablet <span>768</span></button>
+              <button class="viewport-button" data-size="desktop" aria-pressed="false">Web <span>1280</span></button>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <div class="app-screen" id="app-screen" data-size="phone">
+              <header class="app-topbar">
+                <div class="app-brand"><span class="app-brand-dot" aria-hidden="true"></span>Gurudevi</div>
+                <span class="workspace-label">Hillview Learning Community</span>
+                <span class="user-greeting">Good morning, Anu</span>
+              </header>
+              <div class="app-body">
+                <aside class="app-sidebar" aria-label="Example navigation">
+                  <p class="sidebar-label">Workspace</p>
+                  <span class="sidebar-link active">Overview</span>
+                  <span class="sidebar-link">My learning</span>
+                  <span class="sidebar-link">Shared library</span>
+                  <span class="sidebar-link">People</span>
+                </aside>
+                <section class="screen-content" id="screen-content" aria-live="polite"></section>
+              </div>
+            </div>
+          </div>
+          <footer class="review-foot">
+            <span id="art-note">First-use concept · firefly identity reference · review art</span>
+            <a href="./state-coverage.md">Open the full state-to-art guide</a>
+          </footer>
+        </section>
+      </div>
+    </main>
+    <script>
+      const root = './';
+      const states = {
+        'first-empty': { name: 'First-use empty', kicker: 'A fresh start', title: 'Your space is ready', body: 'Add the first item you want to keep close. You can build this space around the way your school community works.', action: 'Add the first item', image: 'state-studies-round-01/state-first-use-empty.png', alt: 'Tutii welcomes the user beside an open notebook in a school library.', note: 'First-use empty · dedicated concept' },
+        'search-empty': { name: 'No search matches', kicker: 'Nothing matched', title: 'Try another search', body: 'We couldn’t find anything for that phrase. Clear the search or try a broader word.', action: 'Clear search', secondary: 'Browse everything', image: 'state-studies-round-02/state-search-empty.png', alt: 'Tutii looks thoughtfully across an open library table.', note: 'Search empty · dedicated concept' },
+        'caught-up': { name: 'All caught up', kicker: 'A quiet moment', title: 'You’re all caught up', body: 'There’s nothing waiting for you right now. Your recent work is still here whenever you need it.', action: 'Back to overview', image: 'round-01/state-quiet-completion.png', alt: 'Tutii floats in a relaxed, gentle celebration pose.', note: 'Caught up · reuses quiet-completion pose' },
+        'loading': { name: 'Loading', kicker: 'One moment', title: 'Opening your workspace', body: 'Your latest classes and shared work are on their way.', loading: true, note: 'Routine loading · no mascot; stable skeleton and local progress' },
+        'long-wait': { name: 'Long wait', kicker: 'Still working', title: 'This is taking a little longer', body: 'Your work is safe. You can wait here or check again in a moment.', action: 'Check again', image: 'state-studies-round-02/state-long-wait.png', alt: 'Tutii waits calmly on a classroom windowsill beside a notebook.', note: 'Long wait · dedicated concept' },
+        'offline': { name: 'Offline', kicker: 'No connection', title: 'Your saved work is still here', body: 'You’re offline right now. Open anything already saved on this device while the connection returns.', action: 'View saved work', image: 'state-studies-round-02/state-offline-available.png', alt: 'Tutii sits calmly beside an open notebook in a quiet classroom.', note: 'Offline with local content · dedicated concept' },
+        'queued': { name: 'Queued to sync', kicker: 'Saved on this device', title: 'Your changes are waiting to sync', body: 'We’ll send them when you’re back online. You can keep working in the meantime.', action: 'Review pending work', image: 'state-studies-round-02/state-work-queued.png', alt: 'Tutii carefully places completed work into a folder.', note: 'Queued work · dedicated concept' },
+        'syncing': { name: 'Syncing', kicker: 'Connection returning', title: 'Syncing your saved work', body: 'Your changes are still safe while we reconnect. We’ll let you know when everything is up to date.', status: 'Syncing now', action: 'View saved work', image: 'state-studies-round-02/state-work-queued.png', alt: 'Tutii keeps saved work safely in a folder.', note: 'Syncing · queued-work art with live status text' },
+        'maintenance': { name: 'Temporarily unavailable', kicker: 'Service update', title: 'Gurudevi is taking a short pause', body: 'Some parts of the service are temporarily unavailable. Your saved work remains safe; please try again shortly.', action: 'Try again', image: 'state-studies-round-02/state-long-wait.png', alt: 'Tutii waits calmly in a school setting.', note: 'Maintenance · reuses long-wait concept' },
+        'error': { name: 'Recoverable error', kicker: 'Couldn’t finish that', title: 'Your work is still here', body: 'That action didn’t go through. Try once more, or return to your work and continue from there.', action: 'Try again', secondary: 'Go back', image: 'state-studies-round-02/state-recoverable-error.png', alt: 'Tutii gently points toward a smudged practice page.', note: 'Recoverable action error · dedicated concept' },
+        'not-found': { name: 'Not found', kicker: 'A path changed', title: 'We can’t find that page', body: 'It may have moved or you may not have access anymore. Head back to a place you know.', action: 'Go to overview', secondary: 'Browse library', image: 'state-studies-round-02/state-not-found.png', alt: 'Tutii gestures toward an open aisle in a school library.', note: 'Missing or moved item · dedicated concept' },
+        'access': { name: 'Access needed', kicker: 'Permission required', title: 'This space isn’t open to you yet', body: 'Ask a school administrator or the person who shared it to check your access.', action: 'Return to overview', secondary: 'Switch account', note: 'Access state · copy-first, no mascot' },
+        'partial': { name: 'Partly complete', kicker: 'Some changes saved', title: 'Three items updated', body: 'One item still needs attention. Review it when you’re ready; the saved changes are in place.', action: 'Review remaining item', image: 'round-01/state-quiet-completion.png', alt: 'Tutii gives a calm, encouraging gesture.', note: 'Partial success · quiet-completion pose; copy carries detail' },
+        'success': { name: 'Saved', kicker: 'All changes saved', title: 'Your work is up to date', body: 'Everything you changed has been saved. You can return to it whenever you need.', action: 'Continue', image: 'round-01/state-quiet-completion.png', alt: 'Tutii gives a gentle, low-key celebration.', note: 'Routine success · quiet-completion pose' },
+        'field-error': { name: 'Field needs attention', kicker: 'One detail is missing', title: 'Add a name to continue', body: 'Choose a name that helps everyone recognize this space.', field: true, note: 'Inline validation · next to the field, no mascot' },
+        'destructive': { name: 'Confirm deletion', kicker: 'Before you remove it', title: 'Delete this draft?', body: 'This will permanently remove the draft and its saved notes from this device. This can’t be undone.', destructive: true, note: 'Destructive confirmation · consequence-led copy, no mascot' }
+      };
+
+      const content = document.querySelector('#screen-content');
+      const stateName = document.querySelector('#state-name');
+      const artNote = document.querySelector('#art-note');
+      const screen = document.querySelector('#app-screen');
+      const escapeHtml = (value) => value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+
+      function render(key) {
+        const state = states[key];
+        stateName.textContent = state.name;
+        artNote.textContent = state.note;
+        document.querySelectorAll('.state-button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.state === key)));
+        const visual = state.image ? `<figure><img class="state-art" src="${root + state.image}" alt="${escapeHtml(state.alt)}" /><figcaption class="state-caption">Tutii illustration concept</figcaption></figure>` : '';
+        const status = state.status ? `<div class="plain-status" role="status"><span class="spinner" aria-hidden="true"></span>${escapeHtml(state.status)}</div>` : '';
+        const loading = state.loading ? `<div class="plain-status" role="status"><span class="spinner" aria-hidden="true"></span>Loading your latest work</div><div class="skeletons" aria-hidden="true"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div>` : '';
+        const field = state.field ? `<label class="form-line">Space name <input aria-label="Space name" style="border:0;background:transparent;font:inherit;color:inherit;outline:0" placeholder="e.g. Year 8 science" /></label><span class="field-error" role="alert">Add a name before continuing.</span>` : '';
+        const actions = state.destructive ? `<div class="confirm-actions"><button class="action-secondary" type="button">Keep draft</button><button class="action-danger" type="button">Delete draft</button></div>` : `${state.action ? `<div class="actions"><button class="action-primary" type="button">${escapeHtml(state.action)}</button>${state.secondary ? `<button class="action-secondary" type="button">${escapeHtml(state.secondary)}</button>` : ''}</div>` : ''}`;
+        content.innerHTML = `<div class="state-layout${state.image ? '' : ' no-image'}">${visual}<div class="state-copy"><p class="state-kicker">${escapeHtml(state.kicker)}</p><h2>${escapeHtml(state.title)}</h2><p>${escapeHtml(state.body)}</p>${status}${loading}${field}${actions}</div></div>`;
+      }
+
+      document.querySelectorAll('.state-button').forEach(button => button.addEventListener('click', () => render(button.dataset.state)));
+      document.querySelectorAll('.viewport-button').forEach(button => button.addEventListener('click', () => {
+        document.querySelectorAll('.viewport-button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+        screen.dataset.size = button.dataset.size;
+      }));
+      render('first-empty');
+    </script>
+  </body>
+</html>

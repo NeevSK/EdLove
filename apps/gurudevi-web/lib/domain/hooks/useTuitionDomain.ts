@@ -2,7 +2,8 @@
 
 import { useOfflineStatus } from '@repo/core/offline/resilience';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
 import {
   DEFAULT_CANONICAL_BATCHES,
@@ -94,39 +95,47 @@ const INITIAL_FEE_ROWS: FeeViewModel[] = [
   },
 ];
 
+const DEFAULT_SUMMARY: TuitionBatchSummary = {
+  enrolledStudents: 248,
+  todayAttendancePercent: 92,
+  monthlyFeesPaidPercent: 88,
+  totalCollected: 156250,
+  pendingCount: 14,
+};
+
 export function useTuitionDomain() {
   const { isOnline } = useOfflineStatus();
-  const [batches, setBatches] = useState<CommercialPerspective[]>(DEFAULT_CANONICAL_BATCHES);
   const [fees, setFees] = useState<FeeViewModel[]>(INITIAL_FEE_ROWS);
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const throttledRefresh = useThrottledInvalidate(500);
 
-  const [summary, setSummary] = useState<TuitionBatchSummary>({
-    enrolledStudents: 248,
-    todayAttendancePercent: 92,
-    monthlyFeesPaidPercent: 88,
-    totalCollected: 156250,
-    pendingCount: 14,
-  });
   const [selectedBatchId, setSelectedBatchId] = useState<string>('batch-10a-math');
-  const [receipts, setReceipts] = useState<FeeReceiptResult[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Load cached batches & receipts on mount
-  useEffect(() => {
-    async function loadData() {
-      const loadedBatches = await tuitionHexagonalService.getBatches();
-      setBatches(loadedBatches);
+  // TanStack Query: Batches catalog caching & revalidation
+  const { data: batches = DEFAULT_CANONICAL_BATCHES } = useQuery({
+    queryKey: ['tuition', 'batches'],
+    queryFn: () => tuitionHexagonalService.getBatches(),
+    initialData: DEFAULT_CANONICAL_BATCHES,
+    staleTime: 60_000,
+  });
 
-      const cachedReceipts = tuitionHexagonalService.loadCachedReceipts();
-      setReceipts(cachedReceipts);
+  // TanStack Query: Cached receipts
+  const { data: receipts = [] } = useQuery({
+    queryKey: ['tuition', 'receipts'],
+    queryFn: () => tuitionHexagonalService.loadCachedReceipts(),
+    initialData: () => tuitionHexagonalService.loadCachedReceipts(),
+    staleTime: 30_000,
+  });
 
-      const loadedSummary = await tuitionHexagonalService.getBatchSummary();
-      setSummary(loadedSummary);
-    }
-    void loadData();
-  }, []);
+  // TanStack Query: Aggregate summary by batch
+  const { data: summary = DEFAULT_SUMMARY } = useQuery({
+    queryKey: ['tuition', 'summary', selectedBatchId],
+    queryFn: () => tuitionHexagonalService.getBatchSummary(selectedBatchId),
+    initialData: DEFAULT_SUMMARY,
+    staleTime: 30_000,
+  });
 
   const filteredFees = useMemo(() => {
     if (!debouncedSearch.trim()) return fees;
@@ -169,14 +178,9 @@ export function useTuitionDomain() {
           ),
         );
 
-        setReceipts((prev) => [result, ...prev]);
-
-        // Recompute summary
-        const updatedSummary = await tuitionHexagonalService.getBatchSummary(selectedBatchId);
-        setSummary(updatedSummary);
-
-        // Throttle invalidation notification for background query listeners
-        void throttledRefresh(['tuition', selectedBatchId]);
+        // Throttle invalidation notification for background queries using TanStack Pacer
+        void throttledRefresh(['tuition', 'summary', selectedBatchId]);
+        void throttledRefresh(['tuition', 'receipts']);
 
         return result;
       } finally {

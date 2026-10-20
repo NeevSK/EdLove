@@ -4,6 +4,7 @@ import {
   createDomainWorkbenchState,
   createWorkbenchTask,
   openWorkbenchTask,
+  reorderWorkbenchTask,
 } from '@repo/core/logic/workbench/activeTasks';
 import type {
   DomainWorkbenchState,
@@ -64,6 +65,7 @@ export interface ActiveSubTabsState {
   openTab: (tab: ActiveSubTabInput) => void;
   closeTab: (domain: ActiveSubTabDomain, tabId: string) => ActiveSubTabCloseResult;
   setActiveTab: (domain: ActiveSubTabDomain, tabId: string) => void;
+  reorderTab: (domain: ActiveSubTabDomain, tabId: string, destinationIndex: number) => void;
   clearTabs: (domain?: ActiveSubTabDomain) => void;
   togglePinFeature: (domain: string, featureId: string) => void;
   isFeaturePinned: (domain: string, featureId: string) => boolean;
@@ -357,6 +359,28 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
             activeTabByDomain: {
               ...state.activeTabByDomain,
               [domain]: result.state.focusedTaskKey ?? '',
+            },
+          };
+        });
+      },
+
+      reorderTab: (domain, tabId, destinationIndex) => {
+        if (!isWorkbenchDomain(domain)) return;
+        set((state) => {
+          const currentTabs = state.tabsByDomain[domain] ?? [];
+          const currentWorkbench = toWorkbenchState(
+            domain,
+            currentTabs,
+            state.activeTabByDomain[domain] ?? '',
+          );
+          const reordered = reorderWorkbenchTask(currentWorkbench, tabId, destinationIndex);
+          if (reordered === currentWorkbench) return state;
+          return {
+            tabsByDomain: {
+              ...state.tabsByDomain,
+              [domain]: reordered.tasks.map((task) =>
+                toItem(task, paramsForTask(task, currentTabs)),
+              ),
             },
           };
         });

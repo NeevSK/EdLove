@@ -2,7 +2,7 @@ export const PUBLIC_GURUDEVI_HOST = 'gurudevi.app';
 export const SANCTUARY_GURUDEVI_HOST = 'sanctuary.gurudevi.app';
 export const EXPLORE_GURUDEVI_HOST = 'explore.gurudevi.app';
 
-export type GurudeviHost = 'public' | 'sanctuary' | 'explore' | 'other';
+export type GurudeviHost = 'public' | 'sanctuary' | 'explore' | 'school' | 'other';
 export type HostRoutingDecision =
   | { kind: 'allow' }
   | {
@@ -17,6 +17,7 @@ const sanctuaryRoutePrefixes = [
   '/api',
   '/auth',
   '/community',
+  '/explore-intro',
   '/library',
   '/notifications',
   '/onboarding',
@@ -28,6 +29,7 @@ const sanctuaryRoutePrefixes = [
   '/settings',
   '/sign-in',
   '/sign-up',
+  '/welcome',
   '/workspace',
 ] as const;
 
@@ -35,6 +37,7 @@ const exploreDeniedPrefixes = [
   '/api',
   '/auth',
   '/explore-internal',
+  '/explore-intro',
   '/onboarding',
   '/recovery',
   '/reset-password',
@@ -44,8 +47,35 @@ const exploreDeniedPrefixes = [
 
 const GURUDEVI_LK_HOSTS = new Set(['gurudevi.lk', 'www.gurudevi.lk']);
 
+const RESERVED_SUBDOMAINS = new Set([
+  'sanctuary',
+  'explore',
+  'public',
+  'api',
+  'admin',
+  'www',
+  'platform',
+  'status',
+  'mail',
+  'auth',
+]);
+
 function normalizeHostname(hostname: string): string {
   return hostname.trim().toLowerCase().replace(/:\d+$/, '').replace(/\.$/, '');
+}
+
+export function isLocalPreviewHost(hostname: string): boolean {
+  const normalized = normalizeHostname(hostname);
+  return normalized === 'localhost' || normalized === '127.0.0.1' || normalized === '[::1]' || normalized === '::1';
+}
+
+export function extractSchoolSubdomain(hostname: string): string | null {
+  const normalized = normalizeHostname(hostname);
+  const match = normalized.match(/^([a-z0-9_-]+)\.gurudevi\.app$/);
+  if (!match) return null;
+  const subdomain = match[1];
+  if (!subdomain || RESERVED_SUBDOMAINS.has(subdomain)) return null;
+  return subdomain;
 }
 
 export function classifyGurudeviHost(hostname: string): GurudeviHost {
@@ -53,6 +83,7 @@ export function classifyGurudeviHost(hostname: string): GurudeviHost {
   if (normalizedHostname === PUBLIC_GURUDEVI_HOST) return 'public';
   if (normalizedHostname === SANCTUARY_GURUDEVI_HOST) return 'sanctuary';
   if (normalizedHostname === EXPLORE_GURUDEVI_HOST) return 'explore';
+  if (extractSchoolSubdomain(normalizedHostname) !== null) return 'school';
   return 'other';
 }
 
@@ -82,7 +113,7 @@ export function resolveHostRouting(
   }
 
   if (normalized === 'platform.gurudevi.app') {
-    return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/self' };
+    return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/welcome' };
   }
 
   const incomingHost = classifyGurudeviHost(hostname);
@@ -95,8 +126,34 @@ export function resolveHostRouting(
     }
     if (hasRoutePrefix(pathname, exploreDeniedPrefixes)) return { kind: 'not-found' };
     if (pathname === '/') {
-      return { kind: 'rewrite', pathname: '/self' };
+      return { kind: 'rewrite', pathname: '/welcome' };
     }
+    return { kind: 'allow' };
+  }
+
+  if (incomingHost === 'school') {
+    if (method !== 'GET' && method !== 'HEAD') return { kind: 'not-found' };
+    const schoolHandle = extractSchoolSubdomain(hostname);
+    if (pathname === '/badge.svg') {
+      return { kind: 'rewrite', pathname: `/badge.svg?school=${schoolHandle}` };
+    }
+
+    if (pathname.startsWith('/api/og')) {
+      return { kind: 'allow' };
+    }
+
+    if (isSanctuaryPath(pathname)) {
+      return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname };
+    }
+
+    if (pathname === '/') {
+      return { kind: 'rewrite', pathname: `/school/${schoolHandle}` };
+    }
+
+    if (!pathname.startsWith('/school/')) {
+      return { kind: 'rewrite', pathname: `/school/${schoolHandle}${pathname}` };
+    }
+
     return { kind: 'allow' };
   }
 
@@ -109,11 +166,11 @@ export function resolveHostRouting(
   }
 
   if (pathname === '/sanctuary' || pathname.startsWith('/sanctuary/')) {
-    return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/self' };
+    return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/welcome' };
   }
 
   if (incomingHost === 'sanctuary' && pathname === '/') {
-    return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/self' };
+    return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/welcome' };
   }
 
   const expectedHost = isSanctuaryPath(pathname) ? 'sanctuary' : 'public';

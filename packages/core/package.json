@@ -338,6 +338,11 @@
       "import": "./src/logic/workspace/*.ts",
       "default": "./src/logic/workspace/*.ts"
     },
+    "./logic/workbench": {
+      "types": "./src/logic/workbench/index.ts",
+      "import": "./src/logic/workbench/index.ts",
+      "default": "./src/logic/workbench/index.ts"
+    },
     "./logic/workbench/*": {
       "types": "./src/logic/workbench/*.ts",
       "import": "./src/logic/workbench/*.ts",

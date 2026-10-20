@@ -12,23 +12,38 @@ export default async function SubmissionsPage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <SubmissionsState
-        displayName="Explorer"
-        title="Submissions are unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <SubmissionsFloor
+          accountId="explore-guest"
+          authSubjectId="explore-guest"
+          displayName="Guest Explorer"
+          capacity="STUDENT"
+        />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <SubmissionsState
-        action={<Link href={signInPath('/workspace/submissions')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to view assignment submissions and grades."
-        title="Submissions are private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <SubmissionsFloor
+          accountId="explore-guest"
+          authSubjectId="explore-guest"
+          displayName="Guest Explorer"
+          capacity="STUDENT"
+        />
+      </SanctuaryShell>
     );
   }
 

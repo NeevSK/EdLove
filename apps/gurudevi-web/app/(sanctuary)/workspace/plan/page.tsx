@@ -13,23 +13,28 @@ export default async function PlanPage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <WorkspaceState
-        displayName="Explorer"
-        title="Plan workspace is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <PlanFloor displayName="Guest Explorer" initialCapacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <WorkspaceState
-        action={<Link href={signInPath('/workspace/plan')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to plan grade class events and compose calm notices."
-        title="Plan & Notices is private to institutional bonds"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <PlanFloor displayName="Guest Explorer" initialCapacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 

@@ -3,9 +3,16 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BROWSER_SELF_FEATURES } from '@/app/(sanctuary)/self/browserFeatureRegistry';
 import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
 import { requestAccountSelfProcedure } from '@/lib/sanctuary/selfApiClient';
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>();
+  return {
+    ...actual,
+    useQuery: vi.fn(() => ({ data: {}, isLoading: false })),
+  };
+});
 
 vi.mock('@repo/self/features/featureManifest', () => ({
   resolveSelfFeatureManifest: vi.fn(() => ({
@@ -326,14 +333,14 @@ describe('Floor Atmosphere Integration (G2 — jsdom)', () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const trigger = screen.getByRole('button', { name: /customize floor atmosphere/i });
+    const trigger = screen.getByRole('button', { name: /floor studio/i });
     expect(trigger).toBeDefined();
 
     await user.click(trigger);
     expect(
-      screen.getByRole('complementary', { name: /floor atmosphere configuration/i }),
+      screen.getByRole('dialog', { name: /floor studio/i }),
     ).toBeDefined();
-    expect(screen.getByText('Atmospheric Shader FX')).toBeDefined();
+    expect(screen.getByText(/tactile shader fx/i)).toBeDefined();
 
     await user.click(screen.getByRole('button', { name: /aurora mesh/i }));
     const floorArticle = document.querySelector('article[data-domain="self"]');

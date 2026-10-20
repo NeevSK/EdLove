@@ -439,7 +439,6 @@ function TabsLayoutContent() {
                   {showActiveSubTabs && (
                     <ActiveSubTabStrip
                       domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
                       onReturnToOverview={returnToDomainOverview}
                     />
                   )}
@@ -479,7 +478,6 @@ function TabsLayoutContent() {
                   {showActiveSubTabs && (
                     <ActiveSubTabStrip
                       domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
                       onReturnToOverview={returnToDomainOverview}
                     />
                   )}
@@ -507,7 +505,6 @@ function TabsLayoutContent() {
                   {showActiveSubTabs && (
                     <ActiveSubTabStrip
                       domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
                       onReturnToOverview={returnToDomainOverview}
                     />
                   )}
@@ -548,7 +545,6 @@ function TabsLayoutContent() {
                   {showActiveSubTabs && (
                     <ActiveSubTabStrip
                       domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
                       onReturnToOverview={returnToDomainOverview}
                     />
                   )}
@@ -576,7 +572,6 @@ function TabsLayoutContent() {
                 {showActiveSubTabs && domainTabs.length > 0 && (
                   <ActiveSubTabStrip
                     domain={currentDomain}
-                    onAddTabPress={() => setCatalogSheetTab(currentDomain)}
                     onReturnToOverview={returnToDomainOverview}
                   />
                 )}

@@ -1,9 +1,8 @@
 import { useAuth } from '@repo/core/logic';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
-import { useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
+import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect } from 'react';
 
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
@@ -22,9 +21,11 @@ export function SessionRouteGate({
   const params = useGlobalSearchParams<{ entry?: string }>();
   const { refreshProfile } = useAuth();
   const routeState = useBootstrapRouteState(pathname);
-  const routeTarget = getBootstrapRouteTarget(routeState, {
+  const bootstrapTarget = getBootstrapRouteTarget(routeState, {
     guestOnboardingIntent: pathname === '/onboarding' && params.entry === 'guest',
   });
+  const routeTarget = bootstrapTarget;
+  const { decision, redirectTo } = routeTarget;
   const presentation = getEntryPresentation({
     pathname,
     profileError: routeState.profileError,
@@ -46,10 +47,14 @@ export function SessionRouteGate({
 
   useEffect(() => {
     const pendingIntent = pendingIntentStore.getState().getPendingIntent();
-    const action = getEntryNavigationAction({ pathname, pendingIntent, routeTarget });
+    const action = getEntryNavigationAction({
+      pathname,
+      pendingIntent,
+      routeTarget: { decision, redirectTo },
+    });
     if (action.consumePendingIntent) pendingIntentStore.getState().drainPendingIntent();
     if (action.target) router.replace(action.target as any);
-  }, [pathname, routeTarget.decision, routeTarget.redirectTo, router]);
+  }, [pathname, decision, redirectTo, router]);
 
   // router.replace() updates the browser location before Expo Router commits
   // the destination tree. Keeping children mounted in that gap can show the
@@ -91,6 +96,22 @@ export function SessionRouteGate({
         <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
           Restoring your sanctuary…
         </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Retry restoring your sanctuary"
+          onPress={() => void refreshProfile()}
+          className="mt-6 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
+        >
+          <Text className="font-semibold text-white">Retry</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Return to Welcome"
+          onPress={() => router.replace('/welcome')}
+          className="mt-3 py-2 px-4"
+        >
+          <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
+        </Pressable>
       </Box>
     );
   }
@@ -102,12 +123,20 @@ export function SessionRouteGate({
     </>
   );
   if (presentation.kind !== 'transition') return content;
+  const destination = presentation.target === '/welcome' ? 'Welcome' : 'your sanctuary';
   return (
-    <Box className="flex-1">
-      {content}
-      <Box className="absolute inset-0 z-50 items-center justify-center bg-phase-canvas px-8">
-        <BrandPulse size={32} accessibilityLabel="Opening your sanctuary" />
-      </Box>
+    <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
+      <Text className="text-center text-base font-semibold text-phase-text-primary">
+        Continue to {destination}
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Continue to ${destination}`}
+        onPress={() => router.replace(presentation.target as Href)}
+        className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
+      >
+        <Text className="font-semibold text-white">Continue</Text>
+      </Pressable>
     </Box>
   );
 }

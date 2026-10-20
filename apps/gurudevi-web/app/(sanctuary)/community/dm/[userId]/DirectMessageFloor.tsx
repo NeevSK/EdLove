@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
+import { getExploreCapacityMeta, isExploreCapacity } from '@/lib/explore/exploreCapacity';
 import { type ChatMessage, useCommunityChat } from '@/lib/repositories/communityChatRepository';
 import styles from './dm.module.css';
 
@@ -21,6 +22,9 @@ export function DirectMessageFloor({
     threadId,
     displayName,
   );
+  const roleLabel = capacity && isExploreCapacity(capacity)
+    ? getExploreCapacityMeta(capacity).label
+    : null;
   const [draft, setDraft] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +70,10 @@ export function DirectMessageFloor({
             </Link>
           </div>
           <h1>{targetName}</h1>
-          <p>Direct pedagogical channel • End-to-end encrypted session</p>
+          <p>
+            Direct pedagogical channel • End-to-end encrypted session
+            {roleLabel ? <span className={styles.roleTag}> · Your role: {roleLabel}</span> : null}
+          </p>
         </div>
       </header>
 
@@ -78,7 +85,10 @@ export function DirectMessageFloor({
           >
             <div className={styles.avatar}>{m.senderInitials}</div>
             <div className={`${styles.messageBubble} ${m.isSelf ? styles.messageBubbleSelf : ''}`}>
-              <span className={styles.authorName}>{m.isSelf ? 'You' : m.senderName}</span>
+              <span className={styles.authorName}>
+                {m.isSelf ? 'You' : m.senderName}
+                {m.isSelf && roleLabel ? <span className={styles.roleTag}> · {roleLabel}</span> : null}
+              </span>
               <p className={styles.messageText}>{m.text}</p>
               <div
                 style={{

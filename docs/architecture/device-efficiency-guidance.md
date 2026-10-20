@@ -1,6 +1,21 @@
+---
+title: "Gurudevi Device Efficiency Guidance"
+status: "superseded"
+superseded_by: "docs/engineering/runtime-performance/device-efficiency-guidance.md"
+created: 2026-08-31
+updated: 2026-10-19
+author: "Naveen"
+scribe: "Antigravity"
+tags: [performance, runtime-performance, device-efficiency]
+---
+
+> [!NOTE]
+> This document has been relocated to the centralized performance suite:
+> **[`docs/engineering/runtime-performance/device-efficiency-guidance.md`](file:///c:/x/docs/engineering/runtime-performance/device-efficiency-guidance.md)**.
+
 # Gurudevi device-efficiency guidance
 
-Status: working baseline  
+Status: superseded (relocated to `docs/engineering/runtime-performance/`)  
 Scope: storage, battery, and network  
 Updated: 2026-08-31
 

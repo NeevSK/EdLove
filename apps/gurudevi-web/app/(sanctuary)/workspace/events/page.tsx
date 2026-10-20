@@ -12,23 +12,28 @@ export default async function EventsPage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <EventsState
-        displayName="Explorer"
-        title="Institutional ERP is offline"
-        detail="Server credentials are not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <EventsFloor schoolId="school-ananda-colombo" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <EventsState
-        action={<Link href={signInPath('/workspace/events')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to view institutional programs, event budgets, and physical asset inventories."
-        title="Institutional ERP is private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <EventsFloor schoolId="school-ananda-colombo" />
+      </SanctuaryShell>
     );
   }
 

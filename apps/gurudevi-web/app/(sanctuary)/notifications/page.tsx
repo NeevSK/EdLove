@@ -1,5 +1,8 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost, isLocalPreviewHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
@@ -9,22 +12,67 @@ import { NotificationsFloor } from './NotificationsFloor';
 export const metadata = { title: 'Notifications | Gurudevi Sanctuary' };
 
 export default async function NotificationsPage() {
-  const supabase = await createServerSupabaseClient();
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExploreHost = classifyGurudeviHost(host) === 'explore';
+  const supabase = isExploreHost ? null : await createServerSupabaseClient();
+  const isExplore = isExploreHost || (!supabase && isLocalPreviewHost(host));
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+        unreadNotifications={2}
+      >
+        <NotificationsFloor displayName="Guest Explorer" isExplore={true} />
+      </SanctuaryShell>
+    );
+  }
+
   if (!supabase) {
     return (
       <NotificationsState
+        action={
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <Link href={signInPath('/notifications')}>Sign in</Link>
+            <Link href="/welcome">Welcome Gate</Link>
+            <a href="https://explore.gurudevi.app">Guest House ↗</a>
+          </div>
+        }
         displayName="Explorer"
-        title="Notifications are unavailable"
-        detail="Browser sign-in is not configured in this environment."
+        title="Notifications are private"
+        detail="Sign in to view alerts and updates from your learning circles."
       />
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
+    if (isLocalPreviewHost(host)) {
+      return (
+        <SanctuaryShell
+          displayName="Guest Explorer"
+          navigationPrefix=""
+          showAccountNavigation={true}
+          isExploreMode={true}
+          unreadNotifications={2}
+        >
+          <NotificationsFloor displayName="Guest Explorer" isExplore={true} />
+        </SanctuaryShell>
+      );
+    }
     return (
       <NotificationsState
-        action={<Link href={signInPath('/notifications')}>Sign in</Link>}
+        action={
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <Link href={signInPath('/notifications')}>Sign in</Link>
+            <Link href="/welcome">Welcome Gate</Link>
+            <a href="https://explore.gurudevi.app">Guest House ↗</a>
+          </div>
+        }
         displayName="Explorer"
         detail="Sign in to view alerts and updates from your learning circles."
         title="Notifications are private"
@@ -35,6 +83,12 @@ export default async function NotificationsPage() {
   if (entry.kind === 'onboarding-required') {
     return (
       <NotificationsState
+        action={
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <Link href="/onboarding">Complete Enrollment</Link>
+            <Link href="/welcome">Welcome Gate</Link>
+          </div>
+        }
         displayName="Explorer"
         title="Complete enrollment first"
         detail="Finish onboarding before accessing your notification center."
@@ -45,6 +99,12 @@ export default async function NotificationsPage() {
   if (entry.kind === 'inactive' || entry.kind === 'unavailable') {
     return (
       <NotificationsState
+        action={
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <Link href="/welcome">Return to Welcome Gate</Link>
+            <a href="https://explore.gurudevi.app">Guest House ↗</a>
+          </div>
+        }
         displayName="Explorer"
         title="Notifications are unavailable"
         detail={entry.message}

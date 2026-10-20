@@ -27,7 +27,7 @@ export {
   getOrCreateGuestLease,
   registerGuestLeaseDataKey,
 } from '@repo/core/native/guestLease';
-export { getGuestScope, guestStorageKey, setGuestScope } from '@repo/core/native/guestScope';
+export { getGuestScope, guestStorageKey, isGuestUserId, setGuestScope } from '@repo/core/native/guestScope';
 export { Runtime } from '@repo/core/native/runtime';
 export {
   nativeDeviceProvider,

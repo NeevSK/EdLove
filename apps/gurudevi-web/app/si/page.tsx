@@ -44,7 +44,7 @@ export default function SinhalaLandingPage() {
       </h1>
       <p className="mt-8 max-w-3xl text-xl leading-9 text-ink-soft">{copy.summary}</p>
       <p className="mt-8 max-w-3xl text-lg leading-8">
-        ගුරුදේවි යනු අධ්‍යාපනයේ සම්බන්ධතා ශක්තිමත් කිරීමට සහ ගුරුවරුන්ගේ, සිසුන්ගේ සහ පාසල් ප්‍රජාවන්ගේ ගෞරවය රැකීමට නිර්මාණය කළ
+        ගුරුදෙවි යනු අධ්‍යාපනයේ සම්බන්ධතා ශක්තිමත් කිරීමට සහ ගුරුවරුන්ගේ, සිසුන්ගේ සහ පාසල් ප්‍රජාවන්ගේ ගෞරවය රැකීමට නිර්මාණය කළ
         ඩිජිටල් වේදිකාවකි.
       </p>
       <Link

@@ -19,17 +19,43 @@ const sharedTokenCss = [
 ].join(';');
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://gurudevi.app'),
   title: {
     default: 'Gurudevi',
     template: '%s | Gurudevi',
   },
   description:
     'Gurudevi is an education ecology support system and sanctuary for education in Sri Lanka, supporting teachers, students, schools, families, and communities.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    siteName: 'Gurudevi',
+    type: 'website',
+    locale: 'en_LK',
+    alternateLocale: ['si_LK', 'ta_LK'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
 };
+
+import { PDPAConsentBanner } from './components/PDPAConsentBanner';
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -38,8 +64,23 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           rel="stylesheet"
         />
         <style>{`:root{${sharedTokenCss}}`}</style>
+        <script>{`(function(){try{
+var t=localStorage.getItem('gurudevi_theme')||'sanctuary';
+var m=localStorage.getItem('gurudevi_mode')||'system';
+var d=localStorage.getItem('gurudevi_density')||'default';
+var legacy=localStorage.getItem('gurudevi_appearance_preset');
+if(legacy==='night'){m='dark';}else if(legacy==='garden'||legacy==='dawn'){t=legacy;}
+var resolvedMode=m==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;
+document.documentElement.setAttribute('data-theme',t);
+document.documentElement.setAttribute('data-mode',resolvedMode);
+document.documentElement.setAttribute('data-appearance',resolvedMode==='dark'?'night':t);
+if(d==='simplified'){document.documentElement.setAttribute('data-density','simplified');}
+}catch(e){}})();`}</script>
       </head>
-      <body className="bg-paper font-serif text-ink antialiased">{children}</body>
+      <body className="bg-paper font-serif text-ink antialiased">
+        {children}
+        <PDPAConsentBanner />
+      </body>
     </html>
   );
 }

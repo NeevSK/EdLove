@@ -188,6 +188,34 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
         reason: 'DeepLinkHostOrSchemeError',
       });
     });
+
+    it('classifies valid canonical sanctuary routes as internalRoute for HTTPS and custom schemes', () => {
+      expect(
+        classifyRouteIntent('https://sanctuary.gurudevi.app/self?feature=fire_journal'),
+      ).toEqual({
+        kind: 'internalRoute',
+        path: '/self?feature=fire_journal',
+        url: 'https://sanctuary.gurudevi.app/self?feature=fire_journal',
+      });
+
+      expect(classifyRouteIntent('https://gurudevi.app/library/resource/bio-101')).toEqual({
+        kind: 'internalRoute',
+        path: '/library/resource/bio-101',
+        url: 'https://gurudevi.app/library/resource/bio-101',
+      });
+
+      expect(classifyRouteIntent('gurudevi://self')).toEqual({
+        kind: 'internalRoute',
+        path: '/self',
+        url: 'gurudevi://self',
+      });
+
+      expect(classifyRouteIntent('gurudevi://workspace/classroom/grade-10')).toEqual({
+        kind: 'internalRoute',
+        path: '/workspace/classroom/grade-10',
+        url: 'gurudevi://workspace/classroom/grade-10',
+      });
+    });
   });
 
   describe('decodeInstallReferrerEffect (Google Play Install Referrer pipeline)', () => {

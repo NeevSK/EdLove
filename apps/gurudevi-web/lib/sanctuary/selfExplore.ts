@@ -33,18 +33,34 @@ type LocalCollection<T> = Readonly<{ version: 1; entries: readonly T[] }>;
 export type ExploreSelfPracticeAdapter = Readonly<{
   storageKind: ExploreStorage['kind'];
   loadJournal(): readonly ExploreJournalEntry[];
-  burnJournal(content: string): ExploreJournalEntry;
+  loadJournalForDate(dateStr: string): readonly ExploreJournalEntry[];
+  burnJournal(
+    content: string,
+    options?: Readonly<{ targetDate?: string; isRetroactive?: boolean }>,
+  ): ExploreJournalEntry;
   loadMoodHistory(): readonly ExploreMoodLog[];
+  loadMoodHistoryForDate(dateStr: string): readonly ExploreMoodLog[];
+  getActivityDensityForDates(dates: readonly string[]): Readonly<Record<string, number>>;
   logMood(input: Readonly<{ mood: MoodValue; note?: string }>): ExploreMoodLog;
   reset(): void;
 }>;
 
-export type AccountSafeTryFireJournalAdapter = Readonly<{
+export type AccountSafeTrySelfPracticeAdapter = Readonly<{
   storageKind: ExploreStorage['kind'];
   loadJournal(): PracticeResult<readonly ExploreJournalEntry[]>;
-  burnJournal(content: string): PracticeResult<ExploreJournalEntry>;
+  loadJournalForDate(dateStr: string): PracticeResult<readonly ExploreJournalEntry[]>;
+  getActivityDensityForDates(dates: readonly string[]): PracticeResult<Readonly<Record<string, number>>>;
+  burnJournal(
+    content: string,
+    options?: Readonly<{ targetDate?: string; isRetroactive?: boolean }>,
+  ): PracticeResult<ExploreJournalEntry>;
+  loadMoodHistory(): readonly ExploreMoodLog[];
+  loadMoodHistoryForDate(dateStr: string): readonly ExploreMoodLog[];
+  logMood(input: Readonly<{ mood: MoodValue; note?: string }>): ExploreMoodLog;
   reset(): PracticeResult<void>;
 }>;
+
+export type AccountSafeTryFireJournalAdapter = AccountSafeTrySelfPracticeAdapter;
 
 function newId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `explore-${Date.now()}-${Math.random()}`;
@@ -184,15 +200,31 @@ function createLocalSelfPracticeAdapter(
   return {
     storageKind: storage.kind,
     loadJournal: () => journal().entries,
-    burnJournal: (content) => {
+    loadJournalForDate: (dateStr: string) => {
+      const prefix = dateStr.slice(0, 10);
+      return journal().entries.filter(
+        (entry) => (entry.target_date ?? entry.created_at.slice(0, 10)) === prefix,
+      );
+    },
+    burnJournal: (content, options) => {
       assertLocalOnlyWrite(identity);
       const normalized = content.trim();
       if (!normalized) throw new Error('Write a few words before releasing this reflection.');
       const previous = journal().entries;
+      const targetDate = options?.targetDate ? options.targetDate.slice(0, 10) : undefined;
+      const recordedAt = now().toISOString();
+      const isRetroactive = Boolean(
+        options?.isRetroactive ||
+          (targetDate && targetDate !== recordedAt.slice(0, 10)),
+      );
       const entry: ExploreJournalEntry = {
         id: createId(),
         content_preview: normalized.slice(0, 50),
-        created_at: now().toISOString(),
+        created_at: recordedAt,
+        target_date: targetDate,
+        occurred_at: targetDate ? `${targetDate}T12:00:00.000Z` : recordedAt,
+        recorded_at: recordedAt,
+        is_retroactive: isRetroactive,
         is_burned: true,
         source,
       };
@@ -200,6 +232,24 @@ function createLocalSelfPracticeAdapter(
       return entry;
     },
     loadMoodHistory: () => moods().entries,
+    loadMoodHistoryForDate: (dateStr: string) => {
+      const prefix = dateStr.slice(0, 10);
+      return moods().entries.filter((entry) => entry.created_at.slice(0, 10) === prefix);
+    },
+    getActivityDensityForDates: (dates: readonly string[]) => {
+      const journalEntries = journal().entries;
+      const moodEntries = moods().entries;
+      const density: Record<string, number> = {};
+      for (const d of dates) {
+        const prefix = d.slice(0, 10);
+        const jCount = journalEntries.filter(
+          (e) => (e.target_date ?? e.created_at.slice(0, 10)) === prefix,
+        ).length;
+        const mCount = moodEntries.filter((e) => e.created_at.slice(0, 10) === prefix).length;
+        density[prefix] = jCount + mCount;
+      }
+      return density;
+    },
     logMood: ({ mood, note }) => {
       assertLocalOnlyWrite(identity);
       const choice = MOOD_CHOICES.find((candidate) => candidate.value === mood);
@@ -279,13 +329,45 @@ export function createAccountSafeTrySelfPracticeAdapter(input: {
   return {
     storageKind: adapter.storageKind,
     loadJournal: () => practiceController.load().entries,
-    burnJournal: (content) => {
+    loadJournalForDate: (dateStr: string) => {
+      const prefix = dateStr.slice(0, 10);
+      return practiceController
+        .load()
+        .entries.filter((entry) => (entry.target_date ?? entry.created_at.slice(0, 10)) === prefix);
+    },
+    getActivityDensityForDates: (dates: readonly string[]) => {
+      const journalEntries = practiceController.load().entries;
+      const moodEntries = adapter.loadMoodHistory();
+      const density: Record<string, number> = {};
+      for (const d of dates) {
+        const prefix = d.slice(0, 10);
+        const jCount = journalEntries.filter(
+          (entry) => (entry.target_date ?? entry.created_at.slice(0, 10)) === prefix,
+        ).length;
+        const mCount = moodEntries.filter(
+          (entry) => entry.created_at.slice(0, 10) === prefix,
+        ).length;
+        density[prefix] = jCount + mCount;
+      }
+      return density;
+    },
+    burnJournal: (content, options) => {
       const normalized = content.trim();
       if (!normalized) throw new Error('Write a few words before releasing this reflection.');
+      const targetDate = options?.targetDate ? options.targetDate.slice(0, 10) : undefined;
+      const recordedAt = new Date().toISOString();
+      const isRetroactive = Boolean(
+        options?.isRetroactive ||
+          (targetDate && targetDate !== recordedAt.slice(0, 10)),
+      );
       const entry: ExploreJournalEntry = {
         id: newId(),
         content_preview: normalized.slice(0, 50),
-        created_at: new Date().toISOString(),
+        created_at: recordedAt,
+        target_date: targetDate,
+        occurred_at: targetDate ? `${targetDate}T12:00:00.000Z` : recordedAt,
+        recorded_at: recordedAt,
+        is_retroactive: isRetroactive,
         is_burned: true,
         source: 'practice',
       };
@@ -293,7 +375,13 @@ export function createAccountSafeTrySelfPracticeAdapter(input: {
       practiceController.save({ entries: [entry, ...entries] });
       return entry;
     },
-    reset: () => practiceController.reset(),
+    loadMoodHistory: () => adapter.loadMoodHistory(),
+    loadMoodHistoryForDate: (dateStr: string) => adapter.loadMoodHistoryForDate(dateStr),
+    logMood: (input) => adapter.logMood(input),
+    reset: () => {
+      practiceController.reset();
+      adapter.reset();
+    },
   };
 }
 

@@ -76,8 +76,33 @@ describe('Chaos & Network Degradation Scenario Suite', () => {
     );
 
     const response = await authenticatedSovereignFetch('https://api.gurudevi.org/stream');
+    const body = await response.json();
+    expect(body.offline).toBe(true);
+  });
+
+  it('automatically times out stalled network requests when caller supplies no abort signal', async () => {
+    vi.useFakeTimers();
+
+    vi.spyOn(globalThis, 'fetch').mockImplementationOnce((_input, init) => {
+      return new Promise((_, reject) => {
+        const signal = init?.signal as AbortSignal | undefined;
+        if (signal) {
+          signal.addEventListener('abort', () => {
+            reject(new DOMException('The user aborted a request.', 'AbortError'));
+          });
+        }
+      });
+    });
+
+    const fetchPromise = authenticatedSovereignFetch('https://api.gurudevi.org/stalled-endpoint');
+
+    await vi.advanceTimersByTimeAsync(15_001);
+
+    const response = await fetchPromise;
     expect(response.status).toBe(503);
     const body = await response.json();
     expect(body.offline).toBe(true);
+
+    vi.useRealTimers();
   });
 });

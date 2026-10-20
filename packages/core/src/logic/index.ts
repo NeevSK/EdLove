@@ -191,3 +191,8 @@ export type { APIError } from '@repo/core/types/API';
 export type { LessonMaterial } from '@repo/core/types/LessonMaterial';
 
 export * from './classroomResolver';
+export {
+  parseInstitutionalQR,
+  type ParsedInstitutionalQR,
+} from './utils/institutionalQrParser';
+

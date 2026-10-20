@@ -1,6 +1,7 @@
 import { GURUDEVI_QR_URL } from '@repo/core/config/publicUrls';
 import { classifyRouteIntent } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
 import Link from 'next/link';
+import { QRScannerFloor } from './QRScannerFloor';
 
 export const metadata = { title: 'QR link' };
 
@@ -52,6 +53,11 @@ export default async function QRPage({
           Go to Gurudevi on web
         </Link>
       </div>
+
+      <div className="mt-12">
+        <QRScannerFloor />
+      </div>
     </main>
   );
 }
+

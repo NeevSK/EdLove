@@ -255,7 +255,7 @@ export function openWorkbenchTask(
       kind: 'opened',
       state: {
         ...state,
-        tasks: [...state.tasks, focusedTask],
+        tasks: [focusedTask, ...state.tasks],
         focusedTaskKey: focusedTask.taskKey,
       },
       evictedTask: null,
@@ -274,13 +274,40 @@ export function openWorkbenchTask(
     state: {
       ...state,
       tasks: [
-        ...state.tasks.filter((candidate) => candidate.taskKey !== evictedTask.taskKey),
         focusedTask,
+        ...state.tasks.filter((candidate) => candidate.taskKey !== evictedTask.taskKey),
       ],
       focusedTaskKey: focusedTask.taskKey,
     },
     evictedTask,
   };
+}
+
+/**
+ * Reorders only the active-task working set. The caller supplies an index in
+ * the list after removing the dragged task; focus and task data are unchanged.
+ */
+export function reorderWorkbenchTask(
+  state: DomainWorkbenchState,
+  taskKey: string,
+  destinationIndex: number,
+): DomainWorkbenchState {
+  const sourceIndex = state.tasks.findIndex((task) => task.taskKey === taskKey);
+  if (
+    sourceIndex < 0 ||
+    !Number.isInteger(destinationIndex) ||
+    destinationIndex < 0 ||
+    destinationIndex >= state.tasks.length
+  ) {
+    return state;
+  }
+  if (sourceIndex === destinationIndex) return state;
+
+  const tasks = [...state.tasks];
+  const [task] = tasks.splice(sourceIndex, 1);
+  if (!task) return state;
+  tasks.splice(destinationIndex, 0, task);
+  return { ...state, tasks };
 }
 
 export function closeWorkbenchTask(
@@ -372,7 +399,7 @@ export function restoreDomainWorkbenchState(
   });
   const focusedTaskKey = tasks.some((task) => task.taskKey === snapshot.focusedTaskKey)
     ? snapshot.focusedTaskKey
-    : (tasks.sort((left, right) => right.lastFocusedAt.localeCompare(left.lastFocusedAt))[0]
+    : ([...tasks].sort((left, right) => right.lastFocusedAt.localeCompare(left.lastFocusedAt))[0]
         ?.taskKey ?? null);
   const temporalHorizon =
     snapshot.temporalHorizon && validateTemporalHorizon(snapshot.temporalHorizon).length > 0

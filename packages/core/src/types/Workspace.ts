@@ -1,21 +1,35 @@
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
-export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night';
+export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night' | 'none';
 export type WorkspaceAppearanceMotion = 'off' | 'subtle';
 
-/** A registered, remotely hosted image that may be used as a workspace wallpaper. */
+/** A registered image or custom uploaded asset that may be used as a workspace wallpaper. */
 export interface WorkspaceWallpaper {
-  provider: 'cloudinary';
+  provider: 'cloudinary' | 'custom' | 'preset';
   url: string;
   publicId: string;
   width: number;
   height: number;
+  name?: string;
+}
+
+export type WallpaperPlaybackMode = 'single' | 'slideshow' | 'off';
+
+export interface FloorWallpaperConfig {
+  mode: WallpaperPlaybackMode;
+  activeId?: string | null;
+  items: WorkspaceWallpaper[];
+  slideshowIntervalSeconds: number; // 180, 300, 600, 0 = on arrival
+  customWashColor?: string | null;
+  washOpacity?: number; // 0 to 1
+  wallpaperOpacity?: number; // 0.1 to 0.5
 }
 
 export interface WorkspaceAppearance {
   preset: WorkspaceAppearancePreset;
   motion: WorkspaceAppearanceMotion;
   wallpaper?: WorkspaceWallpaper | null;
+  wallpaperConfig?: FloorWallpaperConfig | null;
 }
 
 export type WorkspaceSwitcherTargetId =

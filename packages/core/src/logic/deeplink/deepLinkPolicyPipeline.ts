@@ -9,13 +9,34 @@ const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
 export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
-export const ALLOWED_NATIVE_HOSTS = new Set(['auth', 'qr', 'invite', 'c']);
+export const ALLOWED_NATIVE_HOSTS = new Set([
+  'auth',
+  'qr',
+  'invite',
+  'c',
+  'self',
+  'workspace',
+  'library',
+  'community',
+  'profile',
+  'notifications',
+  'settings',
+  'onboarding',
+]);
 export const ALLOWED_WEB_PATH_PREFIXES = [
   '/auth/callback',
   '/auth/complete',
   '/qr',
   '/invite',
   '/c',
+  '/self',
+  '/workspace',
+  '/library',
+  '/community',
+  '/profile',
+  '/notifications',
+  '/settings',
+  '/onboarding',
 ];
 
 /**
@@ -79,6 +100,7 @@ export type RouteIntent =
   | { readonly kind: 'authCallback'; readonly url: string }
   | { readonly kind: 'classroomInvite'; readonly inviteCode: string; readonly url: string }
   | { readonly kind: 'qr'; readonly payload: QRPayload; readonly url: string }
+  | { readonly kind: 'internalRoute'; readonly path: string; readonly url: string }
   | { readonly kind: 'unsupported' }
   | { readonly kind: 'rejected'; readonly reason: DeepLinkValidationError['_tag'] };
 
@@ -182,11 +204,16 @@ export const classifyRouteIntentEffect = (
     }
 
     let encodedInviteCode: string | undefined;
-    if (parsed.protocol === 'gurudevi:' && parsed.hostname === 'c') {
-      encodedInviteCode = parsed.pathname.replace(/^\//, '');
+    if (parsed.protocol === 'gurudevi:') {
+      if (parsed.hostname === 'c') {
+        encodedInviteCode = parsed.pathname.replace(/^\//, '');
+      } else if (parsed.hostname === 'invite') {
+        const inviteMatch = parsed.pathname.match(/^\/classroom\/([^/]+)$/);
+        encodedInviteCode = inviteMatch?.[1];
+      }
     } else {
       const inviteMatch =
-        parsed.pathname.match(/^\/(?:invite\/)?classroom\/([^/]+)$/) ||
+        parsed.pathname.match(/^\/invite\/classroom\/([^/]+)$/) ||
         parsed.pathname.match(/^\/c\/([^/]+)$/);
       encodedInviteCode = inviteMatch?.[1];
     }
@@ -199,6 +226,21 @@ export const classifyRouteIntentEffect = (
       return {
         kind: 'classroomInvite',
         inviteCode,
+        url: acceptedUrl,
+      } as const;
+    }
+
+    // Resolve internal sanctuary routes across web and native schemes
+    const internalCandidatePath =
+      parsed.protocol === 'gurudevi:'
+        ? `/${parsed.hostname}${parsed.pathname === '/' ? '' : parsed.pathname}`
+        : parsed.pathname;
+
+    if (isValidAppRoutePath(internalCandidatePath)) {
+      const fullPath = internalCandidatePath + (parsed.search || '');
+      return {
+        kind: 'internalRoute',
+        path: fullPath,
         url: acceptedUrl,
       } as const;
     }

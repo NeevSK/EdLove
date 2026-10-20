@@ -1,5 +1,7 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
@@ -9,20 +11,42 @@ import { SelfFloor } from './SelfFloor';
 export const metadata = { title: 'Self | Gurudevi Sanctuary' };
 
 export default async function SelfPage() {
-  const supabase = await createServerSupabaseClient();
-  if (!supabase)
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore = classifyGurudeviHost(host) === 'explore';
+
+  if (isExplore) {
     return (
-      <SelfState
-        detail="Self is not configured for browser sign-in in this environment."
-        title="Self is unavailable"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <SelfFloor
+          accountId="explore-guest"
+          displayName="Guest Explorer"
+          initialPracticing={true}
+        />
+      </SanctuaryShell>
     );
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) {
+    return <SelfFloorGuestFallback />;
+  }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <SanctuaryShell displayName="Guest" navigationPrefix="">
-        <SelfFloor accountId="guest" displayName="Guest" initialPracticing={true} />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <SelfFloor accountId="explore-guest" displayName="Guest Explorer" initialPracticing={true} />
       </SanctuaryShell>
     );
   }
@@ -42,6 +66,7 @@ export default async function SelfPage() {
       <SelfFloor
         accountId={entry.accountId}
         displayName={entry.displayName}
+        initialCapacity={entry.activeCapacity}
         key={entry.accountId}
       />
     </SanctuaryShell>
@@ -64,6 +89,19 @@ function SelfState({
           {action}
         </section>
       </main>
+    </SanctuaryShell>
+  );
+}
+
+function SelfFloorGuestFallback() {
+  return (
+    <SanctuaryShell
+      displayName="Guest Explorer"
+      navigationPrefix=""
+      showAccountNavigation={true}
+      isExploreMode={true}
+    >
+      <SelfFloor accountId="explore-guest" displayName="Guest Explorer" initialPracticing={true} />
     </SanctuaryShell>
   );
 }

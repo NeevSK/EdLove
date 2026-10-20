@@ -1,6 +1,21 @@
+---
+title: "Gurudevi Mascot Adaptive Performance Contract"
+status: "superseded"
+superseded_by: "docs/engineering/runtime-performance/gurudevi-mascot-low-end-performance.md"
+created: 2026-08-31
+updated: 2026-10-19
+author: "Naveen"
+scribe: "Antigravity"
+tags: [performance, runtime-performance, mascot, graphics]
+---
+
+> [!NOTE]
+> This document has been relocated to the centralized performance suite:
+> **[`docs/engineering/runtime-performance/gurudevi-mascot-low-end-performance.md`](file:///c:/x/docs/engineering/runtime-performance/gurudevi-mascot-low-end-performance.md)**.
+
 # Gurudevi mascot adaptive performance contract
 
-## Goal
+Status: superseded (relocated to `docs/engineering/runtime-performance/`)
 
 Preserve the approved warm raster artwork and its expressive presentation on
 capable devices while making the experience safe for older Android devices,

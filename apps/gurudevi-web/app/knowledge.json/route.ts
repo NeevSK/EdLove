@@ -8,14 +8,14 @@ export function GET() {
     { id: 'home', title: 'Home', category: 'page', url: absoluteUrl('/') },
     {
       id: 'home-si',
-      title: 'ගුරුදේවි | සමෝධානික අධ්‍යාපනයේ සුරක්ෂිත කෙම්බිම',
+      title: 'ගුරුදෙවි | සමෝධානිත අධ්‍යාපනයේ සුපසන් කෙම්බිම',
       category: 'page',
       language: 'si',
       url: absoluteUrl('/si'),
     },
     {
       id: 'home-ta',
-      title: 'குருதேவி | கல்வியின் உயிரோட்டமான அமைதிச் சோலை',
+      title: 'குருதெவி | கல்வியின் உயிரோட்டமான அமைதிச் சோலை',
       category: 'page',
       language: 'ta',
       url: absoluteUrl('/ta'),

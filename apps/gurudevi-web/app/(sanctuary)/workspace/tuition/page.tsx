@@ -12,23 +12,28 @@ export default async function TuitionPage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <TuitionState
-        displayName="Explorer"
-        title="Fee ledger is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <TuitionFloor displayName="Guest Explorer" capacity="PRINCIPAL" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <TuitionState
-        action={<Link href={signInPath('/workspace/tuition')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to view classroom fee ledgers and institutional billing."
-        title="Fee ledger is private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <TuitionFloor displayName="Guest Explorer" capacity="PRINCIPAL" />
+      </SanctuaryShell>
     );
   }
 

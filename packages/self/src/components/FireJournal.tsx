@@ -53,6 +53,7 @@ export default function FireJournal({
   const [isBurning, setIsBurning] = useState(false);
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
+  const effectiveUserId = activeUserId || 'guest';
   const isPastView = useTemporalStore((state) => state.isPastView);
   const {
     journalHistory,
@@ -60,7 +61,8 @@ export default function FireJournal({
     isLoading,
     error: historyError,
     refreshData,
-  } = useFireJournal(activeUserId ?? undefined);
+    isGuest,
+  } = useFireJournal(effectiveUserId);
   const [showSuccess, setShowSuccess] = useState(false);
   const [burnError, setBurnError] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -197,7 +199,7 @@ export default function FireJournal({
   };
 
   const handleBurn = async () => {
-    if (!content.trim() || !activeUserId || isPastView || componentDisabled) return;
+    if (!content.trim() || !effectiveUserId || isPastView || componentDisabled) return;
 
     hapticMedium();
     setBurnError(null);
@@ -213,7 +215,7 @@ export default function FireJournal({
     }
   };
 
-  if (isLoading && activeUserId) {
+  if (isLoading) {
     return (
       <VStack className="p-lg gap-lg">
         <SkeletonCard height={40} />
@@ -226,12 +228,25 @@ export default function FireJournal({
     );
   }
 
-  if (!activeUserId) {
-    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
-  }
-
   return (
     <VStack className="p-lg gap-lg">
+      {isGuest && (
+        <HStack className="items-center justify-between rounded-xl bg-sacredGold/10 border border-sacredGold/20 px-3 py-2">
+          <Text className="text-xs text-sacredWhite/80">
+            {t('fireJournal.guestNotice') || 'Guest Safe-Try: reflections remain private to this device.'}
+          </Text>
+          <Pressable
+            onPress={() => router.push('/auth')}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in to save across devices"
+          >
+            <Text className="text-xs font-bold text-sanctuarySaffron">
+              {t('common.signIn') || 'Sign in'}
+            </Text>
+          </Pressable>
+        </HStack>
+      )}
+
       <VStack className="gap-1">
         <Heading className="text-sacredWhite" size="lg">
           {t('fireJournal.title') || 'Fire Journal'}

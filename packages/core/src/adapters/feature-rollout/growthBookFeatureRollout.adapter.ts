@@ -78,6 +78,10 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
 
     await this.growthbook.setAttributes(attributes);
 
+    return this.readSnapshot();
+  }
+
+  private readSnapshot(): FeatureRolloutSnapshot {
     const flags: Record<string, boolean | string> = {};
 
     // The manifest is the SSOT for the GrowthBook key mapping (ADR-012). The
@@ -99,14 +103,15 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
     context: UserContext,
     callback: (snapshot: FeatureRolloutSnapshot) => void,
   ): () => void {
+    this.currentContext = context;
     this.growthbook.setRenderer(() => {
-      void this.resolveFlags(context)
-        .then(callback)
-        .catch(() => {});
+      // setAttributes invokes this renderer, so writing attributes here would
+      // create an endless microtask loop and prevent native input processing.
+      callback(this.readSnapshot());
     });
 
     return () => {
-      this.growthbook.setRenderer(() => {});
+      this.growthbook.setRenderer(null);
     };
   }
 

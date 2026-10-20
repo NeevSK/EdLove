@@ -99,6 +99,27 @@ describe('CORS origin allowlist', () => {
     expect(resolveAllowedCorsOrigin('http://localhost:3000', 'production')).toBeNull();
     expect(resolveAllowedCorsOrigin('https://explore.gurudevi.app', 'production')).toBeNull();
   });
+
+  it('allows valid institutional school subdomains while rejecting reserved or hostile origins', () => {
+    expect(resolveAllowedCorsOrigin('https://ananda.gurudevi.app', 'production')).toBe(
+      'https://ananda.gurudevi.app',
+    );
+    expect(resolveAllowedCorsOrigin('https://visakha.gurudevi.app', 'production')).toBe(
+      'https://visakha.gurudevi.app',
+    );
+    expect(resolveAllowedCorsOrigin('https://chundikuli-college.gurudevi.app', 'production')).toBe(
+      'https://chundikuli-college.gurudevi.app',
+    );
+    // Reserved administrative subdomains must be rejected
+    expect(resolveAllowedCorsOrigin('https://admin.gurudevi.app', 'production')).toBeNull();
+    expect(resolveAllowedCorsOrigin('https://api.gurudevi.app', 'production')).toBeNull();
+    expect(resolveAllowedCorsOrigin('https://auth.gurudevi.app', 'production')).toBeNull();
+    // Hostile spoofing attempts must be rejected
+    expect(
+      resolveAllowedCorsOrigin('https://ananda.gurudevi.app.attacker.com', 'production'),
+    ).toBeNull();
+    expect(resolveAllowedCorsOrigin('http://ananda.gurudevi.app', 'production')).toBeNull();
+  });
 });
 
 describe('production TLS startup configuration', () => {

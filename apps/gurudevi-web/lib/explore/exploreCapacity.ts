@@ -100,6 +100,16 @@ export function getExploreCapacity(): ExploreCapacity {
   return DEFAULT_EXPLORE_CAPACITY;
 }
 
+export function hasSavedExploreCapacity(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const saved = window.localStorage.getItem(EXPLORE_CAPACITY_STORAGE_KEY);
+    return saved !== null && isExploreCapacity(saved);
+  } catch {
+    return false;
+  }
+}
+
 export function setExploreCapacity(capacity: ExploreCapacity): void {
   if (typeof window === 'undefined') return;
   try {

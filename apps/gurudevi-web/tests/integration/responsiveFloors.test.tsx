@@ -16,6 +16,14 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>();
+  return {
+    ...actual,
+    useQuery: vi.fn(() => ({ data: {}, isLoading: false })),
+  };
+});
+
 const mockCommunityResult: CommunityGroupsResult = {
   kind: 'ready',
   groups: [

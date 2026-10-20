@@ -267,3 +267,36 @@ export function getCohortLookup() {
   }
   return map;
 }
+
+/**
+ * Single Source of Truth for Standalone External Dependency Waivers.
+ * Replaces unverified handwritten YAML prose with programmatic, reviewable waivers.
+ */
+export const DEPENDENCY_WAIVERS = {
+  'inline-style-prefixer': {
+    pinnedVersion: '5.1.2',
+    reason: 'v5 pinned as direct peer dependency of react-native-web runtime.',
+    milestone: 'react-native-web v0.22',
+  },
+  'tesseract.js': {
+    pinnedVersion: '5.1.1',
+    reason: 'v5 pinned for local web worker and OCR model asset stability.',
+    milestone: 'Q1-2027',
+  },
+  'vercel': {
+    pinnedVersion: '59.23.2',
+    reason: 'v59 pinned for monorepo build deployment workflows.',
+    milestone: 'Next.js 17 milestone',
+  },
+  '@sentry/node': {
+    pinnedVersion: '8.55.2',
+    reason: 'v8 held for Node/Hono server compatibility.',
+    milestone: 'Hono v5 milestone',
+  },
+};
+
+/** Get structured waiver information for a package */
+export function getWaiver(pkgName) {
+  return DEPENDENCY_WAIVERS[pkgName] || null;
+}
+

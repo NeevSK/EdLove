@@ -1,7 +1,7 @@
-import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
 import { LAUNCH, MARKETING_COPY } from '../../lib/site';
 import { RoadmapSection } from './RoadmapSection';
 

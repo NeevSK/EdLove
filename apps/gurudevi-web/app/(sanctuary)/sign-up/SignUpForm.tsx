@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
+import styles from '../auth/auth.module.css';
 import { browserAuthRuntime, safeReturnPath } from '../auth/browserAuth';
 
 type FormState = 'ready' | 'submitting' | 'pending' | 'created' | 'unavailable' | 'error';
@@ -46,27 +47,29 @@ export function SignUpForm({ returnTo }: Readonly<{ returnTo: string }>) {
   }
 
   return (
-    <form className="space-y-5" onSubmit={(event) => void signUp(event)}>
-      <div>
-        <label className="block font-sans text-sm font-semibold" htmlFor="sign-up-email">
+    <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(event) => void signUp(event)}>
+      <div className={styles.inputGroup}>
+        <label className={styles.inputLabel} htmlFor="sign-up-email">
           Email address
         </label>
         <input
           autoComplete="email"
-          className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          className={styles.textInput}
           id="sign-up-email"
           name="email"
           required
           type="email"
+          placeholder="you@school.edu.lk"
         />
       </div>
-      <div>
-        <label className="block font-sans text-sm font-semibold" htmlFor="sign-up-password">
+
+      <div className={styles.inputGroup}>
+        <label className={styles.inputLabel} htmlFor="sign-up-password">
           Password
         </label>
         <input
           autoComplete="new-password"
-          className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          className={styles.textInput}
           id="sign-up-password"
           minLength={8}
           name="password"
@@ -74,32 +77,33 @@ export function SignUpForm({ returnTo }: Readonly<{ returnTo: string }>) {
           type="password"
         />
       </div>
+
       {state === 'pending' || state === 'created' ? (
-        <p className="font-sans text-sm text-green-800" role="status">
+        <div className={styles.statusMessage} role="status">
           {message}
-        </p>
+        </div>
       ) : null}
+
       {state === 'error' || state === 'unavailable' ? (
-        <p className="font-sans text-sm text-red-700" role="alert">
+        <div className={styles.errorMessage} role="alert">
           {message}
-        </p>
+        </div>
       ) : null}
+
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
+        className={styles.submitBtn}
         disabled={state === 'submitting' || state === 'pending' || state === 'created'}
         type="submit"
       >
-        {state === 'submitting' ? 'Signing up…' : 'Sign up'}
+        {state === 'submitting' ? 'Creating account…' : 'Create account with password'}
       </button>
-      <p className="text-center font-sans text-sm text-ink-soft">
-        Already have an account?{' '}
-        <Link
-          className="font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
-          href={`/sign-in?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
-        >
-          Sign in
+
+      <div className={styles.guestOptionRow}>
+        <span>Already have an account?</span>
+        <Link className={styles.guestLink} href={`/sign-in?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}>
+          Sign in here →
         </Link>
-      </p>
+      </div>
     </form>
   );
 }

@@ -1,27 +1,40 @@
 'use client';
 
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
+import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
+import {
+  resolveTemporalCoordinates,
+  resolveTemporalIntent,
+  toIsoDate,
+} from '@repo/core/logic/workbench';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
+import { useQuery } from '@tanstack/react-query';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import type { SelfCategory } from '../../../lib/canvas/useSelfCanvas';
 import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
+import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
 import { burnJournal, loadBurnedJournalHistory } from '../../../lib/sanctuary/selfJournal';
 import { useDomainWorkbench } from '../../../lib/workbench';
-import { FloorAtmosphere, type FloorAtmosphereKind } from '../components/FloorAtmosphere';
-import { FloorAtmospherePicker } from '../components/FloorAtmospherePicker';
-import { TaskStrip, TemporalHorizon } from '../components/workbench';
+import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
+import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
+import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import {
+  TaskStrip,
+  TemporalHorizon,
+  timeGreeting,
+  WorkbenchContextHeader,
+} from '../components/workbench';
 import {
   BROWSER_SELF_FEATURES,
-  getBrowserSelfFeature,
-  isBrowserSelfFeatureDelivered,
 } from './browserFeatureRegistry';
 import { FireJournal, initialScreen, type ScreenState } from './components/FireJournal';
 import { MoodLotusModal } from './components/MoodLotusModal';
-import { SelfCatalogRail } from './components/SelfCatalogRail';
 import { SelfOverview } from './components/SelfOverview';
 import { UnavailableTask } from './components/UnavailableTask';
 import styles from './self-floor.module.css';
@@ -50,49 +63,63 @@ const fireJournalTask = {
   route: '/self',
   title: fireJournalFeature.label,
   icon: fireJournalFeature.emoji,
-  temporalBinding: { kind: 'none' },
+  temporalBinding: { kind: 'follow-domain' },
   localStatePolicy: 'restore-permitted',
 } as const;
 
 function todayHorizon(): DomainTemporalHorizon {
   const now = new Date();
+  const date = toIsoDate(now);
   return {
     anchor: {
       kind: 'date',
-      date: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-        now.getDate(),
-      ).padStart(2, '0')}`,
+      date,
     },
     scale: 'day',
     intent: 'current',
   };
 }
 
-function shiftDate(horizon: DomainTemporalHorizon, amount: number): DomainTemporalHorizon {
-  const anchorDate =
-    horizon.anchor.kind === 'date' ? horizon.anchor.date : new Date().toISOString();
-  const date = new Date(`${anchorDate.slice(0, 10)}T12:00:00`);
-  date.setDate(date.getDate() + amount);
-  return { ...horizon, anchor: { kind: 'date', date: date.toISOString().slice(0, 10) } };
-}
-
-function formatHorizon(horizon: DomainTemporalHorizon): string {
-  if (horizon.anchor.kind !== 'date') return 'Today';
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(
-    new Date(`${horizon.anchor.date}T12:00:00`),
-  );
-}
+const SELF_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
+  {
+    id: 'workbench',
+    label: 'Task Workbench & Timeline',
+    icon: '🧭',
+  },
+  {
+    id: 'content',
+    label: 'Practices & Living Canvas',
+    icon: '🪷',
+  },
+];
 
 export function SelfFloor({
   accountId,
   displayName,
   initialPracticing = false,
-}: Readonly<{ accountId?: string; displayName: string; initialPracticing?: boolean }>) {
+  initialCapacity,
+}: Readonly<{
+  accountId?: string;
+  displayName: string;
+  initialPracticing?: boolean;
+  initialCapacity?: string;
+}>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
   const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
-  const [moodModalOpen, setMoodModalOpen] = useState(false);
-  const workbench = useDomainWorkbench('self');
+  const quickAccessScope = accountId === 'explore-guest' ? 'explore' : 'sanctuary';
+  const quickAccess = useQuickAccessPreferences(
+    'self',
+    quickAccessScope,
+    SELF_FEATURE_MANIFEST.all.map((feature) => feature.id),
+    ['fire_journal'],
+    getMaxPinnedForWorkspace('self'),
+  );
+  const workbench = useDomainWorkbench('self', { usageScope: quickAccessScope });
   const [showOverview, setShowOverview] = useState(true);
+  const returnToHome = useCallback(() => setShowOverview(true), []);
+  const exploreCapacity = useExploreCapacity();
+  const primaryRole =
+    initialCapacity ?? (accountId === 'explore-guest' ? exploreCapacity : undefined);
   const practiceAdapter = useMemo(
     () =>
       accountId
@@ -104,6 +131,30 @@ export function SelfFloor({
     practiceAdapter !== null &&
     declaredPracticeCapability(fireJournalFeature.id, 'browser') !== null;
   const horizon = workbench.state.temporalHorizon ?? todayHorizon();
+  const currentAnchorDate =
+    horizon.anchor.kind === 'date' ? horizon.anchor.date : toIsoDate(new Date());
+  const coordinates = useMemo(
+    () => resolveTemporalCoordinates(currentAnchorDate, { domain: 'self' }),
+    [currentAnchorDate],
+  );
+
+  const datesKey = useMemo(
+    () => coordinates.slots.map((s) => s.date).join(','),
+    [coordinates.slots],
+  );
+
+  const { data: activityDensity = {} } = useQuery<Readonly<Record<string, number>>>({
+    queryKey: ['self', 'activity-density', accountId ?? 'anonymous', datesKey],
+    queryFn: async () => {
+      if (!practiceAdapter?.getActivityDensityForDates) return {};
+      const dates = coordinates.slots.map((s) => s.date);
+      const result = practiceAdapter.getActivityDensityForDates(dates);
+      return result instanceof Promise ? await result : result;
+    },
+    enabled: Boolean(practiceAdapter?.getActivityDensityForDates),
+    staleTime: 60_000,
+  });
+
   const focusedTask = useMemo(
     () =>
       workbench.state.tasks.find((task) => task.taskKey === workbench.state.focusedTaskKey) ?? null,
@@ -150,7 +201,9 @@ export function SelfFloor({
     setScreen((current) => ({ ...current, error: null, historyStatus: 'loading' }));
     try {
       const rawEntries = isPracticing
-        ? await practiceAdapter?.loadJournal()
+        ? coordinates.intent === 'review'
+          ? practiceAdapter?.loadJournalForDate(coordinates.date)
+          : practiceAdapter?.loadJournal()
         : await loadBurnedJournalHistory();
       const entries = Array.isArray(rawEntries) ? rawEntries : [];
       setScreen((current) => ({ ...current, entries, historyStatus: 'ready' }));
@@ -162,7 +215,7 @@ export function SelfFloor({
         historyStatus: 'error',
       }));
     }
-  }, [isPracticing, practiceAdapter]);
+  }, [isPracticing, practiceAdapter, coordinates.date, coordinates.intent]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -171,8 +224,12 @@ export function SelfFloor({
 
     setScreen((current) => ({ ...current, error: null, isBurning: true, notice: null }));
     try {
+      const isReviewMode = coordinates.intent === 'review';
       const entry = isPracticing
-        ? await practiceAdapter?.burnJournal(content)
+        ? await practiceAdapter?.burnJournal(content, {
+            targetDate: coordinates.date,
+            isRetroactive: isReviewMode,
+          })
         : await burnJournal(content);
       if (!entry) throw new Error('Safe Try is unavailable until the account identity is ready.');
       setScreen((current) => ({
@@ -244,37 +301,47 @@ export function SelfFloor({
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
+    const returnToHome = showOverview;
     const result = workbench.close(task.taskKey);
-    setShowOverview(result.kind === 'overview');
+    setShowOverview(returnToHome || result.kind === 'overview');
   }
-
-  const [moodModalInitialTab, setMoodModalInitialTab] = useState<'mood' | 'breath'>('mood');
 
   function openFeature(feature: SelfFeatureManifestItem) {
-    const delivery = getBrowserSelfFeature(feature.id);
-    if (delivery?.taskKind === 'modal') {
-      if (delivery.renderer === 'mood-lotus') {
-        setMoodModalInitialTab('mood');
-        setMoodModalOpen(true);
-        return;
-      }
-      if (delivery.renderer === 'breath-guide') {
-        setMoodModalInitialTab('breath');
-        setMoodModalOpen(true);
-        return;
-      }
-    }
-    if (feature.id === fireJournalFeature.id && isBrowserSelfFeatureDelivered(feature.id)) {
-      openFireJournal();
+    const result = workbench.open({
+      ...fireJournalTask,
+      featureId: feature.id,
+      title: feature.label,
+      icon: feature.emoji,
+    });
+    if (result.kind === 'at-capacity') {
+      setScreen((current) => ({
+        ...current,
+        error: `Close one of your other Self tasks before opening ${feature.label}.`,
+      }));
       return;
     }
-    setScreen((current) => ({
-      ...current,
-      error: `${feature.label} is not delivered in the browser yet. It remains in the catalog so the same Self floor can grow without a second navigation model.`,
-    }));
+    setShowOverview(false);
   }
 
+  function openQuickAccessFeature(feature: SelfFeatureManifestItem) {
+    openFeature(feature);
+  }
+
+  useEffect(() => {
+    const practice = new URLSearchParams(window.location.search).get('practice');
+    if (practice === 'breath') {
+      openFeature(requiredFeature('breath_guide'));
+    } else if (practice === 'journal') {
+      openFireJournal();
+    }
+  }, []);
+
   const journalActive = !showOverview && focusedTask?.featureId === fireJournalFeature.id;
+  const wellbeingTaskActive =
+    !showOverview &&
+    (focusedTask?.featureId === 'mood_lotus' ||
+      focusedTask?.featureId === 'breath_guide' ||
+      focusedTask?.featureId === 'daily_pulse');
 
   useEffect(() => {
     if (!journalActive) return;
@@ -282,7 +349,9 @@ export function SelfFloor({
     (async () => {
       try {
         const rawEntries = isPracticing
-          ? await practiceAdapter?.loadJournal()
+          ? coordinates.intent === 'review'
+            ? practiceAdapter?.loadJournalForDate(coordinates.date)
+            : practiceAdapter?.loadJournal()
           : await loadBurnedJournalHistory();
         if (!active) return;
         const entries = Array.isArray(rawEntries) ? rawEntries : [];
@@ -301,7 +370,7 @@ export function SelfFloor({
     return () => {
       active = false;
     };
-  }, [journalActive, isPracticing, practiceAdapter]);
+  }, [journalActive, isPracticing, practiceAdapter, coordinates.date, coordinates.intent]);
 
   const practiceContent = journalActive ? (
     <FireJournal
@@ -313,89 +382,118 @@ export function SelfFloor({
       setScreen={setScreen}
       loadHistory={loadHistory}
       submit={submit}
+      temporalIntent={coordinates.intent}
+      selectedDate={coordinates.date}
+    />
+  ) : wellbeingTaskActive && focusedTask ? (
+    <MoodLotusModal
+      embedded
+      initialTab={focusedTask.featureId === 'breath_guide' ? 'breath' : 'mood'}
+      onClose={returnToHome}
+      temporalIntent={coordinates.intent}
+      selectedDate={coordinates.date}
+      isPracticing={isPracticing}
+      practiceAdapter={practiceAdapter}
     />
   ) : (
     <UnavailableTask task={focusedTask} onReturnToOverview={() => setShowOverview(true)} />
   );
 
   return (
-    <article
-      className={styles.floor}
-      aria-labelledby="self-floor-title"
-      data-domain="self"
-      data-appearance={canvas.appearance.preset}
-      data-motion={canvas.appearance.motion}
-      data-atmosphere={atmosphere}
+    <SanctuaryFloorCanvas
+      appearance={canvas.appearance}
+      domain="self"
+      furnitureItems={SELF_FURNITURE_ITEMS}
+      groupOrder={[
+        ...(canvas.groupOrder.length > 0 ? canvas.groupOrder : ['workbench', 'content']),
+      ]}
+      onReorderFurniture={(order) => canvas.setGroupOrder(order as unknown as SelfCategory[])}
+      onResetFloorDefaults={canvas.resetAppearance}
+      showPageActions={showOverview}
+      onTogglePinFurniture={canvas.togglePin}
+      pinnedIds={canvas.pinnedIds}
+      setAppearance={canvas.setAppearance}
+      titleId="self-floor-title"
+      topControls={() => (
+        <WorkbenchContextHeader
+          domain="self"
+          homeActive={showOverview}
+          dateControl={
+            <TemporalHorizon
+              compact
+              dateLabel={coordinates.dateLabel}
+              intent={coordinates.intent}
+              orientation={coordinates.orientationLabel}
+              slots={coordinates.slots}
+              activityDensity={activityDensity}
+              onSelectDate={(date) => {
+                workbench.setTemporalHorizon({
+                  anchor: { kind: 'date', date },
+                  scale: 'day',
+                  intent: resolveTemporalIntent(date, toIsoDate(new Date())),
+                });
+              }}
+              onToday={() => workbench.setTemporalHorizon(todayHorizon())}
+            />
+          }
+          greeting={timeGreeting(displayName)}
+          intent={coordinates.intent}
+          selectedDate={coordinates.date}
+        />
+      )}
     >
-      <FloorAtmosphere kind={atmosphere} preset={canvas.appearance.preset} />
-      <div className={styles.workbenchChrome}>
-        <TaskStrip
+      <TaskStrip
+          shellSlot
           focusedTaskKey={workbench.state.focusedTaskKey}
           onCloseTask={closeTask}
           onFocusTask={focusTask}
-          onOpenCatalog={() => setShowOverview(true)}
-          onOpenOverview={() => setShowOverview(true)}
+          onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+          onOpenOverview={() => {
+            setShowOverview(true);
+            requestAnimationFrame(() =>
+              document.getElementById('self-catalog-title')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              }),
+            );
+          }}
+          quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
+            id: feature.id,
+            label: feature.label,
+            emoji: feature.emoji,
+          }))}
+          quickAccessPinnedIds={quickAccess.pinnedIds}
+          quickAccessUsage={quickAccess.usage}
+          quickAccessPinLimit={quickAccess.pinLimit}
+          onOpenQuickAccessItem={(item) => {
+            const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
+            if (feature) openQuickAccessFeature(feature);
+          }}
+          onToggleQuickAccessPin={quickAccess.togglePin}
           overviewActive={showOverview}
           tasks={workbench.state.tasks}
         />
-        <TemporalHorizon
-          dateLabel={formatHorizon(horizon)}
-          onNext={() => workbench.setTemporalHorizon(shiftDate(horizon, 1))}
-          onPrevious={() => workbench.setTemporalHorizon(shiftDate(horizon, -1))}
-          onToday={() => workbench.setTemporalHorizon(todayHorizon())}
-          orientation="A quiet daily orientation for reflection; Fire Journal does not bind to a date."
-        />
-      </div>
-      {showOverview ? (
-        <SelfOverview
-          displayName={displayName}
-          groupOrder={canvas.groupOrder}
-          manifestAll={SELF_FEATURE_MANIFEST.all}
-          onOpenFeature={openFeature}
-          onOpenFireJournal={openFireJournal}
-          pinnedFeatures={canvas.pinnedFeatures}
-          fireJournalId={fireJournalFeature.id}
-        />
-      ) : (
-        <div className={styles.masterDetailLayout} data-layout-mode={canvas.layoutMode}>
-          <SelfCatalogRail
-            canvas={canvas}
-            focusedTask={focusedTask}
-            onOpenFeature={openFeature}
-            onReturnToOverview={() => {
-              if (focusedTask) closeTask(focusedTask);
-              setShowOverview(true);
-            }}
-          />
 
-          <div className={styles.activePracticeStage}>
-            <div className={styles.backOverviewBar}>
-              <button
-                className={styles.streamBackButton}
-                onClick={() => {
-                  if (focusedTask) closeTask(focusedTask);
-                  setShowOverview(true);
-                }}
-                type="button"
-              >
-                ← Back to Overview
-              </button>
-            </div>
-            {practiceContent}
-          </div>
+      {showOverview ? (
+        <div className={styles.featureContentIn} key="self-home">
+          <SelfOverview
+            displayName={displayName}
+            groupOrder={canvas.groupOrder}
+            manifestAll={SELF_FEATURE_MANIFEST.all}
+            onOpenFeature={openFeature}
+            onOpenFireJournal={openFireJournal}
+            pinnedFeatures={canvas.pinnedFeatures}
+            fireJournalId={fireJournalFeature.id}
+            temporalIntent={coordinates.intent}
+            selectedDate={coordinates.date}
+            primaryRole={primaryRole}
+          />
+        </div>
+      ) : (
+        <div className={styles.featureContentIn} data-layout-mode={canvas.layoutMode} key={focusedTask?.taskKey ?? 'self-feature'}>
+          <div className={styles.activePracticeStage}>{practiceContent}</div>
         </div>
       )}
-      {moodModalOpen ? (
-        <MoodLotusModal initialTab={moodModalInitialTab} onClose={() => setMoodModalOpen(false)} />
-      ) : null}
-      <FloorAtmospherePicker
-        currentPreset={canvas.appearance.preset}
-        currentMotion={canvas.appearance.motion}
-        currentAtmosphere={atmosphere}
-        onSelectPreset={(preset) => canvas.setAppearance({ ...canvas.appearance, preset })}
-        onSelectMotion={(motion) => canvas.setAppearance({ ...canvas.appearance, motion })}
-        onSelectAtmosphere={selectAtmosphere}
-      />
-    </article>
+    </SanctuaryFloorCanvas>
   );
 }

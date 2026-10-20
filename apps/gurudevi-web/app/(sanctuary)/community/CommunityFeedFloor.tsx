@@ -9,34 +9,20 @@ import {
   type CommunityGroupsResult,
   parseCommunityGroupsResult,
 } from '../../../lib/community/groups-contract';
+import {
+  getExploreCapacityMeta,
+  isExploreCapacity,
+  useExploreCapacity,
+} from '../../../lib/explore/exploreCapacity';
+import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { LivingCard } from '../components/LivingCard';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import styles from './community.module.css';
 
-export const EXPLORE_COMMUNITY_GROUPS: readonly CommunityGroup[] = [
-  {
-    id: 'compassion-circle',
-    name: 'Compassion & Mindfulness',
-    description: 'Daily reflections on mindful practice, grounding exercises, and calm focus.',
-    memberCount: 42,
-  },
-  {
-    id: 'educators-hearth',
-    name: 'Educators Hearth',
-    description: 'Pedagogy, quiet classroom spaces, and contemplative dialogue for teachers.',
-    memberCount: 28,
-  },
-  {
-    id: 'wisdom-dialogues',
-    name: 'Wisdom & Philosophy',
-    description: 'Exploring contemplative texts, ancient thought, and ethical living.',
-    memberCount: 35,
-  },
-  {
-    id: 'reflective-inquiry',
-    name: 'Reflective Inquiry',
-    description: 'Peer discussions on honest self-inquiry, ethics, and mindful living.',
-    memberCount: 19,
-  },
+const COMMUNITY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
+  { id: 'arrival', label: 'Circle Welcome & Notice', icon: '🪷' },
+  { id: 'search', label: 'Circle Search & Discovery', icon: '🔍' },
+  { id: 'circles', label: 'Community Circles & Feed', icon: '👥' },
 ];
 
 export type CommunityFloorMode = 'account' | 'explore';
@@ -45,11 +31,19 @@ export function CommunityFeedFloor({
   mode = 'account',
   result: initialResult,
   accountId,
+  primaryCapacity,
 }: Readonly<{
   mode?: CommunityFloorMode;
   result: CommunityGroupsResult;
   accountId?: string;
+  primaryCapacity?: string | null;
 }>) {
+  const exploreCapacity = useExploreCapacity();
+  const roleLabel = primaryCapacity && isExploreCapacity(primaryCapacity)
+    ? getExploreCapacityMeta(primaryCapacity).label
+    : mode === 'explore'
+      ? getExploreCapacityMeta(exploreCapacity).label
+      : null;
   const canvas = useCommunityCanvas({
     accountId: accountId ?? 'explore',
     enableRemoteSync: mode === 'account' && Boolean(accountId),
@@ -155,19 +149,29 @@ export function CommunityFeedFloor({
   }
 
   return (
-    <article
+    <SanctuaryFloorCanvas
+      appearance={canvas.appearance}
       className={styles.floor}
-      data-domain="community"
-      data-mode={mode}
-      aria-labelledby="community-title"
-      data-appearance={canvas.appearance.preset}
-      data-motion={canvas.appearance.motion}
+      dataMode={mode}
+      domain="community"
+      furnitureItems={COMMUNITY_FURNITURE_ITEMS}
+      groupOrder={
+        canvas.groupOrder.length > 0
+          ? (canvas.groupOrder as string[])
+          : ['arrival', 'search', 'circles']
+      }
+      onReorderFurniture={(order) => canvas.setGroupOrder(order as any)}
+      onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
+      pinnedIds={canvas.pinnedSurfaces as string[]}
+      setAppearance={canvas.setAppearance}
+      titleId="community-title"
     >
       <header className={styles.arrival}>
         <p className={styles.eyebrow}>
           {mode === 'explore' ? 'Community · Sample space' : 'Community · Shared space'}
         </p>
         <h1 id="community-title">Your circles</h1>
+        {roleLabel ? <p className={styles.roleContext}>Showing your {roleLabel.toLocaleLowerCase()} perspective</p> : null}
         <p>
           {mode === 'explore'
             ? 'Explore sample circles on this device. Searching is local; no account, group membership, or cloud request is created.'
@@ -360,7 +364,7 @@ export function CommunityFeedFloor({
           )}
         </section>
       )}
-    </article>
+    </SanctuaryFloorCanvas>
   );
 }
 

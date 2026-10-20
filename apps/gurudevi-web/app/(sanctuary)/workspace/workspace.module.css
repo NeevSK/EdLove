@@ -7,6 +7,26 @@
   display: grid;
   gap: 0.65rem;
 }
+.workbenchTabHeader {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--line, rgba(44, 40, 37, 0.12));
+}
+.workspaceTaskStrip {
+  flex: 1 1 auto;
+}
+.featureContentIn {
+  animation: featureContentIn 180ms ease-out both;
+}
+@keyframes featureContentIn {
+  from { opacity: 0; transform: translateY(0.35rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .featureContentIn { animation: none; }
+}
 .heading {
   max-width: 52rem;
 }
@@ -204,6 +224,79 @@
   text-transform: capitalize;
   cursor: pointer;
 }
+.rapidRollCall {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 0.85rem;
+  background: #fbf9f4;
+}
+.rapidRollCall label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink, #29251f);
+}
+.rapidInput {
+  flex: 1;
+  min-width: 12rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 0.5rem;
+  background: #fffdf8;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+}
+.rapidApplyBtn {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--sanctuary-saffron, #9d5b25);
+  border-radius: 0.5rem;
+  background: var(--sanctuary-saffron, #9d5b25);
+  color: white;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.rapidApplyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.kioskBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--sanctuary-saffron, #9d5b25);
+  border-radius: 0.75rem;
+  background: #fdfaf3;
+  font-size: 0.85rem;
+}
+.kioskLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--sanctuary-saffron, #9d5b25);
+  text-decoration: underline;
+}
+.shadowPill {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: #f2efe9;
+  color: #71695f;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
 .loading,
 .empty,
 .muted {
@@ -238,174 +331,86 @@
   }
 }
 
-@media (min-width: 48rem) {
-  .masterDetailLayout {
-    display: grid;
-    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
-    align-items: start;
-    gap: clamp(1.5rem, 3vw, 3rem);
-  }
-
-  .backOverviewBar {
-    display: none;
-  }
+.masterDetailLayout {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1rem, 2vw, 1.75rem);
 }
 
 @media (max-width: 767px) {
   .masterDetailLayout {
-    display: block;
-  }
-
-  .catalogRail {
-    display: none;
-  }
-
-  .backOverviewBar {
-    display: flex;
-    margin-bottom: 1rem;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.catalogRail {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.25rem;
-  border: 1px solid var(--border, #ded8cf);
-  border-radius: 1rem;
-  background: var(--glass-surface, #fffdf8);
-  max-height: calc(100vh - 8rem);
-  overflow-y: auto;
+.masterDetailLayoutRailHidden { grid-template-columns: minmax(0, 1fr); }
+
+.activeWorkspaceStage {
+  min-width: 0;
 }
 
-.catalogRailHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border, #ded8cf);
+.workspaceTaskPreview {
+  display: grid;
+  max-width: 48rem;
+  justify-items: start;
+  gap: 0.55rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem) 0;
 }
 
-.catalogRailTitle {
+.workspaceTaskEmoji { font-size: 2rem; line-height: 1; }
+.workspaceTaskPreview .eyebrow { margin: 0.6rem 0 0; }
+.workspaceTaskPreview h2 {
   margin: 0;
   font-family: Georgia, serif;
-  font-size: 1.15rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+}
+.workspaceTaskPreview > p { max-width: 42rem; margin: 0; line-height: 1.6; }
+
+.classroomHomeSection {
+  margin: 2.5rem 0 1rem;
+}
+
+.classroomHomeSection h2 {
+  margin: 0.15rem 0 0.75rem;
+  font-family: Georgia, serif;
   font-weight: 500;
 }
 
-.returnOverviewButton {
-  padding: 0.35rem 0.75rem;
-  min-height: 2.75rem;
-  min-width: 2.75rem;
-  border: 1px solid var(--border, #ded8cf);
-  border-radius: 9999px;
-  background: transparent;
-  color: var(--ink-ghost, #71695f);
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.returnOverviewButton:hover {
-  background: #faf0d9;
-  color: var(--ink, #29251f);
-}
-
-.catalogRailSection {
+.classroomHomeList {
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.catalogRailSectionTitle {
-  margin: 0.25rem 0 0.1rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-ghost, #71695f);
-}
-
-.catalogRailList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.catalogRailRow {
+.classroomHomeList li {
   display: flex;
+  min-width: min(16rem, 100%);
   align-items: center;
-  gap: 0.25rem;
-  width: 100%;
-}
-
-.catalogRailItem {
-  display: flex;
-  align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
-  flex: 1;
-  min-width: 0;
-  min-height: 2.75rem;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid transparent;
-  border-radius: 0.65rem;
-  background: transparent;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border, #ded8cf);
   color: var(--ink, #29251f);
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.catalogRailItem:hover {
-  background: #faf0d9;
-  border-color: var(--border, #ded8cf);
-}
-
-.catalogRailItemActive {
-  background: #faf0d9;
-  border-color: var(--sanctuary-saffron, #9d5b25);
-  font-weight: 600;
-}
-
-.catalogRailItemLabel {
-  flex: 1;
-  font-size: 0.88rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.catalogRailPinButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
-  padding: 0;
-  border: none;
-  border-radius: 0.375rem;
+.classroomHomeList button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 50%;
   background: transparent;
   color: var(--ink-ghost, #71695f);
-  font-size: 0.95rem;
   cursor: pointer;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
 }
 
-.catalogRailPinButton:hover {
-  color: var(--sanctuary-saffron, #9d5b25);
-  background: #faf0d9;
-}
-
-.catalogRailPinButtonPinned {
-  color: var(--sanctuary-saffron, #9d5b25);
-}
-
-.activeWorkspaceStage {
-  min-width: 0;
+.classroomHomeList button:hover {
+  background: color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 12%, transparent);
+  color: var(--ink, #29251f);
 }
 
 .streamBackButton {
@@ -421,4 +426,130 @@
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
+}
+
+.sessionSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.sessionPill {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border, #ded8cf);
+  background: #ffffff;
+  color: var(--ink, #29251f);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sessionPill:hover {
+  border-color: var(--sanctuary-saffron, #9d5b25);
+  background: #faf0d9;
+}
+
+.sessionPillActive {
+  background: var(--sanctuary-saffron, #9d5b25);
+  border-color: var(--sanctuary-saffron, #9d5b25);
+  color: #ffffff;
+}
+
+.hallwayDriftBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.75rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+.earlyWarningBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+.workspaceCatalog {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.workspaceCatalog h2 {
+  margin: 0;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+}
+
+.workspaceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.workspaceCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.workspaceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(48, 35, 21, 0.08);
+}
+
+.roleTag {
+  font-size: 0.7rem;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft, #71695f);
+  background: rgba(44, 40, 37, 0.05);
+  border: 1px solid var(--line, rgba(44, 40, 37, 0.1));
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.catalogOpenButton,
+.catalogOpenLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--sanctuary-saffron, #a45d25);
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.catalogOpenButton:hover,
+.catalogOpenLink:hover {
+  color: var(--ink, #1f1b18);
+  text-decoration: underline;
 }

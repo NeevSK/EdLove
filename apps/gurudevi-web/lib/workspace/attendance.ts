@@ -433,8 +433,8 @@ export async function loadAccountAttendance(
   }
   return rosterValue.filter(isRecord).map((row) => {
     const id = requiredString(row.enrollment_id, 'enrollment identity');
-    // Enrollments always reference an account; the guard keeps any unlinked row unmarkable.
-    const studentId = typeof row.student_id === 'string' && row.student_id ? row.student_id : null;
+    // Enrollments reference a student account; fallback to enrollment id so shadow learners are always markable.
+    const studentId = typeof row.student_id === 'string' && row.student_id ? row.student_id : id;
     return {
       id,
       studentId,
@@ -443,7 +443,7 @@ export async function loadAccountAttendance(
           ? row.full_name
           : `Learner ${id.slice(0, 6)}`,
       rollNumber: null,
-      status: studentId ? (attendanceByStudent.get(studentId) ?? 'present') : 'present',
+      status: attendanceByStudent.get(studentId) ?? 'present',
     };
   });
 }

@@ -452,10 +452,39 @@ except Exception as e:
     const resolvedProject = path.resolve(ROOT_DIR, targetProject);
     const output = runCommand(
       'node',
-      ['c:/projects/rn-terrain/packages/rn-terrain/bin/rn-terrain.js', 'affordance', pkg],
+      ['scripts/run-rn-terrain.mjs', 'affordance', pkg],
       { cwd: resolvedProject },
     );
     return toText(output.combined, !output.ok);
   }
+
+  handleContext(args: { package?: string }) {
+    const pkg = args.package;
+    if (!pkg) {
+      return toText('Missing required argument: "package" (name of package to ground, e.g. "react-native-reanimated").', true);
+    }
+    console.error(`[Platform MCP] Generating Grounding Context Pack for: ${pkg}`);
+    const output = runCommand(
+      'node',
+      ['scripts/run-rn-terrain.mjs', 'context', pkg],
+      { cwd: ROOT_DIR },
+    );
+    return toText(output.combined, !output.ok);
+  }
+
+  handleGravity(args: { package?: string }) {
+    const pkg = args.package;
+    if (!pkg) {
+      return toText('Missing required argument: "package" (name of package to inspect, e.g. "react-native-reanimated").', true);
+    }
+    console.error(`[Platform MCP] Querying Training Gravity Radar for: ${pkg}`);
+    const output = runCommand(
+      'node',
+      ['scripts/run-rn-terrain.mjs', 'gravity', pkg],
+      { cwd: ROOT_DIR },
+    );
+    return toText(output.combined, !output.ok);
+  }
 }
+
 

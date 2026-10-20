@@ -4,6 +4,7 @@ import { storage } from '@repo/core/lib/storage';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useOfflineStatus } from '@repo/core/offline/resilience';
 import { useCallback, useEffect, useState } from 'react';
+import { useThrottledInvalidate } from '../pacer/usePacer';
 
 export interface ChatMessage {
   id: string;
@@ -101,6 +102,8 @@ export function useCommunityChat(threadId: string, currentUserName = 'You') {
     setMessages(loadDurableChat(threadId));
   }, [threadId]);
 
+  const throttledRefresh = useThrottledInvalidate(300);
+
   const sendMessage = useCallback(
     async (text: string): Promise<ChatMessage> => {
       const normalized = text.trim();
@@ -146,9 +149,11 @@ export function useCommunityChat(threadId: string, currentUserName = 'You') {
         type: 'CUSTOM',
       });
 
+      void throttledRefresh(['community', 'chat', threadId]);
+
       return newMessage;
     },
-    [currentUserName, isOffline, threadId],
+    [currentUserName, isOffline, threadId, throttledRefresh],
   );
 
   return {

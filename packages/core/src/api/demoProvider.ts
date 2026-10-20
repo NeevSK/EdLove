@@ -53,7 +53,22 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
   // Library
   'library.getResources': () => MOCK.MOCK_LIBRARY_RESOURCES,
   'library.getCollections': () => MOCK.MOCK_LIBRARY_COLLECTIONS,
-  'library.getResourceById': () => MOCK.MOCK_LIBRARY_RESOURCES[0],
+  'library.getResourcesCount': () => MOCK.MOCK_LIBRARY_RESOURCES.length,
+  'library.getCollectionsCount': () => MOCK.MOCK_LIBRARY_COLLECTIONS.length,
+  'library.getResourceById': (id?: string) =>
+    MOCK.MOCK_LIBRARY_RESOURCES.find((resource) => resource.id === id) ??
+    MOCK.MOCK_LIBRARY_RESOURCES[0],
+  'library.getCollectionById': (id?: string) =>
+    MOCK.MOCK_LIBRARY_COLLECTIONS.find((collection) => collection.id === id) ??
+    MOCK.MOCK_LIBRARY_COLLECTIONS[0],
+  'library.getBookmarkedResources': () => [],
+  'library.searchLibrary': (params?: { query?: string }) => {
+    const query = params?.query?.trim().toLowerCase();
+    if (!query) return MOCK.MOCK_LIBRARY_RESOURCES;
+    return MOCK.MOCK_LIBRARY_RESOURCES.filter((resource) =>
+      resource.title.toLowerCase().includes(query),
+    );
+  },
 
   // Community
   'community.getGroups': () => MOCK.MOCK_COMMUNITY_GROUPS,

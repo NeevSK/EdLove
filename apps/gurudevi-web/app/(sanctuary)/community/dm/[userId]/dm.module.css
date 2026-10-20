@@ -83,6 +83,18 @@
   border-color: color-mix(in srgb, var(--color-action, #a85022) 35%, transparent);
 }
 
+.authorName {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.roleTag {
+  color: var(--color-leaf, #2e5d32);
+  font-size: 0.7rem;
+  font-weight: 550;
+}
+
 .messageText {
   font-size: 0.85rem;
   color: var(--color-ink, #131e27);

@@ -1,0 +1,59 @@
+.pill {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.25rem;
+  color: #19734b;
+  font-size: 0.72rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.pill[data-status="offline"] {
+  color: #b53e38;
+}
+
+.pill[data-status="unstable"] {
+  color: #a86b13;
+}
+
+.pill[data-status="checking"] {
+  color: var(--ink-soft, #706b63);
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 0.5rem;
+  border-radius: 50%;
+  background: #219461;
+}
+
+.pill[data-status="offline"] .statusDot {
+  background: #c34840;
+}
+
+.pill[data-status="unstable"] .statusDot {
+  background: #d29222;
+}
+
+.pill[data-status="checking"] .statusDot {
+  background: #9a9286;
+}
+
+:global([data-appearance="night"]) .pill {
+  color: #86d6ae;
+}
+
+:global([data-appearance="night"]) .pill[data-status="offline"] {
+  color: #f0928d;
+}
+
+:global([data-appearance="night"]) .pill[data-status="unstable"] {
+  color: #e8bd6c;
+}
+
+:global([data-appearance="night"]) .pill[data-status="checking"] {
+  color: #b2aaa0;
+}

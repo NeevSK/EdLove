@@ -1,41 +1,208 @@
 @import "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap";
 @import "tailwindcss";
 
-[data-domain][data-appearance="dawn"] {
-  --paper: #fff6e8;
-  --paper-light: #fffaf2;
-  --line: #ead3bc;
-  background: radial-gradient(circle at 85% 5%, #f4bd8d66, transparent 27rem), var(--paper);
+/* ==========================================================================
+   Two-Tier Sovereign Theme System
+   Tier 1: Personality Theme (sanctuary, lotus, youth, garden)
+   Tier 2: Luminance Mode (light, dark)
+   ========================================================================== */
+
+/* 1. Sanctuary Classic */
+html[data-theme="sanctuary"][data-mode="light"],
+html:not([data-theme])[data-mode="light"] {
+  --paper: #f7f2e8;
+  --paper-light: #fffdf8;
+  --line: rgb(104 94 85 / 0.16);
+  --ink: #131e27;
+  --ink-soft: #453c35;
+  --color-cream-silence: #f7f2e8;
+  --color-sacred-white: #fffdf8;
+  --color-background: #f7f2e8;
+  --color-charcoal-truth: #131e27;
+  --color-mud-brown: #453c35;
+  --color-sanctuary-saffron: #a85022;
+  --color-primary: #a85022;
+  color-scheme: light;
+  background: var(--paper);
 }
 
-[data-domain][data-appearance="garden"] {
+html[data-theme="sanctuary"][data-mode="dark"],
+html:not([data-theme])[data-mode="dark"],
+html[data-appearance="night"] {
+  --paper: #1a1610;
+  --paper-light: #25201a;
+  --line: rgba(245, 237, 214, 0.14);
+  --ink: #f5edd6;
+  --ink-soft: #c8bfb0;
+  --color-cream-silence: #1a1610;
+  --color-sacred-white: #25201a;
+  --color-background: #1a1610;
+  --color-charcoal-truth: #f5edd6;
+  --color-mud-brown: #c8bfb0;
+  --color-sanctuary-saffron: #d4843a;
+  --color-primary: #d4843a;
+  color-scheme: dark;
+  background: radial-gradient(circle at 80% 4%, rgba(212, 132, 58, 0.12), transparent 26rem), var(--paper);
+}
+
+/* 2. Lotus / Blush */
+html[data-theme="lotus"][data-mode="light"] {
+  --paper: #fff4f5;
+  --paper-light: #fffdfd;
+  --line: #eed8dc;
+  --ink: #2e1b24;
+  --ink-soft: #634350;
+  --color-cream-silence: #fff4f5;
+  --color-sacred-white: #fffdfd;
+  --color-background: #fff4f5;
+  --color-charcoal-truth: #2e1b24;
+  --color-mud-brown: #634350;
+  --color-sanctuary-saffron: #c85a6e;
+  --color-primary: #c85a6e;
+  color-scheme: light;
+  background: radial-gradient(circle at 85% 5%, rgba(200, 90, 110, 0.12), transparent 27rem), var(--paper);
+}
+
+html[data-theme="lotus"][data-mode="dark"] {
+  --paper: #1e1318;
+  --paper-light: #291a22;
+  --line: #4d2e3b;
+  --ink: #f8ebf0;
+  --ink-soft: #c9aeb8;
+  --color-cream-silence: #1e1318;
+  --color-sacred-white: #291a22;
+  --color-background: #1e1318;
+  --color-charcoal-truth: #f8ebf0;
+  --color-mud-brown: #c9aeb8;
+  --color-sanctuary-saffron: #e0788c;
+  --color-primary: #e0788c;
+  color-scheme: dark;
+  background: radial-gradient(circle at 80% 4%, rgba(224, 120, 140, 0.14), transparent 26rem), var(--paper);
+}
+
+/* 3. Youth / Radiant */
+html[data-theme="youth"][data-mode="light"] {
+  --paper: #fafbfd;
+  --paper-light: #ffffff;
+  --line: #d7e2ea;
+  --ink: #0f1923;
+  --ink-soft: #384959;
+  --color-cream-silence: #fafbfd;
+  --color-sacred-white: #ffffff;
+  --color-background: #fafbfd;
+  --color-charcoal-truth: #0f1923;
+  --color-mud-brown: #384959;
+  --color-sanctuary-saffron: #e57e24;
+  --color-primary: #e57e24;
+  color-scheme: light;
+  background: radial-gradient(circle at 15% 10%, rgba(24, 136, 158, 0.08), transparent 25rem), var(--paper);
+}
+
+html[data-theme="youth"][data-mode="dark"] {
+  --paper: #0f1420;
+  --paper-light: #171f30;
+  --line: #28354d;
+  --ink: #f1f5f9;
+  --ink-soft: #94a3b8;
+  --color-cream-silence: #0f1420;
+  --color-sacred-white: #171f30;
+  --color-background: #0f1420;
+  --color-charcoal-truth: #f1f5f9;
+  --color-mud-brown: #94a3b8;
+  --color-sanctuary-saffron: #f59e0b;
+  --color-primary: #f59e0b;
+  color-scheme: dark;
+  background: radial-gradient(circle at 80% 4%, rgba(56, 189, 248, 0.12), transparent 26rem), var(--paper);
+}
+
+/* 4. Garden / Botanical */
+html[data-theme="garden"][data-mode="light"],
+html[data-appearance="garden"] {
   --paper: #f3f7ec;
   --paper-light: #fbfdf6;
   --line: #cbd8bf;
+  --ink: #1e281c;
+  --ink-soft: #41523d;
+  --color-cream-silence: #f3f7ec;
+  --color-sacred-white: #fbfdf6;
+  --color-background: #f3f7ec;
+  --color-charcoal-truth: #1e281c;
+  --color-mud-brown: #41523d;
+  --color-sanctuary-saffron: #2d5a37;
+  --color-primary: #2d5a37;
+  color-scheme: light;
   background: radial-gradient(circle at 12% 8%, #a8c99555, transparent 28rem), var(--paper);
 }
 
-[data-domain][data-appearance="night"] {
-  --paper: #202326;
-  --paper-light: #2b3030;
-  --line: #4a504e;
-  --ink: #f3efe6;
-  --ink-soft: #c7c2b8;
-  color: var(--ink);
-  background: radial-gradient(circle at 80% 4%, #758da044, transparent 26rem), var(--paper);
+html[data-theme="garden"][data-mode="dark"] {
+  --paper: #151c16;
+  --paper-light: #1c261e;
+  --line: #2b3d2f;
+  --ink: #e2f3e7;
+  --ink-soft: #9db5a3;
+  --color-cream-silence: #151c16;
+  --color-sacred-white: #1c261e;
+  --color-background: #151c16;
+  --color-charcoal-truth: #e2f3e7;
+  --color-mud-brown: #9db5a3;
+  --color-sanctuary-saffron: #6ee7b7;
+  --color-primary: #6ee7b7;
+  color-scheme: dark;
+  background: radial-gradient(circle at 80% 4%, rgba(110, 231, 183, 0.12), transparent 26rem), var(--paper);
 }
 
-[data-domain][data-appearance="night"] select {
+/* Shared semantic aliases keep older floor styles inside the active palette. */
+html {
+  --surface-canvas: var(--paper);
+  --surface-raised: var(--paper-light);
+  --surface-glass: color-mix(in srgb, var(--paper-light) 92%, transparent);
+  --glass-surface: var(--surface-glass);
+  --surface-translucent: var(--surface-glass);
+  --border: var(--line);
+  --ink-ghost: var(--ink-soft);
+}
+
+/* Legacy presets compatibility */
+html[data-appearance="dawn"] {
+  --paper: #fff6e8;
+  --paper-light: #fffaf2;
+  --line: #ead3bc;
+  --color-cream-silence: #fff6e8;
+  --color-sacred-white: #fffaf2;
+  --color-background: #fff6e8;
+  color-scheme: light;
+  background: radial-gradient(circle at 85% 5%, #f4bd8d66, transparent 27rem), var(--paper);
+}
+
+/* Form selects in dark mode */
+html[data-mode="dark"] select,
+html[data-appearance="night"] select {
   background: var(--paper-light);
   color: var(--ink);
 }
 
+/* Teacher Simplified / Glanceable Density Mode */
+html[data-density="simplified"] {
+  font-size: 112%;
+}
+
+html[data-density="simplified"] button,
+html[data-density="simplified"] input,
+html[data-density="simplified"] select,
+html[data-density="simplified"] a[role="button"] {
+  min-height: 52px;
+}
+
+[data-motion="subtle"],
+html[data-motion="subtle"],
 [data-domain][data-motion="subtle"] {
   background-size: 140% 140%;
   animation: sanctuary-floor-breathe 24s ease-in-out infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-motion="subtle"],
+  html[data-motion="subtle"],
   [data-domain][data-motion="subtle"] {
     animation: none;
   }

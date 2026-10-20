@@ -54,6 +54,19 @@ export async function redirectSystemPath({
         return targetPath;
       }
 
+      case 'internalRoute': {
+        const targetPath = intent.path;
+        // Stash internal intent so that if the user is unauthenticated, SessionRouteGate
+        // will automatically drain and navigate to this target after sign-in.
+        pendingIntentStore.getState().setPendingIntent({
+          targetPath,
+          intentKind: 'generic',
+          params: { path: targetPath },
+          originalUrl: intent.url,
+        });
+        return targetPath;
+      }
+
       case 'unsupported':
       case 'rejected':
       default:

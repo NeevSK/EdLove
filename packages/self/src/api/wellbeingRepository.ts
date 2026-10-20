@@ -1,6 +1,7 @@
 import { moodLogs } from '@repo/core/adapters/powersync/schema';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { applyTemporalFilter } from '@repo/core/logic';
+import { isGuestUserId } from '@repo/core/native';
 import { getDrizzleDB } from '@repo/core/powersync';
 import { selfAPI } from '@repo/self/api/self';
 import type { FireJournalEntry, MoodLog } from '@repo/self/types';
@@ -38,6 +39,19 @@ export async function fetchMoodHistoryForView(
   userId: string,
   options: { phase: string },
 ): Promise<MoodLog[]> {
+  if (isGuestUserId(userId)) {
+    const { GuestDataManager } = await import('@repo/core/native');
+    const guestLogs = await GuestDataManager.getMoodLogs();
+    return guestLogs.map((entry) => ({
+      id: entry.localId,
+      user_id: userId,
+      mood_score: normalizeMoodScore(entry.mood),
+      mood: scoreToMood(entry.mood),
+      note: entry.note,
+      created_at: entry.timestamp,
+    }));
+  }
+
   if (Platform.OS !== 'web') {
     try {
       const db = getDrizzleDB();
@@ -93,11 +107,25 @@ export async function createMoodLog(
   mood: MoodLog['mood'],
   note?: string,
 ): Promise<MoodLog> {
+  const score = moodToScore(mood);
+
+  if (isGuestUserId(userId)) {
+    const { GuestDataManager } = await import('@repo/core/native');
+    const guestEntry = await GuestDataManager.addMoodLog(score, note);
+    return {
+      id: guestEntry.localId,
+      user_id: userId,
+      mood_score: score,
+      mood: mood ?? 'calm',
+      note,
+      created_at: guestEntry.timestamp,
+    };
+  }
+
   if (Platform.OS !== 'web') {
     try {
       const db = getDrizzleDB();
       const id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
-      const score = moodToScore(mood);
       const createdAt = new Date().toISOString();
 
       // Zero-latency local SQLite write
@@ -156,6 +184,18 @@ export async function fetchFireJournalHistoryForView(
   userId: string,
   options: { viewDate: string; isPastView: boolean },
 ): Promise<FireJournalEntry[]> {
+  if (isGuestUserId(userId)) {
+    const { GuestDataManager } = await import('@repo/core/native');
+    const entries = await GuestDataManager.getJournalEntries();
+    return entries.map((entry) => ({
+      id: entry.localId,
+      user_id: userId,
+      content_preview: entry.content.substring(0, 50),
+      is_burned: true,
+      created_at: entry.timestamp,
+    }));
+  }
+
   return selfAPI.getBurnedHistory(
     userId,
     10,
@@ -167,6 +207,18 @@ export async function burnFireJournalEntry(
   userId: string,
   content: string,
 ): Promise<FireJournalEntry> {
+  if (isGuestUserId(userId)) {
+    const { GuestDataManager } = await import('@repo/core/native');
+    const guestEntry = await GuestDataManager.addJournalEntry(content);
+    return {
+      id: guestEntry.localId,
+      user_id: userId,
+      content_preview: content.substring(0, 50),
+      is_burned: true,
+      created_at: guestEntry.timestamp,
+    };
+  }
+
   if (Platform.OS !== 'web') {
     const id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
     const createdAt = new Date().toISOString();

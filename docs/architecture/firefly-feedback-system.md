@@ -54,7 +54,7 @@ when reduced motion is requested.
 
 ## Configuration
 
-`@repo/ui/components/Mascot` owns the public mascot seam. `MascotProvider` accepts a `MascotConfig`; the default is `{ id: 'firefly', name: 'Firefly' }`. `FireflyFeedbackScene` consumes that seam rather than importing a concrete animal in each state component. Adding a mascot requires one renderer case and an approved `MascotId`, without rewriting state surfaces.
+`@repo/ui/components/Mascot` owns the public mascot seam. `MascotProvider` accepts a `MascotConfig`; the default is `{ id: 'firefly', name: 'Tutii' }` (the canonical sanctuary guide). `FireflyFeedbackScene` consumes that seam rather than importing a concrete animal in each state component. Adding a mascot requires one renderer case and an approved `MascotId`, without rewriting state surfaces.
 
 ## Accessibility and motion
 

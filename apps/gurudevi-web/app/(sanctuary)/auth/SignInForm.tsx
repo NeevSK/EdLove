@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
+import styles from './auth.module.css';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
+import { maskEmail, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
 
@@ -25,16 +27,33 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
     }
 
     setState('submitting');
-    setMessage('');
-    const { data, error } = await runtime.client.auth.signInWithPassword({ email, password });
+    const result = typeof runtime.signInWithPassword === 'function'
+      ? await runtime.signInWithPassword({ email, password })
+      : await runtime.client.auth.signInWithPassword({ email, password });
+    const { data, error } = result;
     if (error) {
       setState('error');
-      setMessage('We could not sign in with those details. Check them and try again.');
+      setMessage(error.message || 'We could not sign in with those details. Check them and try again.');
       return;
     }
 
     // Set session duration preference (non-blocking)
     runtime.setSessionDuration(remember).catch(() => {});
+
+    // Register device account record on shared device (no password/token stored)
+    if (data.user) {
+      const userMeta = (data.user as { user_metadata?: Record<string, unknown> }).user_metadata || {};
+      saveDeviceAccount({
+        accountId: data.user.id,
+        authUserId: data.user.id,
+        displayName: String(userMeta.display_name || email.split('@')[0] || 'Scholar'),
+        avatarUrl: typeof userMeta.avatar_url === 'string' ? userMeta.avatar_url : null,
+        maskedEmail: maskEmail(email),
+        schoolId: typeof userMeta.school_id === 'string' ? userMeta.school_id : null,
+        capacity: (userMeta.capacity as 'student' | 'teacher' | 'scholar') || 'student',
+        hasPin: false,
+      });
+    }
 
     // Give Supabase client time to persist session to cookies before navigation
     if (data.session) {
@@ -43,38 +62,51 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
 
     // Use href assignment for more reliable navigation
     const destination = safeReturnPath(returnTo);
-    console.log('[SignInForm] Navigating to:', destination);
     window.location.href = destination;
   }
 
   return (
-    <form className="space-y-5" onSubmit={(event) => void signIn(event)}>
-      <label className="block font-sans text-sm font-semibold" htmlFor="email">
-        Email address
-      </label>
-      <input
-        autoComplete="email"
-        className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
-        id="email"
-        name="email"
-        required
-        type="email"
-      />
-      <label className="block font-sans text-sm font-semibold" htmlFor="password">
-        Password
-      </label>
-      <input
-        autoComplete="current-password"
-        className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
-        id="password"
-        minLength={8}
-        name="password"
-        required
-        type="password"
-      />
-      <label className="flex items-center gap-2 font-sans text-sm cursor-pointer">
+    <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(event) => void signIn(event)}>
+      <div className={styles.inputGroup}>
+        <label className={styles.inputLabel} htmlFor="email">
+          Email address
+        </label>
         <input
-          className="w-4 h-4 border border-line bg-paper focus:outline-3 focus:outline-offset-2 focus:outline-water"
+          autoComplete="email"
+          className={styles.textInput}
+          id="email"
+          name="email"
+          required
+          type="email"
+          placeholder="you@school.edu.lk"
+        />
+      </div>
+
+      <div className={styles.inputGroup}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label className={styles.inputLabel} htmlFor="password">
+            Password
+          </label>
+          <Link
+            style={{ fontSize: '12px', color: '#7a6e5f', textDecoration: 'underline' }}
+            href={`/recovery?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
+          >
+            Forgot password?
+          </Link>
+        </div>
+        <input
+          autoComplete="current-password"
+          className={styles.textInput}
+          id="password"
+          minLength={8}
+          name="password"
+          required
+          type="password"
+        />
+      </div>
+
+      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#453c35', cursor: 'pointer' }}>
+        <input
           id="remember"
           name="remember"
           type="checkbox"
@@ -83,33 +115,20 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
         />
         <span>Remember me for 30 days</span>
       </label>
+
       {state !== 'ready' && state !== 'submitting' ? (
-        <p className="font-sans text-sm text-red-700" role="alert">
+        <div className={styles.errorMessage} role="alert">
           {message}
-        </p>
+        </div>
       ) : null}
+
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
+        className={styles.submitBtn}
         disabled={state === 'submitting'}
         type="submit"
       >
-        {state === 'submitting' ? 'Signing in…' : 'Sign in'}
+        {state === 'submitting' ? 'Signing in…' : 'Sign in with password'}
       </button>
-      <Link
-        className="block text-center font-sans text-sm font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
-        href={`/recovery?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
-      >
-        Forgot your password?
-      </Link>
-      <p className="text-center font-sans text-sm text-ink-soft">
-        New to Gurudevi?{' '}
-        <Link
-          className="font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
-          href="/sign-up?returnTo=%2Fonboarding"
-        >
-          Sign up
-        </Link>
-      </p>
     </form>
   );
 }

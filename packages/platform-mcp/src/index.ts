@@ -600,6 +600,7 @@ class PolymathPlatformServer {
           'open_app',
           'screenshot',
           'logs',
+          'capture_profile',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
@@ -640,6 +641,9 @@ class PolymathPlatformServer {
           'memory_sinks',
           'cognitive_load',
           'push_audit',
+          'hermes',
+          'yoga',
+          'doctor',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
@@ -673,6 +677,9 @@ class PolymathPlatformServer {
           memory_sinks: () => this.audit.handleCheckMemorySinks(),
           cognitive_load: (p) => this.audit.handleReportCognitiveLoad(p as any),
           push_audit: () => this.audit.handlePushAudit(),
+          hermes: (p) => this.audit.handleVerifyHermes(p as any),
+          yoga: (p) => this.audit.handleVerifyYoga(p as any),
+          doctor: (p) => this.audit.handleDoctorAll(p as any),
         };
 
         const handler = auditHandlers[action];
@@ -709,6 +716,8 @@ class PolymathPlatformServer {
           'spellcheck',
           'disk_usage',
           'affordance',
+          'context',
+          'gravity',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
@@ -716,6 +725,10 @@ class PolymathPlatformServer {
         switch (action) {
           case 'affordance':
             return this.discovery.handleAffordance(params as any);
+          case 'context':
+            return this.discovery.handleContext(params as any);
+          case 'gravity':
+            return this.discovery.handleGravity(params as any);
           case 'grep':
             return this.discovery.handleGrepCode(params as any);
           case 'scout':

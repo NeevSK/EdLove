@@ -1,0 +1,489 @@
+/* Floor Studio Trigger & Drawer Styles */
+
+.floorHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  z-index: 5;
+  width: 100%;
+  padding: 0.15rem 0;
+}
+
+.topControlsGroup {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.studioTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.2rem;
+  padding: 0 0.55rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--ink, #1a1918);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+  margin-left: auto;
+}
+
+@media (max-width: 48rem) {
+  .floorHeaderBar {
+    margin-bottom: 0.3rem;
+  }
+  .studioTrigger {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+  }
+}
+
+.studioTrigger:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border-color: transparent;
+  color: var(--color-sanctuary-saffron, #a85022);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+.studioTriggerActive {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border-color: transparent;
+  color: var(--color-sanctuary-saffron, #a85022);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 18%, transparent);
+}
+
+/* Slide-Over Drawer Overlay */
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Slide-Over Panel */
+.drawerPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(28rem, 100vw);
+  background: color-mix(in srgb, var(--paper, #fbf8f2) 96%, transparent);
+  backdrop-filter: blur(24px);
+  border-left: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+}
+
+.drawerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drawerTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink, #1a1918);
+}
+
+.drawerSubtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.76rem;
+  color: var(--ink-soft, #706b63);
+  text-transform: capitalize;
+}
+
+.closeButton {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  border-radius: 999px;
+  background: var(--paper-light, #fff);
+  color: var(--ink-soft, #706b63);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+  border-color: var(--ink, #1a1918);
+  color: var(--ink, #1a1918);
+}
+
+/* Tab Navigation */
+.tabNav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  gap: 0.5rem;
+  background: color-mix(in srgb, var(--paper-light, #fff) 50%, transparent);
+}
+
+.tabButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--ink-soft, #706b63);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabButton:hover {
+  background: color-mix(in srgb, var(--paper-light, #fff) 80%, transparent);
+  color: var(--ink, #1a1918);
+}
+
+.tabButtonActive {
+  background: var(--paper-light, #fff);
+  border-color: var(--line, rgba(0, 0, 0, 0.12));
+  color: var(--color-sanctuary-saffron, #a85022);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.drawerBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-ghost, #8a8275);
+}
+
+.gridTwo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.gridThree {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.pillButton {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border-radius: 0.5rem;
+  background: var(--paper-light, #fff);
+  color: var(--ink, #1a1918);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.pillButton:hover {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+}
+
+.pillButtonActive {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  background: color-mix(in srgb, var(--lotus, #d97706) 12%, var(--paper-light, #fff));
+  color: var(--color-sanctuary-saffron, #a85022);
+  font-weight: 600;
+}
+
+/* Wallpaper Uploader Dropzone */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.25rem 1rem;
+  border: 2px dashed var(--line, rgba(0, 0, 0, 0.16));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light, #fff) 50%, transparent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.dropzone:hover {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  background: var(--paper-light, #fff);
+}
+
+.dropzoneText {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink, #1a1918);
+}
+
+.dropzoneHint {
+  font-size: 0.7rem;
+  color: var(--ink-soft, #706b63);
+}
+
+.fileInputHidden {
+  display: none;
+}
+
+/* Wallpaper Playlist / Grid */
+.wallpaperList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.wallpaperCard {
+  position: relative;
+  height: 5.5rem;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.wallpaperCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.wallpaperCardActive {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 30%, transparent);
+}
+
+.wallpaperCardLabel {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  padding: 0.35rem 0.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wallpaperDeleteBtn {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.wallpaperCard:hover .wallpaperDeleteBtn {
+  opacity: 1;
+}
+
+/* Furniture Staging List */
+.furnitureList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.furnitureItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border-radius: 0.6rem;
+  background: var(--paper-light, #fff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.furnitureItemPinned {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  background: color-mix(in srgb, var(--lotus, #d97706) 6%, var(--paper-light, #fff));
+}
+
+.furnitureInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.furnitureName {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink, #1a1918);
+}
+
+.furnitureActions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.furnitureBtn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--ink-soft, #706b63);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+}
+
+.furnitureBtn:hover:not(:disabled) {
+  background: var(--paper, #fbf8f2);
+  color: var(--ink, #1a1918);
+  border-color: var(--ink-soft, #706b63);
+}
+
+.furnitureBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.furnitureBtnActive {
+  background: var(--color-sanctuary-saffron, #a85022);
+  color: #fff;
+  border-color: var(--color-sanctuary-saffron, #a85022);
+}
+
+/* Custom Color Wash Mixer */
+.colorMixer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.colorInput {
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.15));
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: transparent;
+}
+
+.colorHexText {
+  font-family: monospace;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border-radius: 0.4rem;
+  background: var(--paper-light, #fff);
+  color: var(--ink, #1a1918);
+  width: 6.5rem;
+}
+
+/* Reset / Action Footer */
+.drawerFooter {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: color-mix(in srgb, var(--paper-light, #fff) 50%, transparent);
+}
+
+.resetBtn {
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--ink-soft, #706b63);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.resetBtn:hover {
+  color: var(--ink, #1a1918);
+  text-decoration: underline;
+}

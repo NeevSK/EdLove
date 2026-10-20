@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
+import styles from './auth.module.css';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 import { PhoneOtpEntry } from './PhoneOtpEntry';
 
@@ -43,10 +45,15 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
       identity.status === 'authenticated' && identity.session.user.is_anonymous === true;
     const { error: authError } = isAnonymousGuest
       ? await runtime.client.auth.updateUser({ email }, { emailRedirectTo: callbackUrl() })
-      : await runtime.client.auth.signInWithOtp({
-          email,
-          options: { emailRedirectTo: callbackUrl(), shouldCreateUser: true },
-        });
+      : typeof runtime.signInWithOtp === 'function'
+        ? await runtime.signInWithOtp({
+            email,
+            emailRedirectTo: callbackUrl(),
+          })
+        : await runtime.client.auth.signInWithOtp({
+            email,
+            options: { emailRedirectTo: callbackUrl(), shouldCreateUser: true },
+          });
     setPending(null);
     if (authError) {
       setError('We could not send an email link. Check the address and try again.');
@@ -101,74 +108,105 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
   }
 
   return (
-    <div className="space-y-7">
-      <form
-        className="space-y-5"
-        onSubmit={(event) => {
-          sendMagicLink(event);
-        }}
-      >
-        <div>
-          <label className="block font-sans text-sm font-semibold" htmlFor="passwordless-email">
-            {'Email address'}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      <div className={styles.formHeader}>
+        <div className={styles.formBadge}>
+          <span className={styles.statusDot} />
+          <span className={styles.formBadgeText}>Sign In</span>
+        </div>
+        <h2 className={styles.formTitle}>Welcome back</h2>
+        <p className={styles.formSub}>
+          Continue with Google, Apple, or your email address.
+        </p>
+      </div>
+
+      <div className={styles.oauthRow}>
+        <button
+          type="button"
+          aria-label="Continue with Google"
+          className={styles.oauthBtn}
+          disabled={pending !== null}
+          onClick={() => void continueWithProvider('google')}
+        >
+          <div className={styles.googleGlyph} aria-hidden="true">
+            G
+          </div>
+          <span>{pending === 'google' ? 'Connecting…' : 'Continue with Google'}</span>
+        </button>
+
+        <button
+          type="button"
+          aria-label="Continue with Apple"
+          className={styles.oauthBtn}
+          disabled={pending !== null}
+          onClick={() => void continueWithProvider('apple')}
+        >
+          <span className={styles.appleGlyph} aria-hidden="true">
+            
+          </span>
+          <span>{pending === 'apple' ? 'Connecting…' : 'Continue with Apple'}</span>
+        </button>
+      </div>
+
+      <div className={styles.orDivider}>
+        <div className={styles.dividerLine} aria-hidden="true" />
+        <span>Or with email magic link</span>
+        <div className={styles.dividerLine} aria-hidden="true" />
+      </div>
+
+      <form onSubmit={(e) => void sendMagicLink(e)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className={styles.inputGroup}>
+          <label className={styles.inputLabel} htmlFor="passwordless-email">
+            Email address
           </label>
           <input
-            autoComplete="email"
-            className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
             id="passwordless-email"
             name="email"
-            required
             type="email"
+            autoComplete="email"
+            required
+            placeholder="you@school.edu.lk"
+            className={styles.textInput}
+            disabled={pending !== null}
           />
         </div>
+
         <button
-          className="inline-flex min-h-12 w-full items-center justify-center bg-ink px-5 font-sans text-sm font-bold text-paper hover:bg-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
-          disabled={pending !== null}
           type="submit"
+          disabled={pending !== null}
+          className={styles.submitBtn}
         >
-          {pending === 'email' ? 'Sending…' : 'Continue with email'}
+          {pending === 'email' ? 'Sending link…' : 'Continue with email'}
+          <span aria-hidden="true">→</span>
         </button>
-        <p className="font-sans text-sm leading-6 text-ink-soft">
-          {'If this address is new, we will create your account after you confirm the email link.'}
+
+        <p style={{ fontSize: '12px', color: '#7a6e5f', margin: 0, lineHeight: 1.5 }}>
+          If this address is new, we will create your account after you confirm the email link.
         </p>
       </form>
 
-      <div className="flex items-center gap-3 font-sans text-xs uppercase tracking-[0.14em] text-ink-soft">
-        <span className="h-px flex-1 bg-line" />
-        <span>{'Or continue with'}</span>
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {(['google', 'apple'] as const).map((provider) => (
-          <button
-            aria-label={`Sign in with ${providerName(provider)}`}
-            className="inline-flex min-h-12 items-center justify-center border border-line px-4 font-sans text-sm font-bold text-ink hover:border-lotus hover:text-lotus disabled:cursor-wait disabled:opacity-60 focus:outline-3 focus:outline-offset-4 focus:outline-water"
-            disabled={pending !== null}
-            key={provider}
-            onClick={() => {
-              continueWithProvider(provider);
-            }}
-            type="button"
-          >
-            {pending === provider ? 'Continuing…' : `Continue with ${providerName(provider)}`}
-          </button>
-        ))}
-      </div>
+      {message ? (
+        <div className={styles.statusMessage} role="status">
+          {message}
+        </div>
+      ) : null}
+
+      {error ? (
+        <div className={styles.errorMessage} role="alert">
+          {error}
+        </div>
+      ) : null}
 
       {process.env.NEXT_PUBLIC_PHONE_AUTH_ENABLED === 'true' ? (
         <PhoneOtpEntry returnTo={returnTo} />
       ) : null}
 
-      {message ? (
-        <p className="font-sans text-sm text-green-800" role="status">
-          {message}
-        </p>
-      ) : null}
-      {error ? (
-        <p className="font-sans text-sm text-red-700" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <div className={styles.guestOptionRow}>
+        <span>Prefer to explore first?</span>
+        <Link className={styles.guestLink} href="/self">
+          Enter Guest House freely →
+        </Link>
+      </div>
     </div>
   );
 }

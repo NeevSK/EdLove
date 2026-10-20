@@ -1,5 +1,7 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
@@ -9,20 +11,46 @@ import { LibraryFloor } from './LibraryFloor';
 export const metadata = { title: 'Library | Gurudevi Sanctuary' };
 
 export default async function LibraryPage() {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore = classifyGurudeviHost(host) === 'explore';
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <LibraryFloor accountId="explore-guest" displayName="Guest Explorer" mode="explore" />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase)
     return (
-      <LibraryState
-        detail="Library is not configured for browser sign-in."
-        title="Library unavailable"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <LibraryFloor accountId="explore-guest" displayName="Guest Explorer" mode="explore" />
+      </SanctuaryShell>
     );
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out')
     return (
-      <SanctuaryShell displayName="Guest" navigationPrefix="">
-        <LibraryFloor accountId="guest" displayName="Guest" mode="explore" />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <LibraryFloor accountId="explore-guest" displayName="Guest Explorer" mode="explore" />
       </SanctuaryShell>
     );
   if (entry.kind === 'onboarding-required')

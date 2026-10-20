@@ -1,6 +1,21 @@
+---
+title: "Gurudevi Memory Efficiency Implementation Plan"
+status: "superseded"
+superseded_by: "docs/engineering/runtime-performance/memory-efficiency-implementation-plan.md"
+created: 2026-08-31
+updated: 2026-10-19
+author: "Naveen"
+scribe: "Antigravity"
+tags: [performance, runtime-performance, memory-efficiency]
+---
+
+> [!NOTE]
+> This document has been relocated to the centralized performance suite:
+> **[`docs/engineering/runtime-performance/memory-efficiency-implementation-plan.md`](file:///c:/x/docs/engineering/runtime-performance/memory-efficiency-implementation-plan.md)**.
+
 # Gurudevi memory-efficiency implementation plan
 
-Status: active plan  
+Status: superseded (relocated to `docs/engineering/runtime-performance/`)  
 Created: 2026-08-31  
 Related guidance: [memory-efficiency-guidance.md](./memory-efficiency-guidance.md)
 

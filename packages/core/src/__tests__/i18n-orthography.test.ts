@@ -40,6 +40,15 @@ describe('i18n Orthography & Phonetic Consistency Gate', () => {
       forbiddenPatterns: [/குருதேவி/g, /குருதேவீ/g],
       requiredPattern: /குருதெவி/,
     },
+    {
+      lang: 'web-locales',
+      filePath: path.resolve(
+        __dirname,
+        '../../../../apps/gurudevi-web/lib/locales.ts',
+      ),
+      forbiddenPatterns: [/ගුරුදේවි/g, /ගුරුදේවී/g, /குருதேவி/g, /குருதேவீ/g, /සුරක්ෂිත කෙම්බිම/g, /සමෝධානික/g, /සමෝදානිත/g],
+      requiredPattern: /ගුරුදෙවි/,
+    },
   ];
 
   for (const { lang, filePath, forbiddenPatterns, requiredPattern } of localePaths) {

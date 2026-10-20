@@ -9,6 +9,7 @@ import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
+import { recordStartupStage } from '@/boot/startupTelemetry';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
 
@@ -65,14 +66,6 @@ function startDeferredServices(): void {
   void import('@/lib/inngestEvents')
     .then(({ installMobileWorkflowEventBridge }) => installMobileWorkflowEventBridge())
     .catch((error: unknown) => console.warn('[startup] workflow bridge deferred:', error));
-  if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
-    void import('@/lib/googleSignIn')
-      .then(({ configureGoogleOneTap }) => configureGoogleOneTap())
-      .catch((error: unknown) => console.warn('[startup] Google Sign-In deferred:', error));
-  }
-  void import('@/lib/backgroundSync')
-    .then(({ registerBackgroundSync }) => registerBackgroundSync())
-    .catch((error: unknown) => console.warn('[startup] background sync deferred:', error));
   void import('@/lib/deepLinks/installReferrerBridge')
     .then(({ resolveDeferredInstallIntent }) => resolveDeferredInstallIntent())
     .catch((error: unknown) => console.warn('[startup] deferred install referrer bridge deferred:', error));
@@ -94,6 +87,7 @@ export function EntryStartupBoundary() {
         return { registerAppCatalog };
       },
       initializeDeviceAccounts: () => deviceAccounts.initialize(),
+      onStage: recordStartupStage,
     })
       .then(() => {
         if (cancelled) return;

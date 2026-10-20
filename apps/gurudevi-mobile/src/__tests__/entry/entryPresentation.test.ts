@@ -36,13 +36,28 @@ describe('entry presentation adapter', () => {
   });
 
   it('covers route replacement with a transition surface', () => {
+    const deniedRouteTarget = {
+      ...routeTarget,
+      redirectTo: '/workspace',
+      policy: { ...routeTarget.policy, canRenderCurrentPath: false },
+    };
+    expect(
+      getEntryPresentation({
+        pathname: '/self',
+        profileError: null,
+        routeTarget: deniedRouteTarget,
+      }),
+    ).toEqual({ kind: 'transition', target: '/workspace' });
+  });
+
+  it('keeps the admitted current route visible during a stale redirect target', () => {
     expect(
       getEntryPresentation({
         pathname: '/self',
         profileError: null,
         routeTarget: { ...routeTarget, redirectTo: '/workspace' },
       }),
-    ).toEqual({ kind: 'transition', target: '/workspace' });
+    ).toEqual({ kind: 'content', mountProtectedServices: true });
   });
 
   it('mounts protected services only for admitted protected content', () => {

@@ -2,6 +2,11 @@ import { CommentSheet } from '@repo/community/components/CommentSheet';
 import CommunityHearth from '@repo/community/components/CommunityHearth';
 import CreateGroupModal from '@repo/community/components/CreateGroupModal';
 import CreatePostModal from '@repo/community/components/CreatePostModal';
+import {
+  CommunityComposeFurniture,
+  PulseCard,
+  SectionCard,
+} from '@repo/community/components/furniture';
 import { PostCard } from '@repo/community/components/PostCard';
 import SocialShieldModal from '@repo/community/components/SocialShieldModal';
 import AnnouncementsScreen from '@repo/community/screens/AnnouncementsScreen';
@@ -559,44 +564,12 @@ export default function CommunityScreen() {
   );
 
   const renderComposeCard = () => (
-    <Box className="mx-4 mt-4 px-5 py-5 rounded-3xl border border-border bg-phase-surface">
-      <VStack className="gap-4">
-        <VStack className="gap-1">
-          <Heading className="text-md text-ink font-bold">Compose into the circle</Heading>
-          <Text className="text-ink/60 text-sm leading-snug">
-            Posting feels like contribution, not just a button.
-          </Text>
-        </VStack>
-        <HStack className="gap-3 flex-wrap">
-          <SanctuaryButton
-            action="primary"
-            size="sm"
-            onPress={handleNewPost}
-            className="bg-phase-interactive rounded-xl"
-          >
-            <Text className="text-white font-bold">New Post</Text>
-          </SanctuaryButton>
-          <SanctuaryButton
-            action="secondary"
-            size="sm"
-            onPress={handleNewGroup}
-            className="bg-phase-surface border-border rounded-xl"
-          >
-            <Text className="text-ink font-bold">New Group</Text>
-          </SanctuaryButton>
-          {sanctuaryGroups[0] && (
-            <SanctuaryButton
-              action="secondary"
-              size="sm"
-              onPress={handleOpenCircle}
-              className="bg-phase-surface border-border rounded-xl"
-            >
-              <Text className="text-ink font-bold">Open Circle</Text>
-            </SanctuaryButton>
-          )}
-        </HStack>
-      </VStack>
-    </Box>
+    <CommunityComposeFurniture
+      hasJoinedGroups={Boolean(sanctuaryGroups[0])}
+      onNewPost={handleNewPost}
+      onNewGroup={handleNewGroup}
+      onOpenCircle={handleOpenCircle}
+    />
   );
 
   const renderFilterRow = () => (
@@ -861,34 +834,5 @@ export default function CommunityScreen() {
         />
       </Box>
     </ScreenWrapper>
-  );
-}
-
-function PulseCard({ label, value }: { label: string; value: string }) {
-  return (
-    <Box className="flex-1 min-w-[92px] px-3 py-4 rounded-2xl bg-white/30 border border-white/20">
-      <Text className="text-[9px] text-ink/40 font-bold uppercase tracking-wider">{label}</Text>
-      <Heading className="mt-1 text-2xl font-bold text-ink">{value}</Heading>
-    </Box>
-  );
-}
-
-function SectionCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Box className="rounded-3xl border border-border bg-phase-surface/30 overflow-hidden mb-4">
-      <VStack className="gap-1 p-5">
-        <Heading className="text-md text-ink font-bold">{title}</Heading>
-        <Text className="text-ink/60 text-xs leading-snug">{description}</Text>
-      </VStack>
-      {children}
-    </Box>
   );
 }

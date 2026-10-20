@@ -2,22 +2,30 @@
 
 import type { WorkspaceAppearanceMotion, WorkspaceAppearancePreset } from '@repo/core/types';
 import React, { useEffect, useState } from 'react';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import styles from './settings.module.css';
 
 interface SettingsFloorProps {
   displayName: string;
   capacity?: string;
+  isExplore?: boolean;
 }
 
-export function SettingsFloor({ displayName, capacity }: Readonly<SettingsFloorProps>) {
+export function SettingsFloor({ displayName, capacity, isExplore }: Readonly<SettingsFloorProps>) {
   const [preset, setPreset] = useState<WorkspaceAppearancePreset>('default');
   const [motion, setMotion] = useState<WorkspaceAppearanceMotion>('subtle');
   const [language, setLanguage] = useState<'en' | 'si' | 'ta'>('en');
   const [highContrast, setHighContrast] = useState(false);
   const [telemetryConsent, setTelemetryConsent] = useState(true);
   const [savedNotification, setSavedNotification] = useState<string | null>(null);
+  const [navigationLayout, setNavigationLayout] = useState<'horizontal' | 'side'>('horizontal');
 
   useEffect(() => {
+    try {
+      setNavigationLayout(localStorage.getItem('gurudevi_navigation_layout_v1') === 'side' ? 'side' : 'horizontal');
+    } catch {
+      setNavigationLayout('horizontal');
+    }
     // Read appearance from root dataset or localStorage
     const savedPreset = localStorage.getItem(
       'gurudevi_appearance_preset',
@@ -40,6 +48,17 @@ export function SettingsFloor({ displayName, capacity }: Readonly<SettingsFloorP
     const hasConsent = document.cookie.includes('gurudevi_pdpa_consent=true');
     setTelemetryConsent(hasConsent);
   }, []);
+
+  const handleNavigationLayoutChange = (layout: 'horizontal' | 'side') => {
+    setNavigationLayout(layout);
+    try {
+      localStorage.setItem('gurudevi_navigation_layout_v1', layout);
+    } catch {
+      // Keep the selection for this session when storage is unavailable.
+    }
+    window.dispatchEvent(new Event('gurudevi:navigation-layout'));
+    triggerSavedNotice('Navigation layout updated');
+  };
 
   const handlePresetChange = (newPreset: WorkspaceAppearancePreset) => {
     setPreset(newPreset);
@@ -82,25 +101,89 @@ export function SettingsFloor({ displayName, capacity }: Readonly<SettingsFloorP
   };
 
   return (
-    <div className={styles.container}>
-      <header className={styles.headerBar}>
-        <h1>Sanctuary Settings</h1>
-        <p>
-          Personalize your atmosphere, sensory motion, privacy consent, and regional accessibility.
-        </p>
-      </header>
+    <SanctuaryFloorCanvas domain="settings" titleId="settings-title">
+      <div className={styles.container}>
+        <header className={styles.headerBar}>
+          <h1 id="settings-title">Sanctuary Settings</h1>
+          <p>
+            Personalize your atmosphere, sensory motion, privacy consent, and regional accessibility.
+          </p>
+        </header>
 
-      {savedNotification && (
-        <div
-          aria-live="polite"
-          className={styles.optionSub}
-          style={{ color: 'var(--color-leaf, #2e5d32)', fontWeight: 700 }}
-        >
-          ✓ {savedNotification}
-        </div>
-      )}
+        {isExplore && (
+          <div
+            style={{
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              background: 'var(--color-paper-light, #f7f3ea)',
+              border: '1px solid var(--color-line, rgba(104, 94, 85, 0.2))',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+            }}
+          >
+            <div>
+              <strong style={{ display: 'block', color: 'var(--color-ink, #131e27)' }}>
+                Guest Preferences Active
+              </strong>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)' }}>
+                Your settings are saved locally to this device under Sri Lanka PDPA No. 9 of 2022.
+              </span>
+            </div>
+            <a
+              href="https://sanctuary.gurudevi.app/sign-in"
+              style={{
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                color: 'var(--color-action, #a85022)',
+                textDecoration: 'underline',
+              }}
+            >
+              Enter Sanctuary to Sync ↗
+            </a>
+          </div>
+        )}
+
+        {savedNotification && (
+          <div
+            aria-live="polite"
+            className={styles.optionSub}
+            style={{ color: 'var(--color-leaf, #2e5d32)', fontWeight: 700 }}
+          >
+            ✓ {savedNotification}
+          </div>
+        )}
 
       <div className={styles.sectionsList}>
+        <section className={styles.settingSection}>
+          <h2 className={styles.sectionTitle}><span>🧭</span><span>Navigation & workspace</span></h2>
+          <p className={styles.sectionDescription}>Choose where the main destinations live. On small screens, navigation stays in the bottom bar.</p>
+          <div aria-label="Desktop navigation layout" className={styles.optionsGrid} role="group">
+            <button
+              aria-pressed={navigationLayout === 'horizontal'}
+              className={styles.optionCard}
+              data-selected={navigationLayout === 'horizontal'}
+              onClick={() => handleNavigationLayoutChange('horizontal')}
+              type="button"
+            >
+              <span className={styles.optionLabel}>Horizontal row</span>
+              <span className={styles.optionSub}>Recommended · keeps the workspace wide</span>
+            </button>
+            <button
+              aria-pressed={navigationLayout === 'side'}
+              className={styles.optionCard}
+              data-selected={navigationLayout === 'side'}
+              onClick={() => handleNavigationLayoutChange('side')}
+              type="button"
+            >
+              <span className={styles.optionLabel}>Side rail</span>
+              <span className={styles.optionSub}>A familiar vertical menu for desktop</span>
+            </button>
+          </div>
+        </section>
         {/* Appearance & Diurnal Palette */}
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
@@ -323,5 +406,6 @@ export function SettingsFloor({ displayName, capacity }: Readonly<SettingsFloorP
         </section>
       </div>
     </div>
+    </SanctuaryFloorCanvas>
   );
 }

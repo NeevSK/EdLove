@@ -56,6 +56,9 @@
     "test:e2e:ui": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec playwright test --ui\" --name \"apps_gurudevi-mobile-test_e2e_ui\" --evidence-level G4",
     "inspect:localhost": "node scripts/inspect-brave.mjs",
     "doctor": "node ../../scripts/run-and-report.mjs --cmd \"npx react-doctor\" --name \"apps_gurudevi-mobile-doctor\"",
+    "doctor:terrain": "node ../../scripts/run-rn-terrain.mjs doctor:all .",
+    "verify:hermes": "node ../../scripts/run-rn-terrain.mjs verify:hermes app/index.tsx",
+    "verify:yoga": "node ../../scripts/run-rn-terrain.mjs verify:yoga app/index.tsx",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec rimraf .turbo node_modules dist .expo\" --name \"apps_gurudevi-mobile-clean\"",
     "postinstall": "node scripts/copy-powersync-assets.mjs"
   },

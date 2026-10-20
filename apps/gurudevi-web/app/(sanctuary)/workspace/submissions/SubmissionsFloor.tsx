@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  loadBrowserAssignments,
-  loadBrowserSubmissions,
-  submitBrowserAssignment,
-  type BrowserAssignment,
-  type BrowserSubmission,
-} from '@/lib/workspace/assignmentSubmissions';
+import React, { useRef, useState } from 'react';
+import { useAcademicDomain } from '@/lib/domain';
 import styles from './submissions.module.css';
 
 interface SubmissionsFloorProps {
@@ -19,36 +13,20 @@ interface SubmissionsFloorProps {
 }
 
 export function SubmissionsFloor({ accountId, authSubjectId, displayName, capacity }: Readonly<SubmissionsFloorProps>) {
-  const [assignments, setAssignments] = useState<readonly BrowserAssignment[]>([]);
-  const [submissions, setSubmissions] = useState<readonly BrowserSubmission[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const {
+    assignments,
+    submissions,
+    selectedAssignmentId,
+    setSelectedAssignmentId,
+    submitAssignment,
+    isSubmitting,
+    isOnline,
+  } = useAcademicDomain();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>(
-    '',
-  );
   const [notes, setNotes] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    let active = true;
-    void Promise.all([loadBrowserAssignments(accountId, authSubjectId), loadBrowserSubmissions(accountId, authSubjectId)])
-      .then(([nextAssignments, nextSubmissions]) => {
-        if (!active) return;
-        setAssignments(nextAssignments);
-        setSubmissions(nextSubmissions);
-        setSelectedAssignmentId((current) => current || nextAssignments[0]?.id || '');
-      })
-      .catch((cause: unknown) => {
-        if (!active) return;
-        setLoadError(cause instanceof Error ? cause.message : 'Assignments could not be loaded.');
-      });
-    return () => {
-      active = false;
-    };
-  }, [accountId, authSubjectId]);
 
   const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -76,24 +54,16 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      const result = await submitBrowserAssignment(accountId, authSubjectId, {
-        assignmentId: selectedAssignmentId,
-        content: notes.trim() || null,
-      });
-      if (result.status === 'committed') {
+      const result = await submitAssignment(selectedAssignmentId, notes.trim());
+      if (result) {
         setNotes('');
         setSelectedFile(null);
         setNotice('Submission committed and ready for educator review.');
-        setSubmissions(await loadBrowserSubmissions(accountId, authSubjectId));
-      } else {
-        setNotice(`Submission is queued: ${result.message ?? 'it will retry with the same command.'}`);
       }
     } catch (cause) {
       setNotice(cause instanceof Error ? cause.message : 'Submission could not be sent. Your draft remains.');
     } finally {
-      setIsSubmitting(false);
       setTimeout(() => setNotice(null), 4000);
     }
   };
@@ -164,7 +134,7 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
                 {!assignments.length && <option value="">No assignments available</option>}
                 {assignments.map((asg) => (
                   <option key={asg.id} value={asg.id}>
-                    {asg.title}{asg.classroom ? ` (${asg.classroom})` : ''}
+                    {asg.title}{asg.classroom_id ? ` (${asg.classroom_id})` : ''}
                   </option>
                 ))}
               </select>
@@ -226,18 +196,18 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
             <span>Evaluation & Feedback Queue</span>
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)', margin: 0 }}>
-            {loadError ?? 'Recent server-authorized submissions and educator evaluations.'}
+            Recent server-authorized submissions and educator evaluations.
           </p>
 
           <div className={styles.submissionList}>
             {submissions.map((sub) => {
-              const assignment = assignments.find((item) => item.id === sub.assignmentId);
+              const assignment = assignments.find((item) => item.id === sub.assignment_id);
               return (
               <div key={sub.id} className={styles.submissionItem}>
                 <div className={styles.submissionMeta}>
                   <span className={styles.submissionName}>{assignment?.title ?? 'Assignment'}</span>
                   <span className={styles.submissionSub}>
-                    By {displayName} • {new Date(sub.submittedAt).toLocaleDateString()}
+                    By {displayName} • {new Date(sub.submitted_at).toLocaleDateString()}
                   </span>
                   {sub.feedback && (
                     <span

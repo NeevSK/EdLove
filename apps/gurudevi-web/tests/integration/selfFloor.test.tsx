@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -7,6 +7,14 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vites
 vi.mock('@/lib/sanctuary/selfApiClient', () => ({
   requestAccountSelfProcedure: vi.fn(),
 }));
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>();
+  return {
+    ...actual,
+    useQuery: vi.fn(() => ({ data: {}, isLoading: false })),
+  };
+});
 
 import { resolveSelfFeatureManifest } from '@repo/self/features/featureManifest';
 import { BROWSER_SELF_FEATURES } from '@/app/(sanctuary)/self/browserFeatureRegistry';
@@ -141,6 +149,10 @@ vi.mock('@/lib/workbench', async () => {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(requestAccountSelfProcedure).mockReset();
+});
+
+afterEach(() => {
+  cleanup();
 });
 
 describe('Self Journal G1 Boundary Tests — API Functions', () => {
@@ -445,7 +457,7 @@ describe('Mood Lotus Boundary Tests (G1)', () => {
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
-    await user.click(screen.getByRole('button', { name: /calm/i }));
+    await user.click(screen.getByRole('button', { name: /^calm$/i }));
     await user.type(screen.getByRole('textbox', { name: /a few words/i }), 'Feeling centered');
     await user.click(screen.getByRole('button', { name: /save calm/i }));
 
@@ -468,11 +480,11 @@ describe('Mood Lotus Boundary Tests (G1)', () => {
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
-    await user.click(screen.getByRole('button', { name: /calm/i }));
+    await user.click(screen.getByRole('button', { name: /^calm$/i }));
     await user.click(screen.getByRole('button', { name: /save calm/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeDefined();
+      expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
     });
   });
 });

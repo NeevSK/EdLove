@@ -3,6 +3,7 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { libraryAPI } from '@repo/library/api/library';
 import { knowledgeSync } from '@repo/library/api/sync';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type {
   CollectionFilters,
   CreateCollectionInput,
@@ -36,9 +37,10 @@ export const LIBRARY_KEYS = {
  */
 export const useLibraryRealtime = () => {
   const queryClient = useQueryClient();
+  const isDemoMode = useAuthStore((state) => state.isDemoMode);
 
   useEffect(() => {
-    if (!supabase || typeof supabase.channel !== 'function') return;
+    if (isDemoMode || !supabase || typeof supabase.channel !== 'function') return;
 
     try {
       const collectionsChannel = supabase
@@ -103,7 +105,7 @@ export const useLibraryRealtime = () => {
     } catch (err) {
       console.warn('[useLibraryRealtime] Realtime subscription skipped:', err);
     }
-  }, [queryClient]);
+  }, [isDemoMode, queryClient]);
 };
 
 export const useLibrary = (

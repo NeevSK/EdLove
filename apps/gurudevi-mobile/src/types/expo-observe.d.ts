@@ -6,7 +6,7 @@ declare module 'expo-observe' {
       sampleRate?: number;
       dispatchInDebug?: boolean;
       dispatchingEnabled?: boolean;
-      integrations?: { expoRouter?: boolean };
+      integrations?: { 'expo-router'?: boolean };
     }) => void;
     logEvent: (name: string, attributes?: Record<string, unknown>) => void;
     reportError: (error: Error, context?: Record<string, unknown>) => void;

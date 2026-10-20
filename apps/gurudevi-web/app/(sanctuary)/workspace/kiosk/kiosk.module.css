@@ -1,0 +1,327 @@
+.kioskContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 85vh;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: transparent;
+  color: var(--ink, #1f1b16);
+  font-family: var(--font-ui-grotesque, "Outfit", system-ui, sans-serif);
+  gap: 1.5rem;
+}
+
+.kioskHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border, #ded8cf);
+}
+
+.headerTitle {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink, #1f1b16);
+}
+
+.headerSubtitle {
+  font-size: 0.9rem;
+  color: #71695f;
+  margin: 0.25rem 0 0;
+}
+
+.exitLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 999px;
+  background: white;
+  color: var(--ink, #1f1b16);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.exitLink:hover {
+  background: #f5f0e6;
+  border-color: #9d5b25;
+}
+
+.kioskGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  flex: 1;
+}
+
+@media (max-width: 840px) {
+  .kioskGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scannerCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  background: white;
+  border: 2px solid var(--border, #ded8cf);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  min-height: 24rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scannerCardIdle {
+  border-color: var(--border, #ded8cf);
+}
+
+.scannerCardSuccess {
+  border-color: #3b7b32;
+  box-shadow: 0 0 35px rgba(59, 123, 50, 0.3);
+}
+
+.scannerCardWarning {
+  border-color: #c97e18;
+  box-shadow: 0 0 35px rgba(201, 126, 24, 0.3);
+}
+
+.scannerCardError {
+  border-color: #b23428;
+  box-shadow: 0 0 35px rgba(178, 52, 40, 0.3);
+}
+
+.tapTargetIcon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: #fbf0dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  color: #9d5b25;
+  margin-bottom: 1.25rem;
+  animation: pulseTarget 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseTarget {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(157, 91, 37, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 16px rgba(157, 91, 37, 0);
+  }
+}
+
+.tapPrompt {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink, #1f1b16);
+}
+
+.tapDetail {
+  font-size: 0.9rem;
+  color: #71695f;
+  margin: 0.5rem 0 1.5rem;
+  max-width: 22rem;
+}
+
+.badgePulseDisplay {
+  padding: 1.2rem 1.8rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 24rem;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.badgePulseSuccess {
+  background: #edf6eb;
+  border: 1px solid #3b7b32;
+  color: #24501d;
+}
+
+.badgePulseWarning {
+  background: #fef7e8;
+  border: 1px solid #c97e18;
+  color: #7b4c09;
+}
+
+.badgePulseError {
+  background: #fbeee9;
+  border: 1px solid #b23428;
+  color: #6d1b13;
+}
+
+.badgeStudentName {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.badgeStudentMeta {
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.cameraFeedWrapper {
+  width: 100%;
+  max-width: 18rem;
+  height: 12rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid #ded8cf;
+  background: #000;
+  margin-top: 1rem;
+}
+
+.cameraVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cameraToggleBtn {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ded8cf;
+  border-radius: 0.5rem;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #71695f;
+}
+
+.manualInputForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  width: 100%;
+  max-width: 20rem;
+}
+
+.manualInput {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ded8cf;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.manualSubmitBtn {
+  padding: 0.5rem 0.85rem;
+  background: #9d5b25;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.streamCard {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: white;
+  border: 1px solid var(--border, #ded8cf);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.streamHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.streamTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.streamCountBadge {
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: #edf6eb;
+  color: #24501d;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.streamList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow-y: auto;
+  max-height: 28rem;
+}
+
+.streamItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: #fdfaf5;
+  border: 1px solid #f0ebe1;
+}
+
+.streamItemInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.streamItemName {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink, #1f1b16);
+}
+
+.streamItemRoll {
+  font-size: 0.75rem;
+  color: #71695f;
+}
+
+.streamItemTime {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3b7b32;
+  font-variant-numeric: tabular-nums;
+}
+
+.burstWarning {
+  padding: 0.75rem 1rem;
+  background: #fef7e8;
+  border: 1px solid #c97e18;
+  border-radius: 0.75rem;
+  color: #7b4c09;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}

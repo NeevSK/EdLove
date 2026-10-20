@@ -29,3 +29,16 @@ export {
   resolveWallpaperPresentation,
   type WallpaperPresentation,
 } from './wallpaper';
+export {
+  PROVISIONAL_MAX_OPTIONAL_CONCURRENCY,
+  reduceWorkAdmission,
+  resolveWorkAdmission,
+  type WorkAdmissionDecision,
+  type WorkAdmissionObservation,
+  type WorkAdmissionPhase,
+  type WorkAdmissionPolicy,
+  type WorkAdmissionReason,
+  type WorkAdmissionState,
+  type WorkAppState,
+  type WorkPressure,
+} from './workAdmission';

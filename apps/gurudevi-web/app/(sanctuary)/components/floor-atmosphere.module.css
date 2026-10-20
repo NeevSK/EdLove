@@ -205,3 +205,19 @@
   font-weight: 600;
   color: var(--ink, #111827);
 }
+
+@media (orientation: portrait) and (max-width: 48rem) {
+  .atmosphereTrigger {
+    bottom: calc(var(--bottom-tabs-block-size, 4.75rem) + 0.75rem);
+    right: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+  }
+  .atmospherePanel {
+    bottom: calc(var(--bottom-tabs-block-size, 4.75rem) + 3.5rem);
+    right: 0.75rem;
+    width: calc(100vw - 1.5rem);
+    max-width: 20rem;
+  }
+}
+

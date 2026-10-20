@@ -139,8 +139,8 @@ describe('domain workbench active-task policy', () => {
     if (evicted.kind !== 'opened') throw new Error('Expected a permitted inactive task to evict.');
     expect(evicted.evictedTask?.taskKey).toBe(pulse.taskKey);
     expect(evicted.state.tasks.map((task) => task.taskKey)).toEqual([
-      goals.taskKey,
       journal.taskKey,
+      goals.taskKey,
     ]);
 
     const protectedCapacity = openWorkbenchTask(evicted.state, pulse, THIRD_FOCUS, {

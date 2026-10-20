@@ -64,6 +64,8 @@ export interface EditorialWork {
   rightsAgreementId?: string;
   externalSource?: ExternalSource;
   contributions: ReadonlyArray<Contribution>;
+  schoolId?: string;
+  subEntityId?: string;
 }
 
 export interface EditorialSubmission {
@@ -82,6 +84,8 @@ export interface EditorialSubmission {
   decisionNote?: string;
   createdAt: string;
   updatedAt: string;
+  schoolId?: string;
+  subEntityId?: string;
 }
 
 const allowedSubmissionTransitions: Record<SubmissionStatus, ReadonlyArray<SubmissionStatus>> = {
@@ -109,6 +113,69 @@ export interface EditorialVersion {
   updatedDate?: string;
   translationOfVersionId?: string;
   translationStatus: TranslationStatus;
+  schoolId?: string;
+}
+
+export interface SchoolEditorialScope {
+  schoolId: string;
+  subEntityId?: string;
+}
+
+export interface StudentSubmissionDraft {
+  schoolId: string;
+  subEntityId?: string;
+  authorId: string;
+  title: string;
+  summary: string;
+  body: string;
+  language: Language;
+  kind: ContentKind;
+  rightsAgreementId?: string;
+}
+
+export interface FacultyReviewInput {
+  reviewerId: string;
+  decision: 'approved' | 'rejected' | 'in_review';
+  decisionNote?: string;
+}
+
+export interface PublishedSchoolArticle {
+  workId: string;
+  schoolId: string;
+  subEntityId?: string;
+  title: string;
+  summary: string;
+  body: string;
+  language: Language;
+  slug: string;
+  publishedAt: string;
+  authorIds: ReadonlyArray<string>;
+}
+
+export interface IEditorialPublishingPort {
+  submitStudentDraft(draft: StudentSubmissionDraft): Promise<EditorialSubmission>;
+  reviewSubmission(submissionId: string, review: FacultyReviewInput): Promise<EditorialSubmission>;
+  publishApprovedWork(submissionId: string, slug: string): Promise<PublishedSchoolArticle>;
+}
+
+export interface IEditorialContentStoragePort {
+  saveWork(work: EditorialWork): Promise<void>;
+  saveSubmission(submission: EditorialSubmission): Promise<void>;
+  getSubmission(id: string): Promise<EditorialSubmission | undefined>;
+  getWorkBySlug(schoolId: string, slug: string): Promise<PublishedSchoolArticle | undefined>;
+  listSchoolPublished(schoolId: string): Promise<ReadonlyArray<PublishedSchoolArticle>>;
+}
+
+export interface IEdgeDomainResolutionPort {
+  resolveSchoolByHost(hostname: string): Promise<{ schoolId: string; handle: string } | null>;
+}
+
+export interface ISandboxedPluginPort {
+  executePlugin(
+    pluginId: string,
+    capabilities: ReadonlyArray<string>,
+    context: Record<string, unknown>,
+  ): Promise<{ success: boolean; output: unknown }>;
 }
 
 export type DistributionChannel = 'linkedin' | 'medium' | 'substack' | 'meta' | 'postiz' | 'rss';

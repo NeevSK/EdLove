@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { type FeeRecord, useTuition } from '@/lib/repositories/tuitionRepository';
+import { type FeeViewModel as FeeRecord, useTuitionDomain } from '@/lib/domain';
 import styles from './tuition.module.css';
 
 interface TuitionFloorProps {
@@ -11,7 +11,9 @@ interface TuitionFloorProps {
 }
 
 export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorProps>) {
-  const { fees, activeBatch, issueReceipt, isOffline, pendingCount } = useTuition();
+  const { fees, issueReceipt, isOnline } = useTuitionDomain();
+  const isOffline = !isOnline;
+  const pendingCount = fees.filter((f) => f.status === 'pending').length;
   const [filter, setFilter] = useState<'all' | 'paid' | 'pending' | 'overdue'>('all');
   const [activeModalRecord, setActiveModalRecord] = useState<FeeRecord | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
@@ -34,11 +36,15 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
     try {
       const updated = await issueReceipt(record.id);
       setActiveModalRecord(null);
-      setNotice(
-        isOffline
-          ? `Receipt ${updated.receiptNo} issued offline for ${record.studentName}. Queued in device outbox.`
-          : `Receipt ${updated.receiptNo} issued for ${record.studentName}.`,
-      );
+      if (updated) {
+        setNotice(
+          isOffline
+            ? `Receipt ${updated.receiptNo} issued offline for ${record.studentName}. Queued in device outbox.`
+            : `Receipt ${updated.receiptNo} issued for ${record.studentName}.`,
+        );
+      } else {
+        setNotice(`Payment processed for ${record.studentName}.`);
+      }
       setTimeout(() => setNotice(null), 4000);
     } catch (err) {
       setNotice('Failed to issue receipt. Free storage and retry.');

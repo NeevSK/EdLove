@@ -12,23 +12,28 @@ export default async function ClimatePage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <ClimateState
-        displayName="Explorer"
-        title="Climate sensing is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <ClimateSensingFloor displayName="Guest Explorer" capacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <ClimateState
-        action={<Link href={signInPath('/workspace/climate')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to submit and view classroom climate sensing pulses."
-        title="Climate sensing is private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <ClimateSensingFloor displayName="Guest Explorer" capacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 

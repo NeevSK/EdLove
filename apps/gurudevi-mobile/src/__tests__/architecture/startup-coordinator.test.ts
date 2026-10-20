@@ -64,6 +64,108 @@ describe('essential startup coordinator', () => {
 
     expect(registerAppCatalog).toHaveBeenCalledTimes(1);
   });
+
+  it('reports measured startup stages without allowing telemetry to change startup', async () => {
+    let time = 10;
+    const stages: { stage: string; outcome: string; durationMs: number | null }[] = [];
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    try {
+      await completeEssentialStartup({
+        bootstrapPlatform: async () => {
+          time += 4;
+        },
+        isRuntimeRegistered: () => true,
+        loadCatalog: async () => {
+          time += 3;
+          return {
+            registerAppCatalog: () => {
+              time += 2;
+            },
+          };
+        },
+        initializeDeviceAccounts: async () => {
+          time += 5;
+        },
+        now: () => time,
+        onStage: (event) => {
+          stages.push(event);
+          if (stages.length === 1) throw new Error('telemetry unavailable');
+        },
+      });
+
+      expect(stages).toEqual([
+        { stage: 'bootstrapPlatform', outcome: 'complete', durationMs: 4 },
+        { stage: 'runtimeRegistration', outcome: 'complete', durationMs: 0 },
+        { stage: 'loadCatalog', outcome: 'complete', durationMs: 3 },
+        { stage: 'registerAppCatalog', outcome: 'complete', durationMs: 2 },
+        { stage: 'initializeDeviceAccounts', outcome: 'complete', durationMs: 5 },
+      ]);
+      expect(warn).toHaveBeenCalledOnce();
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('keeps startup alive and marks durations unavailable for invalid or regressing clocks', async () => {
+    const invalidClockStages: { stage: string; durationMs: number | null }[] = [];
+    await completeEssentialStartup({
+      bootstrapPlatform: async () => undefined,
+      isRuntimeRegistered: () => true,
+      loadCatalog: async () => ({ registerAppCatalog: vi.fn() }),
+      initializeDeviceAccounts: async () => undefined,
+      now: () => Number.NaN,
+      onStage: ({ stage, durationMs }) => invalidClockStages.push({ stage, durationMs }),
+    });
+    expect(invalidClockStages).toHaveLength(5);
+    expect(invalidClockStages.every(({ durationMs }) => durationMs === null)).toBe(true);
+
+    const clockValues = [5, 4];
+    let callCount = 0;
+    const regressingClockStages: { stage: string; durationMs: number | null }[] = [];
+    await completeEssentialStartup({
+      bootstrapPlatform: async () => undefined,
+      isRuntimeRegistered: () => true,
+      loadCatalog: async () => ({ registerAppCatalog: vi.fn() }),
+      initializeDeviceAccounts: async () => undefined,
+      now: () => clockValues[callCount++] ?? callCount,
+      onStage: ({ stage, durationMs }) => regressingClockStages.push({ stage, durationMs }),
+    });
+    expect(regressingClockStages[0]).toEqual({ stage: 'bootstrapPlatform', durationMs: null });
+    expect(regressingClockStages.slice(1).every(({ durationMs }) => durationMs !== null)).toBe(
+      true,
+    );
+  });
+
+  it('reports the original stage failure and clears its deadline timer', async () => {
+    vi.useFakeTimers();
+    const onStage = vi.fn();
+    const failure = new Error('native adapter unavailable');
+
+    try {
+      await expect(
+        completeEssentialStartup({
+          bootstrapPlatform: async () => {
+            throw failure;
+          },
+          isRuntimeRegistered: () => true,
+          loadCatalog: async () => ({ registerAppCatalog: vi.fn() }),
+          initializeDeviceAccounts: async () => undefined,
+          onStage,
+        }),
+      ).rejects.toBe(failure);
+
+      expect(onStage).toHaveBeenCalledWith({
+        stage: 'bootstrapPlatform',
+        outcome: 'failed',
+        durationMs: expect.any(Number),
+      });
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it.each([
     [
       'bootstrapPlatform',
@@ -104,6 +206,7 @@ describe('essential startup coordinator', () => {
 
         await vi.advanceTimersByTimeAsync(200_000);
         await rejection;
+        expect(vi.getTimerCount()).toBe(0);
       } finally {
         vi.useRealTimers();
       }
@@ -126,12 +229,13 @@ describe('essential startup coordinator', () => {
       },
     });
 
-    // Let the fast bootstrap complete without hitting the deadline
-    await vi.runAllTimersAsync();
-    await startup;
+    try {
+      await startup;
 
-    expect(steps).toEqual(['runtime', 'catalog', 'accounts']);
-
-    vi.useRealTimers();
+      expect(steps).toEqual(['runtime', 'catalog', 'accounts']);
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

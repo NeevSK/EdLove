@@ -5,6 +5,7 @@ import {
   createWorkbenchTask,
   type OpenWorkbenchTaskResult,
   openWorkbenchTask,
+  reorderWorkbenchTask,
   type RestoreWorkbenchStateResult,
   restoreDomainWorkbenchState,
   setDomainTemporalHorizon,
@@ -17,6 +18,7 @@ import type {
   WorkbenchTaskInput,
 } from '@repo/core/types';
 import { createBrowserWorkbenchStorage, type WorkbenchStorage } from './storage';
+import { recordQuickAccessUse } from './quickAccessPreferences';
 
 type StoreListener = () => void;
 type TaskInputForDomain = Omit<WorkbenchTaskInput, 'domain'>;
@@ -26,6 +28,7 @@ export interface DomainWorkbenchStoreOptions {
   canEvict?: (task: WorkbenchTaskDescriptor) => boolean;
   canRestore?: (task: WorkbenchTaskDescriptor) => boolean;
   storage?: WorkbenchStorage;
+  usageScope?: string;
 }
 
 /** Browser-only persistence and subscription adapter over the shared task policy. */
@@ -35,6 +38,7 @@ export class DomainWorkbenchStore {
   private readonly canEvict: (task: WorkbenchTaskDescriptor) => boolean;
   private readonly canRestore: (task: WorkbenchTaskDescriptor) => boolean;
   private readonly storage: WorkbenchStorage;
+  private readonly usageScope: string;
   private state: DomainWorkbenchState;
 
   constructor(
@@ -44,7 +48,8 @@ export class DomainWorkbenchStore {
     this.maximumTasks = options.maximumTasks ?? 7;
     this.canEvict = options.canEvict ?? ((task) => task.localStatePolicy === 'none');
     this.canRestore = options.canRestore ?? (() => true);
-    this.storage = options.storage ?? createBrowserWorkbenchStorage();
+    this.usageScope = options.usageScope ?? 'sanctuary';
+    this.storage = options.storage ?? createBrowserWorkbenchStorage(this.usageScope);
     this.state = createDomainWorkbenchState(domain);
   }
 
@@ -73,6 +78,9 @@ export class DomainWorkbenchStore {
       canEvict: this.canEvict,
     });
     this.replaceState(result.state);
+    if (result.kind !== 'at-capacity' && (this.domain === 'self' || this.domain === 'workspace')) {
+      recordQuickAccessUse(this.domain, this.usageScope, task.featureId);
+    }
     return result;
   }
 
@@ -90,7 +98,14 @@ export class DomainWorkbenchStore {
       canEvict: this.canEvict,
     });
     this.replaceState(result.state);
+    if (this.domain === 'self' || this.domain === 'workspace') {
+      recordQuickAccessUse(this.domain, this.usageScope, task.featureId);
+    }
     return result;
+  }
+
+  reorder(taskKey: string, destinationIndex: number): void {
+    this.replaceState(reorderWorkbenchTask(this.state, taskKey, destinationIndex));
   }
 
   setTemporalHorizon(horizon: DomainTemporalHorizon | null): void {

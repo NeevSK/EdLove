@@ -17,6 +17,10 @@ export const BROWSER_SELF_FEATURES: Readonly<Record<string, BrowserFeatureRegist
     renderer: 'mood-lotus',
     taskKind: 'modal',
   },
+  daily_pulse: {
+    renderer: 'mood-lotus',
+    taskKind: 'modal',
+  },
   breath_guide: {
     renderer: 'breath-guide',
     taskKind: 'modal',

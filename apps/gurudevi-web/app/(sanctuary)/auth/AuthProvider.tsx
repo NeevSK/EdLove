@@ -2,6 +2,7 @@
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import { type BrowserAuthRuntime, type BrowserSession, browserAuthRuntime } from './browserAuth';
+import { sanctuarySignOut } from '@/lib/sanctuary/signOut';
 
 type AuthState = Readonly<{
   status: 'loading' | 'authenticated' | 'signed-out' | 'unavailable';
@@ -50,8 +51,13 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   };
 
   const signOut = async () => {
-    if (!runtime) return;
-    await runtime.client.auth.signOut({ scope: 'local' });
+    try {
+      await sanctuarySignOut();
+    } catch {
+      if (runtime) {
+        await runtime.client.auth.signOut({ scope: 'local' }).catch(() => {});
+      }
+    }
     setState({ status: 'signed-out', session: null, error: null });
   };
 

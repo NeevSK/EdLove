@@ -99,8 +99,22 @@ export async function authenticatedSovereignFetch(
     }
   }
 
+  let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+  let effectiveSignal = requestInit?.signal;
+  if (!effectiveSignal && typeof AbortController !== 'undefined') {
+    const controller = new AbortController();
+    timeoutTimer = setTimeout(() => {
+      controller.abort(new Error('Network request timed out'));
+    }, 15000);
+    effectiveSignal = controller.signal;
+  }
+
   try {
-    return await secureApiFetch(input, { ...requestInit, headers });
+    return await secureApiFetch(input, {
+      ...requestInit,
+      headers,
+      ...(effectiveSignal ? { signal: effectiveSignal } : {}),
+    });
   } catch (error) {
     const isNetworkFailure =
       error instanceof TypeError ||
@@ -126,6 +140,8 @@ export async function authenticatedSovereignFetch(
     }
 
     throw error;
+  } finally {
+    if (timeoutTimer) clearTimeout(timeoutTimer);
   }
 }
 

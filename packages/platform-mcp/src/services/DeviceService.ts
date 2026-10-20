@@ -1,5 +1,6 @@
 import { ROOT_DIR } from '../utils/constants.js';
 import { runCommand } from '../utils/execution.js';
+import { captureDeviceProfile, type DeviceProfileCaptureInput } from './deviceProfileCapture.js';
 
 function toMcpText(stdout: string, isError?: boolean) {
   return {
@@ -131,7 +132,17 @@ function buildArgentArgs(action: string, params: DeviceParams): string[] {
 
 export class DeviceService {
   async handleDeviceAction(action: string, params: DeviceParams = {}) {
-    console.error(`Sovereign Device Action: "${action}" with params`, params);
+    const loggedParams = action === 'capture_profile' ? { ...params, serial: '<redacted-device>' } : params;
+    console.error(`Sovereign Device Action: "${action}" with params`, loggedParams);
+
+    if (action === 'capture_profile') {
+      try {
+        const result = await captureDeviceProfile(params as DeviceProfileCaptureInput);
+        return toMcpText(JSON.stringify(result.manifest, null, 2));
+      } catch (err) {
+        return toMcpText(err instanceof Error ? err.message : String(err), true);
+      }
+    }
 
     const command = 'pnpm';
     const base: string[] = ['--filter', '@repo/platform-mcp', 'exec'];

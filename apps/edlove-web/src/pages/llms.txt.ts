@@ -1,39 +1,41 @@
-import { SITE_DESCRIPTION, SITE_URL } from '../lib/site';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '../lib/site';
 
 export function GET() {
-  const body = [
-    '# EdLove',
-    '',
-    `> ${SITE_DESCRIPTION}`,
-    '',
-    '## Canonical Site',
-    `- ${SITE_URL}/`,
-    '',
-    '## Priority Sections',
-    `- Vision: ${SITE_URL}/vision`,
-    `- Cosmos: ${SITE_URL}/cosmos`,
-    `- Sri Lanka: ${SITE_URL}/sri-lanka`,
-    `- Gurudevi: ${SITE_URL}/gurudevi`,
-    `- Resources: ${SITE_URL}/resources`,
-    `- Library: ${SITE_URL}/library`,
-    `- Community: ${SITE_URL}/community`,
-    `- Journal: ${SITE_URL}/journal`,
-    '',
-    '## Machine-Readable Endpoints',
-    `- Sitemap: ${SITE_URL}/sitemap-index.xml`,
-    `- Knowledge Index: ${SITE_URL}/knowledge.json`,
-    `- Journal RSS: ${SITE_URL}/journal/feed.xml`,
-    '',
-    '## Notes',
-    '- This file is an optional AI-orientation layer, not the canonical source of truth.',
-    '- Canonical truth lives in the HTML pages, structured metadata, and machine-readable endpoints.',
-    '- Prefer the sitemap and knowledge index for discovery.',
-    '- Public content may be used for search and real-time reference; training use is not granted by this site policy.',
-  ].join('\n');
+  const body = `# ${SITE_NAME}
+> ${SITE_DESCRIPTION}
+
+The EdLove Foundation is the apex educational transformation ecosystem connecting philosophy, 200 global innovations, pedagogical canon, and empirical field research.
+
+## Core Epistemic Commons
+- [Vision & Philosophy](${SITE_URL}/vision): Educational philosophy, non-extractive technology, and the Convivial Limit.
+- [200 Educational Innovations](${SITE_URL}/innovations): Curated global directory of 200 transformative learning practices.
+- [Cosmos Paradigms](${SITE_URL}/cosmos): Six holistic educational paradigms spanning self, ecological, and societal learning.
+- [Pedagogical Canon](${SITE_URL}/library): Foundational texts, teaching methods, and open educational resources.
+- [Ceylon Research Atlas](${SITE_URL}/sri-lanka): Empirical field research, school mapping, and district-level educational indicators.
+- [Gurudevi Sanctuary](${SITE_URL}/gurudevi): The relational education support system and teacher sanctuary in Sri Lanka.
+
+## Canonical Resources
+- [Home](${SITE_URL}/): Foundation portal and epistemic overview.
+- [Journal](${SITE_URL}/journal): Essays and pedagogical field notes.
+- [Community](${SITE_URL}/community): Educator circles and civic partnerships.
+- [Resources](${SITE_URL}/resources): Tools, guides, and curriculum toolkits.
+
+## Complete Context & LLM Ingestion
+- [Full Context Corpus](${SITE_URL}/llms-full.txt): Complete aggregated markdown text of all public essays, research summaries, and paradigm definitions for single-request LLM ingestion.
+
+## Machine-Readable Endpoints
+- [XML Sitemap Index](${SITE_URL}/sitemap-index.xml): Master XML sitemap index.
+- [Knowledge Index](${SITE_URL}/knowledge.json): Structured JSON catalog of public knowledge nodes.
+- [Journal RSS Feed](${SITE_URL}/journal/feed.xml): RSS 2.0 syndication feed.
+
+## Ethical AI & Citation Policy
+Public educational knowledge on edlove.org is licensed for open academic reference and search engine citation (search=yes, ai-input=yes). Mass scraping for uncredited model training without attribution is not granted (ai-train=no).
+`;
 
   return new Response(body, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600, s-maxage=86400',
     },
   });
 }

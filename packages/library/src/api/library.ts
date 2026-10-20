@@ -6,6 +6,7 @@ import {
   growthSignalsAPI,
   libraryContract,
 } from '@repo/core/api/client';
+import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { libraryAPI as sanctuaryLibraryAPI } from '@repo/core/api/library';
 
 import { APIError } from '@repo/core/types';
@@ -429,5 +430,8 @@ const libraryCoverage = assertContractCoverage(
     ],
   }),
 );
-export const libraryAPI = createTemporalProxy('library', rawLibraryAPI);
+export const libraryAPI = createResonantProxy(
+  'library',
+  createTemporalProxy('library', rawLibraryAPI),
+);
 void [libraryContract, libraryCoverage];

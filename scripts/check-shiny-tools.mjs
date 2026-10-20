@@ -1,37 +1,4 @@
-import { execSync } from 'node:child_process';
-
-const REQUIRED_TOOLS = [
-  {
-    name: 'rg',
-    command: 'rg --version',
-    purpose: 'Fast text searching (ripgrep)',
-    install: 'choco install ripgrep OR scoop install ripgrep',
-  },
-  {
-    name: 'fd',
-    command: 'fd --version',
-    purpose: 'Fast file finding (fd-find)',
-    install: 'choco install fd OR scoop install fd',
-  },
-  {
-    name: 'sd',
-    command: 'sd --version',
-    purpose: 'Fast find-and-replace (sd)',
-    install: 'cargo install sd OR scoop install sd',
-  },
-  {
-    name: 'gitleaks',
-    command: 'gitleaks version',
-    purpose: 'Secret leakage detection',
-    install: 'choco install gitleaks OR scoop install gitleaks',
-  },
-  {
-    name: 'pnpm',
-    command: 'pnpm --version',
-    purpose: 'Fast, disk space efficient package manager',
-    install: 'npm install -g pnpm',
-  },
-];
+import { auditAllShinyTools, isInteractive } from './lib/shiny-tools.mjs';
 
 const colors = {
   reset: '\x1b[0m',
@@ -44,25 +11,34 @@ const colors = {
   dim: '\x1b[2m',
 };
 
-console.log(`${colors.bold}${colors.cyan}\n🛡️  Sovereign Tooling Pre-flight Check\n${colors.reset}`);
+console.log(`${colors.bold}${colors.cyan}\n🛡️  Sovereign Tooling & Shiny Tools Pre-flight Check\n${colors.reset}`);
+
+const args = process.argv.slice(2);
+const strict = args.includes('--strict');
+const noPrompt = args.includes('--no-prompt');
+
+// In interactive mode, autoPrompt allows asking the user permission to download & install missing tools
+const shouldPrompt = !noPrompt && isInteractive();
+
+const results = await auditAllShinyTools({ autoPrompt: shouldPrompt });
 
 let allPass = true;
+let missingCount = 0;
 
-for (const tool of REQUIRED_TOOLS) {
-  try {
-    const version = execSync(tool.command, { stdio: 'pipe' }).toString().split('\n')[0];
+for (const [key, tool] of Object.entries(results)) {
+  if (tool.installed) {
     console.log(
-      `${colors.green}✅${colors.reset} ${colors.bold}${tool.name.padEnd(10)}${colors.reset} | ${colors.dim}${version}${colors.reset}`,
+      `${colors.green}✅${colors.reset} ${colors.bold}${tool.name.padEnd(10)}${colors.reset} | ${colors.dim}${tool.version}${colors.reset}`,
     );
-  } catch (_err) {
+  } else {
     allPass = false;
+    missingCount++;
     console.log(
       `${colors.red}❌${colors.reset} ${colors.bold}${tool.name.padEnd(10)}${colors.reset} | ${colors.yellow}MISSING${colors.reset}`,
     );
     console.log(`   ${colors.blue}└${colors.reset} Purpose: ${tool.purpose}`);
-    console.log(
-      `   ${colors.blue}└${colors.reset} Install: ${colors.cyan}${tool.install}${colors.reset}`,
-    );
+    const installSuggestion = tool.wingetId ? `winget install --id ${tool.wingetId} -e` : (tool.npmPkg ? `npm install -g ${tool.npmPkg}` : 'see docs');
+    console.log(`   ${colors.blue}└${colors.reset} Install: ${colors.cyan}${installSuggestion}${colors.reset}`);
   }
 }
 
@@ -70,9 +46,18 @@ if (allPass) {
   console.log(
     `${colors.bold}${colors.green}\n✨ All "Shiny Tools" are present and ready for Sovereign operations.\n${colors.reset}`,
   );
+  process.exit(0);
 } else {
-  console.log(
-    `${colors.bold}${colors.yellow}\n⚠️  Some tools are missing. Please install them to ensure optimal performance and safety.\n${colors.reset}`,
-  );
-  process.exit(1);
+  if (strict) {
+    console.log(
+      `${colors.bold}${colors.red}\n⚠️  ${missingCount} shiny tool(s) missing in strict mode. Exiting with failure.\n${colors.reset}`,
+    );
+    process.exit(1);
+  } else {
+    console.log(
+      `${colors.bold}${colors.yellow}\n⚠️  ${missingCount} shiny tool(s) missing. Standard fallbacks active.\n${colors.reset}`,
+    );
+    // Non-strict exit code 0 to allow graceful fallbacks across monorepo scripts
+    process.exit(0);
+  }
 }

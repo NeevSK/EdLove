@@ -211,6 +211,8 @@ export type {
   WorkspaceSwitcherDestination,
   WorkspaceSwitcherTarget,
   WorkspaceSwitcherTargetId,
+  FloorWallpaperConfig,
+  WallpaperPlaybackMode,
   WorkspaceWallpaper,
   WorkspaceZoneId,
 } from './Workspace';

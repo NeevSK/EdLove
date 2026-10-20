@@ -1,0 +1,201 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  color: #2d2926;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.backLink {
+  color: #a45d25;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.subtitle {
+  color: #71695f;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.metricsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.metricCard {
+  background: #fdfbf7;
+  border: 1px solid #e7e2d9;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px -2px rgba(45, 41, 38, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metricLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #71695f;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.metricIcon {
+  font-size: 1.35rem;
+}
+
+.metricValue {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: #2d2926;
+  line-height: 1.1;
+}
+
+.metricSubtext {
+  font-size: 0.85rem;
+  color: #8c827a;
+}
+
+.calendarCard {
+  background: #fdfbf7;
+  border: 1px solid #e7e2d9;
+  border-radius: 1.25rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.calendarTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d2926;
+  margin: 0;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #574c43;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.dotPresent {
+  background: #16a34a;
+}
+
+.dotLate {
+  background: #d97706;
+}
+
+.dotAbsent {
+  background: #dc2626;
+}
+
+.dotExcused {
+  background: #2563eb;
+}
+
+.dotWeekend {
+  background: #e5e7eb;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.75rem;
+}
+
+.dayCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #f0ede6;
+  min-height: 60px;
+}
+
+.dayNumber {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.pedagogyBanner {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  color: #854d0e;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

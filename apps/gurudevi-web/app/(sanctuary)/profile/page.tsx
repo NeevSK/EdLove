@@ -1,5 +1,8 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost, isLocalPreviewHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
@@ -15,28 +18,83 @@ export const metadata = { title: 'Profile | Gurudevi Sanctuary' };
  * profile fields remain out of scope until their browser contracts exist.
  */
 export default async function ProfilePage() {
-  const supabase = await createServerSupabaseClient();
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExploreHost = classifyGurudeviHost(host) === 'explore';
+  const supabase = isExploreHost ? null : await createServerSupabaseClient();
+  const isExplore = isExploreHost || (!supabase && isLocalPreviewHost(host));
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <ProfileFloor
+          accountId="guest-explorer"
+          displayName="Guest Explorer"
+          primaryScopeRole="Guest Explorer"
+          isExplore={true}
+        />
+      </SanctuaryShell>
+    );
+  }
+
   if (!supabase) {
     return (
       <ProfileState
-        detail="Profile identity cannot be verified because browser sign-in is not configured in this environment."
-        eyebrow="Profile"
-        title="Profile is unavailable"
+        action={
+          <div className={styles.actionRow}>
+            <Link className={styles.action} href={signInPath('/profile')}>
+              Sign in
+            </Link>
+            <a className={styles.secondaryAction} href="https://explore.gurudevi.app">
+              Explore in Guest House ↗
+            </a>
+          </div>
+        }
+        detail="To view your verified educator or student profile, sign in to your sanctuary account."
+        eyebrow="Personal Sanctuary"
+        title="Sanctuary Profile"
       />
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
+    if (isLocalPreviewHost(host)) {
+      return (
+        <SanctuaryShell
+          displayName="Guest Explorer"
+          navigationPrefix=""
+          showAccountNavigation={true}
+          isExploreMode={true}
+        >
+          <ProfileFloor
+            accountId="guest-explorer"
+            displayName="Guest Explorer"
+            primaryScopeRole="Guest Explorer"
+            isExplore={true}
+          />
+        </SanctuaryShell>
+      );
+    }
     return (
       <ProfileState
         action={
-          <Link className={styles.action} href={signInPath('/profile')}>
-            Sign in
-          </Link>
+          <div className={styles.actionRow}>
+            <Link className={styles.action} href={signInPath('/profile')}>
+              Sign in
+            </Link>
+            <Link className={styles.secondaryAction} href="/sign-up?returnTo=/onboarding">
+              Create account
+            </Link>
+          </div>
         }
         detail="Sign in to view the identity associated with your Gurudevi sanctuary."
-        eyebrow="Profile"
+        eyebrow="Personal Sanctuary"
         title="Your profile is private"
       />
     );
@@ -44,6 +102,16 @@ export default async function ProfilePage() {
   if (entry.kind === 'onboarding-required') {
     return (
       <ProfileState
+        action={
+          <div className={styles.actionRow}>
+            <Link className={styles.action} href="/onboarding">
+              Complete Enrollment
+            </Link>
+            <Link className={styles.secondaryAction} href="/welcome">
+              Welcome Gate
+            </Link>
+          </div>
+        }
         detail={onboardingDetail(entry.reason)}
         eyebrow="Profile"
         title="Complete your enrollment first"
@@ -52,11 +120,41 @@ export default async function ProfilePage() {
   }
   if (entry.kind === 'inactive') {
     return (
-      <ProfileState detail={entry.message} eyebrow="Profile" title="This profile is inactive" />
+      <ProfileState
+        action={
+          <div className={styles.actionRow}>
+            <Link className={styles.action} href="/welcome">
+              Return to Welcome Gate
+            </Link>
+            <a className={styles.secondaryAction} href="https://explore.gurudevi.app">
+              Guest House ↗
+            </a>
+          </div>
+        }
+        detail={entry.message}
+        eyebrow="Profile"
+        title="This profile is inactive"
+      />
     );
   }
   if (entry.kind === 'unavailable') {
-    return <ProfileState detail={entry.message} eyebrow="Profile" title="Profile is unavailable" />;
+    return (
+      <ProfileState
+        action={
+          <div className={styles.actionRow}>
+            <Link className={styles.action} href="/welcome">
+              Return to Welcome Gate
+            </Link>
+            <Link className={styles.secondaryAction} href={signInPath('/profile')}>
+              Sign in again
+            </Link>
+          </div>
+        }
+        detail={entry.message}
+        eyebrow="Profile"
+        title="Profile is temporarily unavailable"
+      />
+    );
   }
 
   return (

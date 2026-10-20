@@ -18,9 +18,9 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -58,14 +58,37 @@ export default function AttendanceSheet({
   onScanBadgePress,
 }: AttendanceSheetProps) {
   const { t } = useTranslation();
+  const [absentInput, setAbsentInput] = useState('');
   const {
     students,
+    setStudents,
     searchQuery,
     setSearchQuery,
     updateStudentStatus,
     filteredStudents,
     stats,
   } = useAttendance(initialStudents);
+
+  const handleApplyRapidAbsentees = () => {
+    if (!students.length) return;
+    const tokens = absentInput.split(/[,\s]+/).map((t) => t.trim()).filter(Boolean);
+    if (!tokens.length) return;
+    const rolls = new Set(tokens.map((t) => parseInt(t, 10)).filter((n) => !isNaN(n) && n > 0));
+    if (!rolls.size) return;
+
+    hapticSuccess();
+    setStudents((prev) =>
+      prev.map((student, idx) => {
+        const roll = student.roll_number ?? idx + 1;
+        const isAbsent = rolls.has(roll);
+        return {
+          ...student,
+          status: (isAbsent ? 'absent' : 'present') as AttendanceStatus,
+        };
+      }),
+    );
+    setAbsentInput('');
+  };
 
   // Notify parent on change
   useEffect(() => {
@@ -132,9 +155,18 @@ export default function AttendanceSheet({
                   </Box>
                 )}
                 <VStack className="flex-1">
-                  <Text className="text-phaseText-primary text-base font-bold">
-                    {item.full_name}
-                  </Text>
+                  <HStack className="items-center gap-2">
+                    <Text className="text-phaseText-primary text-base font-bold">
+                      {item.full_name}
+                    </Text>
+                    {item.student_id === item.id && (
+                      <Box className="bg-phase-canvas px-1.5 py-0.5 rounded-full">
+                        <Text className="text-[10px] text-phaseText-secondary font-semibold">
+                          Shadow
+                        </Text>
+                      </Box>
+                    )}
+                  </HStack>
                   <Text className="text-phaseText-secondary text-xs">
                     {t('attendance.sheet.swipeHint') || 'Swipe to mark status'}
                   </Text>
@@ -214,6 +246,36 @@ export default function AttendanceSheet({
                   <Icon as={QrCode} className="text-templeGold" size={22} />
                 </Pressable>
               )}
+            </HStack>
+          </Box>
+
+          {/* Rapid Roll Call ("All Present Except...") */}
+          <Box className="bg-phase-surface p-3 rounded-comfortable border border-phase-canvas/50">
+            <Text className="text-phaseText-secondary text-xs font-bold mb-1.5">
+              Rapid Roll Call (All Present Except...)
+            </Text>
+            <HStack className="gap-2 items-center">
+              <Input className="flex-1 bg-phase-canvas/50 border-phase-canvas rounded-comfortable h-11 px-3">
+                <InputField
+                  placeholder="Absent rolls e.g. 4, 18"
+                  value={absentInput}
+                  onChangeText={setAbsentInput}
+                  className="text-phaseText-primary text-sm"
+                  keyboardType="numbers-and-punctuation"
+                  accessibilityLabel="Absent roll numbers"
+                />
+              </Input>
+              <Pressable
+                onPress={handleApplyRapidAbsentees}
+                disabled={!absentInput.trim()}
+                className={`px-4 h-11 rounded-comfortable justify-center items-center ${
+                  absentInput.trim() ? 'bg-sanctuarySaffron' : 'bg-phase-canvas opacity-50'
+                }`}
+                accessibilityRole="button"
+                accessibilityLabel="Apply rapid absentees"
+              >
+                <Text className="text-white font-bold text-xs">Apply</Text>
+              </Pressable>
             </HStack>
           </Box>
 

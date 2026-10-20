@@ -23,7 +23,11 @@ export function getEntryPresentation({
     return { kind: 'restoring', message: profileError };
   }
 
-  if (routeTarget.redirectTo && pathname !== routeTarget.redirectTo) {
+  if (
+    routeTarget.redirectTo &&
+    pathname !== routeTarget.redirectTo &&
+    !routeTarget.policy.canRenderCurrentPath
+  ) {
     return { kind: 'transition', target: routeTarget.redirectTo };
   }
 

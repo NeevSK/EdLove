@@ -64,8 +64,14 @@ import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
+import {
+  CuratorInvitation,
+  HeroBanner,
+  MapInvitation,
+  SanctuaryPulse,
+} from '../components/furniture';
 
 const LIBRARY_UI_CATEGORIES = [
   { id: 'All', en: 'All' },
@@ -87,89 +93,6 @@ function getLibraryCreateErrorMessage(error: unknown): string {
     ? message
     : 'We could not add this resource. Please try again.';
 }
-
-const MapInvitation = memo(({ onPress }: { onPress: () => void }) => {
-  const theme = useTheme();
-
-  return (
-    <AnimatedView entering={FadeInDown.delay(200).springify()}>
-      <Pressable
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel="Enter the Cosmos"
-        accessibilityHint="Shift from shelves into constellation-style discovery when you want relationships, not just a list"
-        className="mx-4 my-4 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-border"
-      >
-        <Box className="absolute inset-0">
-          <LinearGradient
-            colors={[`${theme.accent.action}16`, `${theme.accent.reward}0D`]}
-            className="flex-1"
-          />
-        </Box>
-        <HStack className="p-5 gap-4 items-center">
-          <Box className="w-[60px] h-[60px] rounded-[30px] bg-white/10 justify-center items-center">
-            <Icon as={MapIcon} size={32} color={theme.accent.action} />
-          </Box>
-          <VStack className="flex-1 gap-1">
-            <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
-              Knowledge map
-            </Text>
-            <Text className="text-lg font-extrabold text-phaseText-primary">Enter the Cosmos</Text>
-            <Text className="text-[13px] text-phaseText-secondary leading-5">
-              Shift from shelves into constellation-style discovery when you want relationships, not
-              just a list.
-            </Text>
-          </VStack>
-          <Box className="p-2.5 bg-phase-accent rounded-xl">
-            <Icon as={Play} size={16} color="white" fill="white" />
-          </Box>
-        </HStack>
-      </Pressable>
-    </AnimatedView>
-  );
-});
-MapInvitation.displayName = 'MapInvitation';
-
-const CuratorInvitation = memo(({ onPress }: { onPress: () => void }) => {
-  const theme = useTheme();
-
-  return (
-    <AnimatedView entering={FadeInDown.delay(300).springify()}>
-      <Pressable
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel="Curator Dashboard"
-        accessibilityHint="Review, polish, and publish new knowledge streams without leaving the sanctuary shell"
-        className="mx-4 mt-0 mb-4 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-accent/20"
-      >
-        <Box className="absolute inset-0">
-          <LinearGradient
-            colors={[`${theme.accent.action}14`, 'rgba(255,255,255,0.2)']}
-            className="flex-1"
-          />
-        </Box>
-        <HStack className="p-4 gap-4 items-center">
-          <Box className="w-12 h-12 rounded-full bg-phase-accent/10 justify-center items-center">
-            <Icon as={FileText} size={24} color={theme.accent.action} />
-          </Box>
-          <VStack className="flex-1 gap-0.5">
-            <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
-              Curator pathway
-            </Text>
-            <Text className="text-base font-extrabold text-phaseText-primary">
-              Curator Dashboard
-            </Text>
-            <Text className="text-[12px] text-phaseText-secondary">
-              Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
-            </Text>
-          </VStack>
-          <Icon as={Plus} size={16} color={theme.text.secondary} />
-        </HStack>
-      </Pressable>
-    </AnimatedView>
-  );
-});
-CuratorInvitation.displayName = 'CuratorInvitation';
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
@@ -308,6 +231,7 @@ export default function LibraryScreen() {
   const isPastView = useTemporalStore((state) => state.isPastView);
   const deskItems = useStore((state) => state.deskItems);
   const user = useStore((state) => state.user);
+  const isDemoMode = useStore((state) => state.isDemoMode);
   const showToast = useStore((state) => state.showToast);
 
   // Search Debouncing (Orchestrated by Reducer)
@@ -354,7 +278,7 @@ export default function LibraryScreen() {
     workspaceId: 'library',
     userId: user?.id ?? null,
     surfaces: librarySurfaces,
-    enableRemoteSync: true,
+    enableRemoteSync: !isDemoMode,
   });
   const resolvedLibrarySurfaces = resolvedSurfaces;
 
@@ -389,12 +313,13 @@ export default function LibraryScreen() {
   );
 
   useEffect(() => {
+    if (isDemoMode) return;
     void discoverFeature('section_library');
     dispatch({ type: 'SET_SYNCING', isSyncing: true });
     void syncLibrary()
       .catch((err) => console.error('Library sync failed:', err))
       .finally(() => dispatch({ type: 'SET_SYNCING', isSyncing: false }));
-  }, [syncLibrary, discoverFeature]);
+  }, [isDemoMode, syncLibrary, discoverFeature]);
 
   useEffect(() => {
     if (
@@ -1064,54 +989,8 @@ export default function LibraryScreen() {
                   const vis = col.visibility;
 
                   const handleOwnerLongPress = () => {
-                    const visOptions = [
-                      {
-                        label: vis === 'private' ? 'Private ✓ (current)' : 'Make Private',
-                        value: 'private',
-                      },
-                      {
-                        label: vis === 'shared' ? 'Shared ✓ (current)' : 'Make Shared',
-                        value: 'shared',
-                      },
-                      {
-                        label: vis === 'public' ? 'Public ✓ (current)' : 'Make Public',
-                        value: 'public',
-                      },
-                    ];
-                    Alert.alert(col.name, 'Manage your collection', [
-                      ...visOptions
-                        .filter((o) => o.value !== vis)
-                        .map((o) => ({
-                          text: o.label,
-                          onPress: () =>
-                            updateCollection({
-                              id: col.id,
-                              updates: { visibility: o.value } as any,
-                            }),
-                        })),
-                      {
-                        text: '✏️ Edit (open detail)',
-                        onPress: () => handleOpenCollectionDetail(col),
-                      },
-                      {
-                        text: '🗑️ Delete',
-                        style: 'destructive' as const,
-                        onPress: () =>
-                          Alert.alert(
-                            'Delete Collection',
-                            `Delete "${col.name}"? This cannot be undone.`,
-                            [
-                              { text: 'Cancel', style: 'cancel' },
-                              {
-                                text: 'Delete',
-                                style: 'destructive',
-                                onPress: () => deleteCollection(col.id),
-                              },
-                            ],
-                          ),
-                      },
-                      { text: 'Cancel', style: 'cancel' as const },
-                    ]);
+                    hapticSuccess();
+                    handleOpenCollectionDetail(col);
                   };
 
                   return (
@@ -1251,10 +1130,10 @@ export default function LibraryScreen() {
                 accessibilityLabel={label}
                 accessibilityHint={hint}
                 accessibilityState={{ selected }}
-                className={`min-h-11 flex-1 px-2 rounded-xl justify-center items-center ${selected ? 'bg-phase-interactive' : ''}`}
+                className={`will-change-variable min-h-11 flex-1 px-2 rounded-xl justify-center items-center ${selected ? 'bg-phase-interactive' : ''}`}
               >
                 <Text
-                  className={`text-center text-[14px] font-bold ${selected ? 'text-white' : 'text-phaseText-secondary'}`}
+                  className={`will-change-variable text-center text-[14px] font-bold ${selected ? 'text-white' : 'text-phaseText-secondary'}`}
                 >
                   {label}
                 </Text>
@@ -1554,161 +1433,5 @@ export default function LibraryScreen() {
         isAdding={isAddingToCollection}
       />
     </ScreenWrapper>
-  );
-}
-
-interface HeroBannerProps {
-  resource: LibraryResource;
-  onPress: (resource: LibraryResource) => void;
-}
-
-const _HERO_HEIGHT = 220;
-
-const SanctuaryPulse = memo(
-  ({
-    resourceCount,
-    collectionCount,
-    bookmarkCount,
-  }: {
-    resourceCount: number;
-    collectionCount: number;
-    bookmarkCount: number;
-  }) => {
-    const theme = useTheme();
-
-    const items = useMemo(
-      () => [
-        {
-          label: 'Resources',
-          value: resourceCount,
-          accent: `${theme.accent.action}18`,
-        },
-        {
-          label: 'Categories',
-          value: collectionCount,
-          accent: `${theme.accent.reward}16`,
-        },
-        {
-          label: 'Bookmarks',
-          value: bookmarkCount,
-          accent: `${theme.accent.sageGreen}16`,
-        },
-      ],
-      [
-        resourceCount,
-        collectionCount,
-        bookmarkCount,
-        theme.accent.action,
-        theme.accent.reward,
-        theme.accent.sageGreen,
-      ],
-    );
-
-    return (
-      <HStack className="px-md pt-sm gap-2.5">
-        {items.map((item) => (
-          <Box
-            key={item.label}
-            className="flex-1 rounded-[18px] border border-phase-border bg-phase-surface overflow-hidden"
-          >
-            <Box className="px-5 py-4" style={{ backgroundColor: item.accent }}>
-              <Text className="text-[10px] font-extrabold tracking-widest uppercase text-phaseText-secondary">
-                {item.label}
-              </Text>
-              <Text className="text-2xl font-extrabold text-phaseText-primary mt-1">
-                {item.value}
-              </Text>
-            </Box>
-          </Box>
-        ))}
-      </HStack>
-    );
-  },
-);
-SanctuaryPulse.displayName = 'SanctuaryPulse';
-
-const HeroBanner = memo(({ resource, onPress }: HeroBannerProps) => {
-  const theme = useTheme();
-  const handlePress = useCallback(() => {
-    onPress(resource);
-  }, [resource, onPress]);
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      accessibilityRole="button"
-      accessibilityLabel={`Featured resource: ${resource.title}`}
-      accessibilityHint="Opens the featured resource"
-    >
-      <Box className="h-[240px] overflow-hidden bg-phase-surface/50 mb-md mx-md rounded-3xl border border-phase-border">
-        {resource.media?.url ? (
-          <ImageBackground
-            source={{ uri: resource.media.url as string }}
-            className="flex-1"
-            resizeMode="cover"
-          >
-            <HeroOverlay resource={resource} theme={theme} />
-          </ImageBackground>
-        ) : (
-          <Box className="flex-1">
-            <LinearGradient
-              colors={[`${theme.accent.action}18`, `${theme.accent.reward}16`]}
-              className="flex-1"
-            />
-            <HeroOverlay resource={resource} theme={theme} />
-          </Box>
-        )}
-      </Box>
-    </Pressable>
-  );
-});
-HeroBanner.displayName = 'HeroBanner';
-
-function HeroOverlay({ resource, theme }: { resource: LibraryResource; theme: any }) {
-  return (
-    <Box className="absolute inset-0 justify-end p-6">
-      <LinearGradient
-        colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)', 'rgba(252,249,242,0.94)']}
-        className="absolute inset-0"
-      />
-      <Box className="bg-[#FCF9F2]/90 rounded-[20px] p-5 border border-white/50">
-        <Box
-          className="self-start px-2 py-1 rounded-full mb-2"
-          style={{ backgroundColor: `${theme.accent.action}18` }}
-        >
-          <Text
-            className="text-[10px] font-extrabold tracking-widest"
-            style={{ color: theme.accent.action }}
-          >
-            ✧ FEATURED
-          </Text>
-        </Box>
-        <Text className="text-[22px] font-extrabold leading-7 mb-1.5 text-phaseText-primary">
-          {resource.title}
-        </Text>
-        {resource.description && (
-          <Text
-            className="text-[13px] leading-[18px] mb-3 text-phaseText-secondary"
-            numberOfLines={3}
-          >
-            {resource.description}
-          </Text>
-        )}
-        <HStack className="items-center gap-2.5">
-          <Box
-            className="flex-row items-center gap-1.5 px-3.5 py-2 rounded-xl"
-            style={{ backgroundColor: theme.accent.action }}
-          >
-            <Icon as={Play} size={14} color="white" fill="white" />
-            <Text className="text-white font-bold text-[13px]">Open</Text>
-          </Box>
-          {resource.creator_name ? (
-            <Text className="text-[12px] text-phaseText-secondary font-semibold">
-              Curated by {resource.creator_name}
-            </Text>
-          ) : null}
-        </HStack>
-      </Box>
-    </Box>
   );
 }

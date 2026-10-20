@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   classifyGurudeviHost,
   EXPLORE_GURUDEVI_HOST,
+  isLocalPreviewHost,
   isSanctuaryPath,
   PUBLIC_GURUDEVI_HOST,
   resolveHostRouting,
@@ -13,6 +14,14 @@ describe('Gurudevi hostname policy', () => {
     expect(classifyGurudeviHost('GURUDEVI.APP.')).toBe('public');
     expect(classifyGurudeviHost(SANCTUARY_GURUDEVI_HOST)).toBe('sanctuary');
     expect(classifyGurudeviHost(EXPLORE_GURUDEVI_HOST)).toBe('explore');
+    expect(classifyGurudeviHost('localhost')).toBe('other');
+  });
+
+  it('recognizes local preview hosts without changing production host classification', () => {
+    expect(isLocalPreviewHost('localhost:3000')).toBe(true);
+    expect(isLocalPreviewHost('127.0.0.1:3000')).toBe(true);
+    expect(isLocalPreviewHost('[::1]:3000')).toBe(true);
+    expect(isLocalPreviewHost('explore.gurudevi.app')).toBe(false);
     expect(classifyGurudeviHost('localhost')).toBe('other');
   });
 
@@ -37,12 +46,12 @@ describe('Gurudevi hostname policy', () => {
     expect(resolveHostRouting('platform.gurudevi.app', '/', 'GET')).toEqual({
       kind: 'redirect',
       host: SANCTUARY_GURUDEVI_HOST,
-      pathname: '/self',
+      pathname: '/welcome',
     });
     expect(resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/', 'GET')).toEqual({
       kind: 'redirect',
       host: SANCTUARY_GURUDEVI_HOST,
-      pathname: '/self',
+      pathname: '/welcome',
     });
     expect(resolveHostRouting('gurudevi.lk', '/anything', 'GET')).toEqual({
       kind: 'redirect',
@@ -53,9 +62,12 @@ describe('Gurudevi hostname policy', () => {
   it('maps Explore-only GET requests to canonical routes and denies privileged paths', () => {
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/', 'GET')).toEqual({
       kind: 'rewrite',
-      pathname: '/self',
+      pathname: '/welcome',
     });
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'GET')).toEqual({
+      kind: 'allow',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/welcome', 'GET')).toEqual({
       kind: 'allow',
     });
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/workspace', 'GET')).toEqual({
@@ -68,6 +80,15 @@ describe('Gurudevi hostname policy', () => {
       kind: 'redirect',
       host: SANCTUARY_GURUDEVI_HOST,
       pathname: '/sign-in',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/profile', 'GET')).toEqual({
+      kind: 'allow',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/settings', 'GET')).toEqual({
+      kind: 'allow',
+    });
+    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/notifications', 'GET')).toEqual({
+      kind: 'allow',
     });
     expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'POST')).toEqual({
       kind: 'not-found',
@@ -108,5 +129,40 @@ describe('Gurudevi hostname policy', () => {
     expect(
       resolveHostRouting(SANCTUARY_GURUDEVI_HOST, '/.well-known/apple-app-site-association', 'GET'),
     ).toEqual({ kind: 'allow' });
+  });
+
+  it('recognizes and routes school vanity subdomains to dynamic school profiles', () => {
+    expect(classifyGurudeviHost('ananda.gurudevi.app')).toBe('school');
+    expect(classifyGurudeviHost('royal-college.gurudevi.app')).toBe('school');
+    expect(classifyGurudeviHost('sanctuary.gurudevi.app')).toBe('sanctuary');
+
+    // Root rewrites to sovereign school profile
+    expect(resolveHostRouting('ananda.gurudevi.app', '/', 'GET')).toEqual({
+      kind: 'rewrite',
+      pathname: '/school/ananda',
+    });
+
+    // Privileged operational desk redirected to canonical Sanctuary host
+    expect(resolveHostRouting('ananda.gurudevi.app', '/workspace/school', 'GET')).toEqual({
+      kind: 'redirect',
+      host: SANCTUARY_GURUDEVI_HOST,
+      pathname: '/workspace/school',
+    });
+
+    // Subpaths rewrite to preserve subdomain context
+    expect(resolveHostRouting('ananda.gurudevi.app', '/articles/sports-2026', 'GET')).toEqual({
+      kind: 'rewrite',
+      pathname: '/school/ananda/articles/sports-2026',
+    });
+
+    // Direct allowed subpaths
+    expect(resolveHostRouting('ananda.gurudevi.app', '/school/ananda', 'GET')).toEqual({
+      kind: 'allow',
+    });
+
+    // Unsafe methods rejected on public school vanity domain
+    expect(resolveHostRouting('ananda.gurudevi.app', '/', 'POST')).toEqual({
+      kind: 'not-found',
+    });
   });
 });

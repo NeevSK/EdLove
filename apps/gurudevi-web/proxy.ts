@@ -24,15 +24,26 @@ export async function proxy(request: NextRequest) {
   }
 
   const incomingHost = hostRouting.kind === 'allow' ? classifyGurudeviHost(hostname) : 'other';
-  return incomingHost !== 'explore' && isSanctuaryPath(request.nextUrl.pathname)
-    ? refreshSupabaseSession(request)
-    : NextResponse.next({ request });
+  const response =
+    incomingHost !== 'explore' && isSanctuaryPath(request.nextUrl.pathname)
+      ? await refreshSupabaseSession(request)
+      : NextResponse.next({ request });
+
+  return applySecurityHeaders(response);
+}
+
+function applySecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
 }
 
 // Host routing must see both route families. Static assets are excluded so their
 // origin remains stable while routes move between the two canonical hosts.
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:avif|css|gif|ico|jpeg|jpg|js|map|png|svg|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:avif|css|gif|ico|jpeg|jpg|js|map|png|svg|webp|txt)$).*)',
   ],
 };

@@ -4,6 +4,7 @@ import { storage } from '@repo/core/lib/storage';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useOfflineStatus } from '@repo/core/offline/resilience';
 import { useCallback, useEffect, useState } from 'react';
+import { useThrottledInvalidate } from '../pacer/usePacer';
 
 export interface ClimateMetrics {
   psychologicalSafety: number;
@@ -78,6 +79,8 @@ export function useClimateSensing(classroomId = 'class-10a') {
     setData(loadDurableClimate(classroomId));
   }, [classroomId]);
 
+  const throttledRefresh = useThrottledInvalidate(500);
+
   const submitRating = useCallback(
     async (ratings: ClimateMetrics, note?: string): Promise<ClimateSubmission> => {
       const nowIso = new Date().toISOString();
@@ -141,9 +144,11 @@ export function useClimateSensing(classroomId = 'class-10a') {
         type: 'CUSTOM',
       });
 
+      void throttledRefresh(['classroom', 'climate', classroomId]);
+
       return submission;
     },
-    [classroomId],
+    [classroomId, throttledRefresh],
   );
 
   return {

@@ -33,14 +33,14 @@ describe('Next host proxy', () => {
     expect(response.headers.get('x-middleware-rewrite')).toBeNull();
   });
 
-  it('rewrites Explore root to /self', async () => {
+  it('rewrites Explore root to /welcome', async () => {
     const response = await proxy(
       new NextRequest('http://localhost:3210/', {
         headers: { host: 'explore.gurudevi.app:3210' },
       }),
     );
 
-    expect(response.headers.get('x-middleware-rewrite')).toContain('/self');
+    expect(response.headers.get('x-middleware-rewrite')).toContain('/welcome');
   });
 
   it('does not route from forwarded host when the direct Host header is unrelated', async () => {
@@ -60,5 +60,15 @@ describe('Next host proxy', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('enforces clickjacking defense and MIME sniffing protection headers', async () => {
+    const response = await proxy(
+      new NextRequest('https://sanctuary.gurudevi.app/workspace'),
+    );
+
+    expect(response.headers.get('x-frame-options')).toBe('DENY');
+    expect(response.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(response.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
   });
 });

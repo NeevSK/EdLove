@@ -18,7 +18,7 @@ export function getEntryNavigationAction({
 }: {
   pathname: string;
   pendingIntent: PendingDeepLinkIntent | null;
-  routeTarget: RouteTarget;
+  routeTarget: Pick<RouteTarget, 'decision' | 'redirectTo'>;
 }): EntryNavigationAction {
   if (routeTarget.decision === 'app' && pendingIntent?.targetPath) {
     const targetBase = pendingIntent.targetPath.split(/[?#]/)[0];

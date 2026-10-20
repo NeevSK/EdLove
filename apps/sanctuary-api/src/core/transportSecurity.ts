@@ -10,6 +10,22 @@ export function requiresHttps(nodeEnv = process.env.NODE_ENV): boolean {
   return nodeEnv !== 'development' && nodeEnv !== 'test';
 }
 
+const RESERVED_DISALLOWED_SUBDOMAINS = new Set([
+  'explore',
+  'api',
+  'admin',
+  'www',
+  'platform',
+  'status',
+  'mail',
+  'auth',
+]);
+
+const CANONICAL_ALLOWED_ORIGINS = new Set([
+  'https://gurudevi.app',
+  'https://sanctuary.gurudevi.app',
+]);
+
 export function resolveAllowedCorsOrigin(
   origin: string | undefined,
   nodeEnv = process.env.NODE_ENV,
@@ -29,8 +45,26 @@ export function resolveAllowedCorsOrigin(
       return null;
     }
   }
-  const allowedOrigins = ['https://gurudevi.app', 'https://sanctuary.gurudevi.app'];
-  return allowedOrigins.includes(origin) ? origin : null;
+
+  try {
+    const parsedOrigin = new URL(origin);
+    if (parsedOrigin.origin !== origin) return null;
+    if (parsedOrigin.protocol !== 'https:') return null;
+
+    if (CANONICAL_ALLOWED_ORIGINS.has(origin)) return origin;
+
+    const match = parsedOrigin.hostname.match(/^([a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\.gurudevi\.app$/);
+    if (match) {
+      const subdomain = match[1];
+      if (subdomain && !RESERVED_DISALLOWED_SUBDOMAINS.has(subdomain)) {
+        return origin;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 export function requireHttpsMiddleware(nodeEnv = process.env.NODE_ENV) {

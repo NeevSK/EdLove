@@ -4,6 +4,7 @@ import { storage } from '@repo/core/lib/storage';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useOfflineStatus } from '@repo/core/offline/resilience';
 import { useCallback, useEffect, useState } from 'react';
+import { useThrottledInvalidate } from '../pacer/usePacer';
 
 export interface AssignmentQuest {
   id: string;
@@ -133,6 +134,8 @@ export function useAcademicSubmissions(classroomId = 'class-10a') {
     (s) => s.queue.filter((item) => item.scope === 'classroom').length,
   );
 
+  const throttledRefresh = useThrottledInvalidate(500);
+
   useEffect(() => {
     setSubmissions(loadDurableSubmissions(classroomId));
   }, [classroomId]);
@@ -195,9 +198,11 @@ export function useAcademicSubmissions(classroomId = 'class-10a') {
         type: 'CUSTOM',
       });
 
+      void throttledRefresh(['academic', 'submissions', classroomId]);
+
       return newSubmission;
     },
-    [assignments, classroomId],
+    [assignments, classroomId, throttledRefresh],
   );
 
   const gradeSubmission = useCallback(
@@ -238,8 +243,10 @@ export function useAcademicSubmissions(classroomId = 'class-10a') {
         },
         type: 'CUSTOM',
       });
+
+      void throttledRefresh(['academic', 'submissions', classroomId]);
     },
-    [classroomId],
+    [classroomId, throttledRefresh],
   );
 
   return {

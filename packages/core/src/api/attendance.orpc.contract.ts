@@ -4,9 +4,9 @@ const status = z.enum(['present', 'absent', 'late', 'excused']);
 const sessionKind = z.enum(['lesson', 'arrival', 'departure']);
 
 const attendance = z.object({
-  id: z.string().uuid(),
-  student_id: z.string().uuid(),
-  grade_class_id: z.string().uuid(),
+  id: z.uuid(),
+  student_id: z.uuid(),
+  grade_class_id: z.uuid(),
   status,
   attendance_date: z.string(),
   created_at: z.string(),
@@ -15,45 +15,45 @@ const attendance = z.object({
   student_avatar_url: z.string().nullable(),
   sessions: z.array(
     z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
       session_kind: sessionKind,
       session_at: z.string(),
       status,
-      teacher_id: z.string().uuid().nullable(),
-      subject_id: z.string().uuid().nullable(),
-      term_id: z.string().uuid().nullable(),
+      teacher_id: z.uuid().nullable(),
+      subject_id: z.uuid().nullable(),
+      term_id: z.uuid().nullable(),
     }),
   ),
 });
 
 const sessionInput = z.strictObject({
   sessionKind: sessionKind.optional(),
-  sessionAt: z.string().datetime().optional(),
-  teacherId: z.string().uuid().nullable().optional(),
-  subjectId: z.string().uuid().nullable().optional(),
-  termId: z.string().uuid().nullable().optional(),
+  sessionAt: z.iso.datetime().optional(),
+  teacherId: z.uuid().nullable().optional(),
+  subjectId: z.uuid().nullable().optional(),
+  termId: z.uuid().nullable().optional(),
 });
 
 const recordInput = z
   .strictObject({
-    gradeClassId: z.string().uuid(),
-    studentId: z.string().uuid(),
+    gradeClassId: z.uuid(),
+    studentId: z.uuid(),
     status,
     date: z.string(),
   })
   .merge(sessionInput);
 
 const rosterStudent = z.object({
-  enrollment_id: z.string().uuid(),
-  student_id: z.string().uuid(),
+  enrollment_id: z.uuid(),
+  student_id: z.uuid(),
   full_name: z.string().nullable(),
   avatar_url: z.string().nullable(),
 });
 
 const gradeClassSummary = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  academic_cycle_id: z.string().uuid(),
+  academic_cycle_id: z.uuid(),
   role: z.string().nullable(),
 });
 
@@ -68,7 +68,7 @@ export const attendanceORPCContract = {
     path: '/attendance/classroom',
     request: {
       query: z.strictObject({
-        gradeClassId: z.string().uuid(),
+        gradeClassId: z.uuid(),
         date: z.string().optional(),
       }),
     },
@@ -94,8 +94,8 @@ export const attendanceORPCContract = {
     path: '/attendance/school-pulse',
     request: {
       query: z.strictObject({
-        schoolId: z.string().uuid(),
-        gradeClassId: z.string().uuid().optional(),
+        schoolId: z.uuid(),
+        gradeClassId: z.uuid().optional(),
         viewDate: z.string().optional(),
       }),
     },
@@ -116,10 +116,10 @@ export const attendanceORPCContract = {
     path: '/attendance/report',
     request: {
       query: z.strictObject({
-        schoolId: z.string().uuid(),
+        schoolId: z.uuid(),
         startDate: z.string(),
         endDate: z.string(),
-        gradeClassId: z.string().uuid().optional(),
+        gradeClassId: z.uuid().optional(),
       }),
     },
     responses: {
@@ -148,7 +148,7 @@ export const attendanceORPCContract = {
     path: '/attendance/grade-class-roster',
     request: {
       query: z.strictObject({
-        gradeClassId: z.string().uuid(),
+        gradeClassId: z.uuid(),
         date: z.string().optional(),
       }),
     },
@@ -165,5 +165,45 @@ export const attendanceORPCContract = {
       200: { schema: z.array(gradeClassSummary), description: 'Grade classes the caller may mark' },
     },
     metadata: ownSchoolRead,
+  },
+  quickMark: {
+    method: 'post',
+    path: '/attendance/quick-mark',
+    request: {
+      body: z.strictObject({
+        gradeClassId: z.uuid(),
+        date: z.string(),
+        rawText: z.string().trim().min(1).max(500),
+      }),
+    },
+    metadata: attendanceWrite,
+    responses: {
+      200: {
+        schema: z.object({
+          updatedCount: z.number(),
+          marks: z.record(z.string(), status),
+        }),
+        description: 'Quick-marked attendance via text parser',
+      },
+    },
+  },
+  submitExcuse: {
+    method: 'post',
+    path: '/attendance/excuse',
+    request: {
+      body: z.strictObject({
+        studentId: z.uuid(),
+        gradeClassId: z.uuid(),
+        date: z.string(),
+        reason: z.string().trim().min(2).max(500),
+      }),
+    },
+    metadata: attendanceWrite,
+    responses: {
+      200: {
+        schema: z.object({ success: z.boolean() }),
+        description: 'Submitted excused absence note',
+      },
+    },
   },
 };

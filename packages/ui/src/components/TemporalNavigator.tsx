@@ -1,8 +1,8 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
-import { useState } from 'react';
-import { Platform } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Modal, Platform, TextInput, View } from 'react-native';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 /**
@@ -22,9 +22,12 @@ const loadDateTimePicker = () => {
 export const TemporalNavigator = () => {
   const { viewDate, setViewDate, resetToToday, phase } = useTemporalStore();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [manualDateInput, setManualDateInput] = useState('');
+
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0] || '', []);
 
   const adjustDate = (days: number) => {
-    const date = new Date(viewDate);
+    const date = new Date(viewDate + 'T12:00:00');
     date.setDate(date.getDate() + days);
     const dateStr = date.toISOString().split('T')[0] || '';
     setViewDate(dateStr);
@@ -32,8 +35,7 @@ export const TemporalNavigator = () => {
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const todayStr = new Date().toISOString().split('T')[0];
+    const date = new Date(dateStr + 'T12:00:00');
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -51,67 +53,210 @@ export const TemporalNavigator = () => {
 
   const isToday = phase === 'present';
 
+  const phaseLabel = useMemo(() => {
+    switch (phase) {
+      case 'past':
+        return 'Archival Review';
+      case 'future':
+        return 'Future Horizon';
+      case 'present':
+      default:
+        return 'Live Practice';
+    }
+  }, [phase]);
+
+  const relativeLabel = useMemo(() => {
+    if (viewDate === todayStr) return 'Today';
+    const dView = new Date(viewDate + 'T12:00:00');
+    const dToday = new Date(todayStr + 'T12:00:00');
+    const diffDays = Math.round((dView.getTime() - dToday.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays === -1) return 'Yesterday';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays < -1) return `${Math.abs(diffDays)}d ago`;
+    if (diffDays > 1) return `+${diffDays}d`;
+    return phaseLabel;
+  }, [viewDate, todayStr, phaseLabel]);
+
+  const handleOpenPicker = () => {
+    setManualDateInput(viewDate);
+    setShowDatePicker(true);
+  };
+
+  const handleManualDateConfirm = () => {
+    if (manualDateInput && !Number.isNaN(Date.parse(manualDateInput))) {
+      const parsedIso = new Date(manualDateInput + 'T12:00:00').toISOString().split('T')[0] || '';
+      setViewDate(parsedIso);
+    }
+    setShowDatePicker(false);
+  };
+
+  const shiftDaysFromToday = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    const dateStr = d.toISOString().split('T')[0] || '';
+    setViewDate(dateStr);
+    setShowDatePicker(false);
+  };
+
   return (
     <Animated.View
       layout={LinearTransition}
       entering={FadeIn}
-      className="flex-row items-center justify-between bg-phase-surface/10 mx-4 my-2 py-2.5 px-3 rounded-xl border border-white/5 shadow-sm"
+      className="bg-phase-surface/10 mx-3 my-1.5 py-1.5 px-2.5 rounded-full border border-white/10 shadow-sm flex-row items-center justify-between"
     >
-      <HStack className="items-center flex-1 gap-2">
+      {/* Left: Dynamic Phase Badge */}
+      <View
+        className={`px-2.5 py-1 rounded-full flex-row items-center ${
+          phase === 'present'
+            ? 'bg-phase-accent/20 border border-phase-accent/40'
+            : phase === 'past'
+              ? 'bg-amber-900/25 border border-amber-600/40'
+              : 'bg-cyan-900/25 border border-cyan-600/40'
+        }`}
+      >
+        <Text
+          className={`text-xs font-bold ${
+            phase === 'present'
+              ? 'text-phase-accent'
+              : phase === 'past'
+                ? 'text-amber-400'
+                : 'text-cyan-400'
+          }`}
+        >
+          {relativeLabel}
+        </Text>
+      </View>
+
+      {/* Center: Stepper & Formatted Date */}
+      <HStack className="items-center gap-1.5">
         <Pressable
           accessibilityRole="button"
-          className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
+          className="w-7 h-7 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
           onPress={() => adjustDate(-1)}
+          accessibilityLabel="Previous day"
         >
-          <ChevronLeft size={20} color="#999" />
+          <ChevronLeft size={16} color="#bbb" />
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          className="px-1.5 py-0.5 active:opacity-75"
+          onPress={handleOpenPicker}
+        >
+          <Text className="text-white text-xs font-semibold tracking-tight">
+            {formatDate(viewDate)}
+          </Text>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          className={`w-7 h-7 rounded-full bg-white/5 items-center justify-center ${
+            isToday ? 'opacity-20' : 'active:bg-white/10'
+          }`}
+          onPress={() => !isToday && adjustDate(1)}
+          disabled={isToday}
+          accessibilityLabel="Next day"
+        >
+          <ChevronRight size={16} color="#bbb" />
+        </Pressable>
+      </HStack>
+
+      {/* Right: Calendar Icon & Conditional Today Reset */}
+      <HStack className="items-center gap-1.5">
+        <Pressable
+          accessibilityRole="button"
+          className="w-7 h-7 rounded-full bg-white/10 items-center justify-center active:bg-white/20 border border-white/10"
+          onPress={handleOpenPicker}
+          accessibilityLabel="Calendar"
+        >
+          <Calendar size={13} color="#F6BF8C" />
         </Pressable>
 
         {!isToday && (
           <Pressable
             accessibilityRole="button"
-            className="flex-row items-center ml-2 px-2.5 py-1.5 rounded-lg bg-phase-accent/15 active:bg-phase-accent/25"
+            className="flex-row items-center px-2 py-1 rounded-full bg-phase-accent/20 border border-phase-accent/40 active:bg-phase-accent/30"
             onPress={resetToToday}
+            accessibilityLabel="Go to Today"
           >
-            <RotateCcw size={14} color="#F6BF8C" />
-            <Text className="text-phase-accent text-xs font-semibold ml-1">Today</Text>
+            <RotateCcw size={11} color="#F6BF8C" />
+            <Text className="text-phase-accent text-[11px] font-bold ml-1">Go to Today</Text>
           </Pressable>
         )}
       </HStack>
 
-      <Pressable
-        accessibilityRole="button"
-        className="flex-row items-center px-3 active:opacity-70"
-        onPress={() => {
-          if (Platform.OS === 'web') {
-            const dateStr = prompt('Enter date (YYYY-MM-DD):', viewDate);
-            if (dateStr && !isNaN(Date.parse(dateStr))) {
-              setViewDate(new Date(dateStr).toISOString().split('T')[0] || '');
-            }
-          } else {
-            setShowDatePicker(true);
-          }
-        }}
-      >
-        <Calendar size={16} color="#F6BF8C" className="mr-1.5" />
-        <Box>
-          <Text className="text-white text-base font-bold tracking-tight">
-            {formatDate(viewDate)}
-          </Text>
-          {/* Temporal pulse (Phase 2 delighter) */}
-          <Box className="w-1 h-1 rounded-full bg-phase-accent absolute -bottom-2 self-center shadow-[0_0_8px_#F6BF8C]" />
-        </Box>
-      </Pressable>
-
-      <Box className="flex-row items-center justify-end flex-1">
-        <Pressable
-          accessibilityRole="button"
-          className={`w-9 h-9 rounded-full bg-white/5 items-center justify-center ${isToday ? 'opacity-20' : 'active:bg-white/10'}`}
-          onPress={() => !isToday && adjustDate(1)}
-          disabled={isToday}
+      {/* Cross-platform Modal Date Picker Dialog (Eradicating prompt()) */}
+      {showDatePicker && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible={showDatePicker}
+          onRequestClose={() => setShowDatePicker(false)}
         >
-          <ChevronRight size={20} color="#999" />
-        </Pressable>
-      </Box>
+          <View className="flex-1 bg-black/75 items-center justify-center p-4">
+            <View className="bg-neutral-900 border border-white/10 rounded-2xl p-5 w-full max-w-sm">
+              <Text className="text-white text-base font-bold mb-3">Choose Calendar Date</Text>
+
+              {/* Quick Jump Options */}
+              <View className="flex-row flex-wrap gap-2 mb-4">
+                <Pressable
+                  className="px-3 py-1.5 rounded-full bg-white/10 active:bg-white/20"
+                  onPress={() => shiftDaysFromToday(0)}
+                >
+                  <Text className="text-white text-xs font-medium">★ Today</Text>
+                </Pressable>
+                <Pressable
+                  className="px-3 py-1.5 rounded-full bg-white/10 active:bg-white/20"
+                  onPress={() => shiftDaysFromToday(-1)}
+                >
+                  <Text className="text-white text-xs font-medium">Yesterday</Text>
+                </Pressable>
+                <Pressable
+                  className="px-3 py-1.5 rounded-full bg-white/10 active:bg-white/20"
+                  onPress={() => shiftDaysFromToday(-7)}
+                >
+                  <Text className="text-white text-xs font-medium">7 Days Ago</Text>
+                </Pressable>
+                <Pressable
+                  className="px-3 py-1.5 rounded-full bg-white/10 active:bg-white/20"
+                  onPress={() => shiftDaysFromToday(1)}
+                >
+                  <Text className="text-white text-xs font-medium">Tomorrow</Text>
+                </Pressable>
+              </View>
+
+              {/* Manual Date Input */}
+              <Text className="text-white/60 text-xs mb-1">Date (YYYY-MM-DD):</Text>
+              <TextInput testID="direct-date-input"
+                accessibilityLabel="Direct date input"
+                value={manualDateInput}
+                onChangeText={setManualDateInput}
+                placeholder="2026-10-18"
+                placeholderTextColor="#666"
+                className="bg-black/50 border border-white/15 rounded-lg px-3 py-2 text-white text-sm mb-4 font-mono"
+                autoCapitalize="none"
+              />
+
+              <View className="flex-row justify-end gap-2">
+                <Pressable
+                  className="px-4 py-2 rounded-lg bg-white/5 active:bg-white/10"
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <Text className="text-white/70 text-xs font-semibold">Cancel</Text>
+                </Pressable>
+                <Pressable
+                  className="px-4 py-2 rounded-lg bg-phase-accent/25 border border-phase-accent/40 active:bg-phase-accent/35"
+                  onPress={handleManualDateConfirm}
+                >
+                  <Text className="text-phase-accent text-xs font-bold">Go to Date</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Native DateTimePicker if available on native */}
       {showDatePicker &&
         Platform.OS !== 'web' &&
         (() => {
@@ -119,10 +264,10 @@ export const TemporalNavigator = () => {
           if (!DateTimePicker) return null;
           return (
             <DateTimePicker
-              value={new Date(viewDate)}
+              value={new Date(viewDate + 'T12:00:00')}
               mode="date"
               display="default"
-              onChange={(event: any, selectedDate?: Date) => {
+              onChange={(_event: any, selectedDate?: Date) => {
                 setShowDatePicker(false);
                 if (selectedDate) {
                   const dateStr = selectedDate.toISOString().split('T')[0] || '';

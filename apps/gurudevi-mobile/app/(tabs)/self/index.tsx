@@ -5,6 +5,7 @@ import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Box } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { useLocalSearchParams } from 'expo-router';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import React, { useMemo } from 'react';
 import { SelfFloor } from '@/components/self/SelfFloor';
 import { useTrackActiveSubTab } from '@/hooks/useTrackActiveSubTab';
@@ -26,7 +27,12 @@ export default function SelfScreen() {
   const featureTitle = activeFeatureDef?.title || featureId || 'Task';
 
   if (!featureId) {
-    return <SelfFloor />;
+    return (
+      <>
+        <SelfFloor />
+        <ObserveInteractiveMarker params={{ entry_surface: 'self-floor' }} />
+      </>
+    );
   }
 
   return <SelfFeatureScreen featureId={featureId} title={featureTitle} />;

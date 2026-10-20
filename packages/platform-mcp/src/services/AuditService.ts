@@ -584,5 +584,26 @@ export class AuditService {
     const result = runCommand('node', cliArgs);
     return toText(result.combined, !result.ok);
   }
+
+  handleVerifyHermes(args?: { target?: string }) {
+    const target = args?.target || 'apps/gurudevi-mobile/app/index.tsx';
+    console.error(`Verifying Hermes In-Memory Bytecode for: ${target}...`);
+    const result = runCommand('node', ['scripts/run-rn-terrain.mjs', 'verify:hermes', target]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleVerifyYoga(args?: { target?: string }) {
+    const target = args?.target || 'apps/gurudevi-mobile/app/index.tsx';
+    console.error(`Verifying Yoga Headless Virtual Layout for: ${target}...`);
+    const result = runCommand('node', ['scripts/run-rn-terrain.mjs', 'verify:yoga', target]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleDoctorAll(args?: { project?: string }) {
+    const project = args?.project || 'apps/gurudevi-mobile';
+    console.error(`Running Unified 5-Layer Ecosystem Doctor for: ${project}...`);
+    const result = runCommand('node', ['scripts/run-rn-terrain.mjs', 'doctor:all', project]);
+    return toText(result.combined, !result.ok);
+  }
 }
 

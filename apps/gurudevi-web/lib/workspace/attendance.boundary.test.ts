@@ -95,7 +95,7 @@ describe('Workspace attendance account boundary', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('reads roster and marks from protected routes and leaves unlinked students unmarkable', async () => {
+  it('reads roster and marks from protected routes and falls back to enrollment id for shadow learners', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
     setSession();
     const fetchMock = vi
@@ -138,7 +138,7 @@ describe('Workspace attendance account boundary', () => {
       },
       {
         id: '00000000-0000-4000-8000-000000000021',
-        studentId: null,
+        studentId: '00000000-0000-4000-8000-000000000021',
         name: 'Learner 000000',
         rollNumber: null,
         status: 'present',

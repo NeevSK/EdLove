@@ -45,6 +45,7 @@ import {
 } from './transportSecurity';
 import { createConfiguredRateLimitStore, createRateLimitMiddleware } from './rateLimit';
 import { createAdRewardRoutes } from './routes/adRewards';
+import { createAuthGatewayRoutes } from './routes/authGateway';
 import { createDurableAgentRoutes } from './routes/durableAgents';
 import { healthRoutes } from './routes/health';
 import { registerNativeORPCRoutes } from './routes/orpc';
@@ -335,6 +336,36 @@ app.use('/api/library/*', async (c, next) => {
   await next();
   c.header('Cache-Control', 'private, no-store');
 });
+
+// Student, classroom, attendance, grading, and relational records contain sensitive PII.
+// Shared proxy caches, Cloudflare edge, and browser disk caches must never store them.
+const SENSITIVE_PRIVATE_API_PATHS = [
+  '/api/self/*',
+  '/api/attendance/*',
+  '/api/classroom/*',
+  '/api/grading/*',
+  '/api/grades/*',
+  '/api/profile/*',
+  '/api/identity/*',
+  '/api/studentPotential/*',
+  '/api/student-potential/*',
+  '/api/guardian/*',
+  '/api/guardianAssessment/*',
+  '/api/editorial/*',
+  '/api/assignment/*',
+  '/api/tuition/*',
+  '/api/erp/*',
+  '/api/openapi/attendance/*',
+] as const;
+
+for (const path of SENSITIVE_PRIVATE_API_PATHS) {
+  app.use(path, async (c, next) => {
+    await next();
+    c.header('Cache-Control', 'private, no-store, no-cache, max-age=0, must-revalidate');
+    c.header('Pragma', 'no-cache');
+  });
+}
+
 app.use('/api/daily-content/*', async (c, next) => {
   await next();
   c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
@@ -942,6 +973,7 @@ app.all('/api/openapi/*', async (c) => {
 });
 
 app.route('/api', createAdRewardRoutes(getEnv));
+app.route('/api/auth', createAuthGatewayRoutes());
 
 registerNativeORPCRoutes(app, rpcHandler);
 const aiPolicyRoute: SovereignRoute = {

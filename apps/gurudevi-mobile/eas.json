@@ -44,7 +44,9 @@
       "channel": "performance",
       "env": {
         "NODE_ENV": "production",
-        "GURUDEVI_PROFILEABLE_BUILD": "true"
+        "GURUDEVI_PROFILEABLE_BUILD": "true",
+        "EXPO_PUBLIC_APP_ENV": "performance",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
     "production": {

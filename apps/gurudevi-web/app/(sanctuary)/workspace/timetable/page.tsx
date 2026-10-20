@@ -12,23 +12,28 @@ export default async function TimetablePage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <TimetableState
-        displayName="Explorer"
-        title="Timetable is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <TimetableFloor displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <TimetableState
-        action={<Link href={signInPath('/workspace/timetable')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to view instructional timetables for your school bonds."
-        title="Timetable is private to institutional bonds"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <TimetableFloor displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 

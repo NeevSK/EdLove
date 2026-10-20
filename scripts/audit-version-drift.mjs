@@ -16,7 +16,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync, spawnSync } from 'node:child_process';
-import { getCohortLookup } from './lib/dependency-cohorts.mjs';
+import { getCohortLookup, getWaiver } from './lib/dependency-cohorts.mjs';
+import { classifyDependencyReachability } from './lib/reachability.mjs';
 
 const ROOT_DIR = process.cwd();
 const DOCS_DIR = path.join(ROOT_DIR, 'docs', 'stack-map', 'landscape');
@@ -174,12 +175,17 @@ function auditDependencies(majorLagThreshold) {
     if (driftKind === 'BREAKING_0X_MINOR' && delta < majorLagThreshold) continue;
 
     const cohortInfo = cohortLookup.get(pkgName);
+    const waiver = getWaiver(pkgName);
     const annotation = annotations[pkgName];
+    const reachability = classifyDependencyReachability(pkgName, details);
 
     let status = 'UNANNOTATED_LAG';
     let note = null;
 
-    if (cohortInfo) {
+    if (waiver) {
+      status = 'WAIVED';
+      note = waiver.reason + (waiver.milestone ? ` (Review: ${waiver.milestone})` : '');
+    } else if (cohortInfo) {
       if (cohortInfo.cohortId === 'SACRED_NATIVE') {
         const sacredVer = cohortInfo.canonical;
         const sacSem = parseSemver(sacredVer);
@@ -216,6 +222,7 @@ function auditDependencies(majorLagThreshold) {
       note = `Description only (no waiver): "${annotation.notes}"`;
     }
 
+
     results.push({
       pkgName: rawPkgName,
       basePkgName: pkgName,
@@ -230,6 +237,9 @@ function auditDependencies(majorLagThreshold) {
       governance: cohortInfo?.governance || null,
       annotation: note,
       dependentPackages: (details.dependentPackages || []).map((d) => d.name),
+      reachabilityTier: reachability.tier,
+      isReachable: reachability.isReachable,
+      reachabilityReason: reachability.reason,
     });
   }
 
@@ -350,7 +360,7 @@ function auditCodeDialect() {
           if (item.type === 'match') {
             matches.push({
               rule: rule.name || 'Unnamed Rule',
-              category: rule.category || 'Framework',
+              category: rule.category ? `${rule.category} [Advisory Fallback]` : 'Curated [Advisory Fallback]',
               severity: rule.severity || 'MEDIUM',
               advice: rule.message || '',
               file: item.data.path.text,
@@ -474,6 +484,9 @@ function extractPackageBindings(content, pkgName) {
               file: relFile,
               line: lineIdx >= 0 ? lineIdx + 1 : 1,
               snippet: lineIdx >= 0 ? lines[lineIdx].trim() : '',
+              declFile: item.file || null,
+              declLine: item.line || null,
+              pkgVersion: item.packageVersion || null,
             });
           }
         }
@@ -491,6 +504,9 @@ function extractPackageBindings(content, pkgName) {
               file: relFile,
               line: lineIdx >= 0 ? lineIdx + 1 : 1,
               snippet: lineIdx >= 0 ? lines[lineIdx].trim() : '',
+              declFile: item.file || null,
+              declLine: item.line || null,
+              pkgVersion: item.packageVersion || null,
             });
           }
         }
@@ -516,6 +532,9 @@ function extractPackageBindings(content, pkgName) {
                     file: relFile,
                     line: i + 1,
                     snippet: lines[i].trim(),
+                    declFile: item.file || null,
+                    declLine: item.line || null,
+                    pkgVersion: item.packageVersion || null,
                   });
                 }
               }
@@ -533,11 +552,15 @@ function extractPackageBindings(content, pkgName) {
                   file: relFile,
                   line: i + 1,
                   snippet: lines[i].trim(),
+                  declFile: item.file || null,
+                  declLine: item.line || null,
+                  pkgVersion: item.packageVersion || null,
                 });
               }
             }
           }
         }
+
       }
     }
   }
@@ -546,9 +569,80 @@ function extractPackageBindings(content, pkgName) {
 }
 
 // ---------------------------------------------------------
+// Phase 1C: Upstream TCDI Intelligence Bridge (rn-terrain)
+// ---------------------------------------------------------
+function queryTcdiIntelligence(depResults) {
+  const TCDI_ENGINE_PATH = path.resolve('c:/projects/rn-terrain/docs/changelog-intelligence/engine/project-kernel.mjs');
+  if (!fs.existsSync(TCDI_ENGINE_PATH)) {
+    return null;
+  }
+
+  const insights = [];
+  const targetPackages = new Map();
+
+  // 1. Add lagging packages from audit
+  for (const r of depResults) {
+    if (r.delta >= 1 && (r.driftKind === 'BREAKING_MAJOR' || r.driftKind === 'BREAKING_0X_MINOR')) {
+      targetPackages.set(r.basePkgName, { pkgName: r.pkgName, version: r.current, latest: r.latest });
+    }
+  }
+
+  // 2. Add Sacred Native Architecture packages
+  const cohortLookup = getCohortLookup();
+  for (const [pkgName, info] of cohortLookup.entries()) {
+    if (info.cohortId === 'SACRED_NATIVE' && !targetPackages.has(pkgName)) {
+      targetPackages.set(pkgName, { pkgName, version: info.canonical.replace(/^[\^~]/, ''), latest: 'SACRED_PIN' });
+    }
+  }
+
+  for (const [basePkg, item] of targetPackages.entries()) {
+    try {
+      const proc = spawnSync(process.execPath, [TCDI_ENGINE_PATH, basePkg, item.version], {
+        cwd: path.resolve('c:/projects/rn-terrain/docs/changelog-intelligence'),
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+        maxBuffer: 5 * 1024 * 1024,
+      });
+
+      if (proc.status === 0 && proc.stdout) {
+        const out = proc.stdout;
+        const removedMatch = out.match(/🚫\s*\[REMOVED\][^\n]*\n([\s\S]*?)(?=\n\s*(?:⚠️|💥|✅|💎|🔭|===|$))/);
+        const brokenMatch = out.match(/💥\s*\[BROKEN \/ REGRESSED\][^\n]*\n([\s\S]*?)(?=\n\s*(?:⚠️|🚫|✅|💎|🔭|===|$))/);
+
+        const hazards = [];
+        if (removedMatch && removedMatch[1].trim()) {
+          const lines = removedMatch[1].trim().split('\n').filter((l) => l.trim().startsWith('-'));
+          for (const l of lines.slice(0, 2)) {
+            hazards.push(`🚫 ${l.trim().replace(/^-\s*/, '')}`);
+          }
+        }
+        if (brokenMatch && brokenMatch[1].trim()) {
+          const lines = brokenMatch[1].trim().split('\n').filter((l) => l.trim().startsWith('-'));
+          for (const l of lines.slice(0, 3)) {
+            hazards.push(`💥 ${l.trim().replace(/^-\s*/, '')}`);
+          }
+        }
+
+        if (hazards.length > 0) {
+          insights.push({
+            pkgName: item.pkgName,
+            current: item.version,
+            latest: item.latest,
+            hazards,
+          });
+        }
+      }
+    } catch {}
+  }
+
+  return insights;
+}
+
+
+// ---------------------------------------------------------
 // Reporting & CLI Execution
 // ---------------------------------------------------------
-function renderMarkdownReport(depResults, codeResults, divergenceResults, majorLagThreshold) {
+function renderMarkdownReport(depResults, codeResults, divergenceResults, tcdiInsights, majorLagThreshold) {
   let md = `# Sovereign Dependency Intelligence & Cohort Audit Report\n\n`;
   md += `Generated: ${new Date().toISOString()}\n`;
   md += `Threshold: \\Delta_{\\text{major}} \\ge ${majorLagThreshold}\n\n`;
@@ -610,8 +704,8 @@ function renderMarkdownReport(depResults, codeResults, divergenceResults, majorL
   if (standaloneResults.length === 0) {
     md += `✅ Zero standalone packages lagging by $\\ge ${majorLagThreshold}$ major versions.\n\n`;
   } else {
-    md += `| Status | Package | Current | Latest | Lag (Δ) | Notes / Waiver |\n`;
-    md += `| :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    md += `| Status | Package | Reachability Tier | Current | Latest | Lag (Δ) | Notes / Waiver |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
     for (const r of standaloneResults) {
       const badge =
         r.status === 'WAIVED'
@@ -619,10 +713,31 @@ function renderMarkdownReport(depResults, codeResults, divergenceResults, majorL
           : r.status === 'STALE_WAIVER'
             ? '⏰ **`STALE WAIVER`**'
             : '⚠️ **`UNANNOTATED`**';
+      const tierBadge =
+        r.reachabilityTier === 'PRODUCTION_RUNTIME'
+          ? '🚀 `PRODUCTION`'
+          : r.reachabilityTier === 'BUILD_TOOLING'
+            ? '🛠️ `TOOLING`'
+            : '💤 `INERT`';
       const notes = r.annotation ? r.annotation.replace(/\|/g, '\\|') : '-';
-      md += `| ${badge} | \`${r.pkgName}\` | \`${r.current}\` | \`${r.latest}\` | ${r.deltaLabel} | ${notes} |\n`;
+      md += `| ${badge} | \`${r.pkgName}\` | ${tierBadge} | \`${r.current}\` | \`${r.latest}\` | ${r.deltaLabel} | ${notes} |\n`;
     }
     md += `\n`;
+  }
+
+  // 1E. Upstream Ecosystem Hazards (rn-terrain TCDI Signals)
+  if (tcdiInsights && tcdiInsights.length > 0) {
+    md += `### 1E. Upstream Ecosystem Hazards (rn-terrain TCDI Signals)\n\n`;
+    md += `> **TCDI Signal Intelligence:** Multi-package compatibility and native runtime hazards projected from \`c:/projects/rn-terrain\`.\n\n`;
+    md += `| Package | Current | Latest | Upstream Hazards & Active Regressions |\n`;
+    md += `| :--- | :--- | :--- | :--- |\n`;
+    for (const t of tcdiInsights) {
+      const hazardsStr = t.hazards.map((h) => `• ${h}`).join('<br>');
+      md += `| \`${t.pkgName}\` | \`${t.current}\` | \`${t.latest}\` | ${hazardsStr} |\n`;
+    }
+    md += `\n`;
+  } else if (tcdiInsights === null) {
+    md += `> ℹ️ *rn-terrain TCDI engine not detected at local disk path (\`c:/projects/rn-terrain\`). Standalone mode active.*\n\n`;
   }
 
   // 2. Framework Dialects
@@ -642,6 +757,9 @@ function renderMarkdownReport(depResults, codeResults, divergenceResults, majorL
       md += `> **Advice:** ${first.advice}\n\n`;
       for (const o of occurrences.slice(0, 10)) {
         md += `- [${o.file}:${o.line}](file:///${ROOT_DIR.replace(/\\/g, '/')}/${o.file.replace(/\\/g, '/')}#L${o.line})\n`;
+        if (o.declFile) {
+          md += `  📍 **Substrate Proof:** [\`${o.declFile}:${o.declLine}\`](file:///${ROOT_DIR.replace(/\\/g, '/')}/${o.declFile.replace(/\\/g, '/')}#L${o.declLine})\n`;
+        }
         md += `  \`\`\`typescript\n  ${o.snippet}\n  \`\`\`\n`;
       }
       if (occurrences.length > 10) {
@@ -650,6 +768,7 @@ function renderMarkdownReport(depResults, codeResults, divergenceResults, majorL
       md += `\n`;
     }
   }
+
 
   // 3. Internal Workspace Alignment
   md += `## 3. Internal Workspace Version Alignment Drift\n\n`;
@@ -696,6 +815,7 @@ function main() {
   const depResults = codeOnly ? [] : auditDependencies(majorLagThreshold);
   const codeResults = depsOnly ? [] : auditCodeDialect();
   const divergenceResults = codeOnly ? [] : auditWorkspaceDivergence();
+  const tcdiInsights = (codeOnly || depsOnly) ? null : queryTcdiIntelligence(depResults);
 
   const standaloneResults = depResults.filter(
     (r) =>
@@ -725,17 +845,19 @@ function main() {
             unannotatedStandaloneDependencies: unannotatedDeps.length,
             dialectDriftOccurrences: codeResults.length,
             workspaceDivergences: divergenceResults.length,
+            tcdiInsightsCount: tcdiInsights ? tcdiInsights.length : 0,
           },
           dependencies: depResults,
           dialects: codeResults,
           divergences: divergenceResults,
+          tcdiInsights: tcdiInsights || [],
         },
         null,
         2,
       ),
     );
   } else {
-    const md = renderMarkdownReport(depResults, codeResults, divergenceResults, majorLagThreshold);
+    const md = renderMarkdownReport(depResults, codeResults, divergenceResults, tcdiInsights, majorLagThreshold);
     const reportsDir = path.dirname(REPORT_FILE);
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
     try {
@@ -762,11 +884,23 @@ function main() {
     process.exit(1);
   }
 
-  if (failOnUnannotated && unannotatedDeps.length > 0) {
-    console.error(
-      `❌ Quality Gate Violation: ${unannotatedDeps.length} unannotated standalone dependencies are lagging by >= ${majorLagThreshold} major versions.`,
+  const unannotatedProductionDeps = unannotatedDeps.filter((d) => d.isReachable);
+  const unannotatedToolingDeps = unannotatedDeps.filter((d) => !d.isReachable);
+
+  if (unannotatedToolingDeps.length > 0) {
+    console.warn(
+      `⚠️ [Advisory Reachability Notice] ${unannotatedToolingDeps.length} standalone tooling/inert packages lag by >= ${majorLagThreshold} major versions (Non-blocking for app bundles).`,
     );
-    console.error(`Add waivers to docs/stack-map/landscape/dependency-annotations.yaml or run pnpm run deps:upgrade.`);
+  }
+
+  if (failOnUnannotated && unannotatedProductionDeps.length > 0) {
+    console.error(
+      `❌ Quality Gate Violation: ${unannotatedProductionDeps.length} unannotated PRODUCTION dependencies are lagging by >= ${majorLagThreshold} major versions.`,
+    );
+    for (const d of unannotatedProductionDeps) {
+      console.error(`  - ${d.pkgName}: ${d.current} -> ${d.latest} (${d.deltaLabel}) [${d.reachabilityReason}]`);
+    }
+    console.error(`Add waivers to scripts/lib/dependency-cohorts.mjs (DEPENDENCY_WAIVERS) or run pnpm run deps:upgrade.`);
     process.exit(1);
   }
 
@@ -777,9 +911,13 @@ function main() {
     );
     for (const c of criticalCodeDrift) {
       console.error(`  - [${c.file}:${c.line}] ${c.rule}: ${c.advice}`);
+      if (c.declFile) {
+        console.error(`    📍 Substrate Proof: file:///${ROOT_DIR.replace(/\\/g, '/')}/${c.declFile}#L${c.declLine}`);
+      }
     }
     process.exit(1);
   }
+
 }
 
 main();

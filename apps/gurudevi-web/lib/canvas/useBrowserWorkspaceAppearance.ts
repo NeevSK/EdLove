@@ -80,15 +80,22 @@ function readLocal(key: string): WorkspaceAppearance | null {
     if (!parsed || typeof parsed !== 'object') return null;
     const candidate = parsed as Partial<WorkspaceAppearance>;
     if (
-      !['default', 'dawn', 'garden', 'night'].includes(candidate.preset ?? '') ||
+      !['default', 'dawn', 'garden', 'night', 'none'].includes(candidate.preset ?? '') ||
       !['off', 'subtle'].includes(candidate.motion ?? '')
     ) {
       return null;
     }
-    return {
+    const result: WorkspaceAppearance = {
       preset: candidate.preset as WorkspaceAppearance['preset'],
       motion: candidate.motion as WorkspaceAppearance['motion'],
     };
+    if (candidate.wallpaper !== undefined) {
+      result.wallpaper = candidate.wallpaper;
+    }
+    if (candidate.wallpaperConfig !== undefined) {
+      result.wallpaperConfig = candidate.wallpaperConfig;
+    }
+    return result;
   } catch {
     return null;
   }

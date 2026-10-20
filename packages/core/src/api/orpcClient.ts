@@ -1,5 +1,4 @@
-import * as orpcClientPkg from '@orpc/client';
-import { createORPCClient, ORPCError } from '@orpc/client';
+import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import {
   BatchLinkPlugin,
@@ -11,58 +10,6 @@ import type { RouterClient } from '@orpc/server';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import { SOVEREIGN_ORPC_URL } from './base';
 import { authenticatedSovereignFetch } from './clientRuntime';
-
-const CODE_TO_STATUS: Record<string, number> = {
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  METHOD_NOT_SUPPORTED: 405,
-  NOT_ACCEPTABLE: 406,
-  TIMEOUT: 408,
-  CONFLICT: 409,
-  PRECONDITION_FAILED: 412,
-  PAYLOAD_TOO_LARGE: 413,
-  UNSUPPORTED_MEDIA_TYPE: 415,
-  UNPROCESSABLE_CONTENT: 422,
-  TOO_MANY_REQUESTS: 429,
-  CLIENT_CLOSED_REQUEST: 499,
-  INTERNAL_SERVER_ERROR: 500,
-  NOT_IMPLEMENTED: 501,
-  BAD_GATEWAY: 502,
-  SERVICE_UNAVAILABLE: 503,
-  GATEWAY_TIMEOUT: 504,
-};
-
-if (!('status' in ORPCError.prototype)) {
-  Object.defineProperty(ORPCError.prototype, 'status', {
-    get() {
-      return (this.code && CODE_TO_STATUS[this.code]) ?? 500;
-    },
-    enumerable: true,
-    configurable: true,
-  });
-
-  const origToJSON = (ORPCError.prototype as any).toJSON;
-  (ORPCError.prototype as any).toJSON = function () {
-    const json = origToJSON ? origToJSON.call(this) : {};
-    return {
-      ...json,
-      status: (this as any).status,
-    };
-  };
-}
-
-const MalformedResponseError = (orpcClientPkg as any).MalformedResponseError;
-if (MalformedResponseError && !('status' in MalformedResponseError.prototype)) {
-  Object.defineProperty(MalformedResponseError.prototype, 'status', {
-    get() {
-      return (this as any).response?.status;
-    },
-    enumerable: true,
-    configurable: true,
-  });
-}
 
 export interface ClientContext extends ClientRetryPluginContext {
   expectedAccountId?: string;

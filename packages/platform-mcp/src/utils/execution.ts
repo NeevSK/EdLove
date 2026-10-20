@@ -21,6 +21,7 @@ export interface CommandRunResult {
   exitCode: number | null;
   command: string;
   args: string[];
+  error?: string;
 }
 
 export interface PowerShellAvailability {
@@ -70,13 +71,15 @@ export function getPowerShellAvailability(): PowerShellAvailability {
 export function runCommand(
   command: string,
   args: string[] = [],
-  options?: { cwd?: string; shell?: boolean; input?: string },
+  options?: { cwd?: string; shell?: boolean; input?: string; timeoutMs?: number; maxBuffer?: number },
 ): CommandRunResult {
   const result = spawnSync(command, args, {
     cwd: options?.cwd ?? ROOT_DIR,
     encoding: 'utf8',
     shell: options?.shell ?? false,
     input: options?.input,
+    timeout: options?.timeoutMs,
+    maxBuffer: options?.maxBuffer,
   });
 
   const stdout = normalizeOutput(result.stdout);
@@ -91,6 +94,7 @@ export function runCommand(
     exitCode: result.status,
     command,
     args,
+    ...(result.error ? { error: result.error.message } : {}),
   };
 }
 

@@ -20,8 +20,8 @@ try {
     dispatchInDebug: false,
     dispatchingEnabled: true,
     environment: process.env.EXPO_PUBLIC_APP_ENV ?? process.env.NODE_ENV ?? 'production',
-    integrations: { expoRouter: true },
-    sampleRate: 0.2,
+    integrations: { 'expo-router': true },
+    sampleRate: process.env.EXPO_PUBLIC_APP_ENV === 'performance' ? 1 : 0.2,
   });
 } catch (error) {
   console.warn('[observe] configuration unavailable:', error);

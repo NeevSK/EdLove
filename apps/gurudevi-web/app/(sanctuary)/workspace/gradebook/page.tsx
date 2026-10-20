@@ -12,23 +12,28 @@ export default async function GradebookPage() {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <GradebookState
-        displayName="Explorer"
-        title="Gradebook is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <GradebookFloor displayName="Guest Explorer" capacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <GradebookState
-        action={<Link href={signInPath('/workspace/gradebook')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to evaluate students connected to your classroom bonds."
-        title="Gradebook is private to classroom bonds"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <GradebookFloor displayName="Guest Explorer" capacity="TEACHER" />
+      </SanctuaryShell>
     );
   }
 
