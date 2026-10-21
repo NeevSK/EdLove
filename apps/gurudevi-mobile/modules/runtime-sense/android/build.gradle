@@ -1,0 +1,30 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.runtimesense'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.runtimesense"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+  testOptions {
+    unitTests.all {
+      // The golden vectors live with the TypeScript reference in packages/core.
+      systemProperty 'runtimesense.fixtures',
+        file('../../../../../packages/core/src/governor/__fixtures__').absolutePath
+    }
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.json:json:20240303'
+}
