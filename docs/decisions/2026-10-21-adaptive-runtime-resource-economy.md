@@ -175,6 +175,44 @@ existing imports keep working; the mobile build mounts `GURUDEVI_MOBILE_HOST`, w
 only the levers something applies today. Publishing outside the monorepo waits for device
 evidence.
 
+### D12. Recover, heal and grow across launches
+
+Verger keeps a small record between launches and changes it only at boot (crash-only). At each
+launch it reads the session marker the last process left, judges how that process ended
+(Android `ApplicationExitInfo` from API 30; below that, a death while visible counts as a
+failure), folds the result into the record, and decides how much of itself to run:
+
+| Rung | Runs | Entered | Left |
+| --- | --- | --- | --- |
+| 0 | everything, with the learned profile | default | n/a |
+| 1 | everything, profile ignored and reset | 2 failures in 24 h at rung 0 | 3 clean sessions |
+| 2 | no hardware levers (refresh cap, CPU hints, global motion) | 2 more failures | 3 clean sessions, doubled per relapse |
+| 3 | shadow: senses and decides, applies nothing | 2 more failures | as above |
+| 4 | off, native code included | 2 more failures, or any death during native start | only a new policy version or app release |
+
+Failures are crashes, native crashes, ANRs and excessive resource use. Low-memory kills,
+user stops and deaths while hidden are not. Sessions run with verger off never move the
+ladder, and sessions shorter than 30 s in the foreground prove nothing. The `starting` marker
+is written, and the write awaited, before any native call; facts, judgement, decision and start
+then run in one synchronous stretch, so a death inside it points at verger. The accepted cost:
+an unrelated native crash in that stretch also sends the device to rung 4 until the next
+release, which fails closed.
+
+Healing and growth sit on the ladder. Trust in the learned profile halves on a failure and
+grows by 0.1 per clean session. The profile is keyed by a hash of the OS build fingerprint, so
+a system update relearns it. It holds a starting point (the moving average of where the closed
+loop held each lever, used as whole levels rounded down, at trust 0.6 or more), which enters
+the loop's stack and is given back like any decrease; and a grant that relaxes capacity floors
+one step after three proving sessions (cool, roomy, under 5 % stressed, at trust 0.8 or more),
+given back at once on strain. Preference, accessibility, capability and containment floors are
+never relaxed. A configurable exercise share runs healthy launches without hardware levers so
+the degraded paths stay used. The last 48 decisions are kept in a flight recorder and sent once
+after a failed session; summaries report the quality given up beside the performance gained.
+
+`createVerger` in verger-core owns the launch; hosts supply a `VergerPlatform` (facts, exits,
+port) and a `VergerStore` (Gurudevi uses AsyncStorage, because MMKV stays off its startup path).
+Policy version 4.
+
 ## 3. Consequences
 
 - The facade in the spec keeps its names; its internals change.
@@ -202,6 +240,9 @@ evidence.
 | Part | Level |
 | --- | --- |
 | Governor decision layer and controller, 53 tests | G2 |
+| Recovery, trust, growth and the launch cycle across simulated process deaths, 32 tests | G2 |
+| Exit-reason mapping, 3 JUnit tests; `DeviceFacts` compiled against android.jar 35 | G2 / G1 |
+| Recovery on a device (real crash, real exit records, AsyncStorage) | not yet |
 | Kotlin estimator, procfs sampler and display choice, 18 JUnit tests on the JVM | G2 |
 | Sensors compiled against android.jar 35; binding against an expo-modules-core 58.0.21 signature stub | G1 |
 | Device behaviour | R1, one contaminated A52 development-build trace |
