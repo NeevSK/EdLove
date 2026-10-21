@@ -19,7 +19,14 @@
   "memoryLatchMs": 30000,
   "ambientSleepAfterMs": 10000,
   "fastDecreaseSteps": 3,
-  "maxOptionalConcurrency": 2
+  "maxOptionalConcurrency": 2,
+  "saturationCores": 0.9,
+  "saturationAfterMs": 2000,
+  "longTaskWindowMs": 5000,
+  "longTasksForContention": 3,
+  "memoryLowFactor": 1.5,
+  "memoryModerateFactor": 2,
+  "refreshCapHz": 60
  },
  "windows": [
   {

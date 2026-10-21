@@ -73,4 +73,44 @@ describe('runtime-sense mapping', () => {
       saver: true,
     });
   });
+
+  it('carries frame stages, thread load and polled memory into the governor vocabulary', () => {
+    const stages = { uiMs: 9, renderMs: 3, gpuMs: 4, delayMs: 0.5 };
+    const window = { startMs: 0, endMs: 500, frames: 45, averageMs: 17, targetMs: 11.1, worstMs: 30, droppedRatio: 0.2 };
+    expect(toGovernorEvent({ name: 'onFrameWindow', payload: { ...window, state: 'stressed', stages } }, 5)).toEqual({
+      type: 'frame-window',
+      at: 5,
+      window: { ...window, stages },
+    });
+    expect(toGovernorEvent({ name: 'onFrameWindow', payload: { ...window, state: 'stressed', stages: null } }, 5)).toEqual({
+      type: 'frame-window',
+      at: 5,
+      window,
+    });
+    expect(
+      toGovernorEvent(
+        {
+          name: 'onThreadLoad',
+          payload: {
+            intervalMs: 1000,
+            processCores: 1.4,
+            cores: { js: 0.9, main: 0.3 },
+            topOtherName: 'OkHttp',
+            topOtherCores: 0.1,
+            rssMb: 310,
+          },
+        },
+        7,
+      ),
+    ).toEqual({ type: 'thread-load', at: 7, cores: { js: 0.9, main: 0.3 }, processCores: 1.4 });
+    expect(
+      toGovernorEvent({ name: 'onMemory', payload: { availableMb: 420, thresholdMb: 216, lowMemory: false, rssMb: 300 } }, 8),
+    ).toEqual({ type: 'memory-state', at: 8, availableMb: 420, thresholdMb: 216, lowMemory: false });
+  });
+
+  it('keeps only valid refresh rates and reads hint support', () => {
+    const facts = toCapacityFacts({ refreshRatesHz: [60, Number.NaN, 90, -1], supportsCpuHints: true });
+    expect(facts.refreshRatesHz).toEqual([60, 90]);
+    expect(facts.supportsCpuHints).toBe(true);
+  });
 });

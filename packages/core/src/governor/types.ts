@@ -21,7 +21,17 @@ export interface CapacityFacts {
   readonly supportsRenderEffect: boolean;
   /** Android 13+ `RuntimeShader` (AGSL refraction). */
   readonly supportsRuntimeShader: boolean;
+  /** Refresh rates the display offers at its current resolution, ascending; empty if unknown. */
+  readonly refreshRatesHz: readonly number[];
+  /** Android 12+ ADPF performance hint sessions are available. */
+  readonly supportsCpuHints: boolean;
 }
+
+/** Threads the native sampler attributes CPU time to (see `ThreadRole` in runtime-sense). */
+export type ThreadRoleName = 'main' | 'js' | 'nativeModules' | 'render' | 'gc' | 'image' | 'other';
+
+/** What is saturating the CPU, if anything: the JS thread, the main thread, or neither. */
+export type Contention = 'none' | 'js' | 'main';
 
 /** One aggregation window of rendered frames. Windows are only produced when frames arrive. */
 export interface FrameWindow {
@@ -35,6 +45,23 @@ export interface FrameWindow {
   readonly worstMs: number;
   /** Missed vsyncs divided by (frames + missed vsyncs). */
   readonly droppedRatio: number;
+  /** Mean cost per pipeline stage, when the platform reports stages (Android FrameMetrics). */
+  readonly stages?: FrameStages;
+}
+
+/**
+ * Where a frame's time went. `ui`: input, animation, layout and draw on the main thread.
+ * `render`: sync, command issue and buffer swap on the render thread. `gpu`: GPU work
+ * (Android 12+; 0 when unknown). `delay`: time before the frame could start, because the main
+ * thread was busy with other work.
+ */
+export type FrameStage = 'ui' | 'render' | 'gpu' | 'delay';
+
+export interface FrameStages {
+  readonly uiMs: number;
+  readonly renderMs: number;
+  readonly gpuMs: number;
+  readonly delayMs: number;
 }
 
 export type FrameState = 'quiet' | 'calm' | 'neutral' | 'stressed';
@@ -76,6 +103,23 @@ export type GovernorEvent =
       readonly reduceMotion: boolean;
       readonly fidelity: FidelityPreference;
     }
+  | {
+      readonly type: 'thread-load';
+      readonly at: number;
+      /** Cores in use per role over the last interval: 1.0 is one core fully busy. */
+      readonly cores: Readonly<Partial<Record<ThreadRoleName, number>>>;
+      readonly processCores: number;
+    }
+  | {
+      /** Polled system memory; covers API 34+, where foreground apps receive no trims. */
+      readonly type: 'memory-state';
+      readonly at: number;
+      readonly availableMb: number;
+      readonly thresholdMb: number;
+      readonly lowMemory: boolean;
+    }
+  /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */
+  | { readonly type: 'long-task'; readonly at: number; readonly durationMs: number }
   | { readonly type: 'tick'; readonly at: number };
 
 /** Unity-style indexer action, extended with the governor's reasons. */
@@ -103,6 +147,11 @@ export interface LeverSpec {
   readonly motion: boolean;
   /** One line per level, index = level. Documentation for consumers and diagnostics. */
   readonly levels: readonly string[];
+  /**
+   * Moved only by measured pressure, never by static floors (capacity, fidelity, power saver).
+   * For containment levers whose lowest level is drastic.
+   */
+  readonly closedLoopOnly?: boolean;
 }
 
 export type GovernorMode = 'active' | 'shadow';
@@ -138,6 +187,18 @@ export interface GovernorConfig {
   readonly fastDecreaseSteps: number;
   /** Optional background work allowed when nothing constrains it. */
   readonly maxOptionalConcurrency: number;
+  /** A thread role using at least this many cores is saturated. */
+  readonly saturationCores: number;
+  /** Saturation must last this long before it counts as contention. */
+  readonly saturationAfterMs: number;
+  /** Long tasks within this window that also count as JS contention. */
+  readonly longTaskWindowMs: number;
+  readonly longTasksForContention: number;
+  /** Free memory below threshold × factor is treated as a trim of that severity. */
+  readonly memoryLowFactor: number;
+  readonly memoryModerateFactor: number;
+  /** The refresh cap applied under heat, power saving, pressure or idleness. */
+  readonly refreshCapHz: number;
 }
 
 export interface GovernorSnapshot {
@@ -155,6 +216,14 @@ export interface GovernorSnapshot {
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;
+  /** Which thread, if any, is saturated; deferrable work pauses while it is. */
+  readonly contention: Contention;
+  /** Display refresh cap to apply, or null to let the system choose. */
+  readonly refreshCapHz: number | null;
+  /** Whether to hold an ADPF hint session for the UI and render threads. */
+  readonly cpuBoost: boolean;
+  /** Force reduced motion for every Reanimated animation, including unregistered ones. */
+  readonly globalReducedMotion: boolean;
   /** The last indexer action and why. */
   readonly lastAction: IndexerAction;
   readonly lastReason: string;

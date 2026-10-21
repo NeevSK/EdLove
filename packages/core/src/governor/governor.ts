@@ -1,5 +1,5 @@
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
-import { classifyFrameWindow } from './frames';
+import { bottleneckTargets, classifyFrameWindow, frameBottleneck } from './frames';
 import { chooseLeverToLower, validateLevers } from './levers';
 import {
   latchMemory,
@@ -11,6 +11,7 @@ import {
 import type {
   AppVisibility,
   CapacityFacts,
+  Contention,
   FidelityPreference,
   FrameState,
   GovernorConfig,
@@ -22,6 +23,7 @@ import type {
   LeverTarget,
   ThermalLevel,
   ThermalStatus,
+  TrimSeverity,
 } from './types';
 
 export const UNKNOWN_CAPACITY: CapacityFacts = {
@@ -33,6 +35,8 @@ export const UNKNOWN_CAPACITY: CapacityFacts = {
   refreshRateHz: null,
   supportsRenderEffect: false,
   supportsRuntimeShader: false,
+  refreshRatesHz: [],
+  supportsCpuHints: false,
 };
 
 const LOW_MEMORY_DEVICE_BYTES = 3 * 1024 * 1024 * 1024;
@@ -69,6 +73,15 @@ export interface GovernorState {
   readonly lastInteractionAt: number;
   readonly reduceMotion: boolean;
   readonly fidelity: FidelityPreference;
+
+  /** When each role first crossed the saturation line, or null while below it. */
+  readonly jsSaturatedSince: number | null;
+  readonly mainSaturatedSince: number | null;
+  readonly jsCores: number;
+  readonly mainCores: number;
+  /** Recent long-task end times, newest last, pruned to the long-task window. */
+  readonly longTasks: readonly number[];
+  readonly lastContentionActionAt: number;
 
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
@@ -112,6 +125,12 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     lastInteractionAt: options.at,
     reduceMotion: false,
     fidelity: 'auto',
+    jsSaturatedSince: null,
+    mainSaturatedSince: null,
+    jsCores: 0,
+    mainCores: 0,
+    longTasks: [],
+    lastContentionActionAt: Number.NEGATIVE_INFINITY,
     lastAction: 'stale',
     lastReason: 'start',
   };
@@ -140,6 +159,7 @@ export function staticFloors(state: GovernorState): Record<string, number> {
     const max = lever.maxLevel;
     if (lever.motion && state.reduceMotion) raise(lever.id, max);
     if (hidden && (lever.ambient || lever.motion)) raise(lever.id, max);
+    if (lever.closedLoopOnly) continue;
     if (state.fidelity === 'low') raise(lever.id, lever.ambient ? max : Math.min(1, max));
     if (state.powerSaver && (lever.ambient || lever.target === 'energy')) raise(lever.id, max);
     if (state.powerSaver && lever.target === 'gpu') raise(lever.id, Math.min(1, max));
@@ -147,6 +167,8 @@ export function staticFloors(state: GovernorState): Record<string, number> {
     if (lowCapacity && !lever.ambient && lever.target !== 'energy') raise(lever.id, Math.min(1, max));
   }
   if (hidden) raise('prefetch', 2);
+  // A cap the display cannot honour saves nothing, so the lever counts as spent.
+  if (!canCapRefresh(state)) raise('refresh-rate', 1);
   if (capacityReported && !state.capacity.supportsRenderEffect) {
     raise('blur', 2);
     raise('glass-material', 2);
@@ -154,6 +176,12 @@ export function staticFloors(state: GovernorState): Record<string, number> {
     raise('glass-material', 1);
   }
   return clampToLevers(state.levers, floors);
+}
+
+function canCapRefresh(state: GovernorState): boolean {
+  const rates = state.capacity.refreshRatesHz;
+  const cap = state.config.refreshCapHz;
+  return rates.some((hz) => hz > cap + 1) && rates.some((hz) => hz <= cap + 1);
 }
 
 function interactionIdle(state: GovernorState, at: number): boolean {
@@ -165,7 +193,11 @@ function dynamicFloors(state: GovernorState, at: number): Record<string, number>
   const floors: Record<string, number> = {};
   if (interactionIdle(state, at)) {
     for (const lever of state.levers) if (lever.ambient) floors[lever.id] = lever.maxLevel;
+    // Nobody is touching the screen: a high refresh rate draws nothing anyone needs.
+    floors['refresh-rate'] = 1;
   }
+  const thermal = thermalOf(state);
+  if (thermal === 'warm' || thermal === 'hot' || thermal === 'critical') floors['refresh-rate'] = 1;
   return floors;
 }
 
@@ -285,6 +317,64 @@ function resetBackoff(state: GovernorState, at: number): GovernorState {
   return { ...state, upgradeAfterMs: state.config.upgradeAfterMs };
 }
 
+/** Free memory against the system's low-memory threshold, as a trim severity (or none). */
+function polledSeverity(
+  state: GovernorState,
+  event: Extract<GovernorEvent, { type: 'memory-state' }>,
+): TrimSeverity | null {
+  if (event.lowMemory) return 'critical';
+  if (!(event.thresholdMb > 0)) return null;
+  if (event.availableMb < event.thresholdMb * state.config.memoryLowFactor) return 'low';
+  if (event.availableMb < event.thresholdMb * state.config.memoryModerateFactor) return 'moderate';
+  return null;
+}
+
+function onMemoryPressure(state: GovernorState, severity: TrimSeverity, at: number, source: string): GovernorState {
+  const before = memoryLevelOf(state.memoryLatch, at, state.memorySensing);
+  const memoryLatch = latchMemory(state.memoryLatch, severity, at, state.config);
+  let next: GovernorState = { ...state, memoryLatch, memorySensing: true, lastPressureAt: at };
+  const after = memoryLevelOf(memoryLatch, at, true);
+  if (after === 'low' && before !== 'low') {
+    next = lower(next, next.config.fastDecreaseSteps, ['memory'], at, 'fast-decrease', `${source} (${severity})`);
+  } else if (after === 'trimmed' && before !== 'trimmed' && before !== 'low') {
+    next = lower(next, 1, ['memory'], at, 'decrease', `${source} (${severity})`);
+  }
+  return next;
+}
+
+function recentLongTasks(state: GovernorState, at: number): number {
+  let count = 0;
+  for (const t of state.longTasks) if (at - t <= state.config.longTaskWindowMs) count += 1;
+  return count;
+}
+
+/** Which thread is saturated long enough to count, judged at `at`. */
+function contentionOf(state: GovernorState, at: number): Contention {
+  const after = state.config.saturationAfterMs;
+  if (state.jsSaturatedSince !== null && at - state.jsSaturatedSince >= after) return 'js';
+  if (recentLongTasks(state, at) >= state.config.longTasksForContention) return 'js';
+  if (state.mainSaturatedSince !== null && at - state.mainSaturatedSince >= after) return 'main';
+  return 'none';
+}
+
+/**
+ * Contention is the runtime's answer to work it does not control: a component, library or
+ * loop that keeps a thread busy. Whatever the cause, the governor sheds CPU-side quality one
+ * step at a time, no faster than once per saturation period, and pauses deferrable work.
+ */
+function applyContention(state: GovernorState, at: number): GovernorState {
+  const contention = contentionOf(state, at);
+  if (contention === 'none') return state;
+  if (at - state.lastContentionActionAt < state.config.saturationAfterMs) return { ...state, lastPressureAt: at };
+  const detail =
+    contention === 'js'
+      ? `JS thread saturated (${state.jsCores.toFixed(2)} cores, ${recentLongTasks(state, at)} long tasks)`
+      : `main thread saturated (${state.mainCores.toFixed(2)} cores)`;
+  const targets: readonly LeverTarget[] = contention === 'js' ? ['cpu'] : ['cpu', 'gpu'];
+  const next = lower(state, 1, targets, at, 'decrease', detail);
+  return { ...next, lastContentionActionAt: at, lastPressureAt: at };
+}
+
 function onFrameWindow(state: GovernorState, event: Extract<GovernorEvent, { type: 'frame-window' }>) {
   const frameState = classifyFrameWindow(event.window, state.config);
   const span = Math.max(0, event.window.endMs - event.window.startMs);
@@ -293,7 +383,9 @@ function onFrameWindow(state: GovernorState, event: Extract<GovernorEvent, { typ
     const stressMs = state.stressMs + span;
     next = { ...next, stressMs, lastPressureAt: event.at };
     if (stressMs >= state.config.downgradeAfterMs) {
-      next = lower(next, 1, ['gpu', 'cpu'], event.at, 'decrease', `frames over budget for ${Math.round(stressMs)} ms`);
+      const stage = frameBottleneck(event.window);
+      const where = stage === null ? '' : `, ${stage}-bound`;
+      next = lower(next, 1, bottleneckTargets(stage), event.at, 'decrease', `frames over budget for ${Math.round(stressMs)} ms${where}`);
       next = { ...next, stressMs: 0 };
     }
   } else {
@@ -313,16 +405,30 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
     case 'thermal':
       next = { ...next, thermalStatus: event.status, headroom: event.headroom };
       break;
-    case 'memory-trim': {
-      const before = memoryLevelOf(next.memoryLatch, at, next.memorySensing);
-      const memoryLatch = latchMemory(next.memoryLatch, event.severity, at, next.config);
-      next = { ...next, memoryLatch, memorySensing: true, lastPressureAt: at };
-      const after = memoryLevelOf(memoryLatch, at, true);
-      if (after === 'low' && before !== 'low') {
-        next = lower(next, next.config.fastDecreaseSteps, ['memory'], at, 'fast-decrease', `memory trim (${event.severity})`);
-      } else if (after === 'trimmed' && before !== 'trimmed' && before !== 'low') {
-        next = lower(next, 1, ['memory'], at, 'decrease', 'memory trim (moderate)');
-      }
+    case 'memory-trim':
+      next = onMemoryPressure(next, event.severity, at, 'memory trim');
+      break;
+    case 'memory-state': {
+      const severity = polledSeverity(next, event);
+      next = severity === null ? { ...next, memorySensing: true } : onMemoryPressure(next, severity, at, 'free memory low');
+      break;
+    }
+    case 'thread-load': {
+      const js = event.cores.js ?? 0;
+      const main = event.cores.main ?? 0;
+      const line = next.config.saturationCores;
+      next = {
+        ...next,
+        jsCores: js,
+        mainCores: main,
+        jsSaturatedSince: js >= line ? (next.jsSaturatedSince ?? at) : null,
+        mainSaturatedSince: main >= line ? (next.mainSaturatedSince ?? at) : null,
+      };
+      break;
+    }
+    case 'long-task': {
+      const window = next.config.longTaskWindowMs;
+      next = { ...next, longTasks: [...next.longTasks.filter((t) => at - t <= window), at] };
       break;
     }
     case 'power':
@@ -342,6 +448,7 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
       break;
   }
   next = applyStandingPressure(next, at);
+  next = applyContention(next, at);
   if (next.lastAction === 'stale') next = maybeIncrease(next, at);
   next = resetBackoff(next, at);
   return next;
@@ -361,6 +468,7 @@ export function reduceGovernor(state: GovernorState, event: GovernorEvent): Gove
 
 function optionalConcurrency(state: GovernorState, at: number, closedLoop: boolean): number {
   if (state.visibility !== 'active' || state.powerSaver) return 0;
+  if (closedLoop && contentionOf(state, at) !== 'none') return 0;
   const thermal = thermalOf(state);
   const memory = memoryLevelOf(state.memoryLatch, at, state.memorySensing);
   if (closedLoop && (thermal === 'critical' || memory === 'low')) return 0;
@@ -377,11 +485,15 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
   const proposed = combine(state.levers, base, state.pressure, dynamicFloors(state, at));
   const baseline = combine(state.levers, base);
   const active = state.mode === 'active';
+  const levels = active ? proposed : baseline;
+  const thermal = thermalOf(state);
+  const idle = interactionIdle(state, at);
+  const cool = thermal === 'unknown' || thermal === 'nominal';
   return {
     version: state.version,
     at,
     mode: state.mode,
-    levels: active ? proposed : baseline,
+    levels,
     proposedLevels: proposed,
     frameState: state.frameState,
     thermal: thermalOf(state),
@@ -390,6 +502,19 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at, active),
+    contention: contentionOf(state, at),
+    // Hardware levers are new behaviour, so only active mode applies them; shadow mode keeps
+    // the app exactly as it runs today and records the proposal in `proposedLevels`.
+    refreshCapHz:
+      active && (levels['refresh-rate'] ?? 0) >= 1 && canCapRefresh(state) ? state.config.refreshCapHz : null,
+    cpuBoost:
+      active &&
+      state.capacity.supportsCpuHints &&
+      state.visibility === 'active' &&
+      !state.powerSaver &&
+      !idle &&
+      cool,
+    globalReducedMotion: active && (levels['global-motion'] ?? 0) >= 1,
     lastAction: state.lastAction,
     lastReason: state.lastReason,
   };
@@ -403,7 +528,11 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     a.powerSaver !== b.powerSaver ||
     a.visibility !== b.visibility ||
     a.interactionIdle !== b.interactionIdle ||
-    a.optionalConcurrency !== b.optionalConcurrency
+    a.optionalConcurrency !== b.optionalConcurrency ||
+    a.contention !== b.contention ||
+    a.refreshCapHz !== b.refreshCapHz ||
+    a.cpuBoost !== b.cpuBoost ||
+    a.globalReducedMotion !== b.globalReducedMotion
   ) {
     return false;
   }
@@ -413,9 +542,28 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
   return true;
 }
 
-/** When the next time-only change (ambient sleep) will happen, so callers can schedule one tick. */
+/**
+ * When the next change that depends only on elapsed time is due, so the caller schedules one
+ * tick instead of polling: ambient sleep, contention starting after a sustained saturation,
+ * the next contention step while it lasts, long tasks ageing out, and an upgrade becoming due.
+ * Native sensors report only changes, so without this a steady saturated thread would never
+ * be acted on.
+ */
 export function nextTimedChangeAt(state: GovernorState): number | null {
-  if (interactionIdle(state, state.at)) return null;
-  if (!state.levers.some((lever) => lever.ambient)) return null;
-  return state.lastInteractionAt + state.config.ambientSleepAfterMs;
+  const now = state.at;
+  const { saturationAfterMs, longTaskWindowMs, ambientSleepAfterMs } = state.config;
+  const candidates: number[] = [];
+  if (!interactionIdle(state, now)) candidates.push(state.lastInteractionAt + ambientSleepAfterMs);
+  for (const since of [state.jsSaturatedSince, state.mainSaturatedSince]) {
+    if (since === null) continue;
+    candidates.push(since + saturationAfterMs, state.lastContentionActionAt + saturationAfterMs);
+  }
+  for (const t of state.longTasks) candidates.push(t + longTaskWindowMs + 1);
+  if (state.stack.length > 0) {
+    const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
+    candidates.push(lastChange + state.upgradeAfterMs);
+  }
+  let next: number | null = null;
+  for (const t of candidates) if (t > now && (next === null || t < next)) next = t;
+  return next;
 }

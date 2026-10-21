@@ -40,6 +40,17 @@ class ClosedWindow {
     internal set
   var droppedRatio = 0.0
     internal set
+  /** Mean stage costs; NaN when no frame in the window reported stages. */
+  var uiMs = Double.NaN
+    internal set
+  var renderMs = Double.NaN
+    internal set
+  var gpuMs = Double.NaN
+    internal set
+  var delayMs = Double.NaN
+    internal set
+  val hasStages: Boolean
+    get() = !uiMs.isNaN()
   var state = FrameState.QUIET
     internal set
   /** Whether the window should cross the bridge (see [FrameWindowEstimator.shouldForward]). */
@@ -76,6 +87,11 @@ class FrameWindowEstimator(
   private var deadlineSum = 0.0
   private var worst = 0.0
   private var missed = 0L
+  private var stageFrames = 0
+  private var ui = 0.0
+  private var render = 0.0
+  private var gpu = 0.0
+  private var delay = 0.0
   private var previousForwarded: FrameState? = null
 
   /** Running totals since [start]; cheap to read for a periodic heartbeat. */
@@ -98,7 +114,22 @@ class FrameWindowEstimator(
    * Adds one frame that finished at [tMs] and cost [durMs]. Pass NaN for [deadlineMs] when the
    * platform does not report a per-frame deadline.
    */
-  fun addFrame(tMs: Double, durMs: Double, deadlineMs: Double) {
+  fun addFrame(tMs: Double, durMs: Double, deadlineMs: Double) =
+    addFrame(tMs, durMs, deadlineMs, Double.NaN, Double.NaN, Double.NaN, Double.NaN)
+
+  /**
+   * Adds a frame with its pipeline stages (see `FrameStages` in the TS reference). Pass NaN for
+   * [uiMs] when stages are unknown; [gpuMs] may be 0 where the platform does not report it.
+   */
+  fun addFrame(
+    tMs: Double,
+    durMs: Double,
+    deadlineMs: Double,
+    uiMs: Double,
+    renderMs: Double,
+    gpuMs: Double,
+    delayMs: Double,
+  ) {
     if (!open) {
       start = floor(tMs / windowMs) * windowMs
       open = true
@@ -117,6 +148,13 @@ class FrameWindowEstimator(
       val m = floor((durMs - 1e-9) / deadline).toLong()
       missed += m
       totalMissedVsyncs += m
+    }
+    if (!uiMs.isNaN()) {
+      stageFrames += 1
+      ui += uiMs
+      render += renderMs
+      gpu += gpuMs
+      delay += delayMs
     }
     totalFrames += 1
     totalCostMs += durMs
@@ -150,6 +188,11 @@ class FrameWindowEstimator(
     deadlineSum = 0.0
     worst = 0.0
     missed = 0
+    stageFrames = 0
+    ui = 0.0
+    render = 0.0
+    gpu = 0.0
+    delay = 0.0
   }
 
   private fun emit(end: Double) {
@@ -161,6 +204,17 @@ class FrameWindowEstimator(
     out.targetMs = deadlineSum / frames
     out.worstMs = worst
     out.droppedRatio = missed.toDouble() / (frames + missed).toDouble()
+    if (stageFrames > 0) {
+      out.uiMs = ui / stageFrames
+      out.renderMs = render / stageFrames
+      out.gpuMs = gpu / stageFrames
+      out.delayMs = delay / stageFrames
+    } else {
+      out.uiMs = Double.NaN
+      out.renderMs = Double.NaN
+      out.gpuMs = Double.NaN
+      out.delayMs = Double.NaN
+    }
     out.state = classify(out.frames, out.averageMs, out.targetMs, out.droppedRatio, classification)
     out.forward = shouldForward(out.state, previousForwarded)
     if (out.forward) previousForwarded = out.state

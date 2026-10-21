@@ -47,6 +47,27 @@ export function validateLevers(levers: readonly LeverSpec[]): void {
  */
 export const GURUDEVI_LEVERS: readonly LeverSpec[] = [
   {
+    id: 'refresh-rate',
+    maxLevel: 1,
+    visualImpact: 'medium',
+    target: 'gpu',
+    ambient: false,
+    motion: false,
+    levels: ['the display maximum', 'capped (config refreshCapHz)'],
+  },
+  {
+    // The containment lever: it reaches every Reanimated animation in the app, registered or
+    // not, so a badly written component cannot keep the screen busy once this is lowered.
+    id: 'global-motion',
+    maxLevel: 1,
+    visualImpact: 'high',
+    target: 'cpu',
+    ambient: false,
+    motion: true,
+    levels: ['animations run', 'reduced motion forced for all Reanimated animations'],
+    closedLoopOnly: true,
+  },
+  {
     id: 'ambient-motion',
     maxLevel: 2,
     visualImpact: 'low',

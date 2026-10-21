@@ -27,6 +27,9 @@ const A52: CapacityFacts = {
   refreshRateHz: 60,
   supportsRenderEffect: true,
   supportsRuntimeShader: true,
+  // The A52 panel offers 60 and 90 Hz; hint sessions exist on Android 14.
+  refreshRatesHz: [60, 90],
+  supportsCpuHints: true,
 };
 
 const LOW_END: CapacityFacts = { ...A52, totalMemoryBytes: 2 * 1024 ** 3, cpuCores: 4, sdkInt: 30, supportsRuntimeShader: false };

@@ -21,7 +21,11 @@ export interface GovernorTelemetry {
   /** Call with each new snapshot; emits only when governed outputs change. */
   onSnapshot(snapshot: GovernorSnapshot): void;
   /** Call with each frame window; aggregated into a periodic summary. */
-  onFrameWindow(window: FrameWindow, interactionIdle: boolean): void;
+  /** `at` is the caller's clock; it defaults to the window's end on the sensor timeline. */
+  onFrameWindow(window: FrameWindow, interactionIdle: boolean, at?: number): void;
+  /** Call with each CPU sample and long task; aggregated into the periodic summary. */
+  onThreadLoad(at: number, jsCores: number, mainCores: number): void;
+  onLongTask(at: number, durationMs: number): void;
   /** Emits the pending summary, if any, e.g. on background. */
   flush(at: number): void;
   readonly emitted: number;
@@ -35,6 +39,11 @@ interface Summary {
   idleDrawMs: number;
   worstMs: number;
   costSum: number;
+  cpuSamples: number;
+  jsCoresSum: number;
+  mainCoresSum: number;
+  longTasks: number;
+  longTaskMaxMs: number;
 }
 
 const emptySummary = (at: number): Summary => ({
@@ -45,7 +54,23 @@ const emptySummary = (at: number): Summary => ({
   idleDrawMs: 0,
   worstMs: 0,
   costSum: 0,
+  cpuSamples: 0,
+  jsCoresSum: 0,
+  mainCoresSum: 0,
+  longTasks: 0,
+  longTaskMaxMs: 0,
 });
+
+/**
+ * Bumped whenever a decision rule or default changes, so field data can be split by the policy
+ * that produced it (deterministic, versioned policies: telemetry informs the next version).
+ */
+export const GOVERNOR_POLICY_VERSION = 2;
+
+/** Reasons carry measured numbers; telemetry keeps their shape, not their values. */
+export function reasonCode(reason: string): string {
+  return reason.replace(/[0-9]+(\.[0-9]+)?/g, '#').slice(0, 80);
+}
 
 /** Durations are bucketed so events stay low-cardinality and carry no fine timing fingerprint. */
 export function bucketMs(value: number): string {
@@ -68,15 +93,25 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
     if (emitted >= maxEvents) return;
     emitted += 1;
     try {
-      options.sink(name, { experiment: options.experimentKey, arm: options.arm, ...attributes });
+      options.sink(name, {
+        experiment: options.experimentKey,
+        arm: options.arm,
+        policy: GOVERNOR_POLICY_VERSION,
+        ...attributes,
+      });
     } catch {
       // Telemetry must never change app behaviour; a failing sink is dropped silently.
     }
   };
 
   const flush = (at: number) => {
-    if (!summary || summary.windows === 0) return;
+    if (!summary || (summary.windows === 0 && summary.cpuSamples === 0 && summary.longTasks === 0)) return;
+    const samples = Math.max(1, summary.cpuSamples);
     emit('governor_summary', {
+      js_cores: Math.round((summary.jsCoresSum / samples) * 100) / 100,
+      main_cores: Math.round((summary.mainCoresSum / samples) * 100) / 100,
+      long_tasks: summary.longTasks,
+      long_task_max: bucketMs(summary.longTaskMaxMs),
       span_s: Math.round((at - summary.startAt) / 1000),
       windows: summary.windows,
       frames: summary.frames,
@@ -104,7 +139,11 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
         prev.thermal !== snapshot.thermal ||
         prev.memory !== snapshot.memory ||
         prev.optionalConcurrency !== snapshot.optionalConcurrency ||
-        prev.interactionIdle !== snapshot.interactionIdle
+        prev.interactionIdle !== snapshot.interactionIdle ||
+        prev.contention !== snapshot.contention ||
+        prev.refreshCapHz !== snapshot.refreshCapHz ||
+        prev.cpuBoost !== snapshot.cpuBoost ||
+        prev.globalReducedMotion !== snapshot.globalReducedMotion
       ) {
         emit('governor_state', {
           frame: snapshot.frameState,
@@ -112,25 +151,49 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
           memory: snapshot.memory,
           optional_cap: snapshot.optionalConcurrency,
           idle: snapshot.interactionIdle,
+          contention: snapshot.contention,
+          refresh_cap: snapshot.refreshCapHz ?? 0,
+          cpu_boost: snapshot.cpuBoost,
+          global_motion: snapshot.globalReducedMotion,
           action: snapshot.lastAction,
+          reason: reasonCode(snapshot.lastReason),
         });
       }
       for (const [lever, level] of Object.entries(snapshot.proposedLevels)) {
         const before = prev.proposedLevels[lever];
         if (before !== undefined && before !== level) {
-          emit('governor_lever', { lever, from: before, to: level, applied: snapshot.mode === 'active', action: snapshot.lastAction });
+          emit('governor_lever', {
+            lever,
+            from: before,
+            to: level,
+            applied: snapshot.mode === 'active',
+            action: snapshot.lastAction,
+            reason: reasonCode(snapshot.lastReason),
+          });
         }
       }
     },
-    onFrameWindow(window, interactionIdle) {
-      summary ??= emptySummary(window.startMs);
+    onThreadLoad(at, jsCores, mainCores) {
+      summary ??= emptySummary(at);
+      summary.cpuSamples += 1;
+      summary.jsCoresSum += jsCores;
+      summary.mainCoresSum += mainCores;
+      if (at - summary.startAt >= summaryEveryMs) flush(at);
+    },
+    onLongTask(at, durationMs) {
+      summary ??= emptySummary(at);
+      summary.longTasks += 1;
+      summary.longTaskMaxMs = Math.max(summary.longTaskMaxMs, durationMs);
+    },
+    onFrameWindow(window, interactionIdle, at = window.endMs) {
+      summary ??= emptySummary(at - (window.endMs - window.startMs));
       summary.windows += 1;
       summary.frames += window.frames;
       summary.costSum += window.averageMs * window.frames;
       summary.worstMs = Math.max(summary.worstMs, window.worstMs);
       if (window.averageMs > window.targetMs * 1.25) summary.stressedWindows += 1;
       if (interactionIdle && frameRate(window) > 1) summary.idleDrawMs += window.endMs - window.startMs;
-      if (window.endMs - summary.startAt >= summaryEveryMs) flush(window.endMs);
+      if (at - summary.startAt >= summaryEveryMs) flush(at);
     },
     flush,
   };

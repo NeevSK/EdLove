@@ -13,9 +13,10 @@ class RuntimeSenseModule : Module() {
   private fun sense(): RuntimeSense {
     sense?.let { return it }
     val context = requireNotNull(appContext.reactContext) { "React context is not available" }
-    return RuntimeSense(context, object : SenseEmitter {
+    val emitter = object : SenseEmitter {
       override fun emit(name: String, body: Map<String, Any?>) = sendEvent(name, body)
-    }).also { sense = it }
+    }
+    return RuntimeSense(context, emitter) { appContext.currentActivity }.also { sense = it }
   }
 
   override fun definition() = ModuleDefinition {
@@ -30,6 +31,10 @@ class RuntimeSenseModule : Module() {
     }
 
     Function("stop") { sense?.stop() }
+
+    Function("setRefreshCap") { hz: Double? -> sense().setRefreshCap(hz) }
+
+    Function("setCpuBoost") { enabled: Boolean -> sense().setCpuBoost(enabled) }
 
     Function("readTotals") { sense?.totals() ?: emptyMap<String, Any?>() }
 

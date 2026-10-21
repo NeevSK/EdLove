@@ -9,6 +9,8 @@ export {
   aggregateFrames,
   classifyFrameWindow,
   type FrameSample,
+  bottleneckTargets,
+  frameBottleneck,
   frameRate,
   shouldForwardWindow,
 } from './frames';
@@ -28,9 +30,18 @@ export { thermalLevelOf } from './signals';
 export {
   bucketMs,
   createGovernorTelemetry,
+  GOVERNOR_POLICY_VERSION,
   type GovernorTelemetry,
   type GovernorTelemetryOptions,
   type GovernorTelemetrySink,
+  reasonCode,
   type TelemetryValue,
 } from './telemetry';
 export type * from './types';
+export {
+  createRuntimeController,
+  type RuntimeController,
+  type RuntimeControllerOptions,
+  type RuntimePort,
+  type RuntimeScheduler,
+} from './controller';

@@ -1,9 +1,11 @@
 import type {
   CapacityFacts,
+  FrameStages,
   FrameState,
   GovernorConfig,
   GovernorEvent,
   ThermalStatus,
+  ThreadRoleName,
   TrimSeverity,
 } from '@repo/core/governor';
 
@@ -17,6 +19,7 @@ export interface NativeFrameWindow {
   readonly worstMs: number;
   readonly droppedRatio: number;
   readonly state: FrameState;
+  readonly stages?: FrameStages | null;
 }
 export interface NativeThermal {
   readonly status: ThermalStatus | null;
@@ -28,6 +31,27 @@ export interface NativeMemoryTrim {
 }
 export interface NativePowerSaver {
   readonly saver: boolean;
+}
+export interface NativeThreadLoad {
+  readonly intervalMs: number;
+  readonly processCores: number;
+  readonly cores: Readonly<Partial<Record<ThreadRoleName, number>>>;
+  readonly topOtherName: string;
+  readonly topOtherCores: number;
+  readonly rssMb: number | null;
+}
+export interface NativeMemory {
+  readonly availableMb: number;
+  readonly thresholdMb: number;
+  readonly lowMemory: boolean;
+  readonly rssMb: number | null;
+}
+/** What a hardware lever actually did; for diagnostics and telemetry, not for decisions. */
+export interface NativeLever {
+  readonly lever: 'refresh-cap' | 'cpu-boost';
+  readonly requested: number | boolean | null;
+  readonly applied: boolean;
+  readonly modeId?: number;
 }
 
 export interface NativeCapacity {
@@ -41,6 +65,10 @@ export interface NativeCapacity {
   readonly supportsRuntimeShader?: boolean;
   readonly supportsThermalHeadroom?: boolean;
   readonly supportsFrameDeadline?: boolean;
+  readonly supportsGpuDuration?: boolean;
+  readonly supportsCpuHints?: boolean;
+  readonly refreshRatesHz?: readonly number[];
+  readonly largeMemoryClassMb?: number;
 }
 
 export type RuntimeSenseEvents = {
@@ -48,6 +76,9 @@ export type RuntimeSenseEvents = {
   onThermal: (event: NativeThermal) => void;
   onMemoryTrim: (event: NativeMemoryTrim) => void;
   onPowerSaver: (event: NativePowerSaver) => void;
+  onThreadLoad: (event: NativeThreadLoad) => void;
+  onMemory: (event: NativeMemory) => void;
+  onLever: (event: NativeLever) => void;
 };
 
 /** What `start` accepts; every threshold is taken from the governor's own config. */
@@ -89,6 +120,10 @@ export function toCapacityFacts(native: NativeCapacity | null | undefined): Capa
     refreshRateHz: finite(native?.refreshRateHz),
     supportsRenderEffect: native?.supportsRenderEffect === true,
     supportsRuntimeShader: native?.supportsRuntimeShader === true,
+    refreshRatesHz: Array.isArray(native?.refreshRatesHz)
+      ? native.refreshRatesHz.filter((hz) => typeof hz === 'number' && Number.isFinite(hz) && hz > 0)
+      : [],
+    supportsCpuHints: native?.supportsCpuHints === true,
   };
 }
 
@@ -96,7 +131,9 @@ type NativeEvent =
   | { readonly name: 'onFrameWindow'; readonly payload: NativeFrameWindow }
   | { readonly name: 'onThermal'; readonly payload: NativeThermal }
   | { readonly name: 'onMemoryTrim'; readonly payload: NativeMemoryTrim }
-  | { readonly name: 'onPowerSaver'; readonly payload: NativePowerSaver };
+  | { readonly name: 'onPowerSaver'; readonly payload: NativePowerSaver }
+  | { readonly name: 'onThreadLoad'; readonly payload: NativeThreadLoad }
+  | { readonly name: 'onMemory'; readonly payload: NativeMemory };
 
 /**
  * Native payload to governor event. `at` is the JavaScript clock at receipt: the governor's
@@ -105,8 +142,8 @@ type NativeEvent =
 export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
   switch (event.name) {
     case 'onFrameWindow': {
-      const { state: _state, ...window } = event.payload;
-      return { type: 'frame-window', at, window };
+      const { state: _state, stages, ...window } = event.payload;
+      return { type: 'frame-window', at, window: stages ? { ...window, stages } : window };
     }
     case 'onThermal':
       return { type: 'thermal', at, status: event.payload.status, headroom: finite(event.payload.headroom) };
@@ -114,5 +151,20 @@ export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
       return { type: 'memory-trim', at, severity: event.payload.severity };
     case 'onPowerSaver':
       return { type: 'power', at, saver: event.payload.saver };
+    case 'onThreadLoad':
+      return {
+        type: 'thread-load',
+        at,
+        cores: event.payload.cores,
+        processCores: event.payload.processCores,
+      };
+    case 'onMemory':
+      return {
+        type: 'memory-state',
+        at,
+        availableMb: event.payload.availableMb,
+        thresholdMb: event.payload.thresholdMb,
+        lowMemory: event.payload.lowMemory,
+      };
   }
 }

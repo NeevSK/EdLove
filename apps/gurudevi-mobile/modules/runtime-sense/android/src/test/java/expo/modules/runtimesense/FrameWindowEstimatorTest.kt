@@ -105,6 +105,39 @@ class FrameWindowEstimatorTest {
   }
 
   @Test
+  fun stageAveragesMatchTheTypeScriptReference() {
+    val dir = fixtures()
+    val input = JSONObject(File(dir, "synthetic-stages.json").readText()).getJSONArray("frames")
+    val expected = JSONObject(File(dir, "synthetic-stages.expected.json").readText())
+    val c = expected.getJSONObject("config")
+    val classification = FrameClassification(c.getInt("minSamples"), c.getDouble("stressRatio"),
+      c.getDouble("stressDroppedRatio"), c.getDouble("comfortRatio"), c.getDouble("comfortDroppedRatio"))
+    val produced = mutableListOf<DoubleArray>()
+    val states = mutableListOf<String>()
+    val estimator = FrameWindowEstimator(expected.getDouble("windowMs"), classification) { w ->
+      produced += doubleArrayOf(w.startMs, w.frames.toDouble(), w.averageMs, w.droppedRatio,
+        w.uiMs, w.renderMs, w.gpuMs, w.delayMs)
+      states += "${w.state.wire}/${w.forward}"
+    }
+    estimator.defaultTargetMs = expected.getDouble("defaultTargetMs")
+    for (i in 0 until input.length()) {
+      val f = input.getJSONObject(i)
+      val s = f.getJSONObject("stages")
+      estimator.addFrame(f.getDouble("tMs"), f.getDouble("durMs"), f.getDouble("deadlineMs"),
+        s.getDouble("uiMs"), s.getDouble("renderMs"), s.getDouble("gpuMs"), s.getDouble("delayMs"))
+    }
+    estimator.close()
+    val windows = expected.getJSONArray("windows")
+    assertEquals(windows.length(), produced.size)
+    val keys = listOf("startMs", "frames", "averageMs", "droppedRatio", "uiMs", "renderMs", "gpuMs", "delayMs")
+    for (i in 0 until windows.length()) {
+      val e = windows.getJSONObject(i)
+      keys.forEachIndexed { k, key -> assertEquals("window $i $key", e.getDouble(key), produced[i][k], 1e-6) }
+      assertEquals("window $i state", "${e.getString("state")}/${e.getBoolean("forward")}", states[i])
+    }
+  }
+
+  @Test
   fun anIdleScreenProducesNothing() {
     val c = FrameClassification(4, 1.25, 0.1, 0.8, 0.02)
     var count = 0
