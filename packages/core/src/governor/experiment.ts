@@ -9,6 +9,11 @@ export interface ExperimentAssignment {
   readonly bucket: number;
   /** Control runs the governor in shadow: it decides and reports, but applies the open-loop baseline. */
   readonly mode: GovernorMode;
+  /**
+   * Whether the runtime runs at all. The kill switch turns it off entirely, native sensing
+   * included: shadow mode still runs the native module, so it cannot stop a native fault.
+   */
+  readonly runtime: 'off' | GovernorMode;
   readonly reason: 'assigned' | 'kill-switch' | 'forced';
 }
 
@@ -23,6 +28,9 @@ export function fnv1a32(input: string): number {
 }
 
 /**
+ * Include the policy version in `key` (for example `adaptive-runtime-p3`) so each policy
+ * version reshuffles arms; otherwise the same installs stay in treatment every time.
+ *
  * Deterministic assignment: the same install always lands in the same arm for a key, with no
  * network and no stored state. A kill switch sends everyone to control (shadow mode), which is
  * also the safe default when the flag cannot be read.
@@ -35,17 +43,21 @@ export function assignExperiment(options: {
   readonly forceArm?: ExperimentArm;
 }): ExperimentAssignment {
   const bucket = fnv1a32(`${options.key}:${options.installId}`) % 100;
-  if (options.killSwitch) return { key: options.key, arm: 'control', bucket, mode: 'shadow', reason: 'kill-switch' };
+  if (options.killSwitch) {
+    return { key: options.key, arm: 'control', bucket, mode: 'shadow', runtime: 'off', reason: 'kill-switch' };
+  }
   if (options.forceArm) {
     return {
       key: options.key,
       arm: options.forceArm,
       bucket,
       mode: options.forceArm === 'treatment' ? 'active' : 'shadow',
+      runtime: options.forceArm === 'treatment' ? 'active' : 'shadow',
       reason: 'forced',
     };
   }
   const percent = Math.min(100, Math.max(0, options.treatmentPercent));
   const arm: ExperimentArm = bucket < percent ? 'treatment' : 'control';
-  return { key: options.key, arm, bucket, mode: arm === 'treatment' ? 'active' : 'shadow', reason: 'assigned' };
+  const mode: GovernorMode = arm === 'treatment' ? 'active' : 'shadow';
+  return { key: options.key, arm, bucket, mode, runtime: mode, reason: 'assigned' };
 }

@@ -13,7 +13,7 @@ import {
 export * from './src/mapping';
 
 declare class RuntimeSenseNativeModule extends NativeModule<RuntimeSenseEvents> {
-  readonly capacity: NativeCapacity;
+  readCapacity(): NativeCapacity;
   start(config: NativeSenseConfig): void;
   stop(): void;
   setRefreshCap(hz: number | null): void;
@@ -40,7 +40,7 @@ export function createRuntimeSensePort(
   onLever?: (event: NativeLever) => void,
 ): RuntimePort {
   return {
-    capacity: toCapacityFacts(native?.capacity),
+    capacity: toCapacityFacts(native?.readCapacity()),
     start(config: GovernorConfig, onEvent: (event: GovernorEvent) => void) {
       if (!native) return () => {};
       const subscriptions = [

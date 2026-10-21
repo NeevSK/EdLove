@@ -1,7 +1,9 @@
 import {
+  configHash,
   createGovernorTelemetry,
   createRuntimeController,
   DEFAULT_GOVERNOR_CONFIG,
+  type ExperimentAssignment,
   type GovernorSnapshot,
   type GovernorTelemetrySink,
   GURUDEVI_LEVERS,
@@ -10,7 +12,7 @@ import {
 import { createContext, type ReactNode, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 import { AccessibilityInfo, AppState, type AppStateStatus, View } from 'react-native';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
-import { createRuntimeSensePort, isRuntimeSenseAvailable } from '../../modules/runtime-sense';
+import { createRuntimeSensePort, isRuntimeSenseAvailable, readFrameTotals } from '../../modules/runtime-sense';
 import { observeLongTasks } from './longTasks';
 import { type RuntimeMode, resolveRuntimeMode } from './runtimeMode';
 
@@ -19,8 +21,22 @@ const RuntimeContext = createContext<RuntimeController | null>(null);
 /** Touches closer together than this are one interaction; the governor needs presence, not taps. */
 const INTERACTION_THROTTLE_MS = 250;
 
+// Unknown or null at launch is treated as active: the app is starting in front of the user,
+// and treating it as hidden would force reduced motion until the first change event.
 const visibilityOf = (status: AppStateStatus | string | null | undefined) =>
-  status === 'active' ? 'active' : status === 'background' ? 'background' : 'inactive';
+  status === 'background' ? 'background' : status === 'inactive' ? 'inactive' : 'active';
+
+/**
+ * Levers that act today, whatever the app's components do. A software lever joins this list
+ * only when a consumer applies it; lowering a lever nobody reads costs a stress period and a
+ * stack slot and changes nothing, which would push the loop onto the levers that do act.
+ */
+export const APPLIED_LEVERS: readonly string[] = ['refresh-rate', 'global-motion'];
+
+const sessionId = () => Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
+
+const memoryBucket = (bytes: number | null) =>
+  bytes === null ? 'unknown' : bytes < 3 * 1024 ** 3 ? '<3GB' : bytes < 5 * 1024 ** 3 ? '3-5GB' : bytes < 7 * 1024 ** 3 ? '5-7GB' : '>=7GB';
 
 const now = () => performance.now();
 
@@ -33,7 +49,11 @@ interface RuntimeExecutiveProps {
   readonly children: ReactNode;
   /** Overrides the resolved mode (tests, diagnostics). */
   readonly mode?: RuntimeMode;
+  /** The experiment assignment (from `assignExperiment`); its kill switch turns the runtime off. */
+  readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
+  /** Levers with a consumer in this build; defaults to the app-wide hardware levers. */
+  readonly appliedLevers?: readonly string[];
 }
 
 /**
@@ -42,23 +62,37 @@ interface RuntimeExecutiveProps {
  * preference and JS long tasks, and applies the one app-wide lever that lives in JS: forced
  * reduced motion for every Reanimated animation that starts while it is set.
  */
-export function RuntimeExecutive({ children, mode, telemetrySink }: RuntimeExecutiveProps) {
-  const [resolved] = useState(() => mode ?? resolveRuntimeMode());
+export function RuntimeExecutive({ children, mode, assignment, telemetrySink, appliedLevers }: RuntimeExecutiveProps) {
+  const [resolved] = useState<RuntimeMode>(() => mode ?? assignment?.runtime ?? resolveRuntimeMode());
   const [controller] = useState<RuntimeController | null>(() => {
     if (resolved === 'off') return null;
+    const port = createRuntimeSensePort(now);
+    const applied = new Set(appliedLevers ?? APPLIED_LEVERS);
+    const config = DEFAULT_GOVERNOR_CONFIG;
     return createRuntimeController({
-      port: createRuntimeSensePort(now),
-      levers: GURUDEVI_LEVERS,
+      port,
+      levers: GURUDEVI_LEVERS.filter((lever) => applied.has(lever.id)),
       mode: resolved,
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config,
       now,
       scheduler,
       memorySensing: isRuntimeSenseAvailable,
       telemetry: telemetrySink
         ? createGovernorTelemetry({
             sink: telemetrySink,
-            arm: resolved === 'active' ? 'treatment' : 'control',
-            experimentKey: 'adaptive-runtime',
+            arm: assignment?.arm ?? (resolved === 'active' ? 'treatment' : 'control'),
+            experimentKey: assignment?.key ?? 'adaptive-runtime',
+            sessionId: sessionId(),
+            configHash: configHash(config),
+            config,
+            readTotals: isRuntimeSenseAvailable ? readFrameTotals : undefined,
+            device: {
+              ram: memoryBucket(port.capacity.totalMemoryBytes),
+              sdk: port.capacity.sdkInt ?? 0,
+              max_hz: Math.round(Math.max(0, ...port.capacity.refreshRatesHz)),
+              hints: port.capacity.supportsCpuHints,
+              sensing: isRuntimeSenseAvailable,
+            },
           })
         : undefined,
     });

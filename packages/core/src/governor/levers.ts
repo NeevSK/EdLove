@@ -11,8 +11,13 @@ export function chooseLeverToLower(
   levers: readonly LeverSpec[],
   levels: Readonly<Record<string, number>>,
   bottleneck: readonly LeverTarget[],
+  strict = false,
 ): LeverSpec | null {
-  const candidates = levers.filter((lever) => (levels[lever.id] ?? 0) < lever.maxLevel);
+  // Strict: only levers that relieve the bottleneck (a workload is never lowered for a
+  // resource it does not spend). Non-strict ordering is kept for callers that want a fallback.
+  const candidates = levers.filter(
+    (lever) => (levels[lever.id] ?? 0) < lever.maxLevel && (!strict || bottleneck.includes(lever.target)),
+  );
   if (candidates.length === 0) return null;
   const sorted = [...candidates].sort((a, b) => {
     const aTargets = bottleneck.includes(a.target) ? 0 : 1;
@@ -56,12 +61,13 @@ export const GURUDEVI_LEVERS: readonly LeverSpec[] = [
     levels: ['the display maximum', 'capped (config refreshCapHz)'],
   },
   {
-    // The containment lever: it reaches every Reanimated animation in the app, registered or
-    // not, so a badly written component cannot keep the screen busy once this is lowered.
+    // The last UI-thread containment step: Reanimated decides reduced motion when an animation
+    // starts, so this stops new and restarted animations app-wide, registered or not. It does
+    // not stop loops already running, nor CSS animations (Reanimated 4.7.1).
     id: 'global-motion',
     maxLevel: 1,
     visualImpact: 'high',
-    target: 'cpu',
+    target: 'gpu',
     ambient: false,
     motion: true,
     levels: ['animations run', 'reduced motion forced for all Reanimated animations'],

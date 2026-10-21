@@ -1,21 +1,33 @@
 import type { GovernorConfig, MemoryLevel, ThermalLevel, ThermalStatus, TrimSeverity } from './types';
 
+const THERMAL_RANK: Record<ThermalLevel, number> = { unknown: 0, nominal: 1, warm: 2, hot: 3, critical: 4 };
+
 /**
- * Thermal level from ADPF headroom when the device reports it, otherwise from thermal status.
- * Headroom is preferred: it is continuous and forecastable, while status is coarse and some
- * devices always report `none`. Missing data stays `unknown`; it is never treated as safe proof.
+ * Thermal level from status and ADPF headroom, whichever is more severe. Headroom is polled
+ * (every 10–60 s) while status arrives by listener, so either can be the stale one; taking the
+ * worse of the two means a fresh `severe` is never hidden by an old headroom reading. Headroom
+ * 1.0 is the platform's "severe throttling" point, so it maps to `hot` like status `severe`;
+ * only headroom above it is `critical`. Missing data stays `unknown`, never proof of safety.
  */
 export function thermalLevelOf(
   status: ThermalStatus | null,
   headroom: number | null,
   config: GovernorConfig,
 ): ThermalLevel {
-  if (headroom !== null && Number.isFinite(headroom) && headroom > 0) {
-    if (headroom >= config.headroomCritical) return 'critical';
-    if (headroom >= config.headroomHot) return 'hot';
-    if (headroom >= config.headroomWarm) return 'warm';
-    return 'nominal';
-  }
+  const fromStatus = statusLevel(status);
+  if (headroom === null || !Number.isFinite(headroom) || headroom <= 0) return fromStatus;
+  const fromHeadroom: ThermalLevel =
+    headroom > config.headroomCritical
+      ? 'critical'
+      : headroom >= config.headroomHot
+        ? 'hot'
+        : headroom >= config.headroomWarm
+          ? 'warm'
+          : 'nominal';
+  return THERMAL_RANK[fromHeadroom] >= THERMAL_RANK[fromStatus] ? fromHeadroom : fromStatus;
+}
+
+function statusLevel(status: ThermalStatus | null): ThermalLevel {
   switch (status) {
     case null:
       return 'unknown';
@@ -51,9 +63,24 @@ export function latchMemory(
   return { severity: keep ? latch.severity : severity, until: at + config.memoryLatchMs };
 }
 
-export function memoryLevelOf(latch: MemoryLatch, at: number, everObserved: boolean): MemoryLevel {
-  if (latch.severity !== null && at < latch.until) {
-    return latch.severity === 'moderate' ? 'trimmed' : 'low';
-  }
+/**
+ * Memory level from the trim latch and the last polled reading. A polled reading is a level,
+ * not an event: it holds until the next poll says otherwise, because the sensor reports only
+ * changes and a steadily low reading must not be forgotten when the latch expires.
+ */
+export function memoryLevelOf(
+  latch: MemoryLatch,
+  at: number,
+  everObserved: boolean,
+  polled: TrimSeverity | null = null,
+): MemoryLevel {
+  const latched = latch.severity !== null && at < latch.until ? latch.severity : null;
+  const worst = [latched, polled].reduce<TrimSeverity | null>(
+    (a, b) => (b === null ? a : a === null || SEVERITY_RANK[b] > SEVERITY_RANK[a] ? b : a),
+    null,
+  );
+  if (worst !== null) return worst === 'moderate' ? 'trimmed' : 'low';
   return everObserved ? 'normal' : 'unknown';
 }
+
+const SEVERITY_RANK: Record<TrimSeverity, number> = { moderate: 1, low: 2, critical: 3 };

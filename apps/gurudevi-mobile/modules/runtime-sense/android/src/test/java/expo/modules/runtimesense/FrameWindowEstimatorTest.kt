@@ -47,6 +47,7 @@ class FrameWindowEstimatorTest {
       stressDroppedRatio = config.getDouble("stressDroppedRatio"),
       comfortRatio = config.getDouble("comfortRatio"),
       comfortDroppedRatio = config.getDouble("comfortDroppedRatio"),
+      jankFrameFactor = config.getDouble("jankFrameFactor"),
     )
     val produced = mutableListOf<Window>()
     val estimator = FrameWindowEstimator(expected.getDouble("windowMs"), classification) { w ->
@@ -111,7 +112,8 @@ class FrameWindowEstimatorTest {
     val expected = JSONObject(File(dir, "synthetic-stages.expected.json").readText())
     val c = expected.getJSONObject("config")
     val classification = FrameClassification(c.getInt("minSamples"), c.getDouble("stressRatio"),
-      c.getDouble("stressDroppedRatio"), c.getDouble("comfortRatio"), c.getDouble("comfortDroppedRatio"))
+      c.getDouble("stressDroppedRatio"), c.getDouble("comfortRatio"), c.getDouble("comfortDroppedRatio"),
+      c.getDouble("jankFrameFactor"))
     val produced = mutableListOf<DoubleArray>()
     val states = mutableListOf<String>()
     val estimator = FrameWindowEstimator(expected.getDouble("windowMs"), classification) { w ->
@@ -194,5 +196,46 @@ class FrameWindowEstimatorTest {
     assertTrue(Signals.headroomChanged(null, 0.4))
     assertFalse(Signals.headroomChanged(0.40, 0.41))
     assertTrue(Signals.headroomChanged(0.40, 0.43))
+  }
+
+  @Test
+  fun aLateFrameNeverReopensAClosedWindow() {
+    val c = FrameClassification(4, 1.25, 0.1, 0.8, 0.02)
+    val starts = mutableListOf<Double>()
+    val estimator = FrameWindowEstimator(500.0, c) { starts += it.startMs }
+    estimator.defaultTargetMs = 16.667
+    for (i in 0 until 20) estimator.addFrame(i * 16.0, 8.0, Double.NaN)
+    estimator.tick(620.0) // the flush timer closes [0, 500)
+    estimator.addFrame(450.0, 400.0, Double.NaN) // a 400 ms frame whose metrics arrive late
+    estimator.addFrame(1010.0, 8.0, Double.NaN)
+    estimator.close()
+    assertEquals(listOf(0.0, 500.0, 1000.0), starts)
+  }
+
+  @Test
+  fun fewButVeryLongFramesAreStressNotQuiet() {
+    val c = FrameClassification(4, 1.25, 0.1, 0.8, 0.02)
+    var state = FrameState.QUIET
+    val estimator = FrameWindowEstimator(500.0, c) { state = it.state }
+    estimator.addFrame(10.0, 160.0, 16.0)
+    estimator.addFrame(200.0, 160.0, 16.0)
+    estimator.close()
+    assertEquals(FrameState.STRESSED, state)
+  }
+
+  @Test
+  fun droppedReportsCountAsMissedFrames() {
+    val c = FrameClassification(1, 1.25, 0.1, 0.8, 0.02)
+    var dropped = -1.0
+    val estimator = FrameWindowEstimator(500.0, c) { dropped = it.droppedRatio }
+    estimator.addFrame(1.0, 8.0, 16.0)
+    estimator.addDroppedReports(3)
+    estimator.close()
+    assertEquals(3.0 / 4.0, dropped, 1e-12)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun rejectsANonFiniteWindow() {
+    FrameWindowEstimator(Double.NaN, FrameClassification(4, 1.25, 0.1, 0.8, 0.02)) { }
   }
 }

@@ -199,6 +199,16 @@ export interface GovernorConfig {
   readonly memoryModerateFactor: number;
   /** The refresh cap applied under heat, power saving, pressure or idleness. */
   readonly refreshCapHz: number;
+  /** A window with fewer frames is still stressed if one frame took this many frame budgets. */
+  readonly jankFrameFactor: number;
+  /** Calm windows (frames actually drawn within budget) required before any raise. */
+  readonly upgradeCalmWindows: number;
+  /** Contention steps that may fail to relieve the saturated thread before the runtime stops. */
+  readonly maxUnrelievedContentionSteps: number;
+  /** Drops in cores, or in long tasks, that count as relief after a contention step. */
+  readonly contentionReliefCores: number;
+  /** Quality-lowering hardware changes wait this long after the last touch (gesture freeze). */
+  readonly gestureQuietMs: number;
 }
 
 export interface GovernorSnapshot {
@@ -218,6 +228,8 @@ export interface GovernorSnapshot {
   readonly optionalConcurrency: number;
   /** Which thread, if any, is saturated; deferrable work pauses while it is. */
   readonly contention: Contention;
+  /** Contention that shedding did not relieve: the cause is code to fix, not quality to lower. */
+  readonly contentionExhausted: boolean;
   /** Display refresh cap to apply, or null to let the system choose. */
   readonly refreshCapHz: number | null;
   /** Whether to hold an ADPF hint session for the UI and render threads. */

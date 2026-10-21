@@ -29,6 +29,7 @@ export { replayGovernor } from './replay';
 export { thermalLevelOf } from './signals';
 export {
   bucketMs,
+  configHash,
   createGovernorTelemetry,
   GOVERNOR_POLICY_VERSION,
   type GovernorTelemetry,

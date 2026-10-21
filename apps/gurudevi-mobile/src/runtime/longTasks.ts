@@ -1,8 +1,9 @@
 /**
- * JS-thread stalls as reported by React Native's own scheduler. RN 0.88's RuntimeScheduler
- * reports any task that ran without a yielding opportunity past its long-task threshold as a
- * W3C `longtask` performance entry, so this costs no polling and sees every stall, whatever
- * code caused it.
+ * JS event-loop stalls as reported by React Native's own scheduler. RN 0.88's RuntimeScheduler
+ * reports a task that ran without a yielding opportunity for 50 ms or more as a W3C `longtask`
+ * entry, so this costs no polling and covers any code running as a scheduler task. It does not
+ * see synchronous native calls outside the scheduler or work on the UI thread (worklets); the
+ * native per-thread CPU sampler covers those.
  */
 interface LongTaskEntry {
   readonly duration: number;

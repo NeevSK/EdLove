@@ -12,7 +12,16 @@ data class FrameClassification(
   val stressDroppedRatio: Double,
   val comfortRatio: Double,
   val comfortDroppedRatio: Double,
-)
+  /** A window with few frames is still stressed if one frame held this many budgets. */
+  val jankFrameFactor: Double = 6.0,
+) {
+  init {
+    require(minSamples >= 1) { "minSamples must be at least 1" }
+    require(listOf(stressRatio, stressDroppedRatio, comfortRatio, comfortDroppedRatio, jankFrameFactor).all { it.isFinite() && it > 0 }) {
+      "classification thresholds must be finite and positive"
+    }
+  }
+}
 
 enum class FrameState(val wire: String) {
   QUIET("quiet"),
@@ -87,6 +96,10 @@ class FrameWindowEstimator(
   private var deadlineSum = 0.0
   private var worst = 0.0
   private var missed = 0L
+  /** Frames the platform dropped from reporting while this thread lagged; counted as missed. */
+  private var pendingDropped = 0L
+  /** End of the last closed window: a late-delivered frame never reopens a closed window. */
+  private var lastClosedEnd = Double.NEGATIVE_INFINITY
   private var stageFrames = 0
   private var ui = 0.0
   private var render = 0.0
@@ -103,7 +116,7 @@ class FrameWindowEstimator(
     private set
 
   init {
-    require(windowMs > 0) { "windowMs must be positive" }
+    require(windowMs.isFinite() && windowMs > 0) { "windowMs must be finite and positive" }
   }
 
   /** Where the open window ends, or NaN when no window is open. Used to schedule a flush. */
@@ -130,12 +143,18 @@ class FrameWindowEstimator(
     gpuMs: Double,
     delayMs: Double,
   ) {
+    if (tMs.isNaN() || durMs.isNaN()) return
     if (!open) {
-      start = floor(tMs / windowMs) * windowMs
+      // Metrics arrive after the frame; one that belongs to an already closed window is
+      // counted in the next one rather than emitting a second window for the same slot.
+      start = maxOf(floor(tMs / windowMs) * windowMs, lastClosedEnd)
       open = true
+      missed += pendingDropped
+      pendingDropped = 0
     }
     while (tMs >= start + windowMs) {
       emit(start + windowMs)
+      lastClosedEnd = start + windowMs
       start += windowMs
       reset()
     }
@@ -162,8 +181,9 @@ class FrameWindowEstimator(
 
   /**
    * Closes the open window if [nowMs] is past its end. Called from a timer so the last window
-   * before silence is reported without waiting for the next frame. Equivalent to the reference:
-   * the next frame realigns to the same grid, and empty windows are never produced either way.
+   * before silence is reported without waiting for the next frame. For frames delivered in
+   * order this matches the reference exactly; a late frame joins the next window instead of
+   * reopening a closed one (the reference never sees late frames).
    */
   fun tick(nowMs: Double) {
     if (open && nowMs >= start + windowMs) close()
@@ -173,8 +193,19 @@ class FrameWindowEstimator(
   fun close() {
     if (!open) return
     emit(start + windowMs)
+    lastClosedEnd = start + windowMs
     reset()
     open = false
+  }
+
+  /**
+   * Records frames whose metrics the platform dropped because this thread fell behind (the
+   * listener's `dropCountSinceLastInvocation`). They happened, so they count as missed vsyncs.
+   */
+  fun addDroppedReports(count: Int) {
+    if (count <= 0) return
+    if (open) missed += count else pendingDropped += count
+    totalMissedVsyncs += count
   }
 
   /** Forgets forwarding history, so the next window always crosses the bridge. */
@@ -215,7 +246,7 @@ class FrameWindowEstimator(
       out.gpuMs = Double.NaN
       out.delayMs = Double.NaN
     }
-    out.state = classify(out.frames, out.averageMs, out.targetMs, out.droppedRatio, classification)
+    out.state = classify(out.frames, out.averageMs, out.targetMs, out.droppedRatio, out.worstMs, missed, classification)
     out.forward = shouldForward(out.state, previousForwarded)
     if (out.forward) previousForwarded = out.state
     listener.onWindow(out)
@@ -228,9 +259,16 @@ class FrameWindowEstimator(
       averageMs: Double,
       targetMs: Double,
       droppedRatio: Double,
+      worstMs: Double,
+      missedVsyncs: Long,
       c: FrameClassification,
     ): FrameState {
-      if (frames < c.minSamples || targetMs <= 0) return FrameState.QUIET
+      if (frames <= 0 || !(targetMs > 0)) return FrameState.QUIET
+      if (frames < c.minSamples) {
+        // Few frames: idle, or a main thread too stalled to draw. Missed vsyncs tell them apart.
+        val longFrame = worstMs > c.jankFrameFactor * targetMs
+        return if (missedVsyncs >= c.minSamples || longFrame) FrameState.STRESSED else FrameState.QUIET
+      }
       val ratio = averageMs / targetMs
       if (ratio > c.stressRatio || droppedRatio > c.stressDroppedRatio) return FrameState.STRESSED
       if (ratio < c.comfortRatio && droppedRatio < c.comfortDroppedRatio) return FrameState.CALM

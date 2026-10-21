@@ -122,7 +122,7 @@ describe('runtime controller', () => {
     controller.dispatch({ type: 'interaction', at: 0 });
     controller.dispatch({ type: 'interaction', at: 100 });
     expect(calls.filter((c) => c.startsWith('boost:true'))).toHaveLength(1);
-    time.advance(10_100); // idle: ambient sleep, refresh cap, no boost
+    time.advance(10_200); // idle: ambient sleep, refresh cap, no boost
     expect(calls).toContain('refresh:60');
     expect(calls).toContain('boost:false');
     controller.stop();
@@ -145,7 +145,12 @@ describe('runtime controller', () => {
     controller.start();
     controller.dispatch({ type: 'interaction', at: 0 });
     time.advance(30_000);
-    expect(calls.filter((c) => c.startsWith('refresh:') || c.startsWith('boost:'))).toEqual([]);
+    // Shadow only hands the hardware back (a previous instance may have left it capped);
+    // it never caps or boosts.
+    expect(calls.filter((c) => c.startsWith('refresh:') || c.startsWith('boost:'))).toEqual([
+      'refresh:null',
+      'boost:false',
+    ]);
   });
 
   it('keeps governing when a consumer, the port and the telemetry sink all throw', () => {
@@ -208,5 +213,27 @@ describe('runtime controller', () => {
     const lever = events.find(([name]) => name === 'governor_lever');
     expect(lever?.[1].policy).toBeGreaterThan(0);
     expect(String(lever?.[1].reason)).toMatch(/^JS thread saturated \(# cores, # long tasks\)$/);
+  });
+
+  it('releases hardware a previous instance left behind, and ignores events after stop or with NaN time', () => {
+    const time = fakeTime();
+    const { port, calls } = fakePort();
+    const controller = createRuntimeController({
+      port,
+      levers: GURUDEVI_LEVERS,
+      mode: 'active',
+      config: DEFAULT_GOVERNOR_CONFIG,
+      now: time.now,
+      scheduler: time.scheduler,
+      memorySensing: true,
+    });
+    controller.start();
+    expect(calls.slice(0, 2)).toEqual(['refresh:null', 'boost:true']);
+    controller.dispatch({ type: 'tick', at: Number.NaN });
+    expect(controller.getSnapshot().at).toBe(0);
+    controller.stop();
+    const after = calls.length;
+    controller.dispatch({ type: 'power', at: 5, saver: true });
+    expect(calls.length).toBe(after);
   });
 });

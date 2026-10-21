@@ -16,7 +16,9 @@ describe('runtime-sense mapping', () => {
       stressDroppedRatio: DEFAULT_GOVERNOR_CONFIG.stressDroppedRatio,
       comfortRatio: DEFAULT_GOVERNOR_CONFIG.comfortRatio,
       comfortDroppedRatio: DEFAULT_GOVERNOR_CONFIG.comfortDroppedRatio,
+      jankFrameFactor: DEFAULT_GOVERNOR_CONFIG.jankFrameFactor,
       headroomWarm: DEFAULT_GOVERNOR_CONFIG.headroomWarm,
+      saturationCores: DEFAULT_GOVERNOR_CONFIG.saturationCores,
     });
   });
 
@@ -106,6 +108,15 @@ describe('runtime-sense mapping', () => {
     expect(
       toGovernorEvent({ name: 'onMemory', payload: { availableMb: 420, thresholdMb: 216, lowMemory: false, rssMb: 300 } }, 8),
     ).toEqual({ type: 'memory-state', at: 8, availableMb: 420, thresholdMb: 216, lowMemory: false });
+  });
+
+  it('turns an unreported GPU time into NaN, never 0', () => {
+    const window = { startMs: 0, endMs: 500, frames: 30, averageMs: 9, targetMs: 16.7, worstMs: 12, droppedRatio: 0 };
+    const event = toGovernorEvent(
+      { name: 'onFrameWindow', payload: { ...window, state: 'calm', stages: { uiMs: 5, renderMs: 3, gpuMs: null, delayMs: 0 } } },
+      1,
+    );
+    expect(event.type === 'frame-window' && Number.isNaN(event.window.stages?.gpuMs)).toBe(true);
   });
 
   it('keeps only valid refresh rates and reads hint support', () => {

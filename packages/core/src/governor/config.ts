@@ -32,4 +32,9 @@ export const DEFAULT_GOVERNOR_CONFIG: GovernorConfig = {
   memoryLowFactor: 1.5,
   memoryModerateFactor: 2,
   refreshCapHz: 60,
+  jankFrameFactor: 6,
+  upgradeCalmWindows: 2,
+  maxUnrelievedContentionSteps: 2,
+  contentionReliefCores: 0.05,
+  gestureQuietMs: 1_000,
 };

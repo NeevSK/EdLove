@@ -60,11 +60,16 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   let snapshot = snapshotOf(state);
   let stopSensing: (() => void) | null = null;
   let timer: unknown = null;
-  let appliedRefresh: number | null = null;
-  let appliedBoost = false;
+  // Unknown until first applied: a previous JS instance (a reload) may have left the hardware
+  // in any state, so the first snapshot is always sent, including a release.
+  const UNKNOWN = Symbol('unknown');
+  let appliedRefresh: number | null | typeof UNKNOWN = UNKNOWN;
+  let appliedBoost: boolean | typeof UNKNOWN = UNKNOWN;
+  let running = false;
   const listeners = new Set<() => void>();
 
   const applyHardware = (next: GovernorSnapshot) => {
+    if (!running) return;
     if (next.refreshCapHz !== appliedRefresh) {
       appliedRefresh = next.refreshCapHz;
       guard(() => port.setRefreshCap(next.refreshCapHz));
@@ -84,7 +89,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     timer = scheduler.setTimeout(() => {
       timer = null;
       dispatch({ type: 'tick', at: options.now() });
-    }, Math.max(0, due - options.now()));
+    }, Math.max(1, Math.ceil(due - options.now()) + 1));
   };
 
   const observe = (event: GovernorEvent) => {
@@ -96,6 +101,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   };
 
   const dispatch = (event: GovernorEvent) => {
+    if (!running || !isValidEvent(event)) return;
     const before = state.version;
     state = reduceGovernor(state, event);
     guard(() => observe(event));
@@ -112,6 +118,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     start() {
       if (stopSensing !== null) return;
       stopSensing = () => {};
+      running = true;
       guard(() => telemetry?.onSnapshot(snapshot));
       applyHardware(snapshot);
       const stop = guardValue(() => port.start(options.config, dispatch));
@@ -122,14 +129,15 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
       if (stopSensing === null) return;
       const stop = stopSensing;
       stopSensing = null;
+      running = false;
       if (timer !== null) scheduler.clearTimeout(timer);
       timer = null;
       guard(stop);
       // Hand the hardware back to the system.
       if (appliedRefresh !== null) guard(() => port.setRefreshCap(null));
-      if (appliedBoost) guard(() => port.setCpuBoost(false));
-      appliedRefresh = null;
-      appliedBoost = false;
+      if (appliedBoost !== false) guard(() => port.setCpuBoost(false));
+      appliedRefresh = UNKNOWN;
+      appliedBoost = UNKNOWN;
       guard(() => telemetry?.flush(options.now()));
     },
     dispatch,
@@ -162,4 +170,22 @@ function guardValue<T>(effect: () => T): T | null {
     console.error('[governor] side effect failed', error);
     return null;
   }
+}
+
+const finite = (n: unknown): boolean => typeof n === 'number' && Number.isFinite(n);
+
+/**
+ * Rejects events a defective sensor could produce. One NaN timestamp would otherwise become the
+ * governor's clock for good (max(x, NaN) is NaN) and freeze every timed decision.
+ */
+function isValidEvent(event: GovernorEvent): boolean {
+  if (!finite(event.at)) return false;
+  if (event.type === 'frame-window') {
+    const w = event.window;
+    return [w.startMs, w.endMs, w.frames, w.averageMs, w.targetMs, w.worstMs, w.droppedRatio].every(finite);
+  }
+  if (event.type === 'thread-load') return finite(event.processCores);
+  if (event.type === 'memory-state') return finite(event.availableMb) && finite(event.thresholdMb);
+  if (event.type === 'long-task') return finite(event.durationMs);
+  return true;
 }

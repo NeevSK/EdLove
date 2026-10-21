@@ -1,6 +1,8 @@
 package expo.modules.runtimesense
 
 import android.app.Activity
+import android.content.Context
+import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.PerformanceHintManager
 import android.os.Process
@@ -9,36 +11,48 @@ import java.io.File
 
 /**
  * Levers that act on the hardware for the whole app. They are actuators: they do what the
- * JavaScript allocator says and report what they could do, nothing more.
+ * JavaScript allocator says and report what they could do, nothing more. Every platform call
+ * is guarded: an actuator that fails must never take the app down.
+ *
+ * Threading: the hint session is touched only from the sensor's handler thread; window
+ * attributes only on the UI thread.
  */
-class HardwareLevers(private val activity: () -> Activity?) {
+class HardwareLevers(context: Context, private val activity: () -> Activity?) {
+  private val app = context.applicationContext
+  private val displays = app.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+
   // region refresh cap
 
   private var capHz: Float? = null
 
-  /** Display modes at the current resolution, for capacity facts and diagnostics. */
+  /** The default display, readable without an activity (unlike `Activity.getDisplay`). */
+  private fun defaultDisplay(): Display? = runCatching { displays.getDisplay(Display.DEFAULT_DISPLAY) }.getOrNull()
+
+  /** Refresh rates offered at the current resolution, ascending. */
   fun displayRates(): List<Float> {
-    val display = currentDisplay() ?: return emptyList()
-    return DisplayModes.ratesAtResolution(display.supportedModes.map(::spec), spec(display.mode))
+    val display = defaultDisplay() ?: return emptyList()
+    return runCatching { DisplayModes.ratesAtResolution(display.supportedModes.map(::spec), spec(display.mode)) }
+      .getOrDefault(emptyList())
   }
 
+  /** The rate the display runs at now (changes with the cap and with OEM adaptive refresh). */
+  fun currentRefreshHz(): Float? = runCatching { defaultDisplay()?.refreshRate }.getOrNull()?.takeIf { it > 0f }
+
   /**
-   * Caps the refresh rate (null releases the cap). Applied on the UI thread through the
-   * window's preferred display mode (API 23+). Returns the mode id requested, 0 for none.
+   * Caps the refresh rate (null releases it) through the window's preferred display mode
+   * (API 23+), on the UI thread. Returns the mode id requested, 0 for none. The OS and the
+   * vendor may still override the request (power saving, thermal, the user's peak-rate
+   * setting); `currentRefreshHz` tells what actually happened.
    */
   fun setRefreshCap(hz: Float?): Int {
     capHz = hz
-    val act = activity() ?: return 0
-    val display = currentDisplay() ?: return 0
-    val id = DisplayModes.modeIdForCap(display.supportedModes.map(::spec), spec(display.mode), hz)
-    act.runOnUiThread {
-      val window = act.window ?: return@runOnUiThread
-      val attrs = window.attributes
-      if (attrs.preferredDisplayModeId != id) {
-        attrs.preferredDisplayModeId = id
-        window.attributes = attrs
-      }
+    val display = defaultDisplay()
+    val id = if (display == null) {
+      0
+    } else {
+      runCatching { DisplayModes.modeIdForCap(display.supportedModes.map(::spec), spec(display.mode), hz) }.getOrDefault(0)
     }
+    applyModeId(id)
     return id
   }
 
@@ -47,11 +61,25 @@ class HardwareLevers(private val activity: () -> Activity?) {
     capHz?.let { setRefreshCap(it) }
   }
 
-  @Suppress("DEPRECATION")
-  private fun currentDisplay(): Display? = runCatching {
-    val act = activity() ?: return null
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) act.display else act.windowManager.defaultDisplay
-  }.getOrNull()
+  /** Hands the display back to the system: on stop, destroy and JS reload. */
+  fun releaseRefresh() {
+    capHz = null
+    applyModeId(0)
+  }
+
+  private fun applyModeId(id: Int) {
+    val act = activity() ?: return
+    act.runOnUiThread {
+      runCatching {
+        val window = act.window ?: return@runCatching
+        val attrs = window.attributes
+        if (attrs.preferredDisplayModeId != id) {
+          attrs.preferredDisplayModeId = id
+          window.attributes = attrs
+        }
+      }
+    }
+  }
 
   private fun spec(mode: Display.Mode) =
     DisplayModeSpec(mode.modeId, mode.physicalWidth, mode.physicalHeight, mode.refreshRate)
@@ -62,65 +90,92 @@ class HardwareLevers(private val activity: () -> Activity?) {
 
   private var session: PerformanceHintManager.Session? = null
   private var targetNs = 0L
-
-  /** Whether the platform offers performance hint sessions (API 31+, and a manager present). */
-  val supportsCpuHints: Boolean
-    get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hintManager() != null
+  private var boosting = false
 
   /**
-   * Opens or closes a hint session over the UI thread and the render thread. While open, each
-   * frame's measured CPU work is reported against the frame deadline, so the scheduler can
-   * raise clocks or move the threads to faster cores before a frame is missed, and lower them
-   * when work is light. Returns whether a session is open.
+   * Whether hint sessions work here: API 31+, a manager, and a supported update rate (the
+   * platform reports -1 when hints are unsupported).
+   */
+  val supportsCpuHints: Boolean
+    get() {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false
+      val manager = hintManager() ?: return false
+      return runCatching { manager.preferredUpdateRateNanos > 0 }.getOrDefault(false)
+    }
+
+  /**
+   * Turns the boost on or off. One session is kept for the process: creating one costs a
+   * binder call and a procfs scan, so on/off only starts and stops reporting (and, on API 35+,
+   * tells the scheduler to prefer efficiency while off). Returns whether boosting is on.
    */
   fun setCpuBoost(enabled: Boolean, frameDeadlineMs: Double): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false
     if (!enabled) {
-      closeSession()
+      boosting = false
+      session?.let { s -> preferEfficiency(s, true) }
       return false
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false
     val target = (frameDeadlineMs * 1e6).toLong().coerceAtLeast(1_000_000L)
-    session?.let {
-      if (target != targetNs) {
-        runCatching { it.updateTargetWorkDuration(target) }
-        targetNs = target
-      }
-      return true
+    val s = session ?: openSession(target) ?: return false
+    if (target != targetNs) {
+      runCatching { s.updateTargetWorkDuration(target) }
+      targetNs = target
     }
-    val manager = hintManager() ?: return false
-    val tids = hintThreads()
-    if (tids.isEmpty()) return false
-    session = runCatching { manager.createHintSession(tids, target) }.getOrNull()
-    targetNs = target
-    return session != null
+    preferEfficiency(s, false)
+    boosting = true
+    return true
   }
 
-  /** Reports one frame's CPU work (UI and render stages) to the open session, if any. */
-  fun reportFrameWork(cpuWorkMs: Double) {
+  /**
+   * Reports one frame's CPU work. The UI and render threads run in a pipeline, so a frame's
+   * critical path is the longer of the two stages, not their sum; reporting the sum would
+   * read as overload and over-boost a weak phone.
+   */
+  fun reportFrameWork(uiMs: Double, renderMs: Double) {
     val s = session ?: return
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || cpuWorkMs.isNaN() || cpuWorkMs <= 0) return
-    runCatching { s.reportActualWorkDuration((cpuWorkMs * 1e6).toLong()) }
+    if (!boosting || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+    val workMs = maxOf(uiMs, renderMs)
+    if (!workMs.isFinite() || workMs <= 0) return
+    runCatching { s.reportActualWorkDuration((workMs * 1e6).toLong()) }
   }
 
   fun closeSession() {
+    boosting = false
     session?.let { runCatching { it.close() } }
     session = null
   }
 
+  private fun openSession(target: Long): PerformanceHintManager.Session? {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return null
+    val manager = hintManager() ?: return null
+    val tids = hintThreads()
+    if (tids.isEmpty()) return null
+    session = runCatching { manager.createHintSession(tids, target) }.getOrNull()
+    targetNs = target
+    return session
+  }
+
+  private fun preferEfficiency(s: PerformanceHintManager.Session, prefer: Boolean) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+      runCatching { s.setPreferPowerEfficiency(prefer) }
+    }
+  }
+
   private fun hintManager(): PerformanceHintManager? {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return null
-    val act = activity() ?: return null
-    return act.getSystemService(PerformanceHintManager::class.java)
+    return runCatching { app.getSystemService(PerformanceHintManager::class.java) }.getOrNull()
   }
 
   /** The main thread (tid = pid) and the render thread, found by name in procfs. */
   private fun hintThreads(): IntArray {
     val pid = Process.myPid()
     val tids = mutableListOf(pid)
-    File("/proc/self/task").list()?.forEach { name ->
-      val tid = name.toIntOrNull() ?: return@forEach
-      val comm = runCatching { File("/proc/self/task/$name/comm").readText().trim() }.getOrNull()
-      if (comm == "RenderThread") tids += tid
+    runCatching {
+      File("/proc/self/task").list()?.forEach { name ->
+        val tid = name.toIntOrNull() ?: return@forEach
+        val comm = runCatching { File("/proc/self/task/$name/comm").readText().trim() }.getOrNull()
+        if (comm == "RenderThread") tids += tid
+      }
     }
     return tids.toIntArray()
   }

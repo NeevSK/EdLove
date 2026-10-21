@@ -26,7 +26,12 @@
   "longTasksForContention": 3,
   "memoryLowFactor": 1.5,
   "memoryModerateFactor": 2,
-  "refreshCapHz": 60
+  "refreshCapHz": 60,
+  "jankFrameFactor": 6,
+  "upgradeCalmWindows": 2,
+  "maxUnrelievedContentionSteps": 2,
+  "contentionReliefCores": 0.05,
+  "gestureQuietMs": 1000
  },
  "windows": [
   {
@@ -106,7 +111,7 @@
    "gpuMs": 2,
    "delayMs": 18,
    "bottleneck": "delay",
-   "state": "quiet",
+   "state": "stressed",
    "forward": true
   },
   {

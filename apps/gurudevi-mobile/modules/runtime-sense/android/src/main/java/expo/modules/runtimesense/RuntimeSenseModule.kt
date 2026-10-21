@@ -24,7 +24,9 @@ class RuntimeSenseModule : Module() {
 
     Events(*RuntimeSense.EVENTS)
 
-    Constant("capacity") { sense().capacity(appContext.currentActivity) }
+    // A function, not a constant: Expo caches constants on first read, and capacity read
+    // before the first activity resumes would be wrong for the life of the process.
+    Function("readCapacity") { sense().capacity(appContext.currentActivity) }
 
     Function("start") { options: Map<String, Any?> ->
       sense().start(parseConfig(options), appContext.currentActivity)
@@ -48,9 +50,16 @@ class RuntimeSenseModule : Module() {
     }
   }
 
+  /**
+   * Validates synchronously, on the calling (JS) thread, so a bad config is a JS exception
+   * rather than a throw on the sensor thread, which would crash the app.
+   */
   private fun parseConfig(options: Map<String, Any?>): SenseConfig {
-    fun number(key: String): Double =
-      (options[key] as? Number)?.toDouble() ?: throw IllegalArgumentException("start: missing '$key'")
+    fun number(key: String): Double {
+      val value = (options[key] as? Number)?.toDouble() ?: throw IllegalArgumentException("start: missing '$key'")
+      require(value.isFinite() && value > 0) { "start: '$key' must be finite and positive" }
+      return value
+    }
     return SenseConfig(
       windowMs = number("windowMs"),
       classification = FrameClassification(
@@ -59,8 +68,10 @@ class RuntimeSenseModule : Module() {
         stressDroppedRatio = number("stressDroppedRatio"),
         comfortRatio = number("comfortRatio"),
         comfortDroppedRatio = number("comfortDroppedRatio"),
+        jankFrameFactor = number("jankFrameFactor"),
       ),
       headroomWarm = number("headroomWarm"),
+      saturationCores = number("saturationCores"),
     )
   }
 }

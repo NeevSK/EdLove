@@ -154,7 +154,11 @@ describe('thermal and memory pressure', () => {
     state = reduceGovernor(state, { type: 'tick', at: 20_000 });
     expect(state.stack.length).toBe(2);
     state = reduceGovernor(state, { type: 'thermal', at: 21_000, status: 'none', headroom: 0.6 });
+    // Cool again, but nothing has been drawn yet: silence is not evidence, so nothing rises.
     state = reduceGovernor(state, { type: 'tick', at: 25_100 });
+    expect(state.stack.length).toBe(2);
+    // Two calm windows of real frames are.
+    for (const event of frames(25_100, 26_100, 8)) state = reduceGovernor(state, event);
     expect(state.stack.length).toBe(1);
   });
 
@@ -252,9 +256,9 @@ describe('controlled experiment', () => {
     expect(treatment).toBeLessThan(5_300);
   });
 
-  it('sends everyone to shadow mode when the kill switch is on', () => {
+  it('turns the runtime off entirely when the kill switch is on', () => {
     const a = assignExperiment({ installId: 'x', key: 'governor-v1', treatmentPercent: 100, killSwitch: true });
-    expect(a).toMatchObject({ arm: 'control', mode: 'shadow', reason: 'kill-switch' });
+    expect(a).toMatchObject({ arm: 'control', mode: 'shadow', runtime: 'off', reason: 'kill-switch' });
   });
 });
 

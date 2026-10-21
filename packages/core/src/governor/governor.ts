@@ -1,5 +1,5 @@
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
-import { bottleneckTargets, classifyFrameWindow, frameBottleneck } from './frames';
+import { bottleneckTargets, classifyFrameWindow, frameBottleneck, gpuMeasured } from './frames';
 import { chooseLeverToLower, validateLevers } from './levers';
 import {
   latchMemory,
@@ -82,6 +82,18 @@ export interface GovernorState {
   /** Recent long-task end times, newest last, pruned to the long-task window. */
   readonly longTasks: readonly number[];
   readonly lastContentionActionAt: number;
+  /** Load when the last contention step was taken, to judge whether the step relieved it. */
+  readonly contentionBaseline: { readonly js: number; readonly main: number; readonly longTasks: number } | null;
+  readonly contentionUnrelieved: number;
+  /** Levers cannot relieve the current contention: the cause is code, not quality settings. */
+  readonly contentionExhausted: boolean;
+
+  /** Last polled memory reading as a trim severity; holds until the next poll. */
+  readonly polledMemory: TrimSeverity | null;
+  /** End of the last stressed window on the sensor timeline, to require contiguous stress. */
+  readonly stressEndMs: number | null;
+  /** Calm windows since the last level change: the only evidence that permits a raise. */
+  readonly calmWindows: number;
 
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
@@ -131,6 +143,12 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     mainCores: 0,
     longTasks: [],
     lastContentionActionAt: Number.NEGATIVE_INFINITY,
+    contentionBaseline: null,
+    contentionUnrelieved: 0,
+    contentionExhausted: false,
+    polledMemory: null,
+    stressEndMs: null,
+    calmWindows: 0,
     lastAction: 'stale',
     lastReason: 'start',
   };
@@ -237,7 +255,7 @@ function lower(
   let moved = 0;
   for (let step = 0; step < steps; step += 1) {
     const effective = combine(state.levers, staticFloors(state), pressure);
-    const lever = chooseLeverToLower(state.levers, effective, bottleneck);
+    const lever = chooseLeverToLower(state.levers, effective, bottleneck, true);
     if (!lever) break;
     pressure = { ...pressure, [lever.id]: (effective[lever.id] ?? 0) + 1 };
     stack = [...stack, lever.id];
@@ -251,6 +269,7 @@ function lower(
     stack,
     lastDecreaseAt: at,
     lastPressureAt: at,
+    calmWindows: 0,
     upgradeAfterMs: failedUpgrade
       ? Math.min(state.upgradeAfterMs * 2, state.config.maxUpgradeAfterMs)
       : state.upgradeAfterMs,
@@ -271,9 +290,14 @@ function raiseOne(state: GovernorState, at: number, reason: string): GovernorSta
     pressure,
     stack: state.stack.slice(0, -1),
     lastIncreaseAt: at,
+    calmWindows: 0,
     lastAction: 'increase',
     lastReason: reason,
   };
+}
+
+function memoryOf(state: GovernorState, at: number) {
+  return memoryLevelOf(state.memoryLatch, at, state.memorySensing, state.polledMemory);
 }
 
 function thermalOf(state: GovernorState): ThermalLevel {
@@ -283,7 +307,7 @@ function thermalOf(state: GovernorState): ThermalLevel {
 /** Thermal and memory rules that apply on every event, so heat is acted on even without frames. */
 function applyStandingPressure(state: GovernorState, at: number): GovernorState {
   const thermal = thermalOf(state);
-  const memory = memoryLevelOf(state.memoryLatch, at, state.memorySensing);
+  const memory = memoryOf(state, at);
   const sinceThermal = at - state.lastThermalActionAt;
   let next = state;
   if (thermal === 'critical' && sinceThermal >= state.config.thermalActionDelayMs) {
@@ -303,10 +327,14 @@ function maybeIncrease(state: GovernorState, at: number): GovernorState {
   if (state.stack.length === 0) return state;
   const thermal = thermalOf(state);
   if (thermal === 'warm' || thermal === 'hot' || thermal === 'critical') return state;
-  const memory = memoryLevelOf(state.memoryLatch, at, state.memorySensing);
+  const memory = memoryOf(state, at);
   if (memory === 'trimmed' || memory === 'low') return state;
+  if (state.contentionExhausted || contentionOf(state, at) !== 'none') return state;
   const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
   if (at - lastChange < state.upgradeAfterMs) return state;
+  // Only drawn frames within budget are evidence of comfort; an idle screen proves nothing,
+  // and raising on silence makes every new touch start at full cost and shed again.
+  if (state.calmWindows < state.config.upgradeCalmWindows) return state;
   return raiseOne(state, at, `comfortable for ${Math.round(state.upgradeAfterMs)} ms`);
 }
 
@@ -329,17 +357,22 @@ function polledSeverity(
   return null;
 }
 
-function onMemoryPressure(state: GovernorState, severity: TrimSeverity, at: number, source: string): GovernorState {
-  const before = memoryLevelOf(state.memoryLatch, at, state.memorySensing);
-  const memoryLatch = latchMemory(state.memoryLatch, severity, at, state.config);
-  let next: GovernorState = { ...state, memoryLatch, memorySensing: true, lastPressureAt: at };
-  const after = memoryLevelOf(memoryLatch, at, true);
-  if (after === 'low' && before !== 'low') {
-    next = lower(next, next.config.fastDecreaseSteps, ['memory'], at, 'fast-decrease', `${source} (${severity})`);
-  } else if (after === 'trimmed' && before !== 'trimmed' && before !== 'low') {
-    next = lower(next, 1, ['memory'], at, 'decrease', `${source} (${severity})`);
+function relieveMemory(before: GovernorState, after: GovernorState, at: number, why: string): GovernorState {
+  const was = memoryOf(before, at);
+  const now = memoryOf(after, at);
+  if (now === 'low' && was !== 'low') {
+    return lower(after, after.config.fastDecreaseSteps, ['memory'], at, 'fast-decrease', why);
   }
-  return next;
+  if (now === 'trimmed' && was !== 'trimmed' && was !== 'low') {
+    return lower(after, 1, ['memory'], at, 'decrease', why);
+  }
+  return after;
+}
+
+function onMemoryPressure(state: GovernorState, severity: TrimSeverity, at: number, source: string): GovernorState {
+  const memoryLatch = latchMemory(state.memoryLatch, severity, at, state.config);
+  const next: GovernorState = { ...state, memoryLatch, memorySensing: true, lastPressureAt: at };
+  return relieveMemory(state, next, at, `${source} (${severity})`);
 }
 
 function recentLongTasks(state: GovernorState, at: number): number {
@@ -364,15 +397,50 @@ function contentionOf(state: GovernorState, at: number): Contention {
  */
 function applyContention(state: GovernorState, at: number): GovernorState {
   const contention = contentionOf(state, at);
-  if (contention === 'none') return state;
+  if (contention === 'none') {
+    if (state.contentionBaseline === null && !state.contentionExhausted && state.contentionUnrelieved === 0) return state;
+    return { ...state, contentionBaseline: null, contentionUnrelieved: 0, contentionExhausted: false };
+  }
+  if (state.contentionExhausted) return { ...state, lastPressureAt: at };
   if (at - state.lastContentionActionAt < state.config.saturationAfterMs) return { ...state, lastPressureAt: at };
+  const longTasks = recentLongTasks(state, at);
   const detail =
     contention === 'js'
-      ? `JS thread saturated (${state.jsCores.toFixed(2)} cores, ${recentLongTasks(state, at)} long tasks)`
+      ? `JS thread saturated (${state.jsCores.toFixed(2)} cores, ${longTasks} long tasks)`
       : `main thread saturated (${state.mainCores.toFixed(2)} cores)`;
+  // A step that did not lower the saturated thread's load (or its long tasks) failed. After a
+  // few failures the runtime stops shedding: the cause is code no lever reaches, and saying so
+  // is more useful than stripping the app bare.
+  let unrelieved = state.contentionUnrelieved;
+  const base = state.contentionBaseline;
+  if (base !== null) {
+    const relief = state.config.contentionReliefCores;
+    const relieved =
+      contention === 'js'
+        ? state.jsCores <= base.js - relief || longTasks < base.longTasks
+        : state.mainCores <= base.main - relief;
+    unrelieved = relieved ? 0 : unrelieved + 1;
+  }
+  if (unrelieved >= state.config.maxUnrelievedContentionSteps) {
+    return {
+      ...state,
+      contentionUnrelieved: unrelieved,
+      contentionExhausted: true,
+      lastPressureAt: at,
+      lastAction: 'stale',
+      lastReason: `${detail}: not relieved by levers, needs a code fix`,
+    };
+  }
   const targets: readonly LeverTarget[] = contention === 'js' ? ['cpu'] : ['cpu', 'gpu'];
   const next = lower(state, 1, targets, at, 'decrease', detail);
-  return { ...next, lastContentionActionAt: at, lastPressureAt: at };
+  return {
+    ...next,
+    lastContentionActionAt: at,
+    lastPressureAt: at,
+    contentionUnrelieved: unrelieved,
+    contentionExhausted: next.lastAction === 'stale',
+    contentionBaseline: { js: state.jsCores, main: state.mainCores, longTasks },
+  };
 }
 
 function onFrameWindow(state: GovernorState, event: Extract<GovernorEvent, { type: 'frame-window' }>) {
@@ -380,17 +448,21 @@ function onFrameWindow(state: GovernorState, event: Extract<GovernorEvent, { typ
   const span = Math.max(0, event.window.endMs - event.window.startMs);
   let next: GovernorState = { ...state, frameState };
   if (frameState === 'stressed') {
-    const stressMs = state.stressMs + span;
-    next = { ...next, stressMs, lastPressureAt: event.at };
+    // Stress must be continuous: two hitches a minute apart are not 1 s of stress.
+    const contiguous = state.stressEndMs !== null && state.stressEndMs === event.window.startMs;
+    const stressMs = (contiguous ? state.stressMs : 0) + span;
+    next = { ...next, stressMs, stressEndMs: event.window.endMs, lastPressureAt: event.at, calmWindows: 0 };
     if (stressMs >= state.config.downgradeAfterMs) {
       const stage = frameBottleneck(event.window);
       const where = stage === null ? '' : `, ${stage}-bound`;
-      next = lower(next, 1, bottleneckTargets(stage), event.at, 'decrease', `frames over budget for ${Math.round(stressMs)} ms${where}`);
-      next = { ...next, stressMs: 0 };
+      const targets = bottleneckTargets(stage, gpuMeasured(event.window));
+      next = lower(next, 1, targets, event.at, 'decrease', `frames over budget for ${Math.round(stressMs)} ms${where}`);
+      next = { ...next, stressMs: 0, stressEndMs: null };
     }
   } else {
-    next = { ...next, stressMs: 0 };
-    if (frameState === 'neutral') next = { ...next, lastPressureAt: event.at };
+    next = { ...next, stressMs: 0, stressEndMs: null };
+    if (frameState === 'neutral') next = { ...next, lastPressureAt: event.at, calmWindows: 0 };
+    if (frameState === 'calm') next = { ...next, calmWindows: state.calmWindows + 1 };
   }
   return next;
 }
@@ -410,7 +482,8 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
       break;
     case 'memory-state': {
       const severity = polledSeverity(next, event);
-      next = severity === null ? { ...next, memorySensing: true } : onMemoryPressure(next, severity, at, 'free memory low');
+      const polled: GovernorState = { ...next, polledMemory: severity, memorySensing: true };
+      next = relieveMemory(next, severity === null ? polled : { ...polled, lastPressureAt: at }, at, `free memory low (${severity})`);
       break;
     }
     case 'thread-load': {
@@ -470,7 +543,7 @@ function optionalConcurrency(state: GovernorState, at: number, closedLoop: boole
   if (state.visibility !== 'active' || state.powerSaver) return 0;
   if (closedLoop && contentionOf(state, at) !== 'none') return 0;
   const thermal = thermalOf(state);
-  const memory = memoryLevelOf(state.memoryLatch, at, state.memorySensing);
+  const memory = memoryOf(state, at);
   if (closedLoop && (thermal === 'critical' || memory === 'low')) return 0;
   const constrained =
     isLowCapacity(state.capacity) ||
@@ -489,6 +562,11 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
   const thermal = thermalOf(state);
   const idle = interactionIdle(state, at);
   const cool = thermal === 'unknown' || thermal === 'nominal';
+  // Gesture freeze: hardware changes that lower quality wait until the finger has been off the
+  // screen for a moment, unless heat forces them; raising quality (releasing) is never delayed.
+  const touching = at - state.lastInteractionAt < state.config.gestureQuietMs;
+  const forced = thermal === 'hot' || thermal === 'critical';
+  const mayLower = !touching || forced;
   return {
     version: state.version,
     at,
@@ -497,16 +575,19 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     proposedLevels: proposed,
     frameState: state.frameState,
     thermal: thermalOf(state),
-    memory: memoryLevelOf(state.memoryLatch, at, state.memorySensing),
+    memory: memoryOf(state, at),
     powerSaver: state.powerSaver,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at, active),
     contention: contentionOf(state, at),
+    contentionExhausted: state.contentionExhausted,
     // Hardware levers are new behaviour, so only active mode applies them; shadow mode keeps
     // the app exactly as it runs today and records the proposal in `proposedLevels`.
     refreshCapHz:
-      active && (levels['refresh-rate'] ?? 0) >= 1 && canCapRefresh(state) ? state.config.refreshCapHz : null,
+      active && mayLower && (levels['refresh-rate'] ?? 0) >= 1 && canCapRefresh(state)
+        ? state.config.refreshCapHz
+        : null,
     cpuBoost:
       active &&
       state.capacity.supportsCpuHints &&
@@ -514,7 +595,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
       !state.powerSaver &&
       !idle &&
       cool,
-    globalReducedMotion: active && (levels['global-motion'] ?? 0) >= 1,
+    globalReducedMotion: active && mayLower && (levels['global-motion'] ?? 0) >= 1,
     lastAction: state.lastAction,
     lastReason: state.lastReason,
   };
@@ -530,6 +611,7 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     a.interactionIdle !== b.interactionIdle ||
     a.optionalConcurrency !== b.optionalConcurrency ||
     a.contention !== b.contention ||
+    a.contentionExhausted !== b.contentionExhausted ||
     a.refreshCapHz !== b.refreshCapHz ||
     a.cpuBoost !== b.cpuBoost ||
     a.globalReducedMotion !== b.globalReducedMotion
@@ -554,6 +636,7 @@ export function nextTimedChangeAt(state: GovernorState): number | null {
   const { saturationAfterMs, longTaskWindowMs, ambientSleepAfterMs } = state.config;
   const candidates: number[] = [];
   if (!interactionIdle(state, now)) candidates.push(state.lastInteractionAt + ambientSleepAfterMs);
+  candidates.push(state.lastInteractionAt + state.config.gestureQuietMs);
   for (const since of [state.jsSaturatedSince, state.mainSaturatedSince]) {
     if (since === null) continue;
     candidates.push(since + saturationAfterMs, state.lastContentionActionAt + saturationAfterMs);

@@ -95,7 +95,15 @@ export function aggregateFrames(
 
 /** Judges one window. Too few frames says nothing about cost, so it is `quiet`. */
 export function classifyFrameWindow(window: FrameWindow, config: GovernorConfig): FrameState {
-  if (window.frames < config.minSamples || window.targetMs <= 0) return 'quiet';
+  if (window.frames <= 0 || !(window.targetMs > 0)) return 'quiet';
+  if (window.frames < config.minSamples) {
+    // Few frames can mean idleness or a main thread too stalled to draw. Missed vsyncs tell
+    // them apart: a window that missed as many vsyncs as a judgement needs, or held one frame
+    // for many budgets, is severe jank, not quiet.
+    const missed = missedVsyncs(window);
+    const longFrame = window.worstMs > config.jankFrameFactor * window.targetMs;
+    return missed >= config.minSamples || longFrame ? 'stressed' : 'quiet';
+  }
   const ratio = window.averageMs / window.targetMs;
   if (ratio > config.stressRatio || window.droppedRatio > config.stressDroppedRatio) return 'stressed';
   if (ratio < config.comfortRatio && window.droppedRatio < config.comfortDroppedRatio) return 'calm';
@@ -111,6 +119,13 @@ export function classifyFrameWindow(window: FrameWindow, config: GovernorConfig)
 export function shouldForwardWindow(state: FrameState, previousForwarded: FrameState | null): boolean {
   if (state === 'stressed' || state === 'neutral') return true;
   return state !== previousForwarded;
+}
+
+/** Missed vsyncs recovered from a window: droppedRatio = missed / (frames + missed). */
+export function missedVsyncs(window: FrameWindow): number {
+  const d = window.droppedRatio;
+  if (!(d > 0) || d >= 1) return 0;
+  return Math.round((d * window.frames) / (1 - d));
 }
 
 /** Frames per second drawn in a window. */
@@ -133,7 +148,7 @@ export function frameBottleneck(window: FrameWindow): FrameStage | null {
   };
   let best: FrameStage | null = null;
   for (const stage of STAGE_ORDER) {
-    if (!(cost[stage] > 0)) continue;
+    if (!(cost[stage] > 0)) continue; // also skips NaN: an unmeasured stage is never the culprit
     if (best === null || cost[stage] > cost[best]) best = stage;
   }
   return best;
@@ -144,8 +159,16 @@ export function frameBottleneck(window: FrameWindow): FrameStage | null {
  * shaders); every other stage is CPU time on the main or render thread, or main-thread work
  * delaying the frame. Unknown attribution relieves both.
  */
-export function bottleneckTargets(stage: FrameStage | null): readonly LeverTarget[] {
+export function bottleneckTargets(stage: FrameStage | null, gpuKnown = true): readonly LeverTarget[] {
   if (stage === 'gpu') return ['gpu'];
   if (stage === null) return ['gpu', 'cpu'];
+  // Before Android 12 GPU time is unreported, and buffer swaps block under GPU back-pressure,
+  // so a render-bound frame may really be GPU-bound.
+  if (stage === 'render' && !gpuKnown) return ['gpu', 'cpu'];
   return ['cpu'];
+}
+
+/** Whether the window's stages include a measured GPU time. */
+export function gpuMeasured(window: FrameWindow): boolean {
+  return window.stages !== undefined && Number.isFinite(window.stages.gpuMs);
 }

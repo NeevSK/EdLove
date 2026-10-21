@@ -19,7 +19,8 @@ export interface NativeFrameWindow {
   readonly worstMs: number;
   readonly droppedRatio: number;
   readonly state: FrameState;
-  readonly stages?: FrameStages | null;
+  /** `gpuMs` is null before Android 12, where GPU time is not reported. */
+  readonly stages?: (Omit<FrameStages, 'gpuMs'> & { readonly gpuMs: number | null }) | null;
 }
 export interface NativeThermal {
   readonly status: ThermalStatus | null;
@@ -89,7 +90,9 @@ export interface NativeSenseConfig {
   readonly stressDroppedRatio: number;
   readonly comfortRatio: number;
   readonly comfortDroppedRatio: number;
+  readonly jankFrameFactor: number;
   readonly headroomWarm: number;
+  readonly saturationCores: number;
 }
 
 /** The frame window the golden vectors were generated with. */
@@ -103,7 +106,9 @@ export function senseConfigFrom(config: GovernorConfig, windowMs = FRAME_WINDOW_
     stressDroppedRatio: config.stressDroppedRatio,
     comfortRatio: config.comfortRatio,
     comfortDroppedRatio: config.comfortDroppedRatio,
+    jankFrameFactor: config.jankFrameFactor,
     headroomWarm: config.headroomWarm,
+    saturationCores: config.saturationCores,
   };
 }
 
@@ -143,7 +148,9 @@ export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
   switch (event.name) {
     case 'onFrameWindow': {
       const { state: _state, stages, ...window } = event.payload;
-      return { type: 'frame-window', at, window: stages ? { ...window, stages } : window };
+      if (!stages) return { type: 'frame-window', at, window };
+      const gpuMs = stages.gpuMs ?? Number.NaN;
+      return { type: 'frame-window', at, window: { ...window, stages: { ...stages, gpuMs } } };
     }
     case 'onThermal':
       return { type: 'thermal', at, status: event.payload.status, headroom: finite(event.payload.headroom) };

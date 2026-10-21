@@ -113,6 +113,7 @@ class ThreadLoad(roles: Int) {
 class ThreadCpuSampler(
   private val procSelf: File = File("/proc/self"),
   private val clockTicksPerSecond: Long = 100,
+  /** On Android pass `Process.myPid()`; the default reads it from procfs (JVM tests). */
   private val pid: Int = readPid(procSelf),
 ) {
   private val roles = ThreadRole.values()
@@ -120,7 +121,7 @@ class ThreadCpuSampler(
   private val current = HashMap<Int, Long>(64)
   private val names = HashMap<Int, String>(64)
   private val buffer = ByteArray(512)
-  private val line = StringBuilder(512)
+  private var line: String = ""
   private var lastSampleMs = Double.NaN
   val load = ThreadLoad(roles.size)
 
@@ -137,7 +138,9 @@ class ThreadCpuSampler(
       val ticks = ProcStat.cpuTicks(line)
       if (ticks < 0) continue
       current[tid] = ticks
-      if (!names.containsKey(tid)) names[tid] = ProcStat.comm(line)
+      // Re-read the name when a tid is new or its counter went backwards (the tid was reused).
+      val before = previous[tid]
+      if (!names.containsKey(tid) || (before != null && ticks < before)) names[tid] = ProcStat.comm(line)
     }
     val interval = nowMs - lastSampleMs
     val measurable = !lastSampleMs.isNaN() && interval >= MIN_INTERVAL_MS
@@ -171,16 +174,14 @@ class ThreadCpuSampler(
   }
 
   private fun readLine(file: File): Boolean {
-    line.setLength(0)
     return try {
       RandomAccessFile(file, "r").use { raf ->
         val n = raf.read(buffer)
         if (n <= 0) return false
-        for (k in 0 until n) {
-          val c = buffer[k].toInt().toChar()
-          if (c == '\n') break
-          line.append(c)
-        }
+        var end = 0
+        while (end < n && buffer[end] != '\n'.code.toByte()) end++
+        // Thread names are UTF-8; decoding byte by byte would mangle them.
+        line = String(buffer, 0, end, Charsets.UTF_8)
         true
       }
     } catch (_: Exception) {

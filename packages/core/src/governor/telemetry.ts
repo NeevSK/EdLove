@@ -1,6 +1,7 @@
-import { frameRate } from './frames';
+import { DEFAULT_GOVERNOR_CONFIG } from './config';
+import { classifyFrameWindow, frameRate } from './frames';
 import type { ExperimentArm } from './experiment';
-import type { FrameWindow, GovernorSnapshot } from './types';
+import type { FrameWindow, GovernorConfig, GovernorSnapshot } from './types';
 
 export type TelemetryValue = string | number | boolean;
 
@@ -11,6 +12,21 @@ export interface GovernorTelemetryOptions {
   readonly sink: GovernorTelemetrySink;
   readonly arm: ExperimentArm;
   readonly experimentKey: string;
+  /** Stable for one app launch; lets sessions be compared without identifying anyone. */
+  readonly sessionId?: string;
+  /** Device stratum attached to `governor_started` so arms are compared within strata. */
+  readonly device?: Readonly<Record<string, TelemetryValue>>;
+  /** Hash of the active config, so data can be split by every threshold that produced it. */
+  readonly configHash?: string;
+  /** Classifies windows for the summary with the governor's own rule. */
+  readonly config?: GovernorConfig;
+  /**
+   * Native cumulative frame totals. The window stream is filtered (calm repeats are not
+   * forwarded), so summaries count frames from these totals, not from forwarded windows.
+   */
+  readonly readTotals?: () => { readonly frames: number; readonly missedVsyncs: number; readonly costMs: number };
+  /** Separate budget for periodic summaries, so state churn cannot starve them. */
+  readonly maxSummaries?: number;
   /** Hard cap per process, so a flapping signal cannot flood the network. */
   readonly maxEvents?: number;
   /** Summary cadence while foreground. */
@@ -84,37 +100,66 @@ export function bucketMs(value: number): string {
 
 export function createGovernorTelemetry(options: GovernorTelemetryOptions): GovernorTelemetry {
   const maxEvents = options.maxEvents ?? 64;
+  const maxSummaries = options.maxSummaries ?? 120;
   const summaryEveryMs = options.summaryEveryMs ?? 60_000;
+  const config = options.config ?? DEFAULT_GOVERNOR_CONFIG;
   let emitted = 0;
+  let summaries = 0;
+  let lastTotals = safeTotals(options.readTotals);
   let previous: GovernorSnapshot | null = null;
   let summary: Summary | null = null;
 
-  const emit = (name: string, attributes: Record<string, TelemetryValue>) => {
-    if (emitted >= maxEvents) return;
-    emitted += 1;
+  const send = (name: string, attributes: Record<string, TelemetryValue>) => {
     try {
       options.sink(name, {
         experiment: options.experimentKey,
         arm: options.arm,
         policy: GOVERNOR_POLICY_VERSION,
+        ...(options.sessionId ? { session: options.sessionId } : {}),
+        ...(options.configHash ? { config: options.configHash } : {}),
         ...attributes,
       });
     } catch {
       // Telemetry must never change app behaviour; a failing sink is dropped silently.
     }
   };
+  const emit = (name: string, attributes: Record<string, TelemetryValue>) => {
+    if (emitted >= maxEvents) return;
+    emitted += 1;
+    send(name, attributes);
+  };
 
   const flush = (at: number) => {
     if (!summary || (summary.windows === 0 && summary.cpuSamples === 0 && summary.longTasks === 0)) return;
+    if (summaries >= maxSummaries) return;
+    summaries += 1;
     const samples = Math.max(1, summary.cpuSamples);
-    emit('governor_summary', {
+    const totals = safeTotals(options.readTotals);
+    const delta =
+      totals && lastTotals
+        ? {
+            frames: Math.max(0, totals.frames - lastTotals.frames),
+            missed: Math.max(0, totals.missedVsyncs - lastTotals.missedVsyncs),
+            cost: Math.max(0, totals.costMs - lastTotals.costMs),
+          }
+        : null;
+    lastTotals = totals;
+    send('governor_summary', {
+      ...(delta
+        ? {
+            all_frames: delta.frames,
+            all_missed: delta.missed,
+            all_mean_cost: bucketMs(delta.cost / Math.max(1, delta.frames)),
+          }
+        : {}),
       js_cores: Math.round((summary.jsCoresSum / samples) * 100) / 100,
       main_cores: Math.round((summary.mainCoresSum / samples) * 100) / 100,
       long_tasks: summary.longTasks,
       long_task_max: bucketMs(summary.longTaskMaxMs),
       span_s: Math.round((at - summary.startAt) / 1000),
-      windows: summary.windows,
-      frames: summary.frames,
+      // Forwarded windows only (calm repeats are filtered natively); use all_* for totals.
+      fwd_windows: summary.windows,
+      fwd_frames: summary.frames,
       stressed_windows: summary.stressedWindows,
       idle_draw_s: Math.round(summary.idleDrawMs / 1000),
       mean_cost: bucketMs(summary.costSum / Math.max(1, summary.frames)),
@@ -131,7 +176,12 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
       const prev = previous;
       previous = snapshot;
       if (!prev) {
-        emit('governor_started', { mode: snapshot.mode, thermal: snapshot.thermal, memory: snapshot.memory });
+        emit('governor_started', {
+          mode: snapshot.mode,
+          thermal: snapshot.thermal,
+          memory: snapshot.memory,
+          ...(options.device ?? {}),
+        });
         return;
       }
       if (
@@ -141,6 +191,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
         prev.optionalConcurrency !== snapshot.optionalConcurrency ||
         prev.interactionIdle !== snapshot.interactionIdle ||
         prev.contention !== snapshot.contention ||
+        prev.contentionExhausted !== snapshot.contentionExhausted ||
         prev.refreshCapHz !== snapshot.refreshCapHz ||
         prev.cpuBoost !== snapshot.cpuBoost ||
         prev.globalReducedMotion !== snapshot.globalReducedMotion
@@ -152,6 +203,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
           optional_cap: snapshot.optionalConcurrency,
           idle: snapshot.interactionIdle,
           contention: snapshot.contention,
+          unrelieved: snapshot.contentionExhausted,
           refresh_cap: snapshot.refreshCapHz ?? 0,
           cpu_boost: snapshot.cpuBoost,
           global_motion: snapshot.globalReducedMotion,
@@ -191,10 +243,31 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
       summary.frames += window.frames;
       summary.costSum += window.averageMs * window.frames;
       summary.worstMs = Math.max(summary.worstMs, window.worstMs);
-      if (window.averageMs > window.targetMs * 1.25) summary.stressedWindows += 1;
+      if (classifyFrameWindow(window, config) === 'stressed') summary.stressedWindows += 1;
       if (interactionIdle && frameRate(window) > 1) summary.idleDrawMs += window.endMs - window.startMs;
       if (at - summary.startAt >= summaryEveryMs) flush(at);
     },
     flush,
   };
+}
+
+function safeTotals(read: GovernorTelemetryOptions['readTotals']) {
+  if (!read) return null;
+  try {
+    const t = read();
+    return Number.isFinite(t.frames) && Number.isFinite(t.missedVsyncs) && Number.isFinite(t.costMs) ? t : null;
+  } catch {
+    return null;
+  }
+}
+
+/** A short stable hash of a config object, for splitting field data by thresholds. */
+export function configHash(config: GovernorConfig): string {
+  const text = JSON.stringify(Object.entries(config).sort(([a], [b]) => (a < b ? -1 : 1)));
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
 }

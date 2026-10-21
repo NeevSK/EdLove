@@ -69,6 +69,9 @@ contract; they become views computed from the allocator's levels.
   the repo rule on native code and keeps it off the Tier 1 Nitro pin.
 - The spec's figure of 70 to 120 ms per Expo call is not used here: it is not
   sourced in the audit and describes call volume, which this design avoids.
+- Its own cost is not nothing: while visible it wakes about 70 times a minute
+  (1 Hz thread sampling, memory every 10 s, headroom every 10–60 s); hidden, it
+  stops. This cost is an outcome to measure against off, not an assumption.
 - If a later phase needs per-frame synchronous access from a worklet, Nitro
   can be added for that one path without changing the policy layer.
 
@@ -78,27 +81,34 @@ reference, so both implementations produce the same windows.
 ### D4. Every signal has a fallback to Android 9
 
 Polling of free memory and the low-memory flag covers API 34 and later, where
-trims are withheld. Battery temperature and frame-cost drift infer heat where
-thermal status is absent (API 28). Each estimate carries a confidence, and
-low confidence widens the allocator's safety margin.
+trims are withheld; a polled reading holds as a level until the next poll.
+Planned, not yet built: battery temperature and frame-cost drift to infer heat
+where thermal status is absent (API 28), and a confidence on each estimate that
+widens the allocator's safety margin.
 
 ### D5. Invariants
 
 1. Critical work is admitted first; its budget is reserved.
 2. No workload is lowered for an account it does not spend.
-3. Every change records account, signal, value, rule and policy version.
+3. Every change records its rule, signal and policy version. Field telemetry
+   keeps the shape of each reason with its numbers removed (low cardinality,
+   no fine timing fingerprint); exact values stay on the device's diagnostics.
 4. Raising is slower than lowering; a failed raise doubles the wait.
 5. Without signals the baseline holds; nothing guesses upward.
 6. Native measures, TypeScript decides; every threshold has one source.
-7. No quality change during a gesture or list momentum.
+7. No quality-lowering hardware change within 1 s of a touch, unless heat
+   forces it; raising is never delayed. Scroll momentum after the finger lifts
+   is not yet sensed.
 8. Policies are deterministic and versioned; telemetry informs the next
    version, never the running one.
 9. A workload enters the allocator only after its intrinsic cost is checked.
 
 ### D6. Evidence before closed loop
 
-Five modes: off, static, shadow, closed loop, minimal. Assignment is the
-existing deterministic hash; a remote kill switch sends everyone to off. Closed
+Three modes are built: off, shadow and active (closed loop); static and
+minimal are planned. Assignment is a deterministic hash whose key includes the
+policy version; the kill switch turns the runtime off entirely, native sensing
+included (shadow still runs the native module). Closed
 loop reaches users only after shadow data from real phones, with a primary
 outcome named in advance and guardrails (crashes, ANRs, low-memory kills,
 heat, energy) that must not worsen.
@@ -131,13 +141,23 @@ while facts about the phone are learned. First panel: the Galaxy A52 and
 Galaxy A24 and friends' phones, in shadow and active mode, before and after
 their next update.
 
+### D10. Shedding stops where it does not help
+
+A lever is lowered only for a resource it relieves. Contention steps continue
+only while each step measurably lowers the saturated thread's load; after two
+that do not, the runtime stops and reports the contention as needing a code
+fix. Quality rises only after calm frames are actually drawn, never on an idle
+screen. Only levers with a consumer in the build are governed.
+
 ## 3. Consequences
 
 - The facade in the spec keeps its names; its internals change.
 - A registry test will fail when a component animates, decodes, fetches or
   schedules without declaring a workload.
-- Telemetry gains a policy version and reason on every decision, and a daily
-  byte budget per device.
+- Telemetry carries the policy version, a config hash, a session id and a
+  device stratum; state and lever events are capped at 64 per launch and
+  summaries separately at 120. A per-day byte budget is not yet enforced; the
+  review estimated at most about 19 KB per launch.
 - Thresholds tuned on the Galaxy A52 are provisional until checked on a 2 to
   4 GB phone or constrained emulators.
 
@@ -155,7 +175,7 @@ their next update.
 
 | Part | Level |
 | --- | --- |
-| Governor decision layer, 24 tests | G2 |
-| Kotlin estimator against golden vectors, 6 JUnit tests on the JVM | G2 |
+| Governor decision layer and controller, 48 tests | G2 |
+| Kotlin estimator, procfs sampler and display choice, 18 JUnit tests on the JVM | G2 |
 | Sensors compiled against android.jar 35; binding against an expo-modules-core 58.0.21 signature stub | G1 |
 | Device behaviour | R1, one contaminated A52 development-build trace |
