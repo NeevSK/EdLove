@@ -323,6 +323,11 @@
       "import": "./src/efficiency/index.ts",
       "default": "./src/efficiency/index.ts"
     },
+    "./governor": {
+      "types": "./src/governor/index.ts",
+      "import": "./src/governor/index.ts",
+      "default": "./src/governor/index.ts"
+    },
     "./storage-wrapper": {
       "types": "./src/lib/storageWrapper.ts",
       "import": "./src/lib/storageWrapper.ts",
