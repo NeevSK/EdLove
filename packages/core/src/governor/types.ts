@@ -138,6 +138,8 @@ export interface LeverSpec {
   readonly maxLevel: number;
   readonly visualImpact: VisualImpact;
   readonly target: LeverTarget;
+  /** Other resources this lever also relieves (a refresh cap gives CPU and GPU more time). */
+  readonly alsoRelieves?: readonly LeverTarget[];
   /**
    * Ambient levers decorate rather than inform. They sleep (go to `maxLevel`) when nobody
    * has touched the screen for `ambientSleepAfterMs`, independent of pressure.
@@ -201,8 +203,6 @@ export interface GovernorConfig {
   readonly refreshCapHz: number;
   /** A window with fewer frames is still stressed if one frame took this many frame budgets. */
   readonly jankFrameFactor: number;
-  /** Calm windows (frames actually drawn within budget) required before any raise. */
-  readonly upgradeCalmWindows: number;
   /** Contention steps that may fail to relieve the saturated thread before the runtime stops. */
   readonly maxUnrelievedContentionSteps: number;
   /** Drops in cores, or in long tasks, that count as relief after a contention step. */

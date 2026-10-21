@@ -81,7 +81,7 @@ const emptySummary = (at: number): Summary => ({
  * Bumped whenever a decision rule or default changes, so field data can be split by the policy
  * that produced it (deterministic, versioned policies: telemetry informs the next version).
  */
-export const GOVERNOR_POLICY_VERSION = 2;
+export const GOVERNOR_POLICY_VERSION = 3;
 
 /** Reasons carry measured numbers; telemetry keeps their shape, not their values. */
 export function reasonCode(reason: string): string {

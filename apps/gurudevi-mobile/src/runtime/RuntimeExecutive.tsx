@@ -4,6 +4,7 @@ import {
   createRuntimeController,
   DEFAULT_GOVERNOR_CONFIG,
   type ExperimentAssignment,
+  GOVERNOR_POLICY_VERSION,
   type GovernorSnapshot,
   type GovernorTelemetrySink,
   GURUDEVI_LEVERS,
@@ -81,7 +82,7 @@ export function RuntimeExecutive({ children, mode, assignment, telemetrySink, ap
         ? createGovernorTelemetry({
             sink: telemetrySink,
             arm: assignment?.arm ?? (resolved === 'active' ? 'treatment' : 'control'),
-            experimentKey: assignment?.key ?? 'adaptive-runtime',
+            experimentKey: assignment?.key ?? `adaptive-runtime-p${GOVERNOR_POLICY_VERSION}`,
             sessionId: sessionId(),
             configHash: configHash(config),
             config,
@@ -134,18 +135,18 @@ export function RuntimeExecutive({ children, mode, assignment, telemetrySink, ap
 /** Records that someone touched the screen without taking part in the responder system. */
 function PresenceBoundary({ controller, children }: { controller: RuntimeController; children: ReactNode }) {
   const [last] = useState(() => ({ at: Number.NEGATIVE_INFINITY }));
+  // Touch start and every move (throttled): a long scroll keeps the gesture alive, so the
+  // gesture freeze holds for its whole length. Momentum after the finger lifts is not seen.
+  const present = () => {
+    const at = now();
+    if (at - last.at >= INTERACTION_THROTTLE_MS) {
+      last.at = at;
+      controller.dispatch({ type: 'interaction', at });
+    }
+    return false;
+  };
   return (
-    <View
-      style={{ flex: 1 }}
-      onStartShouldSetResponderCapture={() => {
-        const at = now();
-        if (at - last.at >= INTERACTION_THROTTLE_MS) {
-          last.at = at;
-          controller.dispatch({ type: 'interaction', at });
-        }
-        return false;
-      }}
-    >
+    <View style={{ flex: 1 }} onStartShouldSetResponderCapture={present} onMoveShouldSetResponderCapture={present}>
       {children}
     </View>
   );

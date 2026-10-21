@@ -96,9 +96,10 @@ widens the allocator's safety margin.
 4. Raising is slower than lowering; a failed raise doubles the wait.
 5. Without signals the baseline holds; nothing guesses upward.
 6. Native measures, TypeScript decides; every threshold has one source.
-7. No quality-lowering hardware change within 1 s of a touch, unless heat
-   forces it; raising is never delayed. Scroll momentum after the finger lifts
-   is not yet sensed.
+7. Gesture freeze: within 1 s of a touch or move, a hardware change that lowers
+   quality waits and the last published values hold; a change that raises
+   quality applies at once; heat (hot or worse) overrides the freeze. Scroll
+   momentum after the finger lifts is not yet sensed.
 8. Policies are deterministic and versioned; telemetry informs the next
    version, never the running one.
 9. A workload enters the allocator only after its intrinsic cost is checked.
@@ -107,7 +108,8 @@ widens the allocator's safety margin.
 
 Three modes are built: off, shadow and active (closed loop); static and
 minimal are planned. Assignment is a deterministic hash whose key includes the
-policy version; the kill switch turns the runtime off entirely, native sensing
+policy version (the executive defaults to `adaptive-runtime-p<version>`;
+`assignExperiment` is not yet called from the app); the kill switch turns the runtime off entirely, native sensing
 included (shadow still runs the native module). Closed
 loop reaches users only after shadow data from real phones, with a primary
 outcome named in advance and guardrails (crashes, ANRs, low-memory kills,
@@ -147,7 +149,11 @@ A lever is lowered only for a resource it relieves. Contention steps continue
 only while each step measurably lowers the saturated thread's load; after two
 that do not, the runtime stops and reports the contention as needing a code
 fix. Quality rises only after calm frames are actually drawn, never on an idle
-screen. Only levers with a consumer in the build are governed.
+screen. Only levers with a consumer in the build are governed. A lever may
+relieve several resources (the refresh cap relieves GPU, UI-thread CPU and
+energy), but JS-thread contention counts only levers whose primary resource is
+CPU work. A "not relievable" verdict holds until contention has been absent for
+five saturation periods.
 
 ## 3. Consequences
 
@@ -175,7 +181,7 @@ screen. Only levers with a consumer in the build are governed.
 
 | Part | Level |
 | --- | --- |
-| Governor decision layer and controller, 48 tests | G2 |
+| Governor decision layer and controller, 53 tests | G2 |
 | Kotlin estimator, procfs sampler and display choice, 18 JUnit tests on the JVM | G2 |
 | Sensors compiled against android.jar 35; binding against an expo-modules-core 58.0.21 signature stub | G1 |
 | Device behaviour | R1, one contaminated A52 development-build trace |

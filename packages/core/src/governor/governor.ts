@@ -92,8 +92,15 @@ export interface GovernorState {
   readonly polledMemory: TrimSeverity | null;
   /** End of the last stressed window on the sensor timeline, to require contiguous stress. */
   readonly stressEndMs: number | null;
-  /** Calm windows since the last level change: the only evidence that permits a raise. */
-  readonly calmWindows: number;
+  /**
+   * A calm window (frames drawn within budget) has been seen since the last decrease and no
+   * neutral or stressed window since. It is a flag, not a count, because the sensor forwards
+   * calm windows only when the state changes: a run of calm windows arrives as one.
+   */
+  readonly comfortSeen: boolean;
+  /** Hardware outputs as last published, held while a finger is on the screen. */
+  readonly heldRefreshCapHz: number | null;
+  readonly heldGlobalMotion: boolean;
 
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
@@ -148,7 +155,9 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     contentionExhausted: false,
     polledMemory: null,
     stressEndMs: null,
-    calmWindows: 0,
+    comfortSeen: false,
+    heldRefreshCapHz: null,
+    heldGlobalMotion: false,
     lastAction: 'stale',
     lastReason: 'start',
   };
@@ -249,13 +258,14 @@ function lower(
   at: number,
   action: IndexerAction,
   reason: string,
+  match: true | 'primary' = true,
 ): GovernorState {
   let pressure = { ...state.pressure };
   let stack = [...state.stack];
   let moved = 0;
   for (let step = 0; step < steps; step += 1) {
     const effective = combine(state.levers, staticFloors(state), pressure);
-    const lever = chooseLeverToLower(state.levers, effective, bottleneck, true);
+    const lever = chooseLeverToLower(state.levers, effective, bottleneck, match);
     if (!lever) break;
     pressure = { ...pressure, [lever.id]: (effective[lever.id] ?? 0) + 1 };
     stack = [...stack, lever.id];
@@ -269,7 +279,7 @@ function lower(
     stack,
     lastDecreaseAt: at,
     lastPressureAt: at,
-    calmWindows: 0,
+    comfortSeen: false,
     upgradeAfterMs: failedUpgrade
       ? Math.min(state.upgradeAfterMs * 2, state.config.maxUpgradeAfterMs)
       : state.upgradeAfterMs,
@@ -290,7 +300,6 @@ function raiseOne(state: GovernorState, at: number, reason: string): GovernorSta
     pressure,
     stack: state.stack.slice(0, -1),
     lastIncreaseAt: at,
-    calmWindows: 0,
     lastAction: 'increase',
     lastReason: reason,
   };
@@ -332,9 +341,11 @@ function maybeIncrease(state: GovernorState, at: number): GovernorState {
   if (state.contentionExhausted || contentionOf(state, at) !== 'none') return state;
   const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
   if (at - lastChange < state.upgradeAfterMs) return state;
-  // Only drawn frames within budget are evidence of comfort; an idle screen proves nothing,
-  // and raising on silence makes every new touch start at full cost and shed again.
-  if (state.calmWindows < state.config.upgradeCalmWindows) return state;
+  // Only frames drawn within budget at the lowered levels are evidence of comfort; a screen
+  // that went straight from stress to silence proves nothing, and raising on it makes every
+  // new touch start at full cost and shed again. Once comfort is seen, raises continue one at
+  // a time until a neutral or stressed window, or a decrease, withdraws it.
+  if (!state.comfortSeen) return state;
   return raiseOne(state, at, `comfortable for ${Math.round(state.upgradeAfterMs)} ms`);
 }
 
@@ -399,6 +410,10 @@ function applyContention(state: GovernorState, at: number): GovernorState {
   const contention = contentionOf(state, at);
   if (contention === 'none') {
     if (state.contentionBaseline === null && !state.contentionExhausted && state.contentionUnrelieved === 0) return state;
+    // A load flickering across the line must not re-arm shedding each time it dips: the
+    // verdict "not relievable" holds until contention has been absent for a while.
+    const coolDown = 5 * state.config.saturationAfterMs;
+    if (state.contentionExhausted && at - state.lastContentionActionAt < coolDown) return state;
     return { ...state, contentionBaseline: null, contentionUnrelieved: 0, contentionExhausted: false };
   }
   if (state.contentionExhausted) return { ...state, lastPressureAt: at };
@@ -431,8 +446,12 @@ function applyContention(state: GovernorState, at: number): GovernorState {
       lastReason: `${detail}: not relieved by levers, needs a code fix`,
     };
   }
-  const targets: readonly LeverTarget[] = contention === 'js' ? ['cpu'] : ['cpu', 'gpu'];
-  const next = lower(state, 1, targets, at, 'decrease', detail);
+  // The JS thread is not paced by the display, so for JS contention only levers whose primary
+  // resource is CPU work count; a refresh cap relieves the UI and render threads, not JS.
+  const next =
+    contention === 'js'
+      ? lower(state, 1, ['cpu'], at, 'decrease', detail, 'primary')
+      : lower(state, 1, ['cpu', 'gpu'], at, 'decrease', detail);
   return {
     ...next,
     lastContentionActionAt: at,
@@ -449,9 +468,13 @@ function onFrameWindow(state: GovernorState, event: Extract<GovernorEvent, { typ
   let next: GovernorState = { ...state, frameState };
   if (frameState === 'stressed') {
     // Stress must be continuous: two hitches a minute apart are not 1 s of stress.
-    const contiguous = state.stressEndMs !== null && state.stressEndMs === event.window.startMs;
-    const stressMs = (contiguous ? state.stressMs : 0) + span;
-    next = { ...next, stressMs, stressEndMs: event.window.endMs, lastPressureAt: event.at, calmWindows: 0 };
+    // A window's stress reaches as far as its worst frame: a 1 s freeze leaves the next 500 ms
+    // slot empty, and that gap is the same freeze, not recovery.
+    const w = event.window;
+    const contiguous = state.stressEndMs !== null && w.startMs <= state.stressEndMs;
+    const stressMs = (contiguous ? state.stressMs : 0) + Math.max(span, w.worstMs);
+    const reach = Math.max(w.endMs, w.startMs + w.worstMs);
+    next = { ...next, stressMs, stressEndMs: reach, lastPressureAt: event.at, comfortSeen: false };
     if (stressMs >= state.config.downgradeAfterMs) {
       const stage = frameBottleneck(event.window);
       const where = stage === null ? '' : `, ${stage}-bound`;
@@ -461,8 +484,8 @@ function onFrameWindow(state: GovernorState, event: Extract<GovernorEvent, { typ
     }
   } else {
     next = { ...next, stressMs: 0, stressEndMs: null };
-    if (frameState === 'neutral') next = { ...next, lastPressureAt: event.at, calmWindows: 0 };
-    if (frameState === 'calm') next = { ...next, calmWindows: state.calmWindows + 1 };
+    if (frameState === 'neutral') next = { ...next, lastPressureAt: event.at, comfortSeen: false };
+    if (frameState === 'calm') next = { ...next, comfortSeen: true };
   }
   return next;
 }
@@ -529,7 +552,13 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
 
 /** Folds one event into the governor. Pure: same state and event, same result. */
 export function reduceGovernor(state: GovernorState, event: GovernorEvent): GovernorState {
-  const next = step(state, event);
+  const stepped = step(state, event);
+  const published = snapshotOf(stepped, stepped.at);
+  const next: GovernorState = {
+    ...stepped,
+    heldRefreshCapHz: published.refreshCapHz,
+    heldGlobalMotion: published.globalReducedMotion,
+  };
   const before = snapshotOf(state, state.at);
   const after = snapshotOf(next, next.at);
   return outputsEqual(before, after) ? { ...next, version: state.version } : { ...next, version: state.version + 1 };
@@ -562,11 +591,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
   const thermal = thermalOf(state);
   const idle = interactionIdle(state, at);
   const cool = thermal === 'unknown' || thermal === 'nominal';
-  // Gesture freeze: hardware changes that lower quality wait until the finger has been off the
-  // screen for a moment, unless heat forces them; raising quality (releasing) is never delayed.
-  const touching = at - state.lastInteractionAt < state.config.gestureQuietMs;
-  const forced = thermal === 'hot' || thermal === 'critical';
-  const mayLower = !touching || forced;
+  const hardware = hardwareOf(state, at, levels);
   return {
     version: state.version,
     at,
@@ -584,10 +609,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     contentionExhausted: state.contentionExhausted,
     // Hardware levers are new behaviour, so only active mode applies them; shadow mode keeps
     // the app exactly as it runs today and records the proposal in `proposedLevels`.
-    refreshCapHz:
-      active && mayLower && (levels['refresh-rate'] ?? 0) >= 1 && canCapRefresh(state)
-        ? state.config.refreshCapHz
-        : null,
+    refreshCapHz: hardware.refreshCapHz,
     cpuBoost:
       active &&
       state.capacity.supportsCpuHints &&
@@ -595,9 +617,34 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
       !state.powerSaver &&
       !idle &&
       cool,
-    globalReducedMotion: active && mayLower && (levels['global-motion'] ?? 0) >= 1,
+    globalReducedMotion: hardware.globalReducedMotion,
     lastAction: state.lastAction,
     lastReason: state.lastReason,
+  };
+}
+
+/**
+ * App-wide hardware outputs. Gesture freeze: while a finger has been on the screen within
+ * `gestureQuietMs`, a change that lowers quality (a new cap, forcing reduced motion) waits,
+ * and the last published values hold, so a tap never switches the display mode twice. A
+ * change that raises quality applies at once, and heat (hot or worse) overrides the freeze.
+ */
+function hardwareOf(
+  state: GovernorState,
+  at: number,
+  levels: Readonly<Record<string, number>>,
+): { refreshCapHz: number | null; globalReducedMotion: boolean } {
+  const active = state.mode === 'active';
+  const wantCap =
+    active && (levels['refresh-rate'] ?? 0) >= 1 && canCapRefresh(state) ? state.config.refreshCapHz : null;
+  const wantMotion = active && (levels['global-motion'] ?? 0) >= 1;
+  const thermal = thermalOf(state);
+  const touching = at - state.lastInteractionAt < state.config.gestureQuietMs;
+  const forced = thermal === 'hot' || thermal === 'critical';
+  if (!touching || forced) return { refreshCapHz: wantCap, globalReducedMotion: wantMotion };
+  return {
+    refreshCapHz: wantCap === null ? null : state.heldRefreshCapHz,
+    globalReducedMotion: wantMotion ? state.heldGlobalMotion : false,
   };
 }
 
@@ -642,6 +689,7 @@ export function nextTimedChangeAt(state: GovernorState): number | null {
     candidates.push(since + saturationAfterMs, state.lastContentionActionAt + saturationAfterMs);
   }
   for (const t of state.longTasks) candidates.push(t + longTaskWindowMs + 1);
+  if (state.contentionExhausted) candidates.push(state.lastContentionActionAt + 5 * saturationAfterMs + 1);
   if (state.stack.length > 0) {
     const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
     candidates.push(lastChange + state.upgradeAfterMs);

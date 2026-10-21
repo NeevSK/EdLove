@@ -264,3 +264,66 @@ describe('review findings, held as regressions', () => {
     expect(snapshotOf(state).memory).toBe('normal');
   });
 });
+
+describe('second review findings, held as regressions', () => {
+  const win = (start: number, averageMs: number, extra: Record<string, unknown> = {}): GovernorEvent => ({
+    type: 'frame-window',
+    at: start + 500,
+    window: {
+      startMs: start,
+      endMs: start + 500,
+      frames: 30,
+      averageMs,
+      targetMs: 16.667,
+      worstMs: averageMs * 1.4,
+      droppedRatio: averageMs > 20 ? 0.2 : 0,
+      ...extra,
+    },
+  });
+
+  it('raises again from the forwarded stream, where a run of calm windows arrives as one', () => {
+    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    state = run(state, [win(0, 25), win(500, 25), win(1000, 25), win(1500, 25)]);
+    expect(state.stack.length).toBe(2);
+    // Only the first calm window crosses the bridge; the rest are suppressed as repeats.
+    state = run(state, [win(2000, 6), { type: 'tick', at: 7_000 }, { type: 'tick', at: 12_000 }]);
+    expect(state.stack.length).toBe(0);
+  });
+
+  it('holds the published cap through a tap instead of switching the display mode twice', () => {
+    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    state = run(state, [{ type: 'thermal', at: 2_000, status: 'light', headroom: 0.9 }]);
+    expect(snapshotOf(state).refreshCapHz).toBe(60);
+    state = run(state, [{ type: 'interaction', at: 3_000 }]);
+    expect(snapshotOf(state).refreshCapHz).toBe(60);
+    state = run(state, [{ type: 'tick', at: 4_100 }]);
+    expect(snapshotOf(state).refreshCapHz).toBe(60);
+  });
+
+  it('answers UI-bound jank with the refresh cap when that is the lever the build applies', () => {
+    const applied = GURUDEVI_LEVERS.filter((l) => l.id === 'refresh-rate' || l.id === 'global-motion');
+    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: applied });
+    const stages = { uiMs: 20, renderMs: 3, gpuMs: 2, delayMs: 0 };
+    state = run(state, [win(0, 25, { stages }), win(500, 25, { stages })]);
+    expect(state.stack).toEqual(['refresh-rate']);
+  });
+
+  it('accumulates freeze-type jank across the empty slot a long frame leaves', () => {
+    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    const freeze = (start: number) => win(start, 1000, { frames: 1, worstMs: 1000, droppedRatio: 0.98 });
+    state = run(state, [freeze(0)]);
+    expect(state.stack.length).toBe(1);
+  });
+
+  it('keeps the "not relievable" verdict through a load flickering across the line', () => {
+    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    state = run(state, jsLoad(0, 12, 1.0));
+    expect(snapshotOf(state).contentionExhausted).toBe(true);
+    const before = state.stack.length;
+    for (let i = 0; i < 6; i += 1) {
+      const t = 12_000 + i * 1000;
+      state = run(state, [{ type: 'thread-load', at: t, cores: { js: i % 2 ? 0.5 : 1.0 }, processCores: 1 }]);
+    }
+    expect(state.stack.length).toBe(before);
+  });
+});

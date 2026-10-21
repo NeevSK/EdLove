@@ -11,17 +11,19 @@ export function chooseLeverToLower(
   levers: readonly LeverSpec[],
   levels: Readonly<Record<string, number>>,
   bottleneck: readonly LeverTarget[],
-  strict = false,
+  strict: boolean | 'primary' = false,
 ): LeverSpec | null {
+  const matches = (lever: LeverSpec) =>
+    strict === 'primary' ? bottleneck.includes(lever.target) : relieves(lever, bottleneck);
   // Strict: only levers that relieve the bottleneck (a workload is never lowered for a
   // resource it does not spend). Non-strict ordering is kept for callers that want a fallback.
   const candidates = levers.filter(
-    (lever) => (levels[lever.id] ?? 0) < lever.maxLevel && (!strict || bottleneck.includes(lever.target)),
+    (lever) => (levels[lever.id] ?? 0) < lever.maxLevel && (!strict || matches(lever)),
   );
   if (candidates.length === 0) return null;
   const sorted = [...candidates].sort((a, b) => {
-    const aTargets = bottleneck.includes(a.target) ? 0 : 1;
-    const bTargets = bottleneck.includes(b.target) ? 0 : 1;
+    const aTargets = relieves(a, bottleneck) ? 0 : 1;
+    const bTargets = relieves(b, bottleneck) ? 0 : 1;
     if (aTargets !== bTargets) return aTargets - bTargets;
     const impact = IMPACT_RANK[a.visualImpact] - IMPACT_RANK[b.visualImpact];
     if (impact !== 0) return impact;
@@ -30,6 +32,11 @@ export function chooseLeverToLower(
     return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   });
   return sorted[0] ?? null;
+}
+
+/** Whether a lever relieves any of the given resources. */
+export function relieves(lever: LeverSpec, targets: readonly LeverTarget[]): boolean {
+  return targets.includes(lever.target) || (lever.alsoRelieves ?? []).some((t) => targets.includes(t));
 }
 
 export function validateLevers(levers: readonly LeverSpec[]): void {
@@ -56,6 +63,9 @@ export const GURUDEVI_LEVERS: readonly LeverSpec[] = [
     maxLevel: 1,
     visualImpact: 'medium',
     target: 'gpu',
+    // Fewer frames per second: each frame gets more time on the UI and render threads, and the
+    // display and GPU draw less.
+    alsoRelieves: ['cpu', 'energy'],
     ambient: false,
     motion: false,
     levels: ['the display maximum', 'capped (config refreshCapHz)'],

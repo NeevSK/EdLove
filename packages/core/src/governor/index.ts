@@ -24,7 +24,7 @@ export {
   staticFloors,
   UNKNOWN_CAPACITY,
 } from './governor';
-export { chooseLeverToLower, GURUDEVI_LEVERS, validateLevers } from './levers';
+export { chooseLeverToLower, GURUDEVI_LEVERS, relieves, validateLevers } from './levers';
 export { replayGovernor } from './replay';
 export { thermalLevelOf } from './signals';
 export {
