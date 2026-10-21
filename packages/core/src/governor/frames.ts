@@ -71,6 +71,17 @@ export function classifyFrameWindow(window: FrameWindow, config: GovernorConfig)
   return 'neutral';
 }
 
+/**
+ * Which windows the native sensor forwards to JavaScript. Calm and quiet windows only matter
+ * when they end a run of stressed or near-budget ones, so repeats are dropped: an animation
+ * running comfortably costs no bridge traffic at all. The governor reaches the same decisions
+ * from the filtered stream (see the equivalence test).
+ */
+export function shouldForwardWindow(state: FrameState, previousForwarded: FrameState | null): boolean {
+  if (state === 'stressed' || state === 'neutral') return true;
+  return state !== previousForwarded;
+}
+
 /** Frames per second drawn in a window. */
 export function frameRate(window: FrameWindow): number {
   const span = window.endMs - window.startMs;

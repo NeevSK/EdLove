@@ -5,7 +5,13 @@ export {
   type ExperimentAssignment,
   fnv1a32,
 } from './experiment';
-export { aggregateFrames, classifyFrameWindow, type FrameSample, frameRate } from './frames';
+export {
+  aggregateFrames,
+  classifyFrameWindow,
+  type FrameSample,
+  frameRate,
+  shouldForwardWindow,
+} from './frames';
 export {
   type CreateGovernorOptions,
   createGovernor,
