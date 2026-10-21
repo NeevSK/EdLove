@@ -114,6 +114,23 @@ Until after the teacher pilot on 2026-10-26, only TypeScript changes behind
 flags that default to current behaviour may merge. `runtime-sense` stays on
 `feat/adaptive-runtime`.
 
+### D9. A lieutenant to the OS, and a veteran of each phone
+
+The runtime is a supervisor for this app only, subordinate to the Android
+kernel: it never fights the scheduler or the memory killer, it acts before the
+OS has to act bluntly (kill, uniform throttle, ANR), and it reports every
+decision. It learns each phone as it is now, because system updates and vendor
+policy change capacity after sale: after an OTA, apps run with only the
+`verify` compiler filter until the daily idle-and-charging background dexopt
+(AOSP ART Service configuration), and in 2022 Samsung's Game Optimizing Service
+throttled apps by identity (XDA Developers, 2022-03-04). A per-device profile
+keyed by the build fingerprint records frame, thermal, memory and per-thread
+baselines; a new fingerprint marks it stale. Learned values move thresholds
+only within bounds fixed by the policy version, so policies stay deterministic
+while facts about the phone are learned. First panel: the Galaxy A52 and
+Galaxy A24 and friends' phones, in shadow and active mode, before and after
+their next update.
+
 ## 3. Consequences
 
 - The facade in the spec keeps its names; its internals change.
