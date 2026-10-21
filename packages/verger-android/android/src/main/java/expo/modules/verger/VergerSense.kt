@@ -92,28 +92,6 @@ class VergerSense(
   @Volatile private var totalsMissed = 0L
   @Volatile private var totalsCostMs = 0.0
 
-  /** Facts that do not change while the process lives. Read once by JavaScript. */
-  fun capacity(activity: Activity?): Map<String, Any?> {
-    val am = activityManager
-    val memory = ActivityManager.MemoryInfo().also { info -> runCatching { am.getMemoryInfo(info) } }
-    return mapOf(
-      "totalMemoryBytes" to memory.totalMem.toDouble(),
-      "isLowRamDevice" to runCatching { am.isLowRamDevice }.getOrNull(),
-      "memoryClassMb" to runCatching { am.memoryClass }.getOrNull(),
-      "sdkInt" to Build.VERSION.SDK_INT,
-      "cpuCores" to Runtime.getRuntime().availableProcessors(),
-      "refreshRateHz" to levers.currentRefreshHz()?.toDouble(),
-      "supportsRenderEffect" to (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S),
-      "supportsRuntimeShader" to (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU),
-      "supportsThermalHeadroom" to (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R),
-      "supportsFrameDeadline" to (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S),
-      "supportsGpuDuration" to (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S),
-      "supportsCpuHints" to levers.supportsCpuHints,
-      "refreshRatesHz" to levers.displayRates().map { it.toDouble() },
-      "largeMemoryClassMb" to runCatching { am.largeMemoryClass }.getOrNull(),
-    )
-  }
-
   /** Starts sensing (idempotent; a second call replaces the config). */
   fun start(next: SenseConfig, activity: Activity?) {
     handler.post {

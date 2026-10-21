@@ -39,6 +39,7 @@ export const UNKNOWN_CAPACITY: CapacityFacts = {
   supportsRuntimeShader: false,
   refreshRatesHz: [],
   supportsCpuHints: false,
+  buildFingerprint: null,
 };
 
 const LOW_MEMORY_DEVICE_BYTES = 3 * 1024 * 1024 * 1024;
@@ -107,6 +108,10 @@ export interface GovernorState {
   /** Hardware outputs as last published, held while a finger is on the screen. */
   readonly heldRefreshCapHz: number | null;
   readonly heldGlobalMotion: boolean;
+  /** Whether verger may drive hardware at all (the recovery ladder turns this off). */
+  readonly hardware: boolean;
+  /** Steps of capacity floor this device has earned back (0 = none, 2 = all). */
+  readonly capacityGrant: number;
 
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
@@ -120,11 +125,24 @@ export interface CreateGovernorOptions {
   readonly config?: Partial<GovernorConfig>;
   /** Set when a native memory sensor is attached, so absence of trims means "normal". */
   readonly memorySensing?: boolean;
+  /** Whether verger may drive hardware levers and CPU hints. Default true. */
+  readonly hardware?: boolean;
+  /**
+   * Steps of the low-capacity floor relaxed because this device proved it can carry more:
+   * 1 lifts the floor on non-ambient levers, 2 lifts the ambient floor as well.
+   */
+  readonly capacityGrant?: number;
+  /**
+   * Pressure to start from (a learned starting point). It enters the closed loop's stack, so
+   * the loop raises it back exactly as it would its own decreases once frames are comfortable.
+   */
+  readonly initialPressure?: Readonly<Record<string, number>>;
 }
 
 export function createGovernor(options: CreateGovernorOptions): GovernorState {
   validateLevers(options.levers);
   const config = { ...DEFAULT_GOVERNOR_CONFIG, ...options.config };
+  const start = startingPressure(options.levers, options.initialPressure);
   return {
     config,
     levers: options.levers,
@@ -132,8 +150,8 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     mode: options.mode ?? 'active',
     version: 0,
     at: options.at,
-    pressure: {},
-    stack: [],
+    pressure: start.pressure,
+    stack: start.stack,
     frameState: 'quiet',
     stressMs: 0,
     lastPressureAt: options.at,
@@ -164,9 +182,40 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     comfortSeen: false,
     heldRefreshCapHz: null,
     heldGlobalMotion: false,
+    hardware: options.hardware ?? true,
+    capacityGrant: Math.max(0, Math.floor(options.capacityGrant ?? 0)),
     lastAction: 'stale',
-    lastReason: 'start',
+    lastReason: start.stack.length > 0 ? 'start from learned profile' : 'start',
   };
+}
+
+const IMPACT_ORDER = { low: 0, medium: 1, high: 2 } as const;
+
+/**
+ * Turns a learned starting point into pressure and a stack. Containment levers are excluded
+ * (they act only on measured contention). The most visible levers go on top of the stack, so
+ * they are the first given back.
+ */
+function startingPressure(
+  levers: readonly LeverSpec[],
+  initial: Readonly<Record<string, number>> | undefined,
+): { pressure: Record<string, number>; stack: string[] } {
+  const pressure: Record<string, number> = {};
+  const stack: string[] = [];
+  if (!initial) return { pressure, stack };
+  const ordered = [...levers].sort(
+    (a, b) => IMPACT_ORDER[a.visualImpact] - IMPACT_ORDER[b.visualImpact],
+  );
+  for (const lever of ordered) {
+    if (lever.closedLoopOnly) continue;
+    const value = initial[lever.id];
+    if (value === undefined || !Number.isFinite(value)) continue;
+    const level = Math.min(lever.maxLevel, Math.max(0, Math.floor(value)));
+    if (level === 0) continue;
+    pressure[lever.id] = level;
+    for (let i = 0; i < level; i += 1) stack.push(lever.id);
+  }
+  return { pressure, stack };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -196,8 +245,9 @@ export function staticFloors(state: GovernorState): Record<string, number> {
     if (state.fidelity === 'low') raise(lever.id, lever.ambient ? max : Math.min(1, max));
     if (state.powerSaver && (lever.ambient || lever.target === 'energy')) raise(lever.id, max);
     if (state.powerSaver && lever.target === 'gpu') raise(lever.id, Math.min(1, max));
-    if (lowCapacity && lever.ambient) raise(lever.id, max);
-    if (lowCapacity && !lever.ambient && lever.target !== 'energy')
+    // A device that proved it can carry more earns these floors back, one step at a time.
+    if (lowCapacity && lever.ambient && state.capacityGrant < 2) raise(lever.id, max);
+    if (lowCapacity && !lever.ambient && lever.target !== 'energy' && state.capacityGrant < 1)
       raise(lever.id, Math.min(1, max));
   }
   // Rules each lever declares for itself; the reducer names no lever.
@@ -696,12 +746,14 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     refreshCapHz: hardware.refreshCapHz,
     cpuBoost:
       active &&
+      state.hardware &&
       state.capacity.supportsCpuHints &&
       state.visibility === 'active' &&
       !state.powerSaver &&
       !idle &&
       cool,
     globalReducedMotion: hardware.globalReducedMotion,
+    pressure: clampToLevers(state.levers, { ...state.pressure }),
     lastAction: state.lastAction,
     lastReason: state.lastReason,
   };
@@ -718,7 +770,7 @@ function hardwareOf(
   at: number,
   levels: Readonly<Record<string, number>>,
 ): { refreshCapHz: number | null; globalReducedMotion: boolean } {
-  const active = state.mode === 'active';
+  const active = state.mode === 'active' && state.hardware;
   const capLever = leverWith(state, 'refresh-cap');
   const motionLever = leverWith(state, 'global-reduced-motion');
   const wantCap =
@@ -754,7 +806,11 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     return false;
   }
   for (const key of Object.keys(b.proposedLevels)) {
-    if (a.proposedLevels[key] !== b.proposedLevels[key] || a.levels[key] !== b.levels[key])
+    if (
+      a.proposedLevels[key] !== b.proposedLevels[key] ||
+      a.levels[key] !== b.levels[key] ||
+      a.pressure[key] !== b.pressure[key]
+    )
       return false;
   }
   return true;

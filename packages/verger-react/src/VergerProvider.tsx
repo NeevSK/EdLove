@@ -1,13 +1,13 @@
 import {
-  createGovernorTelemetry,
-  createRuntimeController,
+  createVerger,
   type ExperimentAssignment,
   type GovernorMode,
   type GovernorSnapshot,
   type GovernorTelemetrySink,
-  type RuntimeController,
-  type RuntimePort,
+  type Verger,
   type VergerHost,
+  type VergerPlatform,
+  type VergerStore,
 } from '@repo/verger-core';
 import {
   createContext,
@@ -25,7 +25,7 @@ import { observeLongTasks } from './longTasks';
 /** `off` runs nothing; `shadow` senses and decides but applies nothing new; `active` applies. */
 export type VergerMode = 'off' | GovernorMode;
 
-const VergerContext = createContext<RuntimeController | null>(null);
+const VergerContext = createContext<Verger | null>(null);
 
 /** Touches closer together than this are one interaction; verger needs presence, not taps. */
 const INTERACTION_THROTTLE_MS = 250;
@@ -35,144 +35,95 @@ const INTERACTION_THROTTLE_MS = 250;
 const visibilityOf = (status: AppStateStatus | string | null | undefined) =>
   status === 'background' ? 'background' : status === 'inactive' ? 'inactive' : 'active';
 
-const sessionId = () =>
-  Math.floor(Math.random() * 0xffffffff)
-    .toString(16)
-    .padStart(8, '0');
-
-const memoryBucket = (bytes: number | null) =>
-  bytes === null
-    ? 'unknown'
-    : bytes < 3 * 1024 ** 3
-      ? '<3GB'
-      : bytes < 5 * 1024 ** 3
-        ? '3-5GB'
-        : bytes < 7 * 1024 ** 3
-          ? '5-7GB'
-          : '>=7GB';
-
 const now = () => performance.now();
-
-const scheduler = {
-  setTimeout: (callback: () => void, delayMs: number) => setTimeout(callback, delayMs),
-  clearTimeout: (handle: unknown) => clearTimeout(handle as ReturnType<typeof setTimeout>),
-};
 
 export interface VergerProviderProps {
   readonly children: ReactNode;
-  /** The host's definition (`defineHost`): its levers, rules and thresholds. */
+  /** The host's definition (`defineHost`): its levers, rules, thresholds and recovery. */
   readonly host: VergerHost;
-  /** Created lazily, once, only when the mode is not off (so `off` never touches native code). */
-  readonly createPort: (now: () => number) => RuntimePort;
+  /** The platform (`createVergerAndroidPlatform`). Called only if the launch lets verger run. */
+  readonly platform: () => VergerPlatform;
+  /** Durable storage for the recovery ladder, trust and the learned profile. */
+  readonly store?: VergerStore;
   readonly mode: VergerMode;
-  /** The experiment assignment, if any; its arm and key label telemetry. */
+  /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
-  /** Native cumulative frame totals, for unbiased telemetry summaries. */
-  readonly readTotals?: () => {
-    readonly frames: number;
-    readonly missedVsyncs: number;
-    readonly costMs: number;
-  };
-  /** Whether the port senses memory (absence of trims then means normal). */
-  readonly memorySensing?: boolean;
+  /** The app version. A new release starts the recovery ladder over. */
+  readonly release?: string;
 }
 
 /**
- * Mounts verger around an app. In `off` mode it renders its children and does nothing else.
- * Otherwise it starts the runtime loop, feeds it app state, presence, motion preference and JS
- * long tasks, and applies the app-wide lever that lives in JavaScript: forced reduced motion
- * for every Reanimated animation that starts while it is set.
+ * Mounts verger around an app. In `off` mode, or under the kill switch, it renders its
+ * children and creates nothing. Otherwise it runs verger's launch (which may still decide to
+ * stay off), feeds it app state, presence, motion preference and JS long tasks, and applies
+ * the app-wide lever that lives in JavaScript: forced reduced motion for every Reanimated
+ * animation that starts while it is set.
  */
 export function VergerProvider({
   children,
   host,
-  createPort,
+  platform,
+  store,
   mode,
   assignment,
   telemetrySink,
-  readTotals,
-  memorySensing = false,
+  release,
 }: VergerProviderProps) {
-  const [controller] = useState<RuntimeController | null>(() => {
-    if (mode === 'off') return null;
-    const port = createPort(now);
-    return createRuntimeController({
-      port,
-      levers: host.levers,
-      mode,
-      config: host.config,
-      now,
-      scheduler,
-      memorySensing,
-      telemetry: telemetrySink
-        ? createGovernorTelemetry({
-            sink: telemetrySink,
-            arm: assignment?.arm ?? (mode === 'active' ? 'treatment' : 'control'),
-            experimentKey: assignment?.key ?? host.experimentKey,
-            sessionId: sessionId(),
-            configHash: host.configHash,
-            config: host.config,
-            readTotals,
-            device: {
-              ram: memoryBucket(port.capacity.totalMemoryBytes),
-              sdk: port.capacity.sdkInt ?? 0,
-              max_hz: Math.round(Math.max(0, ...port.capacity.refreshRatesHz)),
-              hints: port.capacity.supportsCpuHints,
-              sensing: memorySensing,
-            },
-          })
-        : undefined,
-    });
-  });
+  const [verger] = useState<Verger | null>(() =>
+    mode === 'off' || assignment?.runtime === 'off'
+      ? null
+      : createVerger({
+          host,
+          platform,
+          store,
+          requested: mode,
+          assignment,
+          telemetrySink,
+          release,
+          now,
+        }),
+  );
 
   useEffect(() => {
-    if (!controller) return;
-    controller.start();
-    controller.dispatch({
-      type: 'app-state',
-      at: now(),
-      state: visibilityOf(AppState.currentState),
+    if (!verger) return;
+    let live = true;
+    const reduceMotion = (value: boolean) =>
+      verger.dispatch({ type: 'preferences', at: now(), reduceMotion: value, fidelity: 'auto' });
+    void verger.start().then((plan) => {
+      if (!live || plan.runtime === 'off') return;
+      verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(AppState.currentState) });
+      AccessibilityInfo.isReduceMotionEnabled()
+        .then((value) => live && reduceMotion(value))
+        .catch((error: unknown) => console.error('[verger] reduce-motion query failed', error));
     });
     const appState = AppState.addEventListener('change', (status) =>
-      controller.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) }),
+      verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) }),
     );
-    const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', (reduceMotion) =>
-      controller.dispatch({ type: 'preferences', at: now(), reduceMotion, fidelity: 'auto' }),
-    );
-    AccessibilityInfo.isReduceMotionEnabled()
-      .then((reduceMotion) =>
-        controller.dispatch({ type: 'preferences', at: now(), reduceMotion, fidelity: 'auto' }),
-      )
-      .catch((error: unknown) => console.error('[verger] reduce-motion query failed', error));
+    const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', reduceMotion);
     const stopLongTasks = observeLongTasks((durationMs) =>
-      controller.dispatch({ type: 'long-task', at: now(), durationMs }),
+      verger.dispatch({ type: 'long-task', at: now(), durationMs }),
     );
     return () => {
+      live = false;
       stopLongTasks();
       motion.remove();
       appState.remove();
-      controller.stop();
+      void verger.stop();
     };
-  }, [controller]);
+  }, [verger]);
 
-  if (!controller) return <>{children}</>;
+  if (!verger) return <>{children}</>;
   return (
-    <VergerContext.Provider value={controller}>
-      <PresenceBoundary controller={controller}>{children}</PresenceBoundary>
-      <GlobalMotion controller={controller} />
+    <VergerContext.Provider value={verger}>
+      <PresenceBoundary verger={verger}>{children}</PresenceBoundary>
+      <GlobalMotion verger={verger} />
     </VergerContext.Provider>
   );
 }
 
 /** Records that someone touched the screen without taking part in the responder system. */
-function PresenceBoundary({
-  controller,
-  children,
-}: {
-  controller: RuntimeController;
-  children: ReactNode;
-}) {
+function PresenceBoundary({ verger, children }: { verger: Verger; children: ReactNode }) {
   const last = useRef(Number.NEGATIVE_INFINITY);
   // Touch start and every move (throttled): a long scroll keeps the gesture alive, so the
   // gesture freeze holds for its whole length. Momentum after the finger lifts is not seen.
@@ -180,7 +131,7 @@ function PresenceBoundary({
     const at = now();
     if (at - last.current >= INTERACTION_THROTTLE_MS) {
       last.current = at;
-      controller.dispatch({ type: 'interaction', at });
+      verger.dispatch({ type: 'interaction', at });
     }
     return false;
   };
@@ -195,10 +146,10 @@ function PresenceBoundary({
   );
 }
 
-function GlobalMotion({ controller }: { controller: RuntimeController }) {
+function GlobalMotion({ verger }: { verger: Verger }) {
   const forced = useSyncExternalStore(
-    controller.subscribe,
-    () => controller.getSnapshot().globalReducedMotion,
+    verger.subscribe,
+    () => verger.getSnapshot()?.globalReducedMotion ?? false,
   );
   // Mounting the config forces reduced motion; unmounting restores what was there before.
   return forced ? <ReducedMotionConfig mode={ReduceMotion.Always} /> : null;
@@ -206,19 +157,19 @@ function GlobalMotion({ controller }: { controller: RuntimeController }) {
 
 /** The current snapshot, or null when verger is off. Re-renders on change only. */
 export function useVergerSnapshot(): GovernorSnapshot | null {
-  const controller = useContext(VergerContext);
+  const verger = useContext(VergerContext);
   return useSyncExternalStore(
-    controller?.subscribe ?? noSubscription,
-    () => controller?.getSnapshot() ?? null,
+    verger?.subscribe ?? noSubscription,
+    () => verger?.getSnapshot() ?? null,
   );
 }
 
 /** One lever's applied level (0 = full quality), or 0 when verger is off. */
 export function useLeverLevel(id: string): number {
-  const controller = useContext(VergerContext);
+  const verger = useContext(VergerContext);
   return useSyncExternalStore(
-    controller?.subscribe ?? noSubscription,
-    () => controller?.getSnapshot().levels[id] ?? 0,
+    verger?.subscribe ?? noSubscription,
+    () => verger?.getSnapshot()?.levels[id] ?? 0,
   );
 }
 

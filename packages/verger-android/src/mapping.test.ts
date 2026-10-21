@@ -1,6 +1,12 @@
 import { DEFAULT_GOVERNOR_CONFIG, UNKNOWN_CAPACITY } from '@repo/verger-core';
 import { describe, expect, it } from 'vitest';
-import { FRAME_WINDOW_MS, senseConfigFrom, toCapacityFacts, toGovernorEvent } from './mapping';
+import {
+  FRAME_WINDOW_MS,
+  senseConfigFrom,
+  toCapacityFacts,
+  toExitRecords,
+  toGovernorEvent,
+} from './mapping';
 
 describe('verger-android mapping', () => {
   it('sends the governor thresholds, so native code holds no copy of a tunable', () => {
@@ -172,5 +178,27 @@ describe('verger-android mapping', () => {
     });
     expect(facts.refreshRatesHz).toEqual([60, 90]);
     expect(facts.supportsCpuHints).toBe(true);
+  });
+
+  it('keeps the build fingerprint only when it is a non-empty string', () => {
+    expect(
+      toCapacityFacts({ buildFingerprint: 'a/b/c:14/X/1:user/release-keys' }).buildFingerprint,
+    ).toBe('a/b/c:14/X/1:user/release-keys');
+    expect(toCapacityFacts({ buildFingerprint: '' }).buildFingerprint).toBeNull();
+  });
+
+  it('maps exit records, dropping malformed ones and naming unknown reasons other', () => {
+    expect(
+      toExitRecords([
+        { reason: 'native-crash', atWallMs: 10, foreground: true },
+        { reason: 'freezer-of-the-future', atWallMs: 20 },
+        { reason: 'crash', atWallMs: Number.NaN },
+        { reason: 'anr' },
+      ]),
+    ).toEqual([
+      { reason: 'native-crash', atWallMs: 10, foreground: true },
+      { reason: 'other', atWallMs: 20, foreground: false },
+    ]);
+    expect(toExitRecords(null)).toEqual([]);
   });
 });

@@ -1,4 +1,5 @@
 import {
+  type CreateGovernorOptions,
   createGovernor,
   type GovernorState,
   nextTimedChangeAt,
@@ -16,11 +17,11 @@ import type {
 } from './types';
 
 /**
- * What the controller needs from a platform: the native sensor and its hardware levers. The
- * Android port is `@repo/verger-android`; tests implement it in memory.
+ * The live half of a platform: its sensors and hardware levers. Created only when verger
+ * runs, so a launch that keeps verger off never touches this code. The Android port is
+ * `@repo/verger-android`; tests implement it in memory.
  */
 export interface RuntimePort {
-  readonly capacity: CapacityFacts;
   /** Starts sensing; returns a function that stops it. Must tolerate being called once only. */
   start(config: GovernorConfig, onEvent: (event: GovernorEvent) => void): () => void;
   setRefreshCap(hz: number | null): void;
@@ -34,6 +35,8 @@ export interface RuntimeScheduler {
 
 export interface RuntimeControllerOptions {
   readonly port: RuntimePort;
+  /** What the device is, read once by the platform. */
+  readonly capacity: CapacityFacts;
   readonly levers: readonly LeverSpec[];
   readonly mode: GovernorMode;
   readonly config: GovernorConfig;
@@ -43,6 +46,8 @@ export interface RuntimeControllerOptions {
   readonly telemetry?: GovernorTelemetry;
   /** Whether the port senses memory (absence of trims then means normal). */
   readonly memorySensing: boolean;
+  /** What this launch may do, from the recovery ladder and the learned profile. */
+  readonly launch?: Pick<CreateGovernorOptions, 'hardware' | 'capacityGrant' | 'initialPressure'>;
 }
 
 export interface RuntimeController {
@@ -64,11 +69,12 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   const { port, scheduler, telemetry } = options;
   let state: GovernorState = createGovernor({
     at: options.now(),
-    capacity: port.capacity,
+    capacity: options.capacity,
     levers: options.levers,
     mode: options.mode,
     config: options.config,
     memorySensing: options.memorySensing,
+    ...options.launch,
   });
   let snapshot = snapshotOf(state);
   let stopSensing: (() => void) | null = null;
@@ -196,7 +202,7 @@ const finite = (n: unknown): boolean => typeof n === 'number' && Number.isFinite
  * Rejects events a defective sensor could produce. One NaN timestamp would otherwise become the
  * governor's clock for good (max(x, NaN) is NaN) and freeze every timed decision.
  */
-function isValidEvent(event: GovernorEvent): boolean {
+export function isValidEvent(event: GovernorEvent): boolean {
   if (!finite(event.at)) return false;
   if (event.type === 'frame-window') {
     const w = event.window;

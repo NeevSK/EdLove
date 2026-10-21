@@ -1,5 +1,6 @@
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
 import { validateLevers } from './levers';
+import { DEFAULT_RECOVERY_CONFIG, type RecoveryConfig, validateRecoveryConfig } from './recovery';
 import { configHash, GOVERNOR_POLICY_VERSION } from './telemetry';
 import type { GovernorConfig, LeverSpec } from './types';
 
@@ -13,6 +14,8 @@ export interface VergerHost {
   readonly name: string;
   readonly levers: readonly LeverSpec[];
   readonly config: GovernorConfig;
+  /** How verger recovers, heals and grows across launches on this host. */
+  readonly recovery: RecoveryConfig;
   /** Hash of the effective config, attached to telemetry so data splits by thresholds. */
   readonly configHash: string;
   /** Default experiment key; it carries the policy version so each version reshuffles arms. */
@@ -23,6 +26,7 @@ export interface HostDefinition {
   readonly name: string;
   readonly levers: readonly LeverSpec[];
   readonly config?: Partial<GovernorConfig>;
+  readonly recovery?: Partial<RecoveryConfig>;
 }
 
 const NAME = /^[a-z][a-z0-9-]{1,40}$/;
@@ -35,10 +39,13 @@ export function defineHost(definition: HostDefinition): VergerHost {
   validateLevers(definition.levers);
   const config: GovernorConfig = { ...DEFAULT_GOVERNOR_CONFIG, ...definition.config };
   validateConfig(config);
+  const recovery: RecoveryConfig = { ...DEFAULT_RECOVERY_CONFIG, ...definition.recovery };
+  validateRecoveryConfig(recovery);
   return Object.freeze({
     name: definition.name,
     levers: Object.freeze([...definition.levers]),
     config: Object.freeze(config),
+    recovery: Object.freeze(recovery),
     configHash: configHash(config),
     experimentKey: `${definition.name}-verger-p${GOVERNOR_POLICY_VERSION}`,
   });

@@ -62,7 +62,9 @@ describe('containment of work the runtime does not control', () => {
     expect(snap.contention).toBe('js');
     expect(snap.optionalConcurrency).toBe(0);
     expect(snap.lastReason).toMatch(/^JS thread saturated \(0\.98 cores/);
-    const lowered = Object.entries(snap.proposedLevels).filter(([, level]) => level > 0).map(([id]) => id);
+    const lowered = Object.entries(snap.proposedLevels)
+      .filter(([, level]) => level > 0)
+      .map(([id]) => id);
     const cpuLevers = new Set(GURUDEVI_LEVERS.filter((l) => l.target === 'cpu').map((l) => l.id));
     expect(lowered.some((id) => cpuLevers.has(id))).toBe(true);
   });
@@ -84,7 +86,9 @@ describe('containment of work the runtime does not control', () => {
     const cpuLevers = new Set(GURUDEVI_LEVERS.filter((l) => l.target === 'cpu').map((l) => l.id));
     expect(state.stack.length).toBeGreaterThan(0);
     expect(state.stack.every((id) => cpuLevers.has(id))).toBe(true);
-    expect(state.stack.length).toBeLessThanOrEqual(DEFAULT_GOVERNOR_CONFIG.maxUnrelievedContentionSteps + 1);
+    expect(state.stack.length).toBeLessThanOrEqual(
+      DEFAULT_GOVERNOR_CONFIG.maxUnrelievedContentionSteps + 1,
+    );
     const snap = snapshotOf(state);
     expect(snap.contentionExhausted).toBe(true);
     expect(snap.lastReason).toMatch(/not relieved by levers, needs a code fix$/);
@@ -106,13 +110,17 @@ describe('containment of work the runtime does not control', () => {
     const targets = ['cpu', 'gpu'] as const;
     const levels: Record<string, number> = {};
     // Lower everything except global motion as far as it goes; then it must be the next pick.
-    for (const lever of GURUDEVI_LEVERS) if (lever.id !== 'global-motion') levels[lever.id] = lever.maxLevel;
+    for (const lever of GURUDEVI_LEVERS)
+      if (lever.id !== 'global-motion') levels[lever.id] = lever.maxLevel;
     expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, targets, true)?.id).toBe('global-motion');
     // With any lower-impact cpu/gpu lever still available, global motion is not chosen.
     for (const lever of GURUDEVI_LEVERS) {
-      if (lever.visualImpact === 'high' || !targets.includes(lever.target as 'cpu' | 'gpu')) continue;
+      if (lever.visualImpact === 'high' || !targets.includes(lever.target as 'cpu' | 'gpu'))
+        continue;
       const open = { ...levels, [lever.id]: 0 };
-      expect(chooseLeverToLower(GURUDEVI_LEVERS, open, targets, true)?.id).not.toBe('global-motion');
+      expect(chooseLeverToLower(GURUDEVI_LEVERS, open, targets, true)?.id).not.toBe(
+        'global-motion',
+      );
     }
     // JS contention targets cpu only, so it can never reach this UI-thread lever.
     expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, ['cpu'], true)).toBeNull();
@@ -142,12 +150,23 @@ describe('containment of work the runtime does not control', () => {
 
 describe('memory pressure on Android 14+, where foreground apps get no trims', () => {
   it('turns polled free memory near the system threshold into the same latch a trim would set', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS, memorySensing: true });
-    state = run(state, [{ type: 'memory-state', at: 1000, availableMb: 900, thresholdMb: 216, lowMemory: false }]);
+    let state = createGovernor({
+      at: 0,
+      capacity: PHONE_90HZ,
+      levers: GURUDEVI_LEVERS,
+      memorySensing: true,
+    });
+    state = run(state, [
+      { type: 'memory-state', at: 1000, availableMb: 900, thresholdMb: 216, lowMemory: false },
+    ]);
     expect(snapshotOf(state).memory).toBe('normal');
-    state = run(state, [{ type: 'memory-state', at: 11_000, availableMb: 400, thresholdMb: 216, lowMemory: false }]);
+    state = run(state, [
+      { type: 'memory-state', at: 11_000, availableMb: 400, thresholdMb: 216, lowMemory: false },
+    ]);
     expect(snapshotOf(state).memory).toBe('trimmed');
-    state = run(state, [{ type: 'memory-state', at: 21_000, availableMb: 210, thresholdMb: 216, lowMemory: true }]);
+    state = run(state, [
+      { type: 'memory-state', at: 21_000, availableMb: 210, thresholdMb: 216, lowMemory: true },
+    ]);
     const snap = snapshotOf(state);
     expect(snap.memory).toBe('low');
     expect(snap.lastReason).toBe('free memory low (critical)');
@@ -158,7 +177,10 @@ describe('memory pressure on Android 14+, where foreground apps get no trims', (
 describe('hardware levers', () => {
   it('caps the refresh rate when idle, warm, or saving power, and releases it on touch', () => {
     let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
-    state = run(state, [{ type: 'interaction', at: 0 }, { type: 'tick', at: 5000 }]);
+    state = run(state, [
+      { type: 'interaction', at: 0 },
+      { type: 'tick', at: 5000 },
+    ]);
     expect(snapshotOf(state).refreshCapHz).toBeNull();
     state = run(state, [{ type: 'tick', at: 10_001 }]);
     expect(snapshotOf(state).refreshCapHz).toBe(60);
@@ -170,7 +192,10 @@ describe('hardware levers', () => {
     state = run(state, [{ type: 'tick', at: 11_600 }]);
     expect(snapshotOf(state).refreshCapHz).toBe(60);
     // Hot is forced through even mid-gesture.
-    state = run(state, [{ type: 'interaction', at: 12_000 }, { type: 'thermal', at: 12_100, status: 'severe', headroom: null }]);
+    state = run(state, [
+      { type: 'interaction', at: 12_000 },
+      { type: 'thermal', at: 12_100, status: 'severe', headroom: null },
+    ]);
     expect(snapshotOf(state).refreshCapHz).toBe(60);
 
     const saver = run(createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS }), [
@@ -182,7 +207,10 @@ describe('hardware levers', () => {
 
   it('never asks a 60 Hz display for a cap it cannot honour', () => {
     let state = createGovernor({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS });
-    state = run(state, [{ type: 'tick', at: 20_000 }, { type: 'power', at: 20_001, saver: true }]);
+    state = run(state, [
+      { type: 'tick', at: 20_000 },
+      { type: 'power', at: 20_001, saver: true },
+    ]);
     expect(snapshotOf(state).refreshCapHz).toBeNull();
   });
 
@@ -191,9 +219,14 @@ describe('hardware levers', () => {
     state = run(state, [{ type: 'interaction', at: 0 }]);
     expect(snapshotOf(state).cpuBoost).toBe(true);
     expect(snapshotOf(run(state, [{ type: 'tick', at: 10_001 }])).cpuBoost).toBe(false);
-    expect(snapshotOf(run(state, [{ type: 'thermal', at: 1, status: 'moderate', headroom: 0.96 }])).cpuBoost).toBe(false);
+    expect(
+      snapshotOf(run(state, [{ type: 'thermal', at: 1, status: 'moderate', headroom: 0.96 }]))
+        .cpuBoost,
+    ).toBe(false);
     expect(snapshotOf(run(state, [{ type: 'power', at: 1, saver: true }])).cpuBoost).toBe(false);
-    expect(snapshotOf(run(state, [{ type: 'app-state', at: 1, state: 'background' }])).cpuBoost).toBe(false);
+    expect(
+      snapshotOf(run(state, [{ type: 'app-state', at: 1, state: 'background' }])).cpuBoost,
+    ).toBe(false);
     const low = run(createGovernor({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS }), [
       { type: 'interaction', at: 0 },
     ]);
@@ -201,8 +234,15 @@ describe('hardware levers', () => {
   });
 
   it('in shadow mode proposes but applies no hardware lever', () => {
-    const events: GovernorEvent[] = [{ type: 'interaction', at: 0 }, ...jsLoad(0, 10, 1.0), { type: 'tick', at: 61_000 }];
-    const { final } = replayGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS, mode: 'shadow' }, events);
+    const events: GovernorEvent[] = [
+      { type: 'interaction', at: 0 },
+      ...jsLoad(0, 10, 1.0),
+      { type: 'tick', at: 61_000 },
+    ];
+    const { final } = replayGovernor(
+      { at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS, mode: 'shadow' },
+      events,
+    );
     expect(final.proposedLevels['refresh-rate']).toBe(1); // idle: proposed, not applied
     expect(final.refreshCapHz).toBeNull();
     expect(final.globalReducedMotion).toBe(false);
@@ -214,7 +254,16 @@ describe('review findings, held as regressions', () => {
   const stressed = (start: number, overrides: Record<string, number> = {}): GovernorEvent => ({
     type: 'frame-window',
     at: start + 500,
-    window: { startMs: start, endMs: start + 500, frames: 30, averageMs: 25, targetMs: 16.667, worstMs: 40, droppedRatio: 0.2, ...overrides },
+    window: {
+      startMs: start,
+      endMs: start + 500,
+      frames: 30,
+      averageMs: 25,
+      targetMs: 16.667,
+      worstMs: 40,
+      droppedRatio: 0.2,
+      ...overrides,
+    },
   });
 
   it('classifies a window of a few very long frames as stress, not quiet', () => {
@@ -242,7 +291,15 @@ describe('review findings, held as regressions', () => {
     const calm = (start: number): GovernorEvent => ({
       type: 'frame-window',
       at: start + 500,
-      window: { startMs: start, endMs: start + 500, frames: 30, averageMs: 6, targetMs: 16.667, worstMs: 9, droppedRatio: 0 },
+      window: {
+        startMs: start,
+        endMs: start + 500,
+        frames: 30,
+        averageMs: 6,
+        targetMs: 16.667,
+        worstMs: 9,
+        droppedRatio: 0,
+      },
     });
     state = run(state, [calm(30_000), calm(30_500)]);
     expect(state.stack.length).toBe(0);
@@ -255,18 +312,31 @@ describe('review findings, held as regressions', () => {
   });
 
   it('keeps a steadily low polled memory reading low beyond the trim latch', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS, memorySensing: true });
-    state = run(state, [{ type: 'memory-state', at: 1000, availableMb: 300, thresholdMb: 216, lowMemory: false }]);
+    let state = createGovernor({
+      at: 0,
+      capacity: PHONE_90HZ,
+      levers: GURUDEVI_LEVERS,
+      memorySensing: true,
+    });
+    state = run(state, [
+      { type: 'memory-state', at: 1000, availableMb: 300, thresholdMb: 216, lowMemory: false },
+    ]);
     expect(snapshotOf(state).memory).toBe('low');
     state = run(state, [{ type: 'tick', at: 60_000 }]);
     expect(snapshotOf(state).memory).toBe('low');
-    state = run(state, [{ type: 'memory-state', at: 61_000, availableMb: 1200, thresholdMb: 216, lowMemory: false }]);
+    state = run(state, [
+      { type: 'memory-state', at: 61_000, availableMb: 1200, thresholdMb: 216, lowMemory: false },
+    ]);
     expect(snapshotOf(state).memory).toBe('normal');
   });
 });
 
 describe('second review findings, held as regressions', () => {
-  const win = (start: number, averageMs: number, extra: Record<string, unknown> = {}): GovernorEvent => ({
+  const win = (
+    start: number,
+    averageMs: number,
+    extra: Record<string, unknown> = {},
+  ): GovernorEvent => ({
     type: 'frame-window',
     at: start + 500,
     window: {
@@ -301,7 +371,9 @@ describe('second review findings, held as regressions', () => {
   });
 
   it('answers UI-bound jank with the refresh cap when that is the lever the build applies', () => {
-    const applied = GURUDEVI_LEVERS.filter((l) => l.id === 'refresh-rate' || l.id === 'global-motion');
+    const applied = GURUDEVI_LEVERS.filter(
+      (l) => l.id === 'refresh-rate' || l.id === 'global-motion',
+    );
     let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: applied });
     const stages = { uiMs: 20, renderMs: 3, gpuMs: 2, delayMs: 0 };
     state = run(state, [win(0, 25, { stages }), win(500, 25, { stages })]);
@@ -310,7 +382,8 @@ describe('second review findings, held as regressions', () => {
 
   it('accumulates freeze-type jank across the empty slot a long frame leaves', () => {
     let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
-    const freeze = (start: number) => win(start, 1000, { frames: 1, worstMs: 1000, droppedRatio: 0.98 });
+    const freeze = (start: number) =>
+      win(start, 1000, { frames: 1, worstMs: 1000, droppedRatio: 0.98 });
     state = run(state, [freeze(0)]);
     expect(state.stack.length).toBe(1);
   });
@@ -322,7 +395,9 @@ describe('second review findings, held as regressions', () => {
     const before = state.stack.length;
     for (let i = 0; i < 6; i += 1) {
       const t = 12_000 + i * 1000;
-      state = run(state, [{ type: 'thread-load', at: t, cores: { js: i % 2 ? 0.5 : 1.0 }, processCores: 1 }]);
+      state = run(state, [
+        { type: 'thread-load', at: t, cores: { js: i % 2 ? 0.5 : 1.0 }, processCores: 1 },
+      ]);
     }
     expect(state.stack.length).toBe(before);
   });

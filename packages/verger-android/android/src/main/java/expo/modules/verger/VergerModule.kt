@@ -10,9 +10,11 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class VergerModule : Module() {
   private var sense: VergerSense? = null
 
+  private fun context() = requireNotNull(appContext.reactContext) { "React context is not available" }
+
   private fun sense(): VergerSense {
     sense?.let { return it }
-    val context = requireNotNull(appContext.reactContext) { "React context is not available" }
+    val context = context()
     val emitter = object : SenseEmitter {
       override fun emit(name: String, body: Map<String, Any?>) = sendEvent(name, body)
     }
@@ -20,13 +22,17 @@ class VergerModule : Module() {
   }
 
   override fun definition() = ModuleDefinition {
-    Name("VergerSense")
+    // Must match `requireOptionalNativeModule('Verger')` in index.ts.
+    Name("Verger")
 
     Events(*VergerSense.EVENTS)
 
     // A function, not a constant: Expo caches constants on first read, and capacity read
     // before the first activity resumes would be wrong for the life of the process.
-    Function("readCapacity") { sense().capacity(appContext.currentActivity) }
+    // Facts are read without creating the sensor: judging the last session must not start one.
+    Function("readCapacity") { DeviceFacts.capacity(context()) }
+
+    Function("readExits") { sinceWallMs: Double -> DeviceFacts.exits(context(), sinceWallMs) }
 
     Function("start") { options: Map<String, Any?> ->
       sense().start(parseConfig(options), appContext.currentActivity)

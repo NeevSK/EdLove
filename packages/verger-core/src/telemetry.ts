@@ -1,7 +1,8 @@
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
 import type { ExperimentArm } from './experiment';
 import { classifyFrameWindow, frameRate } from './frames';
-import type { FrameWindow, GovernorConfig, GovernorSnapshot } from './types';
+import { createQualityMeter, type QualityMeter } from './quality';
+import type { FrameWindow, GovernorConfig, GovernorSnapshot, LeverSpec } from './types';
 
 export type TelemetryValue = string | number | boolean;
 
@@ -32,6 +33,8 @@ export interface GovernorTelemetryOptions {
     readonly missedVsyncs: number;
     readonly costMs: number;
   };
+  /** The levers in play, so summaries report the quality given up beside the performance gained. */
+  readonly levers?: readonly LeverSpec[];
   /** Separate budget for periodic summaries, so state churn cannot starve them. */
   readonly maxSummaries?: number;
   /** Hard cap per process, so a flapping signal cannot flood the network. */
@@ -51,6 +54,8 @@ export interface GovernorTelemetry {
   onLongTask(at: number, durationMs: number): void;
   /** Emits the pending summary, if any, e.g. on background. */
   flush(at: number): void;
+  /** A one-off event (launch, recovery, flight record), under the same event budget. */
+  event(name: string, attributes: Readonly<Record<string, TelemetryValue>>): void;
   readonly emitted: number;
 }
 
@@ -88,7 +93,7 @@ const emptySummary = (at: number): Summary => ({
  * Bumped whenever a decision rule or default changes, so field data can be split by the policy
  * that produced it (deterministic, versioned policies: telemetry informs the next version).
  */
-export const GOVERNOR_POLICY_VERSION = 3;
+export const GOVERNOR_POLICY_VERSION = 4;
 
 /** Reasons carry measured numbers; telemetry keeps their shape, not their values. */
 export function reasonCode(reason: string): string {
@@ -115,6 +120,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
   let lastTotals = safeTotals(options.readTotals);
   let previous: GovernorSnapshot | null = null;
   let summary: Summary | null = null;
+  const quality: QualityMeter | null = options.levers ? createQualityMeter(options.levers) : null;
 
   const send = (name: string, attributes: Record<string, TelemetryValue>) => {
     try {
@@ -152,7 +158,10 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
           }
         : null;
     lastTotals = totals;
+    const cost = quality?.take(at);
     send('governor_summary', {
+      // Quality given up (0 = full quality, 1 = every lever at its cheapest), time-weighted.
+      ...(cost ? { quality_cost: round2(cost.applied), proposed_cost: round2(cost.proposed) } : {}),
       ...(delta
         ? {
             all_frames: delta.frames,
@@ -180,7 +189,15 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
     get emitted() {
       return emitted;
     },
+    event(name, attributes) {
+      emit(name, { ...attributes });
+    },
     onSnapshot(snapshot) {
+      try {
+        quality?.onSnapshot(snapshot);
+      } catch {
+        // Measurement must never change behaviour.
+      }
       const prev = previous;
       previous = snapshot;
       if (!prev) {
@@ -259,6 +276,8 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
     flush,
   };
 }
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 function safeTotals(read: GovernorTelemetryOptions['readTotals']) {
   if (!read) return null;

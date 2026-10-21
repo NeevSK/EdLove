@@ -1,11 +1,13 @@
-import type { GovernorConfig, GovernorEvent, RuntimePort } from '@repo/verger-core';
+import type { GovernorConfig, GovernorEvent, RuntimePort, VergerPlatform } from '@repo/verger-core';
 import { NativeModule, requireOptionalNativeModule } from 'expo';
 import {
   type NativeCapacity,
+  type NativeExit,
   type NativeLever,
   type NativeSenseConfig,
   senseConfigFrom,
   toCapacityFacts,
+  toExitRecords,
   toGovernorEvent,
   type VergerAndroidEvents,
 } from './src/mapping';
@@ -14,6 +16,7 @@ export * from './src/mapping';
 
 declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
   readCapacity(): NativeCapacity;
+  readExits(sinceWallMs: number): NativeExit[] | null;
   start(config: NativeSenseConfig): void;
   stop(): void;
   setRefreshCap(hz: number | null): void;
@@ -36,15 +39,33 @@ export function readFrameTotals(): { frames: number; missedVsyncs: number; costM
 }
 
 /**
- * The governor's port onto this device. Without the native module every method is inert and
- * capacity is unknown, so the governor runs on static facts and JS-side signals alone.
+ * Verger's platform on Android. Facts (capacity, exit history) are read-only calls that start
+ * nothing; the port brings up sensing and the hardware levers. Without the native module the
+ * facts are unknown, there is no exit history, and the port is inert, so verger runs on
+ * JS-side signals alone.
  */
+export function createVergerAndroidPlatform(
+  onLever?: (event: NativeLever) => void,
+): VergerPlatform {
+  return {
+    readCapacity: () => toCapacityFacts(native?.readCapacity()),
+    ...(native
+      ? {
+          readExits: (sinceWallMs: number) => toExitRecords(native.readExits(sinceWallMs)),
+          readTotals: readFrameTotals,
+        }
+      : {}),
+    memorySensing: native !== null,
+    createPort: (now) => createVergerAndroidPort(now, onLever),
+  };
+}
+
+/** The live half: native sensors and hardware levers. */
 export function createVergerAndroidPort(
   now: () => number = () => performance.now(),
   onLever?: (event: NativeLever) => void,
 ): RuntimePort {
   return {
-    capacity: toCapacityFacts(native?.readCapacity()),
     start(config: GovernorConfig, onEvent: (event: GovernorEvent) => void) {
       if (!native) return () => {};
       const subscriptions = [

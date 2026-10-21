@@ -1,5 +1,7 @@
 import type {
   CapacityFacts,
+  ExitReason,
+  ExitRecord,
   FrameStages,
   FrameState,
   GovernorConfig,
@@ -70,6 +72,43 @@ export interface NativeCapacity {
   readonly supportsCpuHints?: boolean;
   readonly refreshRatesHz?: readonly number[];
   readonly largeMemoryClassMb?: number;
+  readonly buildFingerprint?: string | null;
+}
+
+/** One entry of `readExits`, as `DeviceFacts.kt` returns it. */
+export interface NativeExit {
+  readonly reason?: string;
+  readonly atWallMs?: number;
+  readonly foreground?: boolean;
+}
+
+const EXIT_REASONS: readonly ExitReason[] = [
+  'crash',
+  'native-crash',
+  'anr',
+  'excessive-resource',
+  'low-memory',
+  'user',
+  'self',
+  'signaled',
+  'other',
+];
+
+/**
+ * Native exit records to verger-core's. Malformed entries are dropped; an unknown reason name
+ * becomes `other` (a newer platform reason is not evidence of a failure).
+ */
+export function toExitRecords(native: readonly NativeExit[] | null | undefined): ExitRecord[] {
+  if (!Array.isArray(native)) return [];
+  const out: ExitRecord[] = [];
+  for (const entry of native) {
+    if (typeof entry?.atWallMs !== 'number' || !Number.isFinite(entry.atWallMs)) continue;
+    const reason = EXIT_REASONS.includes(entry.reason as ExitReason)
+      ? (entry.reason as ExitReason)
+      : 'other';
+    out.push({ reason, atWallMs: entry.atWallMs, foreground: entry.foreground === true });
+  }
+  return out;
 }
 
 export type VergerAndroidEvents = {
@@ -134,6 +173,10 @@ export function toCapacityFacts(native: NativeCapacity | null | undefined): Capa
         )
       : [],
     supportsCpuHints: native?.supportsCpuHints === true,
+    buildFingerprint:
+      typeof native?.buildFingerprint === 'string' && native.buildFingerprint.length > 0
+        ? native.buildFingerprint
+        : null,
   };
 }
 

@@ -10,6 +10,7 @@ export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from 
 export { DEFAULT_GOVERNOR_CONFIG } from './config';
 export {
   createRuntimeController,
+  isValidEvent,
   type RuntimeController,
   type RuntimeControllerOptions,
   type RuntimePort,
@@ -44,7 +45,43 @@ export {
 } from './governor';
 export { defineHost, type VergerHost } from './host';
 export { chooseLeverToLower, relieves, validateLevers } from './levers';
+export {
+  createFlightRecorder,
+  FLIGHT_RECORDER_SIZE,
+  type FlightRecorder,
+  flightLine,
+} from './flightRecorder';
+export { createQualityMeter, type QualityMeter, qualityCost } from './quality';
+export {
+  classifySession,
+  DEFAULT_RECOVERY_CONFIG,
+  type ExitReason,
+  type ExitRecord,
+  foldSession,
+  freshRecord,
+  type LaunchPlan,
+  parseMarker,
+  parseRecord,
+  planLaunch,
+  type RecoveryConfig,
+  type Rung,
+  type RuntimeLevel,
+  type SessionMarker,
+  type SessionOutcome,
+  type Transition,
+  validateRecoveryConfig,
+  type VergerRecord,
+} from './recovery';
 export { replayGovernor } from './replay';
+export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
+export {
+  createVerger,
+  type FrameTotals,
+  type Verger,
+  type VergerOptions,
+  type VergerPlatform,
+  type VergerStore,
+} from './verger';
 export { thermalLevelOf } from './signals';
 export {
   bucketMs,

@@ -25,6 +25,11 @@ export interface CapacityFacts {
   readonly refreshRatesHz: readonly number[];
   /** Android 12+ ADPF performance hint sessions are available. */
   readonly supportsCpuHints: boolean;
+  /**
+   * Identifies the OS build (Android `Build.FINGERPRINT`). Kept on the device only, hashed, to
+   * relearn the profile after a system update. Absent when the platform does not say.
+   */
+  readonly buildFingerprint?: string | null;
 }
 
 /** Threads the native sampler attributes CPU time to (see `ThreadRole` in verger-android). */
@@ -261,6 +266,11 @@ export interface GovernorSnapshot {
   readonly cpuBoost: boolean;
   /** Force reduced motion for every Reanimated animation, including unregistered ones. */
   readonly globalReducedMotion: boolean;
+  /**
+   * Levels the closed loop itself has lowered levers to, before any floor. What the profile
+   * learns from: floors are re-derived every launch, pressure is what this device needed.
+   */
+  readonly pressure: Readonly<Record<string, number>>;
   /** The last indexer action and why. */
   readonly lastAction: IndexerAction;
   readonly lastReason: string;

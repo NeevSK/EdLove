@@ -42,7 +42,8 @@ function fakeTime() {
     const end = now + ms;
     for (;;) {
       let due: [number, { at: number; fn: () => void }] | null = null;
-      for (const entry of timers) if (entry[1].at <= end && (!due || entry[1].at < due[1].at)) due = entry;
+      for (const entry of timers)
+        if (entry[1].at <= end && (!due || entry[1].at < due[1].at)) due = entry;
       if (!due) break;
       timers.delete(due[0]);
       now = due[1].at;
@@ -56,7 +57,7 @@ function fakeTime() {
 function fakePort(capacity = CAPACITY) {
   const calls: string[] = [];
   let emit: ((event: GovernorEvent) => void) | null = null;
-  const port: RuntimePort = {
+  const port: RuntimePort & { readonly capacity: CapacityFacts } = {
     capacity,
     start(_config, onEvent) {
       calls.push('start');
@@ -86,6 +87,7 @@ describe('runtime controller', () => {
     const { port, emit } = fakePort();
     const controller = createRuntimeController({
       port,
+      capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
       config: DEFAULT_GOVERNOR_CONFIG,
@@ -96,7 +98,12 @@ describe('runtime controller', () => {
     controller.start();
     controller.dispatch({ type: 'interaction', at: 0 });
     time.advance(1000);
-    emit({ type: 'thread-load', at: time.now(), cores: { js: 0.97, main: 0.2 }, processCores: 1.2 });
+    emit({
+      type: 'thread-load',
+      at: time.now(),
+      cores: { js: 0.97, main: 0.2 },
+      processCores: 1.2,
+    });
     expect(controller.getSnapshot().contention).toBe('none');
     time.advance(1900);
     expect(controller.getSnapshot().contention).toBe('none');
@@ -111,6 +118,7 @@ describe('runtime controller', () => {
     const { port, calls } = fakePort();
     const controller = createRuntimeController({
       port,
+      capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
       config: DEFAULT_GOVERNOR_CONFIG,
@@ -135,6 +143,7 @@ describe('runtime controller', () => {
     const { port, calls } = fakePort();
     const controller = createRuntimeController({
       port,
+      capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'shadow',
       config: DEFAULT_GOVERNOR_CONFIG,
@@ -172,6 +181,7 @@ describe('runtime controller', () => {
     });
     const controller = createRuntimeController({
       port: broken,
+      capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
       config: DEFAULT_GOVERNOR_CONFIG,
@@ -195,6 +205,7 @@ describe('runtime controller', () => {
     const events: Array<[string, Record<string, unknown>]> = [];
     const controller = createRuntimeController({
       port,
+      capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
       config: DEFAULT_GOVERNOR_CONFIG,
@@ -220,6 +231,7 @@ describe('runtime controller', () => {
     const { port, calls } = fakePort();
     const controller = createRuntimeController({
       port,
+      capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
       config: DEFAULT_GOVERNOR_CONFIG,
