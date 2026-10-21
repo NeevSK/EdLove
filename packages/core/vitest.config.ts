@@ -5,6 +5,8 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
     alias: {
+      // Workspace source, not the declaration build that tsconfig paths point at.
+      '@repo/verger-core': path.resolve(import.meta.dirname, '../verger-core/src/index.ts'),
       'expo-constants': path.resolve(import.meta.dirname, 'src/test-shims/expo-constants.ts'),
       'react-native': path.resolve(import.meta.dirname, 'src/test-shims/react-native.ts'),
     },

@@ -481,6 +481,7 @@
     "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
     "@repo/schema": "workspace:*",
+    "@repo/verger-core": "workspace:*",
     "@sentry/browser": "10.64.0",
     "@supabase/postgrest-js": "2.118.0",
     "@supabase/supabase-js": "2.118.0",

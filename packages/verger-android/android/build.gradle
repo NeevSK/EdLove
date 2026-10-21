@@ -1,0 +1,30 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.verger'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.verger"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+  testOptions {
+    unitTests.all {
+      // The golden vectors live with the TypeScript reference in packages/verger-core.
+      systemProperty 'verger.fixtures',
+        file('../../verger-core/src/__fixtures__').absolutePath
+    }
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.json:json:20240303'
+}

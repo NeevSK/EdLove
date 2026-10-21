@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import a52 from './__fixtures__/a52-self-idle.json';
+// The A52 trace is verger's golden fixture; Gurudevi's tests replay it through Gurudevi's levers.
+import a52 from '../../../verger-core/src/__fixtures__/a52-self-idle.json';
+import type { CapacityFacts, FrameWindow } from './index';
 import {
   aggregateFrames,
   assignExperiment,
@@ -8,15 +10,14 @@ import {
   createGovernorTelemetry,
   DEFAULT_GOVERNOR_CONFIG,
   frameRate,
-  GURUDEVI_LEVERS,
   type GovernorEvent,
+  GURUDEVI_LEVERS,
   type LeverSpec,
   reduceGovernor,
   replayGovernor,
   snapshotOf,
   thermalLevelOf,
 } from './index';
-import type { CapacityFacts, FrameWindow } from './types';
 
 const A52: CapacityFacts = {
   totalMemoryBytes: 7_668_940 * 1024,
@@ -32,9 +33,19 @@ const A52: CapacityFacts = {
   supportsCpuHints: true,
 };
 
-const LOW_END: CapacityFacts = { ...A52, totalMemoryBytes: 2 * 1024 ** 3, cpuCores: 4, sdkInt: 30, supportsRuntimeShader: false };
+const LOW_END: CapacityFacts = {
+  ...A52,
+  totalMemoryBytes: 2 * 1024 ** 3,
+  cpuCores: 4,
+  sdkInt: 30,
+  supportsRuntimeShader: false,
+};
 
-const window = (start: number, averageMs: number, overrides: Partial<FrameWindow> = {}): FrameWindow => ({
+const window = (
+  start: number,
+  averageMs: number,
+  overrides: Partial<FrameWindow> = {},
+): FrameWindow => ({
   startMs: start,
   endMs: start + 500,
   frames: 30,
@@ -47,7 +58,8 @@ const window = (start: number, averageMs: number, overrides: Partial<FrameWindow
 
 const frames = (start: number, end: number, averageMs: number): GovernorEvent[] => {
   const out: GovernorEvent[] = [];
-  for (let t = start; t < end; t += 500) out.push({ type: 'frame-window', at: t + 500, window: window(t, averageMs) });
+  for (let t = start; t < end; t += 500)
+    out.push({ type: 'frame-window', at: t + 500, window: window(t, averageMs) });
   return out;
 };
 
@@ -64,14 +76,29 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
 
   it('classifies the burst: one spike window, then near-budget frames with occasional misses', () => {
     const states = windows.map((w) => classifyFrameWindow(w, DEFAULT_GOVERNOR_CONFIG));
-    expect(states).toEqual(['stressed', 'neutral', 'neutral', 'neutral', 'neutral', 'quiet', 'calm']);
+    expect(states).toEqual([
+      'stressed',
+      'neutral',
+      'neutral',
+      'neutral',
+      'neutral',
+      'quiet',
+      'calm',
+    ]);
     expect(windows[0]?.worstMs).toBeCloseTo(a52.summary.max, 1);
   });
 
   it('puts ambient levers to sleep on the same stream once the screen is untouched for 10 s', () => {
-    const events: GovernorEvent[] = windows.map((w) => ({ type: 'frame-window', at: w.endMs, window: w }));
+    const events: GovernorEvent[] = windows.map((w) => ({
+      type: 'frame-window',
+      at: w.endMs,
+      window: w,
+    }));
     events.push({ type: 'tick', at: 10_000 });
-    const { final } = replayGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS, memorySensing: true }, events);
+    const { final } = replayGovernor(
+      { at: 0, capacity: A52, levers: GURUDEVI_LEVERS, memorySensing: true },
+      events,
+    );
     expect(final.interactionIdle).toBe(true);
     expect(final.levels['ambient-motion']).toBe(2);
     expect(final.levels['loading-shimmer']).toBe(1);
@@ -82,7 +109,10 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
 
   it('in shadow mode decides the same but applies the open-loop baseline', () => {
     const events: GovernorEvent[] = [{ type: 'tick', at: 12_000 }];
-    const { final } = replayGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS, mode: 'shadow' }, events);
+    const { final } = replayGovernor(
+      { at: 0, capacity: A52, levers: GURUDEVI_LEVERS, mode: 'shadow' },
+      events,
+    );
     expect(final.proposedLevels['ambient-motion']).toBe(2);
     expect(final.levels['ambient-motion']).toBe(0);
   });
@@ -171,7 +201,12 @@ describe('thermal and memory pressure', () => {
   });
 
   it('relieves memory levers first on a trim and latches for 30 s', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS, memorySensing: true });
+    let state = createGovernor({
+      at: 0,
+      capacity: A52,
+      levers: GURUDEVI_LEVERS,
+      memorySensing: true,
+    });
     expect(snapshotOf(state).memory).toBe('normal');
     state = reduceGovernor(state, { type: 'memory-trim', at: 100, severity: 'moderate' });
     expect(state.stack).toEqual(['image-cache']);
@@ -187,7 +222,12 @@ describe('thermal and memory pressure', () => {
 describe('floors: users, the system and the hardware come first', () => {
   it('honours reduce motion and never raises a motion lever above its floor', () => {
     let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'preferences', at: 1, reduceMotion: true, fidelity: 'auto' });
+    state = reduceGovernor(state, {
+      type: 'preferences',
+      at: 1,
+      reduceMotion: true,
+      fidelity: 'auto',
+    });
     const snap = snapshotOf(state);
     expect(snap.levels.transitions).toBe(2);
     expect(snap.levels['ambient-motion']).toBe(2);
@@ -205,7 +245,12 @@ describe('floors: users, the system and the hardware come first', () => {
 
   it('lets a user who asks for high fidelity keep effects on a low-memory phone, until pressure says otherwise', () => {
     let state = createGovernor({ at: 0, capacity: LOW_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'preferences', at: 1, reduceMotion: false, fidelity: 'high' });
+    state = reduceGovernor(state, {
+      type: 'preferences',
+      at: 1,
+      reduceMotion: false,
+      fidelity: 'high',
+    });
     expect(snapshotOf(state).levels.blur).toBe(0);
     expect(snapshotOf(state).levels['glass-material']).toBe(1);
   });
@@ -239,7 +284,9 @@ describe('determinism and validation', () => {
   it('rejects malformed lever catalogues', () => {
     const bad: LeverSpec = { ...GURUDEVI_LEVERS[0]!, levels: ['one'] };
     expect(() => createGovernor({ at: 0, levers: [bad] })).toThrow(/must describe/);
-    expect(() => createGovernor({ at: 0, levers: [GURUDEVI_LEVERS[0]!, GURUDEVI_LEVERS[0]!] })).toThrow(/Duplicate/);
+    expect(() =>
+      createGovernor({ at: 0, levers: [GURUDEVI_LEVERS[0]!, GURUDEVI_LEVERS[0]!] }),
+    ).toThrow(/Duplicate/);
   });
 });
 
@@ -247,8 +294,18 @@ describe('controlled experiment', () => {
   it('assigns installs deterministically and close to the requested split', () => {
     let treatment = 0;
     for (let i = 0; i < 10_000; i += 1) {
-      const a = assignExperiment({ installId: `install-${i}`, key: 'governor-v1', treatmentPercent: 50, killSwitch: false });
-      const b = assignExperiment({ installId: `install-${i}`, key: 'governor-v1', treatmentPercent: 50, killSwitch: false });
+      const a = assignExperiment({
+        installId: `install-${i}`,
+        key: 'governor-v1',
+        treatmentPercent: 50,
+        killSwitch: false,
+      });
+      const b = assignExperiment({
+        installId: `install-${i}`,
+        key: 'governor-v1',
+        treatmentPercent: 50,
+        killSwitch: false,
+      });
       expect(a).toEqual(b);
       if (a.arm === 'treatment') treatment += 1;
     }
@@ -257,8 +314,18 @@ describe('controlled experiment', () => {
   });
 
   it('turns the runtime off entirely when the kill switch is on', () => {
-    const a = assignExperiment({ installId: 'x', key: 'governor-v1', treatmentPercent: 100, killSwitch: true });
-    expect(a).toMatchObject({ arm: 'control', mode: 'shadow', runtime: 'off', reason: 'kill-switch' });
+    const a = assignExperiment({
+      installId: 'x',
+      key: 'governor-v1',
+      treatmentPercent: 100,
+      killSwitch: true,
+    });
+    expect(a).toMatchObject({
+      arm: 'control',
+      mode: 'shadow',
+      runtime: 'off',
+      reason: 'kill-switch',
+    });
   });
 });
 
@@ -282,14 +349,22 @@ describe('telemetry', () => {
     telemetry.onSnapshot(snapshotOf(state));
     expect(events.length).toBe(4);
     expect(telemetry.emitted).toBe(4);
-    for (let i = 0; i < 20; i += 1) telemetry.onSnapshot(snapshotOf(reduceGovernor(state, { type: 'interaction', at: 12_000 + i })));
+    for (let i = 0; i < 20; i += 1)
+      telemetry.onSnapshot(
+        snapshotOf(reduceGovernor(state, { type: 'interaction', at: 12_000 + i })),
+      );
     expect(events.length).toBe(4);
     expect(events[0]?.[1]).toMatchObject({ experiment: 'governor-v1', arm: 'treatment' });
   });
 
   it('summarises idle drawing from the A52 trace without per-frame events', () => {
     const names: string[] = [];
-    const telemetry = createGovernorTelemetry({ sink: (name) => names.push(name), arm: 'control', experimentKey: 'governor-v1', summaryEveryMs: 5000 });
+    const telemetry = createGovernorTelemetry({
+      sink: (name) => names.push(name),
+      arm: 'control',
+      experimentKey: 'governor-v1',
+      summaryEveryMs: 5000,
+    });
     const windows = aggregateFrames(a52.frames, 500, a52.vsyncAppMedianGapMs);
     for (const w of windows) telemetry.onFrameWindow(w, true);
     telemetry.flush(6000);

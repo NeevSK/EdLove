@@ -1,0 +1,10 @@
+{
+  "extends": "../typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "paths": { "@repo/verger-core": ["../verger-core/src/index.ts"] }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

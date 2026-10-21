@@ -12,6 +12,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@repo/core/*": ["./src/*"],
+      "@repo/verger-core": ["../verger-core/dist/index.d.ts"],
       "@repo/ui": ["../ui/dist/index.d.ts"],
       "@repo/ui/*": ["../ui/dist/*"]
     },

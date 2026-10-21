@@ -60,7 +60,7 @@ contract; they become views computed from the allocator's levels.
 
 ### D3. Native sensing is a Kotlin Expo module, not Nitro
 
-`apps/gurudevi-mobile/modules/runtime-sense` measures and never decides.
+`packages/verger-android` (formerly `apps/gurudevi-mobile/modules/runtime-sense`) measures and never decides.
 
 - Decisions run on 500 ms windows and on state changes, so synchronous JSI
   access buys nothing. The cost that matters is how often anything crosses,
@@ -154,6 +154,26 @@ relieve several resources (the refresh cap relieves GPU, UI-thread CPU and
 energy), but JS-thread contention counts only levers whose primary resource is
 CPU work. A "not relievable" verdict holds until contention has been absent for
 five saturation periods.
+
+### D11. Verger: decoupled from any host
+
+The runtime is named verger (the keeper of a sanctuary, who keeps it in order so the people
+inside need not think about it) and lives in three host-neutral packages:
+
+| Package | Holds | Depends on |
+| --- | --- | --- |
+| `@repo/verger-core` | reducer, runtime loop, telemetry, replay, experiments, host definition, built-in levers | nothing |
+| `@repo/verger-android` | Kotlin Expo module: sensing, frame estimator, CPU attribution, hardware levers; the Android `RuntimePort` | verger-core |
+| `@repo/verger-react` | provider, hooks, presence, long tasks, global reduced motion | verger-core; react, react-native, reanimated as peers |
+
+A host describes itself as data with `defineHost({ name, levers, config })`. Each lever declares
+its own rules (`requires` a capability, `whenHidden`, `whenIdle`, `whenWarm`, an `actuator`); the
+reducer applies rules and never names a lever. A test fails if any host name appears in the
+three packages, or if the reducer names its own built-in levers. Gurudevi is the first host:
+`@repo/core/governor` holds its levers and its host definitions and re-exports verger, so
+existing imports keep working; the mobile build mounts `GURUDEVI_MOBILE_HOST`, which governs
+only the levers something applies today. Publishing outside the monorepo waits for device
+evidence.
 
 ## 3. Consequences
 

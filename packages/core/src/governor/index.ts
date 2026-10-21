@@ -1,48 +1,8 @@
-export { DEFAULT_GOVERNOR_CONFIG } from './config';
-export {
-  assignExperiment,
-  type ExperimentArm,
-  type ExperimentAssignment,
-  fnv1a32,
-} from './experiment';
-export {
-  aggregateFrames,
-  classifyFrameWindow,
-  type FrameSample,
-  bottleneckTargets,
-  frameBottleneck,
-  frameRate,
-  shouldForwardWindow,
-} from './frames';
-export {
-  type CreateGovernorOptions,
-  createGovernor,
-  type GovernorState,
-  nextTimedChangeAt,
-  reduceGovernor,
-  snapshotOf,
-  staticFloors,
-  UNKNOWN_CAPACITY,
-} from './governor';
-export { chooseLeverToLower, GURUDEVI_LEVERS, relieves, validateLevers } from './levers';
-export { replayGovernor } from './replay';
-export { thermalLevelOf } from './signals';
-export {
-  bucketMs,
-  configHash,
-  createGovernorTelemetry,
-  GOVERNOR_POLICY_VERSION,
-  type GovernorTelemetry,
-  type GovernorTelemetryOptions,
-  type GovernorTelemetrySink,
-  reasonCode,
-  type TelemetryValue,
-} from './telemetry';
-export type * from './types';
-export {
-  createRuntimeController,
-  type RuntimeController,
-  type RuntimeControllerOptions,
-  type RuntimePort,
-  type RuntimeScheduler,
-} from './controller';
+/**
+ * Gurudevi as a verger host. Verger (`@repo/verger-core`) is the host-neutral supervisor; this
+ * module is Gurudevi's half: its levers, with their declared rules, and its host definition.
+ * Everything verger exports is re-exported so existing imports keep working.
+ */
+export * from '@repo/verger-core';
+export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
+export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST } from './host';
