@@ -1,7 +1,9 @@
 import { replayAssignmentSubmission } from '@repo/core/api/assignmentCommands';
+import { attendanceAPI } from '@repo/core/api/attendance';
 import { api } from '@repo/core/api/client';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { resolveGradeClassFromClassroom } from '@repo/core/logic/classroomResolver';
 
 /**
  * Mutation Registry
@@ -169,6 +171,30 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
       vars.status,
       vars.date,
     );
+  },
+  batchRecordAttendance: async (vars) => {
+    // Queued by AttendanceScreen when the register is saved offline.
+    // Shape: { gradeClassId?, classroomId?, schoolId?, date, students: StudentAttendance[] }.
+    if (Array.isArray(vars) || !vars?.date || !Array.isArray(vars?.students)) {
+      throw new Error('Legacy batchRecordAttendance item has no class or date; cannot replay.');
+    }
+    let gradeClassId: string | undefined = vars.gradeClassId;
+    if (!gradeClassId && vars.classroomId) {
+      gradeClassId = await resolveGradeClassFromClassroom(vars.classroomId, vars.schoolId);
+    }
+    if (!gradeClassId) {
+      throw new Error('Queued attendance has no grade class to write to.');
+    }
+    const rows = (vars.students as Array<{ student_id?: string | null; status: string }>)
+      .filter((student) => Boolean(student.student_id))
+      .map((student) => ({
+        gradeClassId: gradeClassId as string,
+        studentId: student.student_id as string,
+        status: student.status,
+        date: vars.date as string,
+      }));
+    if (rows.length === 0) return [];
+    return attendanceAPI.batchRecord(rows as any);
   },
   updateStudent: async (vars) => {
     return api.students.update(vars.id, vars.updates);
