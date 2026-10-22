@@ -1775,6 +1775,11 @@ export class SchemaType implements SchemaDef {
           type: 'String',
           optional: true,
         },
+        kind: {
+          name: 'kind',
+          type: 'String',
+          optional: true,
+        },
         school: {
           name: 'school',
           type: 'School',
@@ -1900,6 +1905,12 @@ export class SchemaType implements SchemaDef {
         legacy_records: {
           name: 'legacy_records',
           type: 'ClassroomLegacyRecord',
+          array: true,
+          relation: { opposite: 'classroom' },
+        },
+        grade_class_links: {
+          name: 'grade_class_links',
+          type: 'ClassroomGradeClass',
           array: true,
           relation: { opposite: 'classroom' },
         },
@@ -14340,6 +14351,12 @@ export class SchemaType implements SchemaDef {
           array: true,
           relation: { opposite: 'grade_class' },
         },
+        classroom_links: {
+          name: 'classroom_links',
+          type: 'ClassroomGradeClass',
+          array: true,
+          relation: { opposite: 'grade_class' },
+        },
       },
       attributes: [
         {
@@ -14488,6 +14505,287 @@ export class SchemaType implements SchemaDef {
           academic_cycle_id: { type: 'String' },
           grade_level_id: { type: 'String' },
           name: { type: 'String' },
+        },
+      },
+    },
+    ClassroomGradeClass: {
+      name: 'ClassroomGradeClass',
+      fields: {
+        id: {
+          name: 'id',
+          type: 'String',
+          id: true,
+          attributes: [
+            { name: '@id' },
+            { name: '@default', args: [{ name: 'value', value: ExpressionUtils.call('uuid') }] },
+          ] as readonly AttributeApplication[],
+          default: ExpressionUtils.call('uuid') as FieldDefault,
+        },
+        classroom_id: {
+          name: 'classroom_id',
+          type: 'String',
+          foreignKeyFor: ['classroom'] as readonly string[],
+        },
+        grade_class_id: {
+          name: 'grade_class_id',
+          type: 'String',
+          foreignKeyFor: ['grade_class'] as readonly string[],
+        },
+        created_by: {
+          name: 'created_by',
+          type: 'String',
+          optional: true,
+        },
+        created_at: {
+          name: 'created_at',
+          type: 'DateTime',
+          attributes: [
+            { name: '@default', args: [{ name: 'value', value: ExpressionUtils.call('now') }] },
+          ] as readonly AttributeApplication[],
+          default: ExpressionUtils.call('now') as FieldDefault,
+        },
+        classroom: {
+          name: 'classroom',
+          type: 'Classroom',
+          attributes: [
+            {
+              name: '@relation',
+              args: [
+                {
+                  name: 'fields',
+                  value: ExpressionUtils.array('String', [ExpressionUtils.field('classroom_id')]),
+                },
+                {
+                  name: 'references',
+                  value: ExpressionUtils.array('String', [ExpressionUtils.field('id')]),
+                },
+                { name: 'onDelete', value: ExpressionUtils.literal('Cascade') },
+              ],
+            },
+          ] as readonly AttributeApplication[],
+          relation: {
+            opposite: 'grade_class_links',
+            fields: ['classroom_id'],
+            references: ['id'],
+            onDelete: 'Cascade',
+          },
+        },
+        grade_class: {
+          name: 'grade_class',
+          type: 'GradeClass',
+          attributes: [
+            {
+              name: '@relation',
+              args: [
+                {
+                  name: 'fields',
+                  value: ExpressionUtils.array('String', [ExpressionUtils.field('grade_class_id')]),
+                },
+                {
+                  name: 'references',
+                  value: ExpressionUtils.array('String', [ExpressionUtils.field('id')]),
+                },
+                { name: 'onDelete', value: ExpressionUtils.literal('Cascade') },
+              ],
+            },
+          ] as readonly AttributeApplication[],
+          relation: {
+            opposite: 'classroom_links',
+            fields: ['grade_class_id'],
+            references: ['id'],
+            onDelete: 'Cascade',
+          },
+        },
+      },
+      attributes: [
+        {
+          name: '@@unique',
+          args: [
+            {
+              name: 'fields',
+              value: ExpressionUtils.array('String', [
+                ExpressionUtils.field('classroom_id'),
+                ExpressionUtils.field('grade_class_id'),
+              ]),
+            },
+          ],
+        },
+        {
+          name: '@@index',
+          args: [
+            {
+              name: 'fields',
+              value: ExpressionUtils.array('String', [ExpressionUtils.field('grade_class_id')]),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('read') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                    '?',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('entity_id'),
+                      '==',
+                      ExpressionUtils.member(ExpressionUtils._this(), ['classroom', 'school_id']),
+                    ),
+                  ),
+                  '||',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                    '?',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('capacity'),
+                        '==',
+                        ExpressionUtils.literal('admin'),
+                      ),
+                      '&&',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('entity_type'),
+                        '==',
+                        ExpressionUtils.literal('PLATFORM'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('create,delete') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                    '?',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('entity_id'),
+                        '==',
+                        ExpressionUtils.member(ExpressionUtils._this(), [
+                          'grade_class',
+                          'school_id',
+                        ]),
+                      ),
+                      '&&',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.binary(
+                          ExpressionUtils.binary(
+                            ExpressionUtils.field('capacity'),
+                            '==',
+                            ExpressionUtils.literal('principal'),
+                          ),
+                          '||',
+                          ExpressionUtils.binary(
+                            ExpressionUtils.field('capacity'),
+                            '==',
+                            ExpressionUtils.literal('section_head'),
+                          ),
+                        ),
+                        '||',
+                        ExpressionUtils.binary(
+                          ExpressionUtils.field('capacity'),
+                          '==',
+                          ExpressionUtils.literal('grade_head'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  '||',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                    '?',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('capacity'),
+                        '==',
+                        ExpressionUtils.literal('admin'),
+                      ),
+                      '&&',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('entity_type'),
+                        '==',
+                        ExpressionUtils.literal('PLATFORM'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('create,delete') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.call('auth'),
+                    '!=',
+                    ExpressionUtils._null(),
+                  ),
+                  '&&',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils._this(), ['classroom', 'teacher_id']),
+                    '==',
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                  ),
+                ),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils._this(), [
+                    'grade_class',
+                    'teacher_assignments',
+                  ]),
+                  '?',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('teacher_id'),
+                      '==',
+                      ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                    ),
+                    '&&',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('status'),
+                      '==',
+                      ExpressionUtils.literal('active'),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('classroom_grade_classes') }],
+        },
+      ] as readonly AttributeApplication[],
+      idFields: ['id'],
+      uniqueFields: {
+        id: { type: 'String' },
+        classroom_id_grade_class_id: {
+          classroom_id: { type: 'String' },
+          grade_class_id: { type: 'String' },
         },
       },
     },

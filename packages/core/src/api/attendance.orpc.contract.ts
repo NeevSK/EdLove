@@ -57,10 +57,20 @@ const gradeClassSummary = z.object({
   role: z.string().nullable(),
 });
 
+const teachingGroupKind = z.enum(['homeroom', 'subject', 'cohort']);
+
+const classroomLink = z.object({
+  grade_class_id: z.uuid(),
+  name: z.string(),
+  academic_cycle_id: z.uuid(),
+});
+
 const attendanceRead = { policy: { action: 'read', subject: 'DailyAttendance' } } as const;
 // Listing the caller's own grade classes is school-scoped; the handler filters to the caller.
 const ownSchoolRead = { policy: { action: 'read', subject: 'School' } } as const;
 const attendanceWrite = { policy: { action: 'create', subject: 'DailyAttendance' } } as const;
+const classroomRead = { policy: { action: 'read', subject: 'Classroom' } } as const;
+const classroomUpdate = { policy: { action: 'update', subject: 'Classroom' } } as const;
 
 export const attendanceORPCContract = {
   getByClassroom: {
@@ -182,6 +192,50 @@ export const attendanceORPCContract = {
       },
     },
     metadata: attendanceRead,
+  },
+  /**
+   * #149 teaching-group links: the grade classes a (legacy) classroom explicitly
+   * teaches. Clients use these before any name matching, and show the class picker when
+   * there is no single answer.
+   */
+  getClassroomLinks: {
+    method: 'get',
+    path: '/attendance/classroom-links',
+    request: { query: z.strictObject({ classroomId: z.uuid() }) },
+    responses: {
+      200: {
+        schema: z.array(classroomLink),
+        description: 'Active grade classes linked to the classroom',
+      },
+    },
+    metadata: classroomRead,
+  },
+  /**
+   * Link a classroom to a grade class of the same school. An unclassified classroom must
+   * be given a `kind` first (here or already set); a homeroom links to exactly one
+   * grade class. Idempotent.
+   */
+  linkClassroom: {
+    method: 'post',
+    path: '/attendance/classroom-links',
+    request: {
+      body: z.strictObject({
+        classroomId: z.uuid(),
+        gradeClassId: z.uuid(),
+        kind: teachingGroupKind.optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.object({
+          classroom_id: z.uuid(),
+          grade_class_id: z.uuid(),
+          kind: teachingGroupKind,
+        }),
+        description: 'The link (created or already present)',
+      },
+    },
+    metadata: classroomUpdate,
   },
   getMyGradeClasses: {
     method: 'get',

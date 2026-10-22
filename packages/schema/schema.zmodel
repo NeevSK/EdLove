@@ -255,6 +255,8 @@ model Classroom {
   deleted_at       DateTime?
   deleted_by       String?
   deletion_reason  String?
+  // #149 teaching group kind: homeroom | subject | cohort; null = not yet classified.
+  kind             String?
 
   school           School?    @relation(fields: [school_id], references: [id])
   teacher          User?      @relation("TeacherClassrooms", fields: [teacher_id], references: [id])
@@ -270,6 +272,7 @@ model Classroom {
   principal_notes  PrincipalNote[] @relation("PrincipalNotesContextClassroom")
   join_requests    ClassroomJoinRequest[]
   legacy_records   ClassroomLegacyRecord[]
+  grade_class_links ClassroomGradeClass[]
 
   // Permissions
   // Official/Cloud Access: Teachers, School Admins, and Platform Admins
@@ -1732,12 +1735,37 @@ model GradeClass {
   attendance_sessions AttendanceSession[]
   teacher_attendance_sessions TeacherAttendanceSession[]
   grade_marks GradeMark[]
+  classroom_links ClassroomGradeClass[]
 
   @@unique([academic_cycle_id, grade_level_id, name])
   @@index([school_id, academic_cycle_id, status])
   @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('all', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_classes")
+}
+
+/// #149 C3: explicit link from a teaching group (classroom) to the grade class(es) it
+/// teaches. Attendance/enrollment use this before any name matching.
+model ClassroomGradeClass {
+  id             String   @id @default(uuid())
+  classroom_id   String
+  grade_class_id String
+  created_by     String?
+  created_at     DateTime @default(now())
+
+  classroom   Classroom  @relation(fields: [classroom_id], references: [id], onDelete: Cascade)
+  grade_class GradeClass @relation(fields: [grade_class_id], references: [id], onDelete: Cascade)
+
+  @@unique([classroom_id, grade_class_id])
+  @@index([grade_class_id])
+  // Anyone in the classroom's school can see which grade classes it teaches.
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.classroom.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // School leaders link and unlink. A classroom's own teacher may link it to a grade
+  // class they hold an active assignment for. Both must be in the same school
+  // (checked in the handler; the rule below pins the grade class to a leader's school).
+  @@allow('create,delete', auth() != null && (auth().bonds?[entity_id == this.grade_class.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('create,delete', auth() != null && this.classroom.teacher_id == auth().id && this.grade_class.teacher_assignments?[teacher_id == auth().id && status == 'active'])
+  @@map("classroom_grade_classes")
 }
 
 model GradeClassSubject {

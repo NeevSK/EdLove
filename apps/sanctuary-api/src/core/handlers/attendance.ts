@@ -82,9 +82,35 @@ export async function resolveGradeClassRecord(
 }
 
 /**
+ * Active grade classes a classroom explicitly teaches (#149 classroom_grade_classes),
+ * limited to the given school. Empty when the classroom has no links.
+ */
+export async function loadClassroomLinks(
+  db: any,
+  classroomId: string,
+  schoolId?: string | null,
+): Promise<Array<GradeClassRecord & { name: string }>> {
+  const links = await db.classroomGradeClass.findMany({
+    where: { classroom_id: classroomId },
+    select: { grade_class_id: true },
+  });
+  const ids = [...new Set<string>((links ?? []).map((link: any) => String(link.grade_class_id)))];
+  if (ids.length === 0) return [];
+  const rows = await db.gradeClass.findMany({
+    where: { id: { in: ids }, status: 'active', ...(schoolId && { school_id: schoolId }) },
+    select: { ...gradeClassSelect, name: true },
+  });
+  return rows ?? [];
+}
+
+/**
  * Bridge used only when a legacy classroom (not attendance) needs its grade class, e.g.
- * enrolling a shadow learner added to classroom "5A". Matches by name within the same
- * school and only when exactly one active grade class has that name; never guesses.
+ * enrolling a shadow learner added to classroom "5A". Never guesses:
+ * 1. the id is itself a grade class;
+ * 2. the classroom's explicit link (#149), when it has exactly one active linked class;
+ *    a classroom with links but no single answer resolves to nothing;
+ * 3. only for classrooms with no links at all: the one active grade class in the same
+ *    school with the same name (legacy fallback, #149 open question 1).
  */
 export async function resolveGradeClassForLegacyClassroom(
   db: any,
@@ -97,7 +123,19 @@ export async function resolveGradeClassForLegacyClassroom(
     where: { id: classroomId },
     select: { id: true, school_id: true, name: true },
   });
-  if (!legacy?.school_id || !legacy.name) return null;
+  if (!legacy?.school_id) return null;
+  if (contextSchoolId && String(legacy.school_id) !== String(contextSchoolId)) return null;
+  const anyLink = await db.classroomGradeClass.findFirst({
+    where: { classroom_id: classroomId },
+    select: { id: true },
+  });
+  if (anyLink) {
+    const linked = await loadClassroomLinks(db, classroomId, legacy.school_id);
+    if (linked.length !== 1) return null;
+    const { id, school_id, academic_cycle_id } = linked[0];
+    return { id, school_id, academic_cycle_id };
+  }
+  if (!legacy.name) return null;
   const matches = await db.gradeClass.findMany({
     where: { school_id: legacy.school_id, name: legacy.name, status: 'active' },
     select: gradeClassSelect,
@@ -348,6 +386,78 @@ export const attendanceRouter = impl.router({
         take: limit ?? 200,
       });
       return rows.map(mapAttendance);
+    }),
+  getClassroomLinks: impl.getClassroomLinks
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      const db = await getPolicyDb(context);
+      const classroom = await db.classroom.findUnique({
+        where: { id: input.query.classroomId },
+        select: { id: true, school_id: true },
+      });
+      if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom not found' });
+      const linked = await loadClassroomLinks(db, classroom.id, classroom.school_id);
+      return linked.map((row) => ({
+        grade_class_id: String(row.id),
+        name: String(row.name),
+        academic_cycle_id: String(row.academic_cycle_id),
+      }));
+    }),
+  linkClassroom: impl.linkClassroom
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      const db = await getPolicyDb(context);
+      const { classroomId, gradeClassId, kind: requestedKind } = input.body;
+      const classroom = await db.classroom.findUnique({
+        where: { id: classroomId },
+        select: { id: true, school_id: true, kind: true },
+      });
+      if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom not found' });
+      if (!classroom.school_id) {
+        throw new ORPCError('BAD_REQUEST', { message: 'This classroom is not part of a school.' });
+      }
+      const gradeClass = await resolveGradeClassRecord(db, gradeClassId, classroom.school_id);
+      if (!gradeClass) {
+        throw new ORPCError('BAD_REQUEST', {
+          message: "The grade class is not in this classroom's school.",
+        });
+      }
+      if (classroom.kind && requestedKind && classroom.kind !== requestedKind) {
+        throw new ORPCError('CONFLICT', {
+          message: `This classroom is already a ${classroom.kind} group.`,
+        });
+      }
+      const kind = (classroom.kind ?? requestedKind) as 'homeroom' | 'subject' | 'cohort' | null;
+      if (!kind) {
+        throw new ORPCError('BAD_REQUEST', {
+          message: 'Say what kind of group this classroom is (homeroom, subject or cohort) first.',
+        });
+      }
+      return db.$transaction(async (tx: any) => {
+        const existing = await tx.classroomGradeClass.findMany({
+          where: { classroom_id: classroomId },
+          select: { grade_class_id: true },
+        });
+        const already = existing.some((row: any) => row.grade_class_id === gradeClass.id);
+        if (!already && kind === 'homeroom' && existing.length > 0) {
+          throw new ORPCError('CONFLICT', {
+            message: 'A homeroom links to exactly one grade class.',
+          });
+        }
+        if (!classroom.kind) {
+          await tx.classroom.update({ where: { id: classroomId }, data: { kind } });
+        }
+        if (!already) {
+          await tx.classroomGradeClass.create({
+            data: {
+              classroom_id: classroomId,
+              grade_class_id: gradeClass.id,
+              created_by: context.user.id,
+            },
+          });
+        }
+        return { classroom_id: classroomId, grade_class_id: gradeClass.id, kind };
+      });
     }),
   getMyGradeClasses: impl.getMyGradeClasses
     .use(doubleGateMiddleware)

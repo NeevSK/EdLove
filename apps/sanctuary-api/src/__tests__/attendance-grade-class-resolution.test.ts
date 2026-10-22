@@ -91,4 +91,50 @@ describe('resolveGradeClassForLegacyClassroom (shadow enrollment bridge)', () =>
     });
     await expect(resolveGradeClassForLegacyClassroom(db, 'cls-5a', schoolId)).resolves.toBeNull();
   });
+
+  it('uses the explicit link before the name (#149)', async () => {
+    const db = createFakeDb({
+      gradeClass: [gc5A, gc6B],
+      classroom: [{ id: 'cls-5a', school_id: schoolId, name: '5A' }],
+      classroomGradeClass: [{ id: 'l1', classroom_id: 'cls-5a', grade_class_id: 'gc-6b' }],
+    });
+    await expect(
+      resolveGradeClassForLegacyClassroom(db, 'cls-5a', schoolId),
+    ).resolves.toMatchObject(pick(gc6B));
+  });
+
+  it('does not fall back to the name when links exist but give no single answer', async () => {
+    const db = createFakeDb({
+      gradeClass: [gc5A, gc6B],
+      classroom: [{ id: 'cls-5a', school_id: schoolId, name: '5A' }],
+      classroomGradeClass: [
+        { id: 'l1', classroom_id: 'cls-5a', grade_class_id: 'gc-5a' },
+        { id: 'l2', classroom_id: 'cls-5a', grade_class_id: 'gc-6b' },
+      ],
+    });
+    await expect(resolveGradeClassForLegacyClassroom(db, 'cls-5a', schoolId)).resolves.toBeNull();
+  });
+
+  it('ignores links to archived or other-school grade classes', async () => {
+    const db = createFakeDb({
+      gradeClass: [
+        { ...gc5A, status: 'archived' },
+        { ...gc6B, school_id: 'school-2' },
+      ],
+      classroom: [{ id: 'cls-5a', school_id: schoolId, name: '5A' }],
+      classroomGradeClass: [
+        { id: 'l1', classroom_id: 'cls-5a', grade_class_id: 'gc-5a' },
+        { id: 'l2', classroom_id: 'cls-5a', grade_class_id: 'gc-6b' },
+      ],
+    });
+    await expect(resolveGradeClassForLegacyClassroom(db, 'cls-5a', schoolId)).resolves.toBeNull();
+  });
+
+  it("never resolves a classroom from another school than the caller's", async () => {
+    const db = createFakeDb({
+      gradeClass: [{ ...gc5A, school_id: 'school-2' }],
+      classroom: [{ id: 'cls-5a', school_id: 'school-2', name: '5A' }],
+    });
+    await expect(resolveGradeClassForLegacyClassroom(db, 'cls-5a', schoolId)).resolves.toBeNull();
+  });
 });

@@ -2376,6 +2376,52 @@ export type GradeClassGetPayload<
   Args extends $SelectIncludeOmit<$Schema, 'GradeClass', true>,
   Options extends $QueryOptions<$Schema> = $QueryOptions<$Schema>,
 > = $Result<$Schema, 'GradeClass', Args, Options>;
+export type ClassroomGradeClassFindManyArgs = $FindManyArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassFindUniqueArgs = $FindUniqueArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassFindFirstArgs = $FindFirstArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassExistsArgs = $ExistsArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassCreateArgs = $CreateArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassCreateManyArgs = $CreateManyArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassCreateManyAndReturnArgs = $CreateManyAndReturnArgs<
+  $Schema,
+  'ClassroomGradeClass'
+>;
+export type ClassroomGradeClassUpdateArgs = $UpdateArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassUpdateManyArgs = $UpdateManyArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassUpdateManyAndReturnArgs = $UpdateManyAndReturnArgs<
+  $Schema,
+  'ClassroomGradeClass'
+>;
+export type ClassroomGradeClassUpsertArgs = $UpsertArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassDeleteArgs = $DeleteArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassDeleteManyArgs = $DeleteManyArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassCountArgs = $CountArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassAggregateArgs = $AggregateArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassGroupByArgs = $GroupByArgs<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassWhereInput = $WhereInput<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassSelect = $SelectInput<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassInclude = $IncludeInput<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassOmit = $OmitInput<$Schema, 'ClassroomGradeClass'>;
+export type ClassroomGradeClassUncheckedCreateInput = $UncheckedCreateInput<
+  $Schema,
+  'ClassroomGradeClass'
+>;
+export type ClassroomGradeClassCheckedCreateInput = $CheckedCreateInput<
+  $Schema,
+  'ClassroomGradeClass'
+>;
+export type ClassroomGradeClassUncheckedUpdateInput = $UncheckedUpdateInput<
+  $Schema,
+  'ClassroomGradeClass'
+>;
+export type ClassroomGradeClassCheckedUpdateInput = $CheckedUpdateInput<
+  $Schema,
+  'ClassroomGradeClass'
+>;
+export type ClassroomGradeClassGetPayload<
+  Args extends $SelectIncludeOmit<$Schema, 'ClassroomGradeClass', true>,
+  Options extends $QueryOptions<$Schema> = $QueryOptions<$Schema>,
+> = $Result<$Schema, 'ClassroomGradeClass', Args, Options>;
 export type GradeClassSubjectFindManyArgs = $FindManyArgs<$Schema, 'GradeClassSubject'>;
 export type GradeClassSubjectFindUniqueArgs = $FindUniqueArgs<$Schema, 'GradeClassSubject'>;
 export type GradeClassSubjectFindFirstArgs = $FindFirstArgs<$Schema, 'GradeClassSubject'>;
