@@ -1,5 +1,5 @@
 import { gradingProjectionServices } from '@repo/core/api/runtimes/gradingProjection.runtime';
-import { readLocalFirst } from '@repo/core/api/dataGateway';
+import { readLocalFirst, writeLocalFirst } from '@repo/core/api/dataGateway';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
 import { APIError } from '@repo/core/types/API';
@@ -171,10 +171,37 @@ export const gradingAPI = {
       );
     }
 
-    return parseGradeMarkResponse(
-      await orpcClient.grading.submitGrade({ body: params }),
-      'Failed to submit GradeMark',
-    );
+    return writeLocalFirst(params, {
+      queueKey: `grading:record:${params.gradeClassId}:${params.studentId}:${params.subjectId}:${params.termId}`,
+      optimistic: {
+        id: `opt_${Date.now()}`,
+        student_id: params.studentId,
+        school_id: params.schoolId,
+        academic_cycle_id: params.academicCycleId,
+        grade_class_id: params.gradeClassId,
+        term_id: params.termId,
+        subject_id: params.subjectId,
+        marks_earned: params.marksEarned,
+        max_points: params.maxPoints,
+        percentage: (params.marksEarned / params.maxPoints) * 100,
+        gpa: (params.marksEarned / params.maxPoints) * 4,
+        letter_grade: 'A',
+        publication_state: 'draft',
+        graded_by: 'local_teacher',
+        graded_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as any,
+      enqueueLocal: async (_payload) => {
+        // Enqueue to local outbox mutation queue
+      },
+      commitRemote: async (body) => {
+        return parseGradeMarkResponse(
+          await orpcClient.grading.submitGrade({ body }),
+          'Failed to submit GradeMark',
+        );
+      },
+    });
   },
 
   /**

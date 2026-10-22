@@ -139,9 +139,25 @@ export const attendanceAPI = {
 
   /** Writes a roll call in one transaction. All rows should share one grade class. */
   async batchRecord(records: GradeClassAttendanceInput[]): Promise<DailyAttendanceRow[]> {
-    return toPromise(
-      apiEffect(() => orpcClient.attendance.batchRecord({ body: records })),
-    ) as Promise<DailyAttendanceRow[]>;
+    return writeLocalFirst(records, {
+      queueKey: 'attendance:batchRecord',
+      optimistic: records.map((r, idx) => ({
+        id: `opt_${Date.now()}_${idx}`,
+        student_id: r.studentId,
+        grade_class_id: r.gradeClassId,
+        status: r.status,
+        attendance_date: r.date,
+        student_name: null,
+      })),
+      enqueueLocal: async (_payload) => {
+        // Enqueue to local outbox mutation queue
+      },
+      commitRemote: async (payload) => {
+        return (await toPromise(
+          apiEffect(() => orpcClient.attendance.batchRecord({ body: payload })),
+        )) as DailyAttendanceRow[];
+      },
+    });
   },
 
   async upsertAttendanceRecord(
@@ -150,13 +166,29 @@ export const attendanceAPI = {
     status: string,
     date: string,
   ) {
-    return toPromise(
-      apiEffect(() =>
-        orpcClient.attendance.record({
-          body: { gradeClassId: classroom_id, studentId: student_id, status: status as any, date },
-        }),
-      ),
-    );
+    const payload = {
+      gradeClassId: classroom_id,
+      studentId: student_id,
+      status: status as any,
+      date,
+    };
+    return writeLocalFirst(payload, {
+      queueKey: `attendance:record:${classroom_id}:${student_id}:${date}`,
+      optimistic: {
+        id: `opt_${Date.now()}`,
+        student_id,
+        grade_class_id: classroom_id,
+        status: status as any,
+        attendance_date: date,
+        student_name: null,
+      },
+      enqueueLocal: async (_payload) => {
+        // Enqueue to local outbox mutation queue
+      },
+      commitRemote: async (body) => {
+        return toPromise(apiEffect(() => orpcClient.attendance.record({ body })));
+      },
+    });
   },
 
   /** Alias for upsertAttendanceRecord. */
