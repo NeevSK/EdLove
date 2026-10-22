@@ -10,7 +10,8 @@ import { assertSubmissionIntent, settleAssignmentSubmission } from '../assignmen
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 import { assertSubmissionAuthority } from '../submissionAuthority';
-import { resolveGradeClassRecord } from './attendance';
+import { resolveGradeClassForLegacyClassroom } from './attendance';
+import { claimShadowStudentAtomically } from './shadowClaim';
 
 const impl = implement(educationalORPCContract).$context<ORPCContext>();
 const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
@@ -369,17 +370,17 @@ export const educationalRouter = impl.router({
       const shadowUserId = randomUUID();
       const inviteCode = `EDL-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
-      // 1. Resolve GradeClass or school context
-      const gradeClass = await resolveGradeClassRecord(
+      // The grade class (model A register) this classroom maps to, only if unambiguous.
+      const gradeClass = await resolveGradeClassForLegacyClassroom(
         db,
         input.params.classroomId,
         context.schoolId,
       );
       const schoolId = gradeClass?.school_id || context.schoolId;
 
-      // 2. Create shadow User profile starting from Grade 1 (persists permanently even if unclaimed)
-      try {
-        await db.user.create({
+      // Shadow user + register enrollment + classroom seat are created together or not at all.
+      const row = await db.$transaction(async (tx: any) => {
+        await tx.user.create({
           data: {
             id: shadowUserId,
             full_name: fullName,
@@ -390,14 +391,8 @@ export const educationalRouter = impl.router({
             citizenship: 'THIRD_CLASS',
           },
         });
-      } catch {
-        // Tolerated in mock environments without user delegate
-      }
-
-      // 3. Enroll shadow student in studentGradeClassEnrollment if gradeClass resolved
-      if (gradeClass) {
-        try {
-          await db.studentGradeClassEnrollment.create({
+        if (gradeClass) {
+          await tx.studentGradeClassEnrollment.create({
             data: {
               school_id: gradeClass.school_id,
               academic_cycle_id: gradeClass.academic_cycle_id,
@@ -409,20 +404,16 @@ export const educationalRouter = impl.router({
               created_by: context.user.id,
             },
           });
-        } catch {
-          // Tolerated in mock environments
         }
-      }
-
-      // 4. Create classroomStudent record with shadow student_id and invite_code
-      const row = await db.classroomStudent.create({
-        data: {
-          classroom_id: input.params.classroomId,
-          student_id: shadowUserId,
-          full_name: fullName,
-          roll_number: input.body.rollNumber,
-          invite_code: inviteCode,
-        },
+        return tx.classroomStudent.create({
+          data: {
+            classroom_id: input.params.classroomId,
+            student_id: shadowUserId,
+            full_name: fullName,
+            roll_number: input.body.rollNumber,
+            invite_code: inviteCode,
+          },
+        });
       });
       return mapClassroomStudent(row);
     }),
@@ -444,153 +435,10 @@ export const educationalRouter = impl.router({
   claimShadowStudent: impl.claimShadowStudent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
-      const claimingUserId = context.user.id;
-      const row = await db.classroomStudent.findUnique({
-        where: { invite_code: input.body.inviteCode },
-      });
-      if (!row) throw new ORPCError('NOT_FOUND', { message: 'Invite code not found' });
-
-      const shadowUserId = row.student_id;
-
-      // When real student joins and claims, carry forward entire accumulated multi-year history
-      if (shadowUserId && shadowUserId !== claimingUserId) {
-        // 1. Carry forward DailyAttendance records (avoiding duplicate key violations)
-        try {
-          const shadowDaily = await db.dailyAttendance.findMany({
-            where: { student_id: shadowUserId },
-          });
-          for (const daily of shadowDaily ?? []) {
-            const existing = await db.dailyAttendance.findUnique({
-              where: {
-                student_id_grade_class_id_attendance_date: {
-                  student_id: claimingUserId,
-                  grade_class_id: daily.grade_class_id,
-                  attendance_date: daily.attendance_date,
-                },
-              },
-            });
-            if (!existing) {
-              await db.dailyAttendance.update({
-                where: { id: daily.id },
-                data: { student_id: claimingUserId },
-              });
-            }
-          }
-        } catch {
-          // Tolerated in mock environments without dailyAttendance
-        }
-
-        // 2. Carry forward AttendanceSessions
-        try {
-          await db.attendanceSession.updateMany({
-            where: { student_id: shadowUserId },
-            data: { student_id: claimingUserId },
-          });
-        } catch {
-          // Tolerated in mock environments
-        }
-
-        // 3. Carry forward StudentGradeClassEnrollments (retaining continuous enrollment history)
-        try {
-          const shadowEnrollments = await db.studentGradeClassEnrollment.findMany({
-            where: { student_id: shadowUserId },
-          });
-          for (const enr of shadowEnrollments ?? []) {
-            const existingEnr = await db.studentGradeClassEnrollment.findFirst({
-              where: {
-                grade_class_id: enr.grade_class_id,
-                student_id: claimingUserId,
-              },
-            });
-            if (!existingEnr) {
-              await db.studentGradeClassEnrollment.update({
-                where: { id: enr.id },
-                data: { student_id: claimingUserId },
-              });
-            }
-          }
-        } catch {
-          // Tolerated in mock environments
-        }
-
-        // 4. Carry forward GradeMarks
-        try {
-          await db.gradeMark.updateMany({
-            where: { student_id: shadowUserId },
-            data: { student_id: claimingUserId },
-          });
-        } catch {
-          // Tolerated in mock environments
-        }
-
-        // 5. Carry forward AssignmentSubmissions
-        try {
-          await db.assignmentSubmission.updateMany({
-            where: { student_id: shadowUserId },
-            data: { student_id: claimingUserId },
-          });
-        } catch {
-          // Tolerated in mock environments
-        }
-
-        // 6. Carry forward other classroom_student enrollments
-        try {
-          await db.classroomStudent.updateMany({
-            where: { student_id: shadowUserId },
-            data: { student_id: claimingUserId },
-          });
-        } catch {
-          // Tolerated in mock environments
-        }
-
-        // 7. Sync verified student name / school to claiming user profile if unpopulated
-        if (row.full_name) {
-          try {
-            const currentUser = await db.user.findUnique({
-              where: { id: claimingUserId },
-              select: { full_name: true, school_id: true },
-            });
-            const updates: any = {};
-            if (
-              !currentUser?.full_name ||
-              currentUser.full_name.startsWith('Student ') ||
-              currentUser.full_name === 'Unnamed student'
-            ) {
-              updates.full_name = row.full_name;
-            }
-            if (!currentUser?.school_id && (context.schoolId || row.school_id)) {
-              updates.school_id = context.schoolId || row.school_id;
-            }
-            if (Object.keys(updates).length > 0) {
-              await db.user.update({
-                where: { id: claimingUserId },
-                data: updates,
-              });
-            }
-          } catch {
-            // Tolerated in mock environments
-          }
-        }
-
-        // 8. Seal the shadow User record as claimed
-        try {
-          await db.user.update({
-            where: { id: shadowUserId },
-            data: {
-              identity_state: `claimed_by_${claimingUserId}`,
-              metadata: { claimed_by: claimingUserId, claimed_at: new Date().toISOString() },
-            },
-          });
-        } catch {
-          // Tolerated in mock environments
-        }
-      }
-
-      // Update the target classroom student row
-      const claimed = await db.classroomStudent.update({
-        where: { id: row.id },
-        data: { student_id: claimingUserId, claimed_at: new Date() },
+      const claimed = await claimShadowStudentAtomically(context.db as any, {
+        inviteCode: input.body.inviteCode,
+        claimingUserId: context.user.id,
+        schoolId: context.schoolId,
       });
       return mapClassroomStudent(claimed);
     }),
