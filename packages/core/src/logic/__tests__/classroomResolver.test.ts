@@ -62,7 +62,7 @@ describe('classroomResolver', () => {
     expect(classroomsAPI.getById).not.toHaveBeenCalled();
   });
 
-  it('falls back to single assigned grade class if name does not match', async () => {
+  it('does not guess the only assigned grade class when the name does not match', async () => {
     vi.mocked(orpcClient.attendance.getMyGradeClasses).mockResolvedValue([
       { id: 'gc-only', name: 'Primary 1', academic_cycle_id: 'cycle-1', role: null },
     ]);
@@ -73,15 +73,28 @@ describe('classroomResolver', () => {
     } as any);
 
     const result = await resolveGradeClassFromClassroom('legacy-classroom-2');
-    expect(result).toBe('gc-only');
+    expect(result).toBe('');
   });
 
-  it('falls back gracefully to input id when RPC fails', async () => {
+  it('returns empty when two assigned grade classes share the classroom name', async () => {
+    vi.mocked(orpcClient.attendance.getMyGradeClasses).mockResolvedValue([
+      { id: 'gc-a', name: '5A', academic_cycle_id: 'cycle-1', role: null },
+      { id: 'gc-b', name: '5a ', academic_cycle_id: 'cycle-2', role: null },
+    ]);
+    vi.mocked(classroomsAPI.getById).mockResolvedValue({
+      id: 'legacy-classroom-3',
+      name: '5A',
+      school_id: 'school-1',
+    } as any);
+    expect(await resolveGradeClassFromClassroom('legacy-classroom-3')).toBe('');
+  });
+
+  it('returns empty (not the classroom id) when the RPC fails', async () => {
     vi.mocked(orpcClient.attendance.getMyGradeClasses).mockRejectedValue(
       new Error('Network error'),
     );
 
     const result = await resolveGradeClassFromClassroom('legacy-unresolved');
-    expect(result).toBe('legacy-unresolved');
+    expect(result).toBe('');
   });
 });

@@ -40,6 +40,9 @@ function toPromise<T>(effect: Effect.Effect<T, AttendanceHttpError, never>): Pro
   );
 }
 
+const STUDENT_HISTORY_UNAVAILABLE =
+  'Per-student attendance history is not available yet; open the class register instead.';
+
 /** One daily_attendance row to write. `gradeClassId` is a grade_classes.id (model A). */
 export type GradeClassAttendanceInput = {
   gradeClassId: string;
@@ -143,22 +146,21 @@ export const attendanceAPI = {
     return this.upsertAttendanceRecord(classroom_id, student_id, status, date);
   },
 
-  /** Queries attendance records for a student. */
-  async getForStudent(student_id: string, date?: string) {
-    return toPromise(
-      apiEffect(() =>
-        orpcClient.attendance.getByClassroom({ query: { studentId: student_id, date } }),
-      ),
-    );
+  /**
+   * Per-student attendance history has no server procedure yet (getByClassroom only
+   * accepts a gradeClassId, so the old `{ studentId }` call was always a 400, retried).
+   * Fail fast with a clear error until a by-student read with an agreed privacy rule exists.
+   */
+  async getForStudent(_student_id: string, _date?: string): Promise<DailyAttendanceRow[]> {
+    throw new APIError(STUDENT_HISTORY_UNAVAILABLE, '501');
   },
 
-  /** Queries attendance timeline for a student. */
-  async getStudentAttendanceTimeline(student_id: string, limit?: number) {
-    return toPromise(
-      apiEffect(() =>
-        orpcClient.attendance.getByClassroom({ query: { studentId: student_id, limit } }),
-      ),
-    );
+  /** See getForStudent: not available until a by-student read procedure exists. */
+  async getStudentAttendanceTimeline(
+    _student_id: string,
+    _options?: unknown,
+  ): Promise<DailyAttendanceRow[]> {
+    throw new APIError(STUDENT_HISTORY_UNAVAILABLE, '501');
   },
 
   async fetchClassroomAttendance(classroom_id: string, date?: string) {
@@ -231,15 +233,11 @@ export const attendanceAPI$ = {
       }),
     ),
 
-  getForStudent: (student_id: string, date?: string) =>
-    apiEffect(() =>
-      orpcClient.attendance.getByClassroom({ query: { studentId: student_id, date } }),
-    ),
+  getForStudent: (_student_id: string, _date?: string) =>
+    Effect.fail(new AttendanceHttpError({ message: STUDENT_HISTORY_UNAVAILABLE, status: '501' })),
 
-  getStudentAttendanceTimeline: (student_id: string, limit?: number) =>
-    apiEffect(() =>
-      orpcClient.attendance.getByClassroom({ query: { studentId: student_id, limit } }),
-    ),
+  getStudentAttendanceTimeline: (_student_id: string, _limit?: number) =>
+    Effect.fail(new AttendanceHttpError({ message: STUDENT_HISTORY_UNAVAILABLE, status: '501' })),
 
   fetchClassroomAttendance: (classroom_id: string, date?: string) =>
     apiEffect(() =>

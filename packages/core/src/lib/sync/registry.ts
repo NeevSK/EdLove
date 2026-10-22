@@ -162,11 +162,18 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     return api.students.create(vars);
   },
   updateAttendance: async (vars) => {
-    // `api.attendance.record` never existed, so replays threw. The server writes
-    // daily_attendance keyed by grade_classes.id; legacy queued items that carry a
-    // classrooms.id will be rejected by the server (mapping pending a product decision).
+    // The server writes daily_attendance keyed by grade_classes.id only. A legacy item
+    // carrying a classrooms.id is mapped to one of the caller's grade classes, or fails
+    // loudly (dead letter) rather than landing in a guessed class.
+    let gradeClassId: string | undefined = vars.gradeClassId;
+    if (!gradeClassId && vars.classroomId) {
+      gradeClassId = await resolveGradeClassFromClassroom(vars.classroomId, vars.schoolId);
+    }
+    if (!gradeClassId) {
+      throw new Error('Queued attendance has no grade class to write to.');
+    }
     return api.attendance.upsertAttendanceRecord(
-      vars.gradeClassId ?? vars.classroomId,
+      gradeClassId,
       vars.studentId,
       vars.status,
       vars.date,

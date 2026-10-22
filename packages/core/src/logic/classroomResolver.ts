@@ -7,8 +7,10 @@ import { orpcClient } from '@repo/core/api/orpcClient';
 const classroomGradeClassCache = new Map<string, string>();
 
 /**
- * Resolves a GradeClass ID from a legacy Classroom ID.
- * If the ID is already a GradeClass ID or cannot be resolved, falls back gracefully.
+ * Resolves a GradeClass ID from a legacy Classroom ID, choosing only among the grade
+ * classes the caller may mark (getMyGradeClasses): an exact id match, or the one class
+ * whose name matches the classroom's name. Returns '' when it cannot tell, so the
+ * caller shows the class picker instead of writing to a guessed class.
  */
 export async function resolveGradeClassFromClassroom(
   classroomId: string,
@@ -33,9 +35,9 @@ export async function resolveGradeClassFromClassroom(
       try {
         const classroom = await classroomsAPI.getById(classroomId);
         if (classroom?.name) {
-          const nameMatch = gradeClasses.find(
-            (gc) => gc.name.trim().toLowerCase() === classroom.name.trim().toLowerCase(),
-          );
+          const wanted = classroom.name.trim().toLowerCase();
+          const nameMatches = gradeClasses.filter((gc) => gc.name.trim().toLowerCase() === wanted);
+          const nameMatch = nameMatches.length === 1 ? nameMatches[0] : undefined;
           if (nameMatch) {
             classroomGradeClassCache.set(classroomId, nameMatch.id);
             return nameMatch.id;
@@ -45,17 +47,14 @@ export async function resolveGradeClassFromClassroom(
         // Fall through
       }
 
-      // 3. If there is exactly one grade class available, map to it
-      if (gradeClasses.length === 1 && gradeClasses[0]?.id) {
-        classroomGradeClassCache.set(classroomId, gradeClasses[0].id);
-        return gradeClasses[0].id;
-      }
+      // No "only class" fallback: a subject classroom (e.g. Science 7) is not the
+      // teacher's register just because they have one grade class.
     }
   } catch {
-    // Return original identifier on error
+    // Unresolved: never echo the classroom id back as if it were a grade class id.
   }
 
-  return classroomId;
+  return '';
 }
 
 /**

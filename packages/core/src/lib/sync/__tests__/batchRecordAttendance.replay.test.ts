@@ -10,7 +10,12 @@ vi.mock('@repo/core/api/client', () => ({ api: {} }));
 vi.mock('@repo/core/api/deviceTrust', () => ({ deviceTrustAPI: {} }));
 vi.mock('@repo/core/api/orpcClient', () => ({ orpcClient: {} }));
 
-const { MUTATION_REGISTRY } = await import('../registry');
+const { MUTATION_REGISTRY: registryModule } = await import('../registry');
+type Replay = (vars: any) => Promise<any>;
+const MUTATION_REGISTRY = registryModule as unknown as {
+  batchRecordAttendance: Replay;
+  updateAttendance: Replay;
+};
 
 const students = [
   { id: 'e1', student_id: 's1', full_name: 'A', roll_number: null, status: 'present' },
@@ -29,7 +34,11 @@ describe('MUTATION_REGISTRY.batchRecordAttendance (offline register replay)', ()
   });
 
   it('writes daily rows for the grade class and skips students without an id', async () => {
-    await MUTATION_REGISTRY.batchRecordAttendance({ gradeClassId: 'gc1', date: '2026-10-22', students });
+    await MUTATION_REGISTRY.batchRecordAttendance({
+      gradeClassId: 'gc1',
+      date: '2026-10-22',
+      students,
+    });
     expect(resolve).not.toHaveBeenCalled();
     expect(batchRecord).toHaveBeenCalledWith([
       { gradeClassId: 'gc1', studentId: 's1', status: 'present', date: '2026-10-22' },
@@ -38,13 +47,38 @@ describe('MUTATION_REGISTRY.batchRecordAttendance (offline register replay)', ()
   });
 
   it('resolves a legacy classroom id at replay time', async () => {
-    await MUTATION_REGISTRY.batchRecordAttendance({ classroomId: 'c1', schoolId: 'sch', date: '2026-10-22', students });
+    await MUTATION_REGISTRY.batchRecordAttendance({
+      classroomId: 'c1',
+      schoolId: 'sch',
+      date: '2026-10-22',
+      students,
+    });
     expect(resolve).toHaveBeenCalledWith('c1', 'sch');
-    expect(batchRecord.mock.calls[0][0][0].gradeClassId).toBe('gc-resolved');
+    expect((batchRecord.mock.calls[0]?.[0] as any[])[0].gradeClassId).toBe('gc-resolved');
   });
 
   it('rejects legacy array-only items instead of silently dropping them', async () => {
     await expect(MUTATION_REGISTRY.batchRecordAttendance(students)).rejects.toThrow(/Legacy/);
     expect(batchRecord).not.toHaveBeenCalled();
+  });
+
+  it('fails loudly when a legacy classroom cannot be mapped to a grade class', async () => {
+    resolve.mockResolvedValueOnce('');
+    await expect(
+      MUTATION_REGISTRY.batchRecordAttendance({ classroomId: 'c1', date: '2026-10-22', students }),
+    ).rejects.toThrow(/no grade class/);
+    expect(batchRecord).not.toHaveBeenCalled();
+  });
+
+  it('updateAttendance does not send a classroom id as a grade class id', async () => {
+    resolve.mockResolvedValueOnce('');
+    await expect(
+      MUTATION_REGISTRY.updateAttendance({
+        classroomId: 'c1',
+        studentId: 's1',
+        status: 'present',
+        date: '2026-10-22',
+      }),
+    ).rejects.toThrow(/no grade class/);
   });
 });
