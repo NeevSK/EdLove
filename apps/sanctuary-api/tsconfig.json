@@ -1,13 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../packages/typescript-config/es2026.json",
   "compilerOptions": {
-    "module": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "target": "ES2022",
-    "lib": ["es2022", "DOM"],
+    "declaration": false,
+    "declarationMap": false,
     "types": ["node", "@repo/types-shim"],
     "skipLibCheck": true,
     "noImplicitAny": false,

@@ -92,6 +92,9 @@ function uniformBatchProjection(input: Record<string, unknown>): Record<string, 
 
 /** Shared procedure boundary: Cedar authorization plus sanitized oRPC errors. */
 export const doubleGateMiddleware = o.middleware(async ({ next, procedure, context }, input) => {
+  if ((context as any).__doubleGatePermitted) {
+    return await next({});
+  }
   const startedAt = performance.now();
   const policy = getPolicyMeta(procedure) ?? (procedure['~orpc']?.meta as any)?.policy;
   const procedureName =
@@ -393,6 +396,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
       message: 'You do not have permission to perform this operation.',
     });
   }
+  (context as any).__doubleGatePermitted = true;
   if (context.capacity === 'admin') {
     console.info(
       JSON.stringify({
