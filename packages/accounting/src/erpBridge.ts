@@ -51,8 +51,8 @@ export function convertAccrualInvoiceToTransaction(
   entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[];
 } {
   const entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[] = journal.entries.map(
-    (e) => ({
-      accountId: resolveAccountId(e.accountCode, coa),
+    (e: AccrualInvoiceJournal['entries'][number]) => ({
+      accountId: resolveAccountId(e.accountCode ?? e.accountId ?? 'unknown', coa),
       amount: e.amountCents / 100,
       side: e.side,
       description: e.description,
@@ -85,8 +85,8 @@ export function convertCashSettlementToTransaction(
   entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[];
 } {
   const entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[] = journal.entries.map(
-    (e) => ({
-      accountId: resolveAccountId(e.accountCode, coa),
+    (e: CashSettlementJournal['entries'][number]) => ({
+      accountId: resolveAccountId(e.accountCode ?? e.accountId ?? 'unknown', coa),
       amount: e.amountCents / 100,
       side: e.side,
       description: e.description,

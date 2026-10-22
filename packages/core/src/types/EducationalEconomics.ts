@@ -144,9 +144,10 @@ export interface NetStudentFeeCalculation {
 
 /** Double-Entry Accounting Journal Entry */
 export interface AccountingJournalEntry {
-  accountId: string;
+  accountId?: string;
+  accountCode?: string;
   amountCents: number;
-  amount: number; // decimal rupees
+  amount?: number; // decimal rupees
   side: 'debit' | 'credit';
   description: string;
 }

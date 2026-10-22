@@ -23,10 +23,11 @@ describe('oRPC installed SDK error compatibility', () => {
     ['FORBIDDEN', 403],
     ['SERVICE_UNAVAILABLE', 503],
   ])('preserves %s status and serialization through the real RPC decoder', async (code, status) => {
-    const error = new ORPCError(code, { status, message: 'Request unavailable' });
+    const error = new ORPCError(code, { message: 'Request unavailable' });
+    Object.assign(error, { status });
     transport.mockResolvedValue(Response.json({ json: error.toJSON() }, { status }));
 
-    await expect(orpcClient.library.list({}, { context: { expectedAccountId: 'account-a' } }))
+    await expect((orpcClient.library as any).list({}, { context: { expectedAccountId: 'account-a' } }))
       .rejects.toMatchObject({ code, status, message: 'Request unavailable' });
     expect(transport).toHaveBeenCalledTimes(1);
     expect(transport.mock.calls[0]?.[2]).toBe('account-a');

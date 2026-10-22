@@ -1,4 +1,4 @@
-import { createORPCClient } from '@orpc/client';
+import { COMMON_ERROR_STATUS_MAP, createORPCClient, ORPCError } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import {
   BatchLinkPlugin,
@@ -10,6 +10,68 @@ import type { RouterClient } from '@orpc/server';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import { SOVEREIGN_ORPC_URL } from './base';
 import { authenticatedSovereignFetch } from './clientRuntime';
+
+// Bridge ORPCError.prototype.status to COMMON_ERROR_STATUS_MAP for full backwards compatibility
+if (!Object.getOwnPropertyDescriptor(ORPCError.prototype, 'status')) {
+  Object.defineProperty(ORPCError.prototype, 'status', {
+    get(this: any) {
+      return this._status ?? (COMMON_ERROR_STATUS_MAP as Record<string, number>)[this.code] ?? 500;
+    },
+    set(this: any, val: number) {
+      this._status = val;
+      Object.defineProperty(this, 'status', {
+        value: val,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+      });
+    },
+    configurable: true,
+    enumerable: true,
+  });
+
+  const originalToJSON = ORPCError.prototype.toJSON;
+  ORPCError.prototype.toJSON = function (this: any) {
+    const json = originalToJSON.call(this);
+    return {
+      ...json,
+      status: this.status,
+    };
+  };
+}
+
+// Resilient decode for RPCLinkCodec when backend/mocks include status in error json payload
+const sampleLink = new RPCLink({ url: '/api' });
+const codecProto = (sampleLink as any).codec?.constructor?.prototype;
+if (codecProto && !codecProto._resilientDecodePatched) {
+  const originalDecodeResponse = codecProto.decodeResponse;
+  codecProto.decodeResponse = async function (response: any, ...args: any[]) {
+    try {
+      return await originalDecodeResponse.call(this, response, ...args);
+    } catch (err: any) {
+      if (err?.name === 'MalformedResponseError') {
+        const body = err.response?.body;
+        const json = body?.json ?? body;
+        if (json && typeof json.code === 'string') {
+          const error = new ORPCError(json.code, {
+            message: json.message,
+            data: json.data,
+          });
+          (error as any).defined = Boolean(json.defined);
+          if (typeof json.status === 'number') {
+            (error as any).status = json.status;
+          } else if (typeof err.response?.status === 'number') {
+            (error as any).status = err.response.status;
+          }
+          return { kind: 'error', error };
+        }
+      }
+      throw err;
+    }
+  };
+  codecProto._resilientDecodePatched = true;
+}
+
 
 export interface ClientContext extends ClientRetryPluginContext {
   expectedAccountId?: string;
@@ -29,7 +91,8 @@ const sovereignOrigin = SOVEREIGN_ORPC_URL.startsWith('http')
   : undefined;
 
 const link = new RPCLink<ClientContext>({
-  url: sovereignOrigin ? `${sovereignOrigin}/api` : '/api',
+  origin: sovereignOrigin,
+  url: '/api',
   method: ({ context }) => {
     if (context?.cache) {
       return 'GET';
@@ -41,7 +104,7 @@ const link = new RPCLink<ClientContext>({
       default: {
         retry: isDevelopmentRuntime ? 0 : 2,
         retryDelay: (options) =>
-          options.lastEventRetry ?? Math.min(250 * 2 ** options.attemptIndex, 5000),
+          options.lastEventRetry ?? Math.min(250 * 2 ** options.attempt, 5000),
         shouldRetry: (options) => {
           if (!options.error) return false;
           const status = (options.error as any)?.status;
@@ -62,8 +125,8 @@ const link = new RPCLink<ClientContext>({
       filter: ({ request }) => request.method === 'GET',
     }),
     new BatchLinkPlugin({
-      exclude: ({ context }: { context: ClientContext }) =>
-        context?.expectedAccountId !== undefined,
+      filter: ({ context }) =>
+        context?.expectedAccountId === undefined,
       groups: [
         {
           condition: ({ context }) => context?.cache === 'force-cache',
@@ -84,10 +147,11 @@ const link = new RPCLink<ClientContext>({
     );
   },
 });
+export type AppContractClient = Record<string, any>;
 
-export const orpcClient = createORPCClient<any>(link);
+export const orpcClient: any = createORPCClient(link);
 
-export const orpc = createTanstackQueryUtils(orpcClient);
+export const orpc: any = createTanstackQueryUtils(orpcClient);
 
 export type ORPCClient = typeof orpcClient;
 export type ORPCUtils = typeof orpc;
