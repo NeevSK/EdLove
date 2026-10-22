@@ -663,8 +663,6 @@
     },
     "endorse": "Endorse",
     "endorsers": "Endorsers",
-    "hearthSubtitle": "Where the community pulse beats strongest",
-    "hearthTitle": "The Hearth",
     "manifestoCarousel": "Community Manifestos",
     "manifestoTopic": "Community Manifesto",
     "profile": {
@@ -1200,9 +1198,9 @@
       "message": "මෙම සැකසුම් ගුරුදෙවි ඔබ සඳහා වඩාත් හොඳින් ක්‍රියා කිරීමට උපකාර කරයි. බොහෝ පරිශීලකයින් සඳහා ස්වයංක්‍රීය ප්‍රකාරය නිර්දේශ කෙරේ."
     },
     "living_theme": {
-      "title": "ජීවමාන තේමාව (Living Theme)",
-      "on": "දවසේ වේලාව අනුව වර්ණ ස්වයංක්‍රීයව වෙනස් වේ",
-      "off": "සාම්ප්‍රදායික නිශ්චල පෙනුම"
+      "title": "වේලාව අනුගමනය කරන්න",
+      "on": "අලුයම සිට රාත්‍රිය දක්වා ආලෝකය වෙනස් වේ.",
+      "off": "දවස පුරා එකම සන්සුන් ආලෝකය."
     },
     "sensory": {
       "title": "සංවේදන ප්‍රතිචාර",
@@ -1236,6 +1234,25 @@
     "description": "ගුරුදෙවි පරිසර පද්ධතිය තුළ ඔබේ අත්දැකීම සකසා ගන්න",
     "account": {
       "title": "Account Stewardship"
+    },
+    "voice": "මේ ස්ථානය ඔබේම කරගන්න",
+    "world": {
+      "title": "ලෝකය",
+      "voice": "ගුරුදේවි සෑදී ඇති කඩදාසිය, තීන්ත සහ ආලෝකය."
+    },
+    "light": {
+      "title": "ආලෝකය",
+      "choose": "දිවා හෝ රාත්‍රී",
+      "day": "දිවා",
+      "night": "රාත්‍රී",
+      "device": "උපාංගය",
+      "hour": "වේලාව අනුව"
+    },
+    "motion": {
+      "title": "චලනය සහ විස්තර",
+      "auto": "මෙම දුරකථනයට ගැළපෙන",
+      "low": "ඉතිරි කිරීම",
+      "high": "සම්පූර්ණ"
     }
   },
   "bulk_creation": {

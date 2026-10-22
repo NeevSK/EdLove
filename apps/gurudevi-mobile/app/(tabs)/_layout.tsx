@@ -24,6 +24,7 @@ import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal
 import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { useWorld, Text as WText } from '@repo/ui/world/native';
 import { router, Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
@@ -52,6 +53,8 @@ export default function TabsLayout() {
 
 function TabsLayoutContent() {
   const pathname = usePathname();
+  // The shell is dressed by the chosen world, like every screen inside it.
+  const wt = useWorld().tokens;
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const shell = useMemo(
@@ -344,10 +347,10 @@ function TabsLayoutContent() {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: tokens.radii.full,
-            backgroundColor: tokens.semantic.surface.interactive,
+            backgroundColor: wt.sunken,
           }}
         >
-          <FileText size={18} color={tokens.semantic.text.primary} />
+          <FileText size={18} color={wt.ink} />
         </Pressable>
       ) : null}
       <Pressable
@@ -362,10 +365,10 @@ function TabsLayoutContent() {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: tokens.radii.full,
-          backgroundColor: tokens.semantic.surface.interactive,
+          backgroundColor: wt.sunken,
         }}
       >
-        <Bell size={18} color={tokens.semantic.text.primary} />
+        <Bell size={18} color={wt.ink} />
         {unreadCount > 0 ? (
           <Box
             style={{
@@ -375,7 +378,7 @@ function TabsLayoutContent() {
               minWidth: 16,
               height: 16,
               borderRadius: 8,
-              backgroundColor: tokens.colors.primary,
+              backgroundColor: wt.lamp,
               paddingHorizontal: 4,
               alignItems: 'center',
               justifyContent: 'center',
@@ -383,7 +386,7 @@ function TabsLayoutContent() {
           >
             <Text
               style={{
-                color: tokens.semantic.text.inverse,
+                color: wt.onLamp,
                 fontSize: tokens.typography.sizes.xs,
                 fontWeight: '800',
               }}
@@ -405,10 +408,10 @@ function TabsLayoutContent() {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: tokens.radii.full,
-          backgroundColor: tokens.semantic.surface.interactive,
+          backgroundColor: wt.sunken,
         }}
       >
-        <Settings size={18} color={tokens.semantic.text.primary} />
+        <Settings size={18} color={wt.ink} />
       </Pressable>
     </Box>
   );
@@ -419,13 +422,18 @@ function TabsLayoutContent() {
         screenOptions={{
           headerShown: !autoHideChromeOnScroll || isChromeVisible,
           tabBarHideOnKeyboard: true,
+          tabBarActiveTintColor: wt.ink,
+          tabBarInactiveTintColor: wt.inkSoft,
           tabBarShowLabel: shell.visibleChrome.tabLabels,
           tabBarStyle: {
             minHeight: shell.tabBar.minHeight,
             paddingTop: shell.tabBar.paddingTop,
             paddingBottom: shell.tabBar.paddingBottom,
-            backgroundColor: tokens.semantic.surface.canvas,
-            borderTopColor: tokens.semantic.border.subtle,
+            backgroundColor: wt.ground,
+            borderTopColor: wt.line,
+            borderTopWidth: 0.75,
+            elevation: 0,
+            shadowOpacity: 0,
             display: !autoHideChromeOnScroll || isChromeVisible ? 'flex' : 'none',
           },
           tabBarLabelStyle: {
@@ -609,14 +617,14 @@ function TabsLayoutContent() {
                   width: size + 16,
                   height: size + 16,
                   borderRadius: tokens.radii.full,
-                  backgroundColor: focused ? tokens.semantic.surface.interactive : 'transparent',
+                  backgroundColor: focused ? wt.sunken : 'transparent',
                 }}
               >
                 <Heart
-                  color={focused ? tokens.colors.primary : color}
+                  color={focused ? wt.lampDeep : color}
                   size={size + 2}
                   strokeWidth={focused ? 2.4 : 2}
-                  fill={focused ? tokens.colors.primary : 'transparent'}
+                  fill={focused ? wt.lamp : 'transparent'}
                 />
               </Box>
             ),
@@ -706,14 +714,14 @@ function TabsLayoutContent() {
       />
 
       <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
-        <ModalContent className="bg-phase-canvas">
+        <ModalContent style={{ backgroundColor: wt.ground }}>
           <Box
             style={{
               paddingTop: shell.modal.contentPadding,
               paddingBottom: tokens.spacing.md,
               paddingHorizontal: shell.modal.contentPadding,
               borderBottomWidth: 1,
-              borderBottomColor: tokens.semantic.border.subtle,
+              borderBottomColor: wt.line,
             }}
           >
             <Box
@@ -724,23 +732,8 @@ function TabsLayoutContent() {
               }}
             >
               <Box>
-                <Text
-                  style={{
-                    color: tokens.semantic.text.primary,
-                    fontSize: tokens.typography.sizes.lg,
-                    fontWeight: '700',
-                  }}
-                >
-                  Breathing Reset
-                </Text>
-                <Text
-                  style={{
-                    color: tokens.semantic.text.secondary,
-                    fontSize: tokens.typography.sizes.xs,
-                  }}
-                >
-                  1 minute of peace
-                </Text>
+                <WText kind="title">Breathing Reset</WText>
+                <WText kind="caption">1 minute of peace</WText>
               </Box>
               <Pressable
                 accessibilityRole="button"
@@ -753,10 +746,10 @@ function TabsLayoutContent() {
                   borderRadius: tokens.radii.full,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: tokens.semantic.surface.interactive,
+                  backgroundColor: wt.sunken,
                 }}
               >
-                <X size={18} color={tokens.semantic.text.primary} />
+                <X size={18} color={wt.ink} />
               </Pressable>
             </Box>
           </Box>

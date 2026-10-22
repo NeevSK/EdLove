@@ -1,6 +1,7 @@
 import { ArrowLeft, Bell, ChevronDown, LayoutGrid, Settings } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { useWorld } from '@repo/ui/world/native';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import React from 'react';
 
@@ -36,12 +37,13 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
   onSettingsPress,
   onCatalogPress,
 }) => {
+  const wt = useWorld().tokens;
   return (
     <Box
       style={{
-        backgroundColor: tokens.semantic.surface.canvas,
-        borderBottomWidth: 1,
-        borderBottomColor: tokens.semantic.border.subtle,
+        backgroundColor: wt.ground,
+        borderBottomWidth: 0.75,
+        borderBottomColor: wt.line,
         paddingHorizontal: tokens.spacing.md,
         paddingVertical: 8,
       }}
@@ -64,10 +66,10 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                 borderRadius: tokens.radii.full,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: tokens.semantic.surface.interactive,
+                backgroundColor: wt.sunken,
               }}
             >
-              <ArrowLeft size={18} color={tokens.semantic.text.primary} />
+              <ArrowLeft size={18} color={wt.ink} />
             </Pressable>
           )}
 
@@ -76,7 +78,7 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
               style={{
                 fontSize: tokens.typography.sizes.sm,
                 fontWeight: '800',
-                color: tokens.semantic.text.primary,
+                color: wt.ink,
                 letterSpacing: -0.2,
               }}
             >
@@ -86,7 +88,7 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xs,
-                  color: tokens.semantic.text.secondary,
+                  color: wt.inkSoft,
                   fontWeight: '500',
                 }}
                 numberOfLines={1}
@@ -108,13 +110,13 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: tokens.semantic.surface.interactive,
+                backgroundColor: wt.sunken,
                 borderRadius: tokens.radii.full,
                 paddingVertical: 3,
                 paddingHorizontal: tokens.spacing.sm,
                 gap: 4,
                 borderWidth: 1,
-                borderColor: tokens.semantic.border.subtle,
+                borderColor: wt.line,
               }}
             >
               <Box
@@ -122,21 +124,21 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                   width: 5,
                   height: 5,
                   borderRadius: 2.5,
-                  backgroundColor: tokens.colors.primary,
+                  backgroundColor: wt.lamp,
                 }}
               />
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xs,
                   fontWeight: '700',
-                  color: tokens.semantic.text.primary,
+                  color: wt.ink,
                   maxWidth: 130,
                 }}
                 numberOfLines={1}
               >
                 {perspectivePill.label}
               </Text>
-              <ChevronDown size={11} color={tokens.semantic.text.secondary} />
+              <ChevronDown size={11} color={wt.inkSoft} />
             </Pressable>
           ) : null}
         </HStack>
@@ -158,10 +160,10 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                 borderRadius: tokens.radii.full,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: tokens.semantic.surface.interactive,
+                backgroundColor: wt.sunken,
               }}
             >
-              <LayoutGrid size={16} color={tokens.semantic.text.primary} />
+              <LayoutGrid size={16} color={wt.ink} />
             </Pressable>
           ) : null}
 
@@ -180,10 +182,10 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                 borderRadius: tokens.radii.full,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: tokens.semantic.surface.interactive,
+                backgroundColor: wt.sunken,
               }}
             >
-              <Bell size={16} color={tokens.semantic.text.primary} />
+              <Bell size={16} color={wt.ink} />
               {unreadCount > 0 ? (
                 <Box
                   style={{
@@ -193,7 +195,7 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                     minWidth: 14,
                     height: 14,
                     borderRadius: 7,
-                    backgroundColor: tokens.colors.primary,
+                    backgroundColor: wt.lamp,
                     paddingHorizontal: 3,
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -201,7 +203,7 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                 >
                   <Text
                     style={{
-                      color: tokens.semantic.text.inverse,
+                      color: wt.onLamp,
                       fontSize: 9,
                       fontWeight: '800',
                     }}
@@ -227,10 +229,10 @@ export const DomainSubHeader: React.FC<DomainSubHeaderProps> = ({
                 borderRadius: tokens.radii.full,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: tokens.semantic.surface.interactive,
+                backgroundColor: wt.sunken,
               }}
             >
-              <Settings size={16} color={tokens.semantic.text.primary} />
+              <Settings size={16} color={wt.ink} />
             </Pressable>
           ) : null}
         </HStack>

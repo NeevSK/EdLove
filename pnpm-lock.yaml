@@ -634,6 +634,21 @@ importers:
       '@expo-google-fonts/inter':
         specifier: ^0.4.2
         version: 0.4.2
+      '@expo-google-fonts/newsreader':
+        specifier: 0.4.1
+        version: 0.4.1
+      '@expo-google-fonts/noto-sans-sinhala':
+        specifier: 0.4.2
+        version: 0.4.2
+      '@expo-google-fonts/noto-sans-tamil':
+        specifier: 0.4.3
+        version: 0.4.3
+      '@expo-google-fonts/noto-serif-sinhala':
+        specifier: 0.4.2
+        version: 0.4.2
+      '@expo-google-fonts/noto-serif-tamil':
+        specifier: 0.4.1
+        version: 0.4.1
       '@expo-google-fonts/poppins':
         specifier: ^0.4.1
         version: 0.4.1
@@ -5779,6 +5794,21 @@ packages:
 
   '@expo-google-fonts/material-symbols@0.4.38':
     resolution: {integrity: sha512-IJkBtN1o8u9BW5fvSii1MyHPQ7Q0HxbWcVBvOrOzgMLpVtZw7R2w94wBTVR7kZwv3w1JNTESMmLA5Sqn1+Z36A==}
+
+  '@expo-google-fonts/newsreader@0.4.1':
+    resolution: {integrity: sha512-j96W112+mj/VYP06DCq00w+twyw42w0MY7eHB/XXioNK80BcG0cIk/zogjOENZSY7qejzIFbHE/PZYqlh/6VKQ==}
+
+  '@expo-google-fonts/noto-sans-sinhala@0.4.2':
+    resolution: {integrity: sha512-pczEE8p3aAvnMuVSppyW8d9dqlg9wxr8R3BfEUB9qPQHAWlR9TsSlaGbF/G/j8k4fSU21swf+v5p4BeTuFeMtA==}
+
+  '@expo-google-fonts/noto-sans-tamil@0.4.3':
+    resolution: {integrity: sha512-1TBkwJ8gJPnt1UIC+um987hYb/QmRDATGKbtwDW6dajISxr8b7+EVjwMESMJaQxfNS8VWE4IBT2jYmpBGw4D+w==}
+
+  '@expo-google-fonts/noto-serif-sinhala@0.4.2':
+    resolution: {integrity: sha512-zTXnIGY2/Eszo93/vPfZYFmTx7mlHorPNu2jFIBBX0iUUlKxN151k4UoSs+6/XN3Kf9e/dFVBrW6jV2TNbRoaw==}
+
+  '@expo-google-fonts/noto-serif-tamil@0.4.1':
+    resolution: {integrity: sha512-Qks3OxcT4IoZQ3WTufbmi7PXJ0XJSvDRdye562XKRGAK/FJTqC1K0E46PutbTP8wv1lAA1crzZvlLnp6g8HihQ==}
 
   '@expo-google-fonts/poppins@0.4.1':
     resolution: {integrity: sha512-LiX5oEryJqDt3UmWwr4oqf11hGMz/JEffkkNcZ3UtGwyoMFzXmBmTwcrAWrEttxypxmLNmPykDg+CY2VjKve9A==}
@@ -27502,6 +27532,16 @@ snapshots:
   '@expo-google-fonts/inter@0.4.2': {}
 
   '@expo-google-fonts/material-symbols@0.4.38': {}
+
+  '@expo-google-fonts/newsreader@0.4.1': {}
+
+  '@expo-google-fonts/noto-sans-sinhala@0.4.2': {}
+
+  '@expo-google-fonts/noto-sans-tamil@0.4.3': {}
+
+  '@expo-google-fonts/noto-serif-sinhala@0.4.2': {}
+
+  '@expo-google-fonts/noto-serif-tamil@0.4.1': {}
 
   '@expo-google-fonts/poppins@0.4.1': {}
 

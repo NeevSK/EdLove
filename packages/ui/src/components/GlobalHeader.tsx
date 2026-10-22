@@ -7,6 +7,7 @@ import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Bell, ChevronDown, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { useWorld, Text as WText } from '@repo/ui/world/native';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
@@ -86,6 +87,7 @@ export default function GlobalHeader({
   const { t } = useTranslation();
   const { can } = usePermissions();
   const theme = useTheme();
+  const wt = useWorld().tokens;
   const user = useStore((state: TotalState) => state.user);
   const insets = useSafeAreaInsets();
   const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
@@ -182,9 +184,9 @@ export default function GlobalHeader({
       <Box
         className="absolute inset-0 border-b"
         style={{
-          backgroundColor: theme.isDark ? '#1A1610' : '#F5EDD6',
-          borderBottomColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(42,35,24,0.08)',
-          opacity: 0.98,
+          backgroundColor: wt.ground,
+          borderBottomColor: wt.line,
+          borderBottomWidth: 0.75,
         }}
       />
 
@@ -207,7 +209,7 @@ export default function GlobalHeader({
               >
                 <Box
                   className="p-2 rounded-xl"
-                  style={{ backgroundColor: tokens.colors.surfaceInteractive }}
+                  style={{ backgroundColor: wt.sunken }}
                 >
                   <ChevronLeft size={24} className="text-phase-text-primary" />
                 </Box>
@@ -247,10 +249,9 @@ export default function GlobalHeader({
             <VStack className="gap-0.5 flex-1">
               {!isCompactLandscape && (subtitle || (!title && greetingDetails.text)) && (
                 <HStack className="items-center gap-1">
-                  <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
+                  <WText kind="label" numberOfLines={1}>
                     {title ? subtitle : greetingDetails.text}
-                  </Text>
-                  {!title && <Text className="text-xs">{greetingDetails.emoji}</Text>}
+                  </WText>
                 </HStack>
               )}
 
@@ -276,15 +277,12 @@ export default function GlobalHeader({
                       size="sm"
                     />
                     {perspectivePill.onPress ? (
-                      <ChevronDown size={14} color={tokens.colors.inkSubtle} />
+                      <ChevronDown size={14} color={wt.inkSoft} />
                     ) : null}
                   </HStack>
                 </Pressable>
               ) : (
-                <Text
-                  className={`${isCompactLandscape ? 'text-base' : 'text-lg'} font-bold text-phase-text-primary`}
-                  numberOfLines={1}
-                >
+                <WText kind="title" numberOfLines={1} style={isCompactLandscape ? { fontSize: 17, lineHeight: 22 } : undefined}>
                   {title
                     ? title
                     : isSelfView
@@ -292,7 +290,7 @@ export default function GlobalHeader({
                         ? userFullName
                         : roleContext.label
                       : displayName}
-                </Text>
+                </WText>
               )}
             </VStack>
           </HStack>
@@ -315,7 +313,7 @@ export default function GlobalHeader({
                   className="p-2 rounded-full"
                   style={{
                     backgroundColor: state.isSearchActive
-                      ? tokens.colors.surfaceInteractive
+                      ? wt.sunken
                       : 'transparent',
                   }}
                 >
@@ -344,7 +342,7 @@ export default function GlobalHeader({
               >
                 <Box
                   className="relative p-2 rounded-full"
-                  style={{ backgroundColor: tokens.colors.surfaceInteractive }}
+                  style={{ backgroundColor: wt.sunken }}
                 >
                   <Bell
                     size={22}
@@ -357,12 +355,12 @@ export default function GlobalHeader({
                       className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full"
                       style={{
                         backgroundColor: error
-                          ? tokens.colors.error
+                          ? wt.danger
                           : isLoading
-                            ? tokens.colors.warning
-                            : tokens.colors.success,
+                            ? wt.inkFaint
+                            : wt.lamp,
                         borderWidth: 1.5,
-                        borderColor: theme.isDark ? '#1A1610' : '#F5EDD6',
+                        borderColor: wt.ground,
                       }}
                     />
                   )}
