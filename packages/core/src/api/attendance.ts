@@ -181,6 +181,10 @@ export const attendanceAPI = {
         status: status as any,
         attendance_date: date,
         student_name: null,
+        student_avatar_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        sessions: [],
       },
       enqueueLocal: async (_payload) => {
         // Enqueue to local outbox mutation queue
