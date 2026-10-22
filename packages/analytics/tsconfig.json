@@ -34,7 +34,12 @@
         "../schema/dist/*"
       ],
       "@repo/analytics/*": [
-        "./src/*"
+        "./src/*",
+        "./src/*/index.ts",
+        "./src/*/index.tsx"
+      ],
+      "@repo/analytics": [
+        "./src/index.ts"
       ]
     },
     "jsx": "react-jsx"

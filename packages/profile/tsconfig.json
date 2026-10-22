@@ -10,7 +10,12 @@
         "./src/*"
       ],
       "@repo/profile/*": [
-        "./src/*"
+        "./src/*",
+        "./src/*/index.ts",
+        "./src/*/index.tsx"
+      ],
+      "@repo/profile": [
+        "./src/index.ts"
       ],
       "@repo/people": [
         "../people/dist/index.d.ts"

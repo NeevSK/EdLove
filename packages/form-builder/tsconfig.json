@@ -10,7 +10,12 @@
         "./src/*"
       ],
       "@repo/form-builder/*": [
-        "./src/*"
+        "./src/*",
+        "./src/*/index.ts",
+        "./src/*/index.tsx"
+      ],
+      "@repo/form-builder": [
+        "./src/index.ts"
       ],
       "@repo/core": [
         "../core/dist/index.d.ts"

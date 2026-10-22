@@ -9,8 +9,9 @@
     "composite": true,
     "emitDeclarationOnly": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@repo/ui/*": ["./src/*"],
+      "@/*": ["./src/*", "./src/*/index.ts", "./src/*/index.tsx"],
+      "@repo/ui/*": ["./src/*", "./src/*/index.ts", "./src/*/index.tsx"],
+      "@repo/ui": ["./src/index.ts"],
       "@repo/core": ["../core/dist/index.d.ts"],
       "@repo/core/*": ["../core/dist/*"]
     },

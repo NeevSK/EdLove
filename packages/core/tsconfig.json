@@ -11,7 +11,8 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"],
-      "@repo/core/*": ["./src/*"],
+      "@repo/core/*": ["./src/*", "./src/*/index.ts", "./src/*/index.tsx"],
+      "@repo/core": ["./src/index.ts"],
       "@repo/ui": ["../ui/dist/index.d.ts"],
       "@repo/ui/*": ["../ui/dist/*"]
     },
@@ -19,5 +20,12 @@
     "rootDir": "./src"
   },
   "include": ["src/**/*", "src/**/*.json"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.bench.ts"
+  ]
 }

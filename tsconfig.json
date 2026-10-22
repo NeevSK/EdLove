@@ -29,52 +29,84 @@
     },
     {
       "path": "./packages/form-builder"
+    },
+    {
+      "path": "./packages/profile"
+    },
+    {
+      "path": "./packages/people"
+    },
+    {
+      "path": "./packages/scanner-kit"
+    },
+    {
+      "path": "./packages/accounting"
+    },
+    {
+      "path": "./packages/platform-mcp"
+    },
+    {
+      "path": "./packages/policies"
+    },
+    {
+      "path": "./packages/library"
+    },
+    {
+      "path": "./packages/payments"
+    },
+    {
+      "path": "./packages/workforce"
+    },
+    {
+      "path": "./packages/community"
+    },
+    {
+      "path": "./packages/ai"
     }
   ],
+  "files": [],
   "compilerOptions": {
-    "noEmit": true,
     "types": ["node"],
     "resolveJsonModule": true,
     "paths": {
-      "@repo/analytics": ["./packages/analytics/src"],
-      "@repo/ui": ["./packages/ui/src"],
-      "@repo/graphics": ["./packages/graphics/src"],
-      "@repo/admin": ["./packages/admin/src"],
-      "@repo/classroom": ["./packages/classroom/src"],
-      "@repo/core": ["./packages/core/src"],
-      "@repo/schema": ["./packages/schema/src"],
-      "@repo/database": ["./packages/database/src"],
-      "@repo/self": ["./packages/self/src"],
-      "@repo/form-builder": ["./packages/form-builder/src"],
-      "@repo/policies": ["./packages/policies/src"],
+      "@repo/analytics": ["./packages/analytics/src/index.ts", "./packages/analytics/src"],
+      "@repo/ui": ["./packages/ui/src/index.ts", "./packages/ui/src"],
+      "@repo/graphics": ["./packages/graphics/src/index.ts", "./packages/graphics/src"],
+      "@repo/admin": ["./packages/admin/src/index.ts", "./packages/admin/src"],
+      "@repo/classroom": ["./packages/classroom/src/index.ts", "./packages/classroom/src"],
+      "@repo/core": ["./packages/core/src/index.ts", "./packages/core/src"],
+      "@repo/schema": ["./packages/schema/src/index.ts", "./packages/schema/src"],
+      "@repo/database": ["./packages/database/src/index.ts", "./packages/database/src"],
+      "@repo/self": ["./packages/self/src/index.ts", "./packages/self/src"],
+      "@repo/form-builder": ["./packages/form-builder/src/index.ts", "./packages/form-builder/src"],
+      "@repo/policies": ["./packages/policies/src/index.ts", "./packages/policies/src"],
+      "@repo/community": ["./packages/community/src/index.ts", "./packages/community/src"],
+      "@repo/people": ["./packages/people/src/index.ts", "./packages/people/src"],
+      "@repo/profile": ["./packages/profile/src/index.ts", "./packages/profile/src"],
+      "@repo/scanner-kit": ["./packages/scanner-kit/src/index.ts", "./packages/scanner-kit/src"],
+      "@repo/library": ["./packages/library/src/index.ts", "./packages/library/src"],
       "@repo/sanctuary-api": ["./apps/sanctuary-api/src/index.ts"],
-      "@library/*": ["./packages/library/src/*"],
-      "@community/*": ["./packages/community/src/*"],
-      "@people/*": ["./packages/people/src/*"],
-      "@profile/*": ["./packages/profile/src/*"],
-      "@scanner-kit/*": ["./packages/scanner-kit/src/*"],
-      "@self/*": ["./packages/self/src/*"],
-      "@repo/accounting/*": ["./packages/accounting/src/*"],
-      "@repo/admin/*": ["./packages/admin/src/*"],
-      "@repo/ai/*": ["./packages/ai/src/*"],
-      "@repo/analytics/*": ["./packages/analytics/src/*"],
-      "@repo/classroom/*": ["./packages/classroom/src/*"],
-      "@repo/community/*": ["./packages/community/src/*"],
-      "@repo/core/*": ["./packages/core/src/*"],
-      "@repo/database/*": ["./packages/database/src/*"],
-      "@repo/form-builder/*": ["./packages/form-builder/src/*"],
-      "@repo/graphics/*": ["./packages/graphics/src/*"],
-      "@repo/library/*": ["./packages/library/src/*"],
-      "@repo/payments/*": ["./packages/payments/src/*"],
-      "@repo/people/*": ["./packages/people/src/*"],
-      "@repo/platform-mcp/*": ["./packages/platform-mcp/src/*"],
-      "@repo/policies/*": ["./packages/policies/src/*"],
-      "@repo/profile/*": ["./packages/profile/src/*"],
-      "@repo/scanner-kit/*": ["./packages/scanner-kit/src/*"],
-      "@repo/schema/*": ["./packages/schema/src/*"],
-      "@repo/self/*": ["./packages/self/src/*"],
-      "@repo/ui/*": ["./packages/ui/src/*"],
-      "@repo/workforce/*": ["./packages/workforce/src/*"]
+      "@repo/accounting/*": ["./packages/accounting/src/*", "./packages/accounting/src/*/index.ts", "./packages/accounting/src/*/index.tsx"],
+      "@repo/admin/*": ["./packages/admin/src/*", "./packages/admin/src/*/index.ts", "./packages/admin/src/*/index.tsx"],
+      "@repo/ai/*": ["./packages/ai/src/*", "./packages/ai/src/*/index.ts", "./packages/ai/src/*/index.tsx"],
+      "@repo/analytics/*": ["./packages/analytics/src/*", "./packages/analytics/src/*/index.ts", "./packages/analytics/src/*/index.tsx"],
+      "@repo/classroom/*": ["./packages/classroom/src/*", "./packages/classroom/src/*/index.ts", "./packages/classroom/src/*/index.tsx"],
+      "@repo/community/*": ["./packages/community/src/*", "./packages/community/src/*/index.ts", "./packages/community/src/*/index.tsx"],
+      "@repo/core/*": ["./packages/core/src/*", "./packages/core/src/*/index.ts", "./packages/core/src/*/index.tsx"],
+      "@repo/database/*": ["./packages/database/src/*", "./packages/database/src/*/index.ts", "./packages/database/src/*/index.tsx"],
+      "@repo/form-builder/*": ["./packages/form-builder/src/*", "./packages/form-builder/src/*/index.ts", "./packages/form-builder/src/*/index.tsx"],
+      "@repo/graphics/*": ["./packages/graphics/src/*", "./packages/graphics/src/*/index.ts", "./packages/graphics/src/*/index.tsx"],
+      "@repo/library/*": ["./packages/library/src/*", "./packages/library/src/*/index.ts", "./packages/library/src/*/index.tsx"],
+      "@repo/payments/*": ["./packages/payments/src/*", "./packages/payments/src/*/index.ts", "./packages/payments/src/*/index.tsx"],
+      "@repo/people/*": ["./packages/people/src/*", "./packages/people/src/*/index.ts", "./packages/people/src/*/index.tsx"],
+      "@repo/platform-mcp/*": ["./packages/platform-mcp/src/*", "./packages/platform-mcp/src/*/index.ts", "./packages/platform-mcp/src/*/index.tsx"],
+      "@repo/policies/*": ["./packages/policies/src/*", "./packages/policies/src/*/index.ts", "./packages/policies/src/*/index.tsx"],
+      "@repo/profile/*": ["./packages/profile/src/*", "./packages/profile/src/*/index.ts", "./packages/profile/src/*/index.tsx"],
+      "@repo/scanner-kit/*": ["./packages/scanner-kit/src/*", "./packages/scanner-kit/src/*/index.ts", "./packages/scanner-kit/src/*/index.tsx"],
+      "@repo/schema/*": ["./packages/schema/src/*", "./packages/schema/src/*/index.ts", "./packages/schema/src/*/index.tsx"],
+      "@repo/self/*": ["./packages/self/src/*", "./packages/self/src/*/index.ts", "./packages/self/src/*/index.tsx"],
+      "@repo/ui/*": ["./packages/ui/src/*", "./packages/ui/src/*/index.ts", "./packages/ui/src/*/index.tsx"],
+      "@repo/workforce/*": ["./packages/workforce/src/*", "./packages/workforce/src/*/index.ts", "./packages/workforce/src/*/index.tsx"]
     }
   },
   "exclude": [
