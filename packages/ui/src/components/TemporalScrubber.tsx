@@ -32,9 +32,9 @@ export const TemporalScrubber: React.FC = () => {
       if (translationX < -50) {
         const currentDate = viewDate ? new Date(viewDate) : today;
         currentDate.setDate(currentDate.getDate() - 1);
-        setViewDate(currentDate.toISOString().split('T')[0]!);
+        scheduleOnRN(setViewDate, currentDate.toISOString().split('T')[0]!);
       } else if (translationX > 50) {
-        setViewDate(today.toISOString().split('T')[0]!);
+        scheduleOnRN(setViewDate, today.toISOString().split('T')[0]!);
       }
     },
     [setViewDate, viewDate],

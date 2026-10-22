@@ -209,7 +209,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       hapticLight();
 
       if (actions && actions.length > 0) {
-        setIsDrawerVisible(true);
+        scheduleOnRN(setIsDrawerVisible, true);
         return;
       }
 
@@ -241,7 +241,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       }
 
       if (!initialized) {
-        setDefaultPosition();
+        scheduleOnRN(setDefaultPosition);
       }
     }, [clampFabToViewport, positionX, positionY, setDefaultPosition]);
 
@@ -352,22 +352,22 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       opacity: pulseOpacity.value,
     }));
 
-    const closeDrawer = useCallback(() => setIsDrawerVisible(false), []);
+    const closeDrawer = useCallback(() => scheduleOnRN(setIsDrawerVisible, false), []);
 
     const handleBreathingReset = useCallback(() => {
-      setIsDrawerVisible(false);
+      scheduleOnRN(setIsDrawerVisible, false);
       onBreathingReset?.();
     }, [onBreathingReset]);
 
     const handleActionPress = useCallback((action: ActionItem) => {
-      setIsDrawerVisible(false);
+      scheduleOnRN(setIsDrawerVisible, false);
       action.onPress();
     }, []);
 
     if (!isVisible) return null;
 
     return (
-      <Box className="absolute inset-0 z-[1000] pointer-events-none">
+      <Box pointerEvents="box-none" className="absolute inset-0 z-[1000]">
         <GestureDetector gesture={composedGesture}>
           <Animated.View
             style={[containerStyle]}

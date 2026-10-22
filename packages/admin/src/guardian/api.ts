@@ -67,7 +67,7 @@ export const guardianAPI: GuardianAPI = {
 
   async getGuardianProfile(guardianId: string): Promise<GuardianIdentity | null> {
     try {
-      return (await api.guardian.getProfile(guardianId)) as GuardianIdentity;
+      return (await api.guardian.getProfile(guardianId)) as unknown as GuardianIdentity;
     } catch {
       return null;
     }

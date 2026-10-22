@@ -68,13 +68,13 @@ export default function GuardianApprovalsSection({
       hapticLight();
       await planBridgeAPI.verifyGuardianLink({ relationshipId, decision });
       hapticSuccess();
-      toast.show(
-        decision === 'verified' ? 'Guardian link verified successfully.' : 'Guardian link revoked.',
-        { type: 'success' },
-      );
+      toast.showToast({
+        message: decision === 'verified' ? 'Guardian link verified successfully.' : 'Guardian link revoked.',
+        type: 'success',
+      });
       await reloadLinks();
     } catch (err: any) {
-      toast.show(err?.message || 'Failed to update guardian verification.', { type: 'error' });
+      toast.showToast({ message: err?.message || 'Failed to update guardian verification.', type: 'error' });
     } finally {
       setProcessingId(null);
     }
@@ -193,7 +193,7 @@ export default function GuardianApprovalsSection({
                   <HStack className="justify-end gap-2 pt-1 border-t border-phase-border/40">
                     {link.verification_status !== 'revoked' ? (
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="outline"
                         onPress={() => handleDecision(link.id, 'revoked')}
                         disabled={isWorking}
@@ -205,7 +205,7 @@ export default function GuardianApprovalsSection({
 
                     {link.verification_status !== 'verified' ? (
                       <Button
-                        size="xs"
+                        size="sm"
                         onPress={() => handleDecision(link.id, 'verified')}
                         disabled={isWorking}
                         className="h-8 px-3 rounded-lg bg-emerald-600"

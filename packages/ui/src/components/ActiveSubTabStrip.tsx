@@ -7,7 +7,7 @@ import { GripVertical, X } from '@repo/ui/icons';
 import { Box, Pressable, ScrollView, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticSelection } from '@repo/ui/utils/haptics';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import Animated, {
   useAnimatedStyle,
@@ -18,6 +18,7 @@ import { usePathname, useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
 
 const EMPTY_TABS: ActiveSubTabItem[] = [];
+const HOME_ICON_STYLE = { fontSize: tokens.typography.sizes.sm };
 
 export interface ActiveSubTabStripProps {
   domain: ActiveSubTabDomain;
@@ -50,26 +51,32 @@ function DraggableTaskPill({
     transform: [{ translateX: translationX.value }, { scale: dragging.value ? 1.04 : 1 }],
     zIndex: dragging.value ? 2 : 0,
   }));
-  const dragGesture = usePanGesture({
-    activateAfterLongPress: 260,
-    onActivate: () => {
+  const dragGesture = Gesture.Pan()
+    .activateAfterLongPress(260)
+    .activeOffsetX([-10, 10])
+    .onStart(() => {
+      'worklet';
       dragging.value = true;
-    },
-    onUpdate: (event) => {
+    })
+    .onUpdate((event: any) => {
+      'worklet';
       translationX.value = event.translationX;
-    },
-    onDeactivate: (event) => {
-      if (!event.canceled && Math.abs(event.translationX) >= 8) {
+    })
+    .onEnd((event: any) => {
+      'worklet';
+      if (Math.abs(event.translationX) >= 8) {
         scheduleOnRN(onDrop, tab.id, event.translationX);
       }
+    })
+    .onFinalize(() => {
+      'worklet';
       dragging.value = false;
       translationX.value = withSpring(0, {
         duration: 400,
         dampingRatio: 0.8,
         overshootClamping: true,
       });
-    },
-  });
+    });
 
   return (
     <Animated.View
@@ -255,6 +262,19 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
     return null;
   }
 
+  const pillElements = tabs.map((tab) => (
+    <DraggableTaskPill
+      active={tab.id === activeTabId}
+      key={tab.id}
+      onClose={() => handleCloseTab(tab.id)}
+      onDrop={handleDrop}
+      onLayout={(taskId, center) => itemCenters.current.set(taskId, center)}
+      onMove={handleAccessibleMove}
+      onSelect={() => handleSelectTab(tab)}
+      tab={tab}
+    />
+  ));
+
   return (
     <Box
       style={{
@@ -286,7 +306,7 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
               borderBottomColor: tokens.colors.primary,
             }}
           >
-            <Text style={{ fontSize: tokens.typography.sizes.sm }}>🏠</Text>
+            <Text style={HOME_ICON_STYLE}>🏠</Text>
             <Text
               style={{
                 fontSize: tokens.typography.sizes.xs,
@@ -299,18 +319,7 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
           </Pressable>
         ) : null}
 
-        {tabs.map((tab) => (
-          <DraggableTaskPill
-            active={tab.id === activeTabId}
-            key={tab.id}
-            onClose={() => handleCloseTab(tab.id)}
-            onDrop={handleDrop}
-            onLayout={(taskId, center) => itemCenters.current.set(taskId, center)}
-            onMove={handleAccessibleMove}
-            onSelect={() => handleSelectTab(tab)}
-            tab={tab}
-          />
-        ))}
+        {pillElements}
 
       </ScrollView>
     </Box>

@@ -29,7 +29,7 @@ export async function getGuardianStudentsRows(
 }
 
 export async function getStudentGuardiansRows(studentId: string): Promise<GuardianIdentity[]> {
-  return api.guardian.getStudentGuardians(studentId) as Promise<GuardianIdentity[]>;
+  return api.guardian.getStudentGuardians(studentId) as unknown as Promise<GuardianIdentity[]>;
 }
 
 export async function getStudentAttendanceRows(studentId: string, _sinceIso: string) {
@@ -68,13 +68,13 @@ export async function getStudentRecentGradesRows(studentId: string, limit = 5) {
       (grade: {
         subject: string;
         grade: string;
-        percentage: number;
+        percentage?: number;
         date: string;
         type: string;
       }) => ({
         subject: grade.subject,
         grade: grade.grade,
-        percentage: grade.percentage,
+        percentage: grade.percentage ?? 0,
         created_at: grade.date,
         type: grade.type,
       }),

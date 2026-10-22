@@ -9,15 +9,15 @@ export {
   dispatchQRDeepLink,
   redeemPendingQRAction,
   useQRDeepLink,
-} from '@repo/scanner-kit/hooks/useQRDeepLink';
-export { default as OCRScanner } from '@repo/scanner-kit/OCRScanner';
+} from './hooks/useQRDeepLink';
+export { default as OCRScanner } from './OCRScanner';
 // OCR adapter pipeline  providers, parsers, pipeline
-export * from '@repo/scanner-kit/ocr';
-export * from '@repo/scanner-kit/adapters';
-export { default as QRShareButton } from '@repo/scanner-kit/qr/QRShareButton';
-export { default as ScannerModal } from '@repo/scanner-kit/ScannerModal';
-export { default as QRHandlerScreen } from '@repo/scanner-kit/screens/QRHandlerScreen';
-export type { ScannedStudent } from '@repo/scanner-kit/types';
+export * from './ocr';
+export * from './adapters';
+export { default as QRShareButton } from './qr/QRShareButton';
+export { default as ScannerModal } from './ScannerModal';
+export { default as QRHandlerScreen } from './screens/QRHandlerScreen';
+export type { ScannedStudent } from './types';
 export {
   parseInstitutionalQR,
   type ParsedInstitutionalQR,

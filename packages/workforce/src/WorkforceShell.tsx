@@ -1,8 +1,9 @@
 import { useDomainFeature } from '@repo/core/logic';
 import { Hammer, Users } from '@repo/ui/icons';
 import { Box, Heading, Icon, Text, Theme, VStack } from '@repo/ui/primitives';
+import type React from 'react';
 
-export default function WorkforceShell() {
+export default function WorkforceShell(): React.ReactNode {
   const { result: workforceFeature } = useDomainFeature('workforce');
 
   if (!workforceFeature.permitted) return null;

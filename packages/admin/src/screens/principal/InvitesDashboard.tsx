@@ -298,7 +298,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
                   <HStack className="gap-2 items-center">
                     <Box className="px-2 py-0.5 rounded-full bg-phase-canvas border border-phase-border">
                       <Text className="text-[8px] font-black text-phaseText-muted uppercase">
-                        {invite.authority?.replace('_', ' ') || 'Guest'}
+                        {invite.capacity?.replace('_', ' ') || 'Guest'}
                       </Text>
                     </Box>
                     <Text className="text-[10px] font-bold text-phaseText-muted uppercase">

@@ -92,9 +92,9 @@ export default function CalmPolicySection({ schoolId, principalId }: CalmPolicyS
 
       setSettings(finalSettings);
       hapticSuccess();
-      toast.show('School calm communication policies updated successfully.', { type: 'success' });
+      toast.showToast({ message: 'School calm communication policies updated successfully.', type: 'success' });
     } catch (err: any) {
-      toast.show(err?.message || 'Could not save calm policies.', { type: 'error' });
+      toast.showToast({ message: err?.message || 'Could not save calm policies.', type: 'error' });
     } finally {
       setIsSaving(false);
     }

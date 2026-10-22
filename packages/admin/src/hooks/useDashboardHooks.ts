@@ -26,8 +26,8 @@ export function useSchoolPulseQuery(schoolId: string) {
     queryKey: ['school-pulse', schoolId, viewDate, viewScale],
     queryFn: () =>
       coreAPI.profile.getSchoolPulse(schoolId, {
-        viewDate,
-        viewScale,
+        view_date: viewDate,
+        view_scale: viewScale,
       }) as Promise<PulseMetricsZod>,
     enabled: !!schoolId,
   });
