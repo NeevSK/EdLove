@@ -137,7 +137,8 @@
     "check:ota-safety": "node scripts/ota-safety-check.mjs",
     "ota-safety:init": "node scripts/ota-safety-check.mjs --init",
     "preflight:build": "node scripts/preflight-build.mjs",
-    "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\""
+    "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\"",
+    "check:world": "node scripts/check-world.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",

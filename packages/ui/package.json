@@ -29,6 +29,21 @@
       "import": "./src/tokens.ts",
       "default": "./src/tokens.ts"
     },
+    "./world": {
+      "types": "./src/world/index.ts",
+      "import": "./src/world/index.ts",
+      "default": "./src/world/index.ts"
+    },
+    "./world/native": {
+      "types": "./src/world/native/index.ts",
+      "import": "./src/world/native/index.ts",
+      "default": "./src/world/native/index.ts"
+    },
+    "./world/dom": {
+      "types": "./src/world/dom/index.tsx",
+      "import": "./src/world/dom/index.tsx",
+      "default": "./src/world/dom/index.tsx"
+    },
     "./feedback": {
       "types": "./src/feedback.ts",
       "import": "./src/feedback.ts",

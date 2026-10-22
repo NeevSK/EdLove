@@ -10,6 +10,8 @@ import {
   useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
+import { DEFAULT_WORLD, isWorldId } from '../world/worlds';
+import type { WorldId } from '../world/types';
 import type { TemporalPhase, ThemeMode } from './types';
 import { getTemporalPhase, shouldUseDarkTheme } from './utils';
 
@@ -19,9 +21,12 @@ interface ThemeContextValue {
   isDark: boolean;
   isVeilActive: boolean;
   enableLivingTheme: boolean;
+  /** The world that dresses every component (see packages/ui/src/world). */
+  worldId: WorldId;
   setThemeMode: (mode: ThemeMode) => Promise<void>;
   toggleVeil: () => Promise<void>;
   setEnableLivingTheme: (enabled: boolean) => Promise<void>;
+  setWorld: (world: WorldId) => Promise<void>;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -29,6 +34,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 const STORAGE_KEYS = {
   IS_VEIL_ACTIVE: '@gurudevi/is_veil_active',
   ENABLE_LIVING_THEME: '@gurudevi/enable_living_theme',
+  WORLD: '@gurudevi/world',
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -38,6 +44,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
   const [isVeilActive, setIsVeilActive] = useState(false);
   const [enableLivingTheme, setEnableLivingThemeState] = useState<boolean>(true);
+  // Read synchronously so a chosen world paints on the first frame, with no flash of Sanctuary.
+  const [worldId, setWorldState] = useState<WorldId>(() => {
+    try {
+      const saved = storage.getString?.(STORAGE_KEYS.WORLD);
+      return isWorldId(saved) ? saved : DEFAULT_WORLD;
+    } catch {
+      return DEFAULT_WORLD;
+    }
+  });
   const systemColorScheme = useColorScheme();
 
   // Derived
@@ -53,12 +68,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadThemeSettings() {
       try {
-        const [veil, living] = await Promise.all([
+        const [veil, living, world] = await Promise.all([
           storage.getStringAsync(STORAGE_KEYS.IS_VEIL_ACTIVE),
           storage.getStringAsync(STORAGE_KEYS.ENABLE_LIVING_THEME),
+          storage.getStringAsync(STORAGE_KEYS.WORLD),
         ]);
         if (veil !== undefined) setIsVeilActive(veil === 'true');
         if (living !== undefined) setEnableLivingThemeState(living === 'true');
+        if (isWorldId(world)) setWorldState(world);
       } catch (e) {
         console.warn('[ThemeProvider] Load error:', e);
       }
@@ -115,6 +132,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setWorld = useCallback(async (world: WorldId) => {
+    if (!isWorldId(world)) return;
+    setWorldState(world);
+    try {
+      storage.set(STORAGE_KEYS.WORLD, world);
+    } catch (e) {
+      console.warn('[ThemeProvider] World error:', e);
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       themeMode,
@@ -122,9 +149,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       isDark,
       isVeilActive,
       enableLivingTheme,
+      worldId,
       setThemeMode,
       toggleVeil,
       setEnableLivingTheme,
+      setWorld,
     }),
     [
       themeMode,
@@ -132,9 +161,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       isDark,
       isVeilActive,
       enableLivingTheme,
+      worldId,
       setThemeMode,
       toggleVeil,
       setEnableLivingTheme,
+      setWorld,
     ],
   );
 
@@ -147,9 +178,11 @@ const DEFAULT_THEME_VALUE: ThemeContextValue = {
   isDark: false,
   isVeilActive: false,
   enableLivingTheme: true,
+  worldId: DEFAULT_WORLD,
   setThemeMode: async () => {},
   toggleVeil: async () => {},
   setEnableLivingTheme: async () => {},
+  setWorld: async () => {},
 };
 
 export function useThemeContext() {
