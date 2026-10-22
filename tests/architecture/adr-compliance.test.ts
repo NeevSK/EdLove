@@ -8,6 +8,7 @@ import { attendanceRouter } from '../apps/sanctuary-api/src/core/handlers/attend
 import { inventoryRouter } from '../apps/sanctuary-api/src/core/handlers/inventory';
 import { mappingRouter } from '../apps/sanctuary-api/src/core/handlers/mapping';
 import { identityRouter } from '../apps/sanctuary-api/src/core/handlers/identity';
+import { selfContract } from '../packages/core/src/api/self.contract';
 import { profileContract } from '../packages/core/src/api/profile.contract';
 import { historyContract } from '../packages/core/src/api/history.contract';
 import { rewardsContract } from '../packages/core/src/api/rewards.contract';
@@ -18,41 +19,44 @@ import { mappingContract } from '../packages/core/src/api/mapping.contract';
 import { identityContract } from '../packages/core/src/api/identity.contract';
 
 const ALL_ROUTERS = [
-  { name: 'self', router: selfRouter, contract: null },
-  { name: 'profile', router: profileRouter, contract: null },
-  { name: 'history', router: historyRouter, contract: historyContract },
-  { name: 'rewards', router: rewardsRouter, contract: rewardsContract },
-  { name: 'presence', router: presenceRouter, contract: presenceContract },
-  { name: 'attendance', router: attendanceRouter, contract: attendanceContract },
-  { name: 'inventory', router: inventoryRouter, contract: inventoryContract },
-  { name: 'mapping', router: mappingRouter, contract: mappingContract },
-  { name: 'identity', router: identityRouter, contract: identityContract },
+  { name: 'self', router: selfRouter, contract: selfContract as any },
+  { name: 'profile', router: profileRouter, contract: profileContract as any },
+  { name: 'history', router: historyRouter, contract: historyContract as any },
+  { name: 'rewards', router: rewardsRouter, contract: rewardsContract as any },
+  { name: 'presence', router: presenceRouter, contract: presenceContract as any },
+  { name: 'attendance', router: attendanceRouter, contract: attendanceContract as any },
+  { name: 'inventory', router: inventoryRouter, contract: inventoryContract as any },
+  { name: 'mapping', router: mappingRouter, contract: mappingContract as any },
+  { name: 'identity', router: identityRouter, contract: identityContract as any },
+];
+
+const ALL_CONTRACTS: Array<{ name: string; contract: Record<string, any> }> = [
+  { name: 'self', contract: selfContract as any },
+  { name: 'profile', contract: profileContract as any },
+  { name: 'history', contract: historyContract as any },
+  { name: 'rewards', contract: rewardsContract as any },
+  { name: 'presence', contract: presenceContract as any },
+  { name: 'attendance', contract: attendanceContract as any },
+  { name: 'inventory', contract: inventoryContract as any },
+  { name: 'mapping', contract: mappingContract as any },
+  { name: 'identity', contract: identityContract as any },
 ];
 
 describe('ADR Compliance: Middleware Enforcement', () => {
   for (const { name, router } of ALL_ROUTERS) {
     describe(`${name} router`, () => {
       it('every procedure uses doubleGateMiddleware', () => {
-        for (const [procName, proc] of Object.entries(router._def.procedures)) {
-          const middlewares = proc._def.middlewares || [];
-          const hasDoubleGate = middlewares.some(m => m.name === 'doubleGateMiddleware');
+        for (const [procName, proc] of Object.entries((router as any)._def?.procedures || {})) {
+          const middlewares = (proc as any)._def?.middlewares || [];
+          const hasDoubleGate = middlewares.some((m: any) => m.name === 'doubleGateMiddleware');
           expect(hasDoubleGate).toBe(true);
         }
       });
     });
-  });
+  }
 });
 
 describe('ADR Compliance: HTTP Method Correctness', () => {
-  const ALL_CONTRACTS = [
-    { name: 'history', contract: historyContract },
-    { name: 'rewards', contract: rewardsContract },
-    { name: 'presence', contract: presenceContract },
-    { name: 'attendance', contract: attendanceContract },
-    { name: 'inventory', contract: inventoryContract },
-    { name: 'mapping', contract: mappingContract },
-    { name: 'identity', contract: identityContract },
-  ];
 
   for (const { name, contract } of ALL_CONTRACTS) {
     describe(`${name} contract HTTP methods`, () => {
@@ -66,24 +70,12 @@ describe('ADR Compliance: HTTP Method Correctness', () => {
             expect(['get', 'post']).toContain(proc.method);
           }
         });
-      });
+      }
     });
-  });
+  }
 });
 
 describe('ADR Compliance: Path Naming Convention', () => {
-  const ALL_CONTRACTS = [
-    { name: 'self', contract: require('../packages/core/src/api/self.contract').selfContract },
-    { name: 'profile', contract: require('../packages/core/src/api/profile.contract').profileContract },
-    { name: 'history', contract: require('../packages/core/src/api/history.contract').historyContract },
-    { name: 'rewards', contract: require('../packages/core/src/api/rewards.contract').rewardsContract },
-    { name: 'presence', contract: require('../packages/core/src/api/presence.contract').presenceContract },
-    { name: 'attendance', contract: require('../packages/core/src/api/attendance.contract').attendanceContract },
-    { name: 'inventory', contract: require('../packages/core/src/api/inventory.contract').inventoryContract },
-    { name: 'mapping', contract: require('../packages/core/src/api/mapping.contract').mappingContract },
-    { name: 'identity', contract: require('../packages/core/src/api/identity.contract').identityContract },
-  ];
-
   for (const { name, contract } of ALL_CONTRACTS) {
     describe(`${name} path convention`, () => {
       for (const [procName, proc] of Object.entries(contract)) {
@@ -92,7 +84,7 @@ describe('ADR Compliance: Path Naming Convention', () => {
         });
 
         it(`${name}.${procName} path params use :param syntax`, () => {
-          const pathParams = (proc.path.match(/:([a-zA-Z0-9_]+)/g) || []).map(p => p.slice(1));
+          const pathParams = (proc.path.match(/:([a-zA-Z0-9_]+)/g) || []).map((p: string) => p.slice(1));
           if (proc.request?.params) {
             const schemaParams = Object.keys(proc.request.params._def.shape());
             expect(pathParams.sort()).toEqual(schemaParams.sort());
@@ -100,22 +92,10 @@ describe('ADR Compliance: Path Naming Convention', () => {
         });
       }
     });
-  });
+  }
 });
 
 describe('ADR Compliance: Policy Metadata', () => {
-  const ALL_CONTRACTS = [
-    { name: 'self', contract: require('../packages/core/src/api/self.contract').selfContract },
-    { name: 'profile', contract: require('../packages/core/src/api/profile.contract').profileContract },
-    { name: 'history', contract: require('../packages/core/src/api/history.contract').historyContract },
-    { name: 'rewards', contract: require('../packages/core/src/api/rewards.contract').rewardsContract },
-    { name: 'presence', contract: require('../packages/core/src/api/presence.contract').presenceContract },
-    { name: 'attendance', contract: require('../packages/core/src/api/attendance.contract').attendanceContract },
-    { name: 'inventory', contract: require('../packages/core/src/api/inventory.contract').inventoryContract },
-    { name: 'mapping', contract: require('../packages/core/src/api/mapping.contract').mappingContract },
-    { name: 'identity', contract: require('../packages/core/src/api/identity.contract').identityContract },
-  ];
-
   for (const { name, contract } of ALL_CONTRACTS) {
     describe(`${name} policy metadata`, () => {
       for (const [procName, proc] of Object.entries(contract)) {
@@ -138,18 +118,10 @@ describe('ADR Compliance: Policy Metadata', () => {
         });
       }
     });
-  });
+  }
 });
 
 describe('ADR Compliance: Response Schema Consistency', () => {
-  const ALL_CONTRACTS = [
-    { name: 'self', contract: require('../packages/core/src/api/self.contract').selfContract },
-    { name: 'profile', contract: require('../packages/core/src/api/profile.contract').profileContract },
-    { name: 'history', contract: require('../packages/core/src/api/history.contract').historyContract },
-    { name: 'rewards', contract: require('../packages/core/src/api/rewards.contract').rewardsContract },
-    { name: 'presence', contract: require('../packages/core/src/api/presence.contract').presenceContract },
-  ];
-
   for (const { name, contract } of ALL_CONTRACTS) {
     describe(`${name} response schemas`, () => {
       for (const [procName, proc] of Object.entries(contract)) {
@@ -179,16 +151,10 @@ describe('ADR Compliance: Response Schema Consistency', () => {
         });
       }
     });
-  });
+  }
 });
 
 describe('ADR Compliance: Input Schema Validation', () => {
-  const ALL_CONTRACTS = [
-    { name: 'self', contract: require('../packages/core/src/api/self.contract').selfContract },
-    { name: 'history', contract: require('../packages/core/src/api/history.contract').historyContract },
-    { name: 'rewards', contract: require('../packages/core/src/api/rewards.contract').rewardsContract },
-  ];
-
   for (const { name, contract } of ALL_CONTRACTS) {
     describe(`${name} input schemas`, () => {
       for (const [procName, proc] of Object.entries(contract)) {
@@ -211,16 +177,10 @@ describe('ADR Compliance: Input Schema Validation', () => {
         });
       }
     });
-  });
+  }
 });
 
 describe('ADR Compliance: Error Code Consistency', () => {
-  const ALL_CONTRACTS = [
-    { name: 'self', contract: require('../packages/core/src/api/self.contract').selfContract },
-    { name: 'history', contract: require('../packages/core/src/api/history.contract').historyContract },
-    { name: 'rewards', contract: require('../packages/core/src/api/rewards.contract').rewardsContract },
-  ];
-
   const VALID_ERROR_CODES = ['400', '401', '403', '404', '409', '422', '500'];
 
   for (const { name, contract } of ALL_CONTRACTS) {
@@ -241,24 +201,17 @@ describe('ADR Compliance: Error Code Consistency', () => {
         });
       }
     });
-  });
+  }
 });
 
 describe('ADR Compliance: Cross-Contract Consistency', () => {
   it('All contracts use consistent ID format (UUID)', () => {
-    const ALL_CONTRACTS = [
-      require('../packages/core/src/api/self.contract').selfContract,
-      require('../packages/core/src/api/history.contract').historyContract,
-      require('../packages/core/src/api/rewards.contract').rewardsContract,
-      require('../packages/core/src/api/profile.contract').profileContract,
-    ];
-
-    for (const contract of ALL_CONTRACTS) {
+    for (const { contract } of ALL_CONTRACTS) {
       for (const proc of Object.values(contract)) {
         // Check path params that look like IDs
         if (proc.request?.params) {
           const shape = proc.request.params._def.shape();
-          for (const [key, schema] of Object.entries(shape)) {
+          for (const [key, schema] of Object.entries<any>(shape)) {
             if (key.toLowerCase().includes('id')) {
               // Should be UUID validation
               expect(schema._def.checks.some((c: any) => c.kind === 'uuid')).toBe(true);
@@ -266,18 +219,13 @@ describe('ADR Compliance: Cross-Contract Consistency', () => {
           }
         }
       }
-    });
+    }
   });
 
   it('All timestamps use ISO 8601 in schemas', () => {
     // This is validated at the schema level (z.string().datetime())
     // but we can verify at the contract level too
-    const ALL_CONTRACTS = [
-      require('../packages/core/src/api/self.contract').selfContract,
-      require('../packages/core/src/api/history.contract').historyContract,
-    ];
-
-    for (const contract of ALL_CONTRACTS) {
+    for (const { contract } of ALL_CONTRACTS) {
       for (const proc of Object.values(contract)) {
         const checkSchema = (schema: any) => {
           if (!schema || !schema._def) return;
@@ -300,6 +248,6 @@ describe('ADR Compliance: Cross-Contract Consistency', () => {
           traverse(successSchema);
         }
       }
-    });
+    }
   });
 });
