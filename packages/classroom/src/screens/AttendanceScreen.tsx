@@ -107,12 +107,21 @@ export default function AttendanceScreen() {
   const currentUser = useStore((state) => state.user);
 
   const saveMutation = useSafeMutation(
-    async (updatedAttendance: StudentAttendance[]) => {
-      let activeId = gradeClassId;
-      if (!activeId && classroomId) {
-        activeId = await resolveGradeClassFromClassroom(classroomId, schoolId ?? undefined);
+    // Variables are self-contained so an offline save can be replayed from the outbox
+    // by MUTATION_REGISTRY.batchRecordAttendance without this screen's closure.
+    async (payload: {
+      gradeClassId?: string;
+      classroomId?: string;
+      schoolId?: string;
+      date: string;
+      students: StudentAttendance[];
+    }) => {
+      let activeId = payload.gradeClassId;
+      if (!activeId && payload.classroomId) {
+        activeId = await resolveGradeClassFromClassroom(payload.classroomId, payload.schoolId);
       }
-      return saveGradeClassRegister(activeId, attendanceDate, updatedAttendance);
+      if (!activeId) throw new Error('No class selected for this register');
+      return saveGradeClassRegister(activeId, payload.date, payload.students);
     },
     {
       mutationKey: 'batchRecordAttendance',
@@ -169,7 +178,13 @@ export default function AttendanceScreen() {
   );
 
   const handleSave = () => {
-    saveMutation.mutate(students);
+    saveMutation.mutate({
+      gradeClassId: gradeClassId || undefined,
+      classroomId: classroomId || undefined,
+      schoolId: schoolId ?? undefined,
+      date: attendanceDate,
+      students,
+    });
   };
 
   if (isLoading) {

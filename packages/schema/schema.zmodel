@@ -151,6 +151,9 @@ model User {
   
   // Everyone can read basic profile info (Discovery)
   @@allow('read', true)
+  // Shadow learners (added to a roster before they have an account) are created by a
+  // teacher or leader of the same school; nothing else about another user can be written.
+  @@allow('create', auth() != null && identity_state == 'shadow' && is_anonymous == true && school_id != null && auth().bonds?[entity_id == this.school_id && (capacity == 'teacher' || capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')])
 
   @@map("users")
 }
@@ -252,6 +255,8 @@ model Classroom {
   deleted_at       DateTime?
   deleted_by       String?
   deletion_reason  String?
+  // #149 teaching group kind: homeroom | subject | cohort; null = not yet classified.
+  kind             String?
 
   school           School?    @relation(fields: [school_id], references: [id])
   teacher          User?      @relation("TeacherClassrooms", fields: [teacher_id], references: [id])
@@ -267,6 +272,7 @@ model Classroom {
   principal_notes  PrincipalNote[] @relation("PrincipalNotesContextClassroom")
   join_requests    ClassroomJoinRequest[]
   legacy_records   ClassroomLegacyRecord[]
+  grade_class_links ClassroomGradeClass[]
 
   // Permissions
   // Official/Cloud Access: Teachers, School Admins, and Platform Admins
@@ -320,6 +326,8 @@ model ClassroomStudent {
 
   @@allow('read', classroom.teacher_id == auth().id || student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  // School leaders may manage rosters of their school's classrooms (as Classroom allows).
+  @@allow('all', auth() != null && auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')])
 
   @@map("classroom_students")
 }
@@ -878,6 +886,9 @@ model School {
   // Guardian verification policy: open (default) allows parents immediate visibility; strict requires leader verification.
   guardian_verification_required Boolean @default(false)
   guardian_verification_policy   String  @default("open")
+  // Who may read a student's attendance history; '{}' = strict defaults. Keys and
+  // defaults: migration 20261022090000 and sanctuary-api core/studentHistoryAccess.ts.
+  student_history_access         Json    @default("{}")
 
   classrooms Classroom[]
   announcements Announcement[]
@@ -1724,12 +1735,37 @@ model GradeClass {
   attendance_sessions AttendanceSession[]
   teacher_attendance_sessions TeacherAttendanceSession[]
   grade_marks GradeMark[]
+  classroom_links ClassroomGradeClass[]
 
   @@unique([academic_cycle_id, grade_level_id, name])
   @@index([school_id, academic_cycle_id, status])
   @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('all', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_classes")
+}
+
+/// #149 C3: explicit link from a teaching group (classroom) to the grade class(es) it
+/// teaches. Attendance/enrollment use this before any name matching.
+model ClassroomGradeClass {
+  id             String   @id @default(uuid())
+  classroom_id   String
+  grade_class_id String
+  created_by     String?
+  created_at     DateTime @default(now())
+
+  classroom   Classroom  @relation(fields: [classroom_id], references: [id], onDelete: Cascade)
+  grade_class GradeClass @relation(fields: [grade_class_id], references: [id], onDelete: Cascade)
+
+  @@unique([classroom_id, grade_class_id])
+  @@index([grade_class_id])
+  // Anyone in the classroom's school can see which grade classes it teaches.
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.classroom.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // School leaders link and unlink. A classroom's own teacher may link it to a grade
+  // class they hold an active assignment for. Both must be in the same school
+  // (checked in the handler; the rule below pins the grade class to a leader's school).
+  @@allow('create,delete', auth() != null && (auth().bonds?[entity_id == this.grade_class.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('create,delete', auth() != null && this.classroom.teacher_id == auth().id && this.grade_class.teacher_assignments?[teacher_id == auth().id && status == 'active'])
+  @@map("classroom_grade_classes")
 }
 
 model GradeClassSubject {
@@ -1772,6 +1808,10 @@ model GradeClassTeacherAssignment {
 
   @@index([grade_class_id, role, effective_from])
   @@index([teacher_id, effective_from])
+  // Had no rules (deny-all under the policy client). Teachers read their own
+  // assignments; school leaders read and manage their school's.
+  @@allow('read', auth() != null && auth().id == teacher_id)
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.grade_class.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_class_teacher_assignments")
 }
 
@@ -1822,6 +1862,8 @@ model DailyAttendance {
 
   @@unique([student_id, grade_class_id, attendance_date])
   @@index([grade_class_id, attendance_date])
+  // Verified guardians read their ward's attendance (pending/revoked links never count).
+  @@allow('read', auth() != null && auth().student_guardian_links_as_guardian?[student_id == this.student_id && verification_status == 'verified'])
   @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
   @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("daily_attendance")
@@ -1855,6 +1897,8 @@ model AttendanceSession {
 
   @@index([daily_attendance_id, session_at])
   @@index([grade_class_id, session_at])
+  // Verified guardians read their ward's attendance (pending/revoked links never count).
+  @@allow('read', auth() != null && auth().student_guardian_links_as_guardian?[student_id == this.student_id && verification_status == 'verified'])
   @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
   @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("attendance_sessions")
@@ -2306,7 +2350,7 @@ model GuardianBond {
   guardian_user_id String
   ward_student_id  String
   relationship     String   @default("parent") // parent, mother, father, guardian, relative
-  status           String   @default("verified") // pending, verified, revoked
+  status           String   @default("pending") // pending, verified, revoked (DB default is pending since 20261017210000)
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
@@ -2316,8 +2360,13 @@ model GuardianBond {
   @@unique([guardian_user_id, ward_student_id])
   @@index([guardian_user_id])
   @@index([ward_student_id])
-  @@allow('all', auth() != null && (guardian_user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
-  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // Was 'all' for the guardian: anyone could self-link to any student as verified.
+  // Guardians may only request (pending) or withdraw; verification is server-side,
+  // matching the guardian_bonds RLS in 20261017210000_plan_bridge_calm_notices.sql.
+  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id))
+  @@allow('create', auth() != null && guardian_user_id == auth().id && status == 'pending')
+  @@allow('delete', auth() != null && guardian_user_id == auth().id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_bonds")
 }
 

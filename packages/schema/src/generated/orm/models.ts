@@ -74,6 +74,11 @@ export type AcademicCycleLeadershipAssignment = $ModelResult<
 export type Subject = $ModelResult<$Schema, 'Subject'>;
 export type GradeLevel = $ModelResult<$Schema, 'GradeLevel'>;
 export type GradeClass = $ModelResult<$Schema, 'GradeClass'>;
+/**
+ * #149 C3: explicit link from a teaching group (classroom) to the grade class(es) it
+ * teaches. Attendance/enrollment use this before any name matching.
+ */
+export type ClassroomGradeClass = $ModelResult<$Schema, 'ClassroomGradeClass'>;
 export type GradeClassSubject = $ModelResult<$Schema, 'GradeClassSubject'>;
 export type GradeClassTeacherAssignment = $ModelResult<$Schema, 'GradeClassTeacherAssignment'>;
 export type StudentGradeClassEnrollment = $ModelResult<$Schema, 'StudentGradeClassEnrollment'>;

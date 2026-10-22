@@ -1,7 +1,7 @@
 import type { StudentLongitudinalEvent } from '@repo/core';
 import { api, type StudentObservation } from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
-import type { AttendanceRecord, StudentGrade } from '@repo/core/types';
+import type { StudentGrade } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui';
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { useThemedColors } from '@repo/ui/hooks';
@@ -26,6 +26,10 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  attendanceSummaryLabel,
+  summarizeStudentAttendance,
+} from '../logic/studentAttendanceSummary';
 
 export default function StudentProfileScreen() {
   const { t } = useTranslation();
@@ -52,7 +56,8 @@ export default function StudentProfileScreen() {
   >('overview');
 
   // Data states
-  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  // null = the server did not allow (or failed) the history read.
+  const [attendance, setAttendance] = useState<Array<{ status: string }> | null>([]);
   const [grades, setGrades] = useState<StudentGrade[]>([]);
   const [observations, setObservations] = useState<StudentObservation[]>([]);
   const [timeline, setTimeline] = useState<StudentLongitudinalEvent[]>([]);
@@ -63,10 +68,20 @@ export default function StudentProfileScreen() {
       setIsLoading(true);
       setLoadError(null);
       const [attData, gradeData, obsData, timelineData, snapshotData] = await Promise.all([
-        api.attendance.getStudentAttendanceTimeline(studentId, {
-          classroomId,
-        }),
-        api.grading.getStudentGradeTimeline(studentId, { classroomId }),
+        // A school may not let this caller see the history (403): keep the rest of the
+        // profile and show the card as unavailable instead of failing everything.
+        api.attendance
+          .getStudentAttendanceTimeline(studentId, { classroomId })
+          .catch((error: unknown) => {
+            console.warn('Student attendance history unavailable:', error);
+            return null;
+          }),
+        // The grading client has no per-student read yet (getStudentGradeTimeline is not
+        // implemented), and calling it threw before any data loaded. Show no grades
+        // rather than failing the whole profile.
+        typeof (api.grading as any).getStudentGradeTimeline === 'function'
+          ? (api.grading as any).getStudentGradeTimeline(studentId, { classroomId })
+          : Promise.resolve([]),
         api.studentObservations.getForEnrollment(classroomStudentId),
         api.longitudinal.getStudentTimeline(studentId, viewDate, [
           'enrollment',
@@ -85,7 +100,7 @@ export default function StudentProfileScreen() {
           'study_note',
         ]),
       ]);
-      setAttendance(attData || []);
+      setAttendance(attData);
       setGrades(gradeData || []);
       setObservations(obsData || []);
       setTimeline(timelineData?.events || []);
@@ -108,12 +123,7 @@ export default function StudentProfileScreen() {
     fetchData();
   };
 
-  const attendanceRate =
-    attendance.length > 0
-      ? Math.round(
-          (attendance.filter((a) => a.status === 'present').length / attendance.length) * 100,
-        )
-      : 100;
+  const attendanceLabel = attendanceSummaryLabel(summarizeStudentAttendance(attendance));
   const latestGrade = grades[0];
   const latestTimelineEvents = timeline.slice(0, 6);
 
@@ -173,7 +183,7 @@ export default function StudentProfileScreen() {
         <Card className="flex-1 p-md bg-phase-surface-secondary">
           <VStack className="items-center gap-xs">
             <Icon as={Calendar} size={20} color={Theme.colors.sanctuarySaffron} />
-            <Heading className="text-xl text-phase-text-primary">{attendanceRate}%</Heading>
+            <Heading className="text-xl text-phase-text-primary">{attendanceLabel}</Heading>
             <Text className="text-[10px] text-phase-text-secondary">
               {t('student.attendance') || 'Attendance'}
             </Text>

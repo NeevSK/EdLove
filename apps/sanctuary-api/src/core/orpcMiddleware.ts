@@ -17,8 +17,28 @@ const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
   503: 'SERVICE_UNAVAILABLE',
 };
 
+/**
+ * ZenStack ORM errors from the policy-enforced client (see policyDb.ts). Matched by their
+ * `reason` field so this module needs no ORM import: a policy rejection is a 403, and a row the caller
+ * may not see (filtered out by a read rule) is a 404, never a 500.
+ */
+function policyErrorCode(error: unknown): 'FORBIDDEN' | 'NOT_FOUND' | null {
+  if (!error || typeof error !== 'object' || typeof (error as any).reason !== 'string') return null;
+  const reason = (error as any).reason;
+  if (reason === 'rejected-by-policy') return 'FORBIDDEN';
+  if (reason === 'not-found') return 'NOT_FOUND';
+  return null;
+}
+
 export function toORPCError(error: unknown, requestId?: string): ORPCError<string, unknown> {
   if (error instanceof ORPCError) return error;
+  const policyCode = policyErrorCode(error);
+  if (policyCode) {
+    return new ORPCError(policyCode, {
+      message: policyCode === 'FORBIDDEN' ? 'You do not have access to this record.' : 'Not found.',
+      data: { code: policyCode, requestId },
+    });
+  }
   if (!(error instanceof SovereignError)) {
     return new ORPCError('INTERNAL_SERVER_ERROR', {
       message: 'An unexpected platform error occurred.',

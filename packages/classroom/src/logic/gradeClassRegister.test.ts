@@ -23,18 +23,20 @@ describe('grade-class register (attendance model A)', () => {
     ]);
   });
 
-  it('includes shadow students without explicit account on register and marks them markable', () => {
+  it('keeps shadow learners (who have a users row) and never substitutes the enrollment id', () => {
+    const shadow = '123e4567-e89b-12d3-a456-426614174022';
     const register = buildRegister(
       [
         { enrollment_id: 'e1', student_id: s1, full_name: 'Nimal' },
-        { enrollment_id: 'e3', student_id: null, full_name: 'Shadow Student' },
+        { enrollment_id: 'e3', student_id: shadow, full_name: 'Shadow Student' },
+        { enrollment_id: 'e4', student_id: null, full_name: 'Broken row' },
       ],
       [],
     );
-    expect(register.students).toHaveLength(2);
-    expect(register.students[1].student_id).toBe('e3');
-    expect(register.students[1].full_name).toBe('Shadow Student');
-    expect(register.excludedWithoutAccount).toBe(0);
+    expect(register.students.map((s) => s.student_id)).toEqual([s1, shadow]);
+    expect(register.students.some((s) => s.student_id === 'e4')).toBe(false);
+    expect(register.excludedWithoutAccount).toBe(1);
+    expect(toDailyAttendanceRows(gc, '2026-10-17', register.students)).toHaveLength(2);
   });
 
   it('writes grade_class_id rows for daily_attendance', () => {

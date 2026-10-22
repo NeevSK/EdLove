@@ -2198,6 +2198,9 @@ importers:
       '@zenstackhq/orm':
         specifier: 3.9.7
         version: 3.9.7(better-sqlite3@12.9.0)(pg@8.23.1)(zod@4.6.5)
+      '@zenstackhq/plugin-policy':
+        specifier: 3.9.7
+        version: 3.9.7(better-sqlite3@12.9.0)(kysely@0.28.16)(pg@8.23.1)(zod@4.6.5)
       '@zenstackhq/schema':
         specifier: 3.9.7
         version: 3.9.7
@@ -2226,9 +2229,6 @@ importers:
       '@zenstackhq/language':
         specifier: 3.9.7
         version: 3.9.7
-      '@zenstackhq/plugin-policy':
-        specifier: 3.9.7
-        version: 3.9.7(better-sqlite3@12.9.0)(kysely@0.28.16)(pg@8.23.1)(zod@4.6.5)
       '@zenstackhq/sdk':
         specifier: 3.9.7
         version: 3.9.7

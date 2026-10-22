@@ -433,8 +433,9 @@ export async function loadAccountAttendance(
   }
   return rosterValue.filter(isRecord).map((row) => {
     const id = requiredString(row.enrollment_id, 'enrollment identity');
-    // Enrollments reference a student account; fallback to enrollment id so shadow learners are always markable.
-    const studentId = typeof row.student_id === 'string' && row.student_id ? row.student_id : id;
+    // Enrollments always reference a users row (shadow learners have one too). Never use the
+    // enrollment id as a student id: the server rejects ids that are not enrolled students.
+    const studentId = typeof row.student_id === 'string' && row.student_id ? row.student_id : null;
     return {
       id,
       studentId,
@@ -443,7 +444,7 @@ export async function loadAccountAttendance(
           ? row.full_name
           : `Learner ${id.slice(0, 6)}`,
       rollNumber: null,
-      status: attendanceByStudent.get(studentId) ?? 'present',
+      status: (studentId && attendanceByStudent.get(studentId)) || 'present',
     };
   });
 }
