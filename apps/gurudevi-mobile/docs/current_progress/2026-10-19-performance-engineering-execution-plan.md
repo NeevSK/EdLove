@@ -2,7 +2,7 @@
 title: "Performance Engineering Execution Plan"
 status: "active"
 created: 2026-10-19
-updated: 2026-10-19
+updated: 2026-10-22
 author: "Codex"
 tags: [mobile, performance, profiling, low-end, execution]
 ---
@@ -26,6 +26,8 @@ architect. Keep one device session and one measured architectural change active
 at a time; no parallel builds or speculative dependency upgrades.
 
 ## Current authority
+
+- [Runtime performance reconciliation and next steps (2026-10-22)](2026-10-22-runtime-performance-reconciliation-and-plan.md): reconciles implementation status, runtime design conflicts, and the current A52 observation.
 
 - [Architecture audit](../architecture/2026-10-19-low-end-startup-architecture-audit.md):
   actual launch chain and verified source discrepancies.
@@ -68,6 +70,25 @@ G1 evidence: core admission 8 tests, optional startup scheduler 4 tests,
 startup coordinator/telemetry 12 tests. The full anti-slop gate remains blocked
 by pre-existing repository findings (39 errors, 514 warnings); the new owned
 files had no reported errors. This is not an overall gate pass.
+
+## Evidence update — 2026-10-22
+
+The existing fixed-read ADB capture path produced a complete development
+snapshot at
+`reports/mobile-performance/2026-10-22T05-24-53-134Z-b7cd1532` (manifest and raw
+reads). On the Samsung SM-A525F / Android 14 / SM7125 it recorded 7,668,940 KiB
+system RAM, 2,655,272 KiB available at that instant, and development-app PSS
+1,958,141 KiB, RSS 2,049,052 KiB, swap PSS 50 KiB. The package was debuggable
+and not profileable. This is a complete observational G5 snapshot, not a
+release baseline, peak, leak diagnosis, or performance comparison. No Perfetto
+trace was requested and no app data was changed.
+
+See the [2026-10-22 reconciliation and next-steps plan](2026-10-22-runtime-performance-reconciliation-and-plan.md)
+for the implementation inventory, unresolved design conflicts, and ordered
+work packages. The broader `docs/engineering/runtime-performance` governor
+proposals should be treated as proposals where they exceed the implemented
+one-job startup pilot; do not promote their concurrency, native sensing, or
+latency claims into shipped status.
 
 ## Design contract
 

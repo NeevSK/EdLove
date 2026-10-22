@@ -2,7 +2,7 @@
 title: "Android Device Profiling Source Register"
 status: "active"
 created: 2026-10-19
-updated: 2026-10-19
+updated: 2026-10-22
 author: "Codex"
 tags: [android, profiling, performance, expo-58, react-native-0.88, research]
 ---
@@ -114,3 +114,34 @@ event attributes contain only fixed stage/outcome and measured duration. This
 is an app-stage supplement, not TTID/TTFD or interaction readiness. See the
 [execution plan](../current_progress/2026-10-19-performance-engineering-execution-plan.md)
 for build, test, crash and benchmark validation status.
+
+## Local device profile capture and comparison
+
+The `sovereign_device` tool reports its action/capture affordances through
+`capabilities`, lists connected Android targets through `list_android_devices`,
+and captures read-only snapshots through `capture_profile`. Captures include
+all currently readable logcat circular buffers (`adb logcat -b all -d`) with a
+64 MiB output limit, plus the device, system, app-memory, package, PID, and
+graphics-frame-stat snapshots described in the manifest. This is exhaustive
+within the readable buffers at capture time and the fixed command allowlist;
+it is not continuous recording. Use Argent/agent-device recording or a
+separately bounded Perfetto session for a journey timeline.
+
+Each capture retains redacted text artifacts and a row in the local
+`reports/mobile-performance/device-profiles.sqlite`. The SQLite database stores
+the raw post-redaction text and hashes, so it is local plaintext and should be
+handled as potentially sensitive despite the known-token/email redactors.
+Device serials are replaced by stable per-device hash aliases, enabling
+within-device and cross-device grouping without storing the serial in the
+profile database. Use the same scenario `label` and app/build for direct device
+comparisons; use `profileName` to identify baseline, warm, low-memory, thermal,
+network, or other explicitly described conditions. `profile_history` returns
+individual captures; `profile_comparison` reads the aggregate view. Summaries
+include sample count and spread, and are descriptive only: no correction is
+applied for differing build, journey, battery, thermal, network, or cache
+conditions.
+
+The SQLite implementation uses Node's built-in `node:sqlite` API under the
+repository's Node 24.21.0 toolchain. Node documents `DatabaseSync` as a
+release-candidate API, so schema evolution and backup/export policy remain
+local tooling concerns rather than a durable production storage contract.

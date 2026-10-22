@@ -75,26 +75,40 @@ deduplicates already-started task IDs through its progress record, catches a
 task failure through the supplied owner callback, and cancels queued frame/idle
 callbacks on cleanup. An already-started dynamic import is not abortable.
 
-The current pilot passes `pressure: 'unknown'` and treats its frame+idle point
-as `phase: 'settled'` for that optional lane. This is explicitly not the
-product's Observe interactive/TTFD event or proof of screen readiness. The
-30-second recovery window is declared but not exercised by this fixed-unknown
-pilot; `reduceWorkAdmission` recovery behavior is tested independently. The
-reducer latches constrained/severe observations and requires a caller-supplied
-healthy observation window to recover; app background and non-settled phases
-deny work, severe pressure denies work, otherwise the provisional concurrency
-remains one. Unknown capacity is recorded, but does not by itself deny this
-optional lane.
+The route gate now supplies `public-ready` or `protected-ready` only while its
+admitted content is rendered; the following frame+idle boundary delays
+dispatch and is not itself a readiness signal. These route phases are not the
+product's Observe interactive/TTFD event or proof of interaction readiness. An
+Android local module reports thermal changes on API 29+
+and foreground memory trim callbacks before API 34. Android 14+ no longer
+delivers the running-memory trim levels, so the memory source remains unknown
+there. The startup owner combines the signals, holds constrained/severe
+pressure through a 30-second quiet window, and then returns it to unknown
+rather than claiming normal. Constrained and severe pressure deny optional
+startup work; required and user-initiated work remains outside this lane.
+Unknown capacity is recorded, but does not by itself deny this optional lane.
 
-This pilot does not yet implement a generic bounded job queue, priority/demand
-ordering, thermal or memory pressure inputs, pressure-driven cancellation, or
-cross-producer integration. These remain proposals below. Do not describe the
-pilot as adaptive to live CPU/memory pressure.
+This pilot still does not implement a generic bounded job queue,
+priority/demand ordering, pressure-driven cancellation of in-flight work, or
+cross-producer integration. Its native pressure input is not yet proven on a
+physical device; Android 14+ foreground memory pressure is unknown. Do not
+describe this as adaptive to live CPU or memory pressure across the app.
 
-Current G1 boundary evidence: `workAdmission.test.ts` 8 tests,
-`optionalStartupWork.test.ts` 4 tests, and startup coordinator plus telemetry
-tests 12 tests. These establish reducer/scheduler contracts under test
-substitutions, not physical timing or pressure-signal correctness.
+The current telemetry owner emits coarse `runtime_conditions_changed` snapshots
+when app state, battery saver, memory pressure, or thermal pressure changes. It
+deduplicates repeated snapshots and shares a 64-attempt process cap with
+`runtime_admission_changed` and `optional_work_finished`. Admission events are
+deduplicated and use the route-owned public/protected-ready phase, known-capacity
+bit, pressure bucket, battery-saver bit, optional concurrency cap, allow/deny
+result, and reason. Startup-job outcomes use finite duration buckets. Observe's
+sampling and dispatch configuration still applies; these events are not proof
+of backend delivery and do not record every app action or resource use.
+
+Current G1 boundary evidence on 2026-10-22: core `workAdmission.test.ts` 11/11;
+mobile `optionalStartupWork.test.ts`, `runtimeGovernorTelemetry.test.ts`, and
+`SessionRouteGate.test.tsx` 22/22. These establish reducer, route-phase,
+scheduler, and telemetry contracts under test substitutions, not physical
+timing or pressure-signal correctness.
 
 **Cadence proposal:** read immutable capacity once after runtime bootstrap;
 refresh event-driven facts on their existing NetInfo/AppState/power listeners;
@@ -147,7 +161,7 @@ onFactsChanged(facts):
 pump():
   never schedule durable user mutation behind optional work
   if not active: admit no disposable foreground work
-  if phase before settled or severe pressure latched: admit no optional jobs
+  if phase is boot or severe pressure is latched: admit no optional jobs
   if constrained/unknown: retain the provisional optional concurrency cap of one
   else choose next stable-priority job while under optional concurrency cap
   ask evaluateEfficiency(job.operation, current context) before dispatch
@@ -197,6 +211,112 @@ policy source; this design does not silently change those values.
   Signal costs, cadence, cancellation responsiveness and thresholds remain
   proposals until release-like evidence on the target cohort exists.
 
+## Adaptive-runtime direction: application-aware response with measured cost
+
+This is a design direction, not a claim that the pilot is already a complete
+adaptive runtime. It draws on the 1997 Odyssey work on agile,
+application-aware adaptation: a resource arbiter coordinates shared pressure,
+while application-specific handlers choose a useful response; evaluation
+considers both responsiveness and the fidelity retained by each application
+feature ([Noble et al., *Agile Application-Aware Adaptation for Mobility*](https://www.cs.cmu.edu/~15-821/assets/READINGS/PAPERS/noble1997.pdf),
+[Odyssey project overview](https://www.cs.cmu.edu/~odyssey/)). The transfer to
+Gurudevi is architectural, not a recreation of Odyssey's operating-system
+design.
+
+The later 2000 history-based adaptation work adds a useful measurement lesson:
+predicting the resource cost of a fidelity choice depends on hardware and
+input data, so the system learned from comparable past executions. Its
+reported CPU and energy prediction errors (20% and 15%) belong to those
+specific graphics and web-image experiments; they are not targets or expected
+accuracy for Gurudevi ([Narayanan, Flinn, and Satyanarayanan, *Using History to
+Improve Mobile Application Adaptation*](https://www.microsoft.com/en-us/research/publication/using-history-to-improve-mobile-application-adaptation/)).
+For this project that supports collecting repeated, device- and workload-bound
+records before tuning policy. It does not justify a benchmark at startup or
+predictive adaptation from one A52 snapshot.
+
+Keep one policy decision seam in `@repo/core/efficiency`, with sensing at
+existing platform owners and response at the producer that understands the
+work. The arbiter may grant, defer, or cancel **disposable** work. A producer
+such as media prefetch can respond by reducing prefetch breadth or image
+quality; sync can reduce optional concurrency while preserving durable queue
+semantics; a user-initiated action remains eligible. The controller must not
+invent a generic feature-fidelity score: each owner must define the user-visible
+quality it can preserve and the minimum useful result. Stable policy and
+feature-specific responses meet through typed decisions and bounded reason
+codes, not duplicated controllers.
+
+Measure agility as the observed interval from a pressure or lifecycle signal
+to policy decision, then from decision to a producer response (including
+cancellation acknowledgement where supported). Measure the user-facing
+fidelity and task completion beside that interval. Capture event time, receipt
+time, signal source/known state, decision cost, queue wait, work duration,
+response outcome, and current workload/build/device condition. Do not claim a
+native-event-to-JS delay until both sides use a validated shared clock or
+explicit clock correlation. Android 14 foreground memory pressure remains
+unknown under the current provider and must stay that way.
+
+Treat governor cost as a first-class measured workload. Development traces now
+record admission reducer/resolver elapsed time, runtime-pressure snapshot
+request and callback-processing time, synchronous Observe call duration, and
+the prior trace writer's serialization/console-call duration and cumulative
+sum. Queue and outbox events provide their existing queue wait and task/drain
+durations. Pair these with native scheduler/CPU and app PSS/RSS observations.
+This still does **not** isolate Kotlin listener CPU, asynchronous console/Metro
+transport, allocation totals, or causal impact on touch latency. Use comparable
+trace-on/trace-off runs with the same artifact and journey before assigning a
+cost delta; do not subtract a single dev-client sample from a different run.
+
+### Connected-device and observer impact
+
+Connected hardware is part of the runtime evidence, not just a target label.
+The existing host capture stores device alias/model/API/SoC, system and app
+memory snapshots, battery/thermal state, CPU and graphics summaries, bounded
+Perfetto scheduler evidence, command start/end times, and redacted logcat.
+Development `[runtime-trace]` JSON lines found in the captured logcat are now
+projected into `device_profile_trace_events`, keyed by capture ID, with only
+fixed categories and bounded scalar fields. The original redacted logcat is
+retained unchanged as the raw evidence. Unknown categories, malformed events,
+and unapproved payload fields are not projected. This enables local queries
+across repeated captures and device aliases without turning raw logs into
+unbounded analytics.
+
+Each development JS process also tags its events with a generated
+`trace_session_id` and marks its first emitted record. This separates process
+restarts inside one logcat buffer. The token is not a journey/touch ID; an
+engineer-controlled journey start/stop marker is still needed to tie events to
+one scripted or manual scenario.
+
+An ADB profile is a snapshot of currently readable circular buffers, not a
+session recorder. It can include trace events from before the capture started,
+and each event's `at_ms` is relative to the JS process. Until an explicit
+session token and monotonic-to-device clock correlation are captured, an event
+row is associated with the capture that observed it, not proven to have been
+caused by that capture's scenario. Perfetto request duration and file size are
+not substitutes for reading trace timestamps.
+
+The observer has a measurable footprint of its own. Preserve per-ADB-command
+wall duration and output bytes, Perfetto start/pull/cleanup timing, trace
+writer call duration and cumulative synchronous cost, and the tool's own
+capture interval. For impact estimates, pair app PSS/RSS and system available
+memory plus native scheduler/CPU evidence before and after a bounded journey;
+record battery/thermal state and active device/build/profile conditions. Keep
+the observer's host-side waiting and device-side work separate. ADB polling,
+logcat dumping, screen recording, touch automation, and Perfetto tracing each
+perturb the system differently, so record which were enabled and compare
+matched runs with the same artifact/journey and instrumentation level. The
+current profile capture can describe these costs and snapshots, but it does
+not isolate governor causal overhead or attribute CPU/memory to a particular
+tap. That needs a bounded journey-level diagnostic session and verified clock
+correlation. The current process token alone is not sufficient.
+
+The intended runtime remains event-driven: no high-frequency polling, no
+per-frame policy evaluation, and no native profiler dependency in production.
+Production telemetry should remain bounded, low-cardinality, and summary-level;
+development can opt into a larger local trace with an explicit cap and
+truncation marker. Pressure experiments must use reversible, documented
+conditions and should not degrade durable storage, authentication, sync
+correctness, or accessibility to produce a chart.
+
 ## Interaction evidence and diagnostic sessions
 
 The runtime controller must be observable without turning every user gesture
@@ -213,7 +333,7 @@ Add controller events only when the published operational snapshot changes:
 
 | Event | Fixed attributes | Purpose |
 | --- | --- | --- |
-| `runtime_admission_changed` | `phase`, `pressure_bucket`, `optional_cap`, `reason` | Explains a decision to defer or permit optional work. |
+| `runtime_admission_changed` | `phase`, `capacity_known`, `pressure_bucket`, `battery_saver`, `optional_cap`, `allowed`, `reason` | Explains a decision to defer or permit optional work. |
 | `optional_work_finished` | `job_id`, `outcome`, `duration_bucket` | Shows whether a named disposable startup job completed after admission. |
 | `interaction_settled` | `interaction_kind`, `route_pattern`, `outcome`, `duration_bucket` | Connects a named product action to its visible completion boundary. |
 
