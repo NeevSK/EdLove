@@ -9,21 +9,15 @@ import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { formResponses, formTemplates } from '@repo/core/adapters/powersync/schema';
 import { eq } from 'drizzle-orm';
 
-export interface ExtendedFormField extends FormField {
-  rubric?: { points?: number; correctValue?: string; [key: string]: unknown };
-}
+export type ExtendedFormField = FormField;
+export type ExtendedFormPage = FormPage;
 
-export interface ExtendedFormPage extends Omit<FormPage, 'fields'> {
-  fields: ExtendedFormField[];
-}
-
-export interface ExtendedFormSchema extends Omit<FormSchema, 'pages'> {
-  pages: ExtendedFormPage[];
+export interface ExtendedFormSchema extends FormSchema {
   affordanceConfig?: Record<string, unknown>;
 }
 
 interface SerializedFormConfig {
-  pages: ExtendedFormPage[];
+  pages: FormPage[];
   settings?: FormSchema['settings'];
   affordanceConfig?: Record<string, unknown>;
 }
@@ -32,7 +26,7 @@ function parseFormConfig(
   rawConfig: string,
   baseTemplate: { isPublished: boolean; slug?: string | null; category?: string | null },
 ): {
-  pages: ExtendedFormPage[];
+  pages: FormPage[];
   settings: FormSchema['settings'];
   affordanceConfig?: Record<string, unknown>;
 } {
@@ -85,22 +79,22 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   async save(form: FormSchema | ExtendedFormSchema): Promise<void> {
     const db = getDrizzleDB();
     const configPayload: SerializedFormConfig = {
-      pages: form.pages as ExtendedFormPage[],
+      pages: form.pages,
       settings: form.settings,
       affordanceConfig: (form as ExtendedFormSchema).affordanceConfig,
     };
 
-    const templateData = {
+    const templateData: typeof formTemplates.$inferInsert = {
       id: form.id,
-      ownerId: form.tenantId,
+      ownerId: form.tenantId ?? 'anonymous',
       title: form.title,
       description: form.description || null,
       config: JSON.stringify(configPayload),
-      isPublished: form.settings.isPublished ?? false,
-      slug: form.settings.slug || null,
-      category: form.settings.category || null,
-      createdAt: form.createdAt,
-      updatedAt: form.updatedAt,
+      isPublished: form.settings?.isPublished ?? false,
+      slug: form.settings?.slug || null,
+      category: form.settings?.category || null,
+      createdAt: form.createdAt ?? new Date().toISOString(),
+      updatedAt: form.updatedAt ?? new Date().toISOString(),
     };
 
     await db.insert(formTemplates).values(templateData).onConflictDoUpdate({
@@ -198,7 +192,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   async aggregate(formId: string): Promise<FieldAnalytics[]> {
     const db = getDrizzleDB();
     const schema = await this.load(formId);
-    const fields = schema.pages.flatMap((page: FormSchema['pages'][number]) => page.fields);
+    const fields: FormField[] = schema.pages.flatMap((page: any) => page.fields as FormField[]);
 
     const rawResponses = await db
       .select()
@@ -209,7 +203,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       id: r.id,
       formId: r.templateId,
       responderId: r.responderId ?? undefined,
-      tenantId: schema.tenantId,
+      tenantId: schema.tenantId ?? 'default',
       data: JSON.parse(r.data),
       submittedAt: r.submittedAt,
     }));
@@ -223,7 +217,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   async export(formId: string): Promise<string> {
     const db = getDrizzleDB();
     const schema = await this.load(formId);
-    const fields = schema.pages.flatMap((page: FormSchema['pages'][number]) => page.fields);
+    const fields: FormField[] = schema.pages.flatMap((page: any) => page.fields as FormField[]);
 
     const rawResponses = await db
       .select()
@@ -234,7 +228,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       id: r.id,
       formId: r.templateId,
       responderId: r.responderId ?? undefined,
-      tenantId: schema.tenantId,
+      tenantId: schema.tenantId ?? 'default',
       data: JSON.parse(r.data),
       submittedAt: r.submittedAt,
     }));
@@ -265,22 +259,22 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
           tenantId: template.ownerId,
           title: template.title,
           description: template.description ?? undefined,
-          pages,
+          pages: pages as FormPage[],
           settings,
           affordanceConfig,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
         };
       })
-      .filter((f) => new Date(f.updatedAt) >= since);
+      .filter((f) => new Date(f.updatedAt ?? 0) >= since);
   }
 
   /**
    * Resolve syncing conflicts. Follows the standard Last-Write-Wins (LWW) conflict strategy.
    */
   resolveConflict(local: FormSchema, remote: FormSchema): FormSchema {
-    const localTime = new Date(local.updatedAt).getTime();
-    const remoteTime = new Date(remote.updatedAt).getTime();
+    const localTime = new Date(local.updatedAt ?? 0).getTime();
+    const remoteTime = new Date(remote.updatedAt ?? 0).getTime();
     return localTime >= remoteTime ? local : remote;
   }
 }

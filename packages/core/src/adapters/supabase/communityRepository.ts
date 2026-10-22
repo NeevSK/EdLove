@@ -145,7 +145,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
         content: params.content,
         isAnonymous: params.isAnonymous,
       });
-      if (res) return res as Comment;
+      if (res) return res as unknown as Comment;
     } catch {
       // Offline fallback: write via direct Supabase client (preserved under Deletion Veto)
     }
@@ -184,8 +184,8 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   async toggleCommentUpvote(commentId: string, userId: string): Promise<boolean> {
     try {
       const res = await communityAPI.toggleCommentUpvote(commentId);
-      if (typeof res?.hasUpvoted === 'boolean') {
-        return res.hasUpvoted;
+      if (typeof (res as any)?.active === 'boolean') {
+        return (res as any).active;
       }
     } catch {
       // Fallback

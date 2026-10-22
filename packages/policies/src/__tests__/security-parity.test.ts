@@ -83,13 +83,13 @@ describe('Double-Gate Security Parity: Cedar PDP vs ZenStack DAL', { tags: ['pol
       // Match `resource is ModelName`
       const isMatches = [...content.matchAll(/resource\s+is\s+(\w+)/g)].map((m) => m[1]);
       for (const res of isMatches) {
-        discoveredCedarResources.add(res);
+        if (res) discoveredCedarResources.add(res);
       }
 
       // Match `resource.type == "ModelName"`
       const typeMatches = [...content.matchAll(/resource\.type\s*==\s*"(\w+)"/g)].map((m) => m[1]);
       for (const res of typeMatches) {
-        discoveredCedarResources.add(res);
+        if (res) discoveredCedarResources.add(res);
       }
     }
 
@@ -116,13 +116,13 @@ describe('Double-Gate Security Parity: Cedar PDP vs ZenStack DAL', { tags: ['pol
       // Match `action == Action::"actionName"`
       const eqMatches = [...content.matchAll(/action\s*==\s*Action::"(\w+)"/g)].map((m) => m[1]);
       for (const act of eqMatches) {
-        discoveredActions.add(act);
+        if (act) discoveredActions.add(act);
       }
 
       // Match `action in [Action::"actionName", ...]`
       const inMatches = [...content.matchAll(/Action::"(\w+)"/g)].map((m) => m[1]);
       for (const act of inMatches) {
-        discoveredActions.add(act);
+        if (act) discoveredActions.add(act);
       }
     }
 

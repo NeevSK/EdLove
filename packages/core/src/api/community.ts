@@ -174,6 +174,7 @@ export const communityAPI = {
     try {
       const res = await orpcClient.community.toggleReaction({
         params: { postId },
+        body: {},
       });
       return res.active;
     } catch (error: any) {

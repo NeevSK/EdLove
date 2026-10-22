@@ -29,9 +29,21 @@ interface SyncManagerProps {
   dispatchQueuedMutation?: (
     mutation: QueuedMutation,
   ) => Promise<QueuedMutationDispatchResult> | QueuedMutationDispatchResult;
+  /** Optional observer for fixed-field local diagnostics; never receives IDs or payloads. */
+  onTrace?: (event: SyncManagerTraceEvent) => void;
 }
 
-export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps = {}) {
+export interface SyncManagerTraceEvent {
+  event: 'drain' | 'item';
+  state: 'started' | 'completed' | 'failed' | 'skipped' | 'deferred';
+  reason?: string;
+  mutationType?: string;
+  queueDepth: number;
+  durationMs?: number;
+  queueWaitMs?: number;
+}
+
+export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncManagerProps = {}) {
   const isOnline = useStore((state) => state.isOnline);
   const {
     queue,
@@ -49,8 +61,24 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
   const MAX_RETRIES = 5; // Increased for better robustness
 
   const processQueue = useCallback(async () => {
+    const trace = onTrace
+      ? (event: SyncManagerTraceEvent) => {
+          try {
+            onTrace(event);
+          } catch {
+            // Diagnostic callbacks must never change durable queue behavior.
+          }
+        }
+      : undefined;
+    const drainStartedAt = onTrace ? performance.now() : null;
     // Version Gating Guard: HARD_BLOCK freezes the outbox immediately to prevent corrupting backend schema/APIs
     if (useVersionGatingStore.getState().isBlocked) {
+      trace?.({
+        event: 'drain',
+        state: 'skipped',
+        reason: 'version-gated',
+        queueDepth: queue.length,
+      });
       if (__DEV__) {
         console.warn(
           '[SyncManager] Outbox replay paused: App version is HARD_BLOCKED pending update.',
@@ -65,6 +93,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     const eligibleQueue = activeUserId ? queue.filter((item) => item.userId === activeUserId) : [];
 
     if (eligibleQueue.length === 0) {
+      trace?.({ event: 'drain', state: 'skipped', reason: 'no-eligible-items', queueDepth: 0 });
       return;
     }
 
@@ -73,6 +102,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     let failedCount = 0;
 
     try {
+      trace?.({ event: 'drain', state: 'started', queueDepth: eligibleQueue.length });
       sovereignBus.emit('sync:started', { queueLength: eligibleQueue.length });
       leaveBreadcrumb('sync', `Sync started: ${eligibleQueue.length} items`, 'info');
       if (__DEV__) {
@@ -88,26 +118,57 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
         }
         return a.timestamp - b.timestamp;
       });
+      let remainingDepth = currentQueue.length;
       for (let item of currentQueue) {
+        const itemQueueDepth = remainingDepth;
+        remainingDepth -= 1;
         // A paused auth session and a user-owned conflict need explicit recovery.
         // They must not silently resume just because React rendered again.
         if (item.commandState === 'auth_paused' || item.commandState === 'conflict') {
+          trace?.({
+            event: 'item',
+            state: 'skipped',
+            reason: item.commandState,
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+          });
           continue;
         }
 
         // Self-heal crashed in-flight locks if lease expired
         if (item.lockLeaseExpiresAt && Date.now() < item.lockLeaseExpiresAt) {
           // Active in-flight lock held by another process/worker
+          trace?.({
+            event: 'item',
+            state: 'skipped',
+            reason: 'active-lease',
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+          });
           continue;
         }
 
         // Respect Conflict Locking: Don't retry if a conflict is already active for this mutation
         if (activeConflicts.some((c) => c.id === item.id)) {
+          trace?.({
+            event: 'item',
+            state: 'skipped',
+            reason: 'active-conflict',
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+          });
           continue;
         }
 
         // Respect Temporal Pacing (Backoff)
         if (item.backoffUntil && Date.now() < item.backoffUntil) {
+          trace?.({
+            event: 'item',
+            state: 'skipped',
+            reason: 'backoff',
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+          });
           continue;
         }
 
@@ -116,8 +177,25 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
         // Atomically claim the lease so another foreground/background coordinator
         // cannot replay the same snapshot concurrently.
-        if (!tryAcquireMutationLease(item.id, 15000)) continue;
+        if (!tryAcquireMutationLease(item.id, 15000)) {
+          trace?.({
+            event: 'item',
+            state: 'skipped',
+            reason: 'lease-not-acquired',
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+          });
+          continue;
+        }
 
+        const itemStartedAt = onTrace ? performance.now() : null;
+        trace?.({
+          event: 'item',
+          state: 'started',
+          mutationType: traceMutationType(item.name),
+          queueDepth: itemQueueDepth,
+          queueWaitMs: elapsedBetween(drainStartedAt, itemStartedAt),
+        });
         try {
           const mutationFn = MUTATION_REGISTRY[item.name];
 
@@ -125,6 +203,14 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
             console.warn(`[SyncManager] Unknown mutation: ${item.name}. Moving to DLQ.`);
             moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
             updateEntry(item.id, 'dead_letter', 'Unknown mutation registry key');
+            trace?.({
+              event: 'item',
+              state: 'failed',
+              reason: 'unknown-mutation',
+              mutationType: 'unknown',
+              queueDepth: itemQueueDepth,
+              durationMs: elapsedSince(itemStartedAt),
+            });
             continue;
           }
 
@@ -136,6 +222,14 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
               removeFromQueue(item.id);
               updateEntry(item.id, 'dispatched');
               processedCount++;
+              trace?.({
+                event: 'item',
+                state: 'completed',
+                reason: 'durable-dispatch-receipt',
+                mutationType: traceMutationType(item.name),
+                queueDepth: itemQueueDepth,
+                durationMs: elapsedSince(itemStartedAt),
+              });
               continue;
             }
             if (dispatchResult === 'pending') {
@@ -147,6 +241,14 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
                 lockLeaseExpiresAt: undefined,
               });
               updateEntry(item.id, 'retrying', 'Workflow receipt pending');
+              trace?.({
+                event: 'item',
+                state: 'deferred',
+                reason: 'receipt-pending',
+                mutationType: traceMutationType(item.name),
+                queueDepth: itemQueueDepth,
+                durationMs: elapsedSince(itemStartedAt),
+              });
               continue;
             }
           }
@@ -170,8 +272,23 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
             scope: item.scope,
           });
           processedCount++;
+          trace?.({
+            event: 'item',
+            state: 'completed',
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+            durationMs: elapsedSince(itemStartedAt),
+          });
         } catch (error: any) {
           const errorType = classifyError(error);
+          trace?.({
+            event: 'item',
+            state: 'failed',
+            reason: errorType,
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+            durationMs: elapsedSince(itemStartedAt),
+          });
           const retryCount = (item.retryCount || 0) + 1;
 
           if (errorType === 'PERMANENT' || retryCount >= MAX_RETRIES) {
@@ -263,9 +380,24 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
           }
         }
       }
+    } catch (error) {
+      trace?.({
+        event: 'drain',
+        state: 'failed',
+        reason: 'unexpected-error',
+        queueDepth: queue.length,
+        durationMs: elapsedSince(drainStartedAt),
+      });
+      throw error;
     } finally {
       setSyncing(false);
     }
+    trace?.({
+      event: 'drain',
+      state: 'completed',
+      queueDepth: useMutationQueue.getState().queue.length,
+      durationMs: elapsedSince(drainStartedAt),
+    });
     leaveBreadcrumb(
       'sync',
       `Sync completed: ${processedCount} processed, ${failedCount} failed`,
@@ -289,6 +421,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     // Note: addConflict now emits 'conflict:detected' on the SovereignBus internally
     addConflict,
     activeConflicts,
+    onTrace,
   ]);
 
   useEffect(() => {
@@ -300,4 +433,16 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
   }, [isOnline, queue.length, isSyncing, processQueue]);
 
   return null;
+}
+
+function traceMutationType(name: string): string {
+  return MUTATION_REGISTRY[name] ? name : 'unknown';
+}
+
+function elapsedSince(startedAt: number | null): number {
+  return startedAt === null ? 0 : Math.max(0, performance.now() - startedAt);
+}
+
+function elapsedBetween(startedAt: number | null, finishedAt: number | null): number {
+  return startedAt === null || finishedAt === null ? 0 : Math.max(0, finishedAt - startedAt);
 }

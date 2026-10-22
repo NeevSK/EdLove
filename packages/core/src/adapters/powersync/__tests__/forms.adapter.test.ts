@@ -174,6 +174,6 @@ describe('PowerSyncFormsAdapter Local-First Persistence & Round-Trip', () => {
     const loaded = await adapter.load('survey-legacy');
     expect(loaded.pages).toHaveLength(1);
     expect(loaded.pages[0]!.title).toBe('Legacy Survey');
-    expect(loaded.settings.isPublished).toBe(false);
+    expect(loaded.settings?.isPublished).toBe(false);
   });
 });

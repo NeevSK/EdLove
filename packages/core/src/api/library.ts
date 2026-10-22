@@ -50,7 +50,7 @@ export const libraryAPI = {
         source: filters.source,
         verified_only: filters.verified_only,
         tags: filters.tags?.join(','),
-        sort_by: filters.sort_by,
+        sort_by: filters.sort_by as any,
         view_date: filters.view_date,
         limit: filters.limit,
         offset: filters.offset,

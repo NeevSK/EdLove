@@ -94,7 +94,7 @@ export const studentsAPI = {
   },
 
   async removeById(id: string): Promise<void> {
-    await orpcClient.educational.removeClassroomStudent({ params: { id } });
+    await orpcClient.educational.removeClassroomStudent({ params: { id }, body: {} });
   },
 
   async getSchoolLegacyHistory(schoolId: string): Promise<any[]> {

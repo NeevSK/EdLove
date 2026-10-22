@@ -2,7 +2,7 @@ import { ORPCError } from '@orpc/server';
 import { gradingORPCContract } from '@repo/core/api/grading.orpc.contract';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
-import { doubleGateMiddleware } from '../orpcMiddleware';
+import { decorateRouterWithDoubleGate } from '../routerDecorator';
 
 const impl = implement(gradingORPCContract).$context<ORPCContext>();
 
@@ -52,10 +52,9 @@ function lifecycleWhere(input: Record<string, string>, extra: Record<string, unk
   };
 }
 
-export const gradingRouter = impl.router({
-  getGradingSettings: impl.getGradingSettings
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+export const gradingRouter = decorateRouterWithDoubleGate(
+  impl.router({
+    getGradingSettings: impl.getGradingSettings.handler(async ({ input, context }) => {
       assertDatabase(context);
       const row = await (context.db as any).classroomGradingSettings.findUnique({
         where: { classroom_id: input.params.classroomId },
@@ -65,9 +64,7 @@ export const gradingRouter = impl.router({
       );
     }),
 
-  updateGradingSettings: impl.updateGradingSettings
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    updateGradingSettings: impl.updateGradingSettings.handler(async ({ input, context }) => {
       assertDatabase(context);
       return (context.db as any).classroomGradingSettings.upsert({
         where: { classroom_id: input.params.classroomId },
@@ -85,9 +82,7 @@ export const gradingRouter = impl.router({
       });
     }),
 
-  getReportCard: impl.getReportCard
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    getReportCard: impl.getReportCard.handler(async ({ input, context }) => {
       assertDatabase(context);
       const rows = await (context.db as any).gradeMark.findMany({
         where: lifecycleWhere(input.query, {
@@ -100,9 +95,7 @@ export const gradingRouter = impl.router({
       return rows.map(mapGradeMark);
     }),
 
-  getClassroomGrades: impl.getClassroomGrades
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    getClassroomGrades: impl.getClassroomGrades.handler(async ({ input, context }) => {
       assertDatabase(context);
       const rows = await (context.db as any).gradeMark.findMany({
         where: lifecycleWhere(input.query, {
@@ -115,71 +108,72 @@ export const gradingRouter = impl.router({
       return rows.map(mapGradeMark);
     }),
 
-  submitGrade: impl.submitGrade.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    assertDatabase(context);
-    if (input.body.schoolId !== context.schoolId) {
-      throw new ORPCError('FORBIDDEN', { message: 'Grade scope is outside the active school.' });
-    }
-    const percentage = (input.body.marksEarned / input.body.maxPoints) * 100;
-    const gradeMark = await context.db.$transaction(async (tx) => {
-      const gradeMark = await tx.gradeMark.create({
-        data: {
-          student_id: input.body.studentId,
-          school_id: input.body.schoolId,
-          academic_cycle_id: input.body.academicCycleId,
-          grade_class_id: input.body.gradeClassId,
-          term_id: input.body.termId,
-          subject_id: input.body.subjectId,
-          marks_earned: input.body.marksEarned,
-          max_points: input.body.maxPoints,
-          percentage,
-          gpa: percentage / 25,
-          letter_grade: letterGrade(percentage),
-          assignment_id: input.body.assignmentId,
-          submission_id: input.body.submissionId,
-          feedback: input.body.feedback,
-          idempotency_key: input.body.idempotencyKey,
-          graded_by: context.user.id,
-          graded_at: new Date(),
-        },
+    submitGrade: impl.submitGrade.handler(async ({ input, context }) => {
+      assertDatabase(context);
+      if (input.body.schoolId !== context.schoolId) {
+        throw new ORPCError('FORBIDDEN', { message: 'Grade scope is outside the active school.' });
+      }
+      const percentage = (input.body.marksEarned / input.body.maxPoints) * 100;
+      const gradeMark = await context.db.$transaction(async (tx) => {
+        const gradeMark = await tx.gradeMark.create({
+          data: {
+            student_id: input.body.studentId,
+            school_id: input.body.schoolId,
+            academic_cycle_id: input.body.academicCycleId,
+            grade_class_id: input.body.gradeClassId,
+            term_id: input.body.termId,
+            subject_id: input.body.subjectId,
+            marks_earned: input.body.marksEarned,
+            max_points: input.body.maxPoints,
+            percentage,
+            gpa: percentage / 25,
+            letter_grade: letterGrade(percentage),
+            assignment_id: input.body.assignmentId,
+            submission_id: input.body.submissionId,
+            feedback: input.body.feedback,
+            idempotency_key: input.body.idempotencyKey,
+            graded_by: context.user.id,
+            graded_at: new Date(),
+          },
+        });
+        await tx.sentinelAuditLog.create({
+          data: {
+            action: 'grade_mark_submitted',
+            resource_id: gradeMark.id,
+            resource_type: 'grade_mark',
+            actor_id: context.user.id,
+            details: input.body,
+          },
+        });
+        return gradeMark;
       });
-      await tx.sentinelAuditLog.create({
-        data: {
-          action: 'grade_mark_submitted',
-          resource_id: gradeMark.id,
-          resource_type: 'grade_mark',
-          actor_id: context.user.id,
-          details: input.body,
-        },
-      });
-      return gradeMark;
-    });
-    return mapGradeMark(gradeMark);
-  }),
+      return mapGradeMark(gradeMark);
+    }),
 
-  publishGrade: impl.publishGrade.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    assertDatabase(context);
-    const gradeMark = await context.db.$transaction(async (tx) => {
-      const gradeMark = await tx.gradeMark.update({
-        where: { id: input.params.id },
-        data: {
-          publication_state: 'published',
-          published_at: new Date(),
-          published_by: context.user.id,
-        },
+    publishGrade: impl.publishGrade.handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const gradeMark = await context.db.$transaction(async (tx) => {
+        const gradeMark = await tx.gradeMark.update({
+          where: { id: input.params.id },
+          data: {
+            publication_state: 'published',
+            published_at: new Date(),
+            published_by: context.user.id,
+          },
+        });
+        if (!gradeMark) throw new ORPCError('NOT_FOUND', { message: 'Grade mark not found' });
+        await tx.sentinelAuditLog.create({
+          data: {
+            action: 'grade_mark_published',
+            resource_id: input.params.id,
+            resource_type: 'grade_mark',
+            actor_id: context.user.id,
+            details: { publication_state: 'published' },
+          },
+        });
+        return gradeMark;
       });
-      if (!gradeMark) throw new ORPCError('NOT_FOUND', { message: 'Grade mark not found' });
-      await tx.sentinelAuditLog.create({
-        data: {
-          action: 'grade_mark_published',
-          resource_id: input.params.id,
-          resource_type: 'grade_mark',
-          actor_id: context.user.id,
-          details: { publication_state: 'published' },
-        },
-      });
-      return gradeMark;
-    });
-    return mapGradeMark(gradeMark);
+      return mapGradeMark(gradeMark);
+    }),
   }),
-});
+);

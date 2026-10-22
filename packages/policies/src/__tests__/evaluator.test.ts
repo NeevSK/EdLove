@@ -120,7 +120,7 @@ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fas
     const contributor = {
       type: 'member',
       id: 'author-1',
-      attributes: { capacity: 'member' },
+      attributes: { capacity: 'member', school_id: 'school-1' },
     };
 
     expect(

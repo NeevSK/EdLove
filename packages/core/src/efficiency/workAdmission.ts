@@ -20,8 +20,9 @@ export interface WorkAdmissionPolicy {
 }
 
 export type WorkAdmissionReason =
-  | 'journey-not-settled'
+  | 'journey-not-ready'
   | 'background'
+  | 'constrained-pressure'
   | 'severe-pressure'
   | 'eligible';
 
@@ -85,10 +86,9 @@ export function reduceWorkAdmission(
   }
 
   if (observation.pressure === 'unknown') {
-    next.pressure =
-      previous.pressure === 'severe' || previous.pressure === 'constrained'
-        ? previous.pressure
-        : 'unknown';
+    const pressureHasBeenQuiet =
+      observation.observedAt - previous.observedAt >= policy.recoveryWindowMs;
+    next.pressure = pressureHasBeenQuiet ? 'unknown' : previous.pressure;
     return next;
   }
 
@@ -124,11 +124,18 @@ export function resolveWorkAdmission(state: WorkAdmissionState): WorkAdmissionDe
   if (state.appState !== 'active') {
     return { optionalWorkAllowed: false, maxOptionalConcurrency: 0, reason: 'background' };
   }
-  if (state.phase !== 'settled') {
-    return { optionalWorkAllowed: false, maxOptionalConcurrency: 0, reason: 'journey-not-settled' };
+  if (state.phase === 'boot') {
+    return { optionalWorkAllowed: false, maxOptionalConcurrency: 0, reason: 'journey-not-ready' };
   }
   if (state.pressure === 'severe') {
     return { optionalWorkAllowed: false, maxOptionalConcurrency: 0, reason: 'severe-pressure' };
+  }
+  if (state.pressure === 'constrained') {
+    return {
+      optionalWorkAllowed: false,
+      maxOptionalConcurrency: 0,
+      reason: 'constrained-pressure',
+    };
   }
 
   return {

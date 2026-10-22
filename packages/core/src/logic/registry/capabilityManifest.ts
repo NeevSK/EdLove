@@ -92,7 +92,7 @@ export const CAPABILITY_MANIFEST: readonly CapabilityDeclaration[] = [
   {
     id: 'attendance',
     domain: 'workspace',
-    platforms: ['browser'],
+    platforms: ['browser', 'native'],
     accessClass: 'scoped',
     account: { action: 'read', subject: 'Classroom attendance', requiresSelectedScope: true },
     localModes: ['explore', 'sandbox'],

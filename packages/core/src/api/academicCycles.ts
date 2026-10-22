@@ -1,10 +1,12 @@
+import { readLocalFirst } from '@repo/core/api/dataGateway';
 import { educational } from '@repo/core/logic/managers/factory';
 import type { AcademicCycle } from '@repo/core/types';
 
 /**
  * Academic Cycles API
  *
- * Manages school terms, semesters, and cycles.
+ * @deprecated Prefer direct domain hooks or Sanctuary oRPC educational router.
+ * Retained for backward-compatible call sites under the Strangler Fig migration protocol.
  */
 export const academicCyclesAPI = {
   /**
@@ -15,10 +17,15 @@ export const academicCyclesAPI = {
   },
 
   /**
-   * Get the currently active academic cycle
+   * Get the currently active academic cycle (cached with 24h TTL)
    */
   async getCurrent(schoolId: string): Promise<AcademicCycle | null> {
-    return educational.institutions.getCurrentAcademicCycle(schoolId);
+    const result = await readLocalFirst<AcademicCycle | null>({
+      key: `academicCycle:current:${schoolId}`,
+      ttl: 24 * 60 * 60 * 1000,
+      fetchRemote: async () => educational.institutions.getCurrentAcademicCycle(schoolId),
+    });
+    return result ?? null;
   },
 
   /**

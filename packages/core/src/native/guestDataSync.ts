@@ -228,7 +228,8 @@ export class GuestDataSync {
 
         await orpcClient.sync.uploadBatch({
           body: {
-            batch: crudBatch,
+            idempotencyKey: `guest-migrate-${session.user.id}-${Date.now()}`,
+            crud: crudBatch as any,
           },
         });
 

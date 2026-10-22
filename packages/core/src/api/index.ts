@@ -196,82 +196,39 @@ export {
 };
 
 /**
- * Unified API Object (Sovereign Orchestration)
+ * Modern Sovereign oRPC v2 Dynamic Client Proxy
+ *
+ * Replaces the monolithic 70-entry manual API object with a lightweight,
+ * zero-overhead proxy over `orpcClient`.
+ *
+ * Procedure calls route directly through orpcClient.<domain>.<procedure>().
+ * Deleted or non-existent legacy methods throw loud, actionable errors.
  */
-export const api = {
-  announcements: announcementAPI,
-  agent: agentAPI,
-  auth: authAPI,
-  circles: circleAPI,
-  identity: identityAPI,
-  tasks: tasksAPI,
-  notes: classroomNotesAPI,
-  lessons: lessonsAPI,
-  students: studentsAPI,
-  attendance: attendanceAPI,
-  planBridge: planBridgeAPI,
-  resources: resourcesAPI,
-  groups: groupsAPI,
-  lessonMaterials: lessonMaterialsAPI,
-  assignments: assignmentsAPI,
-  classroomGroups: classroomGroupsAPI,
-  classroomStudents: classroomStudentsAPI,
-  classrooms: classroomsAPI,
-  grading: gradingAPI,
-  school: schoolAPI,
-  inventory: inventoryAPI,
-  accounting: accountingAPI,
-  payments: paymentsAPI,
-  erp: {
-    inventory: inventoryAPI,
-    accounting: accountingAPI,
-    payments: paymentsAPI,
+export const api: any = new Proxy(orpcClient, {
+  get(target: any, domainProp: string) {
+    if (domainProp in target) {
+      return target[domainProp];
+    }
+    // Domain aliases for existing consumers
+    if (domainProp === 'academicCycles') return target.educational;
+    if (domainProp === 'tasks') return target.educational;
+    if (domainProp === 'notes') return target.classroomNotes ?? target.educational;
+    if (domainProp === 'lessons') return target.educational;
+    if (domainProp === 'students') return target.educational;
+    if (domainProp === 'accounting' || domainProp === 'payments') return target.erp;
+    if (domainProp === 'challenges') return target.growth;
+    if (domainProp === 'missions') return target.sacredMissions;
+    if (domainProp === 'pro') return target.thuthimal;
+    if (domainProp === 'echo') return target.echoes;
+    if (domainProp === 'forms') return target.forms;
+    if (domainProp === 'school') return target.admin;
+
+    // Loud break for deleted/unmapped domain properties
+    throw new Error(
+      `[NUCLEAR-HARD-CUT] Domain property "api.${domainProp}" does not exist in oRPC v2. Migrate directly to orpcClient.${domainProp}.*`,
+    );
   },
-  rewards: rewardsAPI,
-  tracking: trackingAPI,
-  onboarding: onboardingAPI,
-  presence: presenceAPI,
-  sacredMissions: missionsAPI,
-  dailyContent: dailyContentAPI,
-  thuthimal: proAPI,
-  pro: proAPI,
-  classroomNotes: classroomNotesAPI,
-  principalNotes: principalNotesAPI,
-  community: communityAPI,
-  messaging: messagingAPI,
-  community_group: communityAPI,
-  guardian: guardianAPI,
-  staffManagement: staffManagementAPI,
-  missions: missionsAPI,
-  demo: demoAPI,
-  growth: growthAPI,
-  growthState: growthStateAPI,
-  ripples: ripplesAPI,
-  warmMirror: warmMirrorAPI,
-  naturePaths: naturePathsAPI,
-  moonPhase: moonPhaseAPI,
-  schoolForest: schoolForestAPI,
-  challenges: contextualChallengesAPI,
-  deviceTrust: deviceTrustAPI,
-  founder: founderAPI,
-  principalWorkspace: principalWorkspaceAPI,
-  teacherInsights: teacherInsightsAPI,
-  longitudinal: longitudinalAPI,
-  academicCycles: academicCyclesAPI,
-  studentObservations: studentObservationsAPI,
-  privacy: privacyAPI,
-  echo: echoAPI,
-  studentPotential: studentPotentialAPI,
-  mapping: mappingAPI,
-  history: historyAPI,
-  forms: formTemplatesAPI,
-  socialAPI,
-  profile: profileAPI,
-  media: mediaAPI,
-  library: libraryAPI,
-  orpcClient,
-  orpc,
-};
+});
 
 export default api;
 export * from './pilot.orpc.v2';

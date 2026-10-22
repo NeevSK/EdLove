@@ -27,6 +27,13 @@ export function classifyError(error: any): ErrorCategory {
   if (
     error.status === 400 ||
     error.status === 403 ||
+    error.status === 404 ||
+    code === 'BAD_REQUEST' ||
+    code === 'FORBIDDEN' ||
+    code === 'NOT_FOUND' ||
+    code === '400' ||
+    code === '403' ||
+    code === '404' ||
     code === '23505' || // Unique violation
     code === '42501' || // Insufficient privilege
     code === '42P01' || // Relation doesn't exist

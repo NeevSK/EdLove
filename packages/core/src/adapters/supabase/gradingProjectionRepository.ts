@@ -164,3 +164,6 @@ export const createSupabaseGradingProjectionRepository = (
     }
   },
 });
+
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+export const gradingProjectionRepository = createSupabaseGradingProjectionRepository(supabaseClient);

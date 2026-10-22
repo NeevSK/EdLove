@@ -24,13 +24,34 @@ async function handleNativeORPC(c: any, rpcHandler: RPCHandler) {
     'status=',
     response?.status,
   );
-  return matched && response ? response : c.text('Not Found', 404);
+  return matched && response
+    ? response
+    : c.json(
+        {
+          error: 'ORPC_PROCEDURE_NOT_FOUND',
+          path: c.req.path,
+          method: c.req.method,
+          message: `[NUCLEAR-HARD-CUT] No oRPC v2 procedure matches "${c.req.path}". Verify router specification in apps/sanctuary-api/src/core/router.ts`,
+        },
+        404,
+      );
 }
 
 export function registerNativeORPCRoutes(app: RouteRegistrar, rpcHandler: RPCHandler) {
   for (const path of nativeORPCPaths) {
     app.all(path, (context) => handleNativeORPC(context, rpcHandler));
   }
+  // Modern oRPC v2 catch-all for dynamically routed domain procedures
+  app.all('/api/*', async (c: any, next: any) => {
+    if (
+      c.req.path.startsWith('/api/auth') ||
+      c.req.path.startsWith('/api/ai') ||
+      c.req.path.startsWith('/api/openapi')
+    ) {
+      return await next();
+    }
+    return handleNativeORPC(c, rpcHandler);
+  });
 }
 
 export { nativeORPCPaths };

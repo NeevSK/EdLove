@@ -2,6 +2,7 @@ import { AnalyticsEngine, type FieldAnalytics } from '@intuitui-labs/form-builde
 import type { FormAnalytics, FormStorage } from '@intuitui-labs/form-builder-engine/ports';
 import type {
   FieldDefinition,
+  FormPage,
   FormResponse,
   FormSchema,
 } from '@intuitui-labs/form-builder-engine/schema';
@@ -19,21 +20,76 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
 
   // ─── FormStorage Port Implementation ───────────────────────────────────────
 
+  private parseFormConfig(
+    rawConfig: unknown,
+    baseTemplate: { is_published: boolean; slug?: string | null; category?: string | null },
+  ): {
+    pages: FormPage[];
+    settings: FormSchema['settings'];
+    affordanceConfig?: Record<string, unknown>;
+  } {
+    try {
+      const parsed = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
+      if (Array.isArray(parsed)) {
+        return {
+          pages: parsed as FormPage[],
+          settings: {
+            isPublished: baseTemplate.is_published,
+            slug: baseTemplate.slug ?? undefined,
+            category: baseTemplate.category ?? undefined,
+          },
+        };
+      }
+
+      const configObj = parsed as {
+        pages?: FormPage[];
+        settings?: FormSchema['settings'];
+        affordanceConfig?: Record<string, unknown>;
+      };
+
+      return {
+        pages: configObj?.pages || [],
+        settings: {
+          isPublished: baseTemplate.is_published,
+          slug: baseTemplate.slug ?? undefined,
+          category: baseTemplate.category ?? undefined,
+          ...configObj?.settings,
+        },
+        affordanceConfig: configObj?.affordanceConfig,
+      };
+    } catch {
+      return {
+        pages: [],
+        settings: {
+          isPublished: baseTemplate.is_published,
+          slug: baseTemplate.slug ?? undefined,
+          category: baseTemplate.category ?? undefined,
+        },
+      };
+    }
+  }
+
   /**
    * Save or update a form schema in the Supabase database.
    */
   async save(form: FormSchema): Promise<void> {
+    const configPayload = {
+      pages: form.pages,
+      settings: form.settings,
+      affordanceConfig: form.affordanceConfig,
+    };
+
     const templateData = {
       id: form.id,
-      owner_id: form.tenantId,
+      owner_id: form.tenantId ?? (await this.supabase.auth.getUser()).data.user?.id ?? '00000000-0000-0000-0000-000000000000',
       title: form.title,
       description: form.description || null,
-      config: form.pages, // Serialized array of FormPage structures
-      is_published: form.settings.isPublished ?? false,
-      slug: form.settings.slug || null,
-      category: form.settings.category || null,
-      created_at: form.createdAt,
-      updated_at: form.updatedAt,
+      config: configPayload,
+      is_published: form.settings?.isPublished ?? false,
+      slug: form.settings?.slug || null,
+      category: form.settings?.category || null,
+      created_at: form.createdAt ?? new Date().toISOString(),
+      updated_at: form.updatedAt ?? new Date().toISOString(),
     };
 
     const { error } = await this.supabase
@@ -62,18 +118,17 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       throw new APIError(`Form template not found: ${id}`, 'NOT_FOUND');
     }
 
+    const { pages, settings, affordanceConfig } = this.parseFormConfig(template.config, template);
+
     return {
       v: '1.0',
       id: template.id,
       tenantId: template.owner_id,
       title: template.title,
       description: template.description ?? undefined,
-      pages: typeof template.config === 'string' ? JSON.parse(template.config) : template.config,
-      settings: {
-        isPublished: template.is_published,
-        slug: template.slug ?? undefined,
-        category: template.category ?? undefined,
-      },
+      pages,
+      settings,
+      affordanceConfig,
       createdAt: template.created_at,
       updatedAt: template.updated_at,
     };
@@ -93,21 +148,21 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       throw new APIError('Failed to list form templates from Supabase', error.code, error);
     }
 
-    return (templates || []).map((template) => ({
-      v: '1.0',
-      id: template.id,
-      tenantId: template.owner_id,
-      title: template.title,
-      description: template.description ?? undefined,
-      pages: typeof template.config === 'string' ? JSON.parse(template.config) : template.config,
-      settings: {
-        isPublished: template.is_published,
-        slug: template.slug ?? undefined,
-        category: template.category ?? undefined,
-      },
-      createdAt: template.created_at,
-      updatedAt: template.updated_at,
-    }));
+    return (templates || []).map((template) => {
+      const { pages, settings, affordanceConfig } = this.parseFormConfig(template.config, template);
+      return {
+        v: '1.0',
+        id: template.id,
+        tenantId: template.owner_id,
+        title: template.title,
+        description: template.description ?? undefined,
+        pages,
+        settings,
+        affordanceConfig,
+        createdAt: template.created_at,
+        updatedAt: template.updated_at,
+      };
+    });
   }
 
   /**
@@ -162,7 +217,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       id: r.id,
       formId: r.template_id,
       responderId: r.responder_id ?? undefined,
-      tenantId: schema.tenantId,
+      tenantId: schema.tenantId ?? 'default',
       data: typeof r.data === 'string' ? JSON.parse(r.data) : r.data,
       submittedAt: r.submitted_at,
     }));
@@ -190,7 +245,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       id: r.id,
       formId: r.template_id,
       responderId: r.responder_id ?? undefined,
-      tenantId: schema.tenantId,
+      tenantId: schema.tenantId ?? 'default',
       data: typeof r.data === 'string' ? JSON.parse(r.data) : r.data,
       submittedAt: r.submitted_at,
     }));

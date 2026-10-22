@@ -96,7 +96,23 @@ export const classroomsAPI = {
   },
 
   async getClassroomCapacitySummary(id: string) {
-    return orpcClient.identity.resolveWorkspaceContext({ params: { id } });
+    try {
+      const classroom = await classroomRepository.getClassroomById(id);
+      const enrolledCount = await classroomRepository.getEnrolledCount(id);
+      const capacity = (classroom as any)?.capacity ?? 40;
+      return {
+        id,
+        capacity,
+        enrolledCount,
+        availableSeats: Math.max(0, capacity - enrolledCount),
+        isFull: enrolledCount >= capacity,
+      };
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to calculate classroom capacity summary',
+        error.status?.toString() || error.code || 'CAPACITY_SUMMARY_FAILED',
+      );
+    }
   },
 
   async getTeacherStats(id: string) {

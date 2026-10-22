@@ -59,7 +59,7 @@ export const identityAPI = {
     const inFlight = inFlightIdentityRequests.get(requestKey);
     if (inFlight) return inFlight;
 
-    const request = orpcClient.identity.identifyActiveCitizen({}).finally(() => {
+    const request = (orpcClient.identity.identifyActiveCitizen({}) as unknown as Promise<ActiveCitizen | null>).finally(() => {
       inFlightIdentityRequests.delete(requestKey);
     });
     inFlightIdentityRequests.set(requestKey, request);

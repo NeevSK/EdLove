@@ -26,11 +26,11 @@ const initialState = (overrides: Partial<WorkAdmissionObservation> = {}): WorkAd
 });
 
 describe('work admission reducer', () => {
-  it('holds optional work until the explicit settled phase and gates background or severe pressure', () => {
-    expect(resolveWorkAdmission(initialState({ phase: 'protected-ready' }))).toEqual({
+  it('holds optional work until route content is ready and gates background or severe pressure', () => {
+    expect(resolveWorkAdmission(initialState({ phase: 'boot' }))).toEqual({
       optionalWorkAllowed: false,
       maxOptionalConcurrency: 0,
-      reason: 'journey-not-settled',
+      reason: 'journey-not-ready',
     });
     expect(resolveWorkAdmission(initialState({ appState: 'background' })).reason).toBe(
       'background',
@@ -40,11 +40,21 @@ describe('work admission reducer', () => {
     );
   });
 
-  it('keeps settled unknown, constrained, and unknown-capacity work at the provisional cap of one', () => {
+  it.each(['public-ready', 'protected-ready', 'settled'] as const)(
+    'admits the provisional lane after the %s route owner commits content',
+    (phase) => {
+      expect(resolveWorkAdmission(initialState({ phase }))).toMatchObject({
+        optionalWorkAllowed: true,
+        maxOptionalConcurrency: 1,
+        reason: 'eligible',
+      });
+    },
+  );
+
+  it('keeps settled unknown and unknown-capacity work at the provisional cap of one', () => {
     expect(PROVISIONAL_MAX_OPTIONAL_CONCURRENCY).toBe(1);
     for (const state of [
       initialState({ pressure: 'unknown' }),
-      initialState({ pressure: 'constrained' }),
       initialState({ capacityKnown: false, pressure: 'normal' }),
     ]) {
       expect(resolveWorkAdmission(state)).toMatchObject({
@@ -62,7 +72,11 @@ describe('work admission reducer', () => {
       policy,
     );
     expect(state.pressure).toBe('constrained');
-    expect(resolveWorkAdmission(state).maxOptionalConcurrency).toBe(1);
+    expect(resolveWorkAdmission(state)).toMatchObject({
+      optionalWorkAllowed: false,
+      maxOptionalConcurrency: 0,
+      reason: 'constrained-pressure',
+    });
 
     state = reduceWorkAdmission(state, observation({ pressure: 'severe', observedAt: 20 }), policy);
     expect(resolveWorkAdmission(state).reason).toBe('severe-pressure');
@@ -82,7 +96,7 @@ describe('work admission reducer', () => {
     expect(state).toMatchObject({ pressure: 'normal', recoveryCandidateSince: null });
   });
 
-  it('does not let unknown pressure clear the worst latched pressure or preserve recovery time', () => {
+  it('holds pressure during the recovery window, then returns to unknown without claiming normal', () => {
     let state = reduceWorkAdmission(
       null,
       observation({ pressure: 'severe', observedAt: 10 }),
@@ -95,6 +109,28 @@ describe('work admission reducer', () => {
       policy,
     );
     expect(state).toMatchObject({ pressure: 'severe', recoveryCandidateSince: null });
+    state = reduceWorkAdmission(
+      state,
+      observation({ pressure: 'unknown', observedAt: 171 }),
+      policy,
+    );
+    expect(state).toMatchObject({ pressure: 'unknown', recoveryCandidateSince: null });
+  });
+
+  it('starts a fresh normal recovery window after a brief unknown observation', () => {
+    let state = reduceWorkAdmission(
+      null,
+      observation({ pressure: 'severe', observedAt: 10 }),
+      policy,
+    );
+    state = reduceWorkAdmission(state, observation({ pressure: 'normal', observedAt: 20 }), policy);
+    state = reduceWorkAdmission(
+      state,
+      observation({ pressure: 'unknown', observedAt: 70 }),
+      policy,
+    );
+    expect(state).toMatchObject({ pressure: 'severe', recoveryCandidateSince: null });
+
     state = reduceWorkAdmission(state, observation({ pressure: 'normal', observedAt: 80 }), policy);
     expect(state).toMatchObject({ pressure: 'severe', recoveryCandidateSince: 80 });
     state = reduceWorkAdmission(
@@ -108,7 +144,7 @@ describe('work admission reducer', () => {
       observation({ pressure: 'normal', observedAt: 180 }),
       policy,
     );
-    expect(state.pressure).toBe('normal');
+    expect(state).toMatchObject({ pressure: 'normal', recoveryCandidateSince: null });
   });
 
   it('ignores stale timestamps without applying their phase or pressure', () => {
@@ -121,22 +157,19 @@ describe('work admission reducer', () => {
     expect(result).toBe(state);
   });
 
-  it.each(['public-ready', 'boot'] as const)(
-    'closes admission on explicit phase regression to %s',
-    (phase) => {
-      const state = reduceWorkAdmission(
-        initialState({ phase: 'settled', observedAt: 50, pressure: 'normal' }),
-        observation({ phase, observedAt: 51, pressure: 'normal' }),
-        policy,
-      );
-      expect(state.phase).toBe(phase);
-      expect(resolveWorkAdmission(state)).toMatchObject({
-        optionalWorkAllowed: false,
-        maxOptionalConcurrency: 0,
-        reason: 'journey-not-settled',
-      });
-    },
-  );
+  it('closes admission on explicit phase regression to boot', () => {
+    const state = reduceWorkAdmission(
+      initialState({ phase: 'settled', observedAt: 50, pressure: 'normal' }),
+      observation({ phase: 'boot', observedAt: 51, pressure: 'normal' }),
+      policy,
+    );
+    expect(state.phase).toBe('boot');
+    expect(resolveWorkAdmission(state)).toMatchObject({
+      optionalWorkAllowed: false,
+      maxOptionalConcurrency: 0,
+      reason: 'journey-not-ready',
+    });
+  });
 
   it('requires a fresh normal window after backgrounding', () => {
     let state = initialState({ pressure: 'normal', observedAt: 10 });

@@ -1,4 +1,10 @@
-import { COMMON_ERROR_STATUS_MAP, createORPCClient, ORPCError } from '@orpc/client';
+import {
+  COMMON_ERROR_STATUS_MAP,
+  createORPCClient,
+  createSafeClient,
+  ORPCError,
+  safe,
+} from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import {
   BatchLinkPlugin,
@@ -8,6 +14,7 @@ import {
 } from '@orpc/client/plugins';
 import type { RouterClient } from '@orpc/server';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
+import type { AppContractClient } from './appContract';
 import { SOVEREIGN_ORPC_URL } from './base';
 import { authenticatedSovereignFetch } from './clientRuntime';
 

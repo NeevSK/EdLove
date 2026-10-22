@@ -26,15 +26,11 @@ export function createAssignmentSubmissionTransport(
   assertSecureApiUrl(options.url);
   const link = new RPCLink<AssignmentSubmissionClientContext>({
     url: options.url,
-    fetch: async (request: Request, _init: any, clientOptions: any, path: readonly string[]) => {
-      const requestUrl = request.url;
+    fetch: async (url: URL | string, init: RequestInit, clientOptions: any, path: readonly string[]) => {
+      const requestUrl = typeof url === 'string' ? url : url.href;
       assertSecureApiUrl(requestUrl);
-      const body = await request.clone().text();
-      const headers = Object.fromEntries(request.headers.entries());
       const mergedInit: RequestInit = {
-        method: request.method || 'POST',
-        headers,
-        body,
+        ...init,
         redirect: 'error',
       };
       return options.fetch(requestUrl, mergedInit, clientOptions, path);

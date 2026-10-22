@@ -1,7 +1,7 @@
 import { ORPCError } from '@orpc/server';
 import { attendanceORPCContract } from '@repo/core/api/attendance.orpc.contract';
 import { implement, type ORPCContext } from '../orpc';
-import { doubleGateMiddleware } from '../orpcMiddleware';
+import { decorateRouterWithDoubleGate } from '../routerDecorator';
 
 const impl = implement(attendanceORPCContract).$context<ORPCContext>();
 
@@ -192,10 +192,9 @@ async function loadDaily(context: ORPCContext, record: RecordInput, db = context
   return row;
 }
 
-export const attendanceRouter = impl.router({
-  getByClassroom: impl.getByClassroom
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+export const attendanceRouter = decorateRouterWithDoubleGate(
+  impl.router({
+    getByClassroom: impl.getByClassroom.handler(async ({ input, context }) => {
       const db = context.db;
       const query = input.query as { gradeClassId?: string; classroomId?: string; date?: string };
       const targetId = query.gradeClassId || query.classroomId;
@@ -214,27 +213,25 @@ export const attendanceRouter = impl.router({
       });
       return rows.map(mapAttendance);
     }),
-  record: impl.record
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => mapAttendance(await loadDaily(context, input.body))),
-  batchRecord: impl.batchRecord.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    try {
-      return await (context.db as any).$transaction(async (tx: any) => {
-        const rows = [];
-        for (const item of input.body) rows.push(mapAttendance(await loadDaily(context, item, tx)));
-        return rows;
-      });
-    } catch (error: any) {
-      if (error instanceof ORPCError) throw error;
-      throw new ORPCError('CONFLICT', {
-        message: error?.message || 'Attendance batch was not applied',
-        cause: error,
-      });
-    }
-  }),
-  getSchoolPulse: impl.getSchoolPulse
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    record: impl.record.handler(async ({ input, context }) =>
+      mapAttendance(await loadDaily(context, input.body)),
+    ),
+    batchRecord: impl.batchRecord.handler(async ({ input, context }) => {
+      try {
+        return await (context.db as any).$transaction(async (tx: any) => {
+          const rows = [];
+          for (const item of input.body) rows.push(mapAttendance(await loadDaily(context, item, tx)));
+          return rows;
+        });
+      } catch (error: any) {
+        if (error instanceof ORPCError) throw error;
+        throw new ORPCError('CONFLICT', {
+          message: error?.message || 'Attendance batch was not applied',
+          cause: error,
+        });
+      }
+    }),
+    getSchoolPulse: impl.getSchoolPulse.handler(async ({ input, context }) => {
       const rows = await (context.db as any).dailyAttendance.findMany({
         where: {
           school_id: input.query.schoolId,
@@ -250,44 +247,42 @@ export const attendanceRouter = impl.router({
         atRiskCount: rows.filter((row: any) => row.status === 'absent').length,
       };
     }),
-  getReport: impl.getReport.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    const rows = await (context.db as any).dailyAttendance.findMany({
-      where: {
-        school_id: input.query.schoolId,
-        grade_class_id: input.query.gradeClassId || undefined,
-        attendance_date: { gte: input.query.startDate, lte: input.query.endDate },
-      },
-      select: { attendance_date: true, status: true },
-      orderBy: { attendance_date: 'asc' },
-    });
-    const byDate = new Map<string, any[]>();
-    for (const row of rows) {
-      const date = String(row.attendance_date).slice(0, 10);
-      byDate.set(date, [...(byDate.get(date) ?? []), row]);
-    }
-    const trend = [...byDate.entries()].map(([date, values]) => {
-      const presentCount = values.filter((row) => row.status === 'present').length;
-      const absentCount = values.filter((row) => row.status === 'absent').length;
-      const lateCount = values.filter((row) => row.status === 'late').length;
+    getReport: impl.getReport.handler(async ({ input, context }) => {
+      const rows = await (context.db as any).dailyAttendance.findMany({
+        where: {
+          school_id: input.query.schoolId,
+          grade_class_id: input.query.gradeClassId || undefined,
+          attendance_date: { gte: input.query.startDate, lte: input.query.endDate },
+        },
+        select: { attendance_date: true, status: true },
+        orderBy: { attendance_date: 'asc' },
+      });
+      const byDate = new Map<string, any[]>();
+      for (const row of rows) {
+        const date = String(row.attendance_date).slice(0, 10);
+        byDate.set(date, [...(byDate.get(date) ?? []), row]);
+      }
+      const trend = [...byDate.entries()].map(([date, values]) => {
+        const presentCount = values.filter((row) => row.status === 'present').length;
+        const absentCount = values.filter((row) => row.status === 'absent').length;
+        const lateCount = values.filter((row) => row.status === 'late').length;
+        return {
+          date,
+          presentCount,
+          absentCount,
+          lateCount,
+          totalCount: values.length,
+          rate: values.length ? presentCount / values.length : 0,
+        };
+      });
+      const present = rows.filter((row: any) => row.status === 'present').length;
       return {
-        date,
-        presentCount,
-        absentCount,
-        lateCount,
-        totalCount: values.length,
-        rate: values.length ? presentCount / values.length : 0,
+        trend,
+        overallRate: rows.length ? present / rows.length : 0,
+        totalAbsences: rows.filter((row: any) => row.status === 'absent').length,
       };
-    });
-    const present = rows.filter((row: any) => row.status === 'present').length;
-    return {
-      trend,
-      overallRate: rows.length ? present / rows.length : 0,
-      totalAbsences: rows.filter((row: any) => row.status === 'absent').length,
-    };
-  }),
-  getGradeClassRoster: impl.getGradeClassRoster
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    }),
+    getGradeClassRoster: impl.getGradeClassRoster.handler(async ({ input, context }) => {
       const db = context.db as any;
       const targetId = input.query.gradeClassId || (input.query as any).classroomId;
       const gradeClass = await resolveGradeClassRecord(db, targetId, context.schoolId);
@@ -315,9 +310,7 @@ export const attendanceRouter = impl.router({
         avatar_url: row.student?.avatar_url ?? null,
       }));
     }),
-  getMyGradeClasses: impl.getMyGradeClasses
-    .use(doubleGateMiddleware)
-    .handler(async ({ context }) => {
+    getMyGradeClasses: impl.getMyGradeClasses.handler(async ({ context }) => {
       const db = context.db as any;
       if (!context.schoolId) return [];
       const leader = ['principal', 'admin', 'section_head', 'grade_head'].includes(
@@ -360,9 +353,7 @@ export const attendanceRouter = impl.router({
       }
       return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
     }),
-  quickMark: impl.quickMark
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    quickMark: impl.quickMark.handler(async ({ input, context }) => {
       const db = context.db as any;
       const { gradeClassId, date, rawText } = input.body;
 
@@ -420,9 +411,7 @@ export const attendanceRouter = impl.router({
         marks,
       };
     }),
-  submitExcuse: impl.submitExcuse
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
+    submitExcuse: impl.submitExcuse.handler(async ({ input, context }) => {
       const db = context.db as any;
       const { studentId, gradeClassId, date } = input.body;
 
@@ -454,5 +443,6 @@ export const attendanceRouter = impl.router({
 
       return { success: true };
     }),
-});
+  }),
+);
 

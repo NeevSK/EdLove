@@ -13,7 +13,7 @@ const createInitialBondSchema = z.object({
   }),
 });
 
-export const onboardingHandlers = {
+export const onboardingHandlers: Record<string, (c: any) => Promise<any>> = {
   createInitialBond: async (c: Context) => {
     const db = c.get('db');
     const user = c.get('user');

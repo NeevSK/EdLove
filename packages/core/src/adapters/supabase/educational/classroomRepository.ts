@@ -75,6 +75,15 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     return data ? (ClassroomSchema.parse(data) as Classroom) : null;
   },
 
+  async getEnrolledCount(classroomId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('classroom_students')
+      .select('*', { count: 'exact', head: true })
+      .eq('classroom_id', classroomId);
+    if (error) return 0;
+    return count ?? 0;
+  },
+
   async createClassroom(classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>) {
     const { data, error } = await supabase.from('classrooms').insert([classroom]).select().single();
     if (error) throw new APIError('Failed to create classroom', error.code, error);

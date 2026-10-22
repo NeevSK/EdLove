@@ -413,8 +413,8 @@ describe('Hardened Bitemporal Fee Exemption Engine & Regulatory Scenarios (G1 Co
       expect(debits).toBe(333333);
       expect(credits).toBe(333333);
 
-      const tutor = settlement.entries.find((e) => e.accountId.includes('tutor'));
-      const inst = settlement.entries.find((e) => e.accountId.includes('institute'));
+      const tutor = settlement.entries.find((e) => e.accountId?.includes('tutor'));
+      const inst = settlement.entries.find((e) => e.accountId?.includes('institute'));
 
       // 70% of 333333 = 233333.1 -> floor 233333
       // Remainder to institute = 333333 - 233333 = 100000

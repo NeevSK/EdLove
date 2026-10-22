@@ -1,3 +1,4 @@
+import { readLocalFirst } from '@repo/core/api/dataGateway';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
@@ -72,19 +73,36 @@ export type DailyAttendanceRow = {
   student_name: string | null;
 };
 
+/**
+ * @deprecated Prefer direct use of `orpcClient.attendance.*` or domain hooks.
+ * Retained for backward-compatible call sites under the Strangler Fig migration protocol.
+ */
 export const attendanceAPI = {
   /** Grade classes the signed-in teacher (or school leader) may mark. */
   async getMyGradeClasses(): Promise<GradeClassOption[]> {
-    return toPromise(apiEffect(() => orpcClient.attendance.getMyGradeClasses())) as Promise<
-      GradeClassOption[]
-    >;
+    const result = await readLocalFirst<GradeClassOption[]>({
+      key: 'attendance:my_grade_classes',
+      ttl: 24 * 60 * 60 * 1000,
+      fetchRemote: () =>
+        toPromise(apiEffect(() => orpcClient.attendance.getMyGradeClasses())) as Promise<
+          GradeClassOption[]
+        >,
+    });
+    return result ?? [];
   },
 
   /** Active enrollments (student_grade_class_enrollments) for a grade class on a date. */
   async getGradeClassRoster(gradeClassId: string, date?: string): Promise<GradeClassRosterRow[]> {
-    return toPromise(
-      apiEffect(() => orpcClient.attendance.getGradeClassRoster({ query: { gradeClassId, date } })),
-    ) as Promise<GradeClassRosterRow[]>;
+    const dateKey = date ?? 'today';
+    const result = await readLocalFirst<GradeClassRosterRow[]>({
+      key: `attendance:roster:${gradeClassId}:${dateKey}`,
+      ttl: 12 * 60 * 60 * 1000,
+      fetchRemote: () =>
+        toPromise(
+          apiEffect(() => orpcClient.attendance.getGradeClassRoster({ query: { gradeClassId, date } })),
+        ) as Promise<GradeClassRosterRow[]>,
+    });
+    return result ?? [];
   },
 
   /**
@@ -94,10 +112,18 @@ export const attendanceAPI = {
     gradeClassId: string,
     date?: string,
   ): Promise<{ records: DailyAttendanceRow[] }> {
-    const records = (await toPromise(
-      apiEffect(() => orpcClient.attendance.getByClassroom({ query: { gradeClassId, date } })),
-    )) as DailyAttendanceRow[];
-    return { records };
+    const dateKey = date ?? 'today';
+    const result = await readLocalFirst<{ records: DailyAttendanceRow[] }>({
+      key: `attendance:snapshot:${gradeClassId}:${dateKey}`,
+      ttl: 5 * 60 * 1000,
+      fetchRemote: async () => {
+        const records = (await toPromise(
+          apiEffect(() => orpcClient.attendance.getByClassroom({ query: { gradeClassId, date } })),
+        )) as DailyAttendanceRow[];
+        return { records };
+      },
+    });
+    return result ?? { records: [] };
   },
 
   /**
@@ -147,16 +173,16 @@ export const attendanceAPI = {
   async getForStudent(student_id: string, date?: string) {
     return toPromise(
       apiEffect(() =>
-        orpcClient.attendance.getByClassroom({ query: { studentId: student_id, date } }),
+        orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id, date } }),
       ),
     );
   },
 
   /** Queries attendance timeline for a student. */
-  async getStudentAttendanceTimeline(student_id: string, limit?: number) {
+  async getStudentAttendanceTimeline(student_id: string, _limit?: number) {
     return toPromise(
       apiEffect(() =>
-        orpcClient.attendance.getByClassroom({ query: { studentId: student_id, limit } }),
+        orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id } }),
       ),
     );
   },
@@ -233,12 +259,12 @@ export const attendanceAPI$ = {
 
   getForStudent: (student_id: string, date?: string) =>
     apiEffect(() =>
-      orpcClient.attendance.getByClassroom({ query: { studentId: student_id, date } }),
+      orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id, date } }),
     ),
 
-  getStudentAttendanceTimeline: (student_id: string, limit?: number) =>
+  getStudentAttendanceTimeline: (student_id: string, _limit?: number) =>
     apiEffect(() =>
-      orpcClient.attendance.getByClassroom({ query: { studentId: student_id, limit } }),
+      orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id } }),
     ),
 
   fetchClassroomAttendance: (classroom_id: string, date?: string) =>

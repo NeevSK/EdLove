@@ -275,6 +275,7 @@ export {
 } from '@repo/core/lib/sync/delta';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+export type { SyncManagerTraceEvent } from '@repo/core/lib/sync/sync/SyncManager';
 export { default as SyncManager } from '@repo/core/lib/sync/sync/SyncManager';
 export type {
   MutationOutcome,

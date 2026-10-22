@@ -4,6 +4,7 @@
  * Composes domain procedure contracts across the polymath platform with strict Zod inference.
  */
 
+import { minifyRouterContract } from '@orpc/contract';
 import { z } from 'zod';
 
 import { adminORPCContract } from './admin.orpc.contract';
@@ -108,3 +109,14 @@ export type AppContractClient = {
   social: InferDomainClient<typeof socialORPCContract>;
   sync: InferDomainClient<typeof syncORPCContract>;
 } & Record<string, any>;
+
+/**
+ * getMinifiedAppContract
+ * Strips verbose Zod schema descriptions and validation ASTs from client contracts.
+ * Critical scaling constraint: Protects low-memory Android devices (2GB RAM)
+ * running the Hermes engine against bytecode bloat and GC pauses.
+ */
+export function getMinifiedAppContract() {
+  return minifyRouterContract(appContract as any);
+}
+

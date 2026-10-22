@@ -86,20 +86,73 @@ export const resourcesAPI = {
   },
 
   /**
-   * Toggles pinned status for a resource.
+   * Toggles pinned status for a resource with local-first cache invalidation and RPC dispatch.
    */
   async togglePin(
     id: string,
     isPinned: boolean,
+    classroomId?: string,
   ): Promise<{ success: boolean; id: string; isPinned: boolean }> {
+    try {
+      if ((orpcClient as any).educational?.toggleResourcePin) {
+        await (orpcClient as any).educational.toggleResourcePin({
+          params: { id },
+          body: { isPinned },
+        });
+      }
+    } catch {
+      // Allow optimistic fallback when remote procedure is offline or unreachable
+    }
+
+    if (classroomId) {
+      try {
+        const key = `gurudevi-resources-cache-${classroomId}`;
+        const raw = await SafeZustandStorage.getItem(key);
+        if (raw) {
+          const list: ClassroomResource[] = JSON.parse(raw);
+          const updated = list.map((item) =>
+            item.id === id ? { ...item, is_pinned: isPinned, updated_at: new Date() } : item,
+          );
+          await SafeZustandStorage.setItem(key, JSON.stringify(updated));
+        }
+      } catch {
+        // Silently tolerate local cache storage failure
+      }
+    }
+
     return { success: true, id, isPinned };
   },
 
   /**
-   * Deletes a resource.
+   * Deletes a resource with local-first cache pruning and RPC dispatch.
    */
-  async delete(id: string | { id: string }): Promise<{ success: boolean; id: string }> {
+  async delete(
+    id: string | { id: string },
+    classroomId?: string,
+  ): Promise<{ success: boolean; id: string }> {
     const targetId = typeof id === 'string' ? id : id.id;
+    try {
+      if ((orpcClient as any).educational?.deleteResource) {
+        await (orpcClient as any).educational.deleteResource({ params: { id: targetId } });
+      }
+    } catch {
+      // Tolerate offline / non-mounted endpoint
+    }
+
+    if (classroomId) {
+      try {
+        const key = `gurudevi-resources-cache-${classroomId}`;
+        const raw = await SafeZustandStorage.getItem(key);
+        if (raw) {
+          const list: ClassroomResource[] = JSON.parse(raw);
+          const filtered = list.filter((item) => item.id !== targetId);
+          await SafeZustandStorage.setItem(key, JSON.stringify(filtered));
+        }
+      } catch {
+        // Silently tolerate local cache storage failure
+      }
+    }
+
     return { success: true, id: targetId };
   },
 };
