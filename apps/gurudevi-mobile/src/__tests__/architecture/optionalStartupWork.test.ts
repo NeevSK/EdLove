@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  scheduleOptionalStartupWork,
   type OptionalStartupProgress,
+  scheduleOptionalStartupWork,
 } from '@/boot/optionalStartupWork';
 
 function harness() {
@@ -111,6 +111,39 @@ describe('optional startup warmup scheduling', () => {
     h.slice();
     await state.inFlight;
     expect(next).toHaveBeenCalledOnce();
+  });
+
+  it('reports per-task queue wait, execution duration, and queue depth', async () => {
+    const h = harness();
+    const state = progress();
+    const events: Array<{
+      state: string;
+      queueDepth: number;
+      durationMs?: number;
+      queueWaitMs?: number;
+    }> = [];
+    let now = 10;
+    scheduleOptionalStartupWork(
+      [
+        {
+          id: 'measured',
+          run: async () => {
+            now = 37;
+          },
+        },
+      ],
+      state,
+      { ...h.scheduling, now: () => now, onTrace: (event) => events.push(event) },
+    );
+    now = 25;
+    h.frame();
+    h.slice();
+    await state.inFlight;
+    expect(events).toEqual([
+      { task: 'measured', state: 'queued', queueDepth: 1 },
+      { task: 'measured', state: 'started', queueDepth: 0, queueWaitMs: 15 },
+      { task: 'measured', state: 'completed', queueDepth: 0, durationMs: 12 },
+    ]);
   });
 
   it('keeps the concurrency cap across effect cleanup and replacement', async () => {

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  ImageBackground,
   Pressable,
   ScrollView,
   StatusBar,
@@ -10,6 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import gardenArtwork from '../../assets/design-preview/garden-path.jpg';
@@ -139,6 +139,65 @@ export default function WelcomeConceptPreview() {
   const textColor = selected.ink;
   const mutedColor = selected.quietInk;
 
+  const capacityOptions = capacities.map((option) => {
+    const active = capacity === option.id;
+    return (
+      <Pressable
+        key={option.id}
+        accessibilityRole="radio"
+        accessibilityState={{ selected: active }}
+        onPress={() => setCapacity(option.id)}
+        style={styles.choiceRow}
+      >
+        <View
+          style={[
+            styles.choiceMark,
+            { borderColor: active ? selected.accent : `${textColor}60` },
+          ]}
+        >
+          {active ? (
+            <View
+              style={[styles.choiceDot, { backgroundColor: selected.accent }]}
+            />
+          ) : null}
+        </View>
+        <View style={styles.choiceText}>
+          <Text style={[styles.choiceTitle, { color: textColor }]}>
+            {option.title}
+          </Text>
+          <Text style={[styles.choiceDetail, { color: mutedColor }]}>
+            {option.detail}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  });
+
+  const conceptChips = concepts.map((concept, index) => {
+    const active = concept.id === selected.id;
+    return (
+      <Pressable
+        key={concept.id}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: active }}
+        onPress={() => setSelectedId(concept.id)}
+        style={[
+          styles.conceptChip,
+          { borderBottomColor: active ? selected.accent : 'transparent' },
+        ]}
+      >
+        <Text
+          style={[
+            styles.conceptChipText,
+            { color: active ? textColor : mutedColor },
+          ]}
+        >
+          0{index + 1} {concept.name}
+        </Text>
+      </Pressable>
+    );
+  });
+
   return (
     <View style={[styles.stage, wideLayout && styles.wideStage]}>
       <View
@@ -201,32 +260,13 @@ export default function WelcomeConceptPreview() {
 
           {showWelcome ? (
             <>
-              <ScrollView
-                horizontal
-                contentContainerStyle={styles.conceptPicker}
-                showsHorizontalScrollIndicator={false}
+              <View
+                style={styles.conceptPicker}
+                accessibilityRole="tablist"
                 accessibilityLabel="Welcome screen concepts"
               >
-                {concepts.map((concept, index) => {
-                  const active = concept.id === selected.id;
-                  return (
-                    <Pressable
-                      key={concept.id}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: active }}
-                      onPress={() => setSelectedId(concept.id)}
-                      style={[
-                        styles.conceptChip,
-                        { borderBottomColor: active ? selected.accent : 'transparent' },
-                      ]}
-                    >
-                      <Text style={{ color: active ? textColor : mutedColor, fontSize: 12 }}>
-                        0{index + 1} {concept.name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
+                {conceptChips}
+              </View>
 
               <View style={styles.heroCopy}>
                 <Text style={[styles.eyebrow, { color: mutedColor }]}>{getLocalGreeting()}</Text>
@@ -236,9 +276,9 @@ export default function WelcomeConceptPreview() {
                 </Text>
               </View>
 
-              <ImageBackground
+              <Image
                 source={selected.hero === 'framed' ? fireflySceneArtwork : gardenArtwork}
-                resizeMode={selected.hero === 'framed' ? 'contain' : 'cover'}
+                contentFit={selected.hero === 'framed' ? 'contain' : 'cover'}
                 accessibilityLabel={
                   selected.hero === 'framed'
                     ? 'Tutii the firefly welcoming the learner among lotus flowers'
@@ -249,7 +289,6 @@ export default function WelcomeConceptPreview() {
                   selected.hero === 'framed' && styles.framedArtwork,
                   selected.hero === 'wide' && styles.wideArtwork,
                 ]}
-                imageStyle={selected.hero === 'framed' ? styles.framedImage : undefined}
               />
 
               <View style={styles.actions}>
@@ -283,7 +322,7 @@ export default function WelcomeConceptPreview() {
               <Text style={[styles.description, { color: mutedColor }]}>
                 One email is all you need to find your way back.
               </Text>
-              <TextInput
+              <TextInput testID="welcome-email-input"
                 accessibilityLabel="Email address"
                 autoCapitalize="none"
                 autoComplete="email"
@@ -352,7 +391,7 @@ export default function WelcomeConceptPreview() {
                   <Text style={[styles.description, { color: mutedColor }]}>
                     I’ll help you find your way around. What should I call you?
                   </Text>
-                  <TextInput
+                  <TextInput testID="welcome-name-input"
                     accessibilityLabel="What should Tutii call you?"
                     autoComplete="name"
                     onChangeText={setLearnerName}
@@ -376,39 +415,7 @@ export default function WelcomeConceptPreview() {
                     Which best describes you here?
                   </Text>
                   <View style={styles.choiceList}>
-                    {capacities.map((option) => {
-                      const active = capacity === option.id;
-                      return (
-                        <Pressable
-                          key={option.id}
-                          accessibilityRole="radio"
-                          accessibilityState={{ selected: active }}
-                          onPress={() => setCapacity(option.id)}
-                          style={styles.choiceRow}
-                        >
-                          <View
-                            style={[
-                              styles.choiceMark,
-                              { borderColor: active ? selected.accent : `${textColor}60` },
-                            ]}
-                          >
-                            {active ? (
-                              <View
-                                style={[styles.choiceDot, { backgroundColor: selected.accent }]}
-                              />
-                            ) : null}
-                          </View>
-                          <View style={styles.choiceText}>
-                            <Text style={[styles.choiceTitle, { color: textColor }]}>
-                              {option.title}
-                            </Text>
-                            <Text style={[styles.choiceDetail, { color: mutedColor }]}>
-                              {option.detail}
-                            </Text>
-                          </View>
-                        </Pressable>
-                      );
-                    })}
+                    {capacityOptions}
                   </View>
                 </>
               ) : isComplete ? (
@@ -513,8 +520,9 @@ const styles = StyleSheet.create({
   brandName: { fontFamily: 'Poppins-Medium', fontSize: 17, letterSpacing: 0.2 },
   previewBadge: { marginLeft: 'auto', paddingVertical: 6 },
   previewBadgeText: { color: '#827D6C', fontSize: 9, letterSpacing: 1.1 },
-  conceptPicker: { gap: 20, paddingRight: 8 },
+  conceptPicker: { flexDirection: 'row', gap: 20, paddingRight: 8 },
   conceptChip: { minHeight: 40, justifyContent: 'center', borderBottomWidth: 2 },
+  conceptChipText: { fontSize: 12 },
   heroCopy: { gap: 10, paddingTop: 2 },
   flowContent: { flex: 1, gap: 20, paddingTop: 28 },
   eyebrow: { fontSize: 10, letterSpacing: 1.8, lineHeight: 15 },

@@ -11,6 +11,7 @@ describe('startup stage telemetry', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('uses the Expo Observe logEvent options shape with fixed stage attributes', async () => {
@@ -64,5 +65,42 @@ describe('startup stage telemetry', () => {
     expect(observeMock.logEvent).toHaveBeenCalledTimes(64);
     expect(warn).toHaveBeenCalledOnce();
     expect(warn).toHaveBeenCalledWith('[startup] Observe stage telemetry is unavailable.');
+  });
+
+  it('traces deferred startup task completion and failure locally in development', async () => {
+    vi.stubGlobal('__DEV__', true);
+    vi.resetModules();
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { measureDevelopmentStartupTask } = await import('@/boot/startupTelemetry');
+
+    await expect(
+      measureDevelopmentStartupTask('workflow-event-bridge', async () => 'ready'),
+    ).resolves.toBe('ready');
+    await expect(
+      measureDevelopmentStartupTask('install-referrer-resolution', async () => {
+        throw new Error('offline');
+      }),
+    ).rejects.toThrow('offline');
+
+    expect(log).toHaveBeenCalledTimes(4);
+    const traceEvents = log.mock.calls.map(([line]) =>
+      JSON.parse(String(line).replace(/^\[runtime-trace\] /, '')),
+    );
+    expect(traceEvents[0]).toMatchObject({
+      trace_session_started: true,
+      trace_event_index: 1,
+    });
+    expect(traceEvents[1]).toMatchObject({
+      trace_session_id: traceEvents[0].trace_session_id,
+      trace_session_started: false,
+      trace_event_index: 2,
+    });
+    expect(log.mock.calls.map(([line]) => String(line))).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('"task":"workflow-event-bridge"'),
+        expect.stringContaining('"task":"install-referrer-resolution"'),
+        expect.stringContaining('"state":"failed"'),
+      ]),
+    );
   });
 });

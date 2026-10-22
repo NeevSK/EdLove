@@ -4,7 +4,7 @@ import { Mascot } from '@repo/ui/components/Mascot';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect } from 'react';
-
+import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { getEntryNavigationAction } from '@/entry/entryNavigation';
 import { getEntryPresentation } from '@/entry/entryPresentation';
@@ -118,6 +118,13 @@ export function SessionRouteGate({
 
   const content = (
     <>
+      <OptionalStartupServices
+        phase={
+          presentation.kind === 'content' && presentation.mountProtectedServices
+            ? 'protected-ready'
+            : 'public-ready'
+        }
+      />
       {children}
       {presentation.kind === 'content' && presentation.mountProtectedServices ? appServices : null}
     </>

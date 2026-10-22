@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { createElement } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, waitFor } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   getLayout: vi.fn(),
+  upsertWorkspaceLayout: vi.fn(),
   getItem: vi.fn(),
   setItem: vi.fn(),
   setStorageItemDurably: vi.fn(),
@@ -18,7 +19,10 @@ vi.mock('react-native', () => ({
 }));
 
 vi.mock('@repo/core/api/workspaceLayout', () => ({
-  workspaceLayoutAPI: { getWorkspaceLayout: mocks.getLayout },
+  workspaceLayoutAPI: {
+    getWorkspaceLayout: mocks.getLayout,
+    upsertWorkspaceLayout: mocks.upsertWorkspaceLayout,
+  },
 }));
 
 vi.mock('@repo/core/api/orpcClient', () => ({
@@ -84,6 +88,7 @@ describe('native workspace layout sync lifecycle', () => {
     mocks.setItem.mockResolvedValue(undefined);
     mocks.setStorageItemDurably.mockResolvedValue(undefined);
     mocks.getLayout.mockResolvedValue(null);
+    mocks.upsertWorkspaceLayout.mockResolvedValue(remoteLayout());
     mocks.patchWorkspaceLayout.mockResolvedValue({
       status: 'completed',
       operationId: '11111111-1111-7111-8111-111111111112',

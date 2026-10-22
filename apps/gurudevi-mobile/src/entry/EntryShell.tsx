@@ -17,7 +17,6 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
-import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
 import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
@@ -69,7 +68,6 @@ export function EntryShell() {
           <QueryClientProvider client={queryClient}>
             <GlobalProvider>
               <EnvironmentProvider>
-                <OptionalStartupServices />
                 <CircadianProvider>
                   <PortalProvider>
                     <ToastProvider>

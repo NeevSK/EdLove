@@ -1,7 +1,11 @@
-import { SyncManager, useAuth, useStore } from '@repo/core';
+import { SyncManager, type SyncManagerTraceEvent, useAuth, useStore } from '@repo/core';
 import { getSessionIdentityMode } from '@repo/core/logic';
-
+import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
+
+function recordOutboxTrace(event: SyncManagerTraceEvent): void {
+  recordDevelopmentTrace({ category: 'outbox', ...event });
+}
 
 /** Starts foreground queue draining only after an active identity is available. */
 export function AuthenticatedSyncService() {
@@ -17,5 +21,10 @@ export function AuthenticatedSyncService() {
     return null;
   }
 
-  return <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />;
+  return (
+    <SyncManager
+      dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus}
+      onTrace={__DEV__ ? recordOutboxTrace : undefined}
+    />
+  );
 }

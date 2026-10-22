@@ -11,6 +11,8 @@ const mocks = vi.hoisted(() => ({
   useStore: vi.fn(),
 }));
 
+vi.mock('expo-observe', () => ({ Observe: { logEvent: vi.fn() } }));
+
 vi.mock('@repo/core/logic', () => ({
   getSessionIdentityMode: mocks.getSessionIdentityMode,
   useAuth: mocks.useAuth,
@@ -64,7 +66,10 @@ describe('AuthenticatedSyncService', () => {
     renderService({ hasActiveIdentity: true, identityAvailability: 'active', session: {} });
 
     expect(mocks.syncManager).toHaveBeenCalledWith(
-      { dispatchQueuedMutation: mocks.dispatchQueuedMutationToSovereignBus },
+      expect.objectContaining({
+        dispatchQueuedMutation: mocks.dispatchQueuedMutationToSovereignBus,
+        onTrace: expect.any(Function),
+      }),
       undefined,
     );
   });

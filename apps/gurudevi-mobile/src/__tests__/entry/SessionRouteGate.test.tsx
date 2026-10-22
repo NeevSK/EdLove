@@ -11,7 +11,11 @@ const mocks = vi.hoisted(() => ({
     redirectTo: null as string | null,
     policy: { canRenderCurrentPath: false },
   },
-  routeState: {} as { profileError?: string | null; session?: { user: { id: string; is_anonymous?: boolean } } },
+  routeState: {} as {
+    profileError?: string | null;
+    session?: { user: { id: string; is_anonymous?: boolean } };
+  },
+  optionalStartup: vi.fn(),
 }));
 
 vi.mock('expo-router', () => ({
@@ -30,6 +34,12 @@ vi.mock('@repo/core/logic', () => ({
 vi.mock('@/entry/bootstrapRouteState', () => ({
   getBootstrapRouteTarget: () => mocks.routeTarget,
   useBootstrapRouteState: () => mocks.routeState,
+}));
+vi.mock('@/boot/OptionalStartupServices', () => ({
+  OptionalStartupServices: (props: { phase: string }) => {
+    mocks.optionalStartup(props);
+    return null;
+  },
 }));
 vi.mock('@repo/ui/components/BrandPulse', () => ({
   BrandPulse: () => null,
@@ -66,6 +76,7 @@ describe('SessionRouteGate account isolation', () => {
       policy: { canRenderCurrentPath: false },
     };
     mocks.routeState = {};
+    mocks.optionalStartup.mockReset();
   });
 
   it('renders a visible protected bootstrap state while a different account profile resolves', async () => {
@@ -111,7 +122,11 @@ describe('SessionRouteGate account isolation', () => {
 
   it('mounts authenticated services only after the session policy enters the app', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'public', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -124,7 +139,11 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
     await act(async () => {
       tree!.update(
         <SessionRouteGate appServices={<AppServices />}>
@@ -136,9 +155,54 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(1);
   });
 
+  it('mounts optional work only for admitted route content and supplies the owning route phase', async () => {
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+    expect(mocks.optionalStartup).not.toHaveBeenCalled();
+
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    await act(async () => {
+      tree!.update(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+    expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'protected-ready' });
+
+    mocks.pathname = '/welcome';
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    await act(async () => {
+      tree!.update(
+        <SessionRouteGate>
+          <>{'public-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+    expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'public-ready' });
+  });
+
   it('does not mount authenticated services on the welcome route', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -154,7 +218,11 @@ describe('SessionRouteGate account isolation', () => {
 
   it('keeps a real account on Welcome until the user chooses an entry action', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
     mocks.routeState = { session: { user: { id: 'real-account-001' } } };
 
     let tree: ReturnType<typeof create>;
@@ -278,7 +346,11 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     let tree: ReturnType<typeof create>;
     await act(async () => {
@@ -303,7 +375,11 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     await act(async () => {
       create(
@@ -327,7 +403,11 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     await act(async () => {
       create(
@@ -349,7 +429,11 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/community';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     let tree: ReturnType<typeof create>;
     await act(async () => {
@@ -373,7 +457,11 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null, policy: { canRenderCurrentPath: true } };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     await act(async () => {
       create(

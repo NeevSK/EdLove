@@ -196,7 +196,6 @@
       "expo-widgets",
       "expo-router",
       "@sentry/react-native/expo",
-      "react-native-enriched-markdown",
       "react-native-nano-icons",
       "expo-background-task",
       "expo-status-bar",

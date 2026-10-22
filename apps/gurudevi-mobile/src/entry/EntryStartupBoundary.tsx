@@ -1,15 +1,13 @@
 import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
+import { Pressable, Text, View } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text, View, Pressable } from '@repo/ui/primitives';
-
-import { fireflyMascotConfig } from '@/brand/mascotArtwork';
-
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
-import { recordStartupStage } from '@/boot/startupTelemetry';
+import { measureDevelopmentStartupTask, recordStartupStage } from '@/boot/startupTelemetry';
+import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
 
@@ -44,9 +42,7 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
         </Text>
         {error ? (
           <>
-            <Text style={styles.errorMessage}>
-              {error.message}
-            </Text>
+            <Text style={styles.errorMessage}>{error.message}</Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Retry starting Gurudevi"
@@ -63,12 +59,16 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
 }
 
 function startDeferredServices(): void {
-  void import('@/lib/inngestEvents')
-    .then(({ installMobileWorkflowEventBridge }) => installMobileWorkflowEventBridge())
-    .catch((error: unknown) => console.warn('[startup] workflow bridge deferred:', error));
-  void import('@/lib/deepLinks/installReferrerBridge')
-    .then(({ resolveDeferredInstallIntent }) => resolveDeferredInstallIntent())
-    .catch((error: unknown) => console.warn('[startup] deferred install referrer bridge deferred:', error));
+  void measureDevelopmentStartupTask('workflow-event-bridge', async () => {
+    const { installMobileWorkflowEventBridge } = await import('@/lib/inngestEvents');
+    await installMobileWorkflowEventBridge();
+  }).catch((error: unknown) => console.warn('[startup] workflow bridge deferred:', error));
+  void measureDevelopmentStartupTask('install-referrer-resolution', async () => {
+    const { resolveDeferredInstallIntent } = await import('@/lib/deepLinks/installReferrerBridge');
+    await resolveDeferredInstallIntent();
+  }).catch((error: unknown) =>
+    console.warn('[startup] deferred install referrer bridge deferred:', error),
+  );
 }
 
 export function EntryStartupBoundary() {
