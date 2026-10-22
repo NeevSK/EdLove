@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import React, { useRef, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain';
+import { submitBrowserAssignment } from '../../../../lib/workspace/assignmentSubmissions';
 import styles from './submissions.module.css';
 
 interface SubmissionsFloorProps {
@@ -55,6 +56,15 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
     }
 
     try {
+      // 1. Replay & queue through durable mutation queue if online or offline
+      if (accountId && authSubjectId) {
+        await submitBrowserAssignment(accountId, authSubjectId, {
+          assignmentId: selectedAssignmentId,
+          content: notes.trim() || null,
+        });
+      }
+
+      // 2. Update domain service state and cache
       const result = await submitAssignment(selectedAssignmentId, notes.trim());
       if (result) {
         setNotes('');

@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, #e2e8f0);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.treeVisual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.02) 70%, transparent 100%);
+  border: 1px dashed rgba(34, 197, 94, 0.3);
+  position: relative;
+  animation: gentlePulse 4s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 20px 4px rgba(34, 197, 94, 0.15);
+  }
+}
+
+.treeEmoji {
+  font-size: 4rem;
+  user-select: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.stageInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stageTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #0f172a);
+  margin: 0;
+}
+
+.stageDesc {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #64748b);
+  margin: 0;
+}
+
+.metricsBar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 8px;
+  background: var(--color-line, #e2e8f0);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.metricLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.pastNotice {
+  font-size: 0.75rem;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}

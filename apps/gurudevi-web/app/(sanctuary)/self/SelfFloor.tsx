@@ -35,6 +35,27 @@ import {
 } from './browserFeatureRegistry';
 import { FireJournal, initialScreen, type ScreenState } from './components/FireJournal';
 import { MoodLotusModal } from './components/MoodLotusModal';
+import { JoyJar } from './components/JoyJar';
+import { GratitudeGlimmers } from './components/GratitudeGlimmers';
+import { WisdomSeeds } from './components/WisdomSeeds';
+import { TomorrowPrep } from './components/TomorrowPrep';
+import { SleepTracker } from './components/SleepTracker';
+import { StudentGoals } from './components/StudentGoals';
+import { DailyRhythm } from './components/DailyRhythm';
+import { ProgressTree } from './components/ProgressTree';
+import { EnergyForecast } from './components/EnergyForecast';
+import { VoiceJournaling } from './components/VoiceJournaling';
+import { RemindersManager } from './components/RemindersManager';
+import { WindDownRitual } from './components/WindDownRitual';
+import { WarmMirrorCard } from './components/WarmMirrorCard';
+import { ResonancePatternCard } from './components/ResonancePatternCard';
+import { MyGradesView } from './components/MyGradesView';
+import { DailyContentCard } from './components/DailyContentCard';
+import { TeachingHistoryTimeline } from './components/TeachingHistoryTimeline';
+import { DecisionJournalSection } from './components/DecisionJournalSection';
+import { ReframeWizard } from './components/ReframeWizard';
+import { PulseDashboard } from './components/PulseDashboard';
+import { ShadowAgentDrawer } from './components/ShadowAgentDrawer';
 import { SelfOverview } from './components/SelfOverview';
 import { UnavailableTask } from './components/UnavailableTask';
 import styles from './self-floor.module.css';
@@ -395,6 +416,46 @@ export function SelfFloor({
       isPracticing={isPracticing}
       practiceAdapter={practiceAdapter}
     />
+  ) : focusedTask?.featureId === 'joy_jar' ? (
+    <JoyJar userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'gratitude_glimmers' ? (
+    <GratitudeGlimmers userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'wisdom_seeds' ? (
+    <WisdomSeeds userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'tomorrow_prep' ? (
+    <TomorrowPrep userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'sleep_tracker' ? (
+    <SleepTracker userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'personal_goals' ? (
+    <StudentGoals userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'daily_rhythm' || focusedTask?.featureId === 'study_rhythm' ? (
+    <DailyRhythm userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'governance_history' ? (
+    <ProgressTree userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'energy_forecast' ? (
+    <EnergyForecast userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'voice_journal' ? (
+    <VoiceJournaling userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'reminders' ? (
+    <RemindersManager userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'wind_down_ritual' ? (
+    <WindDownRitual userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'monthly_reflection' ? (
+    <WarmMirrorCard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'resonance_patterns' ? (
+    <ResonancePatternCard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'academic_grades' ? (
+    <MyGradesView userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'daily_content' ? (
+    <DailyContentCard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'reframe' ? (
+    <ReframeWizard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'decisions' ? (
+    <DecisionJournalSection userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'professional_history' ? (
+    <TeachingHistoryTimeline userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'daily_pulse' ? (
+    <PulseDashboard userId={accountId ?? 'guest-explorer'} />
   ) : (
     <UnavailableTask task={focusedTask} onReturnToOverview={() => setShowOverview(true)} />
   );
@@ -439,6 +500,7 @@ export function SelfFloor({
           greeting={timeGreeting(displayName)}
           intent={coordinates.intent}
           selectedDate={coordinates.date}
+          renderExtra={() => <ShadowAgentDrawer userId={accountId} />}
         />
       )}
     >

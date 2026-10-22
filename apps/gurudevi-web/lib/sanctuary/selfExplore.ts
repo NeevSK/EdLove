@@ -12,7 +12,7 @@ import { createPracticeController, type PracticeResult } from '@repo/core/lib/pr
 import type { WorkbenchRestorationSnapshot } from '@repo/core/types';
 import type { WorkbenchStorage } from '@/lib/workbench';
 import { parseWorkbenchSnapshot } from '@/lib/workbench/storage';
-import { createExploreStorage } from '../explore/storage';
+import { createExploreStorage } from '../explore';
 import type { ExploreStorage } from '../explore/types';
 import type { BurnedJournalEntry } from './selfJournal';
 import { MOOD_CHOICES, type MoodLog, type MoodValue } from './selfWellbeing';

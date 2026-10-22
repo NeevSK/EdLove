@@ -1,0 +1,183 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.titleArea {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.icon {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text, #2c2523);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #726860);
+  margin: 0.25rem 0 0;
+}
+
+.addBtn {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-action, #a85022);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.formCard {
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formTitle {
+  font-size: 1.125rem;
+  font-weight: 650;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text, #2c2523);
+}
+
+.input {
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background-color: #ffffff;
+  font-size: 0.875rem;
+}
+
+.submitBtn {
+  padding: 0.625rem 1.25rem;
+  background-color: var(--color-action, #a85022);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.goalRow {
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.goalDone {
+  opacity: 0.6;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--color-action, #a85022);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0;
+}
+
+.checkboxChecked {
+  background-color: var(--color-action, #a85022);
+}
+
+.goalInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.goalText {
+  font-size: 0.9375rem;
+  color: var(--color-text, #2c2523);
+}
+
+.goalDone .goalText {
+  text-decoration: line-through;
+  color: var(--color-text-muted, #726860);
+}
+
+.miniTrack {
+  width: 100%;
+  max-width: 180px;
+  height: 4px;
+  border-radius: 9999px;
+  background-color: rgba(104, 94, 85, 0.12);
+  overflow: hidden;
+}
+
+.miniFill {
+  height: 100%;
+  background-color: var(--color-success, #2e7d32);
+}
+
+.emptyState {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.3));
+  border-radius: 0.75rem;
+  color: var(--color-text-muted, #726860);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}

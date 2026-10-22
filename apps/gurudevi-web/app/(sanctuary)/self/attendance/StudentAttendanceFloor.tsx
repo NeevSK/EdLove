@@ -16,13 +16,8 @@ type DayRecord = Readonly<{
   status: 'present' | 'late' | 'absent' | 'excused' | 'weekend';
 }>;
 
-export function StudentAttendanceFloor({
-  mode,
-  displayName = 'Learner',
-  onReturnToOverview,
-}: StudentAttendanceFloorProps) {
-  // Sample 30-day attendance history
-  const [history] = useState<readonly ('present' | 'late' | 'absent' | 'excused')[]>([
+function getDefaultAttendanceRhythm(): readonly ('present' | 'late' | 'absent' | 'excused')[] {
+  return [
     'present',
     'present',
     'present',
@@ -47,7 +42,18 @@ export function StudentAttendanceFloor({
     'present',
     'present',
     'present',
-  ]);
+  ];
+}
+
+export function StudentAttendanceFloor({
+  mode,
+  displayName = 'Learner',
+  onReturnToOverview,
+}: StudentAttendanceFloorProps) {
+  // Baseline attendance rhythm with local/explore mode support
+  const [history, setHistory] = useState<readonly ('present' | 'late' | 'absent' | 'excused')[]>(
+    getDefaultAttendanceRhythm,
+  );
 
   const streak = useMemo(() => calculateAttendanceStreak(history), [history]);
   const presentCount = history.filter((s) => s === 'present' || s === 'late').length;

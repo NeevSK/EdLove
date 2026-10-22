@@ -112,4 +112,106 @@
   font-weight: 700;
   cursor: pointer;
   align-self: flex-end;
+  transition: all 0.15s ease;
+}
+
+.saveBtn:hover {
+  background: #8e3f16;
+}
+
+.secondaryBtn {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  color: var(--color-ink, #131e27);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.secondaryBtn:hover {
+  background: var(--color-paper, #f7f2e8);
+}
+
+.dragHandle {
+  cursor: grab;
+  padding: 0.25rem 0.5rem;
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.optionChipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.optionChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  font-size: 0.75rem;
+  color: var(--color-ink, #131e27);
+}
+
+.removeOptionBtn {
+  background: transparent;
+  border: none;
+  color: #b91c1c;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.schemaViewer {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #1a1614;
+  color: #ded8cf;
+  font-family: monospace;
+  font-size: 0.75rem;
+  overflow-x: auto;
+  max-height: 18rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tabBar {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  padding-bottom: 0.5rem;
+}
+
+.tabBtn {
+  min-height: 38px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabBtnActive {
+  background: var(--color-paper-light, #fffdf8);
+  border-color: var(--color-line, rgba(104, 94, 85, 0.2));
+  color: var(--color-action, #a85022);
 }

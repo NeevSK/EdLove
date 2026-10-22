@@ -1,0 +1,88 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, #e2e8f0);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #0f172a);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #64748b);
+  margin: 0;
+}
+
+.quickPills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.pulseCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface-subtle, #f8fafc);
+  border: 1px solid var(--color-line, #e2e8f0);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.pulseCard:hover {
+  border-color: var(--color-action, #0284c7);
+  transform: translateY(-2px);
+}
+
+.iconCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, #e2e8f0);
+  font-size: 1.25rem;
+}
+
+.pulseInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.pulseLabel {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #0f172a);
+}
+
+.pulseValue {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #64748b);
+}

@@ -38,6 +38,7 @@ import { identifyHallwayDrift } from '../../../lib/workspace/attendanceInsights'
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { LivingCard } from '../components/LivingCard';
 import { RoleLensSwitcher, type WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
+import { MorningSituationalBrief } from '../components/MorningSituationalBrief';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import {
   TaskStrip,
@@ -451,6 +452,57 @@ export function WorkspaceFloor({
     setAbsenteeInput('');
   }
 
+  function handleRosterKeyDown(
+    e: React.KeyboardEvent<HTMLButtonElement>,
+    studentId: string,
+    index: number,
+  ) {
+    const key = e.key.toLowerCase();
+    let targetStatus: AttendanceStatus | null = null;
+    if (key === 'p') targetStatus = 'present';
+    else if (key === 'a') targetStatus = 'absent';
+    else if (key === 'l') targetStatus = 'late';
+    else if (key === 'e') targetStatus = 'excused';
+
+    if (targetStatus) {
+      e.preventDefault();
+      setSaved(false);
+      const next = students.map((s) => (s.id === studentId ? { ...s, status: targetStatus! } : s));
+      if (!persistAccountDraft(next)) return;
+      setStudents(next);
+
+      // Rapidly jump focus down to next student row for keyboard roll-call
+      const nextIndex = index + 1;
+      if (nextIndex < students.length) {
+        const nextStudent = students[nextIndex];
+        if (nextStudent) {
+          const nextBtn = document.getElementById(`status-btn-${nextStudent.id}`);
+          nextBtn?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = index + 1;
+      if (nextIndex < students.length) {
+        const nextStudent = students[nextIndex];
+        if (nextStudent) {
+          const nextBtn = document.getElementById(`status-btn-${nextStudent.id}`);
+          nextBtn?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = index - 1;
+      if (prevIndex >= 0) {
+        const prevStudent = students[prevIndex];
+        if (prevStudent) {
+          const prevBtn = document.getElementById(`status-btn-${prevStudent.id}`);
+          prevBtn?.focus();
+        }
+      }
+    }
+  }
+
   async function save() {
     if (!classroom || students.length === 0 || saving) return;
     setSaving(true);
@@ -693,6 +745,10 @@ export function WorkspaceFloor({
             elevation="floating"
             style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
           >
+            {effectiveRole === 'principal' ? (
+              <MorningSituationalBrief schoolId={scope?.entityId ?? 'default-school'} />
+            ) : null}
+
             <div>
               <p className={styles.eyebrow}>{posture.eyebrow}</p>
               <h2 id="workspace-overview-title">{posture.title}</h2>
@@ -1068,17 +1124,24 @@ export function WorkspaceFloor({
                             ) : null}
                           </span>
                           <button
+                            id={`status-btn-${student.id}`}
                             aria-label={
                               student.studentId
-                                ? `${student.name}, ${student.status}. Change attendance status.`
+                                ? `${student.name}, ${student.status}. Change attendance status. Hotkeys: P for Present, A for Absent, L for Late, E for Excused.`
                                 : `${student.name}, not linked to a student account.`
                             }
                             className={`${styles.status} ${styles[student.status]}`}
                             disabled={!student.studentId}
                             onClick={() => changeStatus(student.id)}
+                            onKeyDown={(e) => handleRosterKeyDown(e, student.id, index)}
                             type="button"
                           >
-                            {student.studentId ? student.status : 'not linked'}
+                            <span>{student.studentId ? student.status : 'not linked'}</span>
+                            {student.studentId ? (
+                              <span className={styles.hotkeyBadge} aria-hidden="true">
+                                {student.status.charAt(0).toUpperCase()}
+                              </span>
+                            ) : null}
                           </button>
                         </li>
                       ))}

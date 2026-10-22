@@ -1,0 +1,140 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.presenceStrip {
+  padding: 0.875rem 1.25rem !important;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.presenceStrip:hover {
+  transform: translateY(-1px);
+}
+
+.presenceContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9375rem;
+}
+
+.presenceDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotGood {
+  background-color: var(--color-success, #2e7d32);
+  box-shadow: 0 0 6px rgba(46, 125, 50, 0.4);
+}
+
+.dotWarning {
+  background-color: var(--color-warning, #ed6c02);
+  box-shadow: 0 0 6px rgba(237, 108, 2, 0.4);
+}
+
+.dotAlert {
+  background-color: var(--color-danger, #d32f2f);
+  box-shadow: 0 0 6px rgba(211, 47, 47, 0.4);
+}
+
+.presenceText {
+  flex: 1;
+  font-weight: 600;
+  color: var(--color-text, #2c2523);
+}
+
+.actionArrow {
+  font-size: 0.8125rem;
+  color: var(--color-action, #a85022);
+  font-weight: 600;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.25rem !important;
+}
+
+.clickableCard {
+  cursor: pointer;
+  transition: transform 180ms ease;
+}
+
+.clickableCard:hover {
+  transform: translateY(-1px);
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #726860);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.metricValue {
+  font-size: 1.75rem;
+  font-weight: 750;
+  line-height: 1.1;
+  color: var(--color-text, #2c2523);
+}
+
+.alertValue {
+  color: var(--color-warning, #ed6c02);
+}
+
+.metricSub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #726860);
+  margin-top: 0.25rem;
+}
+
+.trendUp {
+  color: var(--color-success, #2e7d32);
+  font-weight: 600;
+}
+
+.trendDown {
+  color: var(--color-danger, #d32f2f);
+  font-weight: 600;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.skeletonStrip {
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(104, 94, 85, 0.08);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeletonGrid {
+  height: 80px;
+  border-radius: 8px;
+  background: rgba(104, 94, 85, 0.08);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.3; }
+}

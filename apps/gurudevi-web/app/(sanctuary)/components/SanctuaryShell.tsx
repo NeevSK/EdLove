@@ -20,6 +20,10 @@ import {
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
+import {
+  type BrowserCapability,
+  loadAccountCapabilities,
+} from '../../../lib/sanctuary/capabilityBootstrap';
 import { CommandPalette } from './CommandPalette';
 import { DiurnalThemeToggle } from './DiurnalThemeToggle';
 import { ExamLockdownBanner } from './ExamLockdownBanner';
@@ -73,6 +77,33 @@ export function SanctuaryShell({
   );
   const [quickAccessEditorOpen, setQuickAccessEditorOpen] = useState(false);
   const [quickAccessNotice, setQuickAccessNotice] = useState('');
+  const [capabilities, setCapabilities] = useState<readonly BrowserCapability[]>([]);
+
+  // Asynchronously bootstrap server capabilities for current domain
+  useEffect(() => {
+    if (isExploreMode) return;
+    let mounted = true;
+    const domain = pathname.startsWith('/self')
+      ? 'self'
+      : pathname.startsWith('/workspace')
+        ? 'workspace'
+        : pathname.startsWith('/community')
+          ? 'community'
+          : pathname.startsWith('/library')
+            ? 'library'
+            : null;
+
+    if (domain) {
+      loadAccountCapabilities(domain).then((loaded) => {
+        if (mounted && loaded.length > 0) {
+          setCapabilities(loaded);
+        }
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [isExploreMode, pathname]);
 
   const advancedTriggerRef = useRef<HTMLButtonElement>(null);
   const advancedMenuId = useId();

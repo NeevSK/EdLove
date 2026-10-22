@@ -178,4 +178,29 @@ export const selfAPI = {
       throw new APIError(error?.message || 'Failed to fetch thought records', error?.code || 'THOUGHT_HISTORY_FAILED');
     }
   },
+
+  /**
+   * Complete a thought record follow-up reflection.
+   */
+  async completeThoughtRecordFollowUp(
+    id: string,
+    input: { post_outcome?: ThoughtRecord['post_outcome']; follow_up?: ThoughtRecord['follow_up'] },
+  ): Promise<ThoughtRecord> {
+    assertAuthenticated();
+    try {
+      const data = await orpcClient.self.completeThoughtRecordFollowUp({
+        params: { id },
+        body: {
+          post_outcome: input.post_outcome ?? null,
+          follow_up: input.follow_up ?? null,
+        },
+      });
+      return data as ThoughtRecord;
+    } catch (error: any) {
+      throw new APIError(
+        error?.message || 'Failed to complete thought record follow-up',
+        error?.code || 'THOUGHT_RECORD_FAILED',
+      );
+    }
+  },
 };

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
+import { streamAiChat } from '../../../../lib/sanctuary/aiStreamClient';
 import styles from './assistant.module.css';
 
 interface ChatMessage {
@@ -38,7 +39,7 @@ export function AIAssistantFloor({ displayName, capacity }: Readonly<AIAssistant
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendQuery = (text: string) => {
+  const sendQuery = async (text: string) => {
     if (!text.trim() || isThinking) return;
 
     const userMsg: ChatMessage = {
@@ -46,27 +47,64 @@ export function AIAssistantFloor({ displayName, capacity }: Readonly<AIAssistant
       role: 'user',
       content: text.trim(),
     };
-    setMessages((prev) => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setDraft('');
     setIsThinking(true);
 
-    setTimeout(() => {
-      let reply = `Here is a structured pedagogical recommendation for "${text.slice(0, 40)}...":\n\n`;
-      reply +=
+    const botMessageId = `a-${Date.now()}`;
+    let accumulatedContent = '';
+
+    try {
+      const stream = streamAiChat({
+        messages: updatedMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+        billingMode: 'baseline',
+        privacyMode: 'incognito',
+      });
+
+      let hasReceivedChunk = false;
+      for await (const chunk of stream) {
+        if (chunk.delta) {
+          if (!hasReceivedChunk) {
+            hasReceivedChunk = true;
+            setMessages((prev) => [...prev, { id: botMessageId, role: 'assistant', content: chunk.delta ?? '' }]);
+            accumulatedContent = chunk.delta;
+          } else {
+            accumulatedContent += chunk.delta;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === botMessageId ? { ...m, content: accumulatedContent } : m)),
+            );
+          }
+        }
+      }
+
+      if (!hasReceivedChunk) {
+        throw new Error('No stream response received');
+      }
+    } catch {
+      // Fallback pedagogical response if streaming endpoint is unavailable or offline
+      let fallback = `Here is a structured pedagogical recommendation for "${text.slice(0, 40)}...":\n\n`;
+      fallback +=
         '1. **Centering Intention (5 mins)**: Open with a breath pause using the Breath Guide to allow students to transition from morning travel to focused attention.\n';
-      reply +=
+      fallback +=
         '2. **Experiential Inquiry (25 mins)**: Provide tangible artifacts or botanical specimens; encourage peer observations in pairs.\n';
-      reply +=
+      fallback +=
         '3. **Synthesis & Reflection (15 mins)**: Invite students to record key observations in their reflective logs or Fire Journal before concluding.';
 
-      const botMsg: ChatMessage = {
-        id: `a-${Date.now()}`,
-        role: 'assistant',
-        content: reply,
-      };
-      setMessages((prev) => [...prev, botMsg]);
+      setMessages((prev) => [
+        ...prev.filter((m) => m.id !== botMessageId),
+        {
+          id: botMessageId,
+          role: 'assistant',
+          content: fallback,
+        },
+      ]);
+    } finally {
       setIsThinking(false);
-    }, 750);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

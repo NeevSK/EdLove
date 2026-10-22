@@ -341,6 +341,31 @@ export function KioskFloor({ mode, subjectId, scope }: KioskFloorProps) {
         videoRef.current.srcObject = stream;
         void videoRef.current.play();
         setCameraActive(true);
+
+        // Continuous BarcodeDetector frame polling if natively supported by browser engine
+        if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+          try {
+            const barcodeDetector = new (window as any).BarcodeDetector({ formats: ['qr_code'] });
+            let scanActive = true;
+            const scanFrame = async () => {
+              if (!scanActive || !videoRef.current) return;
+              try {
+                if (videoRef.current.readyState >= 2) {
+                  const barcodes = await barcodeDetector.detect(videoRef.current);
+                  if (barcodes.length > 0 && barcodes[0]?.rawValue) {
+                    void processBadgeToken(barcodes[0].rawValue);
+                  }
+                }
+              } catch {
+                // Ignore transient frame detect error
+              }
+              if (scanActive) requestAnimationFrame(scanFrame);
+            };
+            requestAnimationFrame(scanFrame);
+          } catch {
+            // Fallback: standard hardware keystroke scanner / NFC reader active
+          }
+        }
       }
     } catch {
       setFeedback({

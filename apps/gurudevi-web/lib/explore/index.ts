@@ -1,5 +1,13 @@
 export { createExploreSelfReflectionAdapter, EXPLORE_SELF_STORAGE_KEY } from './self-reflection';
-export { createExploreStorage, createInMemoryExploreStorage } from './storage';
+export {
+  createExploreStorage,
+  createInMemoryExploreStorage,
+} from './storage';
+export {
+  BrowserPracticeStorageError,
+  createRequiredBrowserPracticeStorage,
+  type BrowserPracticeStorage,
+} from './practiceStorage';
 export {
   type CreateExploreJournalEntryInput,
   type DeleteExploreJournalEntryInput,

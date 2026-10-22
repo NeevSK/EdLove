@@ -13,6 +13,7 @@ import { CapacityPerspectiveSwitcher } from '../components/CapacityPerspectiveSw
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { AccountDeletionControl } from './AccountDeletionControl';
+import { ThuthimalClaimModal } from './ThuthimalClaimModal';
 import styles from './profile.module.css';
 
 const PROFILE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
@@ -52,6 +53,7 @@ export function ProfileFloor({
     accountId,
   });
   const [activeSection, setActiveSection] = useState<ProfileSection>('identity');
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
   const exploreCapacity = useExploreCapacity();
   const exploreRole = getExploreCapacityMeta(exploreCapacity);
 
@@ -228,18 +230,32 @@ export function ProfileFloor({
                         <p className={styles.qrDesc}>
                           Share your sandbox exploration link with fellow educators or students to collaborate in contemplative guest mode.
                         </p>
-                        <button
-                          type="button"
-                          className={styles.copyQrBtn}
-                          onClick={() => {
-                            if (navigator.clipboard?.writeText) {
-                              void navigator.clipboard.writeText('https://explore.gurudevi.app');
-                              alert('Guest exploration link copied to clipboard!');
-                            }
-                          }}
-                        >
-                          Copy Guest House Link ↗
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            className={styles.copyQrBtn}
+                            onClick={() => {
+                              if (navigator.clipboard?.writeText) {
+                                void navigator.clipboard.writeText('https://explore.gurudevi.app');
+                                alert('Guest exploration link copied to clipboard!');
+                              }
+                            }}
+                          >
+                            Copy Guest House Link ↗
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.copyQrBtn}
+                            style={{
+                              backgroundColor: 'rgba(168, 80, 34, 0.1)',
+                              color: 'var(--color-action, #a85022)',
+                              borderColor: 'var(--color-action, #a85022)',
+                            }}
+                            onClick={() => setClaimModalOpen(true)}
+                          >
+                            🌸 Claim Thuthimal Gift
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </section>
@@ -349,6 +365,10 @@ export function ProfileFloor({
               </main>
             </div>
           )}
+          <ThuthimalClaimModal
+            isOpen={claimModalOpen}
+            onClose={() => setClaimModalOpen(false)}
+          />
         </div>
       )}
     </SanctuaryFloorCanvas>

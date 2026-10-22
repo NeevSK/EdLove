@@ -188,6 +188,26 @@
   background: #f2efe9;
   cursor: not-allowed;
 }
+.status:focus-visible {
+  outline: 2px solid var(--sanctuary-saffron, #9d5b25);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(157, 91, 37, 0.2);
+}
+.hotkeyBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.7rem;
+  font-family: monospace;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: inherit;
+  opacity: 0.85;
+}
 .present {
   color: #446d3c;
   background: #eff6eb;

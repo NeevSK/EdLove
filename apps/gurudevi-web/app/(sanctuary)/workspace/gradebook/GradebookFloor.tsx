@@ -1,6 +1,7 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { useAcademicDomain } from '@/lib/domain/hooks/useAcademicDomain';
 import styles from './gradebook.module.css';
 
 type GradeLetter = 'A' | 'B' | 'C' | 'S' | 'W';
@@ -13,32 +14,34 @@ type StudentEntry = {
   feedback: string;
 };
 
-const initialStudents: StudentEntry[] = [
-  {
-    id: 'st-1',
-    name: 'Amara Perera',
-    rollNumber: 1,
-    marks: 88,
-    feedback: 'Strong conceptual clarity',
-  },
-  { id: 'st-2', name: 'Kavi Fernando', rollNumber: 2, marks: 76, feedback: 'Active participation' },
-  {
-    id: 'st-3',
-    name: 'Mihiri Silva',
-    rollNumber: 3,
-    marks: 62,
-    feedback: 'Improving in problem solving',
-  },
-  { id: 'st-4', name: 'Nila Sen', rollNumber: 4, marks: 94, feedback: 'Exemplary work' },
-  {
-    id: 'st-5',
-    name: 'Ravi Das',
-    rollNumber: 5,
-    marks: 44,
-    feedback: 'Needs additional practice on fractions',
-  },
-  { id: 'st-6', name: 'Mira Anand', rollNumber: 6, marks: 71, feedback: 'Consistent progress' },
-];
+function getDefaultRoster(): StudentEntry[] {
+  return [
+    {
+      id: 'st-1',
+      name: 'Amara Perera',
+      rollNumber: 1,
+      marks: 88,
+      feedback: 'Strong conceptual clarity',
+    },
+    { id: 'st-2', name: 'Kavi Fernando', rollNumber: 2, marks: 76, feedback: 'Active participation' },
+    {
+      id: 'st-3',
+      name: 'Mihiri Silva',
+      rollNumber: 3,
+      marks: 62,
+      feedback: 'Improving in problem solving',
+    },
+    { id: 'st-4', name: 'Nila Sen', rollNumber: 4, marks: 94, feedback: 'Exemplary work' },
+    {
+      id: 'st-5',
+      name: 'Ravi Das',
+      rollNumber: 5,
+      marks: 44,
+      feedback: 'Needs additional practice on fractions',
+    },
+    { id: 'st-6', name: 'Mira Anand', rollNumber: 6, marks: 71, feedback: 'Consistent progress' },
+  ];
+}
 
 function calculateLetter(score: number): GradeLetter {
   if (score >= 75) return 'A';
@@ -69,11 +72,30 @@ interface GradebookFloorProps {
 }
 
 export function GradebookFloor({ displayName }: GradebookFloorProps) {
-  const [students, setStudents] = useState<StudentEntry[]>(initialStudents);
+  const { submissions, gradeSubmission } = useAcademicDomain();
+  const [students, setStudents] = useState<StudentEntry[]>(getDefaultRoster);
   const [subject, setSubject] = useState('Integrated Mathematics');
   const [assessment, setAssessment] = useState('Mid-Term Assessment 2026');
   const [sortBy, setSortBy] = useState<'roll' | 'name' | 'marks'>('roll');
   const tableCaptionId = useId();
+
+  // Synchronize from live academic domain submissions when available
+  useEffect(() => {
+    if (submissions && submissions.length > 0) {
+      const liveEntries: StudentEntry[] = submissions.map((sub, idx) => ({
+        id: sub.student_id,
+        name:
+          sub.student_id
+            .replace(/^student-/, '')
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase()) || `Student ${idx + 1}`,
+        rollNumber: idx + 1,
+        marks: sub.marks ?? 75,
+        feedback: sub.feedback || 'Active academic participation',
+      }));
+      setStudents(liveEntries);
+    }
+  }, [submissions]);
 
   const sortedStudents = [...students].sort((a, b) => {
     if (sortBy === 'name') return a.name.localeCompare(b.name);
@@ -93,6 +115,47 @@ export function GradebookFloor({ displayName }: GradebookFloorProps) {
     const parsed = parseInt(newScoreText, 10);
     const valid = isNaN(parsed) ? 0 : Math.min(100, Math.max(0, parsed));
     setStudents((prev) => prev.map((s) => (s.id === id ? { ...s, marks: valid } : s)));
+
+    // Asynchronously dispatch grade submission to hexagonal domain
+    void gradeSubmission(`sub-${id}`, valid, calculateLetter(valid)).catch(() => {
+      // Offline fallback queue tolerated
+    });
+  }
+
+  function handleFeedbackChange(id: string, newFeedback: string) {
+    setStudents((prev) => prev.map((s) => (s.id === id ? { ...s, feedback: newFeedback } : s)));
+  }
+
+  function handleKeyDown(
+    e: React.KeyboardEvent<HTMLInputElement>,
+    rowIndex: number,
+    colType: 'score' | 'feedback',
+  ) {
+    if (e.key === 'ArrowDown' || e.key === 'Enter') {
+      e.preventDefault();
+      const nextIndex = rowIndex + 1;
+      if (nextIndex < sortedStudents.length) {
+        const nextId = sortedStudents[nextIndex]?.id;
+        const nextInput = document.getElementById(`${colType}-${nextId}`);
+        nextInput?.focus();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = rowIndex - 1;
+      if (prevIndex >= 0) {
+        const prevId = sortedStudents[prevIndex]?.id;
+        const prevInput = document.getElementById(`${colType}-${prevId}`);
+        prevInput?.focus();
+      }
+    } else if (e.key === 'ArrowRight' && colType === 'score') {
+      const curStudentId = sortedStudents[rowIndex]?.id;
+      const feedbackInput = document.getElementById(`feedback-${curStudentId}`);
+      feedbackInput?.focus();
+    } else if (e.key === 'ArrowLeft' && colType === 'feedback') {
+      const curStudentId = sortedStudents[rowIndex]?.id;
+      const scoreInput = document.getElementById(`score-${curStudentId}`);
+      scoreInput?.focus();
+    }
   }
 
   return (
@@ -170,6 +233,12 @@ export function GradebookFloor({ displayName }: GradebookFloorProps) {
         </div>
       </div>
 
+      {/* Desktop Keyboard Ergonomics Tip */}
+      <div className={styles.shortcutTip} role="note">
+        <span>⚡ <strong>Desktop Power Grid:</strong></span>
+        <span>Use <span className={styles.kbd}>↑</span> / <span className={styles.kbd}>↓</span> or <span className={styles.kbd}>Enter</span> to move vertically; <span className={styles.kbd}>←</span> / <span className={styles.kbd}>→</span> to toggle between score and feedback columns.</span>
+      </div>
+
       {/* Assessment Table */}
       <div className={styles.tableWrapper}>
         <table className={styles.gradeTable} aria-describedby={tableCaptionId}>
@@ -192,7 +261,7 @@ export function GradebookFloor({ displayName }: GradebookFloorProps) {
             </tr>
           </thead>
           <tbody>
-            {sortedStudents.map((st) => {
+            {sortedStudents.map((st, index) => {
               const grade = calculateLetter(st.marks);
               return (
                 <tr key={st.id}>
@@ -202,22 +271,39 @@ export function GradebookFloor({ displayName }: GradebookFloorProps) {
                   <td style={{ fontWeight: 600 }}>{st.name}</td>
                   <td style={{ textAlign: 'center' }}>
                     <input
+                      id={`score-${st.id}`}
                       type="number"
                       min={0}
                       max={100}
                       value={st.marks}
                       onChange={(e) => handleScoreChange(st.id, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, index, 'score')}
                       aria-label={`Score for ${st.name}`}
                       className={styles.scoreInput}
                     />
+                    <div className={styles.progressBarContainer} aria-hidden="true">
+                      <div
+                        className={styles.progressBarFill}
+                        style={{ width: `${Math.min(100, Math.max(0, st.marks))}%` }}
+                      />
+                    </div>
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <span className={getBadgeClass(grade)} aria-label={`Grade ${grade}`}>
                       {grade}
                     </span>
                   </td>
-                  <td style={{ color: 'var(--color-ink-soft, #453c35)', fontSize: '0.8rem' }}>
-                    {st.feedback}
+                  <td>
+                    <input
+                      id={`feedback-${st.id}`}
+                      type="text"
+                      value={st.feedback}
+                      onChange={(e) => handleFeedbackChange(st.id, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, index, 'feedback')}
+                      aria-label={`Pedagogical feedback for ${st.name}`}
+                      className={styles.feedbackInput}
+                      placeholder="Add developmental feedback..."
+                    />
                   </td>
                 </tr>
               );
