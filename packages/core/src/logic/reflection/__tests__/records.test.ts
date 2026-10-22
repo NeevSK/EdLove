@@ -7,9 +7,14 @@ import {
 } from '../records';
 import type { ThoughtRecord } from '../types';
 
+vi.mock('../../../lib/sync', () => ({
+  useMutationQueue: {
+    getState: () => ({ addToQueue: vi.fn(async () => undefined) }),
+  },
+}));
 vi.mock('@repo/core/lib/sync', () => ({
   useMutationQueue: {
-    getState: () => ({ addToQueue: async () => undefined }),
+    getState: () => ({ addToQueue: vi.fn(async () => undefined) }),
   },
 }));
 

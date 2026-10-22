@@ -327,7 +327,7 @@ export function createThoughtRecordStore<
   const outboxScope = deps.outbox?.scope ?? 'wellbeing';
 
   const enqueueOutbox = async (name: string, variables: unknown) => {
-    const { useMutationQueue } = await import('@repo/core/lib/sync');
+    const { useMutationQueue } = await import('../../lib/sync');
     await useMutationQueue.getState().addToQueue({
       name,
       scope: outboxScope,
