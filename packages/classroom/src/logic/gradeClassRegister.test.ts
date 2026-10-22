@@ -32,8 +32,8 @@ describe('grade-class register (attendance model A)', () => {
       [],
     );
     expect(register.students).toHaveLength(2);
-    expect(register.students[1].student_id).toBe('e3');
-    expect(register.students[1].full_name).toBe('Shadow Student');
+    expect(register.students[1]!.student_id).toBe('e3');
+    expect(register.students[1]!.full_name).toBe('Shadow Student');
     expect(register.excludedWithoutAccount).toBe(0);
   });
 

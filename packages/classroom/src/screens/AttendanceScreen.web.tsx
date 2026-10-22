@@ -156,6 +156,8 @@ export default function AttendanceScreenWeb() {
         if (cancelled) return;
         setExcludedWithoutAccount(register.excludedWithoutAccount);
         dispatch({ type: 'FETCH_SUCCESS', payload: register.students });
+
+
       } catch (err: any) {
         if (cancelled) return;
         dispatch({

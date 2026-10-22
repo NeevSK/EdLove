@@ -20,6 +20,7 @@ import {
 } from '@repo/ui/primitives';
 import { Canvas, Path, Skia } from 'react-native-skia';
 import { Platform } from 'react-native';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -144,6 +145,7 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
 
   return (
     <Box className="flex-1 bg-phase-world">
+      <ObserveInteractiveMarker />
       <ScrollView showsVerticalScrollIndicator={false}>
         <VStack className="p-lg gap-6">
           {/* Header */}

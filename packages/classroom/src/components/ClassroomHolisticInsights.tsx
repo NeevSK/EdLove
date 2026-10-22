@@ -210,7 +210,7 @@ export default function ClassroomHolisticInsights({
                     </Text>
                     {obs.visibility === 'private' && (
                       <HStack className="items-center gap-1 bg-phase-canvas px-1.5 py-0.5 rounded">
-                        <Icon as={Lock} size="2xs" className="text-phaseText-tertiary" />
+                        <Icon as={Lock} size="xs" className="text-phaseText-tertiary" />
                         <Text className="text-[9px] text-phaseText-tertiary font-bold uppercase">
                           Internal
                         </Text>

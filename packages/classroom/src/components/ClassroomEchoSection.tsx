@@ -32,8 +32,8 @@ interface Echo {
   content: string;
   is_anonymous: boolean;
   is_read: boolean;
-  teacher_response?: string;
-  responded_at?: string;
+  teacher_response?: string | null;
+  responded_at?: string | null;
   created_at: string;
   student_name?: string;
 }
@@ -65,7 +65,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     setLoadError(null);
     try {
       const data = await echoAPI.getEchoesByClassroom(classroomId);
-      setEchoes(data || []);
+      setEchoes((data || []).map((e: any) => ({ ...e, teacher_response: e.teacher_response ?? undefined })));
     } catch (error) {
       console.error('Error fetching echoes:', error);
       setLoadError('Echoes could not be loaded. Please try again.');

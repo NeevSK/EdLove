@@ -130,7 +130,7 @@ describe('ClassroomHolisticInsights Calculation Engine', () => {
       { id: 'a1', status: 'present' },
       { id: 'a2', status: 'present' },
       { id: 'a3', status: 'absent' },
-    ] as AttendanceRecord[];
+    ] as unknown as AttendanceRecord[];
 
     const stats = computeInsightsStats({
       attendance,

@@ -34,7 +34,8 @@ function resolveGradeBgClass(grade: number) {
 
 export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesOverviewProps) {
   const isExplorerMode = useAuthStore((state) => state.isExplorerMode);
-  const isGuest = useAuthStore((state) => state.isGuest);
+  const user = useAuthStore((state) => state.user);
+  const isGuest = Boolean(user?.is_anonymous);
   const isDemoExperience = isDemo || isExplorerMode || isGuest;
 
   const [grades, setGrades] = useState<GradeRow[]>(isDemoExperience ? (getDemoGrades() as any) : []);

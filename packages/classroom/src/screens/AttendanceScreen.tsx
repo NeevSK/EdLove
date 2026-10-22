@@ -16,8 +16,10 @@ import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+
 
 type GradeClassOption = { id: string; name: string };
 
@@ -33,6 +35,9 @@ export default function AttendanceScreen() {
   const isOnline = useStore((state) => state.isOnline);
   const academicCycleId = useStore((state) => state.academicCycleId);
   const setAcademicCycleId = useStore((state) => state.setAcademicCycleId);
+  const showToast = useStore((state) => state.showToast);
+  const currentUser = useStore((state) => state.user);
+
 
   const [selectedGradeClassId, setSelectedGradeClassId] = useState<string | undefined>(undefined);
   const gradeClassId = selectedGradeClassId ?? gradeClassParam;
@@ -75,6 +80,7 @@ export default function AttendanceScreen() {
         setStudents(register.students);
         setExcludedWithoutAccount(register.excludedWithoutAccount);
       } catch (_err) {
+
         if (cancelled) return;
         setError(
           gradeClassId || classroomId
@@ -91,7 +97,7 @@ export default function AttendanceScreen() {
     return () => {
       cancelled = true;
     };
-  }, [gradeClassId, classroomId, attendanceDate, reloadToken, schoolId]);
+  }, [gradeClassId, classroomId, attendanceDate, reloadToken, schoolId, showToast]);
 
   useEffect(() => {
     const syncCycle = async () => {
@@ -103,10 +109,9 @@ export default function AttendanceScreen() {
     syncCycle();
   }, [schoolId, academicCycleId, setAcademicCycleId]);
 
-  const showToast = useStore((state) => state.showToast);
-  const currentUser = useStore((state) => state.user);
 
   const saveMutation = useSafeMutation(
+
     async (updatedAttendance: StudentAttendance[]) => {
       let activeId = gradeClassId;
       if (!activeId && classroomId) {
@@ -140,6 +145,8 @@ export default function AttendanceScreen() {
       },
     },
   );
+
+
 
   const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {
     setStudents(updatedAttendance);
@@ -223,14 +230,16 @@ export default function AttendanceScreen() {
 
   return (
     <VStack className="flex-1 bg-phase-surface-primary">
+      <ObserveInteractiveMarker params={{ entry_surface: 'classroom-attendance', student_count: students.length }} />
       {!isOnline && (
         <Box className="bg-phase-canvas border-b border-phase-border px-4 py-2 flex-row items-center justify-between">
           <Text className="text-xs text-phase-text-secondary font-medium">
-            Offline: attendance can't be saved until you're back online
+            Offline mode: records will save to local outbox and sync automatically
           </Text>
           <Box className="w-2 h-2 rounded-full bg-templeGold" />
         </Box>
       )}
+
       <Box className="px-4 py-2 border-b border-phase-border">
         <Text className="text-xs text-phase-text-secondary">
           {SHADOW_STUDENT_NOTICE}

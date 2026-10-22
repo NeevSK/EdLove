@@ -79,7 +79,7 @@ export default function AttendanceSheet({
     hapticSuccess();
     setStudents((prev) =>
       prev.map((student, idx) => {
-        const roll = student.roll_number ?? idx + 1;
+        const roll = typeof student.roll_number === 'number' ? student.roll_number : parseInt(String(student.roll_number ?? idx + 1), 10);
         const isAbsent = rolls.has(roll);
         return {
           ...student,

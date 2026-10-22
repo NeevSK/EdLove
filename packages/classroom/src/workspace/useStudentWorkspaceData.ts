@@ -15,7 +15,8 @@ import {
 export function useStudentWorkspaceData(forceDemo?: boolean) {
   const isDemoMode = useStore((state) => state.isDemoMode);
   const isExplorerMode = useAuthStore((state) => state.isExplorerMode);
-  const isGuest = useAuthStore((state) => state.isGuest);
+  const user = useAuthStore((state) => state.user);
+  const isGuest = Boolean(user?.is_anonymous);
   const isDemoExperience = isDemoMode || forceDemo === true || isExplorerMode || isGuest;
 
   const registry = useStudentRegistry();

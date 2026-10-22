@@ -4,6 +4,8 @@ import type {
   StudentAttendance,
 } from '@repo/core/logic/schemas/attendance.schema';
 
+
+
 /**
  * Grade-class register (attendance model A: grade_classes + daily_attendance).
  *
@@ -75,13 +77,14 @@ export function localDate(now: Date = new Date()): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-export async function loadGradeClassRegister(gradeClassId: string, date: string) {
+export async function loadGradeClassRegister(gradeClassId: string, date: string): Promise<Register> {
   const [roster, snapshot] = await Promise.all([
     attendanceAPI.getGradeClassRoster(gradeClassId, date),
     attendanceAPI.getClassroomAttendanceSnapshot(gradeClassId, date),
   ]);
   return buildRegister(roster, snapshot.records);
 }
+
 
 export async function saveGradeClassRegister(
   gradeClassId: string,
@@ -92,3 +95,5 @@ export async function saveGradeClassRegister(
   if (rows.length === 0) return [];
   return attendanceAPI.batchRecord(rows);
 }
+
+

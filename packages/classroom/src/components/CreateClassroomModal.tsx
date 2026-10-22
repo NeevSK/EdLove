@@ -1,7 +1,7 @@
 import GuestConversionPrompt from '@repo/classroom/shared/GuestConversionPrompt';
 import { api, communityAPI, identityAPI } from '@repo/core/api/client';
-import { useEntity } from '@repo/core/hooks';
-import { handleAPIError } from '@repo/core/logic';
+import { useEntity, useIsGuest } from '@repo/core/hooks';
+import { handleAPIError, usePermissions } from '@repo/core/logic';
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
@@ -121,14 +121,6 @@ interface CreateClassroomModalProps {
   };
 }
 
-const loadPicker = () => {
-  try {
-    return require('@react-native-picker/picker').Picker;
-  } catch {
-    return null;
-  }
-};
-
 export default function CreateClassroomModal({
   isOpen,
   onClose,
@@ -182,8 +174,9 @@ export default function CreateClassroomModal({
     groupId?: string;
   } | null>(null);
 
-  const isGuest = false; // Placeholder for actual guest check
-  const canCreateClassroom = true; // Placeholder for permissions
+  const isGuest = useIsGuest();
+  const { can } = usePermissions();
+  const canCreateClassroom = !isGuest && can('create', 'Classroom');
 
   const fetchSections = useCallback(async () => {
     try {
@@ -627,62 +620,29 @@ export default function CreateClassroomModal({
                             {t('classroom.selectSection') || 'Select Institutional Section'}
                           </FormControlLabelText>
                         </FormControlLabel>
-                        {(() => {
-                          const Picker = loadPicker();
-                          if (Picker && Platform.OS !== 'web') {
-                            return (
-                              <Box className="bg-sanctuary-surface-secondary border border-sanctuary-border rounded-2xl overflow-hidden mt-1 h-14 justify-center">
-                                <Picker
-                                  selectedValue={state.academic.sectionId}
-                                  onValueChange={(itemValue: string) =>
-                                    handleSectionChange(itemValue)
-                                  }
-                                  style={{ color: '#F6BF8C', backgroundColor: 'transparent' }}
-                                  dropdownIconColor="#F6BF8C"
-                                >
-                                  <Picker.Item
-                                    label="-- Select Section --"
-                                    value=""
-                                    color="#A1A1AA"
-                                  />
-                                  {sections.map((section) => (
-                                    <Picker.Item
-                                      key={section.id}
-                                      label={section.name}
-                                      value={section.id}
-                                      color="#F6BF8C"
-                                    />
-                                  ))}
-                                </Picker>
-                              </Box>
-                            );
-                          }
-                          return (
-                            <Box className="flex-row flex-wrap gap-3">
-                              {sections.map((section) => (
-                                <Button
-                                  key={section.id}
-                                  variant={
-                                    state.academic.sectionId === section.id ? 'solid' : 'outline'
-                                  }
-                                  size="sm"
-                                  onPress={() => handleSectionChange(section.id)}
-                                  className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
-                                >
-                                  <ButtonText
-                                    className={
-                                      state.academic.sectionId === section.id
-                                        ? 'text-white font-bold'
-                                        : 'text-sanctuary-text-secondary'
-                                    }
-                                  >
-                                    {section.name}
-                                  </ButtonText>
-                                </Button>
-                              ))}
-                            </Box>
-                          );
-                        })()}
+                        <Box className="flex-row flex-wrap gap-3">
+                          {sections.map((section) => (
+                            <Button
+                              key={section.id}
+                              variant={
+                                state.academic.sectionId === section.id ? 'solid' : 'outline'
+                              }
+                              size="sm"
+                              onPress={() => handleSectionChange(section.id)}
+                              className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
+                            >
+                              <ButtonText
+                                className={
+                                  state.academic.sectionId === section.id
+                                    ? 'text-white font-bold'
+                                    : 'text-sanctuary-text-secondary'
+                                }
+                              >
+                                {section.name}
+                              </ButtonText>
+                            </Button>
+                          ))}
+                        </Box>
                       </FormControl>
                     </VStack>
                   )}
@@ -701,54 +661,27 @@ export default function CreateClassroomModal({
                         {t('classroom.selectGrade') || 'Target Grade Level'}
                       </FormControlLabelText>
                     </FormControlLabel>
-                    {(() => {
-                      const Picker = loadPicker();
-                      if (Picker && Platform.OS !== 'web') {
-                        return (
-                          <Box className="bg-sanctuary-surface-secondary border border-sanctuary-border rounded-2xl overflow-hidden mt-1 h-14 justify-center">
-                            <Picker
-                              selectedValue={state.academic.gradeId}
-                              onValueChange={(itemValue: string) => handleGradeChange(itemValue)}
-                              style={{ color: '#F6BF8C', backgroundColor: 'transparent' }}
-                              dropdownIconColor="#F6BF8C"
-                            >
-                              <Picker.Item label="-- Select Grade --" value="" color="#A1A1AA" />
-                              {grades.map((grade) => (
-                                <Picker.Item
-                                  key={grade.id}
-                                  label={`Grade ${grade.number}`}
-                                  value={grade.id}
-                                  color="#F6BF8C"
-                                />
-                              ))}
-                            </Picker>
-                          </Box>
-                        );
-                      }
-                      return (
-                        <Box className="flex-row flex-wrap gap-2">
-                          {grades.map((grade) => (
-                            <Button
-                              key={grade.id}
-                              variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
-                              size="sm"
-                              onPress={() => handleGradeChange(grade.id)}
-                              className={`px-4 rounded-full h-10 ${state.academic.gradeId === grade.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
-                            >
-                              <ButtonText
-                                className={
-                                  state.academic.gradeId === grade.id
-                                    ? 'text-white font-bold'
-                                    : 'text-sanctuary-text-secondary'
-                                }
-                              >
-                                {grade.number}
-                              </ButtonText>
-                            </Button>
-                          ))}
-                        </Box>
-                      );
-                    })()}
+                    <Box className="flex-row flex-wrap gap-2">
+                      {grades.map((grade) => (
+                        <Button
+                          key={grade.id}
+                          variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
+                          size="sm"
+                          onPress={() => handleGradeChange(grade.id)}
+                          className={`px-4 rounded-full h-10 ${state.academic.gradeId === grade.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
+                        >
+                          <ButtonText
+                            className={
+                              state.academic.gradeId === grade.id
+                                ? 'text-white font-bold'
+                                : 'text-sanctuary-text-secondary'
+                            }
+                          >
+                            {grade.number}
+                          </ButtonText>
+                        </Button>
+                      ))}
+                    </Box>
                   </FormControl>
                 </VStack>
               )}
