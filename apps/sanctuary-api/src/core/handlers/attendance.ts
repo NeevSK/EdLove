@@ -49,106 +49,117 @@ const dailyWhere = (record: { gradeClassId: string; studentId: string; date: str
   },
 });
 
+type GradeClassRecord = { id: string; school_id: string; academic_cycle_id: string };
+
+const gradeClassSelect = { id: true, school_id: true, academic_cycle_id: true } as const;
+
+/**
+ * Model A: attendance is keyed by a real grade_classes.id. There is no fallback to a
+ * legacy classroom, a name match, or "the school's first class": Cedar authorized the
+ * id the caller sent, so writing anywhere else would bypass that check. Clients map a
+ * legacy classroom to one of their own grade classes before calling.
+ */
 export async function resolveGradeClassRecord(
   db: any,
-  targetId: string,
+  targetId: string | undefined,
   contextSchoolId?: string | null,
-): Promise<{ id: string; school_id: string; academic_cycle_id: string } | null> {
+): Promise<GradeClassRecord | null> {
   if (!targetId) return null;
-  // 1. Direct gradeClass lookup
-  try {
-    const direct = await db.gradeClass.findUnique({
-      where: { id: targetId },
-      select: { id: true, school_id: true, academic_cycle_id: true },
-    });
-    if (direct) return direct;
-  } catch {
-    // Continue to legacy check
-  }
-
-  // 2. Legacy classroom bridge lookup
-  try {
-    const legacy = await db.classroom.findUnique({
-      where: { id: targetId },
-      select: { id: true, school_id: true, name: true, grade_id: true },
-    });
-    if (legacy?.school_id) {
-      // Find matching grade_class in the same school by name
-      const byName = await db.gradeClass.findFirst({
-        where: {
-          school_id: legacy.school_id,
-          name: legacy.name,
-          status: 'active',
-        },
-        select: { id: true, school_id: true, academic_cycle_id: true },
-      });
-      if (byName) return byName;
-
-      // Fallback: first active grade_class in the same school
-      const firstSchoolClass = await db.gradeClass.findFirst({
-        where: {
-          school_id: legacy.school_id,
-          status: 'active',
-        },
-        select: { id: true, school_id: true, academic_cycle_id: true },
-      });
-      if (firstSchoolClass) return firstSchoolClass;
-    }
-  } catch {
-    // Gracefully fall through
-  }
-
-  // 3. Fallback to school-wide lookup if context has schoolId
-  if (contextSchoolId) {
-    try {
-      const schoolClass = await db.gradeClass.findFirst({
-        where: {
-          school_id: contextSchoolId,
-          status: 'active',
-        },
-        select: { id: true, school_id: true, academic_cycle_id: true },
-      });
-      if (schoolClass) return schoolClass;
-    } catch {
-      // Gracefully fall through
-    }
-  }
-
-  return null;
+  const direct = await db.gradeClass.findUnique({
+    where: { id: targetId },
+    select: gradeClassSelect,
+  });
+  if (!direct) return null;
+  if (contextSchoolId && String(direct.school_id) !== String(contextSchoolId)) return null;
+  return direct;
 }
 
-async function loadDaily(context: ORPCContext, record: RecordInput, db = context.db) {
-  const targetId = record.gradeClassId || record.classroomId;
-  const gradeClass = await resolveGradeClassRecord(db, targetId, context.schoolId);
+/**
+ * Bridge used only when a legacy classroom (not attendance) needs its grade class, e.g.
+ * enrolling a shadow learner added to classroom "5A". Matches by name within the same
+ * school and only when exactly one active grade class has that name; never guesses.
+ */
+export async function resolveGradeClassForLegacyClassroom(
+  db: any,
+  classroomId: string,
+  contextSchoolId?: string | null,
+): Promise<GradeClassRecord | null> {
+  const direct = await resolveGradeClassRecord(db, classroomId, contextSchoolId);
+  if (direct) return direct;
+  const legacy = await db.classroom.findUnique({
+    where: { id: classroomId },
+    select: { id: true, school_id: true, name: true },
+  });
+  if (!legacy?.school_id || !legacy.name) return null;
+  const matches = await db.gradeClass.findMany({
+    where: { school_id: legacy.school_id, name: legacy.name, status: 'active' },
+    select: gradeClassSelect,
+    take: 2,
+  });
+  return Array.isArray(matches) && matches.length === 1 ? matches[0] : null;
+}
+
+async function requireGradeClass(db: any, targetId: string | undefined, schoolId?: string | null) {
+  const gradeClass = await resolveGradeClassRecord(db, targetId, schoolId);
   if (!gradeClass) throw new ORPCError('NOT_FOUND', { message: 'Grade class not found' });
+  return gradeClass;
+}
+
+/** Attendance can only be written for a student enrolled in that grade class. */
+async function requireEnrolledStudent(db: any, studentId: string, gradeClassId: string) {
+  const enrollment = await db.studentGradeClassEnrollment.findFirst({
+    where: { student_id: studentId, grade_class_id: gradeClassId },
+    select: { id: true },
+  });
+  if (!enrollment) {
+    throw new ORPCError('BAD_REQUEST', {
+      message: 'Student is not enrolled in this class',
+      data: { studentId, gradeClassId },
+    });
+  }
+}
+
+/** Active enrollments on a date, in register order (the order the teacher sees). */
+async function loadRoster(db: any, gradeClassId: string, date?: string) {
+  const on = date ? new Date(`${date}T23:59:59.999Z`) : new Date();
+  return db.studentGradeClassEnrollment.findMany({
+    where: {
+      grade_class_id: gradeClassId,
+      status: 'active',
+      effective_from: { lte: on },
+      OR: [{ effective_to: null }, { effective_to: { gte: on } }],
+    },
+    include: { student: { select: { full_name: true, avatar_url: true } } },
+    orderBy: { created_at: 'asc' },
+  });
+}
+
+async function loadDaily(
+  context: ORPCContext,
+  record: RecordInput & { note?: string },
+  db = context.db,
+) {
+  const gradeClass = await requireGradeClass(
+    db,
+    record.gradeClassId || record.classroomId,
+    context.schoolId,
+  );
   const effectiveRecord = {
     ...record,
     gradeClassId: gradeClass.id,
   };
 
-  // Ensure shadow student user placeholder exists to satisfy foreign key constraint
-  try {
-    const studentExists = await db.user.findUnique({
-      where: { id: effectiveRecord.studentId },
-      select: { id: true },
-    });
-    if (!studentExists) {
-      await db.user.create({
-        data: {
-          id: effectiveRecord.studentId,
-          full_name: `Student ${effectiveRecord.studentId.slice(0, 8)}`,
-          is_anonymous: true,
-          citizenship: 'THIRD_CLASS',
-        },
-      });
-    }
-  } catch {
-    // Concurrent creation or read-only context tolerated
-  }
+  // Never invent a users row for an unknown id: shadow learners already have one
+  // (addShadowStudent), and an id that is not on this class's roster is a client bug.
+  await requireEnrolledStudent(db, effectiveRecord.studentId, gradeClass.id);
 
   const row: any = await (db.dailyAttendance as any).upsert({
     where: dailyWhere(effectiveRecord) as any,
-    update: { status: effectiveRecord.status, recorded_by: context.user.id },
+    update: {
+      status: effectiveRecord.status,
+      recorded_by: context.user.id,
+      ...(record.note !== undefined && { note: record.note }),
+    },
     create: {
       student_id: effectiveRecord.studentId,
       school_id: gradeClass.school_id,
@@ -157,6 +168,7 @@ async function loadDaily(context: ORPCContext, record: RecordInput, db = context
       attendance_date: new Date(`${effectiveRecord.date}T00:00:00.000Z`),
       status: effectiveRecord.status,
       recorded_by: context.user.id,
+      ...(record.note !== undefined && { note: record.note }),
     },
     include: {
       student: { select: { full_name: true, avatar_url: true } },
@@ -198,12 +210,14 @@ export const attendanceRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db;
       const query = input.query as { gradeClassId?: string; classroomId?: string; date?: string };
-      const targetId = query.gradeClassId || query.classroomId;
-      const gradeClass = await resolveGradeClassRecord(db, targetId, context.schoolId);
-      const effectiveId = gradeClass?.id ?? targetId;
+      const gradeClass = await requireGradeClass(
+        db,
+        query.gradeClassId || query.classroomId,
+        context.schoolId,
+      );
       const rows = await db.dailyAttendance.findMany({
         where: {
-          grade_class_id: effectiveId,
+          grade_class_id: gradeClass.id,
           attendance_date: input.query.date || undefined,
         },
         orderBy: [{ attendance_date: 'desc' }, { created_at: 'desc' }],
@@ -289,25 +303,12 @@ export const attendanceRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const db = context.db as any;
-      const targetId = input.query.gradeClassId || (input.query as any).classroomId;
-      const gradeClass = await resolveGradeClassRecord(db, targetId, context.schoolId);
-      if (
-        !gradeClass ||
-        (context.schoolId && String(gradeClass.school_id) !== String(context.schoolId))
-      ) {
-        throw new ORPCError('NOT_FOUND', { message: 'Grade class not found' });
-      }
-      const on = input.query.date ? new Date(`${input.query.date}T23:59:59.999Z`) : new Date();
-      const rows = await db.studentGradeClassEnrollment.findMany({
-        where: {
-          grade_class_id: gradeClass.id,
-          status: 'active',
-          effective_from: { lte: on },
-          OR: [{ effective_to: null }, { effective_to: { gte: on } }],
-        },
-        include: { student: { select: { full_name: true, avatar_url: true } } },
-        orderBy: { created_at: 'asc' },
-      });
+      const gradeClass = await requireGradeClass(
+        db,
+        input.query.gradeClassId || (input.query as any).classroomId,
+        context.schoolId,
+      );
+      const rows = await loadRoster(db, gradeClass.id, input.query.date);
       return rows.map((row: any) => ({
         enrollment_id: String(row.id),
         student_id: String(row.student_id),
@@ -360,99 +361,40 @@ export const attendanceRouter = impl.router({
       }
       return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
     }),
-  quickMark: impl.quickMark
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
-      const db = context.db as any;
-      const { gradeClassId, date, rawText } = input.body;
+  quickMark: impl.quickMark.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    const db = context.db as any;
+    const { gradeClassId, date, rawText } = input.body;
+    const gradeClass = await requireGradeClass(db, gradeClassId, context.schoolId);
 
-      // Extract roll numbers from text
-      const numbers = (rawText.match(/\d+/g) || []).map(Number);
-      const isLate = /late/i.test(rawText);
-      const targetStatus: 'late' | 'absent' = isLate ? 'late' : 'absent';
-
-      // Load enrollments
-      const enrollments = await db.studentGradeClassEnrollment.findMany({
-        where: { grade_class_id: gradeClassId, status: 'active' },
-        include: { student: true },
+    // "3 7 12" marks those register positions absent; "late 4" marks them late.
+    // Enrollments carry no roll number, so a number is the 1-based position on the
+    // register as shown by getGradeClassRoster (same query, same order).
+    const numbers = [...new Set<number>((rawText.match(/\d+/g) || []).map(Number))];
+    const targetStatus: 'late' | 'absent' = /late/i.test(rawText) ? 'late' : 'absent';
+    const roster = (await loadRoster(db, gradeClass.id, date)) ?? [];
+    const unknown = numbers.filter((n) => n < 1 || n > roster.length);
+    if (unknown.length > 0) {
+      throw new ORPCError('BAD_REQUEST', {
+        message: `No student at register number ${unknown.join(', ')} (class has ${roster.length})`,
+        data: { unknown, rosterSize: roster.length },
       });
+    }
 
-      const marks: Record<string, 'present' | 'late' | 'absent' | 'excused'> = {};
-      let updatedCount = 0;
-
-      for (let idx = 0; idx < (enrollments ?? []).length; idx++) {
-        const enr = enrollments[idx];
-        const studentId = String(enr.student_id);
-        const roll = enr.roll_number ?? idx + 1;
-        const status = numbers.includes(roll) ? targetStatus : 'present';
-        marks[studentId] = status;
-
-        try {
-          await db.dailyAttendance.upsert({
-            where: {
-              student_id_grade_class_id_attendance_date: {
-                student_id: studentId,
-                grade_class_id: gradeClassId,
-                attendance_date: new Date(`${date}T00:00:00.000Z`),
-              },
-            },
-            create: {
-              student_id: studentId,
-              grade_class_id: gradeClassId,
-              attendance_date: new Date(`${date}T00:00:00.000Z`),
-              status,
-              created_at: new Date(),
-              updated_at: new Date(),
-            },
-            update: {
-              status,
-              updated_at: new Date(),
-            },
-          });
-          updatedCount++;
-        } catch {
-          // Tolerated in mock environments
-        }
-      }
-
-      return {
-        updatedCount,
-        marks,
-      };
-    }),
-  submitExcuse: impl.submitExcuse
-    .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => {
-      const db = context.db as any;
-      const { studentId, gradeClassId, date } = input.body;
-
-      try {
-        await db.dailyAttendance.upsert({
-          where: {
-            student_id_grade_class_id_attendance_date: {
-              student_id: studentId,
-              grade_class_id: gradeClassId,
-              attendance_date: new Date(`${date}T00:00:00.000Z`),
-            },
-          },
-          create: {
-            student_id: studentId,
-            grade_class_id: gradeClassId,
-            attendance_date: new Date(`${date}T00:00:00.000Z`),
-            status: 'excused',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          update: {
-            status: 'excused',
-            updated_at: new Date(),
-          },
-        });
-      } catch {
-        // Tolerated in mock environments
-      }
-
-      return { success: true };
-    }),
+    const marks: Record<string, 'present' | 'late' | 'absent' | 'excused'> = {};
+    const items: RecordInput[] = roster.map((enr: any, idx: number) => {
+      const studentId = String(enr.student_id);
+      const status = numbers.includes(idx + 1) ? targetStatus : 'present';
+      marks[studentId] = status;
+      return { gradeClassId: gradeClass.id, studentId, status, date };
+    });
+    await (db as any).$transaction(async (tx: any) => {
+      for (const item of items) await loadDaily(context, item, tx);
+    });
+    return { updatedCount: items.length, marks };
+  }),
+  submitExcuse: impl.submitExcuse.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    const { studentId, gradeClassId, date, reason } = input.body;
+    await loadDaily(context, { gradeClassId, studentId, date, status: 'excused', note: reason });
+    return { success: true };
+  }),
 });
-

@@ -69,6 +69,11 @@ let mockClassroomStudents: any[] = [];
 let mockGradeClassAssignments: any[] = [];
 let mockGradeClassEnrollments: any[] = [];
 
+const mockDailyAttendanceUpserts: any[] = [];
+/** Arguments of every dailyAttendance.upsert since the last reset (newest last). */
+export function getMockDailyAttendanceUpserts() {
+  return mockDailyAttendanceUpserts;
+}
 /** Academic lifecycle (model A) rows: teacher assignments and student enrollments. */
 export function setMockGradeClassLifecycle({
   assignments = [],
@@ -217,6 +222,7 @@ export function setMockClassroomRelationships({
   mockClassroomStudents = students ?? [];
   mockGradeClassAssignments = [];
   mockGradeClassEnrollments = [];
+  mockDailyAttendanceUpserts.length = 0;
   mockEducationalRows.clear();
 }
 
@@ -432,6 +438,10 @@ function createMockDelegate(name: string): any {
           }
           if (name === 'user') {
             return async (args: any = {}) => {
+              const stored = args?.where?.id
+                ? mockEducationalRows.get(`user:${args.where.id}`)
+                : undefined;
+              if (stored) return { ...stored };
               const u = mockUserData ?? {
                 id: args?.where?.id ?? 'mock-user-id',
                 email: 'mock-user@example.com',
@@ -578,14 +588,17 @@ function createMockDelegate(name: string): any {
           prop === 'updateMany'
         ) {
           if (name === 'dailyAttendance' && prop === 'upsert') {
-            return async (args: any = {}) => ({
-              id: '123e4567-e89b-12d3-a456-426614174099',
-              ...(args?.create ?? {}),
-              created_at: new Date('2026-10-17T00:00:00.000Z'),
-              updated_at: new Date('2026-10-17T00:00:00.000Z'),
-              student: { full_name: null, avatar_url: null },
-              sessions: [],
-            });
+            return async (args: any = {}) => {
+              mockDailyAttendanceUpserts.push(args);
+              return {
+                id: '123e4567-e89b-12d3-a456-426614174099',
+                ...(args?.create ?? {}),
+                created_at: new Date('2026-10-17T00:00:00.000Z'),
+                updated_at: new Date('2026-10-17T00:00:00.000Z'),
+                student: { full_name: null, avatar_url: null },
+                sessions: [],
+              };
+            };
           }
           if (name === 'libraryCollection' && prop === 'update') {
             return async (args: { where: { id: string }; data: Record<string, unknown> }) => {
@@ -929,6 +942,13 @@ function createMockDelegate(name: string): any {
               author: { full_name: 'Test Author' },
             });
           }
+          if (name === 'user' && prop === 'create') {
+            return async (args: any = {}) => {
+              const row = { id: args?.data?.id ?? crypto.randomUUID(), ...(args?.data ?? {}) };
+              mockEducationalRows.set(`user:${row.id}`, row);
+              return row;
+            };
+          }
           if (
             [
               'classroom',
@@ -1153,6 +1173,15 @@ function createMockDelegate(name: string): any {
                 return null;
               return mockActiveBond;
             };
+          }
+          if (name === 'studentGradeClassEnrollment') {
+            return async (args: any = {}) =>
+              mockGradeClassEnrollments.find(
+                (row) =>
+                  (!args?.where?.student_id || row.student_id === args.where.student_id) &&
+                  (!args?.where?.grade_class_id ||
+                    row.grade_class_id === args.where.grade_class_id),
+              ) ?? null;
           }
           if (name === 'gradeClassTeacherAssignment') {
             return async (args: any = {}) => ({
