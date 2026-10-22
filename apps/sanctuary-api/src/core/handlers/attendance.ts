@@ -2,6 +2,7 @@ import { ORPCError } from '@orpc/server';
 import { attendanceORPCContract } from '@repo/core/api/attendance.orpc.contract';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
+import { getPolicyDb } from '../policyDb';
 
 const impl = implement(attendanceORPCContract).$context<ORPCContext>();
 
@@ -134,11 +135,7 @@ async function loadRoster(db: any, gradeClassId: string, date?: string) {
   });
 }
 
-async function loadDaily(
-  context: ORPCContext,
-  record: RecordInput & { note?: string },
-  db = context.db,
-) {
+async function loadDaily(context: ORPCContext, record: RecordInput & { note?: string }, db: any) {
   const gradeClass = await requireGradeClass(
     db,
     record.gradeClassId || record.classroomId,
@@ -208,7 +205,7 @@ export const attendanceRouter = impl.router({
   getByClassroom: impl.getByClassroom
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db;
+      const db = await getPolicyDb(context);
       const query = input.query as { gradeClassId?: string; classroomId?: string; date?: string };
       const gradeClass = await requireGradeClass(
         db,
@@ -230,10 +227,12 @@ export const attendanceRouter = impl.router({
     }),
   record: impl.record
     .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => mapAttendance(await loadDaily(context, input.body))),
+    .handler(async ({ input, context }) =>
+      mapAttendance(await loadDaily(context, input.body, await getPolicyDb(context))),
+    ),
   batchRecord: impl.batchRecord.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     try {
-      return await (context.db as any).$transaction(async (tx: any) => {
+      return await (await getPolicyDb(context)).$transaction(async (tx: any) => {
         const rows = [];
         for (const item of input.body) rows.push(mapAttendance(await loadDaily(context, item, tx)));
         return rows;
@@ -249,7 +248,7 @@ export const attendanceRouter = impl.router({
   getSchoolPulse: impl.getSchoolPulse
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const rows = await (context.db as any).dailyAttendance.findMany({
+      const rows = await (await getPolicyDb(context)).dailyAttendance.findMany({
         where: {
           school_id: input.query.schoolId,
           grade_class_id: input.query.gradeClassId || undefined,
@@ -265,7 +264,7 @@ export const attendanceRouter = impl.router({
       };
     }),
   getReport: impl.getReport.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    const rows = await (context.db as any).dailyAttendance.findMany({
+    const rows = await (await getPolicyDb(context)).dailyAttendance.findMany({
       where: {
         school_id: input.query.schoolId,
         grade_class_id: input.query.gradeClassId || undefined,
@@ -302,7 +301,7 @@ export const attendanceRouter = impl.router({
   getGradeClassRoster: impl.getGradeClassRoster
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
+      const db = await getPolicyDb(context);
       const gradeClass = await requireGradeClass(
         db,
         input.query.gradeClassId || (input.query as any).classroomId,
@@ -319,7 +318,7 @@ export const attendanceRouter = impl.router({
   getMyGradeClasses: impl.getMyGradeClasses
     .use(doubleGateMiddleware)
     .handler(async ({ context }) => {
-      const db = context.db as any;
+      const db = await getPolicyDb(context);
       if (!context.schoolId) return [];
       const leader = ['principal', 'admin', 'section_head', 'grade_head'].includes(
         String(context.capacity),
@@ -362,7 +361,7 @@ export const attendanceRouter = impl.router({
       return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
     }),
   quickMark: impl.quickMark.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    const db = context.db as any;
+    const db = await getPolicyDb(context);
     const { gradeClassId, date, rawText } = input.body;
     const gradeClass = await requireGradeClass(db, gradeClassId, context.schoolId);
 
@@ -394,7 +393,11 @@ export const attendanceRouter = impl.router({
   }),
   submitExcuse: impl.submitExcuse.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const { studentId, gradeClassId, date, reason } = input.body;
-    await loadDaily(context, { gradeClassId, studentId, date, status: 'excused', note: reason });
+    await loadDaily(
+      context,
+      { gradeClassId, studentId, date, status: 'excused', note: reason },
+      await getPolicyDb(context),
+    );
     return { success: true };
   }),
 });

@@ -151,6 +151,9 @@ model User {
   
   // Everyone can read basic profile info (Discovery)
   @@allow('read', true)
+  // Shadow learners (added to a roster before they have an account) are created by a
+  // teacher or leader of the same school; nothing else about another user can be written.
+  @@allow('create', auth() != null && identity_state == 'shadow' && is_anonymous == true && school_id != null && auth().bonds?[entity_id == this.school_id && (capacity == 'teacher' || capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')])
 
   @@map("users")
 }
@@ -320,6 +323,8 @@ model ClassroomStudent {
 
   @@allow('read', classroom.teacher_id == auth().id || student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  // School leaders may manage rosters of their school's classrooms (as Classroom allows).
+  @@allow('all', auth() != null && auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')])
 
   @@map("classroom_students")
 }
@@ -1772,6 +1777,10 @@ model GradeClassTeacherAssignment {
 
   @@index([grade_class_id, role, effective_from])
   @@index([teacher_id, effective_from])
+  // Had no rules (deny-all under the policy client). Teachers read their own
+  // assignments; school leaders read and manage their school's.
+  @@allow('read', auth() != null && auth().id == teacher_id)
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.grade_class.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_class_teacher_assignments")
 }
 
@@ -2306,7 +2315,7 @@ model GuardianBond {
   guardian_user_id String
   ward_student_id  String
   relationship     String   @default("parent") // parent, mother, father, guardian, relative
-  status           String   @default("verified") // pending, verified, revoked
+  status           String   @default("pending") // pending, verified, revoked (DB default is pending since 20261017210000)
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
@@ -2316,8 +2325,13 @@ model GuardianBond {
   @@unique([guardian_user_id, ward_student_id])
   @@index([guardian_user_id])
   @@index([ward_student_id])
-  @@allow('all', auth() != null && (guardian_user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
-  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // Was 'all' for the guardian: anyone could self-link to any student as verified.
+  // Guardians may only request (pending) or withdraw; verification is server-side,
+  // matching the guardian_bonds RLS in 20261017210000_plan_bridge_calm_notices.sql.
+  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id))
+  @@allow('create', auth() != null && guardian_user_id == auth().id && status == 'pending')
+  @@allow('delete', auth() != null && guardian_user_id == auth().id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_bonds")
 }
 

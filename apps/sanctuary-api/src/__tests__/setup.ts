@@ -1281,6 +1281,11 @@ vi.mock('@repo/database/client', () => ({
     }
     return mockDb;
   },
+  // Unit tests run without Postgres: the policy client is the same mock/fake db the
+  // handler was given. Policy behaviour is covered by src/__tests__/policy-pg.
+  createPolicyDb: (raw: any) => raw,
+  createPolicyDbForUser: async (raw: any) => raw,
+  loadPolicyAuth: async (_raw: any, id: string) => ({ id, bonds: [] }),
 }));
 
 // Complete Mock CoreRuntimeEnvironment for backend test runs

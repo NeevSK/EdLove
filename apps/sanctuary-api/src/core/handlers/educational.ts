@@ -9,6 +9,7 @@ import { assertDatabase } from '../apiErrors';
 import { assertSubmissionIntent, settleAssignmentSubmission } from '../assignmentSettlement';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
+import { getPolicyDb } from '../policyDb';
 import { assertSubmissionAuthority } from '../submissionAuthority';
 import { resolveGradeClassForLegacyClassroom } from './attendance';
 import { claimShadowStudentAtomically } from './shadowClaim';
@@ -266,7 +267,9 @@ export const educationalRouter = impl.router({
       assertDatabase(context);
       const id = input.params.id;
       const updates = input.body;
-      const row = await (context.db as any).classroom.update({
+      // Policy client: only the classroom's teacher, a principal/section head of its
+      // school, or a platform admin can update it.
+      const row = await (await getPolicyDb(context)).classroom.update({
         where: { id },
         data: {
           ...(updates.name !== undefined && { name: updates.name.trim() }),
@@ -291,7 +294,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       assertDatabase(context);
-      await (context.db as any).classroom.delete({ where: { id: input.params.id } });
+      await (await getPolicyDb(context)).classroom.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   getClassroomResources: impl.getClassroomResources
@@ -335,7 +338,7 @@ export const educationalRouter = impl.router({
   getClassroomStudents: impl.getClassroomStudents
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const rows = await (context.db as any).classroomStudent.findMany({
+      const rows = await (await getPolicyDb(context)).classroomStudent.findMany({
         where: { classroom_id: input.params.classroomId },
         orderBy: [{ roll_number: 'asc' }, { enrolled_at: 'asc' }],
       });
@@ -344,7 +347,7 @@ export const educationalRouter = impl.router({
   enrollStudent: impl.enrollStudent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
+      const db = await getPolicyDb(context);
       const existing = await db.classroomStudent.findFirst({
         where: { classroom_id: input.params.classroomId, student_id: input.body.studentId },
       });
@@ -365,7 +368,7 @@ export const educationalRouter = impl.router({
   addShadowStudent: impl.addShadowStudent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = context.db as any;
+      const db = await getPolicyDb(context);
       const fullName = input.body.fullName.trim();
       const shadowUserId = randomUUID();
       const inviteCode = `EDL-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
@@ -380,6 +383,8 @@ export const educationalRouter = impl.router({
 
       // Shadow user + register enrollment + classroom seat are created together or not at all.
       const row = await db.$transaction(async (tx: any) => {
+        // Policy: a teacher/leader may create a shadow learner only in their own school,
+        // and the seat insert below rolls everything back if this is not their classroom.
         await tx.user.create({
           data: {
             id: shadowUserId,
@@ -420,7 +425,7 @@ export const educationalRouter = impl.router({
   updateClassroomStudent: impl.updateClassroomStudent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const row = await (context.db as any).classroomStudent.update({
+      const row = await (await getPolicyDb(context)).classroomStudent.update({
         where: { id: input.params.id },
         data: { full_name: input.body.fullName?.trim(), roll_number: input.body.rollNumber },
       });
@@ -429,7 +434,9 @@ export const educationalRouter = impl.router({
   removeClassroomStudent: impl.removeClassroomStudent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).classroomStudent.delete({ where: { id: input.params.id } });
+      await (await getPolicyDb(context)).classroomStudent.delete({
+        where: { id: input.params.id },
+      });
       return { success: true };
     }),
   claimShadowStudent: impl.claimShadowStudent

@@ -1009,6 +1009,88 @@ export class SchemaType implements SchemaDef {
             { name: 'condition', value: ExpressionUtils.literal(true) },
           ],
         },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('create') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.call('auth'),
+                        '!=',
+                        ExpressionUtils._null(),
+                      ),
+                      '&&',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('identity_state'),
+                        '==',
+                        ExpressionUtils.literal('shadow'),
+                      ),
+                    ),
+                    '&&',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('is_anonymous'),
+                      '==',
+                      ExpressionUtils.literal(true),
+                    ),
+                  ),
+                  '&&',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.field('school_id'),
+                    '!=',
+                    ExpressionUtils._null(),
+                  ),
+                ),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                  '?',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('entity_id'),
+                      '==',
+                      ExpressionUtils.member(ExpressionUtils._this(), ['school_id']),
+                    ),
+                    '&&',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.binary(
+                          ExpressionUtils.binary(
+                            ExpressionUtils.field('capacity'),
+                            '==',
+                            ExpressionUtils.literal('teacher'),
+                          ),
+                          '||',
+                          ExpressionUtils.binary(
+                            ExpressionUtils.field('capacity'),
+                            '==',
+                            ExpressionUtils.literal('principal'),
+                          ),
+                        ),
+                        '||',
+                        ExpressionUtils.binary(
+                          ExpressionUtils.field('capacity'),
+                          '==',
+                          ExpressionUtils.literal('section_head'),
+                        ),
+                      ),
+                      '||',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('capacity'),
+                        '==',
+                        ExpressionUtils.literal('grade_head'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
         { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('users') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
@@ -2282,6 +2364,44 @@ export class SchemaType implements SchemaDef {
                       ExpressionUtils.field('entity_type'),
                       '==',
                       ExpressionUtils.literal('PLATFORM'),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('all') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                  '?',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('entity_id'),
+                      '==',
+                      ExpressionUtils.member(ExpressionUtils._this(), ['classroom', 'school_id']),
+                    ),
+                    '&&',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('capacity'),
+                        '==',
+                        ExpressionUtils.literal('principal'),
+                      ),
+                      '||',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('capacity'),
+                        '==',
+                        ExpressionUtils.literal('section_head'),
+                      ),
                     ),
                   ),
                 ),
@@ -14729,6 +14849,93 @@ export class SchemaType implements SchemaDef {
           ],
         },
         {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('read') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                  '==',
+                  ExpressionUtils.field('teacher_id'),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('all') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                    '?',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('entity_id'),
+                        '==',
+                        ExpressionUtils.member(ExpressionUtils._this(), [
+                          'grade_class',
+                          'school_id',
+                        ]),
+                      ),
+                      '&&',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.binary(
+                          ExpressionUtils.binary(
+                            ExpressionUtils.field('capacity'),
+                            '==',
+                            ExpressionUtils.literal('principal'),
+                          ),
+                          '||',
+                          ExpressionUtils.binary(
+                            ExpressionUtils.field('capacity'),
+                            '==',
+                            ExpressionUtils.literal('section_head'),
+                          ),
+                        ),
+                        '||',
+                        ExpressionUtils.binary(
+                          ExpressionUtils.field('capacity'),
+                          '==',
+                          ExpressionUtils.literal('grade_head'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  '||',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                    '?',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('capacity'),
+                        '==',
+                        ExpressionUtils.literal('admin'),
+                      ),
+                      '&&',
+                      ExpressionUtils.binary(
+                        ExpressionUtils.field('entity_type'),
+                        '==',
+                        ExpressionUtils.literal('PLATFORM'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
           name: '@@map',
           args: [
             { name: 'name', value: ExpressionUtils.literal('grade_class_teacher_assignments') },
@@ -19662,10 +19869,10 @@ export class SchemaType implements SchemaDef {
           attributes: [
             {
               name: '@default',
-              args: [{ name: 'value', value: ExpressionUtils.literal('verified') }],
+              args: [{ name: 'value', value: ExpressionUtils.literal('pending') }],
             },
           ] as readonly AttributeApplication[],
-          default: 'verified' as FieldDefault,
+          default: 'pending' as FieldDefault,
         },
         created_at: {
           name: 'created_at',
@@ -19776,7 +19983,7 @@ export class SchemaType implements SchemaDef {
         {
           name: '@@allow',
           args: [
-            { name: 'operation', value: ExpressionUtils.literal('all') },
+            { name: 'operation', value: ExpressionUtils.literal('read') },
             {
               name: 'condition',
               value: ExpressionUtils.binary(
@@ -19790,21 +19997,9 @@ export class SchemaType implements SchemaDef {
                   ),
                   '||',
                   ExpressionUtils.binary(
-                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
-                    '?',
-                    ExpressionUtils.binary(
-                      ExpressionUtils.binary(
-                        ExpressionUtils.field('capacity'),
-                        '==',
-                        ExpressionUtils.literal('admin'),
-                      ),
-                      '&&',
-                      ExpressionUtils.binary(
-                        ExpressionUtils.field('entity_type'),
-                        '==',
-                        ExpressionUtils.literal('PLATFORM'),
-                      ),
-                    ),
+                    ExpressionUtils.field('ward_student_id'),
+                    '==',
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
                   ),
                 ),
               ),
@@ -19814,42 +20009,74 @@ export class SchemaType implements SchemaDef {
         {
           name: '@@allow',
           args: [
-            { name: 'operation', value: ExpressionUtils.literal('read') },
+            { name: 'operation', value: ExpressionUtils.literal('create') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.call('auth'),
+                    '!=',
+                    ExpressionUtils._null(),
+                  ),
+                  '&&',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.field('guardian_user_id'),
+                    '==',
+                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                  ),
+                ),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.field('status'),
+                  '==',
+                  ExpressionUtils.literal('pending'),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('delete') },
             {
               name: 'condition',
               value: ExpressionUtils.binary(
                 ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
                 '&&',
                 ExpressionUtils.binary(
+                  ExpressionUtils.field('guardian_user_id'),
+                  '==',
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('all') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                  '?',
                   ExpressionUtils.binary(
                     ExpressionUtils.binary(
-                      ExpressionUtils.field('guardian_user_id'),
+                      ExpressionUtils.field('capacity'),
                       '==',
-                      ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                      ExpressionUtils.literal('admin'),
                     ),
-                    '||',
+                    '&&',
                     ExpressionUtils.binary(
-                      ExpressionUtils.field('ward_student_id'),
+                      ExpressionUtils.field('entity_type'),
                       '==',
-                      ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
-                    ),
-                  ),
-                  '||',
-                  ExpressionUtils.binary(
-                    ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
-                    '?',
-                    ExpressionUtils.binary(
-                      ExpressionUtils.binary(
-                        ExpressionUtils.field('capacity'),
-                        '==',
-                        ExpressionUtils.literal('admin'),
-                      ),
-                      '&&',
-                      ExpressionUtils.binary(
-                        ExpressionUtils.field('entity_type'),
-                        '==',
-                        ExpressionUtils.literal('PLATFORM'),
-                      ),
+                      ExpressionUtils.literal('PLATFORM'),
                     ),
                   ),
                 ),
