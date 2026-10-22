@@ -54,25 +54,25 @@
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.3",
-    "react-i18next": "^17.0.18"
+    "@tanstack/react-query": "^5.104.5",
+    "react-i18next": "^17.1.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.12.0",
-    "typescript": "7.0.2",
+    "eslint": "^10.13.0",
+    "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "5.0.5"
   },
   "peerDependencies": {
-    "@repo/ui": "*",
-    "posthog-js": "^1.383.1",
-    "posthog-node": "^5.36.6",
+    "@repo/ui": "1.5.0",
+    "posthog-js": "^1.430.2",
+    "posthog-node": "^5.56.1",
     "posthog-react-native": "^4.78.5",
-    "react": "19.3.0",
-    "react-i18next": "^17.0.18",
+    "react": "19.3.1",
+    "react-i18next": "^17.1.0",
     "react-native": "0.88.0"
   },
   "peerDependenciesMeta": {

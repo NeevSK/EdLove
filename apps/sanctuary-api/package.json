@@ -21,9 +21,9 @@
     "test:integration:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest --config vitest.integration.config.ts\" --name \"apps_sanctuary-api-test_integration_watch\" --evidence-level G3"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.53",
-    "@ai-sdk/google": "^4.0.69",
-    "@ai-sdk/openai": "^4.0.96",
+    "@ai-sdk/anthropic": "^4.0.85",
+    "@ai-sdk/google": "^4.0.102",
+    "@ai-sdk/openai": "^4.0.99",
     "@growthbook/growthbook": "^1.8.0",
     "@hono/node-server": "^2.1.5",
     "@hono/swagger-ui": "^0.6.1",
@@ -42,22 +42,22 @@
     "@repo/core": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
-    "@scalar/hono-api-reference": "^0.12.12",
-    "@sentry/node": "^8.55.2",
+    "@scalar/hono-api-reference": "^0.12.13",
+    "@sentry/node": "^11.8.0",
     "@supabase/server": "^1.9.2",
-    "@tanstack/ai": "^0.69.0",
+    "@tanstack/ai": "^0.71.0",
     "@tanstack/ai-anthropic": "0.22.0",
     "@tanstack/ai-gemini": "0.38.0",
     "@tanstack/ai-openai": "0.30.0",
-    "ai": "^7.0.143",
+    "ai": "^7.0.148",
     "dotenv": "^17.4.2",
     "foglamp": "^0.7.1",
     "hono": "^4.13.13",
-    "inngest": "^4.24.0",
+    "inngest": "^4.25.0",
     "pino": "^10.4.0",
     "pino-pretty": "^13.2.0",
-    "posthog-node": "^5.56.1",
-    "zod": "4.6.5"
+    "posthog-node": "^5.56.2",
+    "zod": "4.6.7"
   },
   "pnpm": {
     "overrides": {
@@ -74,7 +74,7 @@
     "tsdown": "^0.23.1",
     "tsup": "^8.5.1",
     "tsx": "^4.23.15",
-    "typescript": "7.0.2",
+    "typescript": "7.1.0-beta",
     "vitest": "5.0.5"
   },
   "_originalScripts": {

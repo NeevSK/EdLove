@@ -20,25 +20,25 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"apps_edlove-web-clean\""
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.11",
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/starlight": "^0.42.0",
-    "@astrojs/svelte": "^9.0.1",
+    "@astrojs/starlight": "^0.42.6",
+    "@astrojs/svelte": "^9.1.0",
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@repo/editorial": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "@types/three": "^0.185.4",
-    "astro": "^7.3.5",
+    "astro": "^7.4.1",
     "pagefind": "^1.5.2",
-    "svelte": "^5.57.0",
-    "tailwindcss": "4.3.0",
+    "svelte": "^5.57.2",
+    "tailwindcss": "4.3.3",
     "three": "^0.185.1",
-    "typescript": "7.0.2"
+    "typescript": "7.1.0-beta"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^10.12.0",
+    "eslint": "^10.13.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "5.0.5"
   },

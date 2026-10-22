@@ -10,12 +10,12 @@
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_policies-test\" --evidence-level G2"
   },
   "dependencies": {
-    "@cedar-policy/cedar-wasm": "^4.12.0"
+    "@cedar-policy/cedar-wasm": "^4.14.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^26.6.5",
-    "typescript": "7.0.2",
+    "typescript": "7.1.0-beta",
     "vitest": "5.0.5"
   },
   "exports": {

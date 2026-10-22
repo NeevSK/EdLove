@@ -35,13 +35,13 @@
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.12.0",
-    "typescript": "7.0.2",
+    "eslint": "^10.13.0",
+    "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "5.0.5"
   },
   "peerDependencies": {
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-native": "0.88.0"
   },
   "_originalScripts": {

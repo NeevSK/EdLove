@@ -32,23 +32,23 @@
   },
   "dependencies": {
     "@repo/schema": "workspace:*",
-    "@zenstackhq/orm": "3.9.7",
-    "@zenstackhq/schema": "3.9.7",
+    "@zenstackhq/orm": "3.9.8",
+    "@zenstackhq/schema": "3.9.8",
     "kysely": "0.28.16",
     "pg": "^8.23.1",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/pg": "^8.23.1",
-    "@zenstackhq/cli": "3.9.7",
-    "@zenstackhq/language": "3.9.7",
-    "@zenstackhq/plugin-policy": "3.9.7",
-    "@zenstackhq/sdk": "3.9.7",
-    "@zenstackhq/zod": "3.9.7",
-    "eslint": "^10.12.0",
-    "typescript": "7.0.2",
+    "@zenstackhq/cli": "3.9.8",
+    "@zenstackhq/language": "3.9.8",
+    "@zenstackhq/plugin-policy": "3.9.8",
+    "@zenstackhq/sdk": "3.9.8",
+    "@zenstackhq/zod": "3.9.8",
+    "eslint": "^10.13.0",
+    "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "5.0.5"
   },
