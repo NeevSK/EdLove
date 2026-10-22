@@ -289,3 +289,22 @@ DO $$ BEGIN
       );
   END IF;
 END $$;
+
+-- RLS filters rows after a database role has table privileges. Keep the API
+-- surface private by default, then grant only operations backed by a policy.
+REVOKE ALL ON TABLE
+  public.chargeable_schedules,
+  public.household_welfare_profiles,
+  public.household_wards,
+  public.regulatory_notices,
+  public.educational_fee_assessments,
+  public.institutional_events,
+  public.inventory_asset_items,
+  public.inventory_stock_movements,
+  public.facility_reservations
+FROM anon, authenticated, service_role;
+
+GRANT SELECT ON TABLE public.regulatory_notices TO authenticated;
+GRANT SELECT ON TABLE public.educational_fee_assessments TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.institutional_events TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.inventory_asset_items TO authenticated;

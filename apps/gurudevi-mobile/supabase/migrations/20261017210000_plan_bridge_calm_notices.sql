@@ -106,6 +106,8 @@ CREATE POLICY sgr_withdraw_own ON public.student_guardian_relationships
   FOR DELETE TO authenticated
   USING (guardian_id = public.plan_bridge_viewer_id());
 -- No UPDATE policy: users cannot promote their own link.
+REVOKE ALL ON TABLE public.student_guardian_relationships FROM anon, authenticated;
+GRANT SELECT, INSERT, DELETE ON TABLE public.student_guardian_relationships TO authenticated;
 
 DO $$ BEGIN
   IF to_regclass('public.guardian_bonds') IS NOT NULL THEN
@@ -185,6 +187,8 @@ DROP POLICY IF EXISTS school_mode_policies_member_read ON public.school_mode_pol
 CREATE POLICY school_mode_policies_member_read ON public.school_mode_policies
   FOR SELECT TO authenticated USING (public.academic_lifecycle_is_school_member(school_id));
 -- Writes go through sanctuary-api (principal/admin only); no write policy.
+REVOKE ALL ON TABLE public.school_mode_policies FROM anon, authenticated;
+GRANT SELECT ON TABLE public.school_mode_policies TO authenticated;
 
 -- Usage signal (stub): opt-in, aggregate-only counts so real usage can set
 -- defaults later. No content, no user ids: (school, day, mode, event, role) ->
@@ -201,6 +205,7 @@ CREATE TABLE IF NOT EXISTS public.school_mode_usage_daily (
 );
 ALTER TABLE public.school_mode_usage_daily ENABLE ROW LEVEL SECURITY;
 -- No policies: server-only.
+REVOKE ALL ON TABLE public.school_mode_usage_daily FROM anon, authenticated, service_role;
 
 CREATE OR REPLACE FUNCTION public.bump_school_mode_usage(
   p_school_id uuid, p_mode_key text, p_event text, p_capacity text, p_at timestamptz DEFAULT now())
@@ -330,6 +335,8 @@ CREATE POLICY calendar_events_read ON public.calendar_events
       ELSE public.plan_bridge_can_view_grade_class(grade_class_id)
     END
   );
+REVOKE ALL ON TABLE public.calendar_events FROM anon, authenticated;
+GRANT SELECT ON TABLE public.calendar_events TO authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 4. Notices = announcements extended (Zulip ScheduledMessage-style states)
@@ -389,6 +396,7 @@ CREATE TABLE IF NOT EXISTS public.school_notice_events (
 CREATE INDEX IF NOT EXISTS idx_school_notice_events_notice ON public.school_notice_events (notice_id, created_at);
 ALTER TABLE public.school_notice_events ENABLE ROW LEVEL SECURITY;
 -- No policies: not readable or writable through PostgREST.
+REVOKE ALL ON TABLE public.school_notice_events FROM anon, authenticated, service_role;
 
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 -- The old policy let any school member read every row, which would now include

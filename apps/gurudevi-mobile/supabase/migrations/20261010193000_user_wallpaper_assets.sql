@@ -21,3 +21,6 @@ create policy "Users can insert own wallpaper assets"
   on public.user_wallpaper_assets for insert to authenticated with check (user_id = auth.uid());
 create policy "Users can delete own wallpaper assets"
   on public.user_wallpaper_assets for delete to authenticated using (user_id = auth.uid());
+
+revoke all on table public.user_wallpaper_assets from anon, authenticated, service_role;
+grant select, insert, delete on table public.user_wallpaper_assets to authenticated;

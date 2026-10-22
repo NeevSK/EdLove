@@ -43,3 +43,9 @@ CREATE POLICY "Principals can manage inventory" ON public.inventory_items
     FOR ALL
     USING (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')))
     WITH CHECK (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')));
+
+-- RLS policies do not grant table privileges. Keep the Data API ACL aligned
+-- with the authenticated principal/admin policies above.
+REVOKE ALL ON TABLE public.relief_assignments, public.inventory_items FROM anon;
+REVOKE ALL ON TABLE public.relief_assignments, public.inventory_items FROM authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.relief_assignments, public.inventory_items TO authenticated;
