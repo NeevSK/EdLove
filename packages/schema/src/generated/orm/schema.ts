@@ -7346,6 +7346,14 @@ export class SchemaType implements SchemaDef {
           ] as readonly AttributeApplication[],
           default: 'open' as FieldDefault,
         },
+        student_history_access: {
+          name: 'student_history_access',
+          type: 'Json',
+          attributes: [
+            { name: '@default', args: [{ name: 'value', value: ExpressionUtils.literal('{}') }] },
+          ] as readonly AttributeApplication[],
+          default: '{}' as FieldDefault,
+        },
         classrooms: {
           name: 'classrooms',
           type: 'Classroom',
@@ -15493,6 +15501,38 @@ export class SchemaType implements SchemaDef {
                 ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
                 '&&',
                 ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), [
+                    'student_guardian_links_as_guardian',
+                  ]),
+                  '?',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('student_id'),
+                      '==',
+                      ExpressionUtils.member(ExpressionUtils._this(), ['student_id']),
+                    ),
+                    '&&',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('verification_status'),
+                      '==',
+                      ExpressionUtils.literal('verified'),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('read') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
                   ExpressionUtils.binary(
                     ExpressionUtils.binary(
                       ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
@@ -15970,6 +16010,38 @@ export class SchemaType implements SchemaDef {
                 ExpressionUtils.field('grade_class_id'),
                 ExpressionUtils.field('session_at'),
               ]),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('read') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), [
+                    'student_guardian_links_as_guardian',
+                  ]),
+                  '?',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('student_id'),
+                      '==',
+                      ExpressionUtils.member(ExpressionUtils._this(), ['student_id']),
+                    ),
+                    '&&',
+                    ExpressionUtils.binary(
+                      ExpressionUtils.field('verification_status'),
+                      '==',
+                      ExpressionUtils.literal('verified'),
+                    ),
+                  ),
+                ),
+              ),
             },
           ],
         },

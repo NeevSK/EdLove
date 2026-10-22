@@ -883,6 +883,9 @@ model School {
   // Guardian verification policy: open (default) allows parents immediate visibility; strict requires leader verification.
   guardian_verification_required Boolean @default(false)
   guardian_verification_policy   String  @default("open")
+  // Who may read a student's attendance history; '{}' = strict defaults. Keys and
+  // defaults: migration 20261022090000 and sanctuary-api core/studentHistoryAccess.ts.
+  student_history_access         Json    @default("{}")
 
   classrooms Classroom[]
   announcements Announcement[]
@@ -1831,6 +1834,8 @@ model DailyAttendance {
 
   @@unique([student_id, grade_class_id, attendance_date])
   @@index([grade_class_id, attendance_date])
+  // Verified guardians read their ward's attendance (pending/revoked links never count).
+  @@allow('read', auth() != null && auth().student_guardian_links_as_guardian?[student_id == this.student_id && verification_status == 'verified'])
   @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
   @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("daily_attendance")
@@ -1864,6 +1869,8 @@ model AttendanceSession {
 
   @@index([daily_attendance_id, session_at])
   @@index([grade_class_id, session_at])
+  // Verified guardians read their ward's attendance (pending/revoked links never count).
+  @@allow('read', auth() != null && auth().student_guardian_links_as_guardian?[student_id == this.student_id && verification_status == 'verified'])
   @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
   @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("attendance_sessions")

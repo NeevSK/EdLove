@@ -84,7 +84,7 @@ describe.skipIf(!url)(
           } as any,
           { context: ctx(ID.teacherA, ID.schoolA) },
         );
-        expect(row).toMatchObject({ status: 'late' });
+        expect(row).toMatchObject({ status: 'late', attendance_date: '2026-10-22' });
         const day: any = await call(
           attendanceRouter.getByClassroom,
           { query: { gradeClassId: ID.gcA, date: '2026-10-22' } } as any,

@@ -157,6 +157,32 @@ export const attendanceORPCContract = {
     },
     metadata: attendanceRead,
   },
+  /**
+   * One student's attendance across days, newest first. Who may read it, and how much, is
+   * decided per school (schools.student_history_access); see the handler. `gradeClassId`
+   * is the class the caller views the student through (teachers must send one of their
+   * classes); it is authority context, not a filter.
+   */
+  getStudentHistory: {
+    method: 'get',
+    path: '/attendance/student-history',
+    request: {
+      query: z.strictObject({
+        studentId: z.uuid(),
+        gradeClassId: z.uuid().optional(),
+        from: z.iso.date().optional(),
+        to: z.iso.date().optional(),
+        limit: z.coerce.number().int().min(1).max(500).optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.array(attendance),
+        description: 'Attendance history the caller may see for this student',
+      },
+    },
+    metadata: attendanceRead,
+  },
   getMyGradeClasses: {
     method: 'get',
     path: '/attendance/my-grade-classes',

@@ -3,6 +3,7 @@ import { attendanceORPCContract } from '@repo/core/api/attendance.orpc.contract'
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 import { getPolicyDb } from '../policyDb';
+import { resolveStudentHistoryScope } from '../studentHistoryScope';
 
 const impl = implement(attendanceORPCContract).$context<ORPCContext>();
 
@@ -21,12 +22,17 @@ type RecordInput = {
 
 const iso = (value: unknown) => new Date(value as string | number | Date).toISOString();
 
+// A real Postgres DATE arrives as a Date (String() would give "Wed Oct 21 ..."); fakes
+// and older callers pass 'YYYY-MM-DD' strings.
+const dateOnly = (value: unknown) =>
+  value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
+
 const mapAttendance = (row: any) => ({
   id: String(row.id),
   student_id: String(row.student_id),
   grade_class_id: String(row.grade_class_id),
   status: row.status,
-  attendance_date: String(row.attendance_date).slice(0, 10),
+  attendance_date: dateOnly(row.attendance_date),
   created_at: iso(row.created_at),
   updated_at: iso(row.updated_at ?? row.created_at),
   student_name: row.student?.full_name ?? null,
@@ -275,7 +281,7 @@ export const attendanceRouter = impl.router({
     });
     const byDate = new Map<string, any[]>();
     for (const row of rows) {
-      const date = String(row.attendance_date).slice(0, 10);
+      const date = dateOnly(row.attendance_date);
       byDate.set(date, [...(byDate.get(date) ?? []), row]);
     }
     const trend = [...byDate.entries()].map(([date, values]) => {
@@ -314,6 +320,34 @@ export const attendanceRouter = impl.router({
         full_name: row.student?.full_name ?? null,
         avatar_url: row.student?.avatar_url ?? null,
       }));
+    }),
+  getStudentHistory: impl.getStudentHistory
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      const db = await getPolicyDb(context);
+      const { studentId, from, to, limit } = input.query;
+      const scope = await resolveStudentHistoryScope(context.db, context.user.id, studentId);
+      if (!scope) {
+        throw new ORPCError('FORBIDDEN', {
+          message: "You do not have access to this student's attendance history.",
+        });
+      }
+      const rows = await db.dailyAttendance.findMany({
+        where: {
+          AND: [
+            scope,
+            ...(from ? [{ attendance_date: { gte: new Date(`${from}T00:00:00.000Z`) } }] : []),
+            ...(to ? [{ attendance_date: { lte: new Date(`${to}T00:00:00.000Z`) } }] : []),
+          ],
+        },
+        include: {
+          student: { select: { full_name: true, avatar_url: true } },
+          sessions: { orderBy: { session_at: 'asc' } },
+        },
+        orderBy: [{ attendance_date: 'desc' }, { created_at: 'desc' }],
+        take: limit ?? 200,
+      });
+      return rows.map(mapAttendance);
     }),
   getMyGradeClasses: impl.getMyGradeClasses
     .use(doubleGateMiddleware)

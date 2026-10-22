@@ -11,8 +11,8 @@ import type { ORPCContext } from './orpc';
  * filtered and checked against the zmodel @@allow rules for the signed-in user, on top
  * of the Cedar check in doubleGateMiddleware. Raw SQL is rejected on this client.
  *
- * Enforced today: the attendance router, and in the educational router the classroom
- * roster procedures (list/enroll/add shadow/update/remove) and classroom update/delete.
+ * Enforced today: the attendance router (including getStudentHistory), and in the
+ * educational router the classroom roster procedures (list/enroll/add shadow/update/remove) and classroom update/delete.
  * Everything else still uses the raw client. Tests: src/__tests__/policy-pg.
  *
  * `auth()` in the zmodel is the User row; the fields the policies read (active bonds and
