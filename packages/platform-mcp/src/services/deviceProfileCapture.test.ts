@@ -1,16 +1,24 @@
-import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ROOT_DIR } from '../utils/constants.js';
 
-const { runCommandMock } = vi.hoisted(() => ({ runCommandMock: vi.fn() }));
+const { runCommandMock, storeCaptureMock } = vi.hoisted(() => ({
+  runCommandMock: vi.fn(),
+  storeCaptureMock: vi.fn(),
+}));
 vi.mock('../utils/execution.js', () => ({ runCommand: runCommandMock }));
+vi.mock('./deviceProfileStore.js', () => ({
+  DEVICE_PROFILE_DATABASE_PATH: 'reports/mobile-performance/test-device-profiles.sqlite',
+  storeDeviceProfileCapture: storeCaptureMock,
+}));
 
 import {
   captureDeviceProfile,
-  parseDeviceProfileMetrics,
   type DeviceProfileCaptureInput,
+  parseDeviceProfileMetrics,
+  redactCaptureOutput,
 } from './deviceProfileCapture.js';
 
 const input: DeviceProfileCaptureInput = {
@@ -23,6 +31,7 @@ const generatedDirs: string[] = [];
 
 afterEach(async () => {
   runCommandMock.mockReset();
+  storeCaptureMock.mockReset();
   const allowedRoot = path.resolve(ROOT_DIR, 'reports', 'mobile-performance');
   const realAllowedRoot = await fs.realpath(allowedRoot);
   await Promise.all(
@@ -173,6 +182,74 @@ describe('captureDeviceProfile', () => {
         pid: 'not running',
       }).app,
     ).toMatchObject({ debuggable: false, profileable: false, pid: null });
+  });
+
+  it('captures full buffered logcat and capability output with local-safe redactions', async () => {
+    runCommandMock.mockImplementation((_command: string, args: string[]) => {
+      const logcat = args.includes('logcat');
+      const output = logcat
+        ? 'I/App( 123): user teacher@example.org Authorization: Bearer abc.def access_token=xyz'
+        : args.includes('ro.product.model')
+          ? 'SM-A525F'
+          : args.includes('ro.build.version.sdk')
+            ? '34'
+            : args.includes('ro.soc.model')
+              ? 'SM7125'
+              : 'feature:test.capability';
+      return {
+        ok: true,
+        stdout: output,
+        stderr: '',
+        combined: output,
+        exitCode: 0,
+        command: 'adb',
+        args,
+      };
+    });
+
+    const { outputDir, manifest } = await captureDeviceProfile({
+      ...input,
+      profileName: 'thermal-stress',
+    });
+    generatedDirs.push(outputDir);
+
+    const logcatCall = runCommandMock.mock.calls.find((call) => call[1].includes('logcat'));
+    expect(logcatCall?.[1]).toEqual([
+      '-s',
+      input.serial,
+      'logcat',
+      '-b',
+      'all',
+      '-d',
+      '-v',
+      'threadtime',
+    ]);
+    expect(manifest).toMatchObject({
+      profileName: 'thermal-stress',
+      localStoreStatus: 'stored',
+      captureScope: { logcatBuffers: 'all currently readable circular buffers' },
+      metrics: { device: { model: 'SM-A525F', sdk: 34, soc: 'SM7125' } },
+    });
+    const logcat = await fs.readFile(path.join(outputDir, 'logcat.txt'), 'utf8');
+    expect(logcat).toContain('<redacted-email>');
+    expect(logcat).toContain('Bearer <redacted-secret>');
+    expect(logcat).toContain('access_token=<redacted-secret>');
+    expect(logcat).not.toContain('teacher@example.org');
+    expect(logcat).not.toContain('abc.def');
+    expect(logcat).not.toContain('xyz');
+    expect(storeCaptureMock).toHaveBeenCalledOnce();
+    expect(storeCaptureMock.mock.calls[0]?.[0].outputs.logcat).toBe(logcat);
+  });
+
+  it('redacts device identifiers and credential-shaped values from output', () => {
+    expect(
+      redactCaptureOutput(
+        'serial emulator-5554 token=secret refresh_token: "refresh" https://x/?token=abc',
+        'emulator-5554',
+      ),
+    ).toBe(
+      'serial <redacted-device> token=<redacted-secret> refresh_token:<redacted-secret> https://x/?token=<redacted-secret>',
+    );
   });
 
   it('returns a partial manifest when adb is unavailable and redacts serials from errors', async () => {

@@ -588,10 +588,15 @@ class PolymathPlatformServer {
 
     this.registerPlatformTool(
       'sovereign_device',
-      'Unified device interaction and control engine for mobile simulators and emulators.',
+      'Device inventory, interactions, diagnostics, and multi-device profile capture with local SQLite history.',
       z.object({
         action: z.enum([
           'doctor',
+          'capabilities',
+          'list_android_devices',
+          'profile_history',
+          'profile_comparison',
+          'profile_trace_events',
           'snapshot',
           'press',
           'type',
@@ -600,6 +605,20 @@ class PolymathPlatformServer {
           'open_app',
           'screenshot',
           'logs',
+          'network',
+          'find-text',
+          'find-role',
+          'reload',
+          'clear-cache',
+          'profile',
+          'visual-diff',
+          'record',
+          'component-tree',
+          'swipe',
+          'pinch',
+          'long-press',
+          'wait',
+          'assert',
           'capture_profile',
         ]),
         params: z.record(z.string(), z.any()).optional(),
@@ -1469,7 +1488,9 @@ class PolymathPlatformServer {
         maxPages: z
           .number()
           .optional()
-          .describe('Maximum number of pages to parse (default: 300; dynamically bounded by document size)'),
+          .describe(
+            'Maximum number of pages to parse (default: 300; dynamically bounded by document size)',
+          ),
         extractTables: z
           .boolean()
           .optional()

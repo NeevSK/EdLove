@@ -1,6 +1,12 @@
 import { ROOT_DIR } from '../utils/constants.js';
 import { runCommand } from '../utils/execution.js';
 import { captureDeviceProfile, type DeviceProfileCaptureInput } from './deviceProfileCapture.js';
+import {
+  DEVICE_PROFILE_DATABASE_PATH,
+  listDeviceProfileCaptures,
+  listDeviceProfileComparisons,
+  listDeviceProfileTraceEvents,
+} from './deviceProfileStore.js';
 
 function toMcpText(stdout: string, isError?: boolean) {
   return {
@@ -81,7 +87,8 @@ const AGENT_DEVICE_ACTIONS: Record<string, (params: DeviceParams) => string[]> =
 const ARGENT_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
   doctor: () => ['tools'],
   screenshot: () => ['screenshot'],
-  'visual-diff': (p) => (p.baseline ? ['visual-diff', '--baseline', String(p.baseline)] : ['visual-diff']),
+  'visual-diff': (p) =>
+    p.baseline ? ['visual-diff', '--baseline', String(p.baseline)] : ['visual-diff'],
   record: (p) => {
     if (p.stop) {
       const args = ['record', '--stop'];
@@ -121,6 +128,22 @@ const ARGENT_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
   logs: () => ['logs'],
 };
 
+const DEVICE_CAPABILITIES = {
+  agentDevice: Object.keys(AGENT_DEVICE_ACTIONS),
+  argent: Object.keys(ARGENT_ACTIONS),
+  profileCapture: [
+    'read-only device and app facts',
+    'all currently readable logcat buffers',
+    'bounded Perfetto scheduler trace up to 15 seconds',
+    'local redacted output files and SQLite comparison history',
+  ],
+  profileComparisons: [
+    'within-device scenario/profile history',
+    'between-device grouped summaries',
+    'bounded structured runtime trace events from captured logcat',
+  ],
+} as const;
+
 function buildArgentArgs(action: string, params: DeviceParams): string[] {
   const handler = ARGENT_ACTIONS[action];
   if (handler) {
@@ -132,7 +155,8 @@ function buildArgentArgs(action: string, params: DeviceParams): string[] {
 
 export class DeviceService {
   async handleDeviceAction(action: string, params: DeviceParams = {}) {
-    const loggedParams = action === 'capture_profile' ? { ...params, serial: '<redacted-device>' } : params;
+    const loggedParams =
+      action === 'capture_profile' ? { ...params, serial: '<redacted-device>' } : params;
     console.error(`Sovereign Device Action: "${action}" with params`, loggedParams);
 
     if (action === 'capture_profile') {
@@ -141,6 +165,85 @@ export class DeviceService {
         return toMcpText(JSON.stringify(result.manifest, null, 2));
       } catch (err) {
         return toMcpText(err instanceof Error ? err.message : String(err), true);
+      }
+    }
+
+    if (action === 'capabilities') {
+      return toMcpText(JSON.stringify(DEVICE_CAPABILITIES, null, 2));
+    }
+
+    if (action === 'list_android_devices') {
+      const result = runCommand('adb', ['devices', '-l'], {
+        cwd: ROOT_DIR,
+        shell: false,
+        timeoutMs: 5_000,
+        maxBuffer: 256 * 1024,
+      });
+      return toMcpText(result.combined, !result.ok);
+    }
+
+    if (action === 'profile_history') {
+      try {
+        const limit = Number(params.limit ?? 50);
+        const captures = listDeviceProfileCaptures(limit);
+        return toMcpText(
+          JSON.stringify(
+            {
+              database: DEVICE_PROFILE_DATABASE_PATH,
+              comparisonView: 'device_profile_comparison',
+              captures,
+            },
+            null,
+            2,
+          ),
+        );
+      } catch (error) {
+        return toMcpText(error instanceof Error ? error.message : String(error), true);
+      }
+    }
+
+    if (action === 'profile_comparison') {
+      try {
+        return toMcpText(
+          JSON.stringify(
+            {
+              database: DEVICE_PROFILE_DATABASE_PATH,
+              comparisonView: 'device_profile_comparison',
+              comparisons: listDeviceProfileComparisons(),
+            },
+            null,
+            2,
+          ),
+        );
+      } catch (error) {
+        return toMcpText(error instanceof Error ? error.message : String(error), true);
+      }
+    }
+
+    if (action === 'profile_trace_events') {
+      try {
+        if (
+          typeof params.captureId !== 'string' ||
+          !/^[A-Za-z0-9._-]{1,128}$/.test(params.captureId)
+        ) {
+          throw new Error('captureId must be a valid capture identifier.');
+        }
+        const limit = Number(params.limit ?? 5000);
+        return toMcpText(
+          JSON.stringify(
+            {
+              database: DEVICE_PROFILE_DATABASE_PATH,
+              captureId: params.captureId,
+              clock:
+                'trace_session_id and its start marker identify a JS process session; at_ms remains process-relative with no device wall-clock correlation.',
+              events: listDeviceProfileTraceEvents(params.captureId, limit),
+            },
+            null,
+            2,
+          ),
+        );
+      } catch (error) {
+        return toMcpText(error instanceof Error ? error.message : String(error), true);
       }
     }
 

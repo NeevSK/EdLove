@@ -2,33 +2,78 @@ import { createHash, randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { ROOT_DIR } from '../utils/constants.js';
-import { runCommand, type CommandRunResult } from '../utils/execution.js';
+import { type CommandRunResult, runCommand } from '../utils/execution.js';
+import { DEVICE_PROFILE_DATABASE_PATH, storeDeviceProfileCapture } from './deviceProfileStore.js';
 
 export type ProfileBuildKind = 'development' | 'performance' | 'release' | 'unknown';
+
+interface DeviceProfileManifest {
+  evidenceType: string;
+  claim: string;
+  captureId: string;
+  startedAt: string;
+  endedAt: string;
+  label: string;
+  targetAppId: string;
+  profileName: string;
+  declaredBuildKind: ProfileBuildKind;
+  deviceAlias: string;
+  artifactDirectory: string;
+  localDatabase: string;
+  localStoreStatus: 'stored' | 'failed';
+  localStoreError?: string;
+  source: string;
+  captureScope: {
+    logcatBuffers: string;
+    logcatIsContinuous: boolean;
+    logcatByteLimit: number;
+    redactions: string[];
+    note: string;
+  };
+  commands: Record<string, { ok: boolean; [key: string]: unknown }>;
+  traceCapture: { status: string; [key: string]: unknown };
+  metrics: ReturnType<typeof parseDeviceProfileMetrics>;
+  status: 'complete' | 'partial';
+}
 
 export interface DeviceProfileCaptureInput {
   serial: string;
   appId: string;
   label: string;
+  profileName?: string;
   buildKind: ProfileBuildKind;
   traceSeconds?: number;
 }
 
 const COMMAND_TIMEOUT_MS = 10_000;
-const COMMAND_MAX_BUFFER = 2 * 1024 * 1024;
+const LOGCAT_TIMEOUT_MS = 30_000;
+const COMMAND_MAX_BUFFER = 64 * 1024 * 1024;
 const APP_ID_PATTERN = /^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/;
 const SERIAL_PATTERN = /^[A-Za-z0-9._:][A-Za-z0-9._:-]{0,127}$/;
 const LABEL_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 
 const READS = [
   { key: 'model', args: ['shell', 'getprop', 'ro.product.model'] },
+  { key: 'manufacturer', args: ['shell', 'getprop', 'ro.product.manufacturer'] },
   { key: 'sdk', args: ['shell', 'getprop', 'ro.build.version.sdk'] },
+  { key: 'release', args: ['shell', 'getprop', 'ro.build.version.release'] },
+  { key: 'securityPatch', args: ['shell', 'getprop', 'ro.build.version.security_patch'] },
+  { key: 'buildFingerprint', args: ['shell', 'getprop', 'ro.build.fingerprint'] },
   { key: 'soc', args: ['shell', 'getprop', 'ro.soc.model'] },
+  { key: 'cpuAbi', args: ['shell', 'getprop', 'ro.product.cpu.abilist'] },
   { key: 'lowRam', args: ['shell', 'getprop', 'ro.config.low_ram'] },
   { key: 'meminfo', args: ['shell', 'cat', '/proc/meminfo'] },
+  { key: 'cpuPresent', args: ['shell', 'cat', '/sys/devices/system/cpu/present'] },
   { key: 'cpuOnline', args: ['shell', 'cat', '/sys/devices/system/cpu/online'] },
+  { key: 'cpuinfo', args: ['shell', 'cat', '/proc/cpuinfo'] },
+  { key: 'hardwareFeatures', args: ['shell', 'pm', 'list', 'features'] },
+  { key: 'displaySize', args: ['shell', 'wm', 'size'] },
+  { key: 'displayDensity', args: ['shell', 'wm', 'density'] },
+  { key: 'display', args: ['shell', 'dumpsys', 'display'] },
   { key: 'battery', args: ['shell', 'dumpsys', 'battery'] },
   { key: 'thermal', args: ['shell', 'dumpsys', 'thermalservice'] },
+  { key: 'diskStats', args: ['shell', 'dumpsys', 'diskstats'] },
+  { key: 'cpuStats', args: ['shell', 'dumpsys', 'cpuinfo'] },
 ] as const;
 
 function requireValid(input: DeviceProfileCaptureInput): void {
@@ -38,6 +83,12 @@ function requireValid(input: DeviceProfileCaptureInput): void {
     throw new Error('Invalid dotted Android package name.');
   if (typeof input.label !== 'string' || !LABEL_PATTERN.test(input.label))
     throw new Error('Invalid capture label.');
+  if (
+    input.profileName !== undefined &&
+    (typeof input.profileName !== 'string' || !LABEL_PATTERN.test(input.profileName))
+  ) {
+    throw new Error('Invalid profile name.');
+  }
   if (typeof input.buildKind !== 'string') throw new Error('Invalid declared build kind.');
   if (!['development', 'performance', 'release', 'unknown'].includes(input.buildKind)) {
     throw new Error('Invalid declared build kind.');
@@ -288,13 +339,20 @@ export function parseDeviceProfileMetrics(captures: Record<string, string | null
   const profileable =
     privateFlags === undefined ? null : /\bPROFILEABLE_BY_SHELL\b/i.test(privateFlags);
   const pidText = captures.pid?.trim() ?? '';
+  const appVersionCode = packageInfo.match(/\bversionCode=(\d+)/i)?.[1];
+  const appVersionName = packageInfo.match(/\bversionName=([^\s]+)/i)?.[1];
 
   return {
     device: {
       model: captures.model?.trim() || null,
+      manufacturer: captures.manufacturer?.trim() || null,
       sdk: captures.sdk && /^\d+$/.test(captures.sdk.trim()) ? Number(captures.sdk.trim()) : null,
+      release: captures.release?.trim() || null,
+      securityPatch: captures.securityPatch?.trim() || null,
+      buildFingerprint: captures.buildFingerprint?.trim() || null,
       soc: captures.soc?.trim() || null,
       lowRam: parsedBoolean(captures.lowRam),
+      cpuAbi: captures.cpuAbi?.trim() || null,
     },
     systemMemoryKb: {
       total: parseMemValue(meminfo, 'MemTotal'),
@@ -302,7 +360,19 @@ export function parseDeviceProfileMetrics(captures: Record<string, string | null
       swapTotal: parseMemValue(meminfo, 'SwapTotal'),
       swapFree: parseMemValue(meminfo, 'SwapFree'),
     },
-    cpuOnline: captures.cpuOnline?.trim() || null,
+    cpu: {
+      present: captures.cpuPresent?.trim() || null,
+      online: captures.cpuOnline?.trim() || null,
+      information: captures.cpuinfo?.trim() || null,
+    },
+    display: {
+      size: captures.displaySize?.trim() || null,
+      density: captures.displayDensity?.trim() || null,
+      details: captures.display?.trim() || null,
+    },
+    hardwareFeatures: captures.hardwareFeatures?.trim() || null,
+    systemDiskStats: captures.diskStats?.trim() || null,
+    systemCpuStats: captures.cpuStats?.trim() || null,
     appMemoryKb: {
       pss: parseAppMetric(appMemory, 'PSS'),
       rss: parseAppMetric(appMemory, 'RSS'),
@@ -310,6 +380,9 @@ export function parseDeviceProfileMetrics(captures: Record<string, string | null
     },
     app: {
       pid: /^\d+(?:\s+\d+)*$/.test(pidText) ? pidText : null,
+      versionCode: appVersionCode ? Number(appVersionCode) : null,
+      versionName: appVersionName ?? null,
+      graphicsFrameStats: captures.appGraphics?.trim() || null,
       debuggable,
       profileable,
     },
@@ -326,13 +399,14 @@ export async function captureDeviceProfile(input: DeviceProfileCaptureInput) {
   const startedAt = new Date().toISOString();
   const commands: Record<string, { ok: boolean; [key: string]: unknown }> = {};
   const captures: Record<string, string | null> = {};
-  const record = async (key: string, args: string[]) => {
+  const outputs: Record<string, string | null> = {};
+  const record = async (key: string, args: string[], timeoutMs = COMMAND_TIMEOUT_MS) => {
     const commandStartedAt = new Date().toISOString();
     let result: CommandRunResult;
     try {
-      result = runAdb(input.serial, args);
+      result = runAdb(input.serial, args, timeoutMs);
     } catch (error) {
-      const message = redactSerial(
+      const message = redactCaptureOutput(
         error instanceof Error ? error.message : String(error),
         input.serial,
       );
@@ -346,12 +420,15 @@ export async function captureDeviceProfile(input: DeviceProfileCaptureInput) {
         error: message,
       };
       captures[key] = null;
+      outputs[key] = message;
+      await fs.writeFile(path.join(outputDir, `${key}.txt`), message, 'utf8');
       return;
     }
 
     const marker = negativeMarker(result.combined);
     const ok = result.ok && !marker && !result.error;
-    const output = redactSerial(result.combined, input.serial);
+    const output = redactCaptureOutput(result.combined, input.serial);
+    outputs[key] = output;
     commands[key] = {
       command: 'adb',
       args: ['-s', '<redacted-device>', ...args],
@@ -359,9 +436,11 @@ export async function captureDeviceProfile(input: DeviceProfileCaptureInput) {
       endedAt: new Date().toISOString(),
       exitCode: result.exitCode,
       ok,
-      ...(result.error ? { error: redactSerial(result.error, input.serial) } : {}),
-      ...(marker ? { error: redactSerial(marker, input.serial) } : {}),
+      ...(result.error ? { error: redactCaptureOutput(result.error, input.serial) } : {}),
+      ...(marker ? { error: redactCaptureOutput(marker, input.serial) } : {}),
       rawFile: `${key}.txt`,
+      byteLength: Buffer.byteLength(output, 'utf8'),
+      sha256: createHash('sha256').update(output).digest('hex'),
     };
     captures[key] = ok ? output : null;
     await fs.writeFile(path.join(outputDir, `${key}.txt`), output, 'utf8');
@@ -369,14 +448,19 @@ export async function captureDeviceProfile(input: DeviceProfileCaptureInput) {
 
   for (const read of READS) await record(read.key, [...read.args]);
   await record('appMemory', ['shell', 'dumpsys', 'meminfo', input.appId]);
+  await record('appGraphics', ['shell', 'dumpsys', 'gfxinfo', input.appId, 'framestats']);
   await record('packageInfo', ['shell', 'dumpsys', 'package', input.appId]);
   await record('pid', ['shell', 'pidof', input.appId]);
+  await record('logcat', ['logcat', '-b', 'all', '-d', '-v', 'threadtime'], LOGCAT_TIMEOUT_MS);
   const traceCapture =
     input.traceSeconds === undefined
       ? { status: 'not-requested' as const }
       : await capturePerfettoTrace(input.serial, input.appId, input.traceSeconds, outputDir);
 
-  const manifest = {
+  const databasePath = path
+    .relative(ROOT_DIR, DEVICE_PROFILE_DATABASE_PATH)
+    .replaceAll(path.sep, '/');
+  const manifest: DeviceProfileManifest = {
     evidenceType: 'android-device-profile-snapshot',
     claim: 'observational-snapshot',
     captureId,
@@ -384,10 +468,26 @@ export async function captureDeviceProfile(input: DeviceProfileCaptureInput) {
     endedAt: new Date().toISOString(),
     label: input.label,
     targetAppId: input.appId,
+    profileName: input.profileName ?? 'default',
     declaredBuildKind: input.buildKind,
     deviceAlias: `android-${createHash('sha256').update(input.serial).digest('hex').slice(0, 12)}`,
     artifactDirectory: path.relative(ROOT_DIR, outputDir).replaceAll(path.sep, '/'),
+    localDatabase: databasePath,
+    localStoreStatus: 'stored',
     source: 'adb fixed read-only command allowlist',
+    captureScope: {
+      logcatBuffers: 'all currently readable circular buffers',
+      logcatIsContinuous: false,
+      logcatByteLimit: COMMAND_MAX_BUFFER,
+      redactions: [
+        'device serial',
+        'email addresses',
+        'bearer credentials',
+        'named token/key values',
+        'known token query parameters',
+      ],
+      note: 'Raw command outputs are retained locally after these redactions; other user content may still appear in system logs.',
+    },
     commands,
     traceCapture,
     metrics: parseDeviceProfileMetrics(captures),
@@ -400,14 +500,56 @@ export async function captureDeviceProfile(input: DeviceProfileCaptureInput) {
         ? 'complete'
         : 'partial',
   };
+  try {
+    await storeDeviceProfileCapture({
+      captureId,
+      capturedAt: startedAt,
+      label: input.label,
+      profileName: input.profileName ?? 'default',
+      deviceAlias: manifest.deviceAlias,
+      appId: input.appId,
+      buildKind: input.buildKind,
+      status: manifest.status,
+      model: manifest.metrics.device.model,
+      sdk: manifest.metrics.device.sdk,
+      soc: manifest.metrics.device.soc,
+      totalMemoryKb: manifest.metrics.systemMemoryKb.total,
+      availableMemoryKb: manifest.metrics.systemMemoryKb.available,
+      appPssKb: manifest.metrics.appMemoryKb.pss,
+      appRssKb: manifest.metrics.appMemoryKb.rss,
+      metricsJson: JSON.stringify(manifest.metrics),
+      manifestJson: JSON.stringify(manifest),
+      outputs,
+    });
+  } catch (error) {
+    manifest.localStoreStatus = 'failed';
+    manifest.localStoreError = redactCaptureOutput(
+      error instanceof Error ? error.message : String(error),
+      input.serial,
+    );
+  }
   await fs.writeFile(
     path.join(outputDir, 'manifest.json'),
     `${JSON.stringify(manifest, null, 2)}\n`,
     'utf8',
   );
-  return { outputDir, manifest };
+  return { outputDir, databasePath, manifest };
 }
 
 function redactSerial(value: string, serial: string): string {
   return value.split(serial).join('<redacted-device>');
+}
+
+export function redactCaptureOutput(value: string, serial: string): string {
+  return redactSerial(value, serial)
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '<redacted-email>')
+    .replace(/\bBearer\s+[A-Za-z0-9._~+/-]+=*/gi, 'Bearer <redacted-secret>')
+    .replace(
+      /\b(access[_-]?token|refresh[_-]?token|id[_-]?token|auth[_-]?token|token|api[_-]?key|client[_-]?secret|private[_-]?key)\b\s*([:=])\s*("[^"]*"|'[^']*'|[^\s,;&]+)/gi,
+      '$1$2<redacted-secret>',
+    )
+    .replace(
+      /([?&](?:access_token|refresh_token|id_token|token|api_key|signature)=)[^&\s]*/gi,
+      '$1<redacted-secret>',
+    );
 }
