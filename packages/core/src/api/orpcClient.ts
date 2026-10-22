@@ -14,7 +14,7 @@ import {
 } from '@orpc/client/plugins';
 import type { RouterClient } from '@orpc/server';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
-import type { AppContractClient } from './appContract';
+import type { AppContractClient, SafeAppContractClient } from './appContract';
 import { SOVEREIGN_ORPC_URL } from './base';
 import { authenticatedSovereignFetch } from './clientRuntime';
 
@@ -154,11 +154,20 @@ const link = new RPCLink<ClientContext>({
     );
   },
 });
-export type AppContractClient = Record<string, any>;
+export const orpcClient: AppContractClient = createORPCClient(link) as any;
 
-export const orpcClient: any = createORPCClient(link);
+/**
+ * safeClient
+ * Modern oRPC v2 functional safe client.
+ * Returns Go/Rust-style `[error, data]` tuples instead of throwing unhandled exceptions.
+ * Prevents try/catch boilerplate across repositories and components.
+ */
+export const safeClient: SafeAppContractClient = createSafeClient(orpcClient as any) as any;
 
 export const orpc: any = createTanstackQueryUtils(orpcClient);
 
 export type ORPCClient = typeof orpcClient;
+export type SafeORPCClient = typeof safeClient;
 export type ORPCUtils = typeof orpc;
+
+export { createSafeClient, safe };

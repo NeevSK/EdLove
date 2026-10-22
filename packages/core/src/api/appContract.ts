@@ -110,6 +110,52 @@ export type AppContractClient = {
   sync: InferDomainClient<typeof syncORPCContract>;
 } & Record<string, any>;
 
+export type SafeRouteClient<TRouteClient> = TRouteClient extends (
+  input: infer TInput,
+  options?: infer TOptions,
+) => Promise<infer TOutput>
+  ? (
+      input: TInput,
+      options?: TOptions,
+    ) => Promise<
+      [Error | null, TOutput | undefined, Error | null, boolean] & {
+        error: Error | null;
+        data: TOutput | undefined;
+        definedError: Error | null;
+        isSuccess: boolean;
+      }
+    >
+  : any;
+
+export type SafeDomainClient<TDomain> = {
+  [K in keyof TDomain]: SafeRouteClient<TDomain[K]>;
+};
+
+export type SafeAppContractClient = {
+  admin: SafeDomainClient<InferDomainClient<typeof adminORPCContract>>;
+  agent: SafeDomainClient<InferDomainClient<typeof agentORPCContract>>;
+  announcements: SafeDomainClient<InferDomainClient<typeof announcementsORPCContract>>;
+  attendance: SafeDomainClient<InferDomainClient<typeof attendanceORPCContract>>;
+  channel: SafeDomainClient<InferDomainClient<typeof channelORPCContract>>;
+  community: SafeDomainClient<InferDomainClient<typeof communityORPCContract>>;
+  educational: SafeDomainClient<InferDomainClient<typeof educationalORPCContract>>;
+  events: SafeDomainClient<InferDomainClient<typeof eventsORPCContract>>;
+  grading: SafeDomainClient<InferDomainClient<typeof gradingORPCContract>>;
+  guardianAssessment: SafeDomainClient<InferDomainClient<typeof guardianAssessmentORPCContract>>;
+  identity: SafeDomainClient<InferDomainClient<typeof identityORPCContract>>;
+  library: SafeDomainClient<InferDomainClient<typeof libraryORPCContract>>;
+  mapping: SafeDomainClient<InferDomainClient<typeof mappingORPCContract>>;
+  messaging: SafeDomainClient<InferDomainClient<typeof messagingORPCContract>>;
+  onboarding: SafeDomainClient<InferDomainClient<typeof onboardingORPCContract>>;
+  planBridge: SafeDomainClient<InferDomainClient<typeof planBridgeORPCContract>>;
+  principalNotes: SafeDomainClient<InferDomainClient<typeof principalNotesORPCContract>>;
+  privacy: SafeDomainClient<InferDomainClient<typeof privacyORPCContract>>;
+  profile: SafeDomainClient<InferDomainClient<typeof profileORPCContract>>;
+  rewards: SafeDomainClient<InferDomainClient<typeof rewardsORPCContract>>;
+  social: SafeDomainClient<InferDomainClient<typeof socialORPCContract>>;
+  sync: SafeDomainClient<InferDomainClient<typeof syncORPCContract>>;
+} & Record<string, any>;
+
 /**
  * getMinifiedAppContract
  * Strips verbose Zod schema descriptions and validation ASTs from client contracts.
@@ -119,4 +165,5 @@ export type AppContractClient = {
 export function getMinifiedAppContract() {
   return minifyRouterContract(appContract as any);
 }
+
 

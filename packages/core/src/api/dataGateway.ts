@@ -29,9 +29,16 @@ export async function writeLocalFirst<TPayload, TResult>(
   options: LocalFirstWriteOptions<TPayload, TResult>,
 ): Promise<TResult> {
   await options.enqueueLocal(payload);
-  const result = await options.commitRemote(payload);
-  if (options.onCommitted) {
-    await options.onCommitted(result);
+  try {
+    const result = await options.commitRemote(payload);
+    if (options.onCommitted) {
+      await options.onCommitted(result);
+    }
+    return result;
+  } catch (error) {
+    if (options.optimistic !== undefined) {
+      return options.optimistic;
+    }
+    throw error;
   }
-  return result;
 }

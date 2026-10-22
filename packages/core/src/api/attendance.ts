@@ -1,4 +1,4 @@
-import { readLocalFirst } from '@repo/core/api/dataGateway';
+import { readLocalFirst, writeLocalFirst } from '@repo/core/api/dataGateway';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
