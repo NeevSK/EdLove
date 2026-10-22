@@ -126,6 +126,7 @@ Agents must leverage the monorepo's native tools instead of inventing ad-hoc nod
 | **Physical Affordance Firewall** | `sovereign_discovery(action: "affordance", params: { package: "..." })` | Grounded .d.ts exported hooks, components, and live forbidden/deprecated APIs to prevent LLM hallucination. |
 | **Architecture Audit** | `sovereign_audit(action: "hygiene" \| "hooks")` | Check circular dependencies, unused exports, and hook state density. |
 | **4-Pillars Health** | `node scripts/audit-4-pillars.mjs` | Instant 0-100 monorepo health score across 450k LOC in 2 seconds. |
+| **Dual-Engine Typecheck** | `pnpm run check-types` / `pnpm run check-types:profile` | High-velocity Go (`tsgo` 7.1.0-beta) & Rust (`tsrs`) typechecker with Go pprof profiling. |
 
 ---
 
@@ -137,7 +138,7 @@ Dependencies are governed by **Architectural Weight & Blast Radius**, not poetic
 
 | Tier | Architectural Classification | Key Packages | Blast Radius & Risk | Upgrade Protocol |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tier 1** | **Critical Native Architecture** (fka Sacred Pins) | `react-native-reanimated@4.7.1`, `react-native-gesture-handler@3.3.0`, `react-native-worklets@0.13.0`, `react-native-mmkv@4.3.2`, `react-native-nitro-modules@0.37.1`, `react-native-skia@^3.3.0`, `typescript@7.0.2` | **CRITICAL (Native C++/JSI)**: Fatal `SIGABRT`, JSI memory corruption, native thread deadlocks. | **Cautious Upgrade Protocol**: Upstream changelog analysis $\rightarrow$ peer matrix check $\rightarrow$ `rn-terrain audit:seams` $\rightarrow$ RFC sign-off $\rightarrow$ Harmonizer. |
+| **Tier 1** | **Critical Native Architecture** (fka Sacred Pins) | `react-native-reanimated@4.7.1`, `react-native-gesture-handler@3.4.0`, `react-native-worklets@0.13.0`, `react-native-mmkv@4.3.2`, `react-native-nitro-modules@0.37.1`, `react-native-skia@^3.7.0`, `typescript@7.1.0-beta` | **CRITICAL (Native C++/JSI)**: Fatal `SIGABRT`, JSI memory corruption, native thread deadlocks. | **Cautious Upgrade Protocol**: Upstream changelog analysis $\rightarrow$ peer matrix check $\rightarrow$ `rn-terrain audit:seams` $\rightarrow$ RFC sign-off $\rightarrow$ Harmonizer. |
 | **Tier 2** | **Framework Runtime Matrix** | `expo@~58.0.12`, `react-native@0.88.0`, `react@19.3.0`, `expo-router@~58.0.21`, +40 Expo SDK modules | **HIGH (Platform Engine)**: Monorepo-wide framework baseline. | Gated on Expo SDK release lifecycle and `pnpm --filter gurudevi-mobile exec expo-doctor`. |
 | **Tier 3** | **Database & Contract Schemas** | `@zenstackhq/*@3.9.7`, `zod@4.6.5`, `kysely@0.28.16` | **MODERATE (Domain/Schema)**: ZModel AST, generated ORM contracts, SQL query semantics. | Harmonize cohort $\rightarrow$ `zenstack generate` $\rightarrow$ `tsc --build --noEmit` contract check. |
 | **Tier 4** | **Standalone Utilities & Dev Tools** | `lucide-react`, `oxlint`, `vitest`, `rimraf`, `wrangler` | **LOW (Isolated)**: Scoped to toolchain or UI leaf nodes. | Upgraded via `pnpm run deps:upgrade` (preserves Tiers 1–3). |

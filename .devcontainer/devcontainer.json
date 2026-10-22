@@ -15,7 +15,7 @@
     "dockerfile": "Dockerfile",
     "args": {
       "NODE_VERSION": "24",
-      "PNPM_VERSION": "12.14.0"
+      "PNPM_VERSION": "12.15.0"
     }
   },
   "customizations": {
