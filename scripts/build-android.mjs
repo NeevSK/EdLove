@@ -38,6 +38,8 @@ const basePackage = 'app.gurudevi.sanctuary';
 const targetPkg = isRelease ? basePackage : `${basePackage}.dev`;
 const appName = isRelease ? 'Gurudevi' : 'Gurudevi (Dev)';
 const abi = args.find((arg) => arg.startsWith('--abi='))?.split('=')[1] || 'arm64-v8a';
+const useMold = args.includes('--mold');
+const linkerChoice = useMold ? 'mold' : 'lld (NDK default)';
 const buildRunId = new Date().toISOString().replace(/[:.]/g, '-');
 
 // Linux-ext4 workspace inside WSL2; overridable per contributor via
@@ -52,6 +54,7 @@ console.log(`===================================================================
 console.log(`  • Variant:       ${buildType.toUpperCase()} (${appName})`);
 console.log(`  • ApplicationId: ${targetPkg}`);
 console.log(`  • Target ABI:    ${abi}`);
+console.log(`  • Linker:        ${linkerChoice}`);
 console.log(`  • Gradle Task:   ${gradleTask}`);
 console.log(`========================================================================\x1b[0m`);
 
@@ -162,6 +165,19 @@ if command -v ccache >/dev/null 2>&1; then
   export CCACHE_MAXSIZE="10G"
   export CCACHE_SLOPPINESS="include_file_ctime,include_file_mtime,time_macros"
 fi
+
+# High-Performance Linker Acceleration Layer (mold vs lld)
+${useMold ? `
+if command -v mold >/dev/null 2>&1; then
+  echo "⚡ [Toolchain Acceleration] mold detected — routing native C++ links via -fuse-ld=mold"
+  export CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold"
+  export CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold"
+else
+  echo "⚠️  [Toolchain Warning] --mold specified but mold is not found in PATH; falling back to NDK default (lld)"
+fi
+` : `
+# Baseline Linker: LLVM lld is active by default in NDK 27
+`}
 
 cd "\$WSL_WORKSPACE/apps/gurudevi-mobile/android"
 
@@ -346,7 +362,7 @@ if (buildRes.status !== 0) {
 logStep('Stage 6: Post-build diagnostics and artifact verification');
 
 const apkRelPath = `apps/gurudevi-mobile/android/app/build/outputs/apk/${buildType}/app-${buildType}.apk`;
-const wslApkPath = `\${WSL_WORKSPACE}/${apkRelPath}`;
+const wslApkPath = `${WSL_WORKSPACE}/${apkRelPath}`;
 const apkStat = spawnSync('wsl', ['-e', 'bash', '-c', `ls -lh "${wslApkPath}"`], {
   encoding: 'utf-8',
 });

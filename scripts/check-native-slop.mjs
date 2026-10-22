@@ -102,15 +102,13 @@ const REVIEW_RULES = [
   },
 ];
 
-function walk(dir, files = []) {
-  if (!fs.existsSync(dir)) return files;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (ignoredPaths.has(entry.name) || entry.name.startsWith('.')) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full, files);
-    else if (sourceExtensions.has(path.extname(entry.name))) files.push(full);
-  }
-  return files;
+import { fastScanFiles } from './lib/fast-scan.mjs';
+
+function walk(dir) {
+  return fastScanFiles(dir, {
+    extensions: ['ts', 'tsx', 'js', 'jsx'],
+    absolute: true,
+  });
 }
 
 function getChangedFiles() {

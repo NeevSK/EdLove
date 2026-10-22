@@ -49,6 +49,24 @@ function collectFiles(dir, extensions = ['.tsx', '.jsx', '.ts', '.js']) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
 
+  try {
+    const { execFileSync } = require('node:child_process');
+    const extArgs = [];
+    for (const ext of extensions) {
+      extArgs.push('-e', ext.replace(/^\./, ''));
+    }
+    const output = execFileSync('fd', ['.', ...extArgs, '--type', 'f', '-E', 'node_modules', '-E', 'dist', '-E', '.expo', '-E', '__tests__', '-E', 'build', dir], {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    for (const line of output.split(/\r?\n/)) {
+      if (line.trim()) results.push(line.trim());
+    }
+    if (results.length > 0) return results;
+  } catch {
+    // Fallback to recursive readdir
+  }
+
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (

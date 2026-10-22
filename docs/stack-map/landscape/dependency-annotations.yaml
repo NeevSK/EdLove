@@ -9,15 +9,15 @@ global_tools:
   node:
     category: runtime
     purpose: "JS runtime for the whole monorepo"
-    notes: "mise-managed 24.15.0; engines pin >=22.23 <23."
+    notes: "mise-managed 24.22.1 (security patched); engines pin >=24.22.0."
   pnpm:
     category: runtime
-    purpose: "Workspace package manager (v11)"
-    notes: "mise-managed; preinstall guard enforces pnpm; lockfile committed."
+    purpose: "Workspace package manager (v12.15)"
+    notes: "mise-managed 12.15.0; preinstall guard enforces pnpm; lockfile committed."
   bun:
     category: runtime
     purpose: "Script runner / bundle experiments"
-    notes: "mise-managed 1.3.14; not the primary toolchain."
+    notes: "mise-managed 1.4.3; not the primary toolchain."
   dagger:
     category: ci
     purpose: "CI/CD pipelines (dagger.ts SDK)"
@@ -50,11 +50,11 @@ global_tools:
 dependency_entries:
   react:
     category: native
-    purpose: "UI runtime — pinned 19.3.0 via workspace override"
+    purpose: "UI runtime — pinned 19.3.1 via workspace override"
     notes: "Do not bump independently of React Native 0.88."
   react-native:
     category: native
-    purpose: "Mobile platform runtime (0.88.0-rc.3, new arch)"
+    purpose: "Mobile platform runtime (0.88.0, new arch)"
     notes: "Sacred platform — upgrades gated on Expo SDK 58 compatibility."
   expo:
     category: native
@@ -71,7 +71,7 @@ dependency_entries:
   react-native-gesture-handler:
     category: ui-kit
     purpose: "Gesture system (v3, new arch)"
-    sacred: "3.3.0"
+    sacred: "3.4.0"
   react-native-mmkv:
     category: storage
     purpose: "High-performance key-value store (Nitro v4)"
@@ -83,15 +83,15 @@ dependency_entries:
   react-native-skia:
     category: graphics
     purpose: "GPU graphics engine for RN (new arch Graphite/WebGPU fork by William Candillon)"
-    sacred: "3.0.2"
+    sacred: "^3.7.0"
   "@shopify/react-native-skia":
     category: graphics
-    purpose: "RN Skia alias pointing to react-native-skia 3.0.2"
-    sacred: "3.0.2"
+    purpose: "RN Skia alias pointing to react-native-skia ^3.7.0"
+    sacred: "^3.7.0"
   typescript:
     category: tooling
-    purpose: "Compiler — sacred 7.0.2 (latest stable)"
-    sacred: "7.0.2"
+    purpose: "Compiler — sacred 7.1.0-beta (Go-native tsgo engine)"
+    sacred: "7.1.0-beta"
   effect:
     category: resilience
     purpose: "Resilience, retries, and typed error channels for @repo/core"
@@ -128,7 +128,7 @@ dependency_entries:
     purpose: "Postgres driver"
   zod:
     category: validation
-    purpose: "Schema validation — pinned 4.5.4 workspace-wide"
+    purpose: "Schema validation — pinned 4.6.7 workspace-wide"
   "@powersync/react":
     category: data-sync
     purpose: "PowerSync React bindings"
@@ -233,17 +233,19 @@ dependency_entries:
   "@sentry/react-native":
     category: observability
     purpose: "Crash/error monitoring (mobile)"
+    notes: "v8.31.0 active in mobile app; aligned to Expo SDK 58 runtime."
   "@sentry/cli":
     category: observability
     purpose: "Sentry upload/debug CLI"
+    notes: "v3.8.1 for sourcemap and debug symbol ingestion."
   "@sentry/browser":
     category: observability
     purpose: "Crash/error monitoring (web)"
-    notes: "v10 pinned for web error tracking and telemetry alignment."
+    notes: "v10/v11 web telemetry client."
   "@sentry/node":
     category: observability
     purpose: "Error monitoring for Sanctuary API (Hono/Node)"
-    notes: "v8 held for Node/Hono server compatibility."
+    notes: "v8 held for Node/Hono server compatibility (v11 migration path uses DiagnosticsChannel)."
   posthog-js:
     category: observability
     purpose: "Product analytics (web)"
@@ -253,11 +255,11 @@ dependency_entries:
   pino:
     category: observability
     purpose: "Structured logging"
-    notes: "pino v9 pinned for log transport stability with pino-pretty v11."
+    notes: "pino v10 active with Node 24 runtime; high-throughput streaming JSON."
   pino-pretty:
     category: observability
     purpose: "Pretty printing for local development logs"
-    notes: "Pinned v11 for pino v9 log transport compatibility."
+    notes: "v13 active for dev logs (stripped control characters & node: protocol)."
   tesseract.js:
     category: media
     purpose: "Client-side OCR text extraction"

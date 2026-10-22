@@ -132,6 +132,26 @@ export function checkShinyTool(key) {
         // Fall through
       }
     }
+
+    // Windows fallback: Check WinGet default packages directory if PATH hasn't refreshed
+    if (process.platform === 'win32' && process.env.LOCALAPPDATA && tool.wingetId) {
+      const wingetDir = path.join(process.env.LOCALAPPDATA, 'Microsoft', 'WinGet', 'Packages');
+      if (fs.existsSync(wingetDir)) {
+        try {
+          const matched = fs.readdirSync(wingetDir).find((d) => d.toLowerCase().startsWith(tool.wingetId.toLowerCase()));
+          if (matched) {
+            const candidateBin = path.join(wingetDir, matched, `${tool.binary}.exe`);
+            if (fs.existsSync(candidateBin)) {
+              const output = execSync(`"${candidateBin}" --version`, { stdio: 'pipe', encoding: 'utf8', timeout: 3000 });
+              const version = output.trim().split('\n')[0];
+              return { installed: true, version, binary: candidateBin };
+            }
+          }
+        } catch {
+          // Fall through
+        }
+      }
+    }
   }
 
   return { installed: false, version: '', binary: tool.binary };

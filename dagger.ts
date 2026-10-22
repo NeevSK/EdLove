@@ -16,7 +16,7 @@ class PolymathCI {
     const base = node
       .withDirectory('/src', source, { exclude: ['node_modules', '.turbo'] })
       .withWorkdir('/src')
-      .withExec(['npm', 'install', '-g', 'pnpm@12.14.0'])
+      .withExec(['npm', 'install', '-g', 'pnpm@12.15.0'])
       .withExec(['pnpm', 'install']);
 
     // Parallel Execution

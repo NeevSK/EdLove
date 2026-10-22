@@ -9,23 +9,29 @@ const __dirname = dirname(__filename);
 const root = join(__dirname, '..');
 const startTime = Date.now();
 
-// 1. Load Sacred Native Pins from AGENTS.md
+// 1. Load Sacred Native Pins from Canonical Cohorts SSoT & AGENTS.md
+import { DEPENDENCY_COHORTS } from './lib/dependency-cohorts.mjs';
+
 function loadSacredPinsFromAgentsMd() {
-  const agentsMdPath = join(root, 'AGENTS.md');
   const pins = new Map();
-  if (!existsSync(agentsMdPath)) return pins;
+  // SSoT from dependency-cohorts.mjs
+  if (DEPENDENCY_COHORTS?.SACRED_NATIVE?.packages) {
+    for (const [pkg, version] of Object.entries(DEPENDENCY_COHORTS.SACRED_NATIVE.packages)) {
+      pins.set(pkg, version);
+    }
+  }
 
-  const content = readFileSync(agentsMdPath, 'utf8');
-  const sacredSectionMatch = content.match(/## 2\. Sacred Native Pins[\s\S]*?(?=\n## |\n---|$)/);
-  if (!sacredSectionMatch) return pins;
-
-  const lines = sacredSectionMatch[0].split('\n');
-  for (const line of lines) {
-    const tableMatch = line.match(/^\|\s*`?([a-zA-Z0-9@/._-]+)`?\s*\|\s*`?([a-zA-Z0-9^~._-]+)`?\s*\|/);
-    if (tableMatch) {
-      const [, pkg, version] = tableMatch;
-      if (pkg !== 'Package') {
-        pins.set(pkg, version);
+  const agentsMdPath = join(root, 'AGENTS.md');
+  if (existsSync(agentsMdPath)) {
+    const content = readFileSync(agentsMdPath, 'utf8');
+    const tableMatch = content.match(/\|\s*\*\*Tier 1\*\*\s*\|\s*`?([^\n|]+)`?\s*\|\s*([^|]+)\|/);
+    if (tableMatch && tableMatch[2]) {
+      const pkgs = tableMatch[2].split(',').map(s => s.replace(/[`*]/g, '').trim());
+      for (const p of pkgs) {
+        const atIdx = p.lastIndexOf('@');
+        if (atIdx > 0) {
+          pins.set(p.slice(0, atIdx), p.slice(atIdx + 1));
+        }
       }
     }
   }
@@ -243,6 +249,7 @@ const expoDoctorResult = spawnSync('pnpm', ['--filter', 'gurudevi-mobile', 'exec
   cwd: root,
   encoding: 'utf8',
   shell: process.platform === 'win32',
+  timeout: 15000,
 });
 
 const expoDoctorOutput = expoDoctorResult.stdout || expoDoctorResult.stderr || '';
@@ -269,7 +276,7 @@ if (!isWrite) {
 
 // 6. Write Mode Execution
 console.log(`⏳ [Stage 3/4] Applying updates & harmonizing monorepo versions with Syncpack...`);
-spawnSync('pnpm', ['exec', 'syncpack', 'fix-mismatches'], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
+spawnSync('pnpm', ['exec', 'syncpack', 'fix'], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
 
 console.log(`⏳ [Stage 4/4] Rehydrating lockfile and verifying toolchain SSoT...`);
 spawnSync('pnpm', ['install'], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });

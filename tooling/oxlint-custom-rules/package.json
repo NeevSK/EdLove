@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "oxlint": "1.81.0",
-    "typescript": "7.0.2"
+    "typescript": "7.1.0-beta"
   }
 }

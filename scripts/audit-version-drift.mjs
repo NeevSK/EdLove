@@ -25,6 +25,15 @@ const DEPS_ANNOTATIONS_FILE = path.join(DOCS_DIR, 'dependency-annotations.yaml')
 const DIALECT_ANNOTATIONS_FILE = path.join(DOCS_DIR, 'dialect-annotations.yaml');
 const REPORT_FILE = path.join(ROOT_DIR, 'reports', 'version-drift-report.md');
 
+const APPROVED_LIVE_DEPRECATION_WAIVERS = new Set([
+  // Mandated by AGENTS.md Prime Directive Invariant #7: ALWAYS use Gesture.Pan() with <GestureDetector>
+  'react-native-gesture-handler: Gesture.Pan',
+  'react-native-gesture-handler: Gesture.Tap',
+  'react-native-gesture-handler: Gesture.Exclusive',
+  'react-native-gesture-handler: Gesture.Pinch',
+  'react-native-gesture-handler: Gesture.Rotation',
+]);
+
 // Helper: parse simple YAML subset (matching stack-map.mjs parser)
 function parseMiniYaml(source) {
   const root = {};
@@ -538,6 +547,11 @@ function extractPackageBindings(content, pkgName) {
                   });
                 }
               }
+              continue;
+            }
+
+            const ruleName = `${pkg}: ${prefix}.${sym}`;
+            if (APPROVED_LIVE_DEPRECATION_WAIVERS.has(ruleName)) {
               continue;
             }
 

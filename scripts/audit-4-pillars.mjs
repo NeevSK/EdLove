@@ -9,6 +9,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = 'c:/x';
 const TARGET_DIRS = ['apps', 'packages'];
@@ -115,39 +116,74 @@ function analyzeFile(filePath, relPath) {
   if (logs) metrics.maintenance.consoleLogs += logs.length;
 }
 
-function traverse(dir) {
-  let entries;
+function getFilesToAnalyze() {
+  const filePaths = [];
   try {
-    entries = fs.readdirSync(dir, { withFileTypes: true });
-  } catch (e) {
-    return;
+    const args = [
+      '.',
+      '-e', 'ts', '-e', 'tsx', '-e', 'js', '-e', 'jsx', '-e', 'zmodel', '-e', 'sql', '-e', 'css',
+      '--type', 'f',
+    ];
+    for (const exc of EXCLUDE_DIRS) {
+      args.push('-E', exc);
+    }
+    for (const target of TARGET_DIRS) {
+      args.push(path.join(ROOT, target));
+    }
+    const output = execFileSync('fd', args, {
+      encoding: 'utf8',
+      maxBuffer: 50 * 1024 * 1024,
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    for (const line of output.split(/\r?\n/)) {
+      if (line.trim()) filePaths.push(line.trim());
+    }
+    if (filePaths.length > 0) return filePaths;
+  } catch {
+    // Fallback to JS traverse
   }
 
-  for (const entry of entries) {
-    if (EXCLUDE_DIRS.has(entry.name) || entry.isSymbolicLink()) continue;
+  function traverse(dir) {
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch (e) {
+      return;
+    }
 
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      traverse(fullPath);
-    } else if (entry.isFile()) {
-      const ext = path.extname(entry.name).toLowerCase();
-      if (['.ts', '.tsx', '.js', '.jsx', '.zmodel', '.sql', '.css'].includes(ext)) {
-        const rel = path.relative(ROOT, fullPath);
-        analyzeFile(fullPath, rel);
+    for (const entry of entries) {
+      if (EXCLUDE_DIRS.has(entry.name) || entry.isSymbolicLink()) continue;
+
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        traverse(fullPath);
+      } else if (entry.isFile()) {
+        const ext = path.extname(entry.name).toLowerCase();
+        if (['.ts', '.tsx', '.js', '.jsx', '.zmodel', '.sql', '.css'].includes(ext)) {
+          filePaths.push(fullPath);
+        }
       }
     }
   }
-}
 
-for (const target of TARGET_DIRS) {
-  const p = path.join(ROOT, target);
-  let subs = [];
-  try { subs = fs.readdirSync(p, { withFileTypes: true }); } catch (e) {}
-  for (const sub of subs) {
-    if (sub.isDirectory() && !EXCLUDE_DIRS.has(sub.name) && !sub.isSymbolicLink()) {
-      traverse(path.join(p, sub.name));
+  for (const target of TARGET_DIRS) {
+    const p = path.join(ROOT, target);
+    let subs = [];
+    try { subs = fs.readdirSync(p, { withFileTypes: true }); } catch (e) {}
+    for (const sub of subs) {
+      if (sub.isDirectory() && !EXCLUDE_DIRS.has(sub.name) && !sub.isSymbolicLink()) {
+        traverse(path.join(p, sub.name));
+      }
     }
   }
+
+  return filePaths;
+}
+
+const allDiscoveredFiles = getFilesToAnalyze();
+for (const fullPath of allDiscoveredFiles) {
+  const rel = path.relative(ROOT, fullPath);
+  analyzeFile(fullPath, rel);
 }
 
 // Normalized Ratio Scoring (Out of 100 per pillar)

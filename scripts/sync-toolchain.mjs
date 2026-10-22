@@ -128,7 +128,7 @@ syncFile('.devcontainer/Dockerfile', (content, tools) => {
     .replace(/ARG NODE_VERSION=\d+/g, `ARG NODE_VERSION=${tools.nodeMajor}`)
     .replace(/ARG PNPM_VERSION=[^\r\n]+/g, `ARG PNPM_VERSION=${tools.pnpm}`)
     .replace(/# Base image with Node\.js \d+, pnpm [^,]+,/g, `# Base image with Node.js ${tools.nodeMajor}, pnpm ${tools.pnpm},`)
-    .replace(/typescript@\d+\.\d+\.\d+/g, `typescript@${tools.typescript}`);
+    .replace(/typescript@[^\s\r\n\\]+/g, `typescript@${tools.typescript}`);
 }, 'devcontainer dockerfile');
 
 // Target 3: .devcontainer/devcontainer.json (Node, pnpm)
