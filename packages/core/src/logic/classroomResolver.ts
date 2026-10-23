@@ -7,8 +7,15 @@ import { orpcClient } from '@repo/core/api/orpcClient';
 const classroomGradeClassCache = new Map<string, string>();
 
 /**
- * Resolves a GradeClass ID from a legacy Classroom ID.
- * If the ID is already a GradeClass ID or cannot be resolved, falls back gracefully.
+ * Resolves a GradeClass ID from a legacy Classroom ID, choosing only among the grade
+ * classes the caller may mark (getMyGradeClasses):
+ * 1. the id is already one of those grade classes;
+ * 2. the classroom's explicit link (#149 classroom_grade_classes): used when exactly one
+ *    linked class is one the caller may mark; a linked classroom never falls back to
+ *    name matching;
+ * 3. classrooms with no links: the one class whose name matches the classroom's name.
+ * Returns '' when it cannot tell, so the caller shows the class picker instead of
+ * writing to a guessed class.
  */
 export async function resolveGradeClassFromClassroom(
   classroomId: string,
@@ -29,13 +36,35 @@ export async function resolveGradeClassFromClassroom(
         return directMatch.id;
       }
 
-      // 2. Fetch classroom details to match by name
+      // 2. Explicit link first. If the links cannot be read (older server, offline),
+      // fall through to the name match exactly as before.
+      let links: Array<{ grade_class_id: string }> | null = null;
+      try {
+        links = await orpcClient.attendance.getClassroomLinks({ query: { classroomId } });
+      } catch {
+        links = null;
+      }
+      if (Array.isArray(links) && links.length > 0) {
+        const markable = new Set(gradeClasses.map((gc) => gc.id));
+        const usable = [...new Set(links.map((link) => link.grade_class_id))].filter((id) =>
+          markable.has(id),
+        );
+        const [only] = usable;
+        if (usable.length === 1 && only) {
+          classroomGradeClassCache.set(classroomId, only);
+          return only;
+        }
+        // Linked, but not to exactly one class this caller marks: let them pick.
+        return '';
+      }
+
+      // 3. Unlinked classroom: match by name
       try {
         const classroom = await classroomsAPI.getById(classroomId);
         if (classroom?.name) {
-          const nameMatch = gradeClasses.find(
-            (gc) => gc.name.trim().toLowerCase() === classroom.name.trim().toLowerCase(),
-          );
+          const wanted = classroom.name.trim().toLowerCase();
+          const nameMatches = gradeClasses.filter((gc) => gc.name.trim().toLowerCase() === wanted);
+          const nameMatch = nameMatches.length === 1 ? nameMatches[0] : undefined;
           if (nameMatch) {
             classroomGradeClassCache.set(classroomId, nameMatch.id);
             return nameMatch.id;
@@ -45,17 +74,14 @@ export async function resolveGradeClassFromClassroom(
         // Fall through
       }
 
-      // 3. If there is exactly one grade class available, map to it
-      if (gradeClasses.length === 1 && gradeClasses[0]?.id) {
-        classroomGradeClassCache.set(classroomId, gradeClasses[0].id);
-        return gradeClasses[0].id;
-      }
+      // No "only class" fallback: a subject classroom (e.g. Science 7) is not the
+      // teacher's register just because they have one grade class.
     }
   } catch {
-    // Return original identifier on error
+    // Unresolved: never echo the classroom id back as if it were a grade class id.
   }
 
-  return classroomId;
+  return '';
 }
 
 /**

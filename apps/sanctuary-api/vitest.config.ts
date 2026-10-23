@@ -46,7 +46,13 @@ export default defineConfig({
     sharedViteServer: true,
     globals: true,
     environment: 'node',
-    exclude: ['**/node_modules/**', '**/dist/**', 'src/__tests__/integration/**'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'src/__tests__/integration/**',
+      // Real-Postgres policy suite; runs via vitest.pg.config.ts without the global mocks.
+      'src/__tests__/policy-pg/**',
+    ],
     alias: [
       {
         find: /^@\/generated\/orm\/(.+)$/,

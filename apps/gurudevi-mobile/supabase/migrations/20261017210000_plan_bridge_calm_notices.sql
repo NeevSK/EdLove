@@ -303,7 +303,7 @@ AS $$
         ON g.student_id = e.student_id
         AND (
           g.verification_status = 'verified'
-          OR (g.verification_status != 'revoked' AND NOT COALESCE((SELECT s.guardian_verification_required FROM public.schools s WHERE s.id = c.school_id), false))
+          OR (g.verification_status != 'revoked' AND NOT COALESCE((SELECT s.guardian_verification_required FROM public.schools s WHERE s.id = (SELECT gc.school_id FROM public.grade_classes gc WHERE gc.id = p_grade_class_id)), false))
         )
       WHERE e.grade_class_id = p_grade_class_id
         AND e.status = 'active'

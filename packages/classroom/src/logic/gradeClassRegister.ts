@@ -30,7 +30,7 @@ export type SavedRow = { student_id: string; status: string };
 
 export type Register = {
   students: StudentAttendance[];
-  /** Roster rows without a linked account; preserved as 0 since all students are markable. */
+  /** Roster rows with no student_id (malformed data); left off the register and counted. */
   excludedWithoutAccount: number;
 };
 
@@ -39,12 +39,19 @@ const MARKABLE: readonly AttendanceStatus[] = ['present', 'absent', 'late'];
 export function buildRegister(roster: RosterRow[], saved: SavedRow[]): Register {
   const savedStatus = new Map(saved.map((row) => [row.student_id, row.status]));
   const students: StudentAttendance[] = [];
+  let excludedWithoutAccount = 0;
   for (const row of roster) {
-    const studentId = row.student_id || row.enrollment_id;
-    const prior = studentId ? savedStatus.get(studentId) : undefined;
+    // Shadow learners have their own users row (addShadowStudent), so every real
+    // enrollment has a student_id. Never substitute the enrollment id: the server
+    // rejects ids that are not enrolled students, and the save would fail.
+    if (!row.student_id) {
+      excludedWithoutAccount += 1;
+      continue;
+    }
+    const prior = savedStatus.get(row.student_id);
     students.push({
       id: row.enrollment_id,
-      student_id: studentId,
+      student_id: row.student_id,
       full_name: row.full_name?.trim() || 'Unnamed student',
       roll_number: null,
       // Unmarked students start present locally; only an explicit save persists it.
@@ -53,7 +60,7 @@ export function buildRegister(roster: RosterRow[], saved: SavedRow[]): Register 
         : 'present',
     });
   }
-  return { students, excludedWithoutAccount: 0 };
+  return { students, excludedWithoutAccount };
 }
 
 export function toDailyAttendanceRows(

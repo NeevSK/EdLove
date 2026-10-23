@@ -131,18 +131,14 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
         router.push('/workspace/plan');
         return;
       }
-      if (action === 'Attendance' && classrooms.length > 0 && classrooms[0]) {
+      if (action === 'Attendance') {
+        // Attendance belongs to a grade class (model A). Open the register's class picker
+        // (getMyGradeClasses) instead of guessing from whichever subject classroom is first.
         setUiState((prev) => ({ ...prev, isAdminModalOpen: false }));
-        router.push({
-          pathname: '/attendance',
-          params: {
-            classroomId: classrooms[0].id,
-            classroomName: classrooms[0].name,
-          },
-        });
+        router.push({ pathname: '/attendance' });
       }
     },
-    [classrooms, router],
+    [router],
   );
 
   return {

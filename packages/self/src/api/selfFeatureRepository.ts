@@ -1,7 +1,6 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { decisionJournalAPI } from '@repo/core/api/decisionJournal';
 import { journalEntriesAPI } from '@repo/core/api/journalEntries';
-import { getTemporalRange } from '@repo/core/logic';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { indexVoiceJournals, indexWisdomNotes } from '@repo/self/lib/selfFts';
 
 import type {
@@ -16,12 +15,21 @@ import type {
   WisdomNote,
 } from '@repo/self/types';
 
-function isMissingTable(error: unknown): boolean {
-  if (!error || typeof error !== 'object') return false;
-  const e = error as { code?: string; message?: string };
-  return (
-    e.code === '42P01' || (typeof e.message === 'string' && e.message.includes('does not exist'))
-  );
+async function getCollection<T>(key: string): Promise<T[]> {
+  try {
+    const raw = await SafeZustandStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function setCollection<T>(key: string, items: T[]): Promise<void> {
+  await SafeZustandStorage.setItem(key, JSON.stringify(items));
+}
+
+function uid(prefix: string): string {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 }
 
 export interface ReminderRecord {
@@ -44,289 +52,173 @@ export interface ReminderInput {
 }
 
 export async function fetchReminders(userId: string): Promise<ReminderRecord[]> {
-  const { data, error } = await supabase
-    .from('reminders')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] reminders table not yet migrated — returning empty', {
-        code: (error as { code?: string }).code,
-      });
-      return [];
-    }
-    throw error;
-  }
-  return data ?? [];
+  const all = await getCollection<ReminderRecord>(`reminders:${userId}`);
+  return all.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
 export async function createReminder(
   userId: string,
   input: ReminderInput,
 ): Promise<ReminderRecord> {
-  const { data, error } = await supabase
-    .from('reminders')
-    .insert({
-      user_id: userId,
-      title: input.title,
-      description: input.description,
-      icon_type: input.icon_type,
-      is_default: input.is_default ?? false,
-      is_active: input.is_active ?? true,
-      created_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] reminders table not yet migrated — creating ephemeral record', {
-        code: (error as { code?: string }).code,
-      });
-      return {
-        id: `local_${Date.now()}`,
-        user_id: userId,
-        title: input.title,
-        description: input.description,
-        icon_type: input.icon_type,
-        is_default: input.is_default ?? false,
-        is_active: input.is_active ?? true,
-        created_at: new Date().toISOString(),
-      };
-    }
-    throw error;
-  }
-  return data;
+  const all = await getCollection<ReminderRecord>(`reminders:${userId}`);
+  const record: ReminderRecord = {
+    id: uid('reminder'),
+    user_id: userId,
+    title: input.title,
+    description: input.description,
+    icon_type: input.icon_type,
+    is_default: input.is_default ?? false,
+    is_active: input.is_active ?? true,
+    created_at: new Date().toISOString(),
+  };
+  all.unshift(record);
+  await setCollection(`reminders:${userId}`, all);
+  return record;
 }
 
 export async function updateReminder(
   reminderId: string,
   updates: Partial<ReminderInput> & { is_active?: boolean },
 ): Promise<void> {
-  const { error } = await supabase.from('reminders').update(updates).eq('id', reminderId);
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] reminders table not yet migrated — skipping update', {
-        code: (error as { code?: string }).code,
-      });
+  // Update across active user scopes
+  const keys = ['reminders:current', 'reminders:guest'];
+  for (const key of keys) {
+    const all = await getCollection<ReminderRecord>(key);
+    const index = all.findIndex((r) => r.id === reminderId);
+    if (index >= 0) {
+      const current = all[index]!;
+      all[index] = { ...current, ...updates };
+      await setCollection(key, all);
       return;
     }
-    throw error;
   }
 }
 
 export async function deleteReminder(reminderId: string): Promise<void> {
-  const { error } = await supabase.from('reminders').delete().eq('id', reminderId);
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] reminders table not yet migrated — skipping delete', {
-        code: (error as { code?: string }).code,
-      });
+  const keys = ['reminders:current', 'reminders:guest'];
+  for (const key of keys) {
+    const all = await getCollection<ReminderRecord>(key);
+    const filtered = all.filter((r) => r.id !== reminderId);
+    if (filtered.length !== all.length) {
+      await setCollection(key, filtered);
       return;
     }
-    throw error;
   }
 }
 
 export async function fetchSleepLogs(userId: string): Promise<SleepLog[]> {
-  const { data, error } = await supabase
-    .from('sleep_logs')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(7);
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] sleep_logs table not yet migrated — returning empty', {
-        code: (error as { code?: string }).code,
-      });
-      return [];
-    }
-    throw error;
-  }
-  return data ?? [];
+  const all = await getCollection<SleepLog>(`sleep_logs:${userId}`);
+  return all.slice(0, 7);
 }
 
 export async function createSleepLog(
   userId: string,
   quality: SleepLog['quality'],
 ): Promise<SleepLog> {
-  const { data, error } = await supabase
-    .from('sleep_logs')
-    .insert({
-      user_id: userId,
-      quality,
-      created_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] sleep_logs table not yet migrated — creating ephemeral record', {
-        code: (error as { code?: string }).code,
-      });
-      return {
-        id: `local_${Date.now()}`,
-        user_id: userId,
-        quality,
-        created_at: new Date().toISOString(),
-      } as SleepLog;
-    }
-    throw error;
-  }
-  return data;
+  const all = await getCollection<SleepLog>(`sleep_logs:${userId}`);
+  const record: SleepLog = {
+    id: uid('sleep'),
+    user_id: userId,
+    quality,
+    created_at: new Date().toISOString(),
+  };
+  all.unshift(record);
+  await setCollection(`sleep_logs:${userId}`, all);
+  return record;
 }
 
 export async function fetchJoyMoments(userId: string): Promise<JoyMoment[]> {
-  const { data, error } = await supabase
-    .from('joy_moments')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(20);
-
-  if (error) throw error;
-  return data ?? [];
+  const all = await getCollection<JoyMoment>(`joy_moments:${userId}`);
+  return all.slice(0, 20);
 }
 
 export async function createJoyMoment(
   userId: string,
   input: Pick<JoyMoment, 'student_name' | 'moment_description' | 'category'>,
 ): Promise<JoyMoment> {
-  const { data, error } = await supabase
-    .from('joy_moments')
-    .insert({
-      user_id: userId,
-      student_name: input.student_name ?? null,
-      moment_description: input.moment_description,
-      category: input.category,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  const all = await getCollection<JoyMoment>(`joy_moments:${userId}`);
+  const record: JoyMoment = {
+    id: uid('joy'),
+    user_id: userId,
+    student_name: input.student_name ?? undefined,
+    moment_description: input.moment_description,
+    category: input.category,
+    created_at: new Date().toISOString(),
+  };
+  all.unshift(record);
+  await setCollection(`joy_moments:${userId}`, all);
+  return record;
 }
 
 export async function fetchGratitudeEntries(userId: string): Promise<GratitudeEntry[]> {
-  const { data, error } = await supabase
-    .from('gratitude_entries')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(20);
-
-  if (error) throw error;
-  return data ?? [];
+  const all = await getCollection<GratitudeEntry>(`gratitude:${userId}`);
+  return all.slice(0, 20);
 }
 
 export async function createGratitudeEntry(
   userId: string,
   input: Pick<GratitudeEntry, 'content' | 'category'>,
 ): Promise<GratitudeEntry> {
-  const { data, error } = await supabase
-    .from('gratitude_entries')
-    .insert({
-      user_id: userId,
-      content: input.content,
-      category: input.category,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  const all = await getCollection<GratitudeEntry>(`gratitude:${userId}`);
+  const record: GratitudeEntry = {
+    id: uid('gratitude'),
+    user_id: userId,
+    content: input.content,
+    category: input.category,
+    created_at: new Date().toISOString(),
+  };
+  all.unshift(record);
+  await setCollection(`gratitude:${userId}`, all);
+  return record;
 }
 
 export async function fetchStudentGoalsForView(
   userId: string,
   options: { viewDate: string; isPastView: boolean },
 ): Promise<Goal[]> {
-  let query = supabase.from('student_goals').select('*').eq('user_id', userId);
-
+  const all = await getCollection<Goal>(`student_goals:${userId}`);
   if (options.isPastView) {
-    const range = getTemporalRange(options.viewDate, 'day');
-    query = query.lte('created_at', range.end);
+    return all.filter((g) => new Date(g.created_at) <= new Date(`${options.viewDate}T23:59:59.999Z`));
   }
-
-  const { data, error } = await query.order('created_at', { ascending: false });
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] student_goals table not yet migrated — returning empty', {
-        code: (error as { code?: string }).code,
-      });
-      return [];
-    }
-    throw error;
-  }
-  return data ?? [];
+  return all;
 }
 
 export async function createStudentGoal(userId: string, text: string): Promise<Goal> {
-  const { data, error } = await supabase
-    .from('student_goals')
-    .insert({
-      user_id: userId,
-      text,
-      progress: 0,
-      is_completed: false,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] student_goals table not yet migrated — creating ephemeral record', {
-        code: (error as { code?: string }).code,
-      });
-      return {
-        id: `local_${Date.now()}`,
-        user_id: userId,
-        text,
-        progress: 0,
-        is_completed: false,
-        created_at: new Date().toISOString(),
-      } as unknown as Goal;
-    }
-    throw error;
-  }
-  return data;
+  const all = await getCollection<Goal>(`student_goals:${userId}`);
+  const record: Goal = {
+    id: uid('goal'),
+    user_id: userId,
+    text,
+    progress: 0,
+    is_completed: false,
+    created_at: new Date().toISOString(),
+  } as Goal;
+  all.unshift(record);
+  await setCollection(`student_goals:${userId}`, all);
+  return record;
 }
 
 export async function updateStudentGoal(
   goalId: string,
   updates: Partial<Pick<Goal, 'text' | 'progress' | 'is_completed'>>,
 ): Promise<void> {
-  const { error } = await supabase.from('student_goals').update(updates).eq('id', goalId);
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] student_goals table not yet migrated — skipping update', {
-        code: (error as { code?: string }).code,
-      });
+  const keys = ['student_goals:current', 'student_goals:guest'];
+  for (const key of keys) {
+    const all = await getCollection<Goal>(key);
+    const index = all.findIndex((g) => g.id === goalId);
+    if (index >= 0) {
+      const current = all[index]!;
+      all[index] = { ...current, ...updates };
+      await setCollection(key, all);
       return;
     }
-    throw error;
   }
 }
 
 export async function fetchTomorrowPrepItems(userId: string): Promise<DailyPrepItem[]> {
-  const { data, error } = await supabase
-    .from('daily_prep_items')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('prep_date', new Date().toISOString().split('T')[0])
-    .order('created_at', { ascending: true });
-
-  if (error) throw error;
-  return data ?? [];
+  const all = await getCollection<DailyPrepItem>(`daily_prep:${userId}`);
+  const today = new Date().toISOString().split('T')[0] ?? '';
+  return all.filter((item) => (item.prep_date ?? '') >= today);
 }
 
 export async function createTomorrowPrepItem(
@@ -334,34 +226,47 @@ export async function createTomorrowPrepItem(
   itemText: string,
   prepDate: string,
 ): Promise<DailyPrepItem> {
-  const { data, error } = await supabase
-    .from('daily_prep_items')
-    .insert({
-      user_id: userId,
-      item_text: itemText,
-      prep_date: prepDate,
-      is_completed: false,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  const all = await getCollection<DailyPrepItem>(`daily_prep:${userId}`);
+  const record: DailyPrepItem = {
+    id: uid('prep'),
+    user_id: userId,
+    item_text: itemText,
+    prep_date: prepDate,
+    is_completed: false,
+    created_at: new Date().toISOString(),
+  };
+  all.push(record);
+  await setCollection(`daily_prep:${userId}`, all);
+  return record;
 }
 
 export async function updateTomorrowPrepItem(
   itemId: string,
   updates: Partial<Pick<DailyPrepItem, 'is_completed' | 'item_text'>>,
 ): Promise<void> {
-  const { error } = await supabase.from('daily_prep_items').update(updates).eq('id', itemId);
-
-  if (error) throw error;
+  const keys = ['daily_prep:current', 'daily_prep:guest'];
+  for (const key of keys) {
+    const all = await getCollection<DailyPrepItem>(key);
+    const index = all.findIndex((item) => item.id === itemId);
+    if (index >= 0) {
+      const current = all[index]!;
+      all[index] = { ...current, ...updates };
+      await setCollection(key, all);
+      return;
+    }
+  }
 }
 
 export async function deleteTomorrowPrepItem(itemId: string): Promise<void> {
-  const { error } = await supabase.from('daily_prep_items').delete().eq('id', itemId);
-
-  if (error) throw error;
+  const keys = ['daily_prep:current', 'daily_prep:guest'];
+  for (const key of keys) {
+    const all = await getCollection<DailyPrepItem>(key);
+    const filtered = all.filter((item) => item.id !== itemId);
+    if (filtered.length !== all.length) {
+      await setCollection(key, filtered);
+      return;
+    }
+  }
 }
 
 export async function saveWindDownRitual(
@@ -372,21 +277,14 @@ export async function saveWindDownRitual(
     tomorrow_intent: string;
   },
 ): Promise<void> {
-  const { error } = await supabase.from('wind_down_rituals').insert({
+  const all = await getCollection<any>(`wind_down:${userId}`);
+  all.unshift({
+    id: uid('wind_down'),
     user_id: userId,
     ...payload,
     completed_at: new Date().toISOString(),
   });
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] wind_down_rituals table not yet migrated — skipping insert', {
-        code: (error as { code?: string }).code,
-      });
-      return;
-    }
-    throw error;
-  }
+  await setCollection(`wind_down:${userId}`, all);
 }
 
 export async function saveVoiceJournalRecord(
@@ -398,38 +296,18 @@ export async function saveVoiceJournalRecord(
     contentType?: string;
   },
 ): Promise<void> {
-  if (payload.blob) {
-    const fileName = `voice_${userId}_${Date.now()}.${payload.extension ?? 'webm'}`;
-    await supabase.storage
-      .from('voice-journals')
-      .upload(fileName, payload.blob, {
-        contentType: payload.contentType ?? 'audio/webm',
-        upsert: false,
-      })
-      .catch(() => {});
-  }
-
-  const { error } = await supabase.from('voice_journals').insert({
+  const id = uid('voice');
+  const all = await getCollection<any>(`voice_journals:${userId}`);
+  all.unshift({
+    id,
     user_id: userId,
     duration_seconds: payload.durationSeconds,
     created_at: new Date().toISOString(),
   });
+  await setCollection(`voice_journals:${userId}`, all);
 
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] voice_journals table not yet migrated — skipping insert', {
-        code: (error as { code?: string }).code,
-      });
-      // still index locally for offline search
-      void indexVoiceJournals([
-        { id: `local_${Date.now()}`, duration_seconds: payload.durationSeconds },
-      ]).catch(() => {});
-      return;
-    }
-    throw error;
-  }
   void indexVoiceJournals([
-    { id: `local_${Date.now()}`, duration_seconds: payload.durationSeconds },
+    { id, duration_seconds: payload.durationSeconds },
   ]).catch(() => {});
 }
 
@@ -453,69 +331,50 @@ export async function createDecisionLog(userId: string, text: string): Promise<D
 }
 
 export async function fetchTimetablePeriods(activeDay: number): Promise<Period[]> {
-  const { data, error } = await supabase
-    .from('timetable')
-    .select('*')
-    .eq('day_of_week', activeDay)
-    .order('start_time', { ascending: true });
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] timetable table not yet migrated — returning empty', {
-        code: (error as { code?: string }).code,
-      });
-      return [];
-    }
-    throw error;
-  }
-  return data ?? [];
+  const all = await getCollection<Period>('timetable:current');
+  return all
+    .filter((p) => p.day_of_week === activeDay)
+    .sort((a, b) => (a.start_time ?? '').localeCompare(b.start_time ?? ''));
 }
 
 export async function createTimetablePeriod(
   userId: string,
   period: Omit<Period, 'id' | 'user_id'>,
 ): Promise<Period> {
-  const { data, error } = await supabase
-    .from('timetable')
-    .insert([{ ...period, user_id: userId }])
-    .select()
-    .single();
-
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] timetable table not yet migrated — creating ephemeral record', {
-        code: (error as { code?: string }).code,
-      });
-      return { id: `local_${Date.now()}`, user_id: userId, ...period } as Period;
-    }
-    throw error;
-  }
-  return data;
+  const all = await getCollection<Period>(`timetable:${userId}`);
+  const record: Period = {
+    id: uid('period'),
+    user_id: userId,
+    ...period,
+  } as Period;
+  all.push(record);
+  await setCollection(`timetable:${userId}`, all);
+  return record;
 }
 
 export async function updateTimetablePeriod(id: string, updates: Partial<Period>): Promise<void> {
-  const { error } = await supabase.from('timetable').update(updates).eq('id', id);
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] timetable table not yet migrated — skipping update', {
-        code: (error as { code?: string }).code,
-      });
+  const keys = ['timetable:current', 'timetable:guest'];
+  for (const key of keys) {
+    const all = await getCollection<Period>(key);
+    const index = all.findIndex((p) => p.id === id);
+    if (index >= 0) {
+      const current = all[index]!;
+      all[index] = { ...current, ...updates };
+      await setCollection(key, all);
       return;
     }
-    throw error;
   }
 }
 
 export async function deleteTimetablePeriod(id: string): Promise<void> {
-  const { error } = await supabase.from('timetable').delete().eq('id', id);
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] timetable table not yet migrated — skipping delete', {
-        code: (error as { code?: string }).code,
-      });
+  const keys = ['timetable:current', 'timetable:guest'];
+  for (const key of keys) {
+    const all = await getCollection<Period>(key);
+    const filtered = all.filter((p) => p.id !== id);
+    if (filtered.length !== all.length) {
+      await setCollection(key, filtered);
       return;
     }
-    throw error;
   }
 }
 
@@ -523,47 +382,28 @@ export async function fetchWisdomNotes(
   userId: string,
   options?: { viewDate?: string; isPastView?: boolean },
 ): Promise<WisdomNote[]> {
-  let query = supabase.from('wisdom_notes').select('*').eq('user_id', userId);
-
-  if (options?.isPastView && options.viewDate) {
-    const range = getTemporalRange(options.viewDate, 'day');
-    query = query.gte('created_at', range.start).lte('created_at', range.end);
-  } else {
-    query = query.order('created_at', { ascending: false }).limit(30);
-  }
-
-  const { data, error } = await query;
-  if (error) {
-    if (isMissingTable(error)) {
-      console.warn('[self] wisdom_notes table not yet migrated — returning empty', {
-        code: (error as { code?: string }).code,
-      });
-      return [];
-    }
-    throw error;
-  }
-  const rows = data ?? [];
+  void options;
+  const all = await getCollection<WisdomNote>(`wisdom_notes:${userId}`);
   void indexWisdomNotes(
-    rows.map((r) => ({
-      id: (r as { id: string }).id,
-      insight: (r as { insight: string }).insight,
+    all.map((r) => ({
+      id: r.id,
+      insight: r.insight,
     })),
   ).catch(() => {});
-  return rows;
+  return all.slice(0, 30);
 }
 
 export async function createWisdomNote(userId: string, insight: string): Promise<WisdomNote> {
-  const { data, error } = await supabase
-    .from('wisdom_notes')
-    .insert({
-      user_id: userId,
-      insight: insight,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  const all = await getCollection<WisdomNote>(`wisdom_notes:${userId}`);
+  const record: WisdomNote = {
+    id: uid('wisdom'),
+    user_id: userId,
+    insight,
+    created_at: new Date().toISOString(),
+  } as WisdomNote;
+  all.unshift(record);
+  await setCollection(`wisdom_notes:${userId}`, all);
+  return record;
 }
 
 export async function fetchJournalEntries(

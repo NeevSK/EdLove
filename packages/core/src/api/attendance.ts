@@ -41,6 +41,27 @@ function toPromise<T>(effect: Effect.Effect<T, AttendanceHttpError, never>): Pro
   );
 }
 
+export type StudentHistoryOptions = {
+  /** Class the caller views the student through (grade_classes.id). */
+  gradeClassId?: string;
+  /** Legacy classroom id; used as the authority context when no gradeClassId is given. */
+  classroomId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+};
+
+function studentHistoryQuery(studentId: string, options: StudentHistoryOptions) {
+  const via = options.gradeClassId || options.classroomId;
+  return {
+    studentId,
+    ...(via && { gradeClassId: via }),
+    ...(options.from && { from: options.from }),
+    ...(options.to && { to: options.to }),
+    ...(options.limit && { limit: options.limit }),
+  };
+}
+
 /** One daily_attendance row to write. `gradeClassId` is a grade_classes.id (model A). */
 export type GradeClassAttendanceInput = {
   gradeClassId: string;
@@ -205,22 +226,32 @@ export const attendanceAPI = {
     return this.upsertAttendanceRecord(classroom_id, student_id, status, date);
   },
 
-  /** Queries attendance records for a student. */
-  async getForStudent(student_id: string, date?: string) {
-    return toPromise(
-      apiEffect(() =>
-        orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id, date } }),
-      ),
-    );
+  /**
+   * One student's attendance history (attendance.getStudentHistory), newest first.
+   * The server decides what the caller may see (the student, verified guardians, their
+   * teachers, school leaders; per-school setting) and returns 403 for anyone else.
+   * `date` narrows to a single day.
+   */
+  async getForStudent(student_id: string, date?: string): Promise<DailyAttendanceRow[]> {
+    return this.getStudentAttendanceTimeline(student_id, date ? { from: date, to: date } : {});
   },
 
-  /** Queries attendance timeline for a student. */
-  async getStudentAttendanceTimeline(student_id: string, _limit?: number) {
+  /**
+   * Same read with options. Teachers must pass the class they view the student through
+   * (`gradeClassId`, or the legacy `classroomId` of a classroom they teach); it is
+   * authority context for the server, not a filter.
+   */
+  async getStudentAttendanceTimeline(
+    student_id: string,
+    options: StudentHistoryOptions = {},
+  ): Promise<DailyAttendanceRow[]> {
     return toPromise(
       apiEffect(() =>
-        orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id } }),
+        orpcClient.attendance.getStudentHistory({
+          query: studentHistoryQuery(student_id, options),
+        }),
       ),
-    );
+    ) as Promise<DailyAttendanceRow[]>;
   },
 
   async fetchClassroomAttendance(classroom_id: string, date?: string) {
@@ -295,12 +326,22 @@ export const attendanceAPI$ = {
 
   getForStudent: (student_id: string, date?: string) =>
     apiEffect(() =>
-      orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id, date } }),
+      orpcClient.attendance.getStudentHistory({
+        query: studentHistoryQuery(student_id, date ? { from: date, to: date } : {}),
+      }),
     ),
 
-  getStudentAttendanceTimeline: (student_id: string, _limit?: number) =>
+  getStudentAttendanceTimeline: (
+    student_id: string,
+    options: StudentHistoryOptions | number = {},
+  ) =>
     apiEffect(() =>
-      orpcClient.attendance.getByClassroom({ query: { gradeClassId: student_id } }),
+      orpcClient.attendance.getStudentHistory({
+        query: studentHistoryQuery(
+          student_id,
+          typeof options === 'number' ? { limit: options } : options,
+        ),
+      }),
     ),
 
   fetchClassroomAttendance: (classroom_id: string, date?: string) =>

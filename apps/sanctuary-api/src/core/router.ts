@@ -9,6 +9,28 @@ import { resolveAuthenticatedAccount } from './authenticatedAccount';
 import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext, o } from './orpc';
 
+/**
+ * Students the caller is a verified guardian of (parent/guardian capacity only). Cedar's
+ * parent policy reads these as child_student_ids. Pending and revoked links never count.
+ */
+export async function resolveChildStudentIds(
+  db: any,
+  userId: string,
+  capacity: string | null,
+): Promise<string[]> {
+  if (capacity !== 'parent' && capacity !== 'guardian') return [];
+  try {
+    const rows = await db.studentGuardianRelationship.findMany({
+      where: { guardian_id: userId, verification_status: 'verified' },
+      select: { student_id: true },
+    });
+    return [...new Set<string>((rows ?? []).map((row: any) => String(row.student_id)))];
+  } catch {
+    console.warn('[AUTHZ] Guardian link lookup failed; denying child scope.');
+    return [];
+  }
+}
+
 async function resolveClassroomIds(
   db: any,
   userId: string,
@@ -114,6 +136,7 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
   let classroomIds: string[] = [];
+  let childStudentIds: string[] = [];
 
   if (user.id !== 'anonymous' && db) {
     try {
@@ -132,6 +155,7 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
         capacity = activeBond.capacity;
         schoolId = bondScope.schoolId || '';
         classroomIds = await resolveClassroomIds(db, user.id, capacity, schoolId);
+        childStudentIds = await resolveChildStudentIds(db, user.id, capacity);
       }
     } catch (err) {
       if (err instanceof ORPCError) throw err;
@@ -166,7 +190,7 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
         active_entity_type: activeEntityType ?? '',
         capacity: capacity ?? '',
         classroom_ids: classroomIds,
-        child_student_ids: [],
+        child_student_ids: childStudentIds,
       },
     },
     securityContext: {
@@ -196,6 +220,7 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
   let classroomIds: string[] = [];
+  let childStudentIds: string[] = [];
 
   if (user.id !== 'anonymous' && db) {
     const activeBond = await resolvePersistedActiveBond(activeScopeReader(db), user.id);
@@ -212,6 +237,7 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
       schoolId = scope.schoolId || '';
       capacity = activeBond.capacity;
       classroomIds = await resolveClassroomIds(db, user.id, capacity, schoolId);
+      childStudentIds = await resolveChildStudentIds(db, user.id, capacity);
     }
   }
 
@@ -236,7 +262,7 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
         active_entity_type: activeEntityType ?? '',
         capacity: capacity ?? '',
         classroom_ids: classroomIds,
-        child_student_ids: [],
+        child_student_ids: childStudentIds,
       },
     },
     securityContext: {

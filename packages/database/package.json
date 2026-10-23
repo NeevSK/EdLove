@@ -33,6 +33,7 @@
   "dependencies": {
     "@repo/schema": "workspace:*",
     "@zenstackhq/orm": "3.9.8",
+    "@zenstackhq/plugin-policy": "3.9.8",
     "@zenstackhq/schema": "3.9.8",
     "kysely": "0.28.16",
     "pg": "^8.23.1",
@@ -44,7 +45,6 @@
     "@types/pg": "^8.23.1",
     "@zenstackhq/cli": "3.9.8",
     "@zenstackhq/language": "3.9.8",
-    "@zenstackhq/plugin-policy": "3.9.8",
     "@zenstackhq/sdk": "3.9.8",
     "@zenstackhq/zod": "3.9.8",
     "eslint": "^10.13.0",

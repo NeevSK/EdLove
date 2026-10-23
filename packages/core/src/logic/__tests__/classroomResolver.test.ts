@@ -8,6 +8,7 @@ vi.mock('@repo/core/api/orpcClient', () => ({
   orpcClient: {
     attendance: {
       getMyGradeClasses: vi.fn(),
+      getClassroomLinks: vi.fn(),
     },
   },
 }));
@@ -62,7 +63,7 @@ describe('classroomResolver', () => {
     expect(classroomsAPI.getById).not.toHaveBeenCalled();
   });
 
-  it('falls back to single assigned grade class if name does not match', async () => {
+  it('does not guess the only assigned grade class when the name does not match', async () => {
     vi.mocked(orpcClient.attendance.getMyGradeClasses).mockResolvedValue([
       { id: 'gc-only', name: 'Primary 1', academic_cycle_id: 'cycle-1', role: null },
     ]);
@@ -73,15 +74,80 @@ describe('classroomResolver', () => {
     } as any);
 
     const result = await resolveGradeClassFromClassroom('legacy-classroom-2');
-    expect(result).toBe('gc-only');
+    expect(result).toBe('');
   });
 
-  it('falls back gracefully to input id when RPC fails', async () => {
+  it('returns empty when two assigned grade classes share the classroom name', async () => {
+    vi.mocked(orpcClient.attendance.getMyGradeClasses).mockResolvedValue([
+      { id: 'gc-a', name: '5A', academic_cycle_id: 'cycle-1', role: null },
+      { id: 'gc-b', name: '5a ', academic_cycle_id: 'cycle-2', role: null },
+    ]);
+    vi.mocked(classroomsAPI.getById).mockResolvedValue({
+      id: 'legacy-classroom-3',
+      name: '5A',
+      school_id: 'school-1',
+    } as any);
+    expect(await resolveGradeClassFromClassroom('legacy-classroom-3')).toBe('');
+  });
+
+  it('returns empty (not the classroom id) when the RPC fails', async () => {
     vi.mocked(orpcClient.attendance.getMyGradeClasses).mockRejectedValue(
       new Error('Network error'),
     );
 
     const result = await resolveGradeClassFromClassroom('legacy-unresolved');
-    expect(result).toBe('legacy-unresolved');
+    expect(result).toBe('');
+  });
+
+  describe('explicit classroom links (#149)', () => {
+    const mine = [
+      { id: 'gc-5a', name: '5A', academic_cycle_id: 'cycle-1', role: 'class_teacher' },
+      { id: 'gc-6b', name: '6B', academic_cycle_id: 'cycle-1', role: 'subject_teacher' },
+    ];
+    const named5A = {
+      id: 'legacy-5a',
+      name: '5A',
+      school_id: 'school-1',
+      teacher_id: 'teacher-1',
+      created_at: '',
+      updated_at: '',
+    } as any;
+
+    beforeEach(() => {
+      vi.mocked(orpcClient.attendance.getMyGradeClasses).mockResolvedValue(mine);
+      vi.mocked(classroomsAPI.getById).mockResolvedValue(named5A);
+    });
+
+    it('uses the single linked grade class, even when the name points elsewhere', async () => {
+      vi.mocked(orpcClient.attendance.getClassroomLinks).mockResolvedValue([
+        { grade_class_id: 'gc-6b', name: '6B', academic_cycle_id: 'cycle-1' },
+      ]);
+      await expect(resolveGradeClassFromClassroom('legacy-5a')).resolves.toBe('gc-6b');
+      expect(classroomsAPI.getById).not.toHaveBeenCalled();
+    });
+
+    it('shows the picker for a classroom linked to several classes the caller marks', async () => {
+      vi.mocked(orpcClient.attendance.getClassroomLinks).mockResolvedValue([
+        { grade_class_id: 'gc-5a', name: '5A', academic_cycle_id: 'cycle-1' },
+        { grade_class_id: 'gc-6b', name: '6B', academic_cycle_id: 'cycle-1' },
+      ]);
+      await expect(resolveGradeClassFromClassroom('legacy-5a')).resolves.toBe('');
+    });
+
+    it('only counts links to classes the caller may mark, and never name-matches a linked classroom', async () => {
+      vi.mocked(orpcClient.attendance.getClassroomLinks).mockResolvedValue([
+        { grade_class_id: 'gc-someone-else', name: '5A', academic_cycle_id: 'cycle-1' },
+      ]);
+      await expect(resolveGradeClassFromClassroom('legacy-5a')).resolves.toBe('');
+      expect(classroomsAPI.getById).not.toHaveBeenCalled();
+    });
+
+    it('falls back to the name match for an unlinked classroom or when links cannot be read', async () => {
+      vi.mocked(orpcClient.attendance.getClassroomLinks).mockResolvedValue([]);
+      await expect(resolveGradeClassFromClassroom('legacy-5a')).resolves.toBe('gc-5a');
+      clearClassroomResolutionCache();
+      vi.mocked(orpcClient.attendance.getClassroomLinks).mockRejectedValue(new Error('404'));
+      await expect(resolveGradeClassFromClassroom('legacy-5a')).resolves.toBe('gc-5a');
+    });
   });
 });
