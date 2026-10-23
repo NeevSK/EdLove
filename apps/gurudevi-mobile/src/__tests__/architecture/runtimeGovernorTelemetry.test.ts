@@ -82,10 +82,12 @@ describe('runtime governor telemetry', () => {
       reason: 'eligible',
     });
 
-    expect(log).toHaveBeenCalledOnce();
-    expect(String(log.mock.calls[0]?.[0])).toContain('"category":"governor-overhead"');
-    expect(String(log.mock.calls[0]?.[0])).toContain('"operation":"observe-log-event"');
-    expect(String(log.mock.calls[0]?.[0])).toContain('"previous_trace_write_call_ms":null');
+    expect(log).toHaveBeenCalledTimes(2);
+    expect(String(log.mock.calls[0]?.[0])).toContain('[Governor DEV]');
+    expect(String(log.mock.calls[1]?.[0])).toContain('"category":"governor-overhead"');
+    expect(String(log.mock.calls[1]?.[0])).toContain('"operation":"observe-log-event"');
+    expect(String(log.mock.calls[1]?.[0])).toContain('"trace_session_started":true');
+    expect(String(log.mock.calls[1]?.[0])).not.toContain('previous_trace_write_call_ms');
   });
 
   it('emits bounded runtime-condition events only when a coarse input changes', async () => {

@@ -27,17 +27,24 @@ vi.mock('@react-native-community/netinfo', () => ({
 
 vi.mock('react-native-gesture-handler', () => {
   const React = require('react');
+  const mockGestureChain = () => ({
+    minDuration: vi.fn().mockReturnThis(),
+    onStart: vi.fn().mockReturnThis(),
+    onUpdate: vi.fn().mockReturnThis(),
+    onEnd: vi.fn().mockReturnThis(),
+    onFinalize: vi.fn().mockReturnThis(),
+    onActivate: vi.fn().mockReturnThis(),
+    simultaneousWithExternalGesture: vi.fn().mockReturnThis(),
+  });
   return {
     GestureDetector: ({ children }: { children: React.ReactNode }) => children,
-    useLongPressGesture: () => ({
-      minDuration: vi.fn().mockReturnThis(),
-      onActivate: vi.fn().mockReturnThis(),
-    }),
-    usePanGesture: () => ({
-      onUpdate: vi.fn().mockReturnThis(),
-      onEnd: vi.fn().mockReturnThis(),
-      onFinalize: vi.fn().mockReturnThis(),
-    }),
+    Gesture: {
+      LongPress: mockGestureChain,
+      Pan: mockGestureChain,
+      Simultaneous: vi.fn().mockReturnValue(mockGestureChain()),
+    },
+    useLongPressGesture: mockGestureChain,
+    usePanGesture: mockGestureChain,
     useSimultaneousGestures: () => ({}),
   };
 });

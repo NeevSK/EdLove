@@ -29,8 +29,7 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_accounting-clean\""
   },
   "dependencies": {
-    "@repo/core": "workspace:*",
-    "@supabase/supabase-js": "*"
+    "@repo/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",

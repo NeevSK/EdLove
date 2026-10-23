@@ -5,6 +5,7 @@ import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect } from 'react';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
+import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { getEntryNavigationAction } from '@/entry/entryNavigation';
 import { getEntryPresentation } from '@/entry/entryPresentation';
@@ -44,6 +45,15 @@ export function SessionRouteGate({
     onboardingCompleted: routeState.onboardingCompleted,
     isLocalGuestReady: routeState.isLocalGuestReady,
   });
+
+  useEffect(() => {
+    const routePattern = getDiagnosticRoutePattern(pathname);
+    recordDevelopmentTrace({
+      category: 'route-transition',
+      task: routePattern,
+      state: 'committed',
+    });
+  }, [pathname]);
 
   useEffect(() => {
     const pendingIntent = pendingIntentStore.getState().getPendingIntent();
@@ -146,4 +156,17 @@ export function SessionRouteGate({
       </Pressable>
     </Box>
   );
+}
+
+function getDiagnosticRoutePattern(pathname: string): string {
+  if (pathname === '/' || pathname === '/index') return 'root';
+  if (pathname === '/welcome') return 'welcome';
+  if (pathname === '/onboarding') return 'onboarding';
+  if (pathname.startsWith('/(tabs)/self') || pathname === '/self') return 'self';
+  if (pathname.startsWith('/(tabs)/library') || pathname === '/library') return 'library';
+  if (pathname.startsWith('/(tabs)/workspace') || pathname === '/workspace') return 'workspace';
+  if (pathname.startsWith('/(tabs)/community') || pathname === '/community') return 'community';
+  if (pathname.startsWith('/(tabs)/profile') || pathname === '/profile') return 'profile';
+  if (pathname.startsWith('/auth')) return 'auth';
+  return 'other';
 }

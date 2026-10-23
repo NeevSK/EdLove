@@ -35,7 +35,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import type { ActionItem, TabType } from '@repo/ui/types/fab';
 
 interface LotusPetalFABProps {
-  currentTab?: TabType;
+  currentTab?: TabType | null;
   onPress?: () => void;
   icon?: React.ReactNode;
   actions?: ActionItem[];
@@ -139,12 +139,16 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
 
     // Reconcile props with global state
-    const currentTab = (propTab || globalState.tabType) as TabType;
+    const currentTab = (propTab ?? globalState.tabType) as TabType;
     const actions = propActions || globalState.actions;
     const hasActiveGaps = propGaps ?? globalState.hasActiveGaps;
     const onPress = propPress || globalState.onPress;
     const onBreathingReset = propReset || globalState.onBreathingReset;
-    const isVisible = useGlobal ? globalState.visible : true;
+    const isVisible = useGlobal
+      ? globalState.visible &&
+        propTab !== null &&
+        (propTab === undefined || propTab === globalState.tabType)
+      : true;
     const icon = customIcon || globalState.icon;
 
     const config = useMemo(() => fabConfig[currentTab] || fabConfig.self, [currentTab]);

@@ -8,6 +8,11 @@ tags: [account-lifecycle, identity, onboarding, authorization, deletion]
 
 # Gurudevi Account Lifecycle Contract
 
+> **Canonical authority (2026-10-23):** This document defines the lifecycle
+> detail. Cross-platform credential, provider-linking, AI/channel, and UUID
+> policy is governed by
+> [`authentication-and-sovereign-identity.md`](../architecture/authentication-and-sovereign-identity.md).
+
 This document is the product-level contract for a trustworthy Gurudevi account.
 It is intentionally platform-neutral. Mobile and web may differ in Explore and
 guest behavior, but they must not disagree about the durable account state.

@@ -25,3 +25,26 @@ export function useClassroomLegacyHistory(classroomId?: string) {
     enabled: !!classroomId,
   });
 }
+
+export function invalidateSchoolLegacyHistory(queryClient: any, schoolId?: string) {
+  if (schoolId) {
+    return queryClient.invalidateQueries({
+      queryKey: ['school-legacy-history', schoolId],
+    });
+  }
+  return queryClient.invalidateQueries({
+    queryKey: ['school-legacy-history'],
+  });
+}
+
+export function invalidateClassroomLegacyHistory(queryClient: any, classroomId?: string) {
+  if (classroomId) {
+    return queryClient.invalidateQueries({
+      queryKey: ['classroom-legacy-history', classroomId],
+    });
+  }
+  return queryClient.invalidateQueries({
+    queryKey: ['classroom-legacy-history'],
+  });
+}
+

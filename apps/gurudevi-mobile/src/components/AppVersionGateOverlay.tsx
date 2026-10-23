@@ -1,5 +1,5 @@
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
-import { BrandPulse } from '@repo/ui';
+import { BrandPulse, tokens } from '@repo/ui';
 import React from 'react';
 import { Linking, Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 
@@ -33,7 +33,7 @@ export function AppVersionGateOverlay() {
     return (
       <Modal visible={true} transparent={false} animationType="fade" statusBarTranslucent>
         <View style={styles.hardBlockContainer}>
-          <BrandPulse size={48} tintColor="#D4843A" />
+          <BrandPulse size={48} tintColor={tokens.colors.primary} />
           <Text style={styles.hardBlockTitle}>Critical Update Required</Text>
           <Text style={styles.hardBlockMessage}>
             Your installed version (v{currentInstalledVersion}) is no longer supported. To protect
@@ -84,20 +84,20 @@ export function AppVersionGateOverlay() {
 const styles = StyleSheet.create({
   hardBlockContainer: {
     flex: 1,
-    backgroundColor: '#20140E',
+    backgroundColor: tokens.colors.ink,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
   },
   hardBlockTitle: {
-    color: '#F5EDD6',
+    color: tokens.colors.background,
     fontSize: 22,
     fontWeight: '700',
     marginTop: 24,
     textAlign: 'center',
   },
   hardBlockMessage: {
-    color: '#D8C8B8',
+    color: tokens.colors.toastTextMuted,
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
@@ -105,21 +105,21 @@ const styles = StyleSheet.create({
     maxWidth: 320,
   },
   notesContainer: {
-    backgroundColor: 'rgba(212, 132, 58, 0.1)',
+    backgroundColor: tokens.colors.primary + '1A',
     borderRadius: 8,
     padding: 12,
     marginTop: 16,
     maxWidth: 320,
     borderWidth: 1,
-    borderColor: 'rgba(212, 132, 58, 0.2)',
+    borderColor: tokens.colors.primary + '33',
   },
   notesText: {
-    color: '#E8A76B',
+    color: tokens.colors.loading,
     fontSize: 13,
     textAlign: 'center',
   },
   primaryButton: {
-    backgroundColor: '#D4843A',
+    backgroundColor: tokens.colors.primary,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 28,
@@ -130,31 +130,31 @@ const styles = StyleSheet.create({
     maxWidth: 280,
   },
   primaryButtonText: {
-    color: '#20140E',
+    color: tokens.colors.ink,
     fontSize: 16,
     fontWeight: '700',
   },
   softNudgeBanner: {
-    backgroundColor: '#2B1B14',
+    backgroundColor: tokens.colors.ink,
     paddingVertical: 10,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: '#D4843A40',
+    borderBottomColor: tokens.colors.primary + '40',
   },
   softNudgeContent: {
     flex: 1,
     marginRight: 12,
   },
   softNudgeTitle: {
-    color: '#F5EDD6',
+    color: tokens.colors.background,
     fontSize: 13,
     fontWeight: '700',
   },
   softNudgeSubtitle: {
-    color: '#D8C8B8',
+    color: tokens.colors.toastTextMuted,
     fontSize: 11,
     marginTop: 2,
   },
@@ -164,13 +164,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   updateActionBtn: {
-    backgroundColor: '#D4843A',
+    backgroundColor: tokens.colors.primary,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
   },
   updateActionText: {
-    color: '#20140E',
+    color: tokens.colors.ink,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dismissActionText: {
-    color: '#A09080',
+    color: tokens.colors.textMuted,
     fontSize: 12,
   },
 });

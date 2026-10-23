@@ -18,3 +18,15 @@ export const useStudentAcademicHistory = (studentId?: string) => {
     enabled: !!studentId && can('read', 'AcademicHistory'),
   });
 };
+
+export function invalidateStudentAcademicHistory(queryClient: any, studentId?: string) {
+  if (studentId) {
+    return queryClient.invalidateQueries({
+      queryKey: ['student-academic-history', studentId],
+    });
+  }
+  return queryClient.invalidateQueries({
+    queryKey: ['student-academic-history'],
+  });
+}
+

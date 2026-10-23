@@ -1,6 +1,7 @@
 export * from '@repo/core/lib/accountPin';
 export * from '@repo/core/lib/accountScope';
 export * from '@repo/core/lib/authorization';
+export * from '@repo/core/lib/clientStateFoundation';
 export * from '@repo/core/lib/cloudinary';
 export * from '@repo/core/lib/errors';
 export * from '@repo/core/lib/gradePublication';

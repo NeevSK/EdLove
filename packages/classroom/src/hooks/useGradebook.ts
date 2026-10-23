@@ -78,8 +78,9 @@ export const useGradebook = (
   const updateSettings = async (settings: Omit<ClassroomGradingSettings, 'classroom_id'>) => {
     try {
       const updated = await gradingAPI.updateGradingSettings(classroomId, settings);
-      setGradingSettings(updated);
-      return updated;
+      const casted = updated as ClassroomGradingSettings;
+      setGradingSettings(casted);
+      return casted;
     } catch (err: any) {
       console.error('Failed to update settings:', err);
       setError(err.message || 'Failed to update settings');

@@ -2,7 +2,7 @@
 title: "Phase P0 Account and Scope Foundation Implementation Plan"
 status: "active"
 created: 2026-10-09
-updated: 2026-10-09
+updated: 2026-10-23
 author: "Codex"
 tags: [implementation-plan, account, session, scope, identity, sanctuary, self]
 ---
@@ -18,6 +18,16 @@ must still choose one current typed contract per seam so web, mobile, and API
 callers do not diverge. A later policy change is handled as a versioned
 migration with characterization evidence; it is not a reason to leave the
 current seam ambiguous.
+
+## Integration status
+
+This plan owns account and identity transition work. The platform state owner,
+Zustand/XState admission rules, and browser offline-capability ladder are
+defined in
+[`client-state-and-web-offline-capability-canon.md`](../architecture/client-state-and-web-offline-capability-canon.md).
+The state migration's Phase 0 inventory must supply the concrete store,
+persistence, Query-cache, and cross-store-write evidence used by this plan;
+neither document supersedes the other.
 
 The product ordering is:
 

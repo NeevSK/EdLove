@@ -1,4 +1,5 @@
 import { communityAPI } from '@repo/core/api/community';
+import { orpc } from '@repo/core/api/orpcClient';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -9,7 +10,7 @@ export const pollKeys = {
 };
 
 /**
- * Modern logic for Community Polls using TanStack Query v5.
+ * Modern logic for Community Polls using TanStack Query v5 & oRPC v2.
  * Promoted to @repo/core/api/hooks/poll.hooks.ts.
  */
 export function usePollHooks(postId: string) {
@@ -17,28 +18,32 @@ export function usePollHooks(postId: string) {
   const _user = useAuthStore((state) => state.user);
 
   const { data, isLoading } = useQuery({
-    queryKey: pollKeys.detail(postId),
-    queryFn: async () => {
-      const data = await communityAPI.getPollStatus(postId);
-      return {
-        ...data,
-        userVotes: new Set(data.userVotes || []),
-      };
-    },
-    enabled: !!postId,
+    ...orpc.community.getPollStatus.queryOptions({
+      input: { params: { postId } },
+    }),
+    select: (res: any): Record<string, any> => ({
+      ...(res || {}),
+      userVotes: new Set(res?.userVotes || []),
+    }),
+    enabled: Boolean(postId),
   });
 
   const voteMutation = useMutation({
     mutationFn: ({ optionId }: { optionId: string; allowMultiple?: boolean }) =>
       communityAPI.voteInPoll(postId, optionId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: pollKeys.detail(postId) });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: orpc.community.getPollStatus.queryKey({ input: { params: { postId } } }),
+        }),
+        queryClient.invalidateQueries({ queryKey: pollKeys.detail(postId) }),
+      ]);
     },
   });
 
   return useMemo(
     () => ({
-      ...data,
+      ...(data || {}),
       isLoading,
       isVoting: voteMutation.isPending,
       handleVote: (optionId: string, _allowMultiple = false) => voteMutation.mutate({ optionId }),

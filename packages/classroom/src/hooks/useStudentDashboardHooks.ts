@@ -1,5 +1,6 @@
 import {
   assignmentsAPI,
+  invalidateStudentAssignmentsQuery,
   useStudentAssignmentsQuery,
   useStudentClassroomsQuery,
   useStudentStatsQuery,
@@ -51,10 +52,8 @@ export function useStudentQuestsPulse() {
       return assignmentsAPI.submitSubmission(assignmentId, content, photoUri ?? null);
     },
     onSuccess: () => {
-      // Invalidate assignments to reflect submission status (if tracked there)
-      queryClient.invalidateQueries({
-        queryKey: ['student-assignments', userId],
-      });
+      // Invalidate assignments with deterministic oRPC query key
+      invalidateStudentAssignmentsQuery(queryClient, userId);
     },
   });
 

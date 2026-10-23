@@ -42,3 +42,23 @@ export {
   type WorkAppState,
   type WorkPressure,
 } from './workAdmission';
+export {
+  getHermesHeapStats,
+  reclaimHermesMemory,
+  tuneQueryClientForLowMemory,
+  setupHermesMemoryShield,
+  type HermesHeapStats,
+  type MemoryReclamationOptions,
+  type MemoryReclamationResult,
+} from './hermesDeviceShield';
+export {
+  admitWorkCategory,
+  performanceGovernor,
+  senseGovernor,
+  type DeviceThermalState,
+  type DeviceMemoryTier,
+  type GovernorSnapshot,
+  type WorkAdmissionResult,
+  type WorkCategory,
+} from './governor';
+

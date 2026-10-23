@@ -1,24 +1,29 @@
 'use client';
 
+import { startEventsReceiver } from '@repo/core/api/eventsReceiver';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { useAuth } from '../../app/(sanctuary)/auth/AuthProvider';
 
 /**
  * Clears account-bound and tenant-bound query data whenever the authenticated user ID changes,
- * preventing cross-tenant or cross-session cache leaks in browser memory.
+ * preventing cross-tenant or cross-session cache leaks in browser memory,
+ * and maintains an active real-time SSE stream for tab-aware cache invalidation.
  */
 export function AuthQueryCacheBoundary() {
   const queryClient = useQueryClient();
   const previousSubjectId = useRef<string | null | undefined>(undefined);
 
   let subjectId: string | null = null;
+  let accessToken: string | null = null;
   try {
     const auth = useAuth();
     subjectId = auth.state.session?.user.id ?? null;
+    accessToken = auth.state.session?.access_token ?? null;
   } catch {
     // If rendered outside AuthProvider context, boundary acts safely as no-op
     subjectId = null;
+    accessToken = null;
   }
 
   useEffect(() => {
@@ -28,5 +33,22 @@ export function AuthQueryCacheBoundary() {
     previousSubjectId.current = subjectId;
   }, [queryClient, subjectId]);
 
+  useEffect(() => {
+    if (!subjectId || !accessToken) return;
+
+    const cleanup = startEventsReceiver({
+      queryClient,
+      getAuthToken: () => accessToken,
+      onError: (err) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[SSE] Web event stream warning:', err.message);
+        }
+      },
+    });
+
+    return cleanup;
+  }, [queryClient, subjectId, accessToken]);
+
   return null;
 }
+

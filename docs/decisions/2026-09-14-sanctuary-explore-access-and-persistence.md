@@ -2,7 +2,7 @@
 title: "Sanctuary Explore Access and Persistence Model"
 status: "accepted"
 created: 2026-09-14
-updated: 2026-10-11
+updated: 2026-10-23
 decision_owner: "Gurudevi product architecture"
 tags: [adr, sanctuary, explore, guest, sandbox, local-first, web]
 ---
@@ -17,6 +17,14 @@ same domain routes, feature components, and interaction rules as the product,
 backed by a private local data adapter and a clearly identified baseline data
 set. It is not a separate preview application and it must not report discarded
 writes as successful.
+
+## Integration note (2026-10-23)
+
+This accepted decision remains authoritative for Explore identity and local
+persistence. Its browser-local behavior maps to W0/W1 in the platform
+[`Client State and Web Offline Capability Canon`](../architecture/client-state-and-web-offline-capability-canon.md).
+Authenticated account outboxes and W4 durable-write requirements do not apply
+to public Explore, which must never create cloud commands or background sync.
 
 The persistence commitment, rather than a different application, changes as a
 person chooses more continuity:

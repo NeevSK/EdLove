@@ -14,3 +14,18 @@ export function usePrincipalGovernanceHistory(principalId?: string) {
     staleTime: 1000 * 60 * 30, // 30 mins
   });
 }
+
+export function invalidatePrincipalGovernanceHistory(
+  queryClient: any,
+  principalId?: string,
+) {
+  if (principalId) {
+    return queryClient.invalidateQueries({
+      queryKey: ['principal-governance-history', principalId],
+    });
+  }
+  return queryClient.invalidateQueries({
+    queryKey: ['principal-governance-history'],
+  });
+}
+

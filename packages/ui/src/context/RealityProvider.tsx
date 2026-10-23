@@ -15,7 +15,7 @@ import {
 } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { collectRealitySignals } from './realitySignals';
-import type { NetworkQuality, RealityState } from './types';
+import type { NetworkQuality, RealityPressure, RealityState } from './types';
 import { detectDeviceTier, detectNetworkQuality, shouldUseDataSaver } from './utils';
 
 interface RealityContextValue {
@@ -109,6 +109,25 @@ export function RealityProvider({ children }: { children: ReactNode }) {
       return () => subscription?.remove();
     } catch (error) {
       console.warn('[RealityProvider] Power-state listener unavailable', error);
+      return undefined;
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const subscription = coreRuntime.device.addPressureListener?.((snapshot) => {
+        const combined: RealityPressure =
+          snapshot.memory === 'severe' || snapshot.thermal === 'severe'
+            ? 'severe'
+            : snapshot.memory === 'constrained' || snapshot.thermal === 'constrained'
+              ? 'constrained'
+              : snapshot.memory === 'normal' && snapshot.thermal === 'normal'
+                ? 'normal'
+                : 'unknown';
+        setReality((prev) => ({ ...prev, pressure: combined }));
+      });
+      return () => subscription?.remove();
+    } catch {
       return undefined;
     }
   }, []);

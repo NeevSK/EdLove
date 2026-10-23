@@ -1,3 +1,4 @@
+export * from '@repo/core/logic/utils/edloveUuidV8';
 export * from '@repo/core/logic/utils/idempotency';
 export * from '@repo/core/logic/utils/LanguageUtils';
 export * from '@repo/core/logic/utils/logger';

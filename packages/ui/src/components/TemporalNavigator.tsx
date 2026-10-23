@@ -1,6 +1,7 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { useMemo, useState } from 'react';
 import { Modal, Platform, TextInput, View } from 'react-native';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
@@ -169,7 +170,7 @@ export const TemporalNavigator = () => {
           onPress={handleOpenPicker}
           accessibilityLabel="Calendar"
         >
-          <Calendar size={13} color="#F6BF8C" />
+          <Calendar size={13} color={tokens.colors.primary} />
         </Pressable>
 
         {!isToday && (
@@ -179,7 +180,7 @@ export const TemporalNavigator = () => {
             onPress={resetToToday}
             accessibilityLabel="Go to Today"
           >
-            <RotateCcw size={11} color="#F6BF8C" />
+            <RotateCcw size={11} color={tokens.colors.primary} />
             <Text className="text-phase-accent text-[11px] font-bold ml-1">Go to Today</Text>
           </Pressable>
         )}

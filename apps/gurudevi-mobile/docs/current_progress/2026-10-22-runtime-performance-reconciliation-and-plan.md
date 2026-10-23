@@ -98,14 +98,15 @@ their proposed behavior must not be reported as shipped.
   conditions. The database is local plaintext and is git-ignored.
 - The host profile store now projects fixed-field `[runtime-trace]` records
   found in captured logcat into `device_profile_trace_events`, keyed by
-  capture ID and development JS-process session token, while retaining the
+  capture ID, development JS-process session token and per-session event index,
+  while retaining the
   redacted raw logcat output. Every process marks its first trace event, which
   separates launches found together in the circular buffer. It accepts only
   known trace categories, finite bounded scalar fields and up to 65,536 events
   per capture; unknown/malformed records remain raw only. Schema initialization
-  upgrades existing databases additively to user_version 3. The
-  `profile_trace_events` action retrieves a bounded capture's events. Schema
-  initialization upgrades existing databases additively to user_version 2.
+  upgrades existing databases to user_version 5 and rebuilds trace projections
+  from retained logcat when upgrading from the capture/index-only key. The
+  `profile_trace_events` action retrieves a bounded capture's events.
   Event `at_ms` remains process-relative; the process token does not identify
   a specific touch or workload journey. Buffer snapshots may include earlier
   sessions, so capture association is observational, not causal.
@@ -216,6 +217,141 @@ their proposed behavior must not be reported as shipped.
   equivalence. Platform MCP G0 / TypeScript `tsc --noEmit` completed without
   diagnostics for that package.
 
+## Windows A52 trace integration update (2026-10-22)
+
+- Fixed the source-to-store gap: development `[runtime-trace]` records now carry
+  process-relative `at_ms`, `wall_time_ms`, a `time_origin_ms` correlation
+  anchor, session token and event index. Only fixed low-cardinality fields are
+  serialized. Pretty console duplication is suppressed while the in-memory
+  development telemetry buffer still receives records.
+- Added committed route buckets and development React Native Event Timing
+  capture for touch start/end. The device trace records duration, input delay,
+  JS processing duration and presentation delay without retaining view IDs or
+  user-entered text. This requires runtime support and a development build; it
+  does not attribute a touch to a specific component or measure semantic task
+  completion. Development Event Timing is capped at 2,048 records per JS
+  process.
+- Extended the fixed-field SQLite projection with interaction timing and
+  wall-clock anchors using additive schema migration (user_version 5). Trace
+  rows are keyed by capture, JS session and per-session event index. Migration
+  reparses retained logcat to recover session records previously hidden by the
+  old capture/index-only key; raw redacted output remains the source of truth.
+  parser retains raw redacted logcat while excluding unapproved JSON fields.
+- Windows G5 snapshot/trace: capture
+  `2026-10-22T12-46-04-771Z-8969c10f` (`verger-live-touch`) is stored in
+  `reports/mobile-performance/device-profiles.sqlite` and its artifact folder.
+  All 26 read commands and the 15-second requested Perfetto scheduler trace
+  completed; Perfetto artifact is 6,145,249 bytes and cleanup succeeded. The
+  A52 (SM-A525F, API 34, dev build) snapshot reported app PSS 1,946,166 KiB,
+  RSS 2,044,808 KiB and system available memory 2,398,356 KiB. These are one
+  development-build point-in-time sample, not a leak or release baseline.
+- The first capture's legacy rows were rebuilt from raw logcat: all 278 events
+  across nine JS sessions are now projected instead of the 58 that survived
+  the old key. A follow-up snapshot
+  `2026-10-22T12-53-09-388Z-4de0acb0` is complete and contains 376 events across
+  11 JS sessions, including eight Event Timing records. Live taps reached
+  Library, Self and Profile. The Library FAB was registered and visible; its
+  add action is permission-gated and reports contributions unavailable for the
+  anonymous account. After adding route matching to the shell, the stale
+  Library FAB disappeared on Profile while Profile remained usable. The
+  circular logcat snapshot contains multiple JS sessions and prior routes, so
+  capture ID is a collection batch, not a causal journey ID. No route target or
+  account content was captured.
+  The mounted observer's own trace-write cost is included in the stream and
+  can perturb development measurements.
+- The previous “no current Metro” note above describes an earlier check. During
+  this update the Windows Metro listener on 8082 (PID 15832) served the A52;
+  the source JS reload emitted startup and route records. Port 8081 remained
+  untouched.
+- FAB source check: `FABProvider` defaults to `visible: false`; the mobile
+  shell mounts `LotusPetalFAB`; route screens in shared packages register
+  actions, but Expo tab screens can stay mounted after losing focus. The shell
+  now passes the active route tab and the FAB hides when that does not match
+  its registration. This fixed a stale Library FAB appearing on Profile.
+  Library's add handler still correctly shows the permission restriction for
+  the anonymous account; authenticated role-specific actions remain
+  unverified.
+- `LivingJourneyPanel` now reports a failed growth-journey fetch as a warning
+  while keeping its existing fallback. G5 has not yet confirmed this change:
+  the log showing the old `console.error` was from the bundle served before a
+  fresh Metro restart. A later fresh bundle was loaded below; its Profile route
+  reached the loading skeleton, but the API failure message was not captured
+  from that route. Do not claim the development error overlay is fixed until
+  the new bundle visibly emits the warning and leaves the app interactive.
+
+### Fresh Windows Metro and route check (18:34–18:36 local)
+
+- Restarted only the Gurudevi Metro listener on port 8082 after edits in shared
+  packages; port 8081 was left untouched. Metro successfully loaded the
+  Doppler-backed environment and served a cold-cache Android bundle in
+  92,396 ms for 7,581 modules. The delay is Metro graph compilation, not ADB
+  transfer latency. Subsequent entry bundle update completed in 73 ms.
+- On the newly served bundle, ADB reached the Profile route and emitted a
+  committed `profile` route trace. The screenshot showed the Profile loading
+  skeleton with no Library books FAB; the screenshot was taken before profile
+  content finished loading, so this proves route-level FAB hiding only.
+- The Library route then reached its settled fallback: public collections
+  returned an unavailable state with a Retry action and the personal library
+  remained available. The Library books FAB appeared on that route. Its
+  anonymous-account add action remains permission-gated. This confirms the
+  route-scoped FAB behavior on the fresh shared-package bundle, while the
+  earlier follow-up screenshot had been served before Metro restarted.
+- Assistant Menu controls were enabled in Android and appear as grey floating
+  overlays in the screenshots; they are OS controls, not app FABs. Screenshots
+  are stored beside the capture artifacts in
+  `reports/device-runs/2026-10-22-verger-live/`.
+- The profile journey's API 503/warning behavior remains unverified against
+  this fresh bundle. The captured Library fallback shows its own public
+  collection failure handling, not the Profile journey request.
+- Focused G1 verification: `deviceProfileStore.test.ts` 4/4, mobile
+  `startupTelemetry.test.ts` 3/3 and core `workAdmission.test.ts` 11/11 passed.
+  Package G0 type checks for `@repo/platform-mcp`, `@repo/profile` and
+  `@repo/ui` each reported zero findings. Targeted Biome check still reports
+  the pre-existing formatting in `LotusPetalFAB.tsx` gesture callbacks outside
+  this change; no formatter rewrite was applied. Workspace-wide `git diff
+  --check` reports pre-existing blank-line-at-EOF findings in other dirty
+  files, so those were left untouched.
+
+### Governor contract and A52 reconnection check (18:40–18:47 local)
+
+- ADB server recovery restored the Samsung A52 without changing app data. The
+  Android thermal service reported status `0` (normal) in this snapshot. That
+  is one native device reading and does not prove thermal listener delivery or
+  pressure transitions.
+- Gurudevi Metro is listening on Windows port 8082; port 8081 belongs to the
+  separate Feedora process and was left untouched. The dev launcher had lost
+  its recent server entry after app force-stop. An ADB reverse for 8082 and an
+  explicit `127.0.0.1:8082` connection moved the launcher to a blank app
+  surface, but the app emitted no React Native startup traces and Metro showed
+  no bundle compilation during the bounded observation. Therefore no fresh
+  governor or interaction G5 claim is made from this reconnect attempt.
+- The focused governor contracts now pass 27/27: optional startup scheduling,
+  runtime-pressure recovery, bounded Observe telemetry and SessionRouteGate.
+  Updated the telemetry assertion to expect both the human-readable governor
+  line and its JSON overhead trace; added a route-bucket privacy assertion so
+  dynamic route identifiers are not recorded. These are G1 contracts only.
+- No configuration A/B experiment was run in this continuation. The next
+  device step is to resolve why the Dev Client shows a blank surface despite
+  an active 8082 listener, then repeat the same A52 route/touch/profile
+  journey and capture its fresh trace before any stress or policy comparison.
+
+### Remaining evidence gaps
+
+- No dedicated journey-start/end ID yet connects the physical app-icon tap,
+  launch intent, JS session, individual interaction and host capture. The
+  existing wall/monotonic anchor supports clock conversion but does not prove
+  the clocks are stable through device sleep or wall-clock changes.
+- `capture_profile` snapshots the logcat buffers before starting its optional
+  Perfetto interval. It is not a single synchronized continuous journey
+  recorder. A next additive step is an explicit bounded capture session that
+  records host start/end, device boot-time anchors and app process identity,
+  streams logs during user-guided launch/touch, and writes the same redacted
+  artifacts and profile rows.
+- No controlled low-memory/thermal stress, authenticated profiles, other
+  devices, repeated cold-start set, trace-off comparison, or statistical
+  touch-latency baseline was run. The Perfetto scheduler trace is not CPU
+  sampling or JS stack profiling.
+
 ## Reconciliation decisions
 
 1. Follow the app-specific execution plan's sequence: evidence and usable
@@ -302,4 +438,131 @@ their proposed behavior must not be reported as shipped.
   charging, thermal/network/cache state and exact build identity in the
   label/adjacent run notes. Do not claim a comparative result from unlike
   conditions or a single sample.
+
+### A52 current bundle-reload check (18:51–18:55 local)
+
+- Rechecked the live Windows ADB device `R58T33Y0E3M` (SM-A525F, API 34),
+  foreground package `app.gurudevi.sanctuary.dev`, and Gurudevi Metro PID 29568
+  on 8082. The unrelated 8081 listener was left untouched. ADB reverse reports
+  `tcp:8082 tcp:8082`.
+- Metro `/status` and `/manifest?platform=android&dev=true&hot=false&lazy=true`
+  both returned HTTP 200. The manifest points to
+  `/apps/gurudevi-mobile/index.ts.bundle`.
+- The installed Expo launcher and React Native dev menus are responsive. One
+  launcher Reload and one React Native dev-menu Reload both returned to the same
+  white app surface. The foreground activity remained `MainActivity`; the
+  screenshot and UI hierarchy are saved as `reports/device-runs/2026-10-22-verger-live/after-rn-reload.png`
+  and `after-rn-reload.xml`.
+- The app-PID log has no `ReactNativeJS` startup trace. It does contain repeated
+  React Native soft exceptions from `ReactHost.onWindowFocusChange` stating
+  that the context is not ready. This confirms the JS host had not become ready
+  at those focus events, but does not prove whether bundle delivery, Hermes
+  initialization, or an earlier launch stage caused it. The full current
+  PID-scoped log is saved as
+  `reports/device-runs/2026-10-22-verger-live/a52-app-pid-18711-current-logcat.txt`.
+- No config A/B, app-data clear, reinstall, or build was performed. Next
+  diagnose bundle delivery/execution from the device request and Metro-side
+  evidence before attempting app-level interaction or governor stress. The
+  current state still provides no fresh G5 route, FAB, touch, profile, or
+  governor-pressure evidence.
+- Current focused contract checks: `@repo/core` `workAdmission.test.ts` 11/11,
+  and mobile optional-startup, pressure-recovery, and governor-telemetry suites
+  11/11 across three files (G1 Vitest; substituted native/runtime boundaries).
+  These cover reducer recovery and telemetry contracts, not A52 execution.
+
+### Forensic synthesis of the saved A52 run (2026-10-22)
+
+- The app **did run** in the earlier measured session. PID `12864` logged
+  `Running "main"`, `SessionRouteGate` decisions, route transitions and
+  `[runtime-trace]` records. The later Metro/Dev Launcher attempt used PID
+  `18711` and is a separate launch attempt. The failed later reload must not be
+  used to erase the earlier G5 app-run evidence.
+- Two same-process profile snapshots exist for the A52 development build
+  (`SM-A525F`, API 34, SoC `SM7125`):
+  `2026-10-22T12-46-04-771Z-8969c10f` (18:16 UTC+05:30) and
+  `2026-10-22T12-53-09-388Z-4de0acb0` (18:23 UTC+05:30). Both are stored in
+  `reports/mobile-performance/device-profiles.sqlite`. App PSS rose from
+  1,946,166 KiB to 2,158,742 KiB (+212,576 KiB); RSS rose from 2,044,808 KiB
+  to 2,257,456 KiB; native-heap PSS rose from 1,459,813 KiB to 1,648,749 KiB.
+  System-available RAM fell from 2,398,356 KiB to 2,159,896 KiB. This is a
+  serious same-process growth signal over seven minutes, but two snapshots of
+  a debuggable build do not identify an allocator or prove a leak. Heap/Perfetto
+  allocation attribution and comparable repeated samples are still required.
+- The captured `cpuStats` reports the app at 82% CPU (73% user, 8.3% kernel)
+  over 18:13:22–18:18:22 local device time. It is a process-level interval
+  report, not per-thread CPU attribution. The first snapshot includes a
+  15.8-second Perfetto scheduler trace (6,145,249 bytes); this trace is not CPU
+  sampling, JS stacks, or allocation profiling. The second snapshot requested
+  no native trace.
+- Android graphics counters are cumulative since their own `Stats since`
+  point, not isolated to a tap or the profile capture. The standard janky-frame
+  ratio moved from 3.46% (628/18,167) to 3.11% (847/27,278); p95 stayed 36 ms
+  and p99 stayed 77 ms. Legacy jank is reported separately at 66.54% and
+  53.89%, so it cannot be combined with the standard ratio. Individual
+  `Choreographer`/`OpenGLRenderer` entries include 31–85 skipped frames and
+  944–1,475 ms slow frames during loading/navigation. They confirm visible
+  stalls occurred, but do not attribute them to the governor.
+- The profile samples report thermal service status `0` (no throttling) and AP
+  temperature 33.2°C then 39.8°C. The app governor trace reports thermal
+  `normal`, memory `unknown`, battery saver off and admission allowed with an
+  optional cap of one. The native module intentionally ignores Android
+  `onTrimMemory` callbacks on API 34, so this run could not observe memory
+  pressure transitions regardless of its high PSS. Native pressure snapshot
+  requests took 3.5–4.1 seconds wall time to resolve; because the call is
+  asynchronous, that duration does not prove the JS thread was blocked.
+  No constrained/severe-memory or thermal-stress governor decision was tested.
+- The retained raw logcat shows repeated network `503`/offline failures for
+  explored features and the anonymous guest journey; Profile logged “Error
+  fetching growth journey”. This is an observed backend-unavailable path, not a
+  crash. The app process log contains no `FATAL EXCEPTION`, app ANR,
+  `OutOfMemoryError` or native fatal-signal entry in the captured buffers.
+  It also contains 78 NativeWind `className 'undefined'` remount warnings and
+  11 leaked `exoplayer_internal.db` SQLite-connection warnings. Both are
+  follow-up investigation leads; neither is proven to cause the memory growth
+  or frame stalls.
+- FAB evidence is **not conclusive**. `after-fab-touch.png` shows Samsung’s
+  system Assistant Menu open over a white surface, so that action did not prove
+  an in-app FAB press. `lotus-fab-pressed.png` proves the Books FAB was visible.
+  The later trace records Library and Profile route commits, then generic
+  `touchstart`/`touchend` events (55–117 ms); those touches carry no view/FAB
+  identity, and the route commits precede them. Therefore the traces cannot
+  establish that the FAB caused either route change or completed its action.
+  Eight Event Timing entries average 89.4 ms (mean input delay 60.3 ms), but
+  they are not eight independently identified taps or a statistical baseline.
+- Both profile commands snapshot all readable circular logcat buffers rather
+  than continuously recording the whole journey. Each retained logcat is about
+  53.7 MB; the follow-up snapshot contains 376 trace events across 11 JS
+  sessions spanning 12:40:44–12:52:05 UTC, not just its eight-second capture
+  interval. The first snapshot has 278 events across nine sessions; all 278
+  reappear in the follow-up. These are overlapping buffer snapshots, not 654
+  independent events. The first trace is 15.8 seconds of scheduler data only.
+  The manifest warns that other user content may remain in local raw system
+  logs, so these files and the SQLite store should stay local unless redacted
+  for sharing.
+- The later PID `18711` log establishes one narrow cause: at 18:41:34 it could
+  not reach `127.0.0.1:8082`; the packager-status request failed at 18:41:36
+  and script loading failed at 18:41:37. That sequence precedes the later ADB
+  reverse mapping. Subsequent evidence confirmed the 8082 reverse and TCP
+  reachability, but the saved logs still show no React Native JS startup for
+  that later attempt. Its remaining cause is unresolved; it does not change
+  the earlier successful PID `12864` session.
+- Forensic review found that the SQLite projection dropped allowed decision
+  fields even when emitted in the JSON trace. The v7 projection now preserves
+  bounded phase/app-state/pressure/reason strings, operation names, the
+  optional cap, and capacity/battery/admission booleans. The source admission
+  trace now emits the pressure bucket, capacity-known flag and effective cap;
+  a new device bundle is needed to verify those fields live.
+  The existing local DB was reprojected from its retained logcat; it now has
+  278 and 376 events for the two captures. Legacy JSON lines never included
+  the pressure/capacity/cap fields, so those values cannot be restored for the
+  old run; its multiline human-readable `Governor DEV` records remain in raw
+  logcat. The DB migration is additive and leaves those raw outputs intact.
+- Verification: platform MCP `deviceProfileStore.test.ts` G1 boundary/Vitest,
+  5/5; this covers scalar allowlisting, boolean fields, v5-to-v7 re-projection
+  and SQLite persistence, not device runtime. Platform MCP G0 TypeScript check
+  reported zero findings. Mobile governor G1 suites were 11/11 across three
+  files. The full mobile G0 typecheck returned 32 errors in unrelated test,
+  community and library files; none is reported in the edited governor or
+  profile-store files. This run did not establish when those other errors were
+  introduced.
 

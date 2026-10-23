@@ -20,30 +20,36 @@ import { createGuardianServices } from '@repo/core/logic/domains/guardian/servic
 import { createPrincipalWorkspaceServices } from '@repo/core/logic/domains/principalWorkspace/services';
 import { createTeacherInsightsServices } from '@repo/core/logic/domains/teacherInsights/services';
 import { createWorkspaceLayoutServices } from '@repo/core/logic/domains/workspaceLayout/services';
-import type { SupabaseClient } from '@supabase/supabase-js';
+// Neutral client contract for table query/mutation builders
+export interface IDataQueryClient {
+  from: (table: string) => any;
+  rpc?: (fn: string, params?: Record<string, any>) => any;
+  [key: string]: any;
+}
 
 /**
  * The 'Alchemist' Domain Factory.
- * Centralizes service initialization by injecting the appropriate Supabase client.
- * Supports both RLS-bound Mobile and 'God Mode' Service Role clients.
+ * Centralizes service initialization by injecting a database query client or repositories.
+ * Supports provider-neutral data access without leaking vendor SDK types into domain logic.
  */
 export const createDomainServices = (
-  supabase: SupabaseClient,
+  client: IDataQueryClient,
   overrides?: {
     educationalSideEffects?: EducationalSideEffects;
   },
 ) => {
   // 1. Initialize Repositories (Data Access Layer)
+  const queryClient = client as any;
   const repo = {
-    attendance: createSupabaseAttendanceProjectionRepository(supabase),
-    classroomNotes: createSupabaseClassroomNotesRepository(supabase),
-    educational: createSupabaseEducationalRepository(supabase),
-    founder: createSupabaseFounderRepository(supabase),
-    grading: createSupabaseGradingProjectionRepository(supabase),
-    guardian: createSupabaseGuardianRepository(supabase),
-    principal: createSupabasePrincipalWorkspaceRepository(supabase),
-    teacherInsights: createSupabaseTeacherInsightsRepository(supabase),
-    workspaceLayout: createSupabaseWorkspaceLayoutRepository(supabase),
+    attendance: createSupabaseAttendanceProjectionRepository(queryClient),
+    classroomNotes: createSupabaseClassroomNotesRepository(queryClient),
+    educational: createSupabaseEducationalRepository(queryClient),
+    founder: createSupabaseFounderRepository(queryClient),
+    grading: createSupabaseGradingProjectionRepository(queryClient),
+    guardian: createSupabaseGuardianRepository(queryClient),
+    principal: createSupabasePrincipalWorkspaceRepository(queryClient),
+    teacherInsights: createSupabaseTeacherInsightsRepository(queryClient),
+    workspaceLayout: createSupabaseWorkspaceLayoutRepository(queryClient),
   };
 
   // 1.1 Side Effects (Defaults or Overrides)

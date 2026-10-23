@@ -395,7 +395,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
           },
         });
       } catch (err) {
-        console.error('Error fetching growth journey:', err);
+        console.warn('Unable to fetch growth journey; keeping the profile fallback visible:', err);
         dispatch({ type: 'FETCH_FAILURE' });
       }
     };

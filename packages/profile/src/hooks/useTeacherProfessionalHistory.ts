@@ -18,3 +18,15 @@ export const useTeacherProfessionalHistory = (teacherId?: string) => {
     enabled: !!teacherId && can('read', 'TeacherProfile'),
   });
 };
+
+export function invalidateTeacherProfessionalHistory(queryClient: any, teacherId?: string) {
+  if (teacherId) {
+    return queryClient.invalidateQueries({
+      queryKey: ['teacher-professional-history', teacherId],
+    });
+  }
+  return queryClient.invalidateQueries({
+    queryKey: ['teacher-professional-history'],
+  });
+}
+

@@ -2,7 +2,7 @@
 title: "JWT, Offline Resilience, Query and Transport Hardening Review"
 status: "active"
 created: 2026-10-10
-updated: 2026-10-10
+updated: 2026-10-23
 author: "Gurudevi product architecture"
 tags: [security, jwt, offline-first, tanstack-query, pacer, effect, hardening]
 ---
@@ -13,6 +13,15 @@ This is a hostile review of the current web/API account foundation. It records
 what is implemented, what is only partially covered, and the production work
 still required. A local cache surviving for days is not equivalent to a
 durable write being synchronized for days.
+
+## Integration status
+
+This review's Query/outbox boundary is retained by the platform
+[`Client State and Web Offline Capability Canon`](../architecture/client-state-and-web-offline-capability-canon.md).
+Use that canon for Zustand/XState admission, scope-session ownership, browser
+storage classification, and W0–W4 release language. This review remains the
+hostile assessment of the current web/API hardening state; it does not claim
+that all web workflows are durably offline-capable.
 
 ## JWT and session findings
 

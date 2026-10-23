@@ -129,8 +129,8 @@ export function useProfile(userId?: string) {
 
         if (data) {
           const resolved: UserProfile = {
-            ...data,
-            school_name: data.school_name ?? data.organization_name ?? null,
+            ...(data as UserProfile),
+            school_name: (data as any).school_name ?? (data as any).organization_name ?? null,
           };
           dispatch({
             type: 'FETCH_SUCCESS',

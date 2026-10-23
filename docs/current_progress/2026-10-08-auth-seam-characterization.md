@@ -8,6 +8,10 @@ tags: [CHAR, auth, onboarding, session, compatibility]
 
 # Auth and Onboarding Seam Characterization
 
+> **Canonical authority (2026-10-23):** This remains a characterization record.
+> Decisions and new implementation work must follow
+> [`authentication-and-sovereign-identity.md`](../architecture/authentication-and-sovereign-identity.md).
+
 ## Scope
 
 This is a characterization record, not a replacement design and not permission

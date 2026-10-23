@@ -13,5 +13,5 @@ export function decorateRouterWithDoubleGate<T>(router: T): T {
   return augmentRouter(router as any, {
     meta: {},
     middlewares: [doubleGateMiddleware],
-  }) as T;
+  } as any) as T;
 }

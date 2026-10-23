@@ -31,7 +31,7 @@ class DevTelemetryCatcher {
     return DevTelemetryCatcher.instance;
   }
 
-  record(event: Omit<TelemetryDevRecord, 'id' | 'timestamp'>) {
+  record(event: Omit<TelemetryDevRecord, 'id' | 'timestamp'>, options: { print?: boolean } = {}) {
     const record: TelemetryDevRecord = {
       ...event,
       id: Math.random().toString(36).substring(2, 9),
@@ -43,7 +43,7 @@ class DevTelemetryCatcher {
       this.buffer.pop();
     }
 
-    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    if (options.print !== false && typeof __DEV__ !== 'undefined' && __DEV__) {
       this.printToConsole(record);
     }
   }

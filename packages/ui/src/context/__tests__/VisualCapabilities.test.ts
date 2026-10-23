@@ -128,4 +128,32 @@ describe('resolveVisualCapabilities', () => {
     expect(profile.sound).toBe('essential');
     expect(profile.motion).toBe('refined');
   });
+
+  it('latches down visual budget under constrained runtime pressure', () => {
+    const capabilities = resolveVisualCapabilities(
+      reality({ deviceTier: 'high', pressure: 'constrained' }),
+      'auto',
+    );
+
+    expect(capabilities.allowBlur).toBe(false);
+    expect(capabilities.allowRichAnimation).toBe(false);
+    expect(capabilities.allowSubtleAnimation).toBe(true);
+    expect(capabilities.imageCachePolicy).toBe('disk');
+    expect(capabilities.maxCelebrationParticles).toBeLessThanOrEqual(12);
+  });
+
+  it('drops to essential fidelity under severe runtime pressure', () => {
+    const capabilities = resolveVisualCapabilities(
+      reality({ deviceTier: 'high', pressure: 'severe' }),
+      'auto',
+    );
+
+    expect(capabilities.effectiveFidelity).toBe('low');
+    expect(capabilities.allowBlur).toBe(false);
+    expect(capabilities.allowRichAnimation).toBe(false);
+    expect(capabilities.allowSubtleAnimation).toBe(false);
+    expect(capabilities.maxCelebrationParticles).toBe(0);
+    expect(capabilities.imageCachePolicy).toBe('disk');
+    expect(capabilities.shouldPrefetchAssets).toBe(false);
+  });
 });

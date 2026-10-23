@@ -2,7 +2,7 @@
 title: "Polymath Platform: Resilient State & Offline-First Engineering SOP"
 status: "active"
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-10-23
 author: "Naveen"
 scribe: "Antigravity"
 tags: [sop, architecture, offline-first, resilience, state-management, glossary, disaster-recovery]
@@ -15,6 +15,16 @@ tags: [sop, architecture, offline-first, resilience, state-management, glossary,
 The **Polymath Platform** is engineered to operate seamlessly across high-latency, unreliable, and fully offline environments while maintaining strict data integrity, zero UI freeze, predictable state convergence, and secure transition boundaries between guest and authenticated users.
 
 This Standard Operating Procedure (SOP) formalizes the design patterns, failure recovery protocols, cross-platform invariants, and architectural decisions established during kernel-grade stress testing.
+
+## Governing integration
+
+This SOP remains authoritative for transport failure, stale-while-revalidate,
+outbox, replay, and account-isolation invariants. State ownership and the
+browser offline capability levels are governed by
+[`client-state-and-web-offline-capability-canon.md`](client-state-and-web-offline-capability-canon.md).
+In particular, `offlineFirst` scheduling and an in-memory cache do not prove a
+durable browser write or an offline application shell. Each web journey must
+declare and prove its W0–W4 capability level before making an offline claim.
 
 ---
 

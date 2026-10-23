@@ -1,0 +1,2912 @@
+{
+  "generatedAt": "2026-10-23T05:51:21.570Z",
+  "scope": "apps-and-packages-source-excluding-docs-conventional-tests-and-generated-output",
+  "counts": {
+    "filesScanned": 2814,
+    "zustandStores": 18,
+    "persistedStores": 15,
+    "queryClients": 2,
+    "xstateImports": 0,
+    "contexts": 43,
+    "reducers": 53,
+    "fullStoreSubscriptions": 52,
+    "rawStoreAccesses": 46,
+    "browserStorageAccesses": 114,
+    "queryOperations": 138,
+    "queryPersistence": 0,
+    "serviceWorkerRegistrations": 1,
+    "stateRegistryEntries": 20,
+    "unregisteredZustandStorePaths": 0
+  },
+  "zustandStores": [
+    {
+      "symbol": "useVersionGatingStore",
+      "path": "packages/core/src/lib/sync/versionGating.ts",
+      "line": 53,
+      "candidateOwner": "protocol-candidate",
+      "persisted": true
+    },
+    {
+      "symbol": "usePendingIntentStore",
+      "path": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+      "line": 45,
+      "candidateOwner": "navigation-handoff",
+      "persisted": true
+    },
+    {
+      "symbol": "useActiveSubTabsStore",
+      "path": "packages/core/src/store/useActiveSubTabsStore.ts",
+      "line": 246,
+      "candidateOwner": "scoped-preference",
+      "persisted": true
+    },
+    {
+      "symbol": "useAuthStore",
+      "path": "packages/core/src/store/useAuthStore.ts",
+      "line": 14,
+      "candidateOwner": "scope-session-candidate",
+      "persisted": true
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "path": "packages/core/src/store/useCedarDecisionStore.ts",
+      "line": 40,
+      "candidateOwner": "server-state-candidate",
+      "persisted": false
+    },
+    {
+      "symbol": "useConflictStore",
+      "path": "packages/core/src/store/useConflictStore.ts",
+      "line": 38,
+      "candidateOwner": "durable-command-reconciliation",
+      "persisted": true
+    },
+    {
+      "symbol": "useConsentStore",
+      "path": "packages/core/src/store/useConsentStore.ts",
+      "line": 12,
+      "candidateOwner": "device-preference",
+      "persisted": true
+    },
+    {
+      "symbol": "useDeviceSecurityStore",
+      "path": "packages/core/src/store/useDeviceSecurityStore.ts",
+      "line": 29,
+      "candidateOwner": "server-state-candidate",
+      "persisted": false
+    },
+    {
+      "symbol": "useDraftsStore",
+      "path": "packages/core/src/store/useDraftsStore.ts",
+      "line": 24,
+      "candidateOwner": "scoped-preference",
+      "persisted": true
+    },
+    {
+      "symbol": "useEntitlementStore",
+      "path": "packages/core/src/store/useEntitlementStore.ts",
+      "line": 59,
+      "candidateOwner": "server-state-candidate",
+      "persisted": true
+    },
+    {
+      "symbol": "useFeatureStore",
+      "path": "packages/core/src/store/useFeatureStore.ts",
+      "line": 11,
+      "candidateOwner": "server-state-candidate",
+      "persisted": true
+    },
+    {
+      "symbol": "useGrowthStore",
+      "path": "packages/core/src/store/useGrowthStore.ts",
+      "line": 69,
+      "candidateOwner": "domain-projection-review",
+      "persisted": true
+    },
+    {
+      "symbol": "useNotificationStore",
+      "path": "packages/core/src/store/useNotificationStore.ts",
+      "line": 25,
+      "candidateOwner": "server-state-candidate",
+      "persisted": false
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "path": "packages/core/src/store/usePerspectiveStore.ts",
+      "line": 43,
+      "candidateOwner": "scope-session-candidate",
+      "persisted": true
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/core/src/store/useTemporalStore.ts",
+      "line": 37,
+      "candidateOwner": "shared-client",
+      "persisted": false
+    },
+    {
+      "symbol": "useTenantStore",
+      "path": "packages/core/src/store/useTenantStore.ts",
+      "line": 9,
+      "candidateOwner": "scope-session-candidate",
+      "persisted": true
+    },
+    {
+      "symbol": "useUIStore",
+      "path": "packages/core/src/store/useUIStore.ts",
+      "line": 9,
+      "candidateOwner": "device-preference",
+      "persisted": true
+    },
+    {
+      "symbol": "useSelfCanvasStore",
+      "path": "packages/self/src/features/selfCanvasStore.ts",
+      "line": 170,
+      "candidateOwner": "scoped-preference",
+      "persisted": false
+    }
+  ],
+  "queryClients": [
+    {
+      "path": "apps/gurudevi-mobile/src/lib/queryClient.ts",
+      "lines": [
+        3
+      ]
+    },
+    {
+      "path": "apps/gurudevi-web/lib/query/getQueryClient.ts",
+      "lines": [
+        11
+      ]
+    }
+  ],
+  "xstateImports": [],
+  "contexts": [
+    {
+      "path": "apps/edlove-web/app/components/ThemeProvider.tsx",
+      "lines": [
+        13
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/src/interaction/soundFeedback.tsx",
+      "lines": [
+        16
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/src/providers/AssetProvider.tsx",
+      "lines": [
+        10
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/src/somatic/SomaticPulseProvider.tsx",
+      "lines": [
+        22
+      ]
+    },
+    {
+      "path": "apps/gurudevi-web/lib/workbench/WorkbenchScope.tsx",
+      "lines": [
+        6
+      ]
+    },
+    {
+      "path": "packages/analytics/src/components/AnalyticsProvider.tsx",
+      "lines": [
+        11
+      ]
+    },
+    {
+      "path": "packages/analytics/src/context/ActivityPulseContext.tsx",
+      "lines": [
+        15
+      ]
+    },
+    {
+      "path": "packages/core/src/logic/experience/ActivityPulseContext.tsx",
+      "lines": [
+        22
+      ]
+    },
+    {
+      "path": "packages/core/src/providers/AuthProvider.tsx",
+      "lines": [
+        19
+      ]
+    },
+    {
+      "path": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
+      "lines": [
+        20
+      ]
+    },
+    {
+      "path": "packages/profile/src/navigation/ProfileNavigationContext.tsx",
+      "lines": [
+        20
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/maps/MapProvider.tsx",
+      "lines": [
+        10
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/Mascot.tsx",
+      "lines": [
+        37
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/TemporalProvider.tsx",
+      "lines": [
+        13
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/TemporalProvider.web.tsx",
+      "lines": [
+        11
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/actionsheet/index.tsx",
+      "lines": [
+        33
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/avatar/index.tsx",
+      "lines": [
+        13
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/badge/index.tsx",
+      "lines": [
+        16
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/button/index.tsx",
+      "lines": [
+        24
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/checkbox/index.tsx",
+      "lines": [
+        25,
+        33
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/command/index.tsx",
+      "lines": [
+        15
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/fab/index.tsx",
+      "lines": [
+        19
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/form-control/index.tsx",
+      "lines": [
+        8
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/input/index.tsx",
+      "lines": [
+        20
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/modal/index.tsx",
+      "lines": [
+        30
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/popover/index.tsx",
+      "lines": [
+        12
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/progress/index.tsx",
+      "lines": [
+        18
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/radio/index.tsx",
+      "lines": [
+        22,
+        30
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/select/index.tsx",
+      "lines": [
+        20
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/tabs/index.tsx",
+      "lines": [
+        13
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/ui/toast/index.tsx",
+      "lines": [
+        23
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/workspace/shared.tsx",
+      "lines": [
+        24
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/ChatContext.tsx",
+      "lines": [
+        42
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/CircadianProvider.tsx",
+      "lines": [
+        13
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/FABContext.tsx",
+      "lines": [
+        37
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/FeedbackProvider.tsx",
+      "lines": [
+        13
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/FidelityProvider.tsx",
+      "lines": [
+        21
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/LanguageProvider.tsx",
+      "lines": [
+        19
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/RealityProvider.tsx",
+      "lines": [
+        35
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/SensoryProvider.tsx",
+      "lines": [
+        28
+      ]
+    },
+    {
+      "path": "packages/ui/src/context/ThemeProvider.tsx",
+      "lines": [
+        27
+      ]
+    },
+    {
+      "path": "packages/ui/src/providers/ErrorResolutionProvider.tsx",
+      "lines": [
+        15
+      ]
+    },
+    {
+      "path": "packages/ui/src/providers/ToastProvider.tsx",
+      "lines": [
+        45
+      ]
+    }
+  ],
+  "reducers": [
+    {
+      "path": "apps/gurudevi-web/app/(marketing)/(support)/SupportForm.tsx",
+      "lines": [
+        73
+      ]
+    },
+    {
+      "path": "packages/admin/src/bridge/founderWorkspace.ts",
+      "lines": [
+        113,
+        280
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/founder/GlobalCreateModal.tsx",
+      "lines": [
+        111
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/principal/HierarchyBuilder.tsx",
+      "lines": [
+        123
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/principal/InstitutionalCalendarSection.tsx",
+      "lines": [
+        100
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/principal/PrincipalGovernanceTimeline.tsx",
+      "lines": [
+        151
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/principal/PrincipalNotes.tsx",
+      "lines": [
+        312
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/principal/PrincipalObservationsSection.tsx",
+      "lines": [
+        95
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/AcademicCycleManager.tsx",
+      "lines": [
+        86
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/principal/HierarchyDashboard.tsx",
+      "lines": [
+        94
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/principal/InvitesDashboard.tsx",
+      "lines": [
+        81
+      ]
+    },
+    {
+      "path": "packages/classroom/src/components/ClassroomNotes.tsx",
+      "lines": [
+        208
+      ]
+    },
+    {
+      "path": "packages/classroom/src/components/InventoryView.tsx",
+      "lines": [
+        118
+      ]
+    },
+    {
+      "path": "packages/classroom/src/screens/AttendanceScreen.web.tsx",
+      "lines": [
+        130
+      ]
+    },
+    {
+      "path": "packages/classroom/src/screens/NoSchoolView.web.tsx",
+      "lines": [
+        162,
+        385,
+        692,
+        889
+      ]
+    },
+    {
+      "path": "packages/classroom/src/screens/TeacherClassroomDashboard.web.tsx",
+      "lines": [
+        208
+      ]
+    },
+    {
+      "path": "packages/community/src/components/GroupMemberManagement.tsx",
+      "lines": [
+        78
+      ]
+    },
+    {
+      "path": "packages/community/src/hooks/useComposerLogic.ts",
+      "lines": [
+        16
+      ]
+    },
+    {
+      "path": "packages/community/src/screens/AnnouncementsScreen.tsx",
+      "lines": [
+        110
+      ]
+    },
+    {
+      "path": "packages/community/src/screens/CommunityScreen.tsx",
+      "lines": [
+        215
+      ]
+    },
+    {
+      "path": "packages/community/src/screens/CommunityScreen.web.tsx",
+      "lines": [
+        142
+      ]
+    },
+    {
+      "path": "packages/core/src/hooks/useAccountLifecycle.ts",
+      "lines": [
+        47
+      ]
+    },
+    {
+      "path": "packages/core/src/hooks/useDeviceAccounts.ts",
+      "lines": [
+        57
+      ]
+    },
+    {
+      "path": "packages/core/src/hooks/useSchoolCreation.ts",
+      "lines": [
+        107
+      ]
+    },
+    {
+      "path": "packages/library/src/components/modals/StudentAnalysisModal.tsx",
+      "lines": [
+        133
+      ]
+    },
+    {
+      "path": "packages/library/src/screens/CuratorReviewScreen.tsx",
+      "lines": [
+        78
+      ]
+    },
+    {
+      "path": "packages/library/src/screens/LibraryScreen.tsx",
+      "lines": [
+        229
+      ]
+    },
+    {
+      "path": "packages/library/src/screens/LibraryScreen.web.tsx",
+      "lines": [
+        263
+      ]
+    },
+    {
+      "path": "packages/profile/src/components/EditProfileModal.tsx",
+      "lines": [
+        120
+      ]
+    },
+    {
+      "path": "packages/profile/src/components/LivingJourneyPanel.tsx",
+      "lines": [
+        369
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useCommunityProfile.ts",
+      "lines": [
+        44
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useCommunityProfileHistory.ts",
+      "lines": [
+        29
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useProfile.ts",
+      "lines": [
+        61
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useProfileHistory.ts",
+      "lines": [
+        33
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useSchoolProfile.ts",
+      "lines": [
+        34
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useSchoolPulse.ts",
+      "lines": [
+        37
+      ]
+    },
+    {
+      "path": "packages/profile/src/hooks/useSocialLinks.ts",
+      "lines": [
+        43
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/AccountPinModal.tsx",
+      "lines": [
+        107
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/DeviceAccountManager.tsx",
+      "lines": [
+        214
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/DeviceSecurityCenter.tsx",
+      "lines": [
+        165
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/GlobalHeader.tsx",
+      "lines": [
+        94
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/GlobalHeader.web.tsx",
+      "lines": [
+        79
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/GuestDataSyncModal.tsx",
+      "lines": [
+        104
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/InternalBrowser.tsx",
+      "lines": [
+        61
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/media/AssetCreationPortal.tsx",
+      "lines": [
+        44,
+        177
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/media/VideoPlayer.tsx",
+      "lines": [
+        27
+      ]
+    },
+    {
+      "path": "packages/ui/src/components/media/VideoPlayer.web.tsx",
+      "lines": [
+        31
+      ]
+    },
+    {
+      "path": "packages/ui/src/providers/ToastProvider.tsx",
+      "lines": [
+        165
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/AuthScreen.tsx",
+      "lines": [
+        165
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/AuthScreen.web.tsx",
+      "lines": [
+        234
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/OnboardingScreen.tsx",
+      "lines": [
+        458,
+        459,
+        460,
+        461,
+        462,
+        635
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/OnboardingScreen.web.tsx",
+      "lines": [
+        369,
+        370,
+        371,
+        372,
+        373,
+        510
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/WelcomeScreen.web.tsx",
+      "lines": [
+        330
+      ]
+    }
+  ],
+  "persistence": [
+    {
+      "symbols": [],
+      "path": "packages/core/src/lib/sync/MutationAuditLog.ts",
+      "lines": [
+        36
+      ],
+      "names": [
+        "gurudevi-mutation-audit-log"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": false
+    },
+    {
+      "symbols": [],
+      "path": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "lines": [
+        17
+      ],
+      "names": [
+        "gurudevi-mutation-queue"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": false
+    },
+    {
+      "symbols": [
+        "useVersionGatingStore"
+      ],
+      "path": "packages/core/src/lib/sync/versionGating.ts",
+      "lines": [
+        54
+      ],
+      "names": [
+        "gurudevi-version-gating"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": false
+    },
+    {
+      "symbols": [
+        "usePendingIntentStore"
+      ],
+      "path": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+      "lines": [
+        46
+      ],
+      "names": [],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useActiveSubTabsStore"
+      ],
+      "path": "packages/core/src/store/useActiveSubTabsStore.ts",
+      "lines": [
+        247
+      ],
+      "names": [
+        "gurudevi-active-subtabs-storage"
+      ],
+      "hasVersion": true,
+      "hasMigrate": true,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useAuthStore"
+      ],
+      "path": "packages/core/src/store/useAuthStore.ts",
+      "lines": [
+        15
+      ],
+      "names": [
+        "gurudevi-auth-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useConflictStore"
+      ],
+      "path": "packages/core/src/store/useConflictStore.ts",
+      "lines": [
+        39
+      ],
+      "names": [
+        "gurudevi-conflict-store"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useConsentStore"
+      ],
+      "path": "packages/core/src/store/useConsentStore.ts",
+      "lines": [
+        13
+      ],
+      "names": [
+        "gurudevi-pdpa-consent-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useDraftsStore"
+      ],
+      "path": "packages/core/src/store/useDraftsStore.ts",
+      "lines": [
+        25
+      ],
+      "names": [
+        "gurudevi-drafts-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": false
+    },
+    {
+      "symbols": [
+        "useEntitlementStore"
+      ],
+      "path": "packages/core/src/store/useEntitlementStore.ts",
+      "lines": [
+        60
+      ],
+      "names": [
+        "gurudevi-entitlement-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useFeatureStore"
+      ],
+      "path": "packages/core/src/store/useFeatureStore.ts",
+      "lines": [
+        12
+      ],
+      "names": [
+        "gurudevi-feature-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useGrowthStore"
+      ],
+      "path": "packages/core/src/store/useGrowthStore.ts",
+      "lines": [
+        70
+      ],
+      "names": [
+        "gurudevi-growth-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "usePerspectiveStore"
+      ],
+      "path": "packages/core/src/store/usePerspectiveStore.ts",
+      "lines": [
+        44
+      ],
+      "names": [
+        "gurudevi-perspective-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useTenantStore"
+      ],
+      "path": "packages/core/src/store/useTenantStore.ts",
+      "lines": [
+        10
+      ],
+      "names": [
+        "gurudevi-tenant-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    },
+    {
+      "symbols": [
+        "useUIStore"
+      ],
+      "path": "packages/core/src/store/useUIStore.ts",
+      "lines": [
+        10
+      ],
+      "names": [
+        "gurudevi-ui-storage"
+      ],
+      "hasVersion": false,
+      "hasMigrate": false,
+      "hasPartialize": true
+    }
+  ],
+  "fullStoreSubscriptions": [
+    {
+      "symbol": "useConsentStore",
+      "path": "apps/gurudevi-mobile/src/components/PDPAConsentModal.tsx",
+      "line": 14
+    },
+    {
+      "symbol": "useEntitlementStore",
+      "path": "apps/gurudevi-mobile/src/entry/bootstrapRouteState.ts",
+      "line": 114
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/EnergyForecast.tsx",
+      "line": 25
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/ProgressTree.tsx",
+      "line": 25
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/admin/src/components/principal/PrincipalGovernanceTimeline.tsx",
+      "line": 150
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/classroom/src/hooks/useLearningReflections.ts",
+      "line": 25
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/classroom/src/hooks/useSchoolStats.ts",
+      "line": 20
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/classroom/src/screens/StudentDashboard.tsx",
+      "line": 28
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/classroom/src/screens/StudentDashboard.web.tsx",
+      "line": 29
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/classroom/src/screens/StudentProfileScreen.tsx",
+      "line": 45
+    },
+    {
+      "symbol": "useConflictStore",
+      "path": "packages/classroom/src/screens/TeacherClassroomDashboard.tsx",
+      "line": 550
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/classroom/src/workspace/useTeacherWorkspaceShell.tsx",
+      "line": 26
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/community/src/screens/CommunityScreen.tsx",
+      "line": 187
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/community/src/screens/DirectMessageScreen.tsx",
+      "line": 28
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/community/src/screens/DirectMessageScreen.web.tsx",
+      "line": 50
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/community/src/screens/GroupChatScreen.tsx",
+      "line": 26
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/community/src/screens/GroupChatScreen.web.tsx",
+      "line": 42
+    },
+    {
+      "symbol": "useDeviceSecurityStore",
+      "path": "packages/core/src/hooks/useDeviceSecurity.ts",
+      "line": 26
+    },
+    {
+      "symbol": "useEntitlementStore",
+      "path": "packages/core/src/hooks/useFeatureRegistry.ts",
+      "line": 29
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 32
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/core/src/hooks/useManualSnapshot.ts",
+      "line": 25
+    },
+    {
+      "symbol": "useNotificationStore",
+      "path": "packages/core/src/hooks/useNotifications.ts",
+      "line": 36
+    },
+    {
+      "symbol": "useConflictStore",
+      "path": "packages/core/src/lib/sync/sync/SyncManager.tsx",
+      "line": 58
+    },
+    {
+      "symbol": "useEntitlementStore",
+      "path": "packages/core/src/logic/permissions/hooks/usePermissions.ts",
+      "line": 54
+    },
+    {
+      "symbol": "useEntitlementStore",
+      "path": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "line": 28
+    },
+    {
+      "symbol": "useAuthStore",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 33
+    },
+    {
+      "symbol": "useTenantStore",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 34
+    },
+    {
+      "symbol": "useUIStore",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 35
+    },
+    {
+      "symbol": "useFeatureStore",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 36
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/library/src/screens/LibraryScreen.web.tsx",
+      "line": 126
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/components/BaseSelfView.tsx",
+      "line": 47
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/components/BaseSelfView.web.tsx",
+      "line": 44
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/components/EnergyForecast.web.tsx",
+      "line": 73
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/components/ProgressTree.web.tsx",
+      "line": 66
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/components/ResonanceTimeline.tsx",
+      "line": 18
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useDecisionJournal.ts",
+      "line": 17
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useEnergyForecast.ts",
+      "line": 20
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useJournalEntries.ts",
+      "line": 17
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useJourneyData.ts",
+      "line": 31
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useMoodLogs.ts",
+      "line": 25
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useProgressTree.ts",
+      "line": 10
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useStudentGoals.ts",
+      "line": 17
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useThoughtRecords.ts",
+      "line": 24
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/hooks/useWisdom.ts",
+      "line": 17
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/self/src/screens/self/TeacherSelfView.web.tsx",
+      "line": 43
+    },
+    {
+      "symbol": "useSelfCanvasStore",
+      "path": "packages/self/src/screens/SelfScreen.unified.tsx",
+      "line": 47
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/ui/src/components/TemporalNavigator.tsx",
+      "line": 24
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/ui/src/components/TemporalPilot.tsx",
+      "line": 30
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/ui/src/components/TemporalProvider.tsx",
+      "line": 23
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/ui/src/components/TemporalProvider.web.tsx",
+      "line": 20
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/ui/src/components/TemporalScrubber.tsx",
+      "line": 24
+    },
+    {
+      "symbol": "useTemporalStore",
+      "path": "packages/ui/src/components/TemporalShield.tsx",
+      "line": 23
+    }
+  ],
+  "rawStoreAccesses": [
+    {
+      "symbol": "useFeatureStore",
+      "operation": "getState",
+      "path": "apps/gurudevi-mobile/src/lib/fetchFn.ts",
+      "line": 40
+    },
+    {
+      "symbol": "useFeatureStore",
+      "operation": "getState",
+      "path": "apps/gurudevi-mobile/src/lib/fetchFn.ts",
+      "line": 49
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "apps/gurudevi-mobile/src/lib/inngestEvents.ts",
+      "line": 88
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/classroom/src/screens/NoSchoolView.web.tsx",
+      "line": 202
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/classroom/src/screens/NoSchoolView.web.tsx",
+      "line": 442
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/api/demoProvider.ts",
+      "line": 213
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/api/demoProvider.ts",
+      "line": 433
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/api/demoProvider.ts",
+      "line": 454
+    },
+    {
+      "symbol": "useTemporalStore",
+      "operation": "getState",
+      "path": "packages/core/src/api/temporalProxy.ts",
+      "line": 16
+    },
+    {
+      "symbol": "useGrowthStore",
+      "operation": "getState",
+      "path": "packages/core/src/hooks/useBanyanGrowth.ts",
+      "line": 27
+    },
+    {
+      "symbol": "useGrowthStore",
+      "operation": "getState",
+      "path": "packages/core/src/hooks/useNaturePaths.ts",
+      "line": 28
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/hooks/usePerspectiveSwitch.ts",
+      "line": 43
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/hooks/usePerspectiveSwitch.ts",
+      "line": 45
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/hooks/usePerspectiveSwitch.ts",
+      "line": 66
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/hooks/useSafeMutation.ts",
+      "line": 122
+    },
+    {
+      "symbol": "useVersionGatingStore",
+      "operation": "getState",
+      "path": "packages/core/src/lib/sync/sync/SyncManager.tsx",
+      "line": 75
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/logic/permissions/hooks/usePermissions.ts",
+      "line": 57
+    },
+    {
+      "symbol": "useTemporalStore",
+      "operation": "getState",
+      "path": "packages/core/src/logic/utils/temporalUtils.ts",
+      "line": 82
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 49
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 50
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 51
+    },
+    {
+      "symbol": "useUIStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 52
+    },
+    {
+      "symbol": "useGrowthStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 53
+    },
+    {
+      "symbol": "useFeatureStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 54
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/useAuthStore.ts",
+      "line": 34
+    },
+    {
+      "symbol": "useEntitlementStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/useEntitlementStore.ts",
+      "line": 158
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/useNotificationStore.ts",
+      "line": 51
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/usePerspectiveStore.ts",
+      "line": 155
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/usePerspectiveStore.ts",
+      "line": 169
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/usePerspectiveStore.ts",
+      "line": 176
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/usePerspectiveStore.ts",
+      "line": 190
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 59
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 60
+    },
+    {
+      "symbol": "useUIStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 61
+    },
+    {
+      "symbol": "useFeatureStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/useStore.ts",
+      "line": 62
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 19
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 23
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 39
+    },
+    {
+      "symbol": "useTemporalStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 55
+    },
+    {
+      "symbol": "useConflictStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 61
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 62
+    },
+    {
+      "symbol": "useTemporalStore",
+      "operation": "setState",
+      "path": "packages/core/src/testing/scenarioHarness.ts",
+      "line": 63
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/self/src/features/selfCanvasStore.ts",
+      "line": 55
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/ui/src/hooks/useDemoBridge.ts",
+      "line": 67
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/ui/src/hooks/useDemoBridge.ts",
+      "line": 103
+    },
+    {
+      "symbol": "useFeatureStore",
+      "operation": "getState",
+      "path": "packages/ui/src/providers/FeatureProvider.tsx",
+      "line": 26
+    }
+  ],
+  "browserStorageAccesses": [
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/edlove-web/app/components/ThemeProvider.tsx",
+      "line": 25
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/edlove-web/app/components/ThemeProvider.tsx",
+      "line": 66
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/edlove-web/app/layout.tsx",
+      "line": 64
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/edlove-web/src/utils/helpers.ts",
+      "line": 193
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/edlove-web/src/utils/helpers.ts",
+      "line": 205
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/edlove-web/src/utils/helpers.ts",
+      "line": 219
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts",
+      "line": 68
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts",
+      "line": 77
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts",
+      "line": 113
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+      "line": 136
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 25
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 26
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 41
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 42
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 43
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 64
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 67
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/ExploreMuseumModal.tsx",
+      "line": 65
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/ExploreMuseumModal.tsx",
+      "line": 69
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/ExploreMuseumModal.tsx",
+      "line": 95
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "line": 104
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "line": 134
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "line": 144
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "line": 145
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "line": 163
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "line": 164
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "line": 120
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "line": 132
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "line": 149
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "line": 211
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "line": 274
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "line": 287
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx",
+      "line": 171
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx",
+      "line": 182
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/onboarding/OnboardingForm.tsx",
+      "line": 27
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/onboarding/OnboardingForm.tsx",
+      "line": 129
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/onboarding/OnboardingForm.tsx",
+      "line": 167
+    },
+    {
+      "facility": "localStorage",
+      "operation": "clear",
+      "path": "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+      "line": 334
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx",
+      "line": 192
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx",
+      "line": 210
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 25
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 30
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 37
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 43
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 55
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 65
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 72
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "line": 78
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+      "line": 146
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+      "line": 183
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/components/PDPAConsentBanner.tsx",
+      "line": 14
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/components/PDPAConsentBanner.tsx",
+      "line": 27
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 68
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 69
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 70
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 71
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/canvas/useBrowserWorkspaceAppearance.ts",
+      "line": 48
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/canvas/useBrowserWorkspaceAppearance.ts",
+      "line": 61
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/canvas/useBrowserWorkspaceAppearance.ts",
+      "line": 77
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/canvas/useBrowserWorkspaceAppearance.ts",
+      "line": 106
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/canvas/useSelfCanvas.ts",
+      "line": 44
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/canvas/useSelfCanvas.ts",
+      "line": 59
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/explore/exploreCapacity.ts",
+      "line": 93
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/explore/exploreCapacity.ts",
+      "line": 106
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/explore/exploreCapacity.ts",
+      "line": 116
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/explore/practiceStorage.ts",
+      "line": 104
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/explore/storage.ts",
+      "line": 28
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/explore/storage.ts",
+      "line": 29
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/explore/storage.ts",
+      "line": 33
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/explore/storage.ts",
+      "line": 35
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/explore/storage.ts",
+      "line": 38
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 39
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 45
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 48
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 56
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 82
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 88
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 89
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 96
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 98
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 134
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 141
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 147
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 38
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 46
+    },
+    {
+      "facility": "sessionStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "line": 49
+    },
+    {
+      "facility": "indexedDB",
+      "operation": "open",
+      "path": "apps/gurudevi-web/lib/storage/wallpaperIndexedDb.ts",
+      "line": 25
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workbench/quickAccessPreferences.ts",
+      "line": 22
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workbench/quickAccessPreferences.ts",
+      "line": 51
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workbench/storage.ts",
+      "line": 19
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/workbench/storage.ts",
+      "line": 20
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workbench/storage.ts",
+      "line": 23
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workbench/storage.ts",
+      "line": 25
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workbench/storage.ts",
+      "line": 28
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 78
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 137
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 157
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 193
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 216
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 227
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 252
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 279
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 509
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 527
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
+      "line": 542
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "packages/core/src/adapters/powersync/browserAccountCoordinator.ts",
+      "line": 29
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "packages/core/src/adapters/WebCryptoAdapter.ts",
+      "line": 32
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "packages/core/src/adapters/WebCryptoAdapter.ts",
+      "line": 36
+    },
+    {
+      "facility": "localStorage",
+      "operation": "removeItem",
+      "path": "packages/core/src/adapters/WebCryptoAdapter.ts",
+      "line": 40
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "packages/form-builder/src/services.ts",
+      "line": 85
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "packages/form-builder/src/services.ts",
+      "line": 92
+    },
+    {
+      "facility": "indexedDB",
+      "operation": "open",
+      "path": "packages/library/src/api/database.web.ts",
+      "line": 34
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "packages/ui/src/components/LotusPetalFAB.tsx",
+      "line": 188
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "packages/ui/src/components/LotusPetalFAB.tsx",
+      "line": 231
+    }
+  ],
+  "queryOperations": [
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-mobile/src/screens/TanStackPacerDemo.tsx",
+      "line": 26
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+      "line": 189
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useAcademicDomain.ts",
+      "line": 22
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useAcademicDomain.ts",
+      "line": 30
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useTuitionDomain.ts",
+      "line": 117
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useTuitionDomain.ts",
+      "line": 125
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useTuitionDomain.ts",
+      "line": 133
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useWorkspaceDomain.ts",
+      "line": 30
+    },
+    {
+      "operation": "useQuery",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useWorkspaceDomain.ts",
+      "line": 50
+    },
+    {
+      "operation": "useMutation",
+      "path": "apps/gurudevi-web/lib/domain/hooks/useWorkspaceDomain.ts",
+      "line": 76
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 25
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 41
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 57
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 99
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 105
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 111
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 127
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 133
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 149
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 155
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/hooks/useDashboardHooks.ts",
+      "line": 161
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/screens/PrincipalDashboard.web.tsx",
+      "line": 203
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/admin/src/screens/PrincipalDashboard.web.tsx",
+      "line": 214
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/analytics/src/hooks/queries.ts",
+      "line": 18
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/analytics/src/hooks/queries.ts",
+      "line": 27
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/analytics/src/hooks/queries.ts",
+      "line": 36
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/analytics/src/hooks/queries.ts",
+      "line": 71
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/hooks/useInventory.ts",
+      "line": 9
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/classroom/src/hooks/useStudentDashboardHooks.ts",
+      "line": 40
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/hooks/useTeacherDashboardHooks.ts",
+      "line": 36
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/hooks/useTeacherDashboardHooks.ts",
+      "line": 57
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/hooks/useTeacherDashboardHooks.ts",
+      "line": 87
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 28
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 35
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 41
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 46
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 55
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 59
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 63
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 67
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/classroom/src/planBridge/usePlanBridge.ts",
+      "line": 71
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/community/src/hooks/useCommunity.ts",
+      "line": 37
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/community/src/hooks/useCommunity.ts",
+      "line": 48
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/community/src/hooks/useCommunity.ts",
+      "line": 63
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/community/src/hooks/useCommunity.ts",
+      "line": 73
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/adapters/powersync/hooks.ts",
+      "line": 46
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/adapters/powersync/hooks.ts",
+      "line": 62
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/attendance.hooks.ts",
+      "line": 11
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/attendance.hooks.ts",
+      "line": 26
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/attendance.hooks.ts",
+      "line": 40
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/attendance.hooks.ts",
+      "line": 59
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/attendance.hooks.ts",
+      "line": 69
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/classroom.hooks.ts",
+      "line": 14
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/classroom.hooks.ts",
+      "line": 27
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/classroom.hooks.ts",
+      "line": 40
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/classroom.hooks.ts",
+      "line": 52
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/classroom.hooks.ts",
+      "line": 65
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/comment.hooks.ts",
+      "line": 19
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/comment.hooks.ts",
+      "line": 55
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/comment.hooks.ts",
+      "line": 66
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/comment.hooks.ts",
+      "line": 73
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/comment.hooks.ts",
+      "line": 80
+    },
+    {
+      "operation": "useInfiniteQuery",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 37
+    },
+    {
+      "operation": "useInfiniteQuery",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 61
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 86
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 119
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 164
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 174
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/community.hooks.ts",
+      "line": 184
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/founder.hooks.ts",
+      "line": 15
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/founder.hooks.ts",
+      "line": 28
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/founder.hooks.ts",
+      "line": 42
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/founder.hooks.ts",
+      "line": 55
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/founder.hooks.ts",
+      "line": 68
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/grading.hooks.ts",
+      "line": 20
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/grading.hooks.ts",
+      "line": 51
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/grading.hooks.ts",
+      "line": 75
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/library.hooks.ts",
+      "line": 11
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/library.hooks.ts",
+      "line": 29
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/library.hooks.ts",
+      "line": 43
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/library.hooks.ts",
+      "line": 52
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/library.hooks.ts",
+      "line": 62
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/manifesto.hooks.ts",
+      "line": 16
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/manifesto.hooks.ts",
+      "line": 22
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/manifesto.hooks.ts",
+      "line": 32
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/notification.hooks.ts",
+      "line": 24
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/notification.hooks.ts",
+      "line": 38
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/notification.hooks.ts",
+      "line": 84
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/notification.hooks.ts",
+      "line": 95
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/poll.hooks.ts",
+      "line": 20
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/poll.hooks.ts",
+      "line": 31
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/presence.hooks.ts",
+      "line": 14
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/profile.hooks.ts",
+      "line": 11
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/profile.hooks.ts",
+      "line": 22
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/profile.hooks.ts",
+      "line": 35
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/api/hooks/profile.hooks.ts",
+      "line": 48
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/social.hooks.ts",
+      "line": 12
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/social.hooks.ts",
+      "line": 25
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/api/hooks/social.hooks.ts",
+      "line": 32
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useIdentity.ts",
+      "line": 20
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 35
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 45
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 54
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 63
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 72
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useRewards.ts",
+      "line": 53
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useRewards.ts",
+      "line": 92
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/hooks/useRewards.ts",
+      "line": 112
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/hooks/useRewards.ts",
+      "line": 124
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/hooks/useRewards.ts",
+      "line": 136
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/hooks/useTaskActions.ts",
+      "line": 7
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/hooks/useTaskActions.ts",
+      "line": 14
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/core/src/hooks/useTaskActions.ts",
+      "line": 21
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useTemporalHeatmap.ts",
+      "line": 22
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/core/src/hooks/useTracking.ts",
+      "line": 78
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/graphics/src/components/CollaborativeGrove.tsx",
+      "line": 33
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 127
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 132
+    },
+    {
+      "operation": "useInfiniteQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 139
+    },
+    {
+      "operation": "useInfiniteQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 152
+    },
+    {
+      "operation": "useInfiniteQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 169
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 186
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 204
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 217
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 233
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 255
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 274
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 291
+    },
+    {
+      "operation": "useMutation",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 308
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 401
+    },
+    {
+      "operation": "useInfiniteQuery",
+      "path": "packages/library/src/hooks/useLibrary.ts",
+      "line": 416
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/library/src/screens/ResourceHubScreen.tsx",
+      "line": 166
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/library/src/screens/ResourceHubScreen.tsx",
+      "line": 177
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/profile/src/hooks/useInstitutionalHistory.ts",
+      "line": 6
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/profile/src/hooks/useInstitutionalHistory.ts",
+      "line": 18
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/profile/src/hooks/usePrincipalGovernanceHistory.ts",
+      "line": 6
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/profile/src/hooks/useStudentAcademicHistory.ts",
+      "line": 12
+    },
+    {
+      "operation": "useQuery",
+      "path": "packages/profile/src/hooks/useTeacherProfessionalHistory.ts",
+      "line": 12
+    }
+  ],
+  "queryPersistence": [],
+  "serviceWorkerRegistrations": [
+    {
+      "path": "packages/core/src/native/webPush.web.ts",
+      "line": 60
+    }
+  ],
+  "stateRegistry": {
+    "path": "packages/core/src/lib/clientStateFoundation.ts",
+    "entryCount": 20,
+    "unregisteredZustandStorePaths": []
+  }
+}

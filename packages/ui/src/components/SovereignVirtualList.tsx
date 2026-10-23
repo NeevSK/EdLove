@@ -4,6 +4,7 @@ import { FlashList, type FlashListProps, type ListRenderItem } from '@shopify/fl
 import { LayoutLoopSentinel } from '../sentinels/LayoutLoopSentinel';
 import { BrandedEmptyState } from './BrandedEmptyState';
 import { SkeletonList } from './Skeleton';
+import { tokens } from '../tokens';
 
 export interface SovereignVirtualListProps<T> extends Omit<FlashListProps<T>, 'renderItem'> {
   name: string;
@@ -57,8 +58,8 @@ export function SovereignVirtualList<T>({
       <RefreshControl
         refreshing={isRefreshing}
         onRefresh={onRefresh}
-        tintColor="#D4843A"
-        colors={['#D4843A']}
+        tintColor={tokens.colors.primary}
+        colors={[tokens.colors.primary]}
       />
     ) : undefined);
 

@@ -2,7 +2,7 @@
 title: "PowerSync Phased Implementation Plan"
 status: "active"
 created: 2026-08-10
-updated: 2026-08-12
+updated: 2026-10-23
 author: "Codex"
 tags: [powersync, implementation-plan, migration, testing, release, offline-first]
 ---
@@ -10,6 +10,15 @@ tags: [powersync, implementation-plan, migration, testing, release, offline-firs
 # PowerSync Phased Implementation Plan
 
 This plan takes the repository from a disabled, partially wired PowerSync foundation to a measured production rollout. Every phase has a gate. A later phase must not hide an earlier correctness gap.
+
+## Integration status
+
+PowerSync remains a selective replica, not the universal client-state or
+offline solution. The cross-platform state owner and browser W0–W4 capability
+rules now live in the root
+[`Client State and Web Offline Capability Canon`](../../../../docs/architecture/client-state-and-web-offline-capability-canon.md).
+This plan remains authoritative for PowerSync admission, account-scoped local
+databases, and its mobile/browser replica rollout gates.
 
 ## Operating model: many device accounts, one active local runtime
 

@@ -1,4 +1,5 @@
 import {
+  reclaimHermesMemory,
   reduceWorkAdmission,
   resolveWorkAdmission,
   type WorkAdmissionPhase,
@@ -78,6 +79,13 @@ export function OptionalStartupServices({ phase }: { phase: Exclude<WorkAdmissio
       (snapshot: { memory: NativePressure; thermal: NativePressure }) => {
         const startedAt = __DEV__ ? performance.now() : null;
         recovery.update(snapshot);
+        if (snapshot.memory === 'constrained' || snapshot.memory === 'severe') {
+          reclaimHermesMemory({
+            severity: snapshot.memory,
+            reason: `native-pressure-${source}`,
+            forceGC: true,
+          });
+        }
         if (startedAt !== null) {
           recordDevelopmentTrace({
             category: 'runtime-pressure',
@@ -172,8 +180,10 @@ export function OptionalStartupServices({ phase }: { phase: Exclude<WorkAdmissio
           category: 'admission',
           phase: admission.current.phase,
           app_state: admission.current.appState,
-          pressure: admission.current.pressure,
+          pressure_bucket: admission.current.pressure,
+          capacity_known: admission.current.capacityKnown,
           battery_saver: reality.isBatterySaverMode,
+          optional_cap: allowed ? decision.maxOptionalConcurrency : 0,
           allowed,
           reason: reality.isBatterySaverMode ? 'battery-saver' : decision.reason,
           queue_depth: WARMUPS.filter((task) => !progress.current.started.has(task.id)).length,

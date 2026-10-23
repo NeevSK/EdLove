@@ -1,3 +1,4 @@
+import { orpc } from '@repo/core/api/orpcClient';
 import { socialAPI } from '@repo/core/api/social';
 import { realtime } from '@repo/core/logic/managers/factory';
 import { useStore } from '@repo/core/store/useStore';
@@ -13,24 +14,31 @@ export const notificationKeys = {
 
 /**
  * Hook for managing real-time notifications, promoted to @repo/core.
+ * Backed by typed oRPC v2 contracts with deterministic cache keys.
  */
 export function useNotificationHooks() {
   const queryClient = useQueryClient();
   const userId = useStore((state) => state.user?.id);
 
-  // Fetch list
+  // Fetch list via typed oRPC v2 queryOptions
   const { data: notificationsData, isLoading: isListLoading } = useQuery({
-    queryKey: notificationKeys.list(userId),
-    queryFn: () => socialAPI.getNotifications(40),
-    enabled: !!userId,
+    ...orpc.social.getNotifications.queryOptions({
+      input: { query: { limit: 40 } },
+    }),
+    select: (notifications) =>
+      (notifications as any[]).map((notification: any) => ({
+        ...notification,
+        body: notification.message,
+      })),
+    enabled: Boolean(userId),
     staleTime: 60_000,
   });
 
-  // Unread badge count
-  const { data: countData } = useQuery({
-    queryKey: notificationKeys.count(userId),
-    queryFn: socialAPI.getUnreadNotificationCount,
-    enabled: !!userId,
+  // Unread badge count via typed oRPC v2 queryOptions
+  const { data: countData } = useQuery<number>({
+    ...orpc.social.getUnreadNotificationCount.queryOptions(),
+    select: (res: any) => Number(res ?? 0),
+    enabled: Boolean(userId),
     staleTime: 30_000,
     refetchInterval: 60_000,
   });
@@ -47,6 +55,14 @@ export function useNotificationHooks() {
         filter: `user_id=eq.${userId}`,
       },
       (payload) => {
+        queryClient.setQueryData<Notification[]>(
+          orpc.social.getNotifications.queryKey({ input: { query: { limit: 40 } } }),
+          (prev) => [payload.new as Notification, ...(prev ?? [])],
+        );
+        queryClient.setQueryData<number>(
+          orpc.social.getUnreadNotificationCount.queryKey(),
+          (prev) => (prev ?? 0) + 1,
+        );
         queryClient.setQueryData<Notification[]>(notificationKeys.list(userId), (prev) => [
           payload.new as Notification,
           ...(prev ?? []),
@@ -68,14 +84,22 @@ export function useNotificationHooks() {
   const markReadMutation = useMutation({
     mutationFn: (notifId: string) => socialAPI.markNotificationRead(notifId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: orpc.social.getNotifications.key() }),
+        queryClient.invalidateQueries({ queryKey: orpc.social.getUnreadNotificationCount.key() }),
+        queryClient.invalidateQueries({ queryKey: notificationKeys.all }),
+      ]);
     },
   });
 
   const markAllReadMutation = useMutation({
     mutationFn: socialAPI.markAllNotificationsRead,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: orpc.social.getNotifications.key() }),
+        queryClient.invalidateQueries({ queryKey: orpc.social.getUnreadNotificationCount.key() }),
+        queryClient.invalidateQueries({ queryKey: notificationKeys.all }),
+      ]);
     },
   });
 

@@ -75,6 +75,8 @@ export interface VisualCapabilities {
   experience: ExperienceProfile;
 }
 
+export type RealityPressure = 'unknown' | 'normal' | 'constrained' | 'severe';
+
 /**
  * Reality State - Hardware and network constraints
  */
@@ -85,6 +87,7 @@ export interface RealityState {
   isDataSaverMode: boolean;
   isBatterySaverMode: boolean;
   isReducedMotionEnabled: boolean;
+  pressure?: RealityPressure;
 }
 
 export interface EnvironmentState {

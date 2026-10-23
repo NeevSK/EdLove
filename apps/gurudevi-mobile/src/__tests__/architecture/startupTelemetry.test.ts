@@ -89,6 +89,9 @@ describe('startup stage telemetry', () => {
     expect(traceEvents[0]).toMatchObject({
       trace_session_started: true,
       trace_event_index: 1,
+      wall_time_ms: expect.any(Number),
+      at_ms: expect.any(Number),
+      time_origin_ms: expect.any(Number),
     });
     expect(traceEvents[1]).toMatchObject({
       trace_session_id: traceEvents[0].trace_session_id,
@@ -102,5 +105,41 @@ describe('startup stage telemetry', () => {
         expect.stringContaining('"state":"failed"'),
       ]),
     );
+  });
+
+  it('serializes bounded admission inputs needed to explain a governor decision', async () => {
+    vi.stubGlobal('__DEV__', true);
+    vi.resetModules();
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { recordDevelopmentTrace } = await import('@/boot/startupTelemetry');
+
+    recordDevelopmentTrace({
+      category: 'admission',
+      phase: 'protected-ready',
+      app_state: 'active',
+      pressure_bucket: 'unknown',
+      capacity_known: true,
+      battery_saver: false,
+      optional_cap: 1,
+      allowed: true,
+      reason: 'eligible',
+      queue_depth: 2,
+      account_id: 'must-not-be-recorded',
+    });
+
+    const trace = JSON.parse(String(log.mock.calls[0]?.[0]).replace(/^\[runtime-trace\] /, ''));
+    expect(trace).toMatchObject({
+      category: 'admission',
+      phase: 'protected-ready',
+      app_state: 'active',
+      pressure_bucket: 'unknown',
+      capacity_known: true,
+      battery_saver: false,
+      optional_cap: 1,
+      allowed: true,
+      reason: 'eligible',
+      queue_depth: 2,
+    });
+    expect(trace).not.toHaveProperty('account_id');
   });
 });

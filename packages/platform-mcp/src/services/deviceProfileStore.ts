@@ -38,6 +38,8 @@ export interface DeviceProfileTraceEvent {
   state: string | null;
   outcome: string | null;
   duration_ms: number | null;
+  wall_time_ms: number | null;
+  time_origin_ms: number | null;
   event_json: string;
 }
 
@@ -50,17 +52,41 @@ const TRACE_CATEGORIES = new Set([
   'admission',
   'optional-queue',
   'outbox',
+  'route-transition',
+  'interaction',
 ]);
-const TRACE_STRING_FIELDS = ['task', 'state', 'outcome'] as const;
+const TRACE_STRING_FIELDS = [
+  'task',
+  'state',
+  'outcome',
+  'source',
+  'memory',
+  'thermal',
+  'phase',
+  'app_state',
+  'operation',
+  'event_name',
+  'pressure',
+  'pressure_bucket',
+  'reason',
+] as const;
 const TRACE_NUMERIC_FIELDS = [
   'duration_ms',
   'processing_duration_ms',
+  'input_delay_ms',
+  'processing_ms',
+  'presentation_delay_ms',
   'queue_depth',
   'queue_wait_ms',
   'trace_event_index',
+  'wall_time_ms',
+  'time_origin_ms',
+  'interaction_id',
   'previous_trace_write_call_ms',
   'cumulative_trace_write_call_ms',
+  'optional_cap',
 ] as const;
+const TRACE_BOOLEAN_FIELDS = ['capacity_known', 'battery_saver', 'allowed'] as const;
 
 /** Projects only fixed runtime trace fields; raw logcat remains available as an output. */
 export function parseDeviceProfileTraceEvents(
@@ -84,7 +110,9 @@ export function parseDeviceProfileTraceEvents(
         !Number.isSafeInteger(value.trace_event_index) ||
         value.trace_event_index < 1 ||
         typeof value.category !== 'string' ||
-        !TRACE_CATEGORIES.has(value.category)
+        !TRACE_CATEGORIES.has(value.category) ||
+        (value.wall_time_ms !== undefined &&
+          (typeof value.wall_time_ms !== 'number' || !Number.isFinite(value.wall_time_ms)))
       )
         continue;
       const projected: Record<string, string | number | boolean> = {
@@ -114,6 +142,10 @@ export function parseDeviceProfileTraceEvents(
           projected[field] = item;
         }
       }
+      for (const field of TRACE_BOOLEAN_FIELDS) {
+        const item = value[field];
+        if (typeof item === 'boolean') projected[field] = item;
+      }
       events.push({
         capture_id: captureId,
         trace_session_id:
@@ -126,6 +158,9 @@ export function parseDeviceProfileTraceEvents(
         state: typeof projected.state === 'string' ? projected.state : null,
         outcome: typeof projected.outcome === 'string' ? projected.outcome : null,
         duration_ms: typeof projected.duration_ms === 'number' ? projected.duration_ms : null,
+        wall_time_ms: typeof projected.wall_time_ms === 'number' ? projected.wall_time_ms : null,
+        time_origin_ms:
+          typeof projected.time_origin_ms === 'number' ? projected.time_origin_ms : null,
         event_json: JSON.stringify(projected),
       });
     } catch {
@@ -143,6 +178,10 @@ export const DEVICE_PROFILE_DATABASE_PATH = path.join(
 );
 
 function initialize(database: DatabaseSync): void {
+  const priorVersion = Number(
+    (database.prepare('PRAGMA user_version').get() as { user_version?: number } | undefined)
+      ?.user_version ?? 0,
+  );
   database.exec(`
     PRAGMA foreign_keys = ON;
     CREATE TABLE IF NOT EXISTS device_profile_captures (
@@ -185,8 +224,10 @@ function initialize(database: DatabaseSync): void {
       state TEXT,
       outcome TEXT,
       duration_ms REAL,
+      wall_time_ms REAL,
+      time_origin_ms REAL,
       event_json TEXT NOT NULL,
-      PRIMARY KEY (capture_id, trace_event_index)
+      PRIMARY KEY (capture_id, trace_session_id, trace_event_index)
     );
     CREATE INDEX IF NOT EXISTS idx_device_profile_trace_category
       ON device_profile_trace_events(capture_id, category, trace_event_index);
@@ -203,7 +244,6 @@ function initialize(database: DatabaseSync): void {
       FROM device_profile_captures
       WHERE status IN ('complete', 'partial')
       GROUP BY app_id, scenario_label, profile_name, device_alias, model, android_sdk, build_kind;
-    PRAGMA user_version = 2;
   `);
   const traceColumns = database.prepare('PRAGMA table_info(device_profile_trace_events)').all();
   const columnNames = new Set(traceColumns.map((column) => String(column.name)));
@@ -215,7 +255,115 @@ function initialize(database: DatabaseSync): void {
       'ALTER TABLE device_profile_trace_events ADD COLUMN trace_session_started INTEGER NOT NULL DEFAULT 0',
     );
   }
-  database.exec('PRAGMA user_version = 3');
+  if (!columnNames.has('wall_time_ms')) {
+    database.exec('ALTER TABLE device_profile_trace_events ADD COLUMN wall_time_ms REAL');
+  }
+  if (!columnNames.has('time_origin_ms')) {
+    database.exec('ALTER TABLE device_profile_trace_events ADD COLUMN time_origin_ms REAL');
+  }
+  if (priorVersion < 5) {
+    database.exec('BEGIN IMMEDIATE');
+    try {
+      database.exec(`
+        CREATE TABLE device_profile_trace_events_v5 (
+          capture_id TEXT NOT NULL REFERENCES device_profile_captures(capture_id) ON DELETE CASCADE,
+          trace_session_id TEXT,
+          trace_session_started INTEGER NOT NULL DEFAULT 0,
+          trace_event_index INTEGER NOT NULL,
+          at_ms REAL NOT NULL,
+          category TEXT NOT NULL,
+          task TEXT,
+          state TEXT,
+          outcome TEXT,
+          duration_ms REAL,
+          wall_time_ms REAL,
+          time_origin_ms REAL,
+          event_json TEXT NOT NULL,
+          PRIMARY KEY (capture_id, trace_session_id, trace_event_index)
+        );
+        INSERT OR IGNORE INTO device_profile_trace_events_v5
+          SELECT capture_id, trace_session_id, trace_session_started, trace_event_index,
+            at_ms, category, task, state, outcome, duration_ms, wall_time_ms,
+            time_origin_ms, event_json
+          FROM device_profile_trace_events;
+        DROP TABLE device_profile_trace_events;
+        ALTER TABLE device_profile_trace_events_v5 RENAME TO device_profile_trace_events;
+      `);
+      const logcatRows = database
+        .prepare(
+          `SELECT capture_id, output_text FROM device_profile_outputs
+           WHERE output_name = 'logcat'`,
+        )
+        .all() as Array<{ capture_id: string; output_text: string }>;
+      const insertTrace = database.prepare(
+        `INSERT OR REPLACE INTO device_profile_trace_events
+         (capture_id, trace_session_id, trace_session_started, trace_event_index, at_ms,
+          category, task, state, outcome, duration_ms, wall_time_ms, time_origin_ms, event_json)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      );
+      for (const row of logcatRows) {
+        for (const event of parseDeviceProfileTraceEvents(row.output_text, row.capture_id)) {
+          insertTrace.run(
+            event.capture_id,
+            event.trace_session_id,
+            event.trace_session_started ? 1 : 0,
+            event.trace_event_index,
+            event.at_ms,
+            event.category,
+            event.task,
+            event.state,
+            event.outcome,
+            event.duration_ms,
+            event.wall_time_ms,
+            event.time_origin_ms,
+            event.event_json,
+          );
+        }
+      }
+      database.exec('PRAGMA user_version = 5');
+      database.exec('COMMIT');
+    } catch (error) {
+      database.exec('ROLLBACK');
+      throw error;
+    }
+  }
+  if (priorVersion < 7) {
+    const logcatRows = database.prepare(
+      `SELECT capture_id, output_text FROM device_profile_outputs
+       WHERE output_name = 'logcat'`,
+    );
+    const insertTrace = database.prepare(
+      `INSERT OR REPLACE INTO device_profile_trace_events
+       (capture_id, trace_session_id, trace_session_started, trace_event_index, at_ms,
+        category, task, state, outcome, duration_ms, wall_time_ms, time_origin_ms, event_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    for (const row of logcatRows.iterate() as Iterable<{
+      capture_id: string;
+      output_text: string;
+    }>) {
+      for (const event of parseDeviceProfileTraceEvents(row.output_text, row.capture_id)) {
+        insertTrace.run(
+          event.capture_id,
+          event.trace_session_id,
+          event.trace_session_started ? 1 : 0,
+          event.trace_event_index,
+          event.at_ms,
+          event.category,
+          event.task,
+          event.state,
+          event.outcome,
+          event.duration_ms,
+          event.wall_time_ms,
+          event.time_origin_ms,
+          event.event_json,
+        );
+      }
+    }
+    database.exec('PRAGMA user_version = 7');
+  }
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_device_profile_trace_category
+    ON device_profile_trace_events(capture_id, category, trace_event_index)`);
 }
 
 export async function storeDeviceProfileCapture(input: DeviceProfileStoreInput): Promise<string> {
@@ -267,8 +415,8 @@ export async function storeDeviceProfileCapture(input: DeviceProfileStoreInput):
       if (logcat !== null && logcat !== undefined) {
         const insertTrace = database.prepare(
           `INSERT OR IGNORE INTO device_profile_trace_events
-           (capture_id, trace_session_id, trace_session_started, trace_event_index, at_ms, category, task, state, outcome, duration_ms, event_json)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (capture_id, trace_session_id, trace_session_started, trace_event_index, at_ms, category, task, state, outcome, duration_ms, wall_time_ms, time_origin_ms, event_json)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         );
         for (const event of parseDeviceProfileTraceEvents(logcat, input.captureId)) {
           insertTrace.run(
@@ -282,6 +430,8 @@ export async function storeDeviceProfileCapture(input: DeviceProfileStoreInput):
             event.state,
             event.outcome,
             event.duration_ms,
+            event.wall_time_ms,
+            event.time_origin_ms,
             event.event_json,
           );
         }
@@ -350,8 +500,9 @@ export function listDeviceProfileTraceEvents(
     initialize(database);
     const rows = database
       .prepare(
-        `SELECT capture_id, trace_session_id, trace_session_started, trace_event_index, at_ms, category, task, state, outcome, duration_ms, event_json
-       FROM device_profile_trace_events WHERE capture_id = ? ORDER BY trace_event_index LIMIT ?`,
+        `SELECT capture_id, trace_session_id, trace_session_started, trace_event_index, at_ms, category, task, state, outcome, duration_ms, wall_time_ms, time_origin_ms, event_json
+       FROM device_profile_trace_events WHERE capture_id = ?
+       ORDER BY wall_time_ms, trace_event_index, trace_session_id LIMIT ?`,
       )
       .all(captureId, limit);
     return rows.map((row) => ({
@@ -365,6 +516,8 @@ export function listDeviceProfileTraceEvents(
       state: typeof row.state === 'string' ? row.state : null,
       outcome: typeof row.outcome === 'string' ? row.outcome : null,
       duration_ms: typeof row.duration_ms === 'number' ? row.duration_ms : null,
+      wall_time_ms: typeof row.wall_time_ms === 'number' ? row.wall_time_ms : null,
+      time_origin_ms: typeof row.time_origin_ms === 'number' ? row.time_origin_ms : null,
       event_json: String(row.event_json),
     }));
   } finally {

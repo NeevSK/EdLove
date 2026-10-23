@@ -1,16 +1,15 @@
-import { api } from '@repo/core/api/client';
+import { inventoryAPI } from '@repo/core/api/client';
 import type { InventoryItem } from '@repo/core/types';
-
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 export function useInventory(classroomId: string) {
   const [items, setItems] = useState<InventoryItem[]>([]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['inventory', classroomId],
-    queryFn: () => api.inventory.getAll(classroomId),
-    enabled: !!classroomId,
+    queryFn: () => inventoryAPI.getAll(classroomId),
+    enabled: Boolean(classroomId),
   });
 
   useEffect(() => {
@@ -23,5 +22,6 @@ export function useInventory(classroomId: string) {
     items,
     setItems,
     isLoading,
+    refetch,
   };
 }

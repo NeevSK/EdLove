@@ -46,7 +46,7 @@ export default function MuteHubScreen() {
     try {
       setError(null);
       const data = await socialAPI.getMutedUsers();
-      setMutedUsers((data as MutedUser[]) || []);
+      setMutedUsers((data as unknown as MutedUser[]) || []);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to load muted connections');
     } finally {

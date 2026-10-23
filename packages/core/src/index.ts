@@ -155,6 +155,21 @@ export {
   resolvePracticeAvailability,
 } from '@repo/core/logic/registry/capabilityManifest';
 export { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+export type {
+  EdloveUuidV8Domain,
+  EdloveUuidV8MintOrigin,
+  EdloveUuidV8Parts,
+  EdloveUuidV8Subtype,
+  ParsedEdloveUuidV8,
+} from '@repo/core/logic/utils/edloveUuidV8';
+export {
+  edloveUuidV8Domain,
+  edloveUuidV8MintOrigin,
+  edloveUuidV8Subtype,
+  encodeEdloveUuidV8,
+  isEdloveUuidV8,
+  parseEdloveUuidV8,
+} from '@repo/core/logic/utils/edloveUuidV8';
 export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';

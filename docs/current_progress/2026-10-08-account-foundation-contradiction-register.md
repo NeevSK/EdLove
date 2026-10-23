@@ -8,6 +8,9 @@ tags: [audit, contradictions, account-lifecycle]
 
 # Account Foundation Contradiction Register
 
+> **Canonical authority (2026-10-23):** Resolve these conflicts according to
+> [`authentication-and-sovereign-identity.md`](../architecture/authentication-and-sovereign-identity.md).
+
 This register records conflicts found during the repository-grounded audit.
 Nothing here is silently “fixed” by choosing the newest-looking code.
 

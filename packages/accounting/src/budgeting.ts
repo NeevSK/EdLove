@@ -1,34 +1,23 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { accountingAPI } from '@repo/core/api/erp';
 
 export class Budgeting {
   /**
    * Checks if an account has sufficient budget remaining.
    */
-  static async getBudgetRemaining(accountId: string, date: Date = new Date()) {
-    const isoDate = date.toISOString().split('T')[0];
+  static async getBudgetRemaining(accountId: string, _date: Date = new Date()): Promise<number | null> {
+    try {
+      const accounts = await accountingAPI.getAccounts();
+      const account = accounts.find((a: any) => a.id === accountId);
+      if (!account) return null;
 
-    // 1. Get Budget Allocation
-    const { data: budget, error: budgetError } = await supabase
-      .schema('accounting')
-      .from('budgets')
-      .select('amount')
-      .eq('account_id', accountId)
-      .lte('period_start', isoDate)
-      .gte('period_end', isoDate)
-      .single();
+      const metadata = (account.metadata as Record<string, any>) ?? {};
+      const budgetAmount = Number(metadata.budget_amount ?? 0);
+      if (budgetAmount <= 0) return null;
 
-    if (budgetError) return null; // No budget defined
-
-    // 2. Get Actual Spent (Cumulative Balance for expense accounts is usually Debit)
-    const { data: balanceData, error: balanceError } = await supabase
-      .schema('accounting')
-      .from('vw_account_balances')
-      .select('balance')
-      .eq('id', accountId)
-      .single();
-
-    if (balanceError) throw balanceError;
-
-    return budget.amount - balanceData.balance;
+      const currentBalance = Number(account.balance ?? 0);
+      return budgetAmount - currentBalance;
+    } catch {
+      return null;
+    }
   }
 }

@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-10-04
+updated: 2026-10-23
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -75,6 +75,11 @@ These files outline security models, data lifecycle policies, platform topologie
 | Document | Description |
 |---|---|
 | [architecture/safe-exploration-and-reversible-work-model.md](architecture/safe-exploration-and-reversible-work-model.md) | Canonical platform and safety plan: web Explore, mobile Guest, account Safe Try, independent rollout and presentation controls, and selected-record Keep |
+| [architecture/authentication-and-sovereign-identity.md](architecture/authentication-and-sovereign-identity.md) | **Canonical authentication and identity authority:** credential/account separation, lifecycle, provider linking, web/mobile/API/AI/channel/device contracts, and additive migration gates. |
+| [architecture/edlove-sovereign-uuidv8-specification.md](architecture/edlove-sovereign-uuidv8-specification.md) | **Canonical EdLove identifier profile:** UUIDv8 layout, domain/subtype registry, mint-origin limits, generator rules, and adoption controls for Gurudevi and future EdLove domains. |
+| [architecture/edlove-identity-convergence-program.md](architecture/edlove-identity-convergence-program.md) | **Identity convergence program:** phased movement from provider-coupled authentication to EdLove-owned identity, credential stewardship, shared lifecycle, delegated principals, and release evidence. |
+| [current_progress/2026-10-23-edlove-uuidv8-foundation-implementation-plan.md](current_progress/2026-10-23-edlove-uuidv8-foundation-implementation-plan.md) | Step 1 plan for UUIDv8 registry, conformance vectors, authoritative minting boundary, and non-destructive adoption discovery. |
+| [current_progress/2026-10-23-edlove-account-id-persistence-phase-plan.md](current_progress/2026-10-23-edlove-account-id-persistence-phase-plan.md) | Next-phase plan for additive account UUIDv8 persistence, server-owned assignment, collision handling, resumable backfill, rollback, and production evidence. |
 | [dossiers/2026-10-11-sanctuary-many-doors/README.md](dossiers/2026-10-11-sanctuary-many-doors/README.md) | Draft dream-first resilience exploration: nine professional perspectives, technical frontier/edge and material-access seams, integration rounds, evidence ledger, scale scenarios, and conditional milestones |
 | [architecture/dependency-intelligence-graph.md](architecture/dependency-intelligence-graph.md) | Living specification for the Supabase-backed mobile dependency release-history, compatibility, evidence, query, and operational system. |
 | [architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md](architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md) | Mutation pipeline optimizations, TanStack DX architecture, zero-thrash state transitions, and low-end device efficiency strategies |

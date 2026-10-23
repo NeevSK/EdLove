@@ -20,19 +20,28 @@ export function resolveVisualCapabilities(
   fidelityLevel: FidelityLevel,
   preferences: SensoryPreferences = {},
 ): VisualCapabilities {
+  const isConstrained = reality.pressure === 'constrained';
+  const isSevere = reality.pressure === 'severe';
+
   const experience = resolveExperienceProfile(reality, fidelityLevel, preferences);
-  const effectiveFidelity = computeEffectiveFidelity(fidelityLevel, reality.deviceTier);
-  const powerAllowsEffects = fidelityLevel === 'high' || !reality.isBatterySaverMode;
-  const motionAllowsEffects = !reality.isReducedMotionEnabled;
+  const effectiveFidelity = isSevere
+    ? 'low'
+    : computeEffectiveFidelity(fidelityLevel, reality.deviceTier);
+  const powerAllowsEffects =
+    fidelityLevel === 'high' || (!reality.isBatterySaverMode && !isSevere);
+  const motionAllowsEffects = !reality.isReducedMotionEnabled && !isSevere;
   const allowRichAnimation =
     effectiveFidelity === 'high' &&
     powerAllowsEffects &&
     motionAllowsEffects &&
+    !isConstrained &&
     experience.motion === 'rich';
   const allowSubtleAnimation = motionAllowsEffects && experience.motion !== 'off';
   const useMemoryCache =
     fidelityLevel !== 'low' &&
     !reality.isDataSaverMode &&
+    !isConstrained &&
+    !isSevere &&
     (reality.deviceTier === 'high' || fidelityLevel === 'high');
 
   return {
@@ -45,20 +54,25 @@ export function resolveVisualCapabilities(
           ? 'reduced'
           : 'essential',
     allowAmbientEffects: allowRichAnimation,
-    allowBlur: allowRichAnimation,
+    allowBlur: allowRichAnimation && !isConstrained && !isSevere,
     allowRichAnimation,
     allowSubtleAnimation,
     imageCachePolicy: useMemoryCache ? 'memory-disk' : 'disk',
     imageDecodeFormat:
-      fidelityLevel === 'low' || (reality.deviceTier === 'low' && fidelityLevel !== 'high')
+      fidelityLevel === 'low' || isSevere || (reality.deviceTier === 'low' && fidelityLevel !== 'high')
         ? 'rgb'
         : 'argb',
     shouldPrefetchAssets:
       fidelityLevel !== 'low' &&
       !reality.isDataSaverMode &&
+      !isSevere &&
       reality.networkQuality !== 'poor' &&
       reality.networkQuality !== 'offline',
-    maxCelebrationParticles: experience.maxParticles,
+    maxCelebrationParticles: isSevere
+      ? 0
+      : isConstrained
+        ? Math.min(experience.maxParticles, 12)
+        : experience.maxParticles,
     experience,
   };
 }

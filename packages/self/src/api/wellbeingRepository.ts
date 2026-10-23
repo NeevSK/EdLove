@@ -1,6 +1,4 @@
 import { moodLogs } from '@repo/core/adapters/powersync/schema';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { applyTemporalFilter } from '@repo/core/logic';
 import { isGuestUserId } from '@repo/core/native';
 import { getDrizzleDB } from '@repo/core/powersync';
 import { selfAPI } from '@repo/self/api/self';
@@ -78,24 +76,10 @@ export async function fetchMoodHistoryForView(
     }
   }
 
-  // Fallback / Web path:
-  let query = supabase.from('mood_logs').select('*').eq('user_id', userId);
+  // Fallback / Web path: Delegate directly to Sovereign oRPC API
+  const history = await selfAPI.getMoodHistory(userId, 30);
 
-  query = applyTemporalFilter(query, {
-    column: 'created_at',
-    mode: 'event_time',
-    capability: 'event_stream',
-  });
-
-  if (options.phase === 'present') {
-    query = query.order('created_at', { ascending: false }).limit(30);
-  }
-
-  const { data, error } = await query;
-
-  if (error) throw error;
-
-  return (data ?? []).map((entry) => ({
+  return history.map((entry) => ({
     ...entry,
     mood_score: normalizeMoodScore(entry.mood_score),
     mood: (entry.mood as MoodLog['mood'] | null | undefined) ?? scoreToMood(entry.mood_score),

@@ -52,6 +52,7 @@ import { registerNativeORPCRoutes } from './routes/orpc';
 import { createPayhereWebhookRoutes } from './routes/payhereWebhook';
 import { createVerifiedTelegramIngressRoutes } from './routes/verifiedTelegramIngress';
 import { createVerifiedWhatsappIngressRoutes } from './routes/verifiedWhatsappIngress';
+import { eventsStreamRoutes } from './routes/eventsStream';
 
 // Initialize Sentry
 if (process.env.SENTRY_DSN) {
@@ -59,7 +60,6 @@ if (process.env.SENTRY_DSN) {
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || 'development',
     tracesSampleRate: 0.1,
-    profilesSampleRate: 0.1,
     // Attach trace context to errors
     beforeSend(event, hint) {
       const traceId = getCurrentTraceId?.();
@@ -974,6 +974,7 @@ app.all('/api/openapi/*', async (c) => {
 
 app.route('/api', createAdRewardRoutes(getEnv));
 app.route('/api/auth', createAuthGatewayRoutes());
+app.route('/api', eventsStreamRoutes);
 
 registerNativeORPCRoutes(app, rpcHandler);
 const aiPolicyRoute: SovereignRoute = {

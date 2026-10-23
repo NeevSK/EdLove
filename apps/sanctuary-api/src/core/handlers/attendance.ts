@@ -1,7 +1,7 @@
 import { ORPCError } from '@orpc/server';
 import { attendanceORPCContract } from '@repo/core/api/attendance.orpc.contract';
+import { doubleGateMiddleware } from '../orpcMiddleware';
 import { implement, type ORPCContext } from '../orpc';
-import { decorateRouterWithDoubleGate } from '../routerDecorator';
 
 const impl = implement(attendanceORPCContract).$context<ORPCContext>();
 
@@ -192,8 +192,7 @@ async function loadDaily(context: ORPCContext, record: RecordInput, db = context
   return row;
 }
 
-export const attendanceRouter = decorateRouterWithDoubleGate(
-  impl.router({
+export const attendanceRouter = impl.router({
     getByClassroom: impl.getByClassroom.handler(async ({ input, context }) => {
       const db = context.db;
       const query = input.query as { gradeClassId?: string; classroomId?: string; date?: string };
@@ -216,7 +215,7 @@ export const attendanceRouter = decorateRouterWithDoubleGate(
     record: impl.record.handler(async ({ input, context }) =>
       mapAttendance(await loadDaily(context, input.body)),
     ),
-    batchRecord: impl.batchRecord.handler(async ({ input, context }) => {
+    batchRecord: impl.batchRecord.use(doubleGateMiddleware).handler(async ({ input, context }) => {
       try {
         return await (context.db as any).$transaction(async (tx: any) => {
           const rows = [];
@@ -282,7 +281,7 @@ export const attendanceRouter = decorateRouterWithDoubleGate(
         totalAbsences: rows.filter((row: any) => row.status === 'absent').length,
       };
     }),
-    getGradeClassRoster: impl.getGradeClassRoster.handler(async ({ input, context }) => {
+    getGradeClassRoster: impl.getGradeClassRoster.use(doubleGateMiddleware).handler(async ({ input, context }) => {
       const db = context.db as any;
       const targetId = input.query.gradeClassId || (input.query as any).classroomId;
       const gradeClass = await resolveGradeClassRecord(db, targetId, context.schoolId);
@@ -443,6 +442,5 @@ export const attendanceRouter = decorateRouterWithDoubleGate(
 
       return { success: true };
     }),
-  }),
-);
+  });
 

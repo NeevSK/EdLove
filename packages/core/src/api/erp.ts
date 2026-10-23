@@ -13,6 +13,8 @@ import {
 import { InvoiceSchema, PaymentIntentSchema } from '@repo/core/logic/schemas/payments.schema';
 import { z } from 'zod';
 
+export type RecordTransactionInput = z.infer<typeof erpContract.recordTransaction.request.body>;
+
 export const accountingAPI = {
   /**
    * Get all accounts for the current school/tenancy
@@ -27,7 +29,7 @@ export const accountingAPI = {
    * @policy create Accounting
    */
   async recordTransaction(
-    tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
+    tx: RecordTransactionInput,
   ): Promise<z.infer<typeof FinancialTransactionSchema>> {
     return FinancialTransactionSchema.parse(await orpcClient.erp.recordTransaction({ body: tx }));
   },

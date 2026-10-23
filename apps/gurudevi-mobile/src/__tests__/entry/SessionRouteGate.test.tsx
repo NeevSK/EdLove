@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   searchParams: {} as { entry?: string },
   replace: vi.fn(),
   refreshProfile: vi.fn(),
+  recordDevelopmentTrace: vi.fn(),
   routeTarget: {
     decision: 'booting',
     redirectTo: null as string | null,
@@ -41,6 +42,9 @@ vi.mock('@/boot/OptionalStartupServices', () => ({
     return null;
   },
 }));
+vi.mock('@/boot/startupTelemetry', () => ({
+  recordDevelopmentTrace: mocks.recordDevelopmentTrace,
+}));
 vi.mock('@repo/ui/components/BrandPulse', () => ({
   BrandPulse: () => null,
 }));
@@ -70,6 +74,7 @@ describe('SessionRouteGate account isolation', () => {
     mocks.searchParams = {};
     mocks.replace.mockReset();
     mocks.refreshProfile.mockReset();
+    mocks.recordDevelopmentTrace.mockReset();
     mocks.routeTarget = {
       decision: 'booting',
       redirectTo: null,
@@ -77,6 +82,27 @@ describe('SessionRouteGate account isolation', () => {
     };
     mocks.routeState = {};
     mocks.optionalStartup.mockReset();
+  });
+
+  it('records a fixed route bucket without retaining route identifiers', async () => {
+    mocks.pathname = '/(tabs)/profile/private-user-id';
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'profile-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.recordDevelopmentTrace).toHaveBeenCalledWith({
+      category: 'route-transition',
+      task: 'profile',
+      state: 'committed',
+    });
+    expect(JSON.stringify(mocks.recordDevelopmentTrace.mock.calls)).not.toContain(
+      'private-user-id',
+    );
   });
 
   it('renders a visible protected bootstrap state while a different account profile resolves', async () => {

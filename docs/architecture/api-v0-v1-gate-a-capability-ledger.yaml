@@ -1,0 +1,93 @@
+schema_version: 1
+as_of: 2026-10-23
+purpose: >-
+  Source-grounded Gate A capability inventory. This file is evidence for
+  planning; it is not a declaration of production reachability or authorization.
+source_scan:
+  contract_glob: packages/core/src/api/*.orpc.contract.ts
+  contract_files_found: 22
+  normalized_http_procedure_count: 127
+  procedure_record_format: "domain.operation | METHOD | contract path"
+transport_families:
+  - id: v0-native-orpc
+    path: /api/*
+    status: compatibility-freeze
+    evidence: apps/sanctuary-api/src/core/routes/orpc.ts
+  - id: v0-native-orpc-explicit-mounts
+    path: /api/<namespace>/*
+    count: 50
+    status: compatibility-freeze
+    evidence: apps/sanctuary-api/src/core/routes/nativeORPCPaths.ts
+  - id: openapi-read-only
+    path: /api/openapi/*
+    status: existing-adapter
+    evidence: apps/sanctuary-api/src/core/app.ts
+  - id: activity-stream
+    path: /api/events/stream
+    status: gap-unclassified
+    evidence: apps/sanctuary-api/src/core/routes/eventsStream.ts
+procedure_records:
+  announcements:
+    source: packages/core/src/api/announcements.orpc.contract.ts
+    records: ["getAnnouncements|GET|/announcements", "createAnnouncement|POST|/announcements"]
+  attendance:
+    source: packages/core/src/api/attendance.orpc.contract.ts
+    records: ["getByClassroom|GET|/attendance/classroom", "record|POST|/attendance/record", "batchRecord|POST|/attendance/batch-record", "getSchoolPulse|GET|/attendance/school-pulse", "getReport|GET|/attendance/report", "getGradeClassRoster|GET|/attendance/grade-class-roster", "getMyGradeClasses|GET|/attendance/my-grade-classes", "quickMark|POST|/attendance/quick-mark", "submitExcuse|POST|/attendance/excuse"]
+  channel:
+    source: packages/core/src/api/channel.orpc.contract.ts
+    records: ["beginLink|POST|/channels/:provider/link-attempts", "listMyIdentities|GET|/channels/identities", "revokeIdentity|POST|/channels/identities/:id/revoke", "grantConsent|POST|/channels/identities/:id/consents", "listMyConsents|GET|/channels/consents", "revokeConsent|POST|/channels/consents/:id/revoke", "grantDelegation|POST|/channels/delegations", "listMyDelegations|GET|/channels/delegations", "revokeDelegation|POST|/channels/delegations/:id/revoke"]
+  community:
+    source: packages/core/src/api/community.orpc.contract.ts
+    records: ["getGroups|GET|/community/groups", "createGroup|POST|/community/groups", "getGroup|GET|/community/groups/:groupId", "joinGroup|POST|/community/groups/:groupId/join", "getPosts|GET|/community/posts", "getCommunityResonance|GET|/community/resonance/:userId", "getGroupMessages|GET|/community/groups/:groupId/messages", "sendGroupMessage|POST|/community/groups/:groupId/messages", "createPost|POST|/community/posts", "toggleReaction|POST|/community/posts/:postId/reactions", "updateMemberStatus|PATCH|/community/groups/:groupId/members/status", "updateGroupPolicy|PATCH|/community/groups/:groupId/policy", "getGroupMembers|GET|/community/groups/:groupId/members", "updateMemberRole|PATCH|/community/groups/:groupId/members/role", "approveAllMembers|POST|/community/groups/:groupId/members/approve-all", "getComments|GET|/community/posts/:postId/comments", "createComment|POST|/community/posts/:postId/comments", "deleteComment|DELETE|/community/comments/:commentId", "toggleCommentUpvote|POST|/community/comments/:commentId/upvote", "markOfficialAnswer|POST|/community/comments/:commentId/official", "getPollStatus|GET|/community/polls/:postId", "voteInPoll|POST|/community/polls/:postId/vote", "updatePost|PATCH|/community/posts/:postId", "deletePost|DELETE|/community/posts/:postId", "getReactionStatus|GET|/community/posts/:postId/reaction", "reportContent|POST|/community/report"]
+  events:
+    source: packages/core/src/api/events.orpc.contract.ts
+    records: ["dispatch|POST|/events/dispatch"]
+  identity:
+    source: packages/core/src/api/identity.orpc.contract.ts
+    records: ["capabilityBootstrap|GET|/capabilities/bootstrap/v1", "selectActiveScope|PUT|/identity/active-scope", "resolveWorkspaceContext|GET|/identity/classroom-capacity-summary/:id", "modifyUserProfile|PATCH|/identity/profile/:id", "fetchUserProfile|GET|/identity/profile/:id", "identifyActiveCitizen|GET|/identity/resolveIdentity"]
+  library:
+    source: packages/core/src/api/library.orpc.contract.ts
+    records: ["createCollection|POST|/library/collections", "getCollections|GET|/library/collections", "getCollection|GET|/library/collections/:id", "updateCollection|PUT|/library/collections/:id", "deleteCollection|DELETE|/library/collections/:id", "forkCollection|POST|/library/collections/:id/fork", "addToCollection|POST|/library/collections/:id/resources", "removeFromCollection|DELETE|/library/collections/:id/resources/:resourceId", "getCounts|GET|/library/counts", "getMapTopology|GET|/library/map/topology", "createResource|POST|/library/resources", "getResources|GET|/library/resources", "getResource|GET|/library/resources/:id", "updateResource|PUT|/library/resources/:id", "deleteResource|DELETE|/library/resources/:id", "reportBrokenLink|POST|/library/resources/:id/broken-link", "engage|POST|/library/resources/:id/engage", "verifyResource|POST|/library/resources/:id/verify", "getBookmarkedResources|GET|/library/resources/bookmarked", "searchLibrary|POST|/library/resources/search"]
+  mapping:
+    source: packages/core/src/api/mapping.orpc.contract.ts
+    records: ["getSchoolPulse|GET|/mapping/schools/:schoolId/pulse", "getById|GET|/mapping/topologies/:id", "upsert|PUT|/mapping/topologies/:id", "createShareLink|POST|/mapping/topologies/:id/share"]
+  messaging:
+    source: packages/core/src/api/messaging.orpc.contract.ts
+    records: ["getOrCreateConversation|POST|/messaging/conversations", "getConversations|GET|/messaging/conversations", "getMessages|GET|/messaging/messages", "sendMessage|POST|/messaging/messages"]
+  onboarding:
+    source: packages/core/src/api/onboarding.orpc.contract.ts
+    records: ["completeOnboarding|POST|/identity/complete-onboarding", "createInitialBond|POST|/identity/initial-bond", "revokeSchoolBond|DELETE|/identity/school-bond/:schoolId", "createFounderSchoolBond|POST|/identity/school-founder-bond"]
+  planBridge:
+    source: packages/core/src/api/planBridge.orpc.contract.ts
+    records: ["listMyGradeClasses|GET|/plan/grade-classes", "getSettings|GET|/plan/settings", "updateQuietHours|POST|/plan/settings/quiet-hours", "listEvents|GET|/plan/events", "createEvent|POST|/plan/events", "previewNotice|POST|/plan/notices/preview", "scheduleNotice|POST|/plan/notices", "cancelNotice|POST|/plan/notices/cancel", "listNotices|GET|/plan/notices", "verifyGuardianLink|POST|/plan/guardian-links/verify", "updateModePolicy|POST|/plan/settings/policy", "listGuardianLinks|GET|/plan/guardian-links"]
+  principalNotes:
+    source: packages/core/src/api/principalNotes.orpc.contract.ts
+    records: ["getAll|GET|/principal-notes", "getRecent|GET|/principal-notes/recent", "create|POST|/principal-notes", "update|PATCH|/principal-notes/:id", "delete|DELETE|/principal-notes/:id"]
+  privacy:
+    source: packages/core/src/api/privacy.orpc.contract.ts
+    records: ["getPrivacyLedger|GET|/privacy/ledger", "logPrivacyEvent|POST|/privacy/ledger/events"]
+  profile:
+    source: packages/core/src/api/profile.orpc.contract.ts
+    records: ["getSocialLinks|GET|/profile/social-links", "upsertSocialLink|PUT|/profile/social-links", "deleteSocialLink|DELETE|/profile/social-links/:id"]
+  rewards:
+    source: packages/core/src/api/rewards.orpc.contract.ts
+    records: ["getRewards|GET|/rewards", "getRewardsHistory|GET|/rewards/history", "getRewardsAsOf|GET|/rewards/as-of", "getRewardsRangeHistory|GET|/rewards/range-history", "initializeRewards|POST|/rewards/initialize", "addPoints|POST|/rewards/add-points", "awardBadge|POST|/rewards/award-badge", "checkAndAwardAchievements|POST|/rewards/check-achievements", "getWhisperedMoments|GET|/rewards/whispered-moments"]
+  social:
+    source: packages/core/src/api/social.orpc.contract.ts
+    records: ["getNotifications|GET|/social/notifications", "getUnreadNotificationCount|GET|/social/notifications/unread-count", "markNotificationRead|POST|/social/notifications/read", "markAllNotificationsRead|POST|/social/notifications/read-all", "blockUser|POST|/social/block", "unblockUser|POST|/social/unblock", "isBlockingActive|GET|/social/block/active", "getBlockedUsers|GET|/social/block/list"]
+  sync:
+    source: packages/core/src/api/sync.orpc.contract.ts
+    records: ["getMutationReceipt|GET|/powersync/mutation/:mutationId", "uploadBatch|POST|/powersync/upload", "patchWorkspaceLayout|POST|/sync/patchWorkspaceLayout"]
+unclassified_contract_files:
+  - packages/core/src/api/admin.orpc.contract.ts
+  - packages/core/src/api/agent.orpc.contract.ts
+  - packages/core/src/api/dailyContent.orpc.contract.ts
+  - packages/core/src/api/educational.orpc.contract.ts
+  - packages/core/src/api/self.orpc.contract.ts
+next_gate_required_fields:
+  - target_domain
+  - authority_owner
+  - data_source_of_truth
+  - caller_inventory
+  - v1_disposition
+  - compatibility_and_retirement_evidence

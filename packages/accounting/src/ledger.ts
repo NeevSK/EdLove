@@ -1,5 +1,4 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-
+import { accountingAPI } from '@repo/core/api/erp';
 import type { FinancialTransaction, LedgerEntry } from '@repo/accounting/types';
 
 export class Ledger {
@@ -10,7 +9,7 @@ export class Ledger {
   static async recordTransaction(
     transaction: Omit<FinancialTransaction, 'id' | 'entries'>,
     entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[],
-  ) {
+  ): Promise<FinancialTransaction> {
     // 1. Validate Double Entry Balance
     const total = entries.reduce((sum, entry) => {
       return entry.side === 'debit' ? sum + entry.amount : sum - entry.amount;
@@ -20,44 +19,46 @@ export class Ledger {
       throw new Error('Transaction is not balanced. Debits must equal Credits.');
     }
 
-    // 2. Insert Transaction Header
-    const { data: tx, error: txError } = await supabase
-      .schema('accounting')
-      .from('transactions')
-      .insert(transaction)
-      .select()
-      .single();
+    const isoDate = (transaction.date ? new Date(transaction.date) : new Date()).toISOString();
 
-    if (txError) throw txError;
+    // 2. Delegate to Server Contract via oRPC (enforcing atomic DB transaction and ZenStack policies)
+    const tx = await accountingAPI.recordTransaction({
+      date: isoDate,
+      description: transaction.description,
+      referenceNo: transaction.referenceNo ?? null,
+      metadata: transaction.metadata ?? undefined,
+      entries: entries.map((e) => ({
+        accountId: e.accountId,
+        amount: e.amount,
+        side: e.side,
+        description: e.description ?? null,
+      })),
+    });
 
-    // 3. Insert Ledger Entries
-    const entriesWithTxId = entries.map((e) => ({
-      ...e,
-      transaction_id: tx.id,
-    }));
-
-    const { error: entriesError } = await supabase
-      .schema('accounting')
-      .from('ledger_entries')
-      .insert(entriesWithTxId);
-
-    if (entriesError) throw entriesError;
-
-    return tx;
+    return {
+      id: tx.id,
+      date: tx.date instanceof Date ? tx.date.toISOString() : String(tx.date),
+      description: tx.description,
+      referenceNo: tx.reference_no ?? undefined,
+      metadata: (tx.metadata as Record<string, any>) ?? undefined,
+      entries: entries.map((e, index) => ({
+        id: `${tx.id}_entry_${index}`,
+        transactionId: tx.id,
+        accountId: e.accountId,
+        amount: e.amount,
+        side: e.side,
+        description: e.description ?? undefined,
+        createdAt: new Date().toISOString(),
+      })),
+    };
   }
 
   /**
    * Fetches the current balance of an account.
    */
-  static async getAccountBalance(accountId: string) {
-    const { data, error } = await supabase
-      .schema('accounting')
-      .from('vw_account_balances')
-      .select('balance')
-      .eq('id', accountId)
-      .single();
-
-    if (error) throw error;
-    return data.balance;
+  static async getAccountBalance(accountId: string): Promise<number> {
+    const accounts = await accountingAPI.getAccounts();
+    const account = accounts.find((a: any) => a.id === accountId);
+    return account ? Number(account.balance ?? 0) : 0;
   }
 }

@@ -1,5 +1,6 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Box, Text } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 import {
@@ -69,7 +70,7 @@ export const TemporalScrubber: React.FC = () => {
     transform: [{ translateX: pan.value }],
   }));
 
-  const color = phase === 'past' ? '#968E80' : '#F6BF8C';
+  const color = phase === 'past' ? tokens.colors.inkSubtle : tokens.colors.primary;
   const todayKey = new Date().toISOString().split('T')[0];
 
   return (

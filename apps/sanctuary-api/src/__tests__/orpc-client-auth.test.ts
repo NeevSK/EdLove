@@ -20,7 +20,7 @@ describe('shared oRPC client authentication', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(orpcClient.rewards.getRewards({})).resolves.toBeNull();
+    await expect(orpcClient.rewards.getRewards({ query: {} })).resolves.toBeNull();
 
     const requestInit = fetchMock.mock.calls[0]?.[1];
     const headers = new Headers(requestInit?.headers);

@@ -1,26 +1,22 @@
 import { assignmentsAPI, classroomsAPI, echoAPI, interceptApiCall } from '@repo/core/api/client';
+import {
+  useTeacherClassroomsQuery,
+  useTeacherStatsQuery,
+} from '@repo/core/api/hooks/classroom.hooks';
 import { type Assignment, type Echo, type TeacherStats, useAuthStore } from '@repo/core/logic';
 
 import { useQuery } from '@tanstack/react-query';
 
 /**
  * useTeacherRegistry: Unified hook for a teacher's sanctuary landscape.
+ * Leverages typed oRPC v2 contracts for automatic cache invalidation and zero key mismatch.
  */
 export function useTeacherRegistry() {
   const user = useAuthStore((state) => state.user);
   const userId = user?.id;
 
-  const stats = useQuery<TeacherStats>({
-    queryKey: ['teacher-stats', userId],
-    queryFn: () => classroomsAPI.getTeacherStats(userId!) as Promise<TeacherStats>,
-    enabled: !!userId,
-  });
-
-  const sanctuaries = useQuery({
-    queryKey: ['teacher-sanctuaries', userId],
-    queryFn: () => classroomsAPI.getTeacherClassrooms(userId!),
-    enabled: !!userId,
-  });
+  const stats = useTeacherStatsQuery(userId);
+  const sanctuaries = useTeacherClassroomsQuery(userId);
 
   return {
     stats,
@@ -101,3 +97,19 @@ export function useTeacherTemporalSnapshot() {
     enabled: !!userId,
   });
 }
+
+/**
+ * Atomic invalidation for teacher dashboard pulse queries.
+ */
+export function invalidateTeacherPulseQueries(queryClient: any, userId?: string) {
+  if (userId) {
+    void queryClient.invalidateQueries({ queryKey: ['teacher-assignments-pulse', userId] });
+    void queryClient.invalidateQueries({ queryKey: ['teacher-echoes', userId] });
+    void queryClient.invalidateQueries({ queryKey: ['teacher-temporal-snapshot', userId] });
+  } else {
+    void queryClient.invalidateQueries({ queryKey: ['teacher-assignments-pulse'] });
+    void queryClient.invalidateQueries({ queryKey: ['teacher-echoes'] });
+    void queryClient.invalidateQueries({ queryKey: ['teacher-temporal-snapshot'] });
+  }
+}
+

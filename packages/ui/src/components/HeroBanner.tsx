@@ -16,12 +16,12 @@ export interface HeroBannerProps {
 }
 
 const NETFLIX_TOKENS = {
-  canvas: '#000000',
-  surface: '#141414',
-  surfaceElevated: '#232323',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#B3B3B3',
-  accent: '#E50914',
+  canvas: tokens.colors.ink,
+  surface: tokens.colors.surface,
+  surfaceElevated: tokens.colors.surfaceElevated,
+  textPrimary: tokens.colors.textInverse,
+  textSecondary: tokens.colors.textMuted,
+  accent: tokens.colors.primary,
 } as const;
 
 export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBannerProps) {

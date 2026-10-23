@@ -18,6 +18,7 @@ import { eventsORPCContract } from './events.orpc.contract';
 import { gradingORPCContract } from './grading.orpc.contract';
 import { guardianAssessmentORPCContract } from './guardian-assessment.orpc.contract';
 import { identityORPCContract } from './identity.orpc.contract';
+import { inventoryContract } from './inventory.contract';
 import { libraryORPCContract } from './library.orpc.contract';
 import { mappingORPCContract } from './mapping.orpc.contract';
 import { messagingORPCContract } from './messaging.orpc.contract';
@@ -42,6 +43,7 @@ export const appContract: Record<string, Record<string, any>> = {
   grading: gradingORPCContract,
   guardianAssessment: guardianAssessmentORPCContract,
   identity: identityORPCContract,
+  inventory: inventoryContract,
   library: libraryORPCContract,
   mapping: mappingORPCContract,
   messaging: messagingORPCContract,

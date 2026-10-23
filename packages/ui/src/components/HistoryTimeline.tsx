@@ -1,5 +1,7 @@
 import { type AuditLogEntry, historyAPI } from '@repo/core/logic';
 import { ScrollView, Text, View } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
+import { FlashList } from '@shopify/flash-list';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -31,27 +33,31 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ tableName, rec
     fetchHistory();
   }, [tableName, recordId]);
 
-  if (loading) return <BrandPulse size={24} tintColor="#666666" />;
+  if (loading) return <BrandPulse size={24} tintColor={tokens.colors.inkSubtle} />;
   if (error) return <Text style={styles.error}>{error}</Text>;
   if (history.length === 0)
     return <Text style={styles.empty}>No history found for this item.</Text>;
 
   return (
-    <ScrollView style={styles.container}>
-      {history.map((entry, _index) => (
-        <View key={entry.id} style={styles.entry}>
-          <View style={styles.line} />
-          <View style={styles.dot} />
-          <View style={styles.content}>
-            <Text style={styles.action}>
-              {entry.action} by {entry.author?.full_name || 'System'}
-            </Text>
-            <Text style={styles.date}>{new Date(entry.changed_at).toLocaleString()}</Text>
-            {entry.action === 'UPDATE' && <Text style={styles.changes}>Content changed</Text>}
+    <View style={styles.container}>
+      <FlashList
+        data={history}
+        keyExtractor={(entry) => entry.id}
+        renderItem={({ item: entry }) => (
+          <View style={styles.entry}>
+            <View style={styles.line} />
+            <View style={styles.dot} />
+            <View style={styles.content}>
+              <Text style={styles.action}>
+                {entry.action} by {entry.author?.full_name || 'System'}
+              </Text>
+              <Text style={styles.date}>{new Date(entry.changed_at).toLocaleString()}</Text>
+              {entry.action === 'UPDATE' && <Text style={styles.changes}>Content changed</Text>}
+            </View>
           </View>
-        </View>
-      ))}
-    </ScrollView>
+        )}
+      />
+    </View>
   );
 };
 
@@ -70,13 +76,13 @@ const styles = StyleSheet.create({
     top: 20,
     bottom: -20,
     width: 1,
-    backgroundColor: '#DDD',
+    backgroundColor: tokens.colors.border,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#666',
+    backgroundColor: tokens.colors.inkSubtle,
     marginTop: 6,
     marginRight: 16,
   },
@@ -86,25 +92,25 @@ const styles = StyleSheet.create({
   action: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: tokens.colors.ink,
   },
   date: {
     fontSize: 12,
-    color: '#999',
+    color: tokens.colors.textMuted,
     marginTop: 2,
   },
   changes: {
     fontSize: 13,
-    color: '#666',
+    color: tokens.colors.textMuted,
     marginTop: 4,
     fontStyle: 'italic',
   },
   error: {
-    color: '#FF3B30',
+    color: tokens.colors.error,
     padding: 16,
   },
   empty: {
-    color: '#666',
+    color: tokens.colors.textMuted,
     padding: 16,
     fontStyle: 'italic',
   },

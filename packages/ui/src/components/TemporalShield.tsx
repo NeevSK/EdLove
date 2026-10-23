@@ -2,6 +2,7 @@ import { useTemporalStore } from '@repo/core/logic';
 import { Shield } from '@repo/ui/icons';
 import { Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
+import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#D1AC8C', // Sepia/Glass tint
+    backgroundColor: tokens.colors.surfaceElevated, // Sepia/Glass tint
   },
   badge: {
     position: 'absolute',
@@ -61,12 +62,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderWidth: 1,
-    borderColor: 'rgba(209, 172, 140, 0.3)',
+    borderColor: tokens.colors.borderSubtle,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#D1AC8C',
+    color: tokens.colors.primary,
     marginLeft: 4,
     letterSpacing: 0.5,
   },

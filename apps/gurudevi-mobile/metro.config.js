@@ -5,6 +5,9 @@ const fs = require('node:fs');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
+const orpcClientRoot = fs.realpathSync(
+  path.resolve(workspaceRoot, 'packages/core/node_modules/@orpc/client'),
+);
 
 function resolvePnpmPackageRuntime(packageName, runtimeFile) {
   const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
@@ -135,6 +138,10 @@ config.resolver.blockList = [
   /packages[/\\].*[/\\]node_modules[/\\]@react-native-async-storage[/\\].*/,
   /apps[/\\].*[/\\]node_modules[/\\]\.vite[/\\].*/,
   /apps[/\\].*[/\\]\.expo[/\\].*/,
+  // Generated native projects and Gradle/Xcode outputs are not JavaScript
+  // inputs. Excluding them keeps Metro's Windows fallback watcher bounded
+  // while Android/iOS builds write thousands of transient files.
+  /apps[/\\]gurudevi-mobile[/\\](?:android|ios)(?:[/\\]|$)/,
 ];
 
 const SINGLETON_OVERRIDES = {
@@ -144,6 +151,15 @@ const SINGLETON_OVERRIDES = {
   'react-native-css': path.resolve(projectRoot, 'node_modules/react-native-css'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
+  // @repo/core uses oRPC 2 beta. The pnpm store also contains oRPC 1.x for
+  // server-only tooling; Metro's generic store fallback can select that copy,
+  // whose rest-parameter syntax is rejected by Hermes.
+  '@orpc/client': path.resolve(workspaceRoot, 'packages/core/node_modules/@orpc/client'),
+  '@orpc/shared': path.resolve(
+    orpcClientRoot,
+    '..',
+    'shared',
+  ),
   // These packages are a coordinated runtime. Pin their Metro resolution to
   // the app dependency graph so the pnpm fallback scan cannot select a stale
   // transitive Worklets/Reanimated copy during a web bundle.

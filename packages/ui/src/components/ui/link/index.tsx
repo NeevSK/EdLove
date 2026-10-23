@@ -2,6 +2,7 @@ import { openExternalURL } from '@repo/ui/utils/linking';
 import React from 'react';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
+import { tokens } from '@repo/ui/tokens';
 import { Platform } from 'react-native';
 
 /**
@@ -50,7 +51,7 @@ export const Link = ({
         }}
         className={`inline text-phase-accent hover:underline cursor-pointer ${className || ''}`}
         style={{
-          color: '#D4843A',
+          color: tokens.colors.primary,
           cursor: 'pointer',
           textDecoration: 'underline',
           display: 'inline',
@@ -79,7 +80,7 @@ export const Link = ({
 export const LinkText = ({ children, className, style }: any) => (
   <Text
     className={`text-phase-accent font-medium ${Platform.OS === 'web' ? 'hover:underline' : ''} ${className || ''}`}
-    style={[{ color: '#D4843A' }, style]}
+    style={[{ color: tokens.colors.primary }, style]}
   >
     {children}
   </Text>
