@@ -1,105 +1,100 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { APIError, type StaffAttendance, type StaffLeave } from '@repo/core/types';
+
+async function getCollection<T>(key: string): Promise<T[]> {
+  try {
+    const raw = await SafeZustandStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function setCollection<T>(key: string, items: T[]): Promise<void> {
+  await SafeZustandStorage.setItem(key, JSON.stringify(items));
+}
+
+function uid(prefix: string): string {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+}
 
 export const staffAPI = {
   /**
    * Check-in staff
    */
-  async checkIn(userId: string, schoolId: string, notes?: string) {
-    const { data, error } = await supabase
-      .from('staff_attendance')
-      .insert({
-        user_id: userId,
-        school_id: schoolId,
-        notes,
-        check_in: new Date().toISOString(),
-      })
-      .select()
-      .single();
+  async checkIn(userId: string, schoolId: string, notes?: string): Promise<StaffAttendance> {
+    const key = `staff_attendance:${userId}`;
+    const all = await getCollection<StaffAttendance>(key);
+    const newRecord: StaffAttendance = {
+      id: uid('attendance'),
+      user_id: userId,
+      school_id: schoolId,
+      notes,
+      check_in: new Date().toISOString(),
+      check_out: null,
+      created_at: new Date().toISOString(),
+    } as unknown as StaffAttendance;
 
-    if (error) {
-      throw new APIError('Failed to check in', error.code, error);
-    }
-
-    return data as StaffAttendance;
+    all.unshift(newRecord);
+    await setCollection(key, all);
+    return newRecord;
   },
 
   /**
    * Check-out staff
    */
-  async checkOut(userId: string) {
-    // Find most recent active check-in
-    const { data: latest, error: fetchError } = await supabase
-      .from('staff_attendance')
-      .select('id')
-      .eq('user_id', userId)
-      .is('check_out', null)
-      .order('check_in', { ascending: false })
-      .limit(1)
-      .single();
+  async checkOut(userId: string): Promise<StaffAttendance> {
+    const key = `staff_attendance:${userId}`;
+    const all = await getCollection<StaffAttendance>(key);
+    const latestIndex = all.findIndex((a) => !a.check_out);
 
-    if (fetchError || !latest) {
-      throw new APIError('No active check-in found', fetchError?.code);
+    if (latestIndex < 0) {
+      throw new APIError('No active check-in found', 'NOT_FOUND');
     }
 
-    const { data, error } = await supabase
-      .from('staff_attendance')
-      .update({ check_out: new Date().toISOString() })
-      .eq('id', latest.id)
-      .select()
-      .single();
+    const updated: StaffAttendance = {
+      ...all[latestIndex]!,
+      check_out: new Date().toISOString(),
+    };
 
-    if (error) {
-      throw new APIError('Failed to check out', error.code, error);
-    }
-
-    return data as StaffAttendance;
+    all[latestIndex] = updated;
+    await setCollection(key, all);
+    return updated;
   },
 
   /**
    * Get staff attendance history
    */
-  async getAttendance(userId: string) {
-    const { data, error } = await supabase
-      .from('staff_attendance')
-      .select('*')
-      .eq('user_id', userId)
-      .order('check_in', { ascending: false });
-
-    if (error) {
-      throw new APIError('Failed to fetch attendance', error.code, error);
-    }
-
-    return data as StaffAttendance[];
+  async getAttendance(userId: string): Promise<StaffAttendance[]> {
+    const key = `staff_attendance:${userId}`;
+    const all = await getCollection<StaffAttendance>(key);
+    return all.sort((a, b) => new Date(b.check_in).getTime() - new Date(a.check_in).getTime());
   },
 
   /**
    * Submit leave request
    */
-  async submitLeave(leave: Omit<StaffLeave, 'id' | 'status' | 'created_at'>) {
-    const { data, error } = await supabase.from('staff_leaves').insert(leave).select().single();
+  async submitLeave(leave: Omit<StaffLeave, 'id' | 'status' | 'created_at'>): Promise<StaffLeave> {
+    const key = `staff_leaves:${leave.user_id}`;
+    const all = await getCollection<StaffLeave>(key);
+    const newRecord: StaffLeave = {
+      id: uid('leave'),
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      ...leave,
+    } as unknown as StaffLeave;
 
-    if (error) {
-      throw new APIError('Failed to submit leave request', error.code, error);
-    }
-
-    return data as StaffLeave;
+    all.unshift(newRecord);
+    await setCollection(key, all);
+    return newRecord;
   },
 
   /**
    * Get staff leaves
    */
-  async getLeaves(userId: string) {
-    const { data, error } = await supabase
-      .from('staff_leaves')
-      .select('*')
-      .eq('user_id', userId)
-      .order('start_date', { ascending: false });
-
-    if (error) {
-      throw new APIError('Failed to fetch leaves', error.code, error);
-    }
-
-    return data as StaffLeave[];
+  async getLeaves(userId: string): Promise<StaffLeave[]> {
+    const key = `staff_leaves:${userId}`;
+    const all = await getCollection<StaffLeave>(key);
+    return all.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
   },
 };

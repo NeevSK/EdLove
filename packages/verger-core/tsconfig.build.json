@@ -5,6 +5,7 @@
     "composite": true,
     "declaration": true,
     "emitDeclarationOnly": true,
+    "types": ["node"],
     "outDir": "dist"
   },
   "include": ["src/**/*"],

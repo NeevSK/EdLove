@@ -1,4 +1,4 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { handleAPIError } from '@repo/core/logic';
 
 export interface TeacherSentEcho {
@@ -12,6 +12,19 @@ export interface TeacherSentEcho {
   created_at: string;
 }
 
+async function getEchoes(teacherId: string): Promise<TeacherSentEcho[]> {
+  try {
+    const raw = await SafeZustandStorage.getItem(`teacher_echoes:${teacherId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function setEchoes(teacherId: string, echoes: TeacherSentEcho[]): Promise<void> {
+  await SafeZustandStorage.setItem(`teacher_echoes:${teacherId}`, JSON.stringify(echoes));
+}
+
 export const teacherFeedbackAPI = {
   async submitTeacherFeedback(input: {
     schoolId: string;
@@ -21,17 +34,17 @@ export const teacherFeedbackAPI = {
     priority: 'low' | 'medium' | 'high';
   }): Promise<boolean> {
     try {
-      const { error } = await supabase.from('school_echo_feedback').insert({
-        school_id: input.schoolId,
-        teacher_id: input.teacherId,
-        source: 'teacher',
+      const all = await getEchoes(input.teacherId);
+      const newEcho: TeacherSentEcho = {
+        id: `echo_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         category: input.category,
         content: input.content,
         priority: input.priority,
         is_read: false,
-      });
-
-      if (error) throw error;
+        created_at: new Date().toISOString(),
+      };
+      all.unshift(newEcho);
+      await setEchoes(input.teacherId, all);
       return true;
     } catch (error) {
       handleAPIError(error);
@@ -41,21 +54,12 @@ export const teacherFeedbackAPI = {
 
   async listSentEchoes(teacherId: string, limit = 10): Promise<TeacherSentEcho[]> {
     if (!teacherId) return [];
-
-    const { data, error } = await supabase
-      .from('school_echo_feedback')
-      .select(
-        'id, category, content, priority, is_read, principal_response, responded_at, created_at',
-      )
-      .eq('teacher_id', teacherId)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) {
+    try {
+      const all = await getEchoes(teacherId);
+      return all.slice(0, limit);
+    } catch (error) {
       handleAPIError(error);
       return [];
     }
-
-    return (data ?? []) as TeacherSentEcho[];
   },
 };

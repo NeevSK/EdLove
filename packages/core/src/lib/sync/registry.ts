@@ -28,10 +28,6 @@ function requireIdempotencyKey(context: MutationExecutionContext | undefined): s
 
 export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   'assignment.submit': (variables, context) => replayAssignmentSubmission(variables, context ?? {}),
-  batchRecordAttendance: async (vars) => {
-    const rows = vars?.rows ?? (Array.isArray(vars) ? vars : []);
-    return api.attendance.batchRecord(rows);
-  },
   'classroom.attendance.batchRecord': async (vars) => {
     const rows = vars?.rows ?? (Array.isArray(vars) ? vars : []);
     return api.attendance.batchRecord(rows);

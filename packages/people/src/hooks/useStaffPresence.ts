@@ -1,4 +1,3 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { growthSignalsAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/logic';
 import type { StaffAttendance, StaffLeave } from '@repo/core/types';
@@ -37,32 +36,35 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
   useEffect(() => {
     if (!userId) return;
 
-    const channel = supabase
-      .channel(`staff_attendance:${userId}-${channelSuffix}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'staff_attendance',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setAttendance((prev) => [payload.new as StaffAttendance, ...prev]);
-          } else if (payload.eventType === 'UPDATE') {
-            setAttendance((prev) =>
-              prev.map((a) =>
-                a.id === (payload.new as StaffAttendance).id ? (payload.new as StaffAttendance) : a,
-              ),
-            );
-          }
-        },
-      )
-      .subscribe();
+    let sub: { unsubscribe: () => Promise<void> } | null = null;
+    let unsubscribed = false;
+
+    void import('@repo/core/logic/managers/misc.factory')
+      .then(({ realtime }) => {
+        if (unsubscribed) return;
+        sub = realtime.subscribe<StaffAttendance>(
+          `staff_attendance:${userId}-${channelSuffix}`,
+          {
+            event: '*',
+            table: 'staff_attendance',
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            if (payload.event === 'INSERT' && payload.new) {
+              setAttendance((prev) => [payload.new, ...prev]);
+            } else if (payload.event === 'UPDATE' && payload.new) {
+              setAttendance((prev) =>
+                prev.map((a) => (a.id === payload.new.id ? payload.new : a)),
+              );
+            }
+          },
+        );
+      })
+      .catch(() => {});
 
     return () => {
-      void supabase.removeChannel(channel);
+      unsubscribed = true;
+      if (sub) void sub.unsubscribe();
     };
   }, [userId, channelSuffix]);
 

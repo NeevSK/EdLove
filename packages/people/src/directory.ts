@@ -1,10 +1,12 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import type { Capacity, User } from '@repo/core/types';
+
 export interface PeopleDirectoryEntry extends User {
   schoolCapacity: Capacity | null;
   workCapacities: Capacity[];
   personKind: 'staff' | 'student';
 }
+
 interface BondSeed {
   user_id: string;
   entity_id: string;
@@ -12,6 +14,7 @@ interface BondSeed {
   capacity: string | null;
   status?: string | null;
 }
+
 function mapDirectoryEntry(user: User, bond: BondSeed): PeopleDirectoryEntry {
   const userWithTimestamps = {
     ...user,
@@ -26,6 +29,16 @@ function mapDirectoryEntry(user: User, bond: BondSeed): PeopleDirectoryEntry {
     personKind: schoolCapacity === 'student' ? 'student' : 'staff',
   } as unknown as PeopleDirectoryEntry;
 }
+
+async function getStoredList<T>(key: string): Promise<T[]> {
+  try {
+    const raw = await SafeZustandStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
 export const peopleDirectoryAPI = {
   async listBySchool(
     schoolId: string,
@@ -33,14 +46,8 @@ export const peopleDirectoryAPI = {
       personKind?: 'all' | 'staff' | 'student';
     },
   ): Promise<PeopleDirectoryEntry[]> {
-    const { data: bondRows, error: bondError } = await supabase
-      .from('bonds')
-      .select('user_id, entity_id, entity_type, capacity, status')
-      .eq('entity_type', 'SCHOOL')
-      .eq('entity_id', schoolId);
-    if (bondError) throw bondError;
-
-    let filteredBonds = (bondRows ?? []) as BondSeed[];
+    const bondRows = await getStoredList<BondSeed>(`school_bonds:${schoolId}`);
+    let filteredBonds = bondRows;
     if (options?.personKind === 'student') {
       filteredBonds = filteredBonds.filter((b) => b.capacity === 'student');
     } else if (options?.personKind === 'staff') {
@@ -50,62 +57,50 @@ export const peopleDirectoryAPI = {
     const userIds = Array.from(new Set(filteredBonds.map((b) => b.user_id).filter(Boolean)));
     if (userIds.length === 0) return [];
 
-    const { data: userRows, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .in('id', userIds)
-      .order('full_name', { ascending: true });
-    if (userError) throw userError;
+    const allUsers = await getStoredList<User>('directory_users');
+    const userRows = allUsers.filter((u) => userIds.includes(u.id));
 
     const bondByUserId = new Map(filteredBonds.map((b) => [b.user_id, b]));
-    return (userRows ?? [])
+    return userRows
       .map((row) => {
-        const bond = bondByUserId.get((row as User).id);
-        return bond ? mapDirectoryEntry(row as User, bond) : null;
+        const bond = bondByUserId.get(row.id);
+        return bond ? mapDirectoryEntry(row, bond) : null;
       })
       .filter(Boolean) as PeopleDirectoryEntry[];
   },
+
   async getPerson(userId: string): Promise<PeopleDirectoryEntry | null> {
-    const { data: userRow, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
-    if (userError) throw userError;
+    const allUsers = await getStoredList<User>('directory_users');
+    const userRow = allUsers.find((u) => u.id === userId);
     if (!userRow) return null;
 
-    const schoolId = (userRow as User).school_id as string | null | undefined;
+    const schoolId = userRow.school_id as string | null | undefined;
     if (!schoolId) {
       return {
-        ...(userRow as User),
+        ...userRow,
         schoolCapacity: null,
         workCapacities: [],
         personKind: 'staff',
       } as PeopleDirectoryEntry;
     }
 
-    const { data: bondRow, error: bondError } = await supabase
-      .from('bonds')
-      .select('user_id, entity_id, entity_type, capacity, status')
-      .eq('entity_type', 'SCHOOL')
-      .eq('entity_id', schoolId)
-      .eq('user_id', userId)
-      .maybeSingle();
-    if (bondError) throw bondError;
+    const bondRows = await getStoredList<BondSeed>(`school_bonds:${schoolId}`);
+    const bondRow = bondRows.find((b) => b.user_id === userId);
 
-    const bond =
-      (bondRow as BondSeed | null) ??
-      ({
-        user_id: userId,
-        entity_id: schoolId,
-        entity_type: 'SCHOOL',
-        capacity: null,
-      } satisfies BondSeed);
-    return mapDirectoryEntry(userRow as User, bond);
+    const bond: BondSeed = bondRow ?? {
+      user_id: userId,
+      entity_id: schoolId,
+      entity_type: 'SCHOOL',
+      capacity: null,
+    };
+
+    return mapDirectoryEntry(userRow, bond);
   },
+
   async listStaff(schoolId: string): Promise<PeopleDirectoryEntry[]> {
     return this.listBySchool(schoolId, { personKind: 'staff' });
   },
+
   async listStudents(schoolId: string): Promise<PeopleDirectoryEntry[]> {
     return this.listBySchool(schoolId, { personKind: 'student' });
   },
