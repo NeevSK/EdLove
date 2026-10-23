@@ -1,4 +1,5 @@
 import { tokens } from '@repo/ui/tokens';
+import { WorldStyles } from '@repo/ui/world/dom';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           rel="stylesheet"
         />
         <style>{`:root{${sharedTokenCss}}`}</style>
+        <WorldStyles />
         <script>{`(function(){try{
 var t=localStorage.getItem('gurudevi_theme')||'sanctuary';
 var m=localStorage.getItem('gurudevi_mode')||'system';
@@ -71,6 +73,10 @@ var d=localStorage.getItem('gurudevi_density')||'default';
 var legacy=localStorage.getItem('gurudevi_appearance_preset');
 if(legacy==='night'){m='dark';}else if(legacy==='garden'||legacy==='dawn'){t=legacy;}
 var resolvedMode=m==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;
+var w=localStorage.getItem('gurudevi_world');
+if(w&&/^(sanctuary|kandyan|wewa|kele|angampora|ratna)$/.test(w)){document.documentElement.setAttribute('data-world',w);if(w!=='sanctuary'){t='sanctuary';}}
+var h=new Date().getHours();
+document.documentElement.setAttribute('data-phase',h>=4&&h<6?'predawn':h>=6&&h<9?'dawn':h>=9&&h<12?'morning':h>=12&&h<17?'afternoon':h>=17&&h<20?'dusk':'night');
 document.documentElement.setAttribute('data-theme',t);
 document.documentElement.setAttribute('data-mode',resolvedMode);
 document.documentElement.setAttribute('data-appearance',resolvedMode==='dark'?'night':t);

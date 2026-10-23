@@ -6,6 +6,7 @@ import {
 import { GripVertical, X } from '@repo/ui/icons';
 import { Box, Pressable, ScrollView, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { useWorld } from '@repo/ui/world/native';
 import { hapticLight, hapticSelection } from '@repo/ui/utils/haptics';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -45,6 +46,7 @@ function DraggableTaskPill({
   onMove,
   onLayout,
 }: TaskPillProps) {
+  const wt = useWorld().tokens;
   const translationX = useSharedValue(0);
   const dragging = useSharedValue(false);
   const dragStyle = useAnimatedStyle(() => ({
@@ -88,10 +90,10 @@ function DraggableTaskPill({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: active
-            ? tokens.semantic.surface.elevated
+            ? wt.raised
             : 'transparent',
           borderBottomWidth: active ? 2 : 0,
-          borderBottomColor: tokens.colors.primary,
+          borderBottomColor: wt.lampDeep,
           borderRadius: tokens.radii.sm,
           paddingVertical: 3,
           paddingLeft: 3,
@@ -124,7 +126,7 @@ function DraggableTaskPill({
               borderRadius: tokens.radii.full,
             }}
           >
-            <GripVertical size={13} color={tokens.semantic.text.muted} />
+            <GripVertical size={13} color={wt.inkFaint} />
           </Pressable>
         </Animated.View>
       </GestureDetector>
@@ -150,7 +152,7 @@ function DraggableTaskPill({
               width: 6,
               height: 6,
               borderRadius: 3,
-              backgroundColor: tokens.colors.primary,
+              backgroundColor: wt.lamp,
             }}
           />
         ) : null}
@@ -159,7 +161,7 @@ function DraggableTaskPill({
             flexShrink: 1,
             fontSize: tokens.typography.sizes.xs,
             fontWeight: active ? '700' : '500',
-            color: active ? tokens.semantic.text.primary : tokens.semantic.text.secondary,
+            color: active ? wt.ink : wt.inkSoft,
           }}
           numberOfLines={1}
         >
@@ -178,10 +180,10 @@ function DraggableTaskPill({
           borderRadius: tokens.radii.full,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: active ? tokens.semantic.surface.interactive : 'transparent',
+          backgroundColor: active ? wt.sunken : 'transparent',
         }}
       >
-        <X size={12} color={active ? tokens.semantic.text.primary : tokens.semantic.text.muted} />
+        <X size={12} color={active ? wt.ink : wt.inkFaint} />
       </Pressable>
     </Animated.View>
   );
@@ -192,6 +194,7 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
   domain,
   onReturnToOverview,
 }) => {
+  const wt = useWorld().tokens;
   const router = useRouter();
   const pathname = usePathname();
   const tabs = useActiveSubTabsStore((state) => state.tabsByDomain[domain] ?? EMPTY_TABS);
@@ -278,9 +281,9 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
   return (
     <Box
       style={{
-        backgroundColor: tokens.semantic.surface.canvas,
+        backgroundColor: wt.ground,
         borderBottomWidth: 1,
-        borderBottomColor: tokens.semantic.border.subtle,
+        borderBottomColor: wt.line,
         paddingHorizontal: tokens.spacing.sm,
         paddingVertical: 6,
       }}
@@ -303,15 +306,15 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
               gap: 6,
               paddingHorizontal: tokens.spacing.sm,
               borderBottomWidth: pathname === `/${domain}` ? 2 : 0,
-              borderBottomColor: tokens.colors.primary,
+              borderBottomColor: wt.lampDeep,
             }}
           >
-            <Text style={HOME_ICON_STYLE}>🏠</Text>
+
             <Text
               style={{
                 fontSize: tokens.typography.sizes.xs,
                 fontWeight: pathname === `/${domain}` ? '700' : '500',
-                color: tokens.semantic.text.primary,
+                color: wt.ink,
               }}
             >
               Home

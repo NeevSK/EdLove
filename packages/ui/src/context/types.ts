@@ -4,6 +4,7 @@
  */
 
 import type { Bond } from '@repo/core/types';
+import type { WorldId } from '../world/types';
 
 /**
  * Temporal Phase - Time of day affecting theme and behavior
@@ -112,6 +113,8 @@ export interface EnvironmentState {
 
   /** Whether the Living Theme System is active (phase-aware tokens) or classic (static) */
   enableLivingTheme: boolean;
+  /** The world that dresses every component. */
+  worldId: WorldId;
   visualCapabilities: VisualCapabilities;
 }
 
@@ -125,6 +128,7 @@ export interface EnvironmentActions {
   toggleVeil: () => Promise<void>;
   refreshReality: () => Promise<void>;
   setEnableLivingTheme: (enabled: boolean) => Promise<void>;
+  setWorld: (world: WorldId) => Promise<void>;
   switchPerspective: (entityId: string, capacity: string) => Promise<void>;
 }
 

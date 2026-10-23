@@ -4,7 +4,6 @@ import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
 import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';
-import { withResilience } from '@repo/core/offline/resilience';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { SelfCanvasPersistenceState } from '@repo/self/features/selfCanvasPersistence';
 import {
@@ -41,6 +40,21 @@ const breaker = circuitBreakerRegistry.getOrCreate('self:canvas:server', {
   successThreshold: 2,
 });
 
+async function withRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 500): Promise<T> {
+  let lastError: unknown;
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastError = e;
+      if (i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs * Math.pow(2, i)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 type PendingPersist = {
   idempotencyKey: string;
@@ -71,9 +85,7 @@ async function flushPreferencesToServer(pending: PendingPersist): Promise<boolea
   };
 
   try {
-    await breaker.execute(() =>
-      withResilience(attempt, { retries: 3, backoff: 'exponential', timeout: 8000 } as never),
-    );
+    await breaker.execute(() => withRetry(attempt, 3, 500));
     logBreadcrumb('self:canvas persisted');
     trackEvent('self_canvas_persisted', {
       userId: userId ?? 'guest',

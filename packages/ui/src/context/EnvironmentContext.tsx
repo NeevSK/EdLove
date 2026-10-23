@@ -49,9 +49,11 @@ export function useEnvironment(): EnvironmentContextValue {
     isDark,
     isVeilActive,
     enableLivingTheme,
+    worldId,
     setThemeMode,
     toggleVeil,
     setEnableLivingTheme,
+    setWorld,
   } = useThemeContextOptional();
   const { fidelityLevel, effectiveFidelity, setFidelityLevel } = useFidelityOptional();
   const visualCapabilities = useVisualCapabilities();
@@ -75,6 +77,7 @@ export function useEnvironment(): EnvironmentContextValue {
       reality,
       isVeilActive,
       enableLivingTheme,
+      worldId,
       visualCapabilities,
 
       // Actions
@@ -84,6 +87,7 @@ export function useEnvironment(): EnvironmentContextValue {
       toggleVeil,
       refreshReality,
       setEnableLivingTheme,
+      setWorld,
       switchPerspective,
     }),
     [
@@ -97,6 +101,7 @@ export function useEnvironment(): EnvironmentContextValue {
       reality,
       isVeilActive,
       enableLivingTheme,
+      worldId,
       visualCapabilities,
       setThemeMode,
       setFidelityLevel,
@@ -104,6 +109,7 @@ export function useEnvironment(): EnvironmentContextValue {
       toggleVeil,
       refreshReality,
       setEnableLivingTheme,
+      setWorld,
       switchPerspective,
     ],
   );

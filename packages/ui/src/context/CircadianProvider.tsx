@@ -1,6 +1,9 @@
 import { View } from '@repo/ui/primitives';
-import { colors, phaseMatrix } from '@repo/ui/theme/Theme';
+import { colors } from '@repo/ui/theme/Theme';
+import { worldPhaseTokens } from '@repo/ui/theme/worldBridge';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
+import { WorldContext } from '@repo/ui/world/native/WorldContext';
+import { resolveWorld } from '@repo/ui/world/resolve';
 import { vars } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
@@ -13,10 +16,19 @@ type CircadianContextType = {
 const CircadianContext = createContext<CircadianContextType | null>(null);
 
 export const CircadianProvider = ({ children }: { children: React.ReactNode }) => {
-  const { temporalPhase, isDark } = useEnvironment();
+  const { temporalPhase, isDark, worldId, enableLivingTheme, language } = useEnvironment();
+  const phase = enableLivingTheme ? temporalPhase : isDark ? 'night' : 'morning';
+
+  const world = useMemo(
+    () => resolveWorld(worldId, phase, isDark ? 'dark' : 'light'),
+    [worldId, phase, isDark],
+  );
 
   const circadianVars = useMemo(() => {
-    const tokens = phaseMatrix[temporalPhase][isDark ? 'dark' : 'light'];
+    // Sanctuary keeps its hand-tuned matrix on the clock, as before. Other worlds
+    // follow the same phase as the world components, so both agree on screen.
+    const tokens = worldPhaseTokens(worldId, worldId === 'sanctuary' ? temporalPhase : phase, isDark);
+    const w = world.tokens;
 
     // Semantic mappings
     return vars({
@@ -45,14 +57,35 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
         colors.inkTruth,
         colors.sacredWhite,
       ),
+
+      // World semantic tokens, for className styling: bg-w-ground, text-w-ink ...
+      '--w-ground': w.ground,
+      '--w-raised': w.raised,
+      '--w-sunken': w.sunken,
+      '--w-ink': w.ink,
+      '--w-ink-soft': w.inkSoft,
+      '--w-ink-faint': w.inkFaint,
+      '--w-line': w.line,
+      '--w-lamp': w.lamp,
+      '--w-on-lamp': w.onLamp,
+      '--w-lamp-deep': w.lampDeep,
+      '--w-glow': w.glow,
+      '--w-ornament': w.ornament,
+      '--w-danger': w.danger,
+      '--w-on-danger': w.onDanger,
+      '--w-success': w.success,
+      '--w-focus': w.focus,
     });
-  }, [temporalPhase, isDark]);
+  }, [worldId, temporalPhase, phase, isDark, world]);
 
   const contextValue = useMemo(() => ({ phase: temporalPhase }), [temporalPhase]);
+  const worldValue = useMemo(() => ({ world, language }), [world, language]);
 
   return (
     <CircadianContext value={contextValue}>
-      <View style={[circadianVars, { flex: 1 }]}>{children}</View>
+      <WorldContext value={worldValue}>
+        <View style={[circadianVars, { flex: 1 }]}>{children}</View>
+      </WorldContext>
     </CircadianContext>
   );
 };

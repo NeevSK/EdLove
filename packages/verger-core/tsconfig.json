@@ -1,0 +1,10 @@
+{
+  "extends": "../typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node", "vitest/importMeta"],
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*", "src/**/*.json"],
+  "exclude": ["node_modules"]
+}

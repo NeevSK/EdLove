@@ -810,8 +810,6 @@
     },
     "endorse": "Endorse",
     "endorsers": "Endorsers",
-    "hearthSubtitle": "Where the community pulse beats strongest",
-    "hearthTitle": "The Hearth",
     "manifestoCarousel": "Community Manifestos",
     "manifestoTopic": "Community Manifesto",
     "spotlight": "SPOTLIGHT",
@@ -1282,9 +1280,9 @@
       "message": "These settings help Gurudevi work best for you. Auto mode is recommended for most users."
     },
     "living_theme": {
-      "title": "Living Theme",
-      "on": "Phase-aware colors shift with the time of day",
-      "off": "Classic calm — simple static appearance"
+      "title": "Follow the hour",
+      "on": "The light changes from dawn to night.",
+      "off": "The same calm light all day."
     },
     "sensory": {
       "title": "Sensory feedback",
@@ -1317,6 +1315,25 @@
     "description": "Customize your experience within the Gurudevi Ecosystem",
     "account": {
       "title": "Account Stewardship"
+    },
+    "voice": "Make this place your own",
+    "world": {
+      "title": "World",
+      "voice": "The paper, ink and light Gurudevi is made of."
+    },
+    "light": {
+      "title": "Light",
+      "choose": "Day or night",
+      "day": "Day",
+      "night": "Night",
+      "device": "Device",
+      "hour": "With the hour"
+    },
+    "motion": {
+      "title": "Motion and detail",
+      "auto": "Fit this phone",
+      "low": "Saver",
+      "high": "Full"
     }
   },
   "invitation": {

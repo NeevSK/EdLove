@@ -937,9 +937,9 @@
       "message": "මෙම සැකසුම් ගුරුදෙවි ඔබ සඳහා වඩාත් හොඳින් ක්‍රියා කිරීමට උපකාර කරයි. බොහෝ පරිශීලකයින් සඳහා ස්වයංක්‍රීය ප්‍රකාරය නිර්දේශ කෙරේ."
     },
     "living_theme": {
-      "title": "Living Theme",
-      "on": "Phase-aware colors shift with the time of day",
-      "off": "Classic calm — simple static appearance"
+      "title": "වේලාව අනුගමනය කරන්න",
+      "on": "අලුයම සිට රාත්‍රිය දක්වා ආලෝකය වෙනස් වේ.",
+      "off": "දවස පුරා එකම සන්සුන් ආලෝකය."
     },
     "explorer": {
       "title": "Explorer Mode",
@@ -963,6 +963,25 @@
     "description": "ගුරුදෙවි පරිසර පද්ධතිය තුළ ඔබේ අත්දැකීම සකසා ගන්න",
     "account": {
       "title": "Account Stewardship"
+    },
+    "voice": "මේ ස්ථානය ඔබේම කරගන්න",
+    "world": {
+      "title": "ලෝකය",
+      "voice": "ගුරුදේවි සෑදී ඇති කඩදාසිය, තීන්ත සහ ආලෝකය."
+    },
+    "light": {
+      "title": "ආලෝකය",
+      "choose": "දිවා හෝ රාත්‍රී",
+      "day": "දිවා",
+      "night": "රාත්‍රී",
+      "device": "උපාංගය",
+      "hour": "වේලාව අනුව"
+    },
+    "motion": {
+      "title": "චලනය සහ විස්තර",
+      "auto": "මෙම දුරකථනයට ගැළපෙන",
+      "low": "ඉතිරි කිරීම",
+      "high": "සම්පූර්ණ"
     }
   },
   "bulk_creation": {

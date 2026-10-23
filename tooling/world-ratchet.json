@@ -1,0 +1,4 @@
+{
+  "rawHex": 4139,
+  "note": "Raw hex colours outside dressed files. May only go down. node scripts/check-world.mjs --update"
+}

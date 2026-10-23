@@ -1,0 +1,34 @@
+{
+  "name": "@repo/verger-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Verger: an app-level resource supervisor. Host-neutral decision layer: reducer, runtime loop, telemetry, replay, experiments.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "golden": "UPDATE_GOLDEN=1 vitest run src/goldenVectors.test.ts",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^26.6.5",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "src",
+    "dist"
+  ]
+}

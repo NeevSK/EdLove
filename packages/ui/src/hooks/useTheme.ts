@@ -16,6 +16,7 @@ import {
   resolveClassicTokens,
   resolvePhaseTokens,
 } from '@repo/ui/theme/Theme';
+import { resolveWorldThemeTokens } from '@repo/ui/theme/worldBridge';
 import { getTextOnBackground, hexToRgbComponents } from '@repo/ui/utils/colorUtils';
 import { useMemo } from 'react';
 
@@ -64,14 +65,26 @@ export interface UseThemeReturn extends ResolvedThemeTokens, AdaptiveTokens {
 }
 
 export function useTheme(): UseThemeReturn {
-  const { temporalPhase, isDark, visualCapabilities, enableLivingTheme, themeMode, setThemeMode } =
-    useEnvironment();
+  const {
+    temporalPhase,
+    isDark,
+    visualCapabilities,
+    enableLivingTheme,
+    themeMode,
+    setThemeMode,
+    worldId,
+  } = useEnvironment();
 
-  const tokens = useMemo(
-    () =>
-      enableLivingTheme ? resolvePhaseTokens(temporalPhase, isDark) : resolveClassicTokens(isDark),
-    [enableLivingTheme, temporalPhase, isDark],
-  );
+  const tokens = useMemo(() => {
+    // Non-default worlds dress the legacy tokens too, so every screen follows the world.
+    if (worldId && worldId !== 'sanctuary') {
+      const phase = enableLivingTheme ? temporalPhase : isDark ? 'night' : 'morning';
+      return resolveWorldThemeTokens(worldId, phase, isDark);
+    }
+    return enableLivingTheme
+      ? resolvePhaseTokens(temporalPhase, isDark)
+      : resolveClassicTokens(isDark);
+  }, [worldId, enableLivingTheme, temporalPhase, isDark]);
 
   const animationsEnabled = useMemo(
     () => enableLivingTheme && visualCapabilities.allowRichAnimation,

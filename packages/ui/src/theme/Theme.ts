@@ -1238,6 +1238,11 @@ export function resolveClassicTokens(isDark: boolean): ResolvedThemeTokens {
   return CLASSIC_TOKENS;
 }
 
+/** Enrich raw phase tokens (used by the world bridge). */
+export function enrichPhaseTokens(tokens: PhaseTokens): ResolvedThemeTokens {
+  return enrichThemeTokens(tokens);
+}
+
 /** The single resolver \u2014 this is what all components call via useTheme() */
 export function resolvePhaseTokens(phase: TemporalPhase, isDark: boolean): ResolvedThemeTokens {
   return enrichThemeTokens(phaseMatrix[phase][isDark ? 'dark' : 'light']);

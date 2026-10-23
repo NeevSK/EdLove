@@ -13,6 +13,7 @@
       "@/*": ["./src/*"],
       "@repo/core/*": ["./src/*", "./src/*/index.ts", "./src/*/index.tsx"],
       "@repo/core": ["./src/index.ts"],
+      "@repo/verger-core": ["../verger-core/dist/index.d.ts"],
       "@repo/ui": ["../ui/dist/index.d.ts"],
       "@repo/ui/*": ["../ui/dist/*"]
     },

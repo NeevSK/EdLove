@@ -1,0 +1,37 @@
+{
+  "name": "@repo/verger-android",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Verger's Android sensing and app-wide hardware levers, as an Expo module. Measures; never decides.",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
+  "files": [
+    "index.ts",
+    "src",
+    "android",
+    "expo-module.config.json",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@repo/verger-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}
