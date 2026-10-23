@@ -1,7 +1,7 @@
 import { circuitBreakerRegistry } from '@repo/core/lib/circuit-breaker';
 import { generateIdempotencyKey } from '@repo/core/lib/idempotency';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { isLocalOnlyIdentity } from '@repo/core/logic';
+import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
 import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';
 import { withResilience } from '@repo/core/offline/resilience';
@@ -35,7 +35,7 @@ type StoreState = SelfCanvasPreferences & {
 const keyFor = (userId?: string | null) => `self:canvas-preferences:${userId ?? 'guest'}`;
 const MIGRATED_KEY = (userId?: string | null) => `self:migrated:v2:${userId ?? 'guest'}`;
 
-const breaker = circuitBreakerRegistry.getOrCreate('self:canvas:supabase', {
+const breaker = circuitBreakerRegistry.getOrCreate('self:canvas:server', {
   failureThreshold: 5,
   resetTimeout: 30_000,
   successThreshold: 2,
@@ -56,21 +56,18 @@ function isGuestLocalOnly(userId: string | null | undefined): boolean {
   return user?.id === userId && isLocalOnlyIdentity(user);
 }
 
-async function flushToSupabase(pending: PendingPersist): Promise<boolean> {
+async function flushPreferencesToServer(pending: PendingPersist): Promise<boolean> {
   const { userId, state, idempotencyKey } = pending;
   const attempt = async () => {
-    const { supabaseClient } = await import('@repo/core/adapters/supabaseClient');
-    const { error } = await supabaseClient.from('user_preferences').upsert(
-      {
-        user_id: userId ?? 'guest',
-        key: 'self:canvas',
-        value: state,
-        updated_at: new Date().toISOString(),
-        idempotency_key: idempotencyKey,
-      } as never,
-      { onConflict: 'user_id,key' } as never,
-    );
-    if (error) throw error;
+    if (userId && userId !== 'guest') {
+      const { orpcClient } = await import('@repo/core/api/orpcClient');
+      await orpcClient.self.updatePreferences({
+        body: {
+          favorite_features: state.features.selectedIds,
+          hidden_features: state.features.hiddenIds,
+        },
+      });
+    }
   };
 
   try {
@@ -127,7 +124,7 @@ function schedulePersist(pending: PendingPersist, set: (partial: Partial<StoreSt
       const toFlush = pendingPersist;
       pendingPersist = null;
       set({ persistenceState: 'saving' });
-      void flushToSupabase(toFlush).then((didPersist) => {
+      void flushPreferencesToServer(toFlush).then((didPersist) => {
         applyPersistResult(toFlush, didPersist, set);
       });
     }
@@ -199,7 +196,7 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
           const pending = pendingPersist;
           pendingPersist = null;
           set({ lastIdempotencyKey: pending.idempotencyKey, persistenceState: 'saving' });
-          void flushToSupabase(pending).then((didPersist) => {
+          void flushPreferencesToServer(pending).then((didPersist) => {
             applyPersistResult(pending, didPersist, set);
           });
         }
@@ -261,7 +258,7 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
     }
     pendingPersist = null;
     set({ persistenceState: 'saving' });
-    void flushToSupabase(pending).then((didPersist) => {
+    void flushPreferencesToServer(pending).then((didPersist) => {
       applyPersistResult(pending, didPersist, set);
     });
   },
