@@ -7,6 +7,7 @@ import type {
 } from '@repo/verger-core';
 import { NativeModule, requireOptionalNativeModule } from 'expo';
 import {
+  FRAME_WINDOW_MS,
   type NativeCapacity,
   type NativeExit,
   type NativeLever,
