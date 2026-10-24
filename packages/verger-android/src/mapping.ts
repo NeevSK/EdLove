@@ -60,6 +60,12 @@ export interface NativeNetwork {
   readonly downKbps: number | null;
   readonly dataSaver: DataSaver | null;
 }
+/** The battery as `BatterySignals.kt` builds it; temperature rounded to half a degree natively. */
+export interface NativeBattery {
+  readonly levelPercent: number | null;
+  readonly pluggedIn: boolean | null;
+  readonly temperatureC: number | null;
+}
 /** What a hardware lever actually did; for diagnostics and telemetry, not for decisions. */
 export interface NativeLever {
   readonly lever: 'refresh-cap' | 'cpu-boost';
@@ -139,6 +145,7 @@ export type VergerAndroidEvents = {
   onMemory: (event: NativeMemory) => void;
   onLever: (event: NativeLever) => void;
   onNetwork: (event: NativeNetwork) => void;
+  onBattery: (event: NativeBattery) => void;
 };
 
 /** What `start` accepts; every threshold is taken from the governor's own config. */
@@ -211,7 +218,8 @@ export type NativeEvent =
   | { readonly name: 'onPowerSaver'; readonly payload: NativePowerSaver }
   | { readonly name: 'onThreadLoad'; readonly payload: NativeThreadLoad }
   | { readonly name: 'onMemory'; readonly payload: NativeMemory }
-  | { readonly name: 'onNetwork'; readonly payload: NativeNetwork };
+  | { readonly name: 'onNetwork'; readonly payload: NativeNetwork }
+  | { readonly name: 'onBattery'; readonly payload: NativeBattery };
 
 /**
  * Native payload to governor event. `at` is the JavaScript clock at receipt: the governor's
@@ -260,6 +268,14 @@ export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
         metered: event.payload.metered,
         downKbps: finite(event.payload.downKbps),
         dataSaver: event.payload.dataSaver,
+      };
+    case 'onBattery':
+      return {
+        type: 'battery',
+        at,
+        levelPercent: finite(event.payload.levelPercent),
+        pluggedIn: event.payload.pluggedIn,
+        temperatureC: finite(event.payload.temperatureC),
       };
   }
 }

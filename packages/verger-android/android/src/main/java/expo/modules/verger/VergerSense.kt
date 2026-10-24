@@ -11,6 +11,7 @@ import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
@@ -136,6 +137,8 @@ class VergerSense(
   private var memoryRegistered = false
   private var powerRegistered = false
   private var networkRegistered = false
+  private var batteryRegistered = false
+  private var lastBattery: Map<String, Any?>? = null
 
   private fun registerCallbacks(sensors: Sensors) {
     if (sensors.memory) {
@@ -151,6 +154,17 @@ class VergerSense(
       }
       powerRegistered = true
       emitPower()
+      // Sticky: registering returns the current battery state, emitted at once.
+      val current = runCatching {
+        val batteryFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          app.registerReceiver(batteryReceiver, batteryFilter, null, handler, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+          app.registerReceiver(batteryReceiver, batteryFilter, null, handler)
+        }
+      }
+      batteryRegistered = current.isSuccess
+      current.getOrNull()?.let(::emitBattery)
     }
     if (sensors.network) {
       val ok = runCatching {
@@ -170,6 +184,7 @@ class VergerSense(
   private fun unregisterCallbacks() {
     if (memoryRegistered) runCatching { app.unregisterComponentCallbacks(memoryCallbacks) }
     if (powerRegistered) runCatching { app.unregisterReceiver(powerReceiver) }
+    if (batteryRegistered) runCatching { app.unregisterReceiver(batteryReceiver) }
     if (networkRegistered) {
       runCatching { connectivity.unregisterNetworkCallback(networkCallback) }
       runCatching { app.unregisterReceiver(dataSaverReceiver) }
@@ -177,7 +192,9 @@ class VergerSense(
     memoryRegistered = false
     powerRegistered = false
     networkRegistered = false
+    batteryRegistered = false
     lastNetwork = null
+    lastBattery = null
   }
 
   fun stop() {
@@ -539,6 +556,25 @@ class VergerSense(
     override fun onReceive(context: Context, intent: Intent) = emitPower()
   }
 
+  private val batteryReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) = emitBattery(intent)
+  }
+
+  private fun emitBattery(intent: Intent) {
+    val payload = BatterySignals.payload(
+      BatterySignals.levelPercent(
+        intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1),
+        intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1),
+      ),
+      BatterySignals.pluggedIn(intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)),
+      BatterySignals.temperatureC(intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, Int.MIN_VALUE)),
+    )
+    // The broadcast repeats often (voltage and current change); only a change of what verger reads crosses.
+    if (payload == lastBattery) return
+    lastBattery = payload
+    emit(EVENT_BATTERY, payload)
+  }
+
   private fun emitPower() {
     val saver = runCatching { power.isPowerSaveMode }.getOrNull() ?: return
     emit(EVENT_POWER_SAVER, mapOf("saver" to saver))
@@ -620,9 +656,10 @@ class VergerSense(
     const val EVENT_MEMORY = "onMemory"
     const val EVENT_LEVER = "onLever"
     const val EVENT_NETWORK = "onNetwork"
+    const val EVENT_BATTERY = "onBattery"
     val EVENTS = arrayOf(
       EVENT_FRAME_WINDOW, EVENT_THERMAL, EVENT_MEMORY_TRIM, EVENT_POWER_SAVER,
-      EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER, EVENT_NETWORK,
+      EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER, EVENT_NETWORK, EVENT_BATTERY,
     )
 
     private const val THREAD_SAMPLE_MS = 1_000L

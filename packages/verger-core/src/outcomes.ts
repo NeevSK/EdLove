@@ -6,7 +6,7 @@ import {
   type ResourceAccount,
 } from './demand';
 import { qualityCost } from './quality';
-import type { CapacityFacts, GovernorSnapshot, LeverSpec } from './types';
+import type { CapacityFacts, GovernorConfig, GovernorSnapshot, LeverSpec } from './types';
 
 /**
  * The outcome ledger: loop 2's eyes on loop 1. It watches published snapshots, of any policy,
@@ -84,6 +84,8 @@ export interface OutcomeLedgerOptions {
   /** How long an expand must last without being pushed back by pressure. */
   readonly holdWindowMs?: number;
   readonly maxRecords?: number;
+  /** The host's thresholds, so accounts are read as the policy reads them. */
+  readonly config?: Pick<GovernorConfig, 'batteryLowPercent'>;
 }
 
 export const DEFAULT_JUDGE_WINDOW_MS = 5_000;
@@ -94,13 +96,11 @@ const RANK: Record<AccountState, number> = { unknown: -1, ample: 0, tight: 1, ov
 const strained = (state: AccountState) => state === 'tight' || state === 'overdrawn';
 
 /**
- * The accounts a lever relieves. Animations are driven frame by frame on the UI thread, so a
- * motion lever also relieves CPU (found by the no-blind-lowering property: main-thread
- * contention rightly lowers ambient motion). Easing any compute or energy load also eases heat.
+ * The accounts a lever relieves, as the lever declares them (animation levers declare CPU: the
+ * UI thread drives every frame). Easing any compute or energy load also eases heat.
  */
 export function accountsRelievedBy(lever: LeverSpec): ResourceAccount[] {
   const targets = new Set<ResourceAccount>([lever.target, ...(lever.alsoRelieves ?? [])]);
-  if (lever.motion) targets.add('cpu');
   if (targets.has('gpu') || targets.has('cpu') || targets.has('energy')) targets.add('thermal');
   return [...targets];
 }
@@ -190,7 +190,7 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
     observe(snapshot) {
       // Windows that closed before this snapshot are judged on the state that held until now.
       settle(snapshot.at);
-      const readings = estimateAccounts(snapshot, capacity);
+      const readings = estimateAccounts(snapshot, capacity, options.config);
       const stateOf = (account: ResourceAccount): AccountState => readings[account].state;
 
       // Relief first, while each strain's onset is still known: a pending compress whose

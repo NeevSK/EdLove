@@ -59,6 +59,7 @@ export {
   snapshotOf,
   staticFloors,
   UNKNOWN_CAPACITY,
+  UNKNOWN_BATTERY,
   UNKNOWN_NETWORK,
 } from './governor';
 export {

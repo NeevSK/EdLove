@@ -26,8 +26,8 @@ The one place the plan is tracked; update it with every phase. Verification ride
 | A. Core stage | activation, policy contract, demand and accounts, outcome ledger, invariants | done | G2: properties, mutation check |
 | A. Core stage | recovery ladder against its model | done (found a rung-4 hole, fixed) | G2: model-based |
 | B. Sensing | B1 network and Data Saver | in code; metered treated as home | G2 contract (Kotlin and TS); Android part uncompiled |
-| B. Sensing | B2 battery level, charging, temperature; heat fallback below API 29 | **next** | — |
-| B. Sensing | B3 data budget (prepaid) | planned | — |
+| B. Sensing | B2 battery level, plugged in, temperature; heat fallback below API 29 | in code; low battery is a lever-declared limit | G2 contract (Kotlin and TS), properties; temperature unit to verify on a phone; Android part uncompiled |
+| B. Sensing | B3 data budget: no network assumed free; daily allowances for metered and unmetered; Wi-Fi or night window | **next** | — |
 | B. Sensing | B4 storage; B5 verger's own cost; B6 user fidelity passthrough; B7 input delay | planned | — |
 | C. Envelope | verger-p5: home, ceiling, floor; expand and compress | planned | — |
 | D. Loop 2 and 3 | self-adapting rules; session recording and telemetry; dev lab; policy comparison | planned | — |
@@ -107,10 +107,10 @@ only report. Each row is one source of variety on the phone.
 | GPU-bound frames | frame stages (GPU time from API 31) | blur, glass, particles, ambient motion, refresh cap | seen; countered only by the refresh cap until components read levers |
 | UI or render thread busy | frame stages, main-thread load | list window, transitions, refresh cap | seen; same gap |
 | JS thread saturated | thread load, long tasks | CPU-primary levers; deferrable work paused; then "needs a code fix" | seen; same gap; admission unread |
-| Heat | thermal status (API 29), headroom (API 30) | everything warm-floored, refresh cap, no CPU boost | seen from API 29; below that **unseen** (fallback not built) |
+| Heat | thermal status (API 29), headroom (API 30); battery temperature where the platform gives neither | everything warm-floored, refresh cap, no CPU boost | seen on every API level (the fallback is a weaker witness, confidence 0.4) |
 | Memory pressure | trims, polled free memory | image decode and cache, list window | seen; levers unread |
 | Battery saver | power broadcast | ambient and energy levers, GPU floors | seen |
-| Battery low over a school day | **not sensed** | prefetch, sync, refresh cap | unseen |
+| Battery low over a school day | battery level and plug state (in code, uncompiled) | levers' `whenBatteryLow` (Gurudevi: ambient motion, particles, prefetch); the school-day energy goal is not built | seen; countered by floors |
 | Poor, metered or saved network | network callback, Data Saver status (in code, uncompiled) | levers' `whenMetered`, `whenDataSaver`, `whenOffline` (Gurudevi: prefetch); no optional work under Data Saver or offline | seen and countered in the reducer; native part awaits the Gradle build |
 | Storage low | **not sensed** | eviction, caches | unseen |
 | Other apps competing | free-memory trend, process CPU | as memory and CPU | partly seen |

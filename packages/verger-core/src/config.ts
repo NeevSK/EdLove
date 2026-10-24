@@ -20,6 +20,9 @@ export function validateConfig(config: GovernorConfig): void {
   order('comfortDroppedRatio', 'stressDroppedRatio');
   order('headroomWarm', 'headroomHot');
   order('upgradeAfterMs', 'maxUpgradeAfterMs');
+  order('batteryWarmC', 'batteryHotC');
+  order('batteryHotC', 'batteryCriticalC');
+  if (config.batteryLowPercent > 100) throw new Error('Config "batteryLowPercent" must be at most 100');
   if (!(config.headroomHot <= config.headroomCritical)) {
     throw new Error('Config "headroomHot" must not exceed "headroomCritical"');
   }
@@ -47,6 +50,10 @@ export const DEFAULT_GOVERNOR_CONFIG: GovernorConfig = {
   fastDecreaseSteps: 3,
   maxOptionalConcurrency: 2,
   meteredOptionalConcurrency: 2,
+  batteryLowPercent: 20,
+  batteryWarmC: 40,
+  batteryHotC: 45,
+  batteryCriticalC: 50,
   saturationCores: 0.9,
   saturationAfterMs: 2_000,
   longTaskWindowMs: 5_000,

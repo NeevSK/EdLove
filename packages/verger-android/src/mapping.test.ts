@@ -10,6 +10,7 @@ import {
 import { describe, expect, it } from 'vitest';
 import {
   FRAME_WINDOW_MS,
+  type NativeBattery,
   type NativeNetwork,
   senseConfigFrom,
   toCapacityFacts,
@@ -224,11 +225,24 @@ describe('verger-android mapping', () => {
 describe('the native event contract (shared with NetworkContractTest.kt)', () => {
   const contract = JSON.parse(
     readFileSync(fileURLToPath(new URL('../contract/native-events.json', import.meta.url)), 'utf8'),
-  ) as { network: { case: string; payload: NativeNetwork; event: GovernorEvent }[] };
+  ) as {
+    network: { case: string; payload: NativeNetwork; event: GovernorEvent }[];
+    battery: { case: string; payload: NativeBattery; event: GovernorEvent }[];
+  };
 
-  it('holds network cases', () => {
+  it('holds network and battery cases', () => {
     expect(contract.network.length).toBeGreaterThan(0);
+    expect(contract.battery.length).toBeGreaterThan(0);
   });
+
+  it.each(contract.battery.map((c) => [c.case, c] as const))(
+    'maps the battery payload Kotlin builds into exactly its event: %s',
+    (_name, c) => {
+      const event = toGovernorEvent({ name: 'onBattery', payload: c.payload }, 0);
+      expect(event).toEqual(c.event);
+      expect(isValidEvent(event)).toBe(true);
+    },
+  );
 
   it.each(contract.network.map((c) => [c.case, c] as const))(
     'maps the payload Kotlin builds into exactly its event: %s',

@@ -398,7 +398,7 @@ export function createVerger(options: VergerOptions): Verger {
       },
     });
     const ledger = createSessionLedger(host.levers);
-    const outcomes = createOutcomeLedger({ levers: host.levers, capacity });
+    const outcomes = createOutcomeLedger({ levers: host.levers, capacity, config: host.config });
     const flight = createFlightRecorder(now());
     const initial = started.getSnapshot();
     ledger.onSnapshot(initial);

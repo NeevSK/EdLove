@@ -1,4 +1,5 @@
-import type { CapacityFacts, GovernorSnapshot, LeverSpec } from './types';
+import { DEFAULT_GOVERNOR_CONFIG } from './config';
+import type { CapacityFacts, GovernorConfig, GovernorSnapshot, LeverSpec } from './types';
 
 /**
  * Demand and supply as data. The registry says what the host's work is, which class it is in and
@@ -109,18 +110,26 @@ const SLOW_LINK_KBPS = 1_000;
 export function estimateAccounts(
   snapshot: GovernorSnapshot,
   capacity: CapacityFacts,
+  config: Pick<GovernorConfig, 'batteryLowPercent'> = DEFAULT_GOVERNOR_CONFIG,
 ): Readonly<Record<ResourceAccount, AccountReading>> {
+  const lowPercent = config.batteryLowPercent;
   const sense = snapshot.activation.sense;
   const sdk = capacity.sdkInt ?? 0;
 
+  const fromBattery = snapshot.thermalSource === 'battery';
   const thermal: AccountReading =
     !sense.thermal || snapshot.thermal === 'unknown'
       ? UNKNOWN
       : {
           state:
             snapshot.thermal === 'nominal' ? 'ample' : snapshot.thermal === 'warm' ? 'tight' : 'overdrawn',
-          confidence: sdk >= 30 ? 0.9 : 0.7,
-          source: sdk >= 30 ? 'thermal status and headroom' : 'thermal status',
+          // Battery temperature lags the chip's: a weaker witness.
+          confidence: fromBattery ? 0.4 : sdk >= 30 ? 0.9 : 0.7,
+          source: fromBattery
+            ? 'battery temperature (fallback)'
+            : sdk >= 30
+              ? 'thermal status and headroom'
+              : 'thermal status',
         };
 
   const memory: AccountReading =
@@ -154,13 +163,20 @@ export function estimateAccounts(
     ? { state: frameState(), confidence: sdk >= 31 ? 0.7 : 0.4, source: sdk >= 31 ? 'frame GPU time' : 'frame cost' }
     : UNKNOWN;
 
-  const energy: AccountReading = sense.power
-    ? {
-        state: snapshot.powerSaver ? 'tight' : 'ample',
-        confidence: 0.5,
-        source: 'battery saver (battery level not yet sensed)',
-      }
-    : UNKNOWN;
+  const b = snapshot.battery;
+  const energy: AccountReading = !sense.power
+    ? UNKNOWN
+    : b.pluggedIn === true
+      ? { state: 'ample', confidence: 0.8, source: 'plugged in' }
+      : b.levelPercent !== null && b.levelPercent <= lowPercent / 2
+        ? { state: 'overdrawn', confidence: 0.8, source: `battery at ${b.levelPercent}%` }
+        : (b.levelPercent !== null && b.levelPercent <= lowPercent) || snapshot.powerSaver
+          ? {
+              state: 'tight',
+              confidence: b.levelPercent !== null ? 0.8 : 0.5,
+              source: snapshot.powerSaver ? 'battery saver' : `battery at ${b.levelPercent}%`,
+            }
+          : { state: 'ample', confidence: b.levelPercent !== null ? 0.7 : 0.4, source: 'battery' };
 
   const n = snapshot.network;
   const network: AccountReading =

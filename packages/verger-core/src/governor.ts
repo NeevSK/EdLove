@@ -31,8 +31,10 @@ import type {
   IndexerAction,
   LeverSpec,
   LeverTarget,
+  BatteryState,
   NetworkState,
   ThermalLevel,
+  ThermalSource,
   ThermalStatus,
   TrimSeverity,
 } from './types';
@@ -60,6 +62,14 @@ export const UNKNOWN_NETWORK: NetworkState = {
   downKbps: null,
   dataSaver: null,
 };
+
+export const UNKNOWN_BATTERY: BatteryState = { levelPercent: null, pluggedIn: null, temperatureC: null };
+
+/** Low only when known to be low and known to be unplugged: unknown is never low. */
+const batteryLow = (state: GovernorState) =>
+  state.battery.pluggedIn === false &&
+  state.battery.levelPercent !== null &&
+  state.battery.levelPercent <= state.config.batteryLowPercent;
 
 /** No usable network: none at all, or one the platform could not validate. Unknown is not offline. */
 const offline = (n: NetworkState) => n.transport === 'none' || n.validated === false;
@@ -99,6 +109,7 @@ export interface GovernorState {
   readonly memorySensing: boolean;
 
   readonly powerSaver: boolean;
+  readonly battery: BatteryState;
   readonly network: NetworkState;
   readonly visibility: AppVisibility;
   readonly lastInteractionAt: number;
@@ -197,6 +208,7 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     memoryLatch: NO_MEMORY_LATCH,
     memorySensing: options.memorySensing ?? false,
     powerSaver: false,
+    battery: UNKNOWN_BATTERY,
     network: UNKNOWN_NETWORK,
     visibility: 'active',
     lastInteractionAt: options.at,
@@ -299,6 +311,7 @@ export function staticFloors(state: GovernorState): Record<string, number> {
     if (network.metered === true && lever.whenMetered !== undefined) raise(lever.id, lever.whenMetered);
     if (savingData(network) && lever.whenDataSaver !== undefined) raise(lever.id, lever.whenDataSaver);
     if (offline(network) && lever.whenOffline !== undefined) raise(lever.id, lever.whenOffline);
+    if (batteryLow(state) && lever.whenBatteryLow !== undefined) raise(lever.id, lever.whenBatteryLow);
     for (const need of lever.requires ?? []) {
       if (lacks(state, need.capability, capacityReported)) raise(lever.id, need.otherwiseLevel);
     }
@@ -396,7 +409,7 @@ function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
     case 'thermal':
       return { ...state, thermalStatus: null, headroom: null };
     case 'power':
-      return { ...state, powerSaver: false };
+      return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY };
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'network':
@@ -486,7 +499,22 @@ function memoryOf(state: GovernorState, at: number) {
 }
 
 function thermalOf(state: GovernorState): ThermalLevel {
-  return thermalLevelOf(state.thermalStatus, state.headroom, state.config);
+  return thermalReading(state).level;
+}
+
+/**
+ * Heat, and where it came from. The platform's status and headroom win; only where it gives
+ * neither (Android 9) and the thermal sensor is on, battery temperature stands in.
+ */
+function thermalReading(state: GovernorState): { level: ThermalLevel; source: ThermalSource } {
+  if (state.thermalStatus !== null || state.headroom !== null)
+    return { level: thermalLevelOf(state.thermalStatus, state.headroom, state.config), source: 'platform' };
+  const t = state.battery.temperatureC;
+  if (!state.activation.sense.thermal || t === null) return { level: 'unknown', source: 'none' };
+  const c = state.config;
+  const level: ThermalLevel =
+    t >= c.batteryCriticalC ? 'critical' : t >= c.batteryHotC ? 'hot' : t >= c.batteryWarmC ? 'warm' : 'nominal';
+  return { level, source: 'battery' };
 }
 
 /** Thermal and memory rules that apply on every event, so heat is acted on even without frames. */
@@ -661,7 +689,10 @@ function applyContention(state: GovernorState, at: number): GovernorState {
   const next =
     contention === 'js'
       ? lower(state, 1, ['cpu'], at, 'decrease', detail, 'primary')
-      : lower(state, 1, ['cpu', 'gpu'], at, 'decrease', detail);
+      : // The main thread is CPU: only levers that relieve it count. A GPU-only lever (blur)
+        // lowered here would shed quality without relieving the thread (ADR D5.2; found by the
+        // no-blind-lowering property). Animation levers declare that they relieve CPU.
+        lower(state, 1, ['cpu'], at, 'decrease', detail);
   return {
     ...next,
     lastContentionActionAt: at,
@@ -759,6 +790,16 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
     }
     case 'power':
       next = { ...next, powerSaver: input.saver };
+      break;
+    case 'battery':
+      next = {
+        ...next,
+        battery: {
+          levelPercent: input.levelPercent,
+          pluggedIn: input.pluggedIn,
+          temperatureC: input.temperatureC,
+        },
+      };
       break;
     case 'interaction':
       next = { ...next, lastInteractionAt: at };
@@ -878,6 +919,8 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     thermal: thermalOf(state),
     memory: memoryOf(state, at),
     powerSaver: state.powerSaver,
+    battery: state.battery,
+    thermalSource: thermalReading(state).source,
     network: state.network,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
@@ -955,6 +998,8 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     a.memory !== b.memory ||
     a.powerSaver !== b.powerSaver ||
     a.network !== b.network ||
+    a.battery !== b.battery ||
+    a.thermalSource !== b.thermalSource ||
     a.visibility !== b.visibility ||
     a.interactionIdle !== b.interactionIdle ||
     a.optionalConcurrency !== b.optionalConcurrency ||

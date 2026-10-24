@@ -33,6 +33,8 @@ export const VERGER_GLOBAL_MOTION: LeverSpec = {
   maxLevel: 1,
   visualImpact: 'high',
   target: 'gpu',
+  // Reanimated animations run on the UI thread.
+  alsoRelieves: ['cpu'],
   ambient: false,
   motion: true,
   levels: ['animations run', 'reduced motion forced for animations that start'],

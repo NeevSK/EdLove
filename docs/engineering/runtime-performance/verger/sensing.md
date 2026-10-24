@@ -82,9 +82,9 @@ check at minSdk 28 flags any call above the minimum.
 | Visibility, touches, reduce motion | React Native `AppState`, responder capture, `AccessibilityInfo` | — | on change | none needed | built |
 | **Network** | `ConnectivityManager` default network callback; `NetworkCapabilities` (transport, validated, not metered, downstream bandwidth) | capabilities class 21; callback and field levels *verify* (all at or below minSdk 28 is enough) | on change; bandwidth bucketed to powers of two | none (unknown means unknown) | **in code** (`NetworkSignals.kt`, `VergerSense.kt`): contract-tested on the JVM and in TypeScript; Android part uncompiled until the first Gradle build |
 | **Data Saver** | `ConnectivityManager.getRestrictBackgroundStatus` (disabled, whitelisted, enabled) | 24 (verified) | on change (`ACTION_RESTRICT_BACKGROUND_CHANGED`) | none | **in code**, as above |
-| **Battery level, charging** | `ACTION_BATTERY_CHANGED` sticky broadcast; `BatteryManager` | 28+; property levels *verify* | on change | none | missing |
-| **Battery temperature** | `BatteryManager.EXTRA_TEMPERATURE` (unit *verify*) | 28+ | with battery | — | missing |
-| **Heat fallback below API 29** | battery temperature, and frame cost drifting up at unchanged work | 28 | derived | — | missing |
+| **Battery level, plugged in** | `ACTION_BATTERY_CHANGED` sticky broadcast (`EXTRA_LEVEL`, `EXTRA_SCALE`, `EXTRA_PLUGGED`) | 28+ | only a change of what verger reads | none | **in code** (`BatterySignals.kt`), contract-tested; Android part uncompiled |
+| **Battery temperature** | `EXTRA_TEMPERATURE`, assumed tenths of a degree (**verify on a phone** against the system's battery info) | 28+ | with battery, rounded to 0.5 °C | — | **in code**, as above |
+| **Heat fallback below API 29** | battery temperature where the platform gives no status or headroom; frame-cost drift not built | 28 | derived | — | **in code** (battery part), confidence 0.4 |
 | **Storage** | `StatFs(filesDir).getAvailableBytes` | 18 (verified) | one call per minute | none | missing |
 | **Input delay** | React Native `PerformanceObserver` `event` entries (threshold 104 ms since RN 0.86) | RN 0.88 | push | long tasks | missing |
 | **User fidelity, quiet mode** | the host's settings, passed in | — | on change | `auto` | missing: sent as `auto` |
@@ -109,7 +109,24 @@ is a host's choice) and protects the user's data through:
 
 Critical work (an attendance save and its upload) is never gated by any of these.
 
-Source: [Dialog MyPlan prepaid](https://Dialog.lk/myplan-prepaid) (found by search; not opened).
+**Transport does not say cost either.** Home broadband often has a quota, and a "Wi-Fi" network
+may be a phone's hotspot or a mobile router, which Android usually reports as ordinary unmetered
+Wi-Fi. Android lets the user mark any Wi-Fi "Treat as metered", and verger respects that through
+the metered flag, but by default **no network is assumed free**. The design for the data budget
+(B3), all of it configuration:
+
+- optional data work (prefetch, warming, background extras) spends from a daily allowance of
+  bytes, measured from this app's own traffic counters;
+- separate allowances for metered and unmetered networks, the unmetered one larger because it is
+  only probably cheaper; treating unmetered as free is an option, off by default;
+- when an allowance is spent, optional data waits for the next day, a cheap night window, or a
+  network the user calls free;
+- critical work is never gated; the user decides through Android's "Treat as metered" and, later,
+  an app setting.
+
+Sources (found by search; not opened): [Dialog MyPlan prepaid](https://Dialog.lk/myplan-prepaid);
+[Android Authority on metered hotspots](https://www.androidauthority.com/android-setting-metered-connected-wi-fi-mobile-hotspots-3649733/);
+[Google: advanced network settings](https://support.google.com/nexus/answer/2819583?hl=en).
 
 ## What "complete" means for each signal
 
@@ -124,7 +141,8 @@ Source: [Dialog MyPlan prepaid](https://Dialog.lk/myplan-prepaid) (found by sear
 
 1. ~~Network and Data Saver~~ (in code 2026-10-24; levers declare `whenMetered`, `whenDataSaver`,
    `whenOffline`; Data Saver and offline admit no optional work, metered admits one at a time).
-2. Battery level, charging and temperature, with the heat fallback below API 29.
+2. ~~Battery level, plugged in and temperature, with the heat fallback below API 29~~ (in code
+   2026-10-24; `whenBatteryLow` at `batteryLowPercent`, default 20%; heat thresholds provisional).
 2a. The data budget: this app's bytes against a daily budget, for prepaid users.
 3. Storage.
 4. Verger's own cost (loop 2, phase 2).

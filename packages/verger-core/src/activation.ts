@@ -192,6 +192,7 @@ export function sensorOf(event: GovernorEvent): SensorId | null {
     case 'thermal':
       return 'thermal';
     case 'power':
+    case 'battery':
       return 'power';
     case 'network':
       return 'network';

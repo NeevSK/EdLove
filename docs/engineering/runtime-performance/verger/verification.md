@@ -247,6 +247,15 @@ The invariants are plain functions in `packages/verger-core/src/invariants.ts` (
    which relieves CPU (animations run on the UI thread); the ledger mapped it to GPU only. Fixed in
    `accountsRelievedBy`; the counterexample is pinned.
 
+6. **Main-thread contention lowered a GPU-only lever.** With animation levers at their floor
+   (low fidelity), p4 fell through to blur, which does not relieve the main thread (ADR D5.2).
+   Found by the no-blind-lowering property at 20,000 cases (`VERGER_RUNS`); main contention now
+   targets CPU only, and animation levers declare that they relieve CPU. Pinned.
+7. **The deaf-sensor relation was incomplete,** not the code: battery temperature is a heat
+   reading, so deafening heat must remove it too. The property now says so. Pinned.
+
+`VERGER_RUNS` raises the cases per property for a deep run (nightly, or before a release).
+
 1. **A lever could stay lowered forever.** Pressure stored a level including the floor it was
    lowered from; giving back the last step left the floor's value owned by nothing. One memory
    trim on a 2 GB phone left `image-cache` lowered for good. Fixed in `raiseOne`. Found by the

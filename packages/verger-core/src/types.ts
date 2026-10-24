@@ -111,6 +111,14 @@ export type GovernorEvent =
     }
   | { readonly type: 'memory-trim'; readonly at: number; readonly severity: TrimSeverity }
   | { readonly type: 'power'; readonly at: number; readonly saver: boolean }
+  | {
+      /** Battery state; heard through the power sensor. `null` fields are unknown. */
+      readonly type: 'battery';
+      readonly at: number;
+      readonly levelPercent: number | null;
+      readonly pluggedIn: boolean | null;
+      readonly temperatureC: number | null;
+    }
   | { readonly type: 'interaction'; readonly at: number }
   | { readonly type: 'app-state'; readonly at: number; readonly state: AppVisibility }
   | {
@@ -166,6 +174,17 @@ export type Actuator = 'refresh-cap' | 'global-reduced-motion';
 /** What a lever primarily relieves. Used to match levers to the current bottleneck. */
 export type LeverTarget = 'gpu' | 'cpu' | 'memory' | 'energy' | 'network';
 
+/** The battery as verger last heard it; every field null until the power sensor reports. */
+export interface BatteryState {
+  readonly levelPercent: number | null;
+  /** On external power (plugged in), whether or not it is charging: a full phone on its charger counts. */
+  readonly pluggedIn: boolean | null;
+  readonly temperatureC: number | null;
+}
+
+/** Where the heat reading came from: the platform's thermal service, or the battery as a fallback. */
+export type ThermalSource = 'platform' | 'battery' | 'none';
+
 /** The network as verger last heard it; every field null until the network sensor reports. */
 export interface NetworkState {
   readonly transport: NetworkTransport | null;
@@ -207,6 +226,8 @@ export interface LeverSpec {
   readonly whenDataSaver?: number;
   /** Floor while there is no validated network. A limit. */
   readonly whenOffline?: number;
+  /** Floor while the battery is low and the phone is not plugged in (config `batteryLowPercent`). */
+  readonly whenBatteryLow?: number;
   /**
    * The app-wide effect verger itself applies for this lever, if any. A host lever without an
    * actuator is applied by the host's own consumers reading its level.
@@ -267,6 +288,15 @@ export interface GovernorConfig {
    * reduction, and Data Saver and a data budget protect the user instead. A host's choice.
    */
   readonly meteredOptionalConcurrency: number;
+  /** At or below this level, and not plugged in, the battery is low (the governor spec's 20%). */
+  readonly batteryLowPercent: number;
+  /**
+   * Heat from battery temperature, used only where the platform gives no thermal status or
+   * headroom (Android 9). Provisional until device captures calibrate them.
+   */
+  readonly batteryWarmC: number;
+  readonly batteryHotC: number;
+  readonly batteryCriticalC: number;
   /** A thread role using at least this many cores is saturated. */
   readonly saturationCores: number;
   /** Saturation must last this long before it counts as contention. */
@@ -306,6 +336,8 @@ export interface GovernorSnapshot {
   readonly thermal: ThermalLevel;
   readonly memory: MemoryLevel;
   readonly powerSaver: boolean;
+  readonly battery: BatteryState;
+  readonly thermalSource: ThermalSource;
   readonly network: NetworkState;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;

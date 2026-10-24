@@ -122,8 +122,11 @@ describe('containment of work the runtime does not control', () => {
         'global-motion',
       );
     }
-    // JS contention targets cpu only, so it can never reach this UI-thread lever.
-    expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, ['cpu'], true)).toBeNull();
+    // JS contention matches a lever's primary target only (as the policy calls it), so it can
+    // never reach this UI-thread lever, though the lever declares that it also relieves CPU.
+    expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, ['cpu'], 'primary')).toBeNull();
+    // Main-thread contention may: animations run on the UI thread.
+    expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, ['cpu'], true)?.id).toBe('global-motion');
     const low = createGovernor({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS });
     expect(snapshotOf(low).globalReducedMotion).toBe(false);
   });

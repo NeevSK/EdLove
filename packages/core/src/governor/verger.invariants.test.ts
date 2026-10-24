@@ -28,6 +28,8 @@ import { GURUDEVI_LEVERS } from './gurudeviLevers';
  */
 
 const LEVERS = GURUDEVI_LEVERS;
+/** Cases per property; raise with VERGER_RUNS for a deep run (nightly, before a release). */
+const RUNS = Number(process.env.VERGER_RUNS ?? 300);
 const GB = 1024 ** 3;
 
 // ---------------------------------------------------------------------------------------------
@@ -195,6 +197,15 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
   {
     weight: 1,
     arbitrary: fc.record({
+      type: fc.constant('battery' as const),
+      levelPercent: fc.option(fc.integer({ min: 0, max: 100 }), { nil: null }),
+      pluggedIn: fc.option(fc.boolean(), { nil: null }),
+      temperatureC: fc.option(fc.double({ min: 15, max: 60, noNaN: true }), { nil: null }),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
       type: fc.constant('network' as const),
       transport: fc.option(
         fc.constantFrom('wifi' as const, 'cellular' as const, 'ethernet' as const, 'other' as const, 'none' as const),
@@ -292,7 +303,7 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
         const { snapshots } = run(VERGER_POLICY, options, events);
         expect(checkRun(snapshots, LEVERS)).toEqual([]);
       }),
-      { numRuns: 300 },
+      { numRuns: RUNS },
     );
   });
 
@@ -336,16 +347,45 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
         (options, activation, sensor, events) => {
           const deaf = { ...activation, sense: { ...activation.sense, [sensor]: false } };
           const hearing = { ...activation, sense: { ...activation.sense, [sensor]: true } };
+          // A sensor's readings include every witness of what it senses: battery temperature is
+          // a heat reading (the fallback below Android 10), so deafening heat removes it too.
           const heardNothing = events.map((event): GovernorEvent =>
-            sensorOf(event) === sensor ? { type: 'tick', at: event.at } : event,
+            sensorOf(event) === sensor
+              ? { type: 'tick', at: event.at }
+              : sensor === 'thermal' && event.type === 'battery'
+                ? { ...event, temperatureC: null }
+                : event,
           );
           // Memory sensing is a platform fact the deaf sensor must not claim.
           const memorySensing = sensor === 'memory' ? false : options.memorySensing;
           const a = run(VERGER_POLICY, { ...options, activation: deaf, memorySensing }, events).final;
           const b = run(VERGER_POLICY, { ...options, activation: hearing, memorySensing }, heardNothing).final;
-          expect(withoutActivation(a)).toEqual(withoutActivation(b));
+          // The raw battery temperature stays the power sensor's fact; what a deaf heat sensor
+          // must not do is derive heat from it, which `thermal` and `thermalSource` show.
+          const comparable = (snap: GovernorSnapshot) => {
+            const rest = withoutActivation(snap);
+            return sensor === 'thermal' ? { ...rest, battery: { ...rest.battery, temperatureC: null } } : rest;
+          };
+          expect(comparable(a)).toEqual(comparable(b));
         },
       ),
+      {
+        // Found by this property: battery temperature is a heat reading.
+        examples: [
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            ACTIVATION_PRESETS.active,
+            'thermal' as SensorId,
+            [{ type: 'battery', at: 1, levelPercent: null, pluggedIn: null, temperatureC: 15 }],
+          ],
+        ],
+      },
     );
   });
 
@@ -405,9 +445,24 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
         expect(blind.map((r) => `${r.lever}: ${r.reason}`)).toEqual([]);
       }),
       {
-        numRuns: 300,
-        // Found by this property: main-thread contention lowers a motion lever, which relieves CPU.
+        numRuns: RUNS,
+        // Found by this property: main-thread contention lowers a motion lever, which relieves CPU;
+        // and with motion levers already at their floor (low fidelity), it must not fall through
+        // to a GPU-only lever.
         examples: [
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            [
+              { type: 'thread-load', at: 1, cores: { js: 0, main: 0.9 }, processCores: 0.9 },
+              { type: 'preferences', at: 2_001, reduceMotion: false, fidelity: 'low' },
+            ],
+          ],
           [
             {
               at: 0,
@@ -460,7 +515,7 @@ describe('the invariant suite catches broken policies (mutation check)', { timeo
           const { snapshots } = run(broken, options, events);
           return checkRun(snapshots, LEVERS).length === 0;
         }),
-        { numRuns: 300 },
+        { numRuns: RUNS },
       );
       expect(result.failed).toBe(true);
     });

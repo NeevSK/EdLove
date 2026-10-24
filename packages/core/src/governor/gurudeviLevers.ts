@@ -11,15 +11,20 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     maxLevel: 2,
     visualImpact: 'low',
     target: 'gpu',
+    // Animated on the UI thread every frame.
+    alsoRelieves: ['cpu'],
     ambient: true,
     motion: true,
     levels: ['full motion', 'paced at half the refresh rate', 'still'],
+    whenBatteryLow: 1,
   },
   {
     id: 'loading-shimmer',
     maxLevel: 1,
     visualImpact: 'low',
     target: 'gpu',
+    // Animated on the UI thread every frame.
+    alsoRelieves: ['cpu'],
     ambient: true,
     motion: true,
     levels: ['animated shimmer', 'static placeholder'],
@@ -29,9 +34,12 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     maxLevel: 2,
     visualImpact: 'low',
     target: 'gpu',
+    // Animated on the UI thread every frame.
+    alsoRelieves: ['cpu'],
     ambient: true,
     motion: true,
     levels: ['full count', 'half count', 'none'],
+    whenBatteryLow: 1,
   },
   {
     id: 'blur',
@@ -105,6 +113,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     // No metered limit: most of Gurudevi's users are always on metered mobile data, so metered is
     // home. What it should mean here is an open choice (stage-and-chairs.md).
     whenDataSaver: 2,
+    whenBatteryLow: 1,
     whenOffline: 2,
   },
 ];
