@@ -181,7 +181,7 @@ The ladder, trust, the per-build profile with growth, the flight recorder and th
 | Flight recorder: 48 lines, sent once after a failure | Done | flightRecorder.ts | G2 |
 | Exercise share | Done, default 0 % | recovery.ts | G2 |
 | Quality given up, reported beside performance | Done | quality.ts | G2 |
-| Agility metric (time from stress to relief) | Not built |  |  |
+| Agility metric (time from stress to relief) | Done (2026-10-24), per move | outcomes.ts | G2 |
 | Battery-temperature and frame-drift heat fallback | Not built |  |  |
 | Baseline profiles | Not built; compilation-state API unverified |  |  |
 | User switch for adaptation | Not built; the fidelity preference exists in the reducer |  |  |

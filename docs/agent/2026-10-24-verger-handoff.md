@@ -6,6 +6,9 @@ the state, the open items and the next step.
 
 ## Read first
 
+0. `docs/engineering/runtime-performance/verger/pipeline.md`: the whole of verger on one page, needed
+   against built, requisite variety and affordance. Then `sensing.md` (the starting point) and
+   `verification.md` (how evidence is produced), beside it.
 1. `docs/engineering/runtime-performance/verger/stage-and-chairs.md`: the build doctrine (a full,
    modular foundation; specific choices are data placed later) and **the purpose: adapt both
    ways inside the envelope**.
@@ -50,7 +53,9 @@ the state, the open items and the next step.
 
 ## Evidence (2026-10-24)
 
-- verger-core 83/83, Gurudevi host 53/53, verger-android mapping 10/10 (Vitest, G1/G2).
+- verger-core 95/95, Gurudevi host 66/66 (including the property suite and its mutation check),
+  verger-android mapping 10/10 (Vitest, G1/G2). See `verification.md` for what each proves.
+- The property suite found and fixed two defects in verger-p4 (fail to pass shown).
 - Kotlin: 25 JUnit tests on the desktop JVM (Kotlin 2.1.20) over the Android-free sources (G2).
   `VergerSense.kt`, `VergerModule.kt`, `HardwareLevers.kt`, `DeviceFacts.kt` are **not compiled
   since the sensor change**: this cloud environment's network policy denies `dl.google.com`, so
@@ -64,15 +69,17 @@ the state, the open items and the next step.
 | Decide | done: `VergerPolicy` contract, `VERGER_POLICY` (verger-p4) unchanged; live `tune`; replay takes any policy |
 | Demand and estimate | done as read models: workloads by class, seven accounts with confidence |
 | Ladder key | owned by `ladderKey`; unnamed legacy keys migrate on read |
+| Judge (loop 2) | outcome ledger: every move judged, `Verger.outcomes()` |
+| Verify | `invariants.ts` and the property suite with mutation adequacy |
 
 ## Next steps, in order
 
-1. Envelope policy verger-p5 (home, ceiling, floor; compress and expand), beside p4, compared on
-   the same recordings.
-2. Native network sensing and Data Saver.
-3. Session recording and the telemetry port; then the dev lab.
-4. Static floors without native code (for web and iOS), the drift test, then the cut-off.
-5. On the laptop with the phones: first Gradle build, dev client on the A52 and A24.
+1. The full sensing layer, in the order in `sensing.md`: network and Data Saver first.
+2. Controller and recovery under generated streams (`verification.md`, next).
+3. Envelope policy verger-p5 (home, ceiling, floor; compress and expand), beside p4.
+4. Self-cost meter and loop 2's rules; session recording and telemetry; the dev lab.
+5. Static floors without native code, the drift test, then the cut-off.
+6. On the laptop with the phones: first Gradle build, dev client on the A52 and A24.
 
 ## Open items
 

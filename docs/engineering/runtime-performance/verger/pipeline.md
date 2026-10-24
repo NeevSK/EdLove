@@ -18,34 +18,54 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## The pipeline
 
-```text
-            ┌──────────────────────── loop 1: adapt the app (seconds) ────────────────────────┐
- phone ──▶ 1 SENSE ──▶ 2 ESTIMATE ──▶ 3 DECIDE ──▶ 4 ACT ──▶ components and hardware ──▶ phone
- (OS, HW)  platform     accounts +     policy over    lever levels,                    (changed load)
-           port         confidence     envelope       hardware, admission
-                                          │               │
-            ┌─────────── loop 2: adapt verger (seconds to sessions) ───────────┐
-            │  5 JUDGE each move ◀──── snapshots ────┘                        │
-            │     (outcome ledger)                                            │
-            │  6 SELF-COST ◀──── verger's own counters                        │
-            │  7 ADAPT SELF ──▶ activation, pace, sensors, rung (declared rules) ──▶ back into 1–4
-            └─────────────────────────────────────────────────────────────────┘
-                     │
-                     ▼
-            8 RECORD and REPORT ──▶ telemetry, recordings, flight recorder
-                     │
-            ┌────────┴──── loop 3: change the rules (releases, people) ────┐
-            │  9 COMPARE policies, and verger against off, on recordings   │
-            │ 10 NEW POLICY VERSION ──▶ shipped, assigned by experiment    │
-            └───────────────────────────────────────────────────────────────┘
-   Around all of it: ACTIVATE (what may run) and RECOVER (the ladder), both above every stage.
+Green: built and tested (G2). Amber: partly built. Red: missing.
+
+```mermaid
+flowchart LR
+  classDef built fill:#d3f9d8,stroke:#2b8a3e,color:#1b1b1b
+  classDef partial fill:#fff3bf,stroke:#e67700,color:#1b1b1b
+  classDef missing fill:#ffe3e3,stroke:#c92a2a,color:#1b1b1b
+
+  phone(["phone: OS and hardware"])
+  subgraph L1["Loop 1 · adapt the app · seconds"]
+    S1["1 Sense<br/>platform port"]:::partial
+    S2["2 Estimate<br/>accounts + confidence"]:::partial
+    S3["3 Decide<br/>policy, envelope"]:::partial
+    S4["4 Act<br/>levers, hardware, admission"]:::missing
+  end
+  subgraph L2["Loop 2 · adapt verger · seconds to sessions"]
+    S5["5 Judge<br/>outcome ledger"]:::built
+    S6["6 Self-cost"]:::missing
+    S7["7 Adapt self<br/>declared rules"]:::partial
+  end
+  subgraph L3["Loop 3 · change the rules · people"]
+    S8["8 Record and report"]:::partial
+    S9["9 Compare<br/>policies, verger vs off"]:::partial
+    S10["10 New policy version"]:::partial
+  end
+  ACT["Activate"]:::built
+  REC["Recover: ladder"]:::built
+  VER["Verify: invariants, properties, mutation"]:::built
+
+  phone --> S1 --> S2 --> S3 --> S4 --> phone
+  S3 -- snapshots --> S5 --> S7
+  S6 --> S7 --> S3
+  S5 --> S8 --> S9 --> S10 --> S3
+  ACT -.-> S1 & S3 & S4
+  REC -.-> L1
+  VER -.-> S3 & S5
 ```
+
+Stage 4 is red because no app component reads a lever yet: the policy decides, and only
+verger's own refresh cap and global reduced motion carry a decision to the phone. The full
+sensing layer is specified in [sensing.md](sensing.md); verification in
+[verification.md](verification.md).
 
 ## Needed against built
 
 | # | Stage | Needed | Built | Gap |
 |---|---|---|---|---|
-| 1 | Sense | every disturbance below seen, each sensor switchable, cost-bounded, Android 9 to 16 | frames, thermal and headroom, trims and polled memory, battery saver, per-thread CPU, JS long tasks, app state, touches, reduce motion; switchable natively | network and Data Saver; battery level and temperature; storage; the user's fidelity (sent as `auto`); heat fallback below API 29 |
+| 1 | Sense ([spec](sensing.md)) | every disturbance below seen, each sensor switchable, cost-bounded, Android 9 to 16 | frames, thermal and headroom, trims and polled memory, battery saver, per-thread CPU, JS long tasks, app state, touches, reduce motion; switchable natively | network and Data Saver; battery level and temperature; storage; the user's fidelity (sent as `auto`); heat fallback below API 29 |
 | 2 | Estimate | seven accounts, each with a state and a confidence | `estimateAccounts` (read model) | network and storage unknown; confidences provisional; no policy reads it yet |
 | 3 | Decide | a swappable policy inside the envelope (limit, ceiling, home, floor); compress and expand | `VergerPolicy`, verger-p4: compresses, returns to start; static floors; live tuning | home, ceiling and in-session expansion (verger-p5) |
 | 4 | Act | every lever reaches a component; hardware levers; deferrable work admitted | refresh cap and CPU hints (native), global reduced motion (React); `optionalConcurrency` computed | **no app component reads a lever**; admission read by nothing; the old governor still decides the app |
@@ -56,7 +76,8 @@ compare). Update this page whenever a stage changes. Doctrine:
 | 9 | Compare | two policies, or verger and off, on one recording | `replayGovernor(options, events, policy)` | comparison report; recordings to feed it |
 | 10 | New version | versioned policies, deterministic experiment arms | policy versions, `assignExperiment`, ladder keyed by policy | not called from the app |
 | — | Activate | what may run, live, capped by the ladder | done | the React shell does not yet expose `configure` or `tune` |
-| — | Recover | the ladder, trust, growth across launches | done (G2) | open review items in the handoff note |
+| — | Recover | the ladder, trust, growth across launches | done (G2) | open review items in the handoff note; ladder not yet under generated death schedules |
+| — | Verify ([strategy](verification.md)) | invariants over generated streams, metamorphic relations, mutation adequacy, recordings, phones | `invariants.ts`; property suite with mutation check (G2) | controller and recovery properties; golden recorded sessions (G3); phones (G5) |
 
 ## Requisite variety: every disturbance, seen and countered
 

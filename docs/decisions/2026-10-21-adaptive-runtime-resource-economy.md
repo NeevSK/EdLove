@@ -286,3 +286,12 @@ plan: `docs/engineering/runtime-performance/verger/second-order-loop.md`.
 | Kotlin estimator, procfs sampler and display choice, 18 JUnit tests on the JVM | G2 |
 | Sensors compiled against android.jar 35; binding against an expo-modules-core 58.0.21 signature stub | G1 |
 | Device behaviour | R1, one contaminated A52 development-build trace |
+
+Added 2026-10-24:
+
+| Part | Level |
+| --- | --- |
+| Activation, policy contract, demand and accounts, outcome ledger, ladder key migration | G2 (verger-core 95 tests) |
+| Invariants over generated streams on Gurudevi's levers (300 runs per property), determinism, time shift, deaf-sensor equivalence, no guessing, no permanent degradation, no blind lowering; six mutant policies caught | G2 (property-based, fast-check) |
+| Two defects found by the properties and fixed in verger-p4 (a lever lowered forever after its floor; a sensor off from the start still reporting memory); p4 fixed in place because it has no field data | G2, fail to pass shown |
+| Switchable sensors in Kotlin | G2 for the Android-free parts (25 JUnit); Android sources uncompiled since the change |

@@ -9,9 +9,10 @@ and actuates; every decision is made by `@repo/verger-core` in JavaScript. It kn
 | CPU attribution | `ThreadCpuSampler.kt` | Per-thread CPU from procfs: main, JS, native modules, render, GC, image. |
 | Display | `DisplayModes.kt` | Chooses the display mode for a refresh cap without changing resolution. |
 | Mappings | `Signals.kt` | Trim levels, thermal status, headroom validity and poll pacing. |
+| Sensor set | `Sensors.kt` | Which sensors run, from verger's activation; parsed on the calling thread. |
 | Levers | `HardwareLevers.kt` | Refresh cap (preferred display mode) and the ADPF hint session; released on stop, destroy and reload. |
-| Sensors | `VergerSense.kt` | FrameMetrics stages, thermal, memory, battery saver, thread load; one thread; only changes cross. |
-| Binding | `VergerModule.kt` | Expo Modules API: `readCapacity`, `start`, `stop`, `setRefreshCap`, `setCpuBoost`, `readTotals`, seven events. |
+| Sensors | `VergerSense.kt` | FrameMetrics stages, thermal, memory, battery saver, thread load; one thread; only changes cross; a sensor switched off registers nothing. |
+| Binding | `VergerModule.kt` | Expo Modules API: `readCapacity`, `start`, `setSensors`, `stop`, `setRefreshCap`, `setCpuBoost`, `readTotals`, seven events. |
 | JS | `index.ts`, `src/mapping.ts` | `createVergerAndroidPort()`: a `RuntimePort` for verger-core. |
 
 A host app adds this package as a dependency; Expo autolinking finds `expo-module.config.json`.
@@ -22,6 +23,12 @@ The Kotlin estimator is tested against the golden vectors the TypeScript referen
 (`packages/verger-core/src/__fixtures__`). Regenerate them with `pnpm --filter @repo/verger-core golden`,
 then run both suites. In a prebuilt Android project: `./gradlew :repo_verger-android:testDebugUnitTest`
 (the Gradle project name follows the autolinked package name; confirm it in `settings.gradle`).
+
+## Evidence (2026-10-24)
+
+- Android-free Kotlin (estimator, sampler, exits, display modes, sensor set): 25 JUnit tests on the desktop JVM with Kotlin 2.1.20 (G2).
+- `VergerSense.kt` and `VergerModule.kt` changed for switchable sensors and are **not compiled** since: `android.jar` was unreachable from the cloud session. The first Gradle build must compile them.
+- The signals still missing for a full sensing layer: `docs/engineering/runtime-performance/verger/sensing.md`.
 
 ## Evidence (2026-10-21)
 
