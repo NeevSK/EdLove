@@ -46,6 +46,11 @@ Rules of the envelope:
 3. Every move, in either direction, records its account, signal, rule and policy version.
 4. Quality given up and quality gained are both reported beside the performance they bought.
 
+The envelope is the first loop. Verger also watches its own adapting (what it costs, whether
+each move worked, what it gave up) and changes itself, down to switching itself off where it
+does not pay: the second loop, in [second-order-loop.md](second-order-loop.md). Telemetry is
+how it sees.
+
 Where the code stands (2026-10-24): policy verger-p4 compresses and returns only to where the
 phone started; growth relaxes only the low-memory floor across sessions. Home, ceiling and
 in-session expansion are the next policy (verger-p5), built beside p4 and compared on the same

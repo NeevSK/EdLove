@@ -241,6 +241,17 @@ change every layer live, as events, so sessions replay exactly. Rules and the li
 choices: `docs/engineering/runtime-performance/verger/stage-and-chairs.md`. Activation
 (`activation.ts`) is the first layer built under this rule.
 
+### D14. Verger regulates its own regulating (2026-10-24)
+
+Three loops. Loop 1 adapts the app inside the envelope. Loop 2 adapts verger: it records the
+outcome of every move (relieved, held or withdrawn, agility, quality cost), measures its own
+cost, and by declared, bounded rules in the policy stops moves that do not help, slows moves
+that flap, withdraws expansions that do not hold, keeps itself within its own budget (verger is a
+workload in its own registry), and steps down the ladder on harm. Loop 3, changing the rules
+themselves, belongs to people through new policy versions compared on telemetry and recordings,
+so D5.8 holds: telemetry informs the next version, never the running one. Doctrine, prior art and
+plan: `docs/engineering/runtime-performance/verger/second-order-loop.md`.
+
 ## 3. Consequences
 
 - The facade in the spec keeps its names; its internals change.
