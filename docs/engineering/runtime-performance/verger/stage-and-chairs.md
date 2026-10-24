@@ -16,6 +16,41 @@ placed, moved and swapped later, as data or plug-ins, without rebuilding the sta
 stage serves is in [vision-feasibility-and-plan.md](vision-feasibility-and-plan.md); its lineage
 in [lineage-and-recovery.md](lineage-and-recovery.md).
 
+## The purpose: adapt both ways, inside the envelope
+
+Sensing is not the point; it is how verger knows when to move. The point is that each part of
+the app spends what this phone can give **now**: it **compresses** under pressure and
+**expands** when resources allow, in both directions, within limits it never crosses. Every
+layer below exists to serve this.
+
+For each lever, on this phone, at this moment, verger keeps an **envelope**:
+
+| Atom | Meaning | Set by | Moves |
+|---|---|---|---|
+| **Limit** | the best quality allowed: never exceeded | the user (fidelity, quiet mode), accessibility (reduce motion), the OS (battery saver, Data Saver), the device's capabilities, the activation preset | when any of those change |
+| **Ceiling** | the best quality this phone has earned: expansion stops here | the policy's bound for the device class, raised by growth across sessions | up slowly with proving sessions; down at once on strain |
+| **Home** | where the lever starts and settles on this phone | the device class and the baseline profile (what this phone, on this build, sustained before) | learned across sessions; relearned after a system update |
+| **Floor** | the worst quality allowed | the work's class: critical work never below its essential level, committed work never removed | fixed by the registry |
+
+Within a session, **compress** moves from home toward the floor, in class order (ornamental,
+then deferrable, then committed) and only for the resource under strain. **Expand** moves from
+home toward the ceiling, one step at a time, only while the relevant accounts are ample with
+enough confidence, and is withdrawn at the first strain. Cut fast, return slow, probe gently
+(the shape of TCP congestion control). Across sessions, the home and ceiling learn the phone; an
+OS update makes them stale.
+
+Rules of the envelope:
+1. The limit is never crossed, in either direction, by any policy or learning.
+2. Expansion needs evidence (ample accounts with confidence); missing signals mean holding, never
+   guessing upward.
+3. Every move, in either direction, records its account, signal, rule and policy version.
+4. Quality given up and quality gained are both reported beside the performance they bought.
+
+Where the code stands (2026-10-24): policy verger-p4 compresses and returns only to where the
+phone started; growth relaxes only the low-memory floor across sessions. Home, ceiling and
+in-session expansion are the next policy (verger-p5), built beside p4 and compared on the same
+recordings before it becomes the default.
+
 ## Rules
 
 1. **No chair is welded to the stage.** Every decision has a default that can be replaced (data,
