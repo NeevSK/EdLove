@@ -1,3 +1,4 @@
+import type { SensorId, VergerActivation } from './activation';
 import {
   type CreateGovernorOptions,
   createGovernor,
@@ -23,7 +24,14 @@ import type {
  */
 export interface RuntimePort {
   /** Starts sensing; returns a function that stops it. Must tolerate being called once only. */
-  start(config: GovernorConfig, onEvent: (event: GovernorEvent) => void): () => void;
+  /** `sensors` says which sensors to run; a port may run fewer, never more. */
+  start(
+    config: GovernorConfig,
+    onEvent: (event: GovernorEvent) => void,
+    sensors?: Readonly<Record<SensorId, boolean>>,
+  ): () => void;
+  /** Starts or stops individual sensors while running. A port without it keeps its start set. */
+  setSensors?(sensors: Readonly<Record<SensorId, boolean>>): void;
   setRefreshCap(hz: number | null): void;
   setCpuBoost(enabled: boolean): void;
 }
@@ -48,6 +56,8 @@ export interface RuntimeControllerOptions {
   readonly memorySensing: boolean;
   /** What this launch may do, from the recovery ladder and the learned profile. */
   readonly launch?: Pick<CreateGovernorOptions, 'hardware' | 'capacityGrant' | 'initialPressure'>;
+  /** What verger may do at start, already capped by the launch; defaults to the mode's preset. */
+  readonly activation?: VergerActivation;
 }
 
 export interface RuntimeController {
@@ -74,6 +84,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     mode: options.mode,
     config: options.config,
     memorySensing: options.memorySensing,
+    activation: options.activation,
     ...options.launch,
   });
   let snapshot = snapshotOf(state);
@@ -129,7 +140,12 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   const dispatch = (event: GovernorEvent) => {
     if (!running || !isValidEvent(event)) return;
     const before = state.version;
+    const sensorsBefore = state.activation.sense;
     state = reduceGovernor(state, event);
+    if (state.activation.sense !== sensorsBefore && port.setSensors) {
+      const sensors = state.activation.sense;
+      guard(() => port.setSensors?.(sensors));
+    }
     guard(() => observe(event));
     if (state.version !== before) {
       snapshot = snapshotOf(state);
@@ -147,7 +163,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
       running = true;
       guard(() => telemetry?.onSnapshot(snapshot));
       applyHardware(snapshot);
-      const stop = guardValue(() => port.start(options.config, dispatch));
+      const stop = guardValue(() => port.start(options.config, dispatch, state.activation.sense));
       stopSensing = stop ?? (() => {});
       schedule();
     },

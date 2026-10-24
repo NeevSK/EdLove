@@ -1,4 +1,11 @@
 import {
+  type ActivationPatch,
+  activationForMode,
+  capActivation,
+  resolveActivation,
+  type VergerActivation,
+} from './activation';
+import {
   createRuntimeController,
   type RuntimeController,
   type RuntimePort,
@@ -75,6 +82,11 @@ export interface VergerOptions {
   readonly store?: VergerStore;
   /** The most verger may do this launch; the ladder can only lower it. */
   readonly requested: GovernorMode;
+  /**
+   * The activation asked for (a preset with any overrides); the ladder caps it. Defaults to the
+   * preset that reproduces `requested`.
+   */
+  readonly activation?: VergerActivation;
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
@@ -98,6 +110,14 @@ export interface Verger {
   readonly plan: LaunchPlan | null;
   /** Feeds an event from outside the platform (app state, touches, preferences, long tasks). */
   dispatch(event: GovernorEvent): void;
+  /**
+   * Changes what verger may do while it runs: the patch applies over the launch's activation,
+   * and the result is capped by the launch exactly as at start. `null` returns to the launch's
+   * activation. Ignored while verger is not running.
+   */
+  configure(patch: ActivationPatch | null): void;
+  /** The activation in force, or null while verger is not running. */
+  readonly activation: VergerActivation | null;
   /** Null while verger is not running. */
   getSnapshot(): GovernorSnapshot | null;
   subscribe(listener: () => void): () => void;
@@ -164,6 +184,9 @@ export function createVerger(options: VergerOptions): Verger {
 
   let plan: LaunchPlan | null = null;
   let controller: RuntimeController | null = null;
+  const requestedActivation = options.activation ?? activationForMode(options.requested);
+  /** Caps the activation to what this launch's plan allows. */
+  let capFor: (activation: VergerActivation) => VergerActivation = (a) => a;
   let session: {
     marker: SessionMarker;
     ledger: SessionLedger;
@@ -324,6 +347,12 @@ export function createVerger(options: VergerOptions): Verger {
           device: deviceStratum(capacity, platform.memorySensing),
         })
       : undefined;
+    capFor = (activation) =>
+      capActivation(activation, {
+        runtime: decided.runtime === 'active' ? 'active' : 'shadow',
+        hardware: decided.hardware,
+      });
+    const activation = capFor(requestedActivation);
     const started = createRuntimeController({
       port: platform.createPort(now),
       capacity,
@@ -334,9 +363,11 @@ export function createVerger(options: VergerOptions): Verger {
       scheduler,
       telemetry,
       memorySensing: platform.memorySensing,
+      activation,
       launch: {
         hardware: decided.hardware,
-        capacityGrant: decided.grant,
+        // Growth is a direction activation can switch off; the earned grant is kept, unused.
+        capacityGrant: activation.grow ? decided.grant : 0,
         initialPressure: decided.prior,
       },
     });
@@ -437,6 +468,15 @@ export function createVerger(options: VergerOptions): Verger {
           persist();
         }
       }
+    },
+    configure(patch) {
+      const running = controller;
+      if (!running) return;
+      const activation = capFor(resolveActivation(requestedActivation, patch));
+      running.dispatch({ type: 'activation', at: now(), activation });
+    },
+    get activation() {
+      return controller?.getSnapshot().activation ?? null;
     },
     getSnapshot: () => controller?.getSnapshot() ?? null,
     subscribe(listener) {

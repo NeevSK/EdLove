@@ -1,4 +1,10 @@
-import { activationForMode, type VergerActivation } from './activation';
+import {
+  activationForMode,
+  leverActivation,
+  sensorOf,
+  type SensorId,
+  type VergerActivation,
+} from './activation';
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
 import { bottleneckTargets, classifyFrameWindow, frameBottleneck, gpuMeasured } from './frames';
 import { chooseLeverToLower, validateLevers } from './levers';
@@ -339,6 +345,46 @@ function combine(levers: readonly LeverSpec[], ...sources: Record<string, number
 }
 
 // ---------------------------------------------------------------------------------------------
+// Activation: what the closed loop may do, and which levers it may touch.
+// ---------------------------------------------------------------------------------------------
+
+const closedLoop = (state: GovernorState) => state.activation.decide === 'closed-loop';
+const mayReduce = (state: GovernorState) => closedLoop(state) && state.activation.reduce;
+const mayGrow = (state: GovernorState) => closedLoop(state) && state.activation.grow;
+
+/** Levers verger governs at all; an `off` lever is left at full quality and never picked. */
+const governed = (state: GovernorState) =>
+  state.levers.filter((lever) => leverActivation(state.activation, lever.id) !== 'off');
+
+/** What a sensor's readings left in the state, forgotten when the sensor is switched off. */
+function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
+  switch (sensor) {
+    case 'frames':
+      return { ...state, frameState: 'quiet', stressMs: 0, stressEndMs: null, comfortSeen: false };
+    case 'threads':
+      return { ...state, jsSaturatedSince: null, mainSaturatedSince: null, jsCores: 0, mainCores: 0 };
+    case 'memory':
+      return { ...state, memoryLatch: NO_MEMORY_LATCH, polledMemory: null, memorySensing: false };
+    case 'thermal':
+      return { ...state, thermalStatus: null, headroom: null };
+    case 'power':
+      return { ...state, powerSaver: false };
+    case 'longTasks':
+      return { ...state, longTasks: [] };
+    case 'network':
+      return state;
+  }
+}
+
+function applyActivation(state: GovernorState, activation: VergerActivation): GovernorState {
+  let next: GovernorState = { ...state, activation };
+  for (const [sensor, on] of Object.entries(activation.sense) as [SensorId, boolean][]) {
+    if (!on && state.activation.sense[sensor]) next = forgetSensor(next, sensor);
+  }
+  return next;
+}
+
+// ---------------------------------------------------------------------------------------------
 // Indexer: Unity's StateAction, with asymmetric hysteresis and upgrade back-off.
 // ---------------------------------------------------------------------------------------------
 
@@ -351,12 +397,16 @@ function lower(
   reason: string,
   match: true | 'primary' = true,
 ): GovernorState {
+  if (!mayReduce(state)) {
+    return { ...state, lastAction: 'stale', lastReason: `${reason}: reducing is switched off` };
+  }
+  const candidates = governed(state);
   let pressure = { ...state.pressure };
   let stack = [...state.stack];
   let moved = 0;
   for (let step = 0; step < steps; step += 1) {
     const effective = combine(state.levers, staticFloors(state), pressure);
-    const lever = chooseLeverToLower(state.levers, effective, bottleneck, match);
+    const lever = chooseLeverToLower(candidates, effective, bottleneck, match);
     if (!lever) break;
     pressure = { ...pressure, [lever.id]: (effective[lever.id] ?? 0) + 1 };
     stack = [...stack, lever.id];
@@ -439,7 +489,7 @@ function applyStandingPressure(state: GovernorState, at: number): GovernorState 
 }
 
 function maybeIncrease(state: GovernorState, at: number): GovernorState {
-  if (state.stack.length === 0) return state;
+  if (state.stack.length === 0 || !mayGrow(state)) return state;
   const thermal = thermalOf(state);
   if (thermal === 'warm' || thermal === 'hot' || thermal === 'critical') return state;
   const memory = memoryOf(state, at);
@@ -542,7 +592,7 @@ function applyContention(state: GovernorState, at: number): GovernorState {
       contentionExhausted: false,
     };
   }
-  if (state.contentionExhausted) return { ...state, lastPressureAt: at };
+  if (state.contentionExhausted || !mayReduce(state)) return { ...state, lastPressureAt: at };
   if (at - state.lastContentionActionAt < state.config.saturationAfterMs)
     return { ...state, lastPressureAt: at };
   const longTasks = recentLongTasks(state, at);
@@ -630,18 +680,23 @@ function onFrameWindow(
 function step(state: GovernorState, event: GovernorEvent): GovernorState {
   const at = Math.max(state.at, event.at);
   let next: GovernorState = { ...state, at, lastAction: 'stale', lastReason: state.lastReason };
-  switch (event.type) {
+  // A reading from a switched-off sensor is dropped here, not at the port, so replaying a raw
+  // recording under a different activation gives the same result as running it live.
+  const sensor = sensorOf(event);
+  const input: GovernorEvent =
+    sensor === null || state.activation.sense[sensor] ? event : { type: 'tick', at: event.at };
+  switch (input.type) {
     case 'frame-window':
-      next = onFrameWindow(next, event);
+      next = onFrameWindow(next, input);
       break;
     case 'thermal':
-      next = { ...next, thermalStatus: event.status, headroom: event.headroom };
+      next = { ...next, thermalStatus: input.status, headroom: input.headroom };
       break;
     case 'memory-trim':
-      next = onMemoryPressure(next, event.severity, at, 'memory trim');
+      next = onMemoryPressure(next, input.severity, at, 'memory trim');
       break;
     case 'memory-state': {
-      const severity = polledSeverity(next, event);
+      const severity = polledSeverity(next, input);
       const polled: GovernorState = { ...next, polledMemory: severity, memorySensing: true };
       next = relieveMemory(
         next,
@@ -652,8 +707,8 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
       break;
     }
     case 'thread-load': {
-      const js = event.cores.js ?? 0;
-      const main = event.cores.main ?? 0;
+      const js = input.cores.js ?? 0;
+      const main = input.cores.main ?? 0;
       const line = next.config.saturationCores;
       next = {
         ...next,
@@ -670,20 +725,20 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
       break;
     }
     case 'power':
-      next = { ...next, powerSaver: event.saver };
+      next = { ...next, powerSaver: input.saver };
       break;
     case 'interaction':
       next = { ...next, lastInteractionAt: at };
       break;
     case 'app-state':
-      next = { ...next, visibility: event.state };
-      if (event.state === 'active') next = { ...next, lastInteractionAt: at };
+      next = { ...next, visibility: input.state };
+      if (input.state === 'active') next = { ...next, lastInteractionAt: at };
       break;
     case 'preferences':
-      next = { ...next, reduceMotion: event.reduceMotion, fidelity: event.fidelity };
+      next = { ...next, reduceMotion: input.reduceMotion, fidelity: input.fidelity };
       break;
     case 'activation':
-      next = { ...next, activation: event.activation };
+      next = applyActivation(next, input.activation);
       break;
     case 'network':
     case 'tick':
@@ -716,7 +771,11 @@ export function reduceGovernor(state: GovernorState, event: GovernorEvent): Gove
 // Outputs
 // ---------------------------------------------------------------------------------------------
 
-function optionalConcurrency(state: GovernorState, at: number, closedLoop: boolean): number {
+function optionalConcurrency(state: GovernorState, at: number): number {
+  const admission = state.activation.admission;
+  if (admission === 'off') return state.config.maxOptionalConcurrency;
+  // Measured pressure counts only when admission is applied and the loop is deciding.
+  const closedLoop = admission === 'apply' && state.activation.decide === 'closed-loop';
   if (state.visibility !== 'active' || state.powerSaver) return 0;
   if (closedLoop && contentionOf(state, at) !== 'none') return 0;
   const thermal = thermalOf(state);
@@ -735,10 +794,22 @@ function optionalConcurrency(state: GovernorState, at: number, closedLoop: boole
 /** The governor's published output at time `at` (ambient sleep depends on elapsed time). */
 export function snapshotOf(state: GovernorState, at: number = state.at): GovernorSnapshot {
   const base = staticFloors(state);
-  const proposed = combine(state.levers, base, state.pressure, dynamicFloors(state, at));
   const baseline = combine(state.levers, base);
-  const active = state.mode === 'active';
-  const levels = active ? proposed : baseline;
+  const loop = closedLoop(state)
+    ? combine(state.levers, base, state.pressure, dynamicFloors(state, at))
+    : baseline;
+  // Per lever: `apply` publishes the decision, `shadow` the baseline (the decision is only
+  // proposed), `off` full quality, ungoverned.
+  const levels: Record<string, number> = {};
+  const proposed: Record<string, number> = {};
+  for (const lever of state.levers) {
+    const activation = leverActivation(state.activation, lever.id);
+    const decided = loop[lever.id] ?? 0;
+    proposed[lever.id] = activation === 'off' ? 0 : decided;
+    levels[lever.id] =
+      activation === 'apply' ? decided : activation === 'shadow' ? (baseline[lever.id] ?? 0) : 0;
+  }
+  const hardwareAllowed = state.activation.hardware && state.hardware;
   const thermal = thermalOf(state);
   const idle = interactionIdle(state, at);
   const cool = thermal === 'unknown' || thermal === 'nominal';
@@ -755,15 +826,14 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     powerSaver: state.powerSaver,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
-    optionalConcurrency: optionalConcurrency(state, at, active),
+    optionalConcurrency: optionalConcurrency(state, at),
     contention: contentionOf(state, at),
     contentionExhausted: state.contentionExhausted,
-    // Hardware levers are new behaviour, so only active mode applies them; shadow mode keeps
-    // the app exactly as it runs today and records the proposal in `proposedLevels`.
+    // Hardware levers are new behaviour, so they act only where activation allows them; the
+    // shadow preset keeps the app exactly as it runs today and records the proposal instead.
     refreshCapHz: hardware.refreshCapHz,
     cpuBoost:
-      active &&
-      state.hardware &&
+      hardwareAllowed &&
       state.capacity.supportsCpuHints &&
       state.visibility === 'active' &&
       !state.powerSaver &&
@@ -788,14 +858,16 @@ function hardwareOf(
   at: number,
   levels: Readonly<Record<string, number>>,
 ): { refreshCapHz: number | null; globalReducedMotion: boolean } {
-  const active = state.mode === 'active' && state.hardware;
+  const allowed = state.activation.hardware && state.hardware;
   const capLever = leverWith(state, 'refresh-cap');
   const motionLever = leverWith(state, 'global-reduced-motion');
+  const applied = (lever: LeverSpec | undefined): lever is LeverSpec =>
+    allowed && lever !== undefined && leverActivation(state.activation, lever.id) === 'apply';
   const wantCap =
-    active && capLever && (levels[capLever.id] ?? 0) >= 1 && canCapRefresh(state)
+    applied(capLever) && (levels[capLever.id] ?? 0) >= 1 && canCapRefresh(state)
       ? state.config.refreshCapHz
       : null;
-  const wantMotion = active && motionLever !== undefined && (levels[motionLever.id] ?? 0) >= 1;
+  const wantMotion = applied(motionLever) && (levels[motionLever.id] ?? 0) >= 1;
   const thermal = thermalOf(state);
   const touching = at - state.lastInteractionAt < state.config.gestureQuietMs;
   const forced = thermal === 'hot' || thermal === 'critical';
