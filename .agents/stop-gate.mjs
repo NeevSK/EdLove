@@ -62,8 +62,64 @@ function getModifiedLineNumbers(filePath, repoRoot) {
   }
 }
 
+function findRemainingCodeFiles(dir, fileList = []) {
+  let entries = [];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return fileList;
+  }
+  for (const ent of entries) {
+    if (ent.name.startsWith('.') || ent.name === 'node_modules' || ent.name === 'dist' || ent.name === 'build' || ent.name === '.git') {
+      continue;
+    }
+    const full = path.join(dir, ent.name);
+    if (ent.isDirectory()) {
+      findRemainingCodeFiles(full, fileList);
+    } else if (ent.isFile()) {
+      const ext = path.extname(ent.name).toLowerCase();
+      if (['.tsx', '.jsx', '.ts', '.js'].includes(ext)) {
+        fileList.push(full);
+      }
+    }
+  }
+  return fileList;
+}
+
+function checkDanglingImports(deletedFilesList, remainingFilesList, rootDir) {
+  const dangling = [];
+  for (const delPath of deletedFilesList) {
+    const ext = path.extname(delPath);
+    const baseName = path.basename(delPath, ext);
+    if (!baseName || baseName === 'index') continue;
+
+    const importRegex = new RegExp(`(?:from\\s+['"][^'"]*\\/${baseName}['"]|require\\s*\\(\\s*['"][^'"]*\\/${baseName}['"]\\))`);
+
+    for (const file of remainingFilesList) {
+      try {
+        const content = fs.readFileSync(file, 'utf8');
+        if (importRegex.test(content)) {
+          const lines = content.split('\n');
+          for (let i = 0; i < lines.length; i++) {
+            if (importRegex.test(lines[i])) {
+              dangling.push({
+                deletedFile: path.relative(rootDir, delPath).replace(/\\/g, '/'),
+                importerFile: path.relative(rootDir, file).replace(/\\/g, '/'),
+                line: i + 1,
+                snippet: lines[i].trim()
+              });
+            }
+          }
+        }
+      } catch {}
+    }
+  }
+  return dangling;
+}
+
 async function main() {
   let modifiedFiles = [];
+  let deletedFiles = [];
   try {
     const statusOutput = execSync('git status --porcelain', {
       cwd: projectRoot,
@@ -74,15 +130,98 @@ async function main() {
     const lines = statusOutput.split('\n').filter(Boolean);
     for (const rawLine of lines) {
       if (rawLine.length < 4) continue;
+      const statusCode = rawLine.substring(0, 2);
       const filePathPart = rawLine.substring(3).trim();
       const parts = filePathPart.split(' -> ');
       const filePath = parts[parts.length - 1].trim();
-      if (filePath) {
+      if (!filePath) continue;
+
+      if (statusCode.includes('D')) {
+        const ext = path.extname(filePath).toLowerCase();
+        if (['.tsx', '.jsx', '.ts', '.js'].includes(ext)) {
+          deletedFiles.push(path.resolve(projectRoot, filePath));
+        }
+      } else {
         modifiedFiles.push(path.resolve(projectRoot, filePath));
       }
     }
   } catch {
     process.exit(0);
+  }
+
+  // ── 1. Anti-Bad-Delete: Check for Dangling Imports from Deleted Files ────────
+  if (deletedFiles.length > 0) {
+    const allCodeFiles = findRemainingCodeFiles(projectRoot);
+    const dangling = checkDanglingImports(deletedFiles, allCodeFiles, projectRoot);
+    if (dangling.length > 0) {
+      console.error('');
+      console.error('🛑 [RN-TERRAIN STOP GATE: BAD DELETE / DANGLING DEPENDENCY DETECTED]');
+      console.error('─────────────────────────────────────────────────────────────────');
+      console.error('  Task completion rejected. One or more files were deleted, but other');
+      console.error('  files in the project still import them (causing fatal build crashes):');
+      console.error('');
+      for (const d of dangling) {
+        console.error(`  ❌ Deleted:  ${d.deletedFile}`);
+        console.error(`     Imported: ${d.importerFile}:${d.line}`);
+        console.error(`     Snippet:  ${d.snippet}`);
+        console.error('');
+      }
+      console.error('  CRITICAL INSTRUCTION FOR AI AGENT:');
+      console.error('  Either update the importing files to remove/replace the reference,');
+      console.error('  or restore the deleted file if its removal was accidental.');
+      console.error('─────────────────────────────────────────────────────────────────');
+      process.exit(2);
+    }
+  }
+
+  // ── 2. Anti-Regression: Check for Unverified Massive Line Drops ─────────────
+  const unverifiedTruncations = [];
+  for (const file of modifiedFiles) {
+    if (!fs.existsSync(file)) continue;
+    const rel = path.relative(projectRoot, file).replace(/\\/g, '/');
+    try {
+      const numstat = execSync(`git diff --numstat HEAD -- "${rel}"`, {
+        cwd: projectRoot,
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore']
+      }).trim();
+      if (numstat) {
+        const parts = numstat.split(/\s+/);
+        const added = parseInt(parts[0], 10) || 0;
+        const deleted = parseInt(parts[1], 10) || 0;
+        if (deleted >= 40 && deleted > (added * 2.5)) {
+          const content = fs.readFileSync(file, 'utf8');
+          const allowOverride = /(?:\/\/|\/\*)\s*@allow-(?:truncation|large-deletion)\b/i.test(content) ||
+                                process.env.TERRAIN_ALLOW_TRUNCATION === '1';
+          if (!allowOverride) {
+            unverifiedTruncations.push({
+              file: rel,
+              added,
+              deleted,
+              netLoss: deleted - added
+            });
+          }
+        }
+      }
+    } catch {}
+  }
+
+  if (unverifiedTruncations.length > 0) {
+    console.error('');
+    console.error('🛑 [RN-TERRAIN STOP GATE: UNVERIFIED MASSIVE TRUNCATION / BAD DELETE]');
+    console.error('─────────────────────────────────────────────────────────────────');
+    console.error('  Task completion rejected. The following file(s) suffered a massive net line drop');
+    console.error('  without explicit confirmation, which often indicates accidental wipeout of older work:');
+    console.error('');
+    for (const t of unverifiedTruncations) {
+      console.error(`  ❌ ${t.file}: +${t.added} / -${t.deleted} lines (Net loss: ${t.netLoss} lines)`);
+    }
+    console.error('');
+    console.error('  CRITICAL INSTRUCTION FOR AI AGENT:');
+    console.error('  • If this massive deletion was intentional, add `// @allow-truncation` to the file(s).');
+    console.error('  • If you accidentally truncated existing features, restore the missing sections.');
+    console.error('─────────────────────────────────────────────────────────────────');
+    process.exit(2);
   }
 
   const codeFiles = modifiedFiles.filter(f => {
@@ -113,6 +252,7 @@ async function main() {
   });
 
   if (rnFiles.length === 0) {
+    console.log('✓ [RN-TERRAIN STOP GATE]: All modified lines verified cleanly against New Architecture & modern runtimes.');
     process.exit(0);
   }
 
