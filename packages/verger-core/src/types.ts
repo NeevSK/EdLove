@@ -1,3 +1,5 @@
+import type { VergerActivation } from './activation';
+
 /**
  * Adaptive runtime governor: shared types.
  *
@@ -89,6 +91,15 @@ export type TrimSeverity = 'moderate' | 'low' | 'critical';
 
 export type FidelityPreference = 'auto' | 'low' | 'high';
 
+/** How the device reaches the network. */
+export type NetworkTransport = 'wifi' | 'cellular' | 'ethernet' | 'other' | 'none';
+
+/**
+ * Android Data Saver as it applies to this app (`ConnectivityManager.getRestrictBackgroundStatus`):
+ * `enabled` restricts background data, `allowlisted` means the user exempted this app.
+ */
+export type DataSaver = 'disabled' | 'allowlisted' | 'enabled';
+
 export type GovernorEvent =
   | { readonly type: 'frame-window'; readonly at: number; readonly window: FrameWindow }
   | {
@@ -123,6 +134,20 @@ export type GovernorEvent =
       readonly thresholdMb: number;
       readonly lowMemory: boolean;
     }
+  | {
+      /** The network as the platform reports it; `null` fields are unknown, not false. */
+      readonly type: 'network';
+      readonly at: number;
+      readonly transport: NetworkTransport | null;
+      /** The platform has validated that the network reaches the internet. */
+      readonly validated: boolean | null;
+      readonly metered: boolean | null;
+      /** The platform's downstream bandwidth estimate. */
+      readonly downKbps: number | null;
+      readonly dataSaver: DataSaver | null;
+    }
+  /** What verger may do from now on; already resolved and capped by the launch. */
+  | { readonly type: 'activation'; readonly at: number; readonly activation: VergerActivation }
   /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */
   | { readonly type: 'long-task'; readonly at: number; readonly durationMs: number }
   | { readonly type: 'tick'; readonly at: number };
@@ -276,4 +301,6 @@ export interface GovernorSnapshot {
   /** The last indexer action and why. */
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
+  /** What verger was allowed to do when this snapshot was taken. */
+  readonly activation: VergerActivation;
 }

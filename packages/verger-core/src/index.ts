@@ -6,6 +6,23 @@
  * overrides, telemetry sink and experiment assignment. The platform packages (verger-android,
  * verger-react) supply sensing and the app-wide actuators.
  */
+export {
+  ACTIVATION_PRESETS,
+  type ActivationCap,
+  type ActivationPatch,
+  type ActivationPresetName,
+  activationForMode,
+  capActivation,
+  type LeverActivation,
+  leverActivation,
+  type ObserveLevel,
+  parseActivationPatch,
+  resolveActivation,
+  SENSORS,
+  type SensorId,
+  sensorOf,
+  type VergerActivation,
+} from './activation';
 export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from './builtins';
 export { DEFAULT_GOVERNOR_CONFIG } from './config';
 export {

@@ -1,3 +1,4 @@
+import { activationForMode, type VergerActivation } from './activation';
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
 import { bottleneckTargets, classifyFrameWindow, frameBottleneck, gpuMeasured } from './frames';
 import { chooseLeverToLower, validateLevers } from './levers';
@@ -117,6 +118,8 @@ export interface GovernorState {
   readonly hardware: boolean;
   /** Steps of capacity floor this device has earned back (0 = none, 2 = all). */
   readonly capacityGrant: number;
+  /** What verger may do; changed only by an `activation` event, so replay reproduces it. */
+  readonly activation: VergerActivation;
 
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
@@ -142,6 +145,8 @@ export interface CreateGovernorOptions {
    * the loop raises it back exactly as it would its own decreases once frames are comfortable.
    */
   readonly initialPressure?: Readonly<Record<string, number>>;
+  /** Defaults to the preset that reproduces `mode`. */
+  readonly activation?: VergerActivation;
 }
 
 export function createGovernor(options: CreateGovernorOptions): GovernorState {
@@ -190,6 +195,7 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     heldGlobalMotion: false,
     hardware: options.hardware ?? true,
     capacityGrant: Math.max(0, Math.floor(options.capacityGrant ?? 0)),
+    activation: options.activation ?? activationForMode(options.mode ?? 'active'),
     lastAction: 'stale',
     lastReason: start.stack.length > 0 ? 'start from learned profile' : 'start',
   };
@@ -676,6 +682,10 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
     case 'preferences':
       next = { ...next, reduceMotion: event.reduceMotion, fidelity: event.fidelity };
       break;
+    case 'activation':
+      next = { ...next, activation: event.activation };
+      break;
+    case 'network':
     case 'tick':
       break;
   }
@@ -763,6 +773,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     ...splitPressure(state),
     lastAction: state.lastAction,
     lastReason: state.lastReason,
+    activation: state.activation,
   };
 }
 
@@ -823,7 +834,8 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     a.contentionExhausted !== b.contentionExhausted ||
     a.refreshCapHz !== b.refreshCapHz ||
     a.cpuBoost !== b.cpuBoost ||
-    a.globalReducedMotion !== b.globalReducedMotion
+    a.globalReducedMotion !== b.globalReducedMotion ||
+    a.activation !== b.activation
   ) {
     return false;
   }
