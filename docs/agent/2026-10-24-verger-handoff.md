@@ -1,5 +1,9 @@
 # Verger handoff (2026-10-24)
 
+> **Superseded as the entry point (2026-10-24, end of session):** start with
+> `docs/engineering/runtime-performance/verger/playbook/README.md` and the `verger` skill
+> (`.agents/skills/verger/SKILL.md`). Gate: `pnpm verger:check`. The notes below are history.
+
 Read this first in any new session working on verger, the adaptive runtime. It carries what
 the chat that built it knew. The doctrine, design and ADR hold the reasoning; this file holds
 the state, the open items and the next step.

@@ -18,6 +18,10 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## Build plan and progress
 
+**Continuing this work?** Start with the [playbook](playbook/README.md) (rules, nuances, one
+guide per remaining phase) and run `pnpm verger:check`. Remaining, in order of leverage: F
+(phones), C (envelope), B3 (data budget), D (loops 2 and 3), the rest of B.
+
 The one place the plan is tracked; update it with every phase. Verification rides with each item
 (`verification.md`); evidence levels as in AGENTS.md section 6.
 
