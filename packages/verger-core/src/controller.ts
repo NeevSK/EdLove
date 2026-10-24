@@ -1,12 +1,6 @@
 import type { SensorId, VergerActivation } from './activation';
-import {
-  type CreateGovernorOptions,
-  createGovernor,
-  type GovernorState,
-  nextTimedChangeAt,
-  reduceGovernor,
-  snapshotOf,
-} from './governor';
+import type { CreateGovernorOptions } from './governor';
+import { VERGER_POLICY, type VergerPolicy } from './policy';
 import type { GovernorTelemetry } from './telemetry';
 import type {
   CapacityFacts,
@@ -58,6 +52,8 @@ export interface RuntimeControllerOptions {
   readonly launch?: Pick<CreateGovernorOptions, 'hardware' | 'capacityGrant' | 'initialPressure'>;
   /** What verger may do at start, already capped by the launch; defaults to the mode's preset. */
   readonly activation?: VergerActivation;
+  /** The rules to decide by; `VERGER_POLICY` by default. */
+  readonly policy?: VergerPolicy;
 }
 
 export interface RuntimeController {
@@ -77,7 +73,8 @@ export interface RuntimeController {
  */
 export function createRuntimeController(options: RuntimeControllerOptions): RuntimeController {
   const { port, scheduler, telemetry } = options;
-  let state: GovernorState = createGovernor({
+  const policy = options.policy ?? VERGER_POLICY;
+  let state = policy.create({
     at: options.now(),
     capacity: options.capacity,
     levers: options.levers,
@@ -87,7 +84,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     activation: options.activation,
     ...options.launch,
   });
-  let snapshot = snapshotOf(state);
+  let snapshot = policy.snapshot(state);
   let stopSensing: (() => void) | null = null;
   let timer: unknown = null;
   // Unknown until first applied: a previous JS instance (a reload) may have left the hardware
@@ -116,7 +113,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     if (timer !== null) scheduler.clearTimeout(timer);
     timer = null;
     if (stopSensing === null) return;
-    const due = nextTimedChangeAt(state);
+    const due = policy.nextTimedChangeAt(state);
     if (due === null) return;
     timer = scheduler.setTimeout(
       () => {
@@ -139,16 +136,16 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
 
   const dispatch = (event: GovernorEvent) => {
     if (!running || !isValidEvent(event)) return;
-    const before = state.version;
-    const sensorsBefore = state.activation.sense;
-    state = reduceGovernor(state, event);
-    if (state.activation.sense !== sensorsBefore && port.setSensors) {
-      const sensors = state.activation.sense;
-      guard(() => port.setSensors?.(sensors));
-    }
+    const before = policy.outputVersion(state);
+    state = policy.reduce(state, event);
     guard(() => observe(event));
-    if (state.version !== before) {
-      snapshot = snapshotOf(state);
+    if (policy.outputVersion(state) !== before) {
+      const sensorsBefore = snapshot.activation.sense;
+      snapshot = policy.snapshot(state);
+      if (snapshot.activation.sense !== sensorsBefore && port.setSensors) {
+        const sensors = snapshot.activation.sense;
+        guard(() => port.setSensors?.(sensors));
+      }
       applyHardware(snapshot);
       guard(() => telemetry?.onSnapshot(snapshot));
       for (const listener of listeners) guard(listener);
@@ -163,7 +160,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
       running = true;
       guard(() => telemetry?.onSnapshot(snapshot));
       applyHardware(snapshot);
-      const stop = guardValue(() => port.start(options.config, dispatch, state.activation.sense));
+      const stop = guardValue(() => port.start(options.config, dispatch, snapshot.activation.sense));
       stopSensing = stop ?? (() => {});
       schedule();
     },

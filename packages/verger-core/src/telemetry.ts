@@ -22,6 +22,8 @@ export interface GovernorTelemetryOptions {
   readonly device?: Readonly<Record<string, TelemetryValue>>;
   /** Hash of the active config, so data can be split by every threshold that produced it. */
   readonly configHash?: string;
+  /** The policy deciding; verger's own when absent. */
+  readonly policy?: { readonly id: string; readonly version: number };
   /** Classifies windows for the summary with the governor's own rule. */
   readonly config?: GovernorConfig;
   /**
@@ -127,7 +129,8 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
       options.sink(name, {
         experiment: options.experimentKey,
         arm: options.arm,
-        policy: GOVERNOR_POLICY_VERSION,
+        policy: options.policy?.version ?? GOVERNOR_POLICY_VERSION,
+        policy_id: options.policy?.id ?? 'verger',
         ...(options.sessionId ? { session: options.sessionId } : {}),
         ...(options.configHash ? { config: options.configHash } : {}),
         ...attributes,

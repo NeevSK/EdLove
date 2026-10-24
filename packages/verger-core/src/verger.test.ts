@@ -8,6 +8,7 @@ import {
   freshRecord,
   type GovernorEvent,
   parseRecord,
+  policyKey,
   type RuntimePort,
   type TelemetryValue,
   type VergerPlatform,
@@ -339,7 +340,7 @@ describe('verger launch', () => {
   it('on a rung without hardware, never calls a hardware lever, not even to release', async () => {
     const d = device();
     const store = asyncStore();
-    const record = freshRecord(`p4:${HOST.configHash}:1.0.0`, null, HOST.recovery);
+    const record = freshRecord(`${policyKey(HOST.policy)}:${HOST.configHash}:1.0.0`, null, HOST.recovery);
     store.data.set(
       'verger:sample:record',
       JSON.stringify({ ...record, ladder: { ...record.ladder, rung: 2 } }),

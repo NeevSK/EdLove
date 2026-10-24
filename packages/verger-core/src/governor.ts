@@ -740,6 +740,9 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
     case 'activation':
       next = applyActivation(next, input.activation);
       break;
+    case 'config':
+      next = { ...next, config: input.config, upgradeAfterMs: input.config.upgradeAfterMs };
+      break;
     case 'network':
     case 'tick':
       break;

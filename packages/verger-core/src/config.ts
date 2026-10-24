@@ -6,6 +6,27 @@ import type { GovernorConfig } from './types';
  * guide (headroom > 0.85 watch, > 0.95 reduce, > 1.0 reduce immediately). Every value here is
  * provisional until A52 and 2–3 GB release-build captures calibrate it.
  */
+/** Throws on a config no policy could run; checked at host definition and on every live change. */
+export function validateConfig(config: GovernorConfig): void {
+  for (const [key, value] of Object.entries(config)) {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+      throw new Error(`Config "${key}" must be a finite positive number`);
+    }
+  }
+  const order = (low: keyof GovernorConfig, high: keyof GovernorConfig) => {
+    if (!(config[low] < config[high])) throw new Error(`Config "${low}" must be below "${high}"`);
+  };
+  order('comfortRatio', 'stressRatio');
+  order('comfortDroppedRatio', 'stressDroppedRatio');
+  order('headroomWarm', 'headroomHot');
+  order('upgradeAfterMs', 'maxUpgradeAfterMs');
+  if (!(config.headroomHot <= config.headroomCritical)) {
+    throw new Error('Config "headroomHot" must not exceed "headroomCritical"');
+  }
+  if (!Number.isInteger(config.minSamples))
+    throw new Error('Config "minSamples" must be an integer');
+}
+
 export const DEFAULT_GOVERNOR_CONFIG: GovernorConfig = {
   minSamples: 4,
   stressRatio: 1.25,

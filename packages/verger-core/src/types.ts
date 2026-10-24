@@ -146,6 +146,8 @@ export type GovernorEvent =
       readonly downKbps: number | null;
       readonly dataSaver: DataSaver | null;
     }
+  /** Thresholds from now on (a validated, complete config): live tuning in the lab. */
+  | { readonly type: 'config'; readonly at: number; readonly config: GovernorConfig }
   /** What verger may do from now on; already resolved and capped by the launch. */
   | { readonly type: 'activation'; readonly at: number; readonly activation: VergerActivation }
   /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */

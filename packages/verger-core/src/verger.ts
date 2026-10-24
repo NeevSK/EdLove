@@ -30,15 +30,22 @@ import {
   type SessionOutcome,
   type VergerRecord,
 } from './recovery';
+import { policyKey } from './policy';
 import { createSessionLedger, type SessionLedger } from './session';
 import {
   createGovernorTelemetry,
-  GOVERNOR_POLICY_VERSION,
   type GovernorTelemetry,
   type GovernorTelemetrySink,
   type TelemetryValue,
 } from './telemetry';
-import type { CapacityFacts, GovernorEvent, GovernorMode, GovernorSnapshot } from './types';
+import { validateConfig } from './config';
+import type {
+  CapacityFacts,
+  GovernorConfig,
+  GovernorEvent,
+  GovernorMode,
+  GovernorSnapshot,
+} from './types';
 
 /**
  * Durable key-value storage the host supplies. It may be asynchronous: the launch waits for
@@ -118,6 +125,12 @@ export interface Verger {
   configure(patch: ActivationPatch | null): void;
   /** The activation in force, or null while verger is not running. */
   readonly activation: VergerActivation | null;
+  /**
+   * Changes thresholds while verger runs: the patch applies over the host's config and must
+   * validate, or nothing changes and the error is thrown. `null` returns to the host's config.
+   * The native sensors keep the thresholds they started with.
+   */
+  tune(patch: Partial<GovernorConfig> | null): void;
   /** Null while verger is not running. */
   getSnapshot(): GovernorSnapshot | null;
   subscribe(listener: () => void): () => void;
@@ -180,7 +193,8 @@ export function createVerger(options: VergerOptions): Verger {
     marker: `verger:${host.name}:session`,
     flight: `verger:${host.name}:flight`,
   };
-  const ladderKey = `p${GOVERNOR_POLICY_VERSION}:${host.configHash}:${options.release}`;
+  // A new policy, config or release starts the ladder over.
+  const ladderKey = `${policyKey(host.policy)}:${host.configHash}:${options.release}`;
 
   let plan: LaunchPlan | null = null;
   let controller: RuntimeController | null = null;
@@ -341,6 +355,7 @@ export function createVerger(options: VergerOptions): Verger {
           experimentKey: options.assignment?.key ?? host.experimentKey,
           sessionId: (fnv1a32(`${wallNow()}:${random()}`) >>> 0).toString(16).padStart(8, '0'),
           configHash: host.configHash,
+          policy: host.policy,
           config: host.config,
           levers: host.levers,
           readTotals: platform.readTotals,
@@ -364,6 +379,7 @@ export function createVerger(options: VergerOptions): Verger {
       telemetry,
       memorySensing: platform.memorySensing,
       activation,
+      policy: host.policy,
       launch: {
         hardware: decided.hardware,
         // Growth is a direction activation can switch off; the earned grant is kept, unused.
@@ -474,6 +490,13 @@ export function createVerger(options: VergerOptions): Verger {
       if (!running) return;
       const activation = capFor(resolveActivation(requestedActivation, patch));
       running.dispatch({ type: 'activation', at: now(), activation });
+    },
+    tune(patch) {
+      const running = controller;
+      if (!running) return;
+      const config: GovernorConfig = { ...host.config, ...patch };
+      validateConfig(config);
+      running.dispatch({ type: 'config', at: now(), config });
     },
     get activation() {
       return controller?.getSnapshot().activation ?? null;

@@ -24,7 +24,7 @@ export {
   type VergerActivation,
 } from './activation';
 export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from './builtins';
-export { DEFAULT_GOVERNOR_CONFIG } from './config';
+export { DEFAULT_GOVERNOR_CONFIG, validateConfig } from './config';
 export {
   createRuntimeController,
   type RuntimeController,
@@ -89,6 +89,7 @@ export {
   validateRecoveryConfig,
   type VergerRecord,
 } from './recovery';
+export { policyKey, VERGER_POLICY, type VergerPolicy, validatePolicy } from './policy';
 export { replayGovernor } from './replay';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
