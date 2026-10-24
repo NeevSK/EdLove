@@ -261,6 +261,12 @@ export interface GovernorConfig {
   readonly fastDecreaseSteps: number;
   /** Optional background work allowed when nothing constrains it. */
   readonly maxOptionalConcurrency: number;
+  /**
+   * Optional work allowed on a metered network. Where most users are always metered (Sri Lanka's
+   * teachers, on prepaid mobile data), metered is the normal state, not strain: the default is no
+   * reduction, and Data Saver and a data budget protect the user instead. A host's choice.
+   */
+  readonly meteredOptionalConcurrency: number;
   /** A thread role using at least this many cores is saturated. */
   readonly saturationCores: number;
   /** Saturation must last this long before it counts as contention. */

@@ -16,6 +16,24 @@ whether the stage gives the people working on it **full affordance** (see, chang
 compare). Update this page whenever a stage changes. Doctrine:
 [stage-and-chairs.md](stage-and-chairs.md), [second-order-loop.md](second-order-loop.md).
 
+## Build plan and progress
+
+The one place the plan is tracked; update it with every phase. Verification rides with each item
+(`verification.md`); evidence levels as in AGENTS.md section 6.
+
+| Phase | Item | State | Evidence |
+|---|---|---|---|
+| A. Core stage | activation, policy contract, demand and accounts, outcome ledger, invariants | done | G2: properties, mutation check |
+| A. Core stage | recovery ladder against its model | done (found a rung-4 hole, fixed) | G2: model-based |
+| B. Sensing | B1 network and Data Saver | in code; metered treated as home | G2 contract (Kotlin and TS); Android part uncompiled |
+| B. Sensing | B2 battery level, charging, temperature; heat fallback below API 29 | **next** | — |
+| B. Sensing | B3 data budget (prepaid) | planned | — |
+| B. Sensing | B4 storage; B5 verger's own cost; B6 user fidelity passthrough; B7 input delay | planned | — |
+| C. Envelope | verger-p5: home, ceiling, floor; expand and compress | planned | — |
+| D. Loop 2 and 3 | self-adapting rules; session recording and telemetry; dev lab; policy comparison | planned | — |
+| E. Cut-off | static floors without native code; drift test; consumers move; old governor removed | planned (signed off) | — |
+| F. Phones | first Gradle build; dev client on the A52, A24 and a 2–4 GB phone; Maestro CLI flows; Stryker | needs the laptop | — |
+
 ## The pipeline
 
 Green: built and tested (G2). Amber: partly built. Red: missing.

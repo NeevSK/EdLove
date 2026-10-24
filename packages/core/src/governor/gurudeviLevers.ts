@@ -102,7 +102,8 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     motion: false,
     levels: ['prefetch next screens', 'prefetch on idle only', 'no prefetch'],
     whenHidden: 2,
-    whenMetered: 1,
+    // No metered limit: most of Gurudevi's users are always on metered mobile data, so metered is
+    // home. What it should mean here is an open choice (stage-and-chairs.md).
     whenDataSaver: 2,
     whenOffline: 2,
   },

@@ -92,6 +92,25 @@ check at minSdk 28 flags any call above the minimum.
 | JS heap and GC | Hermes instrumentation | *verify in the installed React Native* | — | — | open |
 | Compile state after an update | unknown API | *verify* | — | build fingerprint | open |
 
+## Data cost where most users are always metered
+
+In Sri Lanka most teachers reach the internet on prepaid mobile data, so **metered is the normal
+state, not strain**: limiting on the metered flag alone would put nearly everyone in a constrained
+mode for good. The flag says only that the OS thinks bytes cost money, not how many the user can
+afford. Verger therefore treats metered as home (no limit by default; `meteredOptionalConcurrency`
+is a host's choice) and protects the user's data through:
+
+| Protection | Signal | State |
+|---|---|---|
+| The user's explicit choice | Data Saver (`getRestrictBackgroundStatus`) | in code |
+| A data budget | bytes this app received and sent (`TrafficStats.getUidRxBytes`, `getUidTxBytes`, since boot; API level *verify*) against a daily budget (a chair) | missing |
+| Cheaper times | prepaid tariffs can price night data far below day data (Dialog's prepaid MyPlan lists 10 cents per MB by day and 1 cent per MB for night bonus data, source below; rates change) | missing: a schedule for large optional downloads is a chair |
+| Free networks | Wi-Fi, unmetered | in code |
+
+Critical work (an attendance save and its upload) is never gated by any of these.
+
+Source: [Dialog MyPlan prepaid](https://Dialog.lk/myplan-prepaid) (found by search; not opened).
+
 ## What "complete" means for each signal
 
 1. **Seen:** a native or JS source, with the API level checked against the installed SDK.
@@ -106,6 +125,7 @@ check at minSdk 28 flags any call above the minimum.
 1. ~~Network and Data Saver~~ (in code 2026-10-24; levers declare `whenMetered`, `whenDataSaver`,
    `whenOffline`; Data Saver and offline admit no optional work, metered admits one at a time).
 2. Battery level, charging and temperature, with the heat fallback below API 29.
+2a. The data budget: this app's bytes against a daily budget, for prepaid users.
 3. Storage.
 4. Verger's own cost (loop 2, phase 2).
 5. The user's fidelity and quiet mode passed through the React shell.

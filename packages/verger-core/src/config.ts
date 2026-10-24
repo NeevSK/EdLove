@@ -46,6 +46,7 @@ export const DEFAULT_GOVERNOR_CONFIG: GovernorConfig = {
   ambientSleepAfterMs: 10_000,
   fastDecreaseSteps: 3,
   maxOptionalConcurrency: 2,
+  meteredOptionalConcurrency: 2,
   saturationCores: 0.9,
   saturationAfterMs: 2_000,
   longTaskWindowMs: 5_000,

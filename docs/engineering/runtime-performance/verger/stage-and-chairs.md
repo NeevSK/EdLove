@@ -93,5 +93,8 @@ caps the result; the kill switch is above everything.
 - Which levers ship governed in a release.
 - Telemetry destinations and the daily byte budget on prepaid data.
 - Whether users see a fidelity setting.
+- What a metered network should mean for Gurudevi, where most teachers are always metered (today:
+  nothing by default), the daily data budget, and whether large optional downloads wait for Wi-Fi
+  or a cheap night window.
 - Whether the breathing guide's animation, or only its timing, is critical; whether uploading an
   attendance save, or only the local write, is critical.

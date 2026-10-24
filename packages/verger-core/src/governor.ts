@@ -830,15 +830,16 @@ function optionalConcurrency(state: GovernorState, at: number): number {
   const thermal = thermalOf(state);
   const memory = memoryOf(state, at);
   if (closedLoop && (thermal === 'critical' || memory === 'low')) return 0;
+  const limit =
+    state.network.metered === true
+      ? Math.min(state.config.maxOptionalConcurrency, state.config.meteredOptionalConcurrency)
+      : state.config.maxOptionalConcurrency;
   const constrained =
-    state.network.metered === true ||
     isLowCapacity(state.capacity) ||
     state.capacity.totalMemoryBytes === null ||
     (closedLoop &&
       (thermal === 'hot' || thermal === 'warm' || memory === 'trimmed' || state.stack.length > 0));
-  return constrained
-    ? Math.min(1, state.config.maxOptionalConcurrency)
-    : state.config.maxOptionalConcurrency;
+  return constrained ? Math.min(1, limit) : limit;
 }
 
 /** The governor's published output at time `at` (ambient sleep depends on elapsed time). */

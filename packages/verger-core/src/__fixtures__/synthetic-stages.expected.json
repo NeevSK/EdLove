@@ -20,6 +20,7 @@
     "ambientSleepAfterMs": 10000,
     "fastDecreaseSteps": 3,
     "maxOptionalConcurrency": 2,
+    "meteredOptionalConcurrency": 2,
     "saturationCores": 0.9,
     "saturationAfterMs": 2000,
     "longTaskWindowMs": 5000,

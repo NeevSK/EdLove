@@ -37,10 +37,22 @@ describe('network limits on Gurudevi (the user and the OS decide; verger respect
     expect(s.optionalConcurrency).toBe(after(null).optionalConcurrency);
   });
 
-  it('metered: prefetch waits for idle, optional work one at a time', () => {
+  it('metered is home: on mobile data alone nothing is limited (most teachers are always metered)', () => {
     const s = after(net({ transport: 'cellular', metered: true }));
-    expect(s.levels.prefetch).toBe(1);
-    expect(s.optionalConcurrency).toBe(1);
+    expect(s.levels.prefetch).toBe(0);
+    expect(s.optionalConcurrency).toBe(after(null).optionalConcurrency);
+  });
+
+  it('a host may still cap optional work on metered networks, as configuration', () => {
+    let state = createGovernor({
+      at: 0,
+      levers: GURUDEVI_LEVERS,
+      capacity: CAPACITY,
+      activation: ACTIVATION_PRESETS.active,
+      config: { meteredOptionalConcurrency: 1 },
+    });
+    state = reduceGovernor(state, net({ transport: 'cellular', metered: true }));
+    expect(snapshotOf(state).optionalConcurrency).toBe(1);
   });
 
   it('Data Saver on: no prefetch and no optional data work', () => {
@@ -49,9 +61,9 @@ describe('network limits on Gurudevi (the user and the OS decide; verger respect
     expect(s.optionalConcurrency).toBe(0);
   });
 
-  it('Data Saver on but this app allowlisted by the user: only the metered limit', () => {
+  it('Data Saver on but this app allowlisted by the user: no Data Saver limit', () => {
     const s = after(net({ transport: 'cellular', metered: true, dataSaver: 'allowlisted' }));
-    expect(s.levels.prefetch).toBe(1);
+    expect(s.levels.prefetch).toBe(0);
   });
 
   it('offline or unvalidated: no prefetch, no optional work', () => {
