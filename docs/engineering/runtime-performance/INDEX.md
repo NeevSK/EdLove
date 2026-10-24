@@ -32,6 +32,14 @@ tags: [performance, runtime-performance, index, catalog, registry]
 | **[`2026-10-20-exploration-ledger-rapidnative-2026-playbook-and-numeric-baselines.md`](file:///c:/x/docs/engineering/runtime-performance/2026-10-20-exploration-ledger-rapidnative-2026-playbook-and-numeric-baselines.md)** | RapidNative 2026 Playbook & Numeric Baselines | Concrete numeric specs (<2.0s TTI, 58+ FPS, <180MB RAM), 9-step priority ladder, when not to optimize. | Active Ledger | 2026-10-20 |
 | **[`2026-10-20-exploration-ledger-expo-adaptive-glass-and-visual-budgeting.md`](file:///c:/x/docs/engineering/runtime-performance/2026-10-20-exploration-ledger-expo-adaptive-glass-and-visual-budgeting.md)** | `expo-adaptive-glass` & Hardware-Adaptive Visual Budgeting | Liquid glass on iOS 26 vs AGSL/RenderEffect on Android, priority shedding (`critical` to `decorative`), scroll-freeze rule. | Active Ledger | 2026-10-20 |
 
+### A2. Verger (the adaptive runtime): vision and lineage
+| Document | Title | Purpose | Status | Updated |
+| :--- | :--- | :--- | :--- | :--- |
+| **[`verger/vision-feasibility-and-plan.md`](verger/vision-feasibility-and-plan.md)** | Gurudevi Adaptive Runtime: Vision, Feasibility and Plan | Why verger exists (the lieutenant to the OS), its atoms, signals, demand registry, architecture, control testing and phases. | Active Design | 2026-10-24 |
+| **[`verger/lineage-and-recovery.md`](verger/lineage-and-recovery.md)** | Verger: Lineage and Recovery | Prior art (Odyssey, MAPE-K, brownout, lite apps) and the mission-critical lessons behind the recovery ladder. | Active Design | 2026-10-24 |
+
+Decisions: [`docs/decisions/2026-10-21-adaptive-runtime-resource-economy.md`](../../decisions/2026-10-21-adaptive-runtime-resource-economy.md).
+
 ### B. Device & Resource Efficiency Baselines
 | Document | Title | Scope | Status | Updated |
 | :--- | :--- | :--- | :--- | :--- |
