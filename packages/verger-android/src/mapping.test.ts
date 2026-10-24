@@ -199,6 +199,9 @@ describe('verger-android mapping', () => {
       { reason: 'native-crash', atWallMs: 10, foreground: true },
       { reason: 'other', atWallMs: 20, foreground: false },
     ]);
-    expect(toExitRecords(null)).toEqual([]);
+    expect(toExitRecords(null)).toBeNull();
+    expect(toExitRecords([{ reason: 'crash', atWallMs: 5, pid: 42 }])).toEqual([
+      { reason: 'crash', atWallMs: 5, foreground: false, pid: 42 },
+    ]);
   });
 });

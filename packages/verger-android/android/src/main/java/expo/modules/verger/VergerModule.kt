@@ -34,6 +34,9 @@ class VergerModule : Module() {
 
     Function("readExits") { sinceWallMs: Double -> DeviceFacts.exits(context(), sinceWallMs) }
 
+    // Lets the next launch match the exit record to this process, not merely to a time.
+    Function("readProcessId") { android.os.Process.myPid() }
+
     Function("start") { options: Map<String, Any?> ->
       sense().start(parseConfig(options), appContext.currentActivity)
     }

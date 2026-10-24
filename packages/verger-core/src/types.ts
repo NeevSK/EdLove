@@ -267,10 +267,12 @@ export interface GovernorSnapshot {
   /** Force reduced motion for every Reanimated animation, including unregistered ones. */
   readonly globalReducedMotion: boolean;
   /**
-   * Levels the closed loop itself has lowered levers to, before any floor. What the profile
-   * learns from: floors are re-derived every launch, pressure is what this device needed.
+   * Steps the closed loop itself has lowered each lever by this session, before any floor and
+   * apart from the learned starting point. What the profile learns from.
    */
   readonly pressure: Readonly<Record<string, number>>;
+  /** What remains of the learned starting point, per lever; the loop gives it back last. */
+  readonly priorHeld: Readonly<Record<string, number>>;
   /** The last indexer action and why. */
   readonly lastAction: IndexerAction;
   readonly lastReason: string;

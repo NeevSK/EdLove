@@ -49,8 +49,8 @@ export interface VergerProviderProps {
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
-  /** The app version. A new release starts the recovery ladder over. */
-  readonly release?: string;
+  /** The app version and build. A new release starts the recovery ladder over (and is the way off rung 4). */
+  readonly release: string;
 }
 
 /**

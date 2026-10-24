@@ -12,6 +12,7 @@ import {
   parseRecord,
   planLaunch,
   qualityCost,
+  reduceGovernor,
   type SessionMarker,
   type SessionReport,
   snapshotOf,
@@ -24,6 +25,7 @@ const HOUR = 3_600_000;
 
 const calm: SessionReport = {
   foregroundMs: 10 * 60_000,
+  evidenceMs: 10 * 60_000,
   stressedMs: 0,
   worstThermal: 'nominal',
   worstMemory: 'normal',
@@ -34,6 +36,8 @@ const calm: SessionReport = {
 
 const marker = (overrides: Partial<SessionMarker> = {}): SessionMarker => ({
   v: 1,
+  key: KEY,
+  pid: null,
   startedAtWall: 1_000,
   phase: 'running',
   foreground: false,
@@ -57,7 +61,9 @@ function fold(
   nowWall: number,
   device: string | null = 'dev1',
 ) {
-  return foldSession(record, classifySession(m, exits), { key: KEY, device, nowWall }, R).record;
+  // Each simulated session gets its own start time: a marker is folded only once.
+  const own = m && m.startedAtWall === 1_000 ? { ...m, startedAtWall: nowWall - 500 } : m;
+  return foldSession(record, classifySession(own, exits), { key: KEY, device, nowWall }, R).record;
 }
 
 describe('judging how the last session ended', () => {
@@ -97,12 +103,12 @@ describe('judging how the last session ended', () => {
       kind: 'failure',
       boot: true,
     });
-    // ...unless the platform says the system ended it.
+    // ...unless the platform says the system ended it: then it is strain, not blame.
     expect(
       classifySession(marker({ phase: 'starting' }), [
         { reason: 'low-memory', atWallMs: 2_000, foreground: true },
       ]),
-    ).toMatchObject({ kind: 'clean' });
+    ).toMatchObject({ kind: 'neutral' });
   });
 
   it('a clean stop is clean whatever the exits say', () => {
@@ -325,7 +331,9 @@ describe('trust and growth', () => {
     });
     expect(state.pressure).toEqual({ 'rows-ahead': 1, frosting: 1 }); // containment lever excluded
     expect(state.stack[state.stack.length - 1]).toBe('frosting'); // most visible first back
-    expect(snapshotOf(state).pressure).toEqual({ 'rows-ahead': 1, frosting: 1 });
+    // Held, not chosen: the profile does not learn from its own starting point.
+    expect(snapshotOf(state).priorHeld).toEqual({ 'rows-ahead': 1, frosting: 1 });
+    expect(snapshotOf(state).pressure).toEqual({});
   });
 
   it('hardware off holds every hardware output at the system default', () => {
@@ -400,5 +408,92 @@ describe('persistence is strict', () => {
         }),
       ),
     ).toBeNull();
+  });
+});
+
+describe('review fixes', () => {
+  it('charges a session only with its own process exit when both sides carry a pid', () => {
+    const mine = marker({ pid: 42 });
+    const exits: ExitRecord[] = [
+      { reason: 'crash', atWallMs: 2_000, foreground: true, pid: 7 }, // another process
+      { reason: 'low-memory', atWallMs: 3_000, foreground: false, pid: 42 },
+    ];
+    expect(classifySession(mine, exits)).toMatchObject({ kind: 'clean', exit: 'low-memory' });
+    // No exit of its own: falls back to the marker (hidden, so clean).
+    expect(classifySession(mine, [exits[0] as ExitRecord])).toMatchObject({
+      kind: 'clean',
+      exit: null,
+    });
+  });
+
+  it('a visible kill for memory is strain: no clean credit, no trust, growth given back', () => {
+    const start: VergerRecord = {
+      ...freshRecord(KEY, 'dev1', R),
+      ladder: { rung: 1, failures: [], clean: 0, relapses: 1 },
+      profile: { device: 'dev1', trust: 0.7, grant: 1, proving: 2, prior: {} },
+    };
+    let record = start;
+    for (let i = 0; i < 5; i += 1) {
+      record = fold(
+        record,
+        marker({ startedAtWall: 10_000 + i * 10 }),
+        [{ reason: 'low-memory', atWallMs: 10_001 + i * 10, foreground: true }],
+        10_005 + i * 10,
+      );
+    }
+    expect(record.ladder).toEqual(start.ladder);
+    expect(record.profile).toMatchObject({ trust: 0.7, grant: 0, proving: 0 });
+  });
+
+  it('never counts the same session twice', () => {
+    const m = marker({ startedAtWall: 5_000, foreground: true });
+    let record = freshRecord(KEY, 'dev1', R);
+    record = foldSession(
+      record,
+      classifySession(m, null),
+      { key: KEY, device: 'dev1', nowWall: 6_000 },
+      R,
+    ).record;
+    record = foldSession(
+      record,
+      classifySession(m, null),
+      { key: KEY, device: 'dev1', nowWall: 7_000 },
+      R,
+    ).record;
+    expect(record.ladder.failures).toHaveLength(1);
+  });
+
+  it('the closed loop gives a starting point back once frames are calm, and learns nothing from it on a still screen', () => {
+    const window = (at: number, averageMs: number) => ({
+      type: 'frame-window' as const,
+      at,
+      window: {
+        startMs: at - 500,
+        endMs: at,
+        frames: 30,
+        averageMs,
+        targetMs: 16.7,
+        worstMs: averageMs + 1,
+        droppedRatio: 0,
+      },
+    });
+    let state = createGovernor({
+      at: 0,
+      levers: SAMPLE_LEVERS,
+      initialPressure: { 'rows-ahead': 1 },
+    });
+    const ledger = createSessionLedger(SAMPLE_LEVERS);
+    ledger.onSnapshot(snapshotOf(state));
+    // A still screen for a minute: nothing drawn, so nothing learned.
+    state = reduceGovernor(state, { type: 'tick', at: 60_000 });
+    ledger.onSnapshot(snapshotOf(state));
+    expect(ledger.report(60_000)).toMatchObject({ evidenceMs: 0, pressure: {} });
+    // Calm frames: the loop gives the starting point back.
+    for (let at = 60_500; at <= 80_000; at += 500) {
+      state = reduceGovernor(state, { type: 'interaction', at });
+      state = reduceGovernor(state, window(at, 8));
+    }
+    expect(snapshotOf(state).priorHeld).toEqual({});
+    expect(snapshotOf(state).levels['rows-ahead'] ?? 0).toBe(0);
   });
 });

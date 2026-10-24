@@ -10,7 +10,6 @@ export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from 
 export { DEFAULT_GOVERNOR_CONFIG } from './config';
 export {
   createRuntimeController,
-  isValidEvent,
   type RuntimeController,
   type RuntimeControllerOptions,
   type RuntimePort,
@@ -59,6 +58,7 @@ export {
   type ExitRecord,
   foldSession,
   freshRecord,
+  guardedRecord,
   type LaunchPlan,
   parseMarker,
   parseRecord,

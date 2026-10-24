@@ -17,6 +17,7 @@ export * from './src/mapping';
 declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
   readCapacity(): NativeCapacity;
   readExits(sinceWallMs: number): NativeExit[] | null;
+  readProcessId(): number;
   start(config: NativeSenseConfig): void;
   stop(): void;
   setRefreshCap(hz: number | null): void;
@@ -52,6 +53,7 @@ export function createVergerAndroidPlatform(
     ...(native
       ? {
           readExits: (sinceWallMs: number) => toExitRecords(native.readExits(sinceWallMs)),
+          readProcessId: () => native.readProcessId(),
           readTotals: readFrameTotals,
         }
       : {}),

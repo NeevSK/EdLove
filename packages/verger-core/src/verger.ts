@@ -13,6 +13,7 @@ import {
   type ExitRecord,
   foldSession,
   freshRecord,
+  guardedRecord,
   type LaunchPlan,
   parseMarker,
   parseRecord,
@@ -49,14 +50,16 @@ export interface FrameTotals {
 }
 
 /**
- * Everything verger needs from a platform. Facts (`readCapacity`, `readExits`) are cheap,
- * read-only calls; `createPort` brings up the live sensors and levers. A launch the recovery
- * ladder keeps off calls none of them.
+ * Everything verger needs from a platform. Facts (`readCapacity`, `readExits`,
+ * `readProcessId`) are read-only calls that start nothing; `createPort` brings up the live
+ * sensors and levers. A launch the ladder keeps off calls none of them.
  */
 export interface VergerPlatform {
   readCapacity(): CapacityFacts;
-  /** How earlier processes ended, newest or oldest first, since a wall time. Absent: unknown. */
-  readExits?(sinceWallMs: number): readonly ExitRecord[];
+  /** How earlier processes ended since a wall time; null when the platform keeps no record. */
+  readExits?(sinceWallMs: number): readonly ExitRecord[] | null;
+  /** This process's id, so the next launch can match the exit record to this session. */
+  readProcessId?(): number | null;
   /** Cumulative native frame totals, for unbiased summaries. */
   readTotals?(): FrameTotals;
   /** Whether the port senses memory (absence of trims then means normal). */
@@ -75,8 +78,11 @@ export interface VergerOptions {
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
-  /** The host's release (app version). A new release starts the ladder over. */
-  readonly release?: string;
+  /**
+   * The host's release (app version and build). A new release starts the ladder over, and is
+   * the only way off rung 4 besides a new policy version, so it is required.
+   */
+  readonly release: string;
   readonly now?: () => number;
   readonly wallNow?: () => number;
   readonly scheduler?: RuntimeScheduler;
@@ -97,7 +103,8 @@ export interface Verger {
   subscribe(listener: () => void): () => void;
 }
 
-const PERSIST_EVERY_MS = 2_000;
+/** Marker and flight writes while running: often enough to keep the last minutes, rarely enough for slow storage. */
+const PERSIST_EVERY_MS = 10_000;
 const FLIGHT_SENT_CHARS = 1_800;
 
 const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
@@ -116,13 +123,30 @@ const defaultScheduler: RuntimeScheduler = {
 };
 
 /**
+ * One queue for every verger instance in the process. The native side is a singleton, so a
+ * remount's new instance must not start until the old one has stopped, nor the old one's stop
+ * land after the new one's start.
+ */
+let processQueue: Promise<unknown> = Promise.resolve();
+const enqueue = <T>(work: () => Promise<T> | T): Promise<T> => {
+  const next = processQueue.then(work);
+  processQueue = next.catch(() => undefined);
+  return next;
+};
+
+/**
  * Verger for one app process. Construction does nothing; `start` runs the launch.
  *
- * The launch is crash-only. It reads what the last session left, then writes a `starting`
- * marker and waits for it to land before any native call, and only then reads the platform's
- * facts and starts the port, in one synchronous stretch. A process that dies inside that
- * stretch leaves `starting` behind, and the next launch keeps verger off entirely. Every
- * failure inside verger's own code ends the launch with verger off: it fails closed.
+ * The launch is crash-only and fails closed:
+ * 1. Read what the last session left. If the store cannot be read, stay off and write nothing:
+ *    an unread record may be the one holding verger down.
+ * 2. Decide from the store alone whether verger may touch native code at all. A session that
+ *    died in its `starting` stretch, or a record already on rung 4, ends the launch here,
+ *    before any native call, so a fault in native code cannot loop.
+ * 3. Write the `starting` marker and wait for it to land; if it cannot be written, stay off.
+ * 4. In one synchronous stretch: read the platform's facts, judge the last session, decide,
+ *    and start the port. Then wait for the `running` marker and the record to land.
+ * Any exception leaves verger off for the process, recorded as an `off` session.
  */
 export function createVerger(options: VergerOptions): Verger {
   const { host, store } = options;
@@ -136,7 +160,7 @@ export function createVerger(options: VergerOptions): Verger {
     marker: `verger:${host.name}:session`,
     flight: `verger:${host.name}:flight`,
   };
-  const ladderKey = `p${GOVERNOR_POLICY_VERSION}:${host.configHash}:${options.release ?? ''}`;
+  const ladderKey = `p${GOVERNOR_POLICY_VERSION}:${host.configHash}:${options.release}`;
 
   let plan: LaunchPlan | null = null;
   let controller: RuntimeController | null = null;
@@ -150,32 +174,49 @@ export function createVerger(options: VergerOptions): Verger {
   } | null = null;
   // The record as this instance last wrote it: a store may not read back its own pending write.
   let lastRecord: VergerRecord | null = null;
-  let chain: Promise<unknown> = Promise.resolve();
   const listeners = new Set<() => void>();
   const notify = () => {
     for (const listener of listeners) guard(listener);
   };
 
-  const write = (key: string, value: string | null): Promise<void> => {
-    if (!store) return Promise.resolve();
+  /** Resolves true once the value is durably handed to the store, false on any failure. */
+  const write = async (key: string, value: string | null): Promise<boolean> => {
+    if (!store) return true;
     try {
-      return Promise.resolve(value === null ? store.remove(key) : store.set(key, value)).catch(
-        (error: unknown) => console.error('[verger] store write failed', error),
-      );
+      await (value === null ? store.remove(key) : store.set(key, value));
+      return true;
     } catch (error) {
       console.error('[verger] store write failed', error);
-      return Promise.resolve();
+      return false;
     }
   };
-  const read = async (key: string): Promise<string | null> => {
-    if (!store) return null;
+  /** Reads every key, or returns null if any read fails (unknown is not the same as absent). */
+  const readAll = async (names: readonly string[]): Promise<(string | null)[] | null> => {
+    if (!store) return names.map(() => null);
     try {
-      return (await store.get(key)) ?? null;
+      return await Promise.all(names.map(async (name) => (await store.get(name)) ?? null));
     } catch (error) {
       console.error('[verger] store read failed', error);
       return null;
     }
   };
+
+  const markerFor = (
+    runtime: SessionMarker['runtime'],
+    rung: Rung,
+    phase: SessionMarker['phase'],
+  ): SessionMarker => ({
+    v: 1,
+    key: ladderKey,
+    startedAtWall: wallNow(),
+    pid: null,
+    phase,
+    foreground: true,
+    runtime,
+    rung,
+    exercise: false,
+    report: null,
+  });
 
   const persist = () => {
     if (!session || !controller) return;
@@ -192,46 +233,55 @@ export function createVerger(options: VergerOptions): Verger {
     session.timer = scheduler.setTimeout(persist, wait);
   };
 
+  const remember = (record: VergerRecord) => {
+    lastRecord = record;
+    return write(keys.record, JSON.stringify(record));
+  };
+
   const launch = async (): Promise<LaunchPlan> => {
     if (options.assignment?.runtime === 'off') return offPlan('kill-switch');
-    const [markerText, recordText, flightText] = await Promise.all([
-      read(keys.marker),
-      read(keys.record),
-      read(keys.flight),
-    ]);
-    const previous = parseMarker(markerText);
-    const stored = lastRecord ?? parseRecord(recordText);
-    const corrupt =
-      (recordText !== null && stored === null) || (markerText !== null && previous === null);
-    const base = stored ?? freshRecord(ladderKey, null, recovery);
 
-    // Rung 4: the platform is the suspect, so nothing native is touched, exits included.
-    // The last session ran with verger off, so folding it changes nothing but the keys.
-    if (base.key === ladderKey && base.ladder.rung === 4) {
+    // 1. What the last session left.
+    const texts = await readAll([keys.marker, keys.record, keys.flight]);
+    if (!texts) return offPlan('store-unreadable');
+    const [markerText = null, recordText = null, flightText = null] = texts;
+    let previous = parseMarker(markerText);
+    const parsed = lastRecord ?? parseRecord(recordText);
+    const corrupt = recordText !== null && parsed === null;
+    let base =
+      parsed ??
+      (corrupt ? guardedRecord(ladderKey, null, recovery) : freshRecord(ladderKey, null, recovery));
+
+    // 2. May verger touch native code at all? Decided from the store alone.
+    if (previous?.phase === 'starting' || (base.key === ladderKey && base.ladder.rung === 4)) {
       const folded = foldSession(
         base,
         classifySession(previous, null),
         { key: ladderKey, device: base.profile.device, nowWall: wallNow() },
         recovery,
       );
-      lastRecord = folded.record;
-      void write(keys.record, JSON.stringify(folded.record));
-      await write(keys.marker, JSON.stringify(markerFor('off', 4, false, 'running')));
-      void write(keys.flight, null);
-      return offPlan('rung-4-off', 4);
+      base = folded.record;
+      previous = null; // consumed
+      if (base.ladder.rung === 4) {
+        const ok = await remember(base);
+        await write(keys.marker, JSON.stringify(markerFor('off', 4, 'running')));
+        return offPlan(ok ? 'rung-4-off' : 'rung-4-off-unrecorded', 4);
+      }
     }
 
-    // The one write that must land first: from here until `running`, a death is verger's.
-    const starting = markerFor(options.requested, base.ladder.rung, false, 'starting');
-    await write(keys.marker, JSON.stringify(starting));
+    // 3. The one write that must land before native code: from here until `running`, a death
+    // is charged to verger.
+    const starting = markerFor(options.requested, base.ladder.rung, 'starting');
+    if (!(await write(keys.marker, JSON.stringify(starting)))) return offPlan('store-unwritable');
 
-    // One synchronous stretch: facts, judgement, decision, start.
+    // 4. One synchronous stretch: facts, judgement, decision, start.
     const platform = options.platform();
     const exits =
       previous && previous.phase !== 'stopped' && platform.readExits
         ? platform.readExits(previous.startedAtWall)
         : null;
     const capacity = platform.readCapacity();
+    const pid = platform.readProcessId?.() ?? null;
     const device = capacity.buildFingerprint
       ? fnv1a32(capacity.buildFingerprint).toString(16)
       : null;
@@ -242,19 +292,29 @@ export function createVerger(options: VergerOptions): Verger {
       { key: ladderKey, device, nowWall: wallNow() },
       recovery,
     );
-    lastRecord = folded.record;
-    void write(keys.record, JSON.stringify(folded.record));
     const decided = store
       ? planLaunch(folded.record, options.requested, random(), recovery)
       : {
           ...planLaunch(freshRecord(ladderKey, device, recovery), options.requested, 1, recovery),
           reason: 'no-store',
         };
+    const recorded = remember(folded.record);
+
+    if (decided.runtime === 'off') {
+      await Promise.all([
+        recorded,
+        write(keys.marker, JSON.stringify(markerFor('off', decided.rung, 'running'))),
+      ]);
+      return decided;
+    }
 
     const telemetry = options.telemetrySink
       ? createGovernorTelemetry({
           sink: options.telemetrySink,
-          arm: options.assignment?.arm ?? (decided.runtime === 'active' ? 'treatment' : 'control'),
+          // From the assignment or the request, never from the ladder: labelling crashed
+          // devices `control` would bias the comparison.
+          arm:
+            options.assignment?.arm ?? (options.requested === 'active' ? 'treatment' : 'control'),
           experimentKey: options.assignment?.key ?? host.experimentKey,
           sessionId: (fnv1a32(`${wallNow()}:${random()}`) >>> 0).toString(16).padStart(8, '0'),
           configHash: host.configHash,
@@ -264,14 +324,6 @@ export function createVerger(options: VergerOptions): Verger {
           device: deviceStratum(capacity, platform.memorySensing),
         })
       : undefined;
-    guard(() => reportLaunch(telemetry, decided, outcome, folded.transition, corrupt, flightText));
-    void write(keys.flight, null);
-
-    if (decided.runtime === 'off') {
-      await write(keys.marker, JSON.stringify(markerFor('off', decided.rung, false, 'running')));
-      return decided;
-    }
-
     const started = createRuntimeController({
       port: platform.createPort(now),
       capacity,
@@ -288,22 +340,23 @@ export function createVerger(options: VergerOptions): Verger {
         initialPressure: decided.prior,
       },
     });
-    const sessionStart = now();
     const ledger = createSessionLedger(host.levers);
-    const flight = createFlightRecorder(sessionStart);
+    const flight = createFlightRecorder(now());
     const initial = started.getSnapshot();
     ledger.onSnapshot(initial);
     flight.record(initial);
     controller = started;
     session = {
       marker: {
-        ...markerFor(decided.runtime, decided.rung, decided.exercise, 'running'),
+        ...markerFor(decided.runtime, decided.rung, 'running'),
         startedAtWall: starting.startedAtWall,
+        pid,
+        exercise: decided.exercise,
       },
       ledger,
       flight,
       timer: null,
-      lastPersistAt: Number.NEGATIVE_INFINITY,
+      lastPersistAt: now(),
       unsubscribe: started.subscribe(() => {
         const snapshot = started.getSnapshot();
         guard(() => ledger.onSnapshot(snapshot));
@@ -313,26 +366,15 @@ export function createVerger(options: VergerOptions): Verger {
       }),
     };
     started.start();
-    persist();
+    // Close the starting stretch as soon as the port is up, before any host code runs.
+    session.marker = { ...session.marker, report: ledger.report(now()) };
+    await Promise.all([recorded, write(keys.marker, JSON.stringify(session.marker))]);
+    // The last session's flight was read above; from here the key holds this session's.
+    void write(keys.flight, JSON.stringify(flight.lines()));
+    guard(() => reportLaunch(telemetry, decided, outcome, folded.transition, corrupt, flightText));
     notify();
     return decided;
   };
-
-  const markerFor = (
-    runtime: SessionMarker['runtime'],
-    rung: Rung,
-    exercise: boolean,
-    phase: SessionMarker['phase'],
-  ): SessionMarker => ({
-    v: 1,
-    startedAtWall: wallNow(),
-    phase,
-    foreground: true,
-    runtime,
-    rung,
-    exercise,
-    report: null,
-  });
 
   const teardown = (clean: boolean) => {
     const current = session;
@@ -360,8 +402,8 @@ export function createVerger(options: VergerOptions): Verger {
   };
 
   const verger: Verger = {
-    start() {
-      const next = chain.then(async () => {
+    start: () =>
+      enqueue(async () => {
         if (plan) return plan;
         try {
           plan = await launch();
@@ -369,21 +411,17 @@ export function createVerger(options: VergerOptions): Verger {
           console.error('[verger] launch failed; staying off', error);
           teardown(false);
           plan = offPlan('launch-error');
+          // An off session, so nothing in this process is charged to verger later.
+          await write(keys.marker, JSON.stringify(markerFor('off', 0, 'running')));
         }
         return plan;
-      });
-      chain = next.catch(() => undefined);
-      return next;
-    },
-    stop() {
-      const next = chain.then(() => {
+      }),
+    stop: () =>
+      enqueue(() => {
         if (!plan) return;
         teardown(true);
         plan = null;
-      });
-      chain = next.catch(() => undefined);
-      return next;
-    },
+      }),
     get plan() {
       return plan;
     },

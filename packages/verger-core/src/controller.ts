@@ -82,8 +82,10 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   // Unknown until first applied: a previous JS instance (a reload) may have left the hardware
   // in any state, so the first snapshot is always sent, including a release.
   const UNKNOWN = Symbol('unknown');
-  let appliedRefresh: number | null | typeof UNKNOWN = UNKNOWN;
-  let appliedBoost: boolean | typeof UNKNOWN = UNKNOWN;
+  // With hardware off (a lower rung), verger never calls a hardware lever, not even to release.
+  const hardwareOff = options.launch?.hardware === false;
+  let appliedRefresh: number | null | typeof UNKNOWN = hardwareOff ? null : UNKNOWN;
+  let appliedBoost: boolean | typeof UNKNOWN = hardwareOff ? false : UNKNOWN;
   let running = false;
   const listeners = new Set<() => void>();
 
@@ -160,8 +162,8 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
       // Hand the hardware back to the system.
       if (appliedRefresh !== null) guard(() => port.setRefreshCap(null));
       if (appliedBoost !== false) guard(() => port.setCpuBoost(false));
-      appliedRefresh = UNKNOWN;
-      appliedBoost = UNKNOWN;
+      appliedRefresh = hardwareOff ? null : UNKNOWN;
+      appliedBoost = hardwareOff ? false : UNKNOWN;
       guard(() => telemetry?.flush(options.now()));
     },
     dispatch,

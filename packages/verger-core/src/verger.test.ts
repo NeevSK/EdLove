@@ -5,6 +5,7 @@ import {
   createVerger,
   defineHost,
   type ExitRecord,
+  freshRecord,
   type GovernorEvent,
   parseRecord,
   type RuntimePort,
@@ -30,18 +31,21 @@ const CAPACITY: CapacityFacts = {
 };
 
 /** An asynchronous store, like AsyncStorage: every call resolves on a later microtask. */
-function asyncStore(): VergerStore & { data: Map<string, string> } {
+function asyncStore(): VergerStore & { data: Map<string, string>; dead: boolean } {
   const data = new Map<string, string>();
-  return {
+  const store = {
     data,
-    get: async (key) => data.get(key) ?? null,
-    set: async (key, value) => {
-      data.set(key, value);
+    // A dead process's writes never land.
+    dead: false,
+    get: async (key: string) => data.get(key) ?? null,
+    set: async (key: string, value: string) => {
+      if (!store.dead) data.set(key, value);
     },
-    remove: async (key) => {
-      data.delete(key);
+    remove: async (key: string) => {
+      if (!store.dead) data.delete(key);
     },
   };
+  return store;
 }
 
 /** One device across launches: its exit history survives process deaths. */
@@ -100,6 +104,20 @@ const scheduler = {
   setTimeout: (_cb: () => void, _ms: number) => 0,
   clearTimeout: () => {},
 };
+
+function options(d: ReturnType<typeof device>, store: VergerStore | undefined) {
+  return {
+    host: HOST,
+    platform: d.platform,
+    store,
+    requested: 'active' as const,
+    release: '1.0.0',
+    now: d.now,
+    wallNow: d.wallNow,
+    scheduler,
+    random: () => 0.99,
+  };
+}
 
 function launcher(
   d: ReturnType<typeof device>,
@@ -168,6 +186,7 @@ describe('verger launch', () => {
       },
       store,
       requested: 'active',
+      release: '1.0.0',
       now: d.now,
       wallNow: d.wallNow,
       scheduler,
@@ -213,58 +232,135 @@ describe('verger launch', () => {
     expect(last.rung).toBe(0);
   });
 
-  it('keeps verger off, native code included, after a death during native start', async () => {
+  it('after a death during native start, the next launch calls nothing native at all', async () => {
     const d = device();
     const store = asyncStore();
-    const first = launcher(d, store);
-    // The process dies inside the starting stretch: simulate by never letting it reach `running`.
-    d.failStart(true);
+    // The process dies inside the starting stretch: once native code is touched, no write of
+    // this process reaches the store again.
+    await createVerger({
+      ...options(d, store),
+      platform: () => {
+        store.dead = true;
+        throw new Error('process killed');
+      },
+    })
+      .start()
+      .catch(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    store.set = (() => {
-      const set = store.set;
-      return async (key: string, value: string) => {
-        if (key.endsWith(':session') && JSON.parse(value).phase !== 'starting') return; // lost with the process
-        await set(key, value);
-      };
-    })();
-    await first.start().catch(() => {});
+    store.dead = false;
     d.die('native-crash', true);
-    d.failStart(false);
 
-    const store2: VergerStore = {
-      get: (k) => store.data.get(k) ?? null,
-      set: (k, v) => void store.data.set(k, v),
-      remove: (k) => void store.data.delete(k),
-    };
     d.calls.length = 0;
-    const plan = await launcher(d, store2).start();
+    const plan = await launcher(d, store).start();
     expect(plan).toMatchObject({ runtime: 'off', rung: 4 });
-    expect(d.calls).toEqual(['exits', 'capacity']); // read facts once to judge, started nothing
-    d.calls.length = 0;
+    expect(d.calls).toEqual([]); // judged from the store alone: a native fault cannot loop
     d.die(null, false);
-    const again = await launcher(d, store2).start();
+    const again = await launcher(d, store).start();
     expect(again).toMatchObject({ runtime: 'off', rung: 4 });
-    expect(d.calls).toEqual([]); // on rung 4 nothing native is touched at all
+    expect(d.calls).toEqual([]);
     // A new release gets another chance.
-    expect((await launcher(d, store2, { release: '1.0.1' }).start()).rung).toBe(0);
+    expect((await launcher(d, store, { release: '1.0.1' }).start()).rung).toBe(0);
   });
 
-  it('fails closed when its own launch throws', async () => {
+  it('a boot death under one release does not put the next release on rung 4', async () => {
     const d = device();
+    const store = asyncStore();
+    await createVerger({
+      ...options(d, store),
+      platform: () => {
+        store.dead = true;
+        throw new Error('process killed');
+      },
+    })
+      .start()
+      .catch(() => {});
+    store.dead = false;
+    d.die('native-crash', true);
+    const plan = await launcher(d, store, { release: '1.0.1' }).start();
+    expect(plan).toMatchObject({ runtime: 'active', rung: 0 });
+  });
+
+  it('stays off and writes nothing when the store cannot be read', async () => {
+    const d = device();
+    const store = asyncStore();
+    store.data.set('verger:sample:record', 'held');
+    store.get = async () => {
+      throw new Error('SQLITE_BUSY');
+    };
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const plan = await launcher(d, store).start();
+    expect(plan).toMatchObject({ runtime: 'off', reason: 'store-unreadable' });
+    expect(d.calls).toEqual([]);
+    expect(store.data.get('verger:sample:record')).toBe('held');
+  });
+
+  it('stays off when the starting marker cannot be written', async () => {
+    const d = device();
+    const store = asyncStore();
+    store.set = async () => {
+      throw new Error('disk full');
+    };
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const plan = await launcher(d, store).start();
+    expect(plan).toMatchObject({ runtime: 'off', reason: 'store-unwritable' });
+    expect(d.calls).toEqual([]);
+  });
+
+  it('starts from shadow, not from full, when the record is corrupt', async () => {
+    const d = device();
+    const store = asyncStore();
+    store.data.set('verger:sample:record', '{"v":1,"key":');
+    const plan = await launcher(d, store).start();
+    expect(plan).toMatchObject({ runtime: 'shadow', rung: 3 });
+  });
+
+  it('fails closed when its own launch throws, and charges nothing later to verger', async () => {
+    const d = device();
+    const store = asyncStore();
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const v = createVerger({
-      host: HOST,
+      ...options(d, store),
       platform: () => {
         throw new Error('no module');
       },
-      store: asyncStore(),
-      requested: 'active',
-      now: d.now,
-      wallNow: d.wallNow,
-      scheduler,
     });
     expect((await v.start()).runtime).toBe('off');
     expect(v.getSnapshot()).toBeNull();
+    expect(JSON.parse(store.data.get('verger:sample:session') ?? '{}')).toMatchObject({
+      runtime: 'off',
+      phase: 'running',
+    });
+    d.die('crash', true); // an unrelated crash while verger was off
+    const next = await launcher(d, store).start();
+    expect(next).toMatchObject({ runtime: 'active', rung: 0 });
+    expect(parseRecord(store.data.get('verger:sample:record'))?.ladder.failures).toEqual([]);
+  });
+
+  it('on a rung without hardware, never calls a hardware lever, not even to release', async () => {
+    const d = device();
+    const store = asyncStore();
+    const record = freshRecord(`p4:${HOST.configHash}:1.0.0`, null, HOST.recovery);
+    store.data.set(
+      'verger:sample:record',
+      JSON.stringify({ ...record, ladder: { ...record.ladder, rung: 2 } }),
+    );
+    const v = launcher(d, store);
+    expect((await v.start()).hardware).toBe(false);
+    await v.stop();
+    expect(d.calls.filter((c) => c.startsWith('refresh') || c.startsWith('boost'))).toEqual([]);
+  });
+
+  it('a second instance starts only after the first has stopped (one native singleton)', async () => {
+    const d = device();
+    const store = asyncStore();
+    const a = launcher(d, store);
+    await a.start();
+    const stopping = a.stop();
+    const b = launcher(d, store);
+    await Promise.all([stopping, b.start()]);
+    const lastStop = d.calls.lastIndexOf('stop');
+    const lastStart = d.calls.lastIndexOf('start');
+    expect(lastStop).toBeLessThan(lastStart);
   });
 
   it('stop then start (as React strict mode does) runs two orderly launches', async () => {

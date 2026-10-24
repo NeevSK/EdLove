@@ -55,6 +55,7 @@ object DeviceFacts {
           "reason" to ExitReasons.name(info.reason),
           "atWallMs" to info.timestamp.toDouble(),
           "foreground" to ExitReasons.visible(info.importance),
+          "pid" to info.pid,
         )
       }
   }

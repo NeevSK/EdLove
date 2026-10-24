@@ -56,6 +56,11 @@ export interface GovernorState {
   readonly pressure: Readonly<Record<string, number>>;
   /** Lowered lever ids in order, restored last-in first-out. */
   readonly stack: readonly string[];
+  /**
+   * How many entries at the bottom of the stack are still the learned starting point. The
+   * loop gives back its own decreases first; this shrinks as it reaches the starting point.
+   */
+  readonly priorDepth: number;
 
   readonly frameState: FrameState;
   readonly stressMs: number;
@@ -152,6 +157,7 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     at: options.at,
     pressure: start.pressure,
     stack: start.stack,
+    priorDepth: start.stack.length,
     frameState: 'quiet',
     stressMs: 0,
     lastPressureAt: options.at,
@@ -379,6 +385,7 @@ function raiseOne(state: GovernorState, at: number, reason: string): GovernorSta
     ...state,
     pressure,
     stack: state.stack.slice(0, -1),
+    priorDepth: Math.min(state.priorDepth, state.stack.length - 1),
     lastIncreaseAt: at,
     lastAction: 'increase',
     lastReason: reason,
@@ -753,7 +760,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
       !idle &&
       cool,
     globalReducedMotion: hardware.globalReducedMotion,
-    pressure: clampToLevers(state.levers, { ...state.pressure }),
+    ...splitPressure(state),
     lastAction: state.lastAction,
     lastReason: state.lastReason,
   };
@@ -788,6 +795,21 @@ function hardwareOf(
   };
 }
 
+/** The loop's own pressure, apart from what remains of the learned starting point. */
+function splitPressure(state: GovernorState): {
+  pressure: Record<string, number>;
+  priorHeld: Record<string, number>;
+} {
+  const priorHeld: Record<string, number> = {};
+  for (const id of state.stack.slice(0, state.priorDepth)) priorHeld[id] = (priorHeld[id] ?? 0) + 1;
+  const pressure: Record<string, number> = {};
+  for (const [id, level] of Object.entries(clampToLevers(state.levers, { ...state.pressure }))) {
+    const own = level - (priorHeld[id] ?? 0);
+    if (own > 0) pressure[id] = own;
+  }
+  return { pressure, priorHeld };
+}
+
 function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
   if (
     a.frameState !== b.frameState ||
@@ -809,7 +831,8 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     if (
       a.proposedLevels[key] !== b.proposedLevels[key] ||
       a.levels[key] !== b.levels[key] ||
-      a.pressure[key] !== b.pressure[key]
+      a.pressure[key] !== b.pressure[key] ||
+      a.priorHeld[key] !== b.priorHeld[key]
     )
       return false;
   }

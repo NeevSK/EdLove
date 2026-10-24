@@ -38,9 +38,13 @@ const platform = () => createVergerAndroidPlatform();
  * unless something turns it on. A new app build restarts the recovery ladder.
  */
 export function GurudeviVerger({ children, mode, assignment, telemetrySink }: GurudeviVergerProps) {
-  const [resolved] = useState<RuntimeMode>(
-    () => mode ?? assignment?.runtime ?? resolveRuntimeMode(),
-  );
+  // A kill switch wins over everything, whichever carries it (remote override or experiment).
+  // Otherwise an explicit mode, then the assignment, then the build default (off).
+  const [resolved] = useState<RuntimeMode>(() => {
+    if (globalThis.__GURUDEVI_RUNTIME_MODE__ === 'off' || assignment?.runtime === 'off')
+      return 'off';
+    return mode ?? assignment?.runtime ?? resolveRuntimeMode();
+  });
   return (
     <VergerProvider
       host={GURUDEVI_MOBILE_HOST}

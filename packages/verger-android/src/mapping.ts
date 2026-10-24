@@ -80,6 +80,7 @@ export interface NativeExit {
   readonly reason?: string;
   readonly atWallMs?: number;
   readonly foreground?: boolean;
+  readonly pid?: number;
 }
 
 const EXIT_REASONS: readonly ExitReason[] = [
@@ -98,15 +99,22 @@ const EXIT_REASONS: readonly ExitReason[] = [
  * Native exit records to verger-core's. Malformed entries are dropped; an unknown reason name
  * becomes `other` (a newer platform reason is not evidence of a failure).
  */
-export function toExitRecords(native: readonly NativeExit[] | null | undefined): ExitRecord[] {
-  if (!Array.isArray(native)) return [];
+export function toExitRecords(
+  native: readonly NativeExit[] | null | undefined,
+): ExitRecord[] | null {
+  // Null means the platform keeps no record (below API 30): unknown, not "nothing ended".
+  if (!Array.isArray(native)) return null;
   const out: ExitRecord[] = [];
   for (const entry of native) {
     if (typeof entry?.atWallMs !== 'number' || !Number.isFinite(entry.atWallMs)) continue;
     const reason = EXIT_REASONS.includes(entry.reason as ExitReason)
       ? (entry.reason as ExitReason)
       : 'other';
-    out.push({ reason, atWallMs: entry.atWallMs, foreground: entry.foreground === true });
+    const pid =
+      typeof entry.pid === 'number' && Number.isInteger(entry.pid) && entry.pid > 0
+        ? { pid: entry.pid }
+        : {};
+    out.push({ reason, atWallMs: entry.atWallMs, foreground: entry.foreground === true, ...pid });
   }
   return out;
 }

@@ -190,19 +190,37 @@ failure), folds the result into the record, and decides how much of itself to ru
 | 3 | shadow: senses and decides, applies nothing | 2 more failures | as above |
 | 4 | off, native code included | 2 more failures, or any death during native start | only a new policy version or app release |
 
-Failures are crashes, native crashes, ANRs and excessive resource use. Low-memory kills,
-user stops and deaths while hidden are not. Sessions run with verger off never move the
-ladder, and sessions shorter than 30 s in the foreground prove nothing. The `starting` marker
-is written, and the write awaited, before any native call; facts, judgement, decision and start
-then run in one synchronous stretch, so a death inside it points at verger. The accepted cost:
-an unrelated native crash in that stretch also sends the device to rung 4 until the next
-release, which fails closed.
+Failures are crashes, native crashes, ANRs and excessive resource use. User stops and deaths
+while hidden are not. A visible kill for memory (or by signal) is neither: it earns no clean
+credit and gives back growth, because it is the very harm verger exists to prevent. Exits are
+matched to the session by process id where both sides carry one. Sessions run with verger
+off, sessions under another policy or release, and sessions already folded never move the
+ladder; sessions shorter than 30 s in the foreground prove nothing.
+
+The launch fails closed at every step (revised after the hostile review of 2026-10-21):
+
+1. If the store cannot be read, verger stays off and writes nothing; a corrupt record starts
+   at rung 3, never rung 0.
+2. Whether verger may touch native code is decided from the store alone: a session that died
+   in its `starting` stretch, or a record on rung 4, ends the launch before any native call,
+   so a native fault cannot loop.
+3. The `starting` marker is written and the write confirmed before any native call; if it
+   cannot be written, verger stays off.
+4. Facts, judgement, decision and start run in one synchronous stretch, and the `running`
+   marker and the record are confirmed before any host code runs.
+5. An exception anywhere leaves an explicit `off` session behind.
+
+The accepted cost: an unrelated native crash inside the starting stretch also sends the
+device to rung 4 until the next release, which fails closed.
 
 Healing and growth sit on the ladder. Trust in the learned profile halves on a failure and
 grows by 0.1 per clean session. The profile is keyed by a hash of the OS build fingerprint, so
 a system update relearns it. It holds a starting point (the moving average of where the closed
 loop held each lever, used as whole levels rounded down, at trust 0.6 or more), which enters
-the loop's stack and is given back like any decrease; and a grant that relaxes capacity floors
+the bottom of the loop's stack and is given back after the loop's own decreases. The profile
+learns only from the loop's own pressure, plus what it kept of the starting point while frames
+were not calm, and only over time when frames were drawn, so a starting point held on a still
+screen is never evidence for itself; and a grant that relaxes capacity floors
 one step after three proving sessions (cool, roomy, under 5 % stressed, at trust 0.8 or more),
 given back at once on strain. Preference, accessibility, capability and containment floors are
 never relaxed. A configurable exercise share runs healthy launches without hardware levers so
@@ -240,7 +258,8 @@ Policy version 4.
 | Part | Level |
 | --- | --- |
 | Governor decision layer and controller, 53 tests | G2 |
-| Recovery, trust, growth and the launch cycle across simulated process deaths, 32 tests | G2 |
+| Recovery, trust, growth and the launch cycle across simulated process deaths and store failures, 42 tests | G2 |
+| Independent hostile review of the recovery work: 1 critical and 8 major findings, all fixed with tests | review |
 | Exit-reason mapping, 3 JUnit tests; `DeviceFacts` compiled against android.jar 35 | G2 / G1 |
 | Recovery on a device (real crash, real exit records, AsyncStorage) | not yet |
 | Kotlin estimator, procfs sampler and display choice, 18 JUnit tests on the JVM | G2 |
