@@ -200,15 +200,19 @@ export interface Transition {
 /**
  * What to start from when a record exists but cannot be trusted (corrupt, or a format this
  * version does not know): shadow, so verger proves itself again before it acts. Never rung 0:
- * the unreadable record may have been holding verger down for a reason.
+ * the unreadable record may have been holding verger down for a reason. Never below `atLeast`,
+ * the rung the last session's marker shows it ran on: an unreadable record must not lift a
+ * phone off rung 4 (found by the ladder's model-based test).
  */
 export function guardedRecord(
   key: string,
   device: string | null,
   config: RecoveryConfig,
+  atLeast: Rung = 3,
 ): VergerRecord {
   const fresh = freshRecord(key, device, config);
-  return { ...fresh, ladder: { ...fresh.ladder, rung: 3, relapses: 1 } };
+  const rung: Rung = atLeast > 3 ? atLeast : 3;
+  return { ...fresh, ladder: { ...fresh.ladder, rung, relapses: 1 } };
 }
 
 export function freshRecord(

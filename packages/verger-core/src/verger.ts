@@ -291,9 +291,13 @@ export function createVerger(options: VergerOptions): Verger {
     let previous = migrateMarker(parseMarker(markerText));
     const parsed = lastRecord ?? migrateRecord(parseRecord(recordText));
     const corrupt = recordText !== null && parsed === null;
+    // A corrupt record starts guarded, never below the rung the last marker of this ladder shows.
+    const markerRung = previous?.key === ladderKey ? previous.rung : 3;
     let base =
       parsed ??
-      (corrupt ? guardedRecord(ladderKey, null, recovery) : freshRecord(ladderKey, null, recovery));
+      (corrupt
+        ? guardedRecord(ladderKey, null, recovery, markerRung)
+        : freshRecord(ladderKey, null, recovery));
 
     // 2. May verger touch native code at all? Decided from the store alone.
     if (previous?.phase === 'starting' || (base.key === ladderKey && base.ladder.rung === 4)) {

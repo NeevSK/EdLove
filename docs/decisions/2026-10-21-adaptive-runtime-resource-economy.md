@@ -200,7 +200,9 @@ ladder; sessions shorter than 30 s in the foreground prove nothing.
 The launch fails closed at every step (revised after the hostile review of 2026-10-21):
 
 1. If the store cannot be read, verger stays off and writes nothing; a corrupt record starts
-   at rung 3, never rung 0.
+   at rung 3, never rung 0, and never below the rung the last session's marker of the same ladder
+   shows (amended 2026-10-24: otherwise a corrupt record lifted a phone off rung 4 and native code
+   ran again; found by the ladder's model-based test).
 2. Whether verger may touch native code is decided from the store alone: a session that died
    in its `starting` stretch, or a record on rung 4, ends the launch before any native call,
    so a native fault cannot loop.
