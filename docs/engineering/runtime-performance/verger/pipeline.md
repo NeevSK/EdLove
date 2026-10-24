@@ -28,14 +28,15 @@ The one place the plan is tracked; update it with every phase. Verification ride
 | B. Sensing | B1 network and Data Saver | in code; metered treated as home | G2 contract (Kotlin and TS); Android part uncompiled |
 | B. Sensing | B2 battery level, plugged in, temperature; heat fallback below API 29 | in code; low battery is a lever-declared limit | G2 contract (Kotlin and TS), properties; temperature unit to verify on a phone; Android part uncompiled |
 | B. Sensing | B3 data budget: no network assumed free; daily allowances for metered and unmetered; Wi-Fi or night window | planned (after E) | — |
-| B. Sensing | B4 storage; B5 verger's own cost; B6 user fidelity passthrough; B7 input delay | planned | — |
+| B. Sensing | B4 storage; B5 verger's own cost; B7 input delay (B6 fidelity passthrough: done with E3) | planned | — |
 | C. Envelope | verger-p5: home, ceiling, floor; expand and compress | planned | — |
 | D. Loop 2 and 3 | self-adapting rules; session recording and telemetry; dev lab; policy comparison | planned | — |
 | E. Cut-off | E1 floors without native code: while verger is off (mode off, kill switch, rung 4, launch error, before start, after stop) the host's policy runs under the `static` preset on JS-only facts (`facts`, Gurudevi: expo-device memory) | done | G1: verger tests (floors before start, kill switch, after stop, stable identity, facts that throw) |
 | E. Cut-off | E2 drift test: the old governor as the differential oracle, every input it distinguishes (2,880 cases) against verger's static decision read through Gurudevi's view (`experienceOf`); every difference named with its cause: six intended (low fidelity honoured, reduce motion keeps blur, saver stills ambient, saver stops prefetch, low-phone blur named, safe mode respects the user), two to decide (3–6 GB class floor, slow network and prefetch: open chairs) | done | G1: exhaustive, with a planted mutant caught (480 cases) |
 | E. Cut-off | Decisions from E2 built: capacity classes (low under 5 GiB, mid under 9 GiB, config; levers' `whenMidCapacity`; earned back by `capacityGrant`) and weak links (slow or back from offline under a minute; levers' `whenSlowNetwork`; one optional job at a time); snapshot carries `capacityClass` and `networkLimit`; the estimator reads the same limit | done | G1: class and network tests; drift test on six phone sizes (5,760 cases), no open difference, planted mutant caught |
-| E. Cut-off | E3 view: `experienceOf` built (levels to the fields consumers read, tier from verger's class); fidelity and quiet passthrough (B6) into verger next | **next** | the drift test |
-| E. Cut-off | E4 mount with configurable activation, `configure` and `tune` in React; E5 consumers move, old governor removed (signed off, gated on E2 and the two decisions) | planned | — |
+| E. Cut-off | E3 view: `experienceOf` (levels to the fields consumers read, tier from verger's class; quiet, sound, haptics and safe mode as settings); the user's fidelity reaches verger (B6) | done | the drift test; G0 for the React shell |
+| E. Cut-off | E4 mount with configurable activation (a build preset and remote patch, not decided in code); `useVerger` exposes `configure`, `tune`, `outcomes` | **next** (`useVerger` done) | — |
+| E. Cut-off | E5 consumers move to `experienceOf`, old governor removed (signed off; E2 green, no open difference) | planned | — |
 | F. Phones | first Gradle build; dev client on the A52, A24 and a 2–4 GB phone; Maestro CLI flows; Stryker | needs the laptop | — |
 
 ## The pipeline
