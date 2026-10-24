@@ -1,13 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
+  type CapacityFacts,
   type ExperimentAssignment,
   type GovernorTelemetrySink,
   GURUDEVI_MOBILE_HOST,
+  UNKNOWN_CAPACITY,
   type VergerStore,
 } from '@repo/core/governor';
 import { createVergerAndroidPlatform } from '@repo/verger-android';
 import { VergerProvider } from '@repo/verger-react';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
+import { totalMemory } from 'expo-device';
 import { type ReactNode, useState } from 'react';
 import { type RuntimeMode, resolveRuntimeMode } from './runtimeMode';
 
@@ -33,6 +36,13 @@ const VERGER_STORE: VergerStore = {
 const platform = () => createVergerAndroidPlatform();
 
 /**
+ * What the floors know of the phone while verger is off: its memory, from expo-device (which
+ * the app loads anyway), never from verger's module. The rest stays unknown, so no capability
+ * floor applies: unknown graphics support is not proof of its absence.
+ */
+const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: totalMemory });
+
+/**
  * Gurudevi's mounting of verger: its mobile host, the Android platform, AsyncStorage for the
  * recovery record, and the mode Gurudevi resolves from its own build and remote settings. Off
  * unless something turns it on. A new app build restarts the recovery ladder.
@@ -50,6 +60,7 @@ export function GurudeviVerger({ children, mode, assignment, telemetrySink }: Gu
       host={GURUDEVI_MOBILE_HOST}
       platform={platform}
       store={VERGER_STORE}
+      facts={facts}
       mode={resolved}
       assignment={assignment}
       telemetrySink={telemetrySink}

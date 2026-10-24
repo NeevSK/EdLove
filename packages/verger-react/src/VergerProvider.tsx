@@ -1,4 +1,5 @@
 import {
+  type CapacityFacts,
   createVerger,
   type ExperimentAssignment,
   type GovernorMode,
@@ -46,6 +47,11 @@ export interface VergerProviderProps {
   /** Durable storage for the recovery ladder, trust and the learned profile. */
   readonly store?: VergerStore;
   readonly mode: VergerMode;
+  /**
+   * Device facts read in JavaScript alone (for example `expo-device`), for the floors that hold
+   * while verger is off. Never verger's native module.
+   */
+  readonly facts?: () => CapacityFacts;
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
@@ -54,11 +60,13 @@ export interface VergerProviderProps {
 }
 
 /**
- * Mounts verger around an app. In `off` mode, or under the kill switch, it renders its
- * children and creates nothing. Otherwise it runs verger's launch (which may still decide to
- * stay off), feeds it app state, presence, motion preference and JS long tasks, and applies
- * the app-wide lever that lives in JavaScript: forced reduced motion for every Reanimated
- * animation that starts while it is set.
+ * Mounts verger around an app. In `off` mode, or under the kill switch, it never starts verger:
+ * no store, no native module, no sensing; only the floors run, in JavaScript, fed app state and
+ * the motion preference, so settings still reach every lever. Otherwise it runs verger's
+ * launch (which may still decide to stay off, and then also leaves the floors), feeds it app
+ * state, presence, motion preference and JS long tasks, and applies the app-wide lever that
+ * lives in JavaScript: forced reduced motion for every Reanimated animation that starts while
+ * it is set.
  */
 export function VergerProvider({
   children,
@@ -66,57 +74,66 @@ export function VergerProvider({
   platform,
   store,
   mode,
+  facts,
   assignment,
   telemetrySink,
   release,
 }: VergerProviderProps) {
-  const [verger] = useState<Verger | null>(() =>
-    mode === 'off' || assignment?.runtime === 'off'
-      ? null
-      : createVerger({
-          host,
-          platform,
-          store,
-          requested: mode,
-          assignment,
-          telemetrySink,
-          release,
-          now,
-        }),
+  const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
+  const [verger] = useState<Verger>(() =>
+    createVerger({
+      host,
+      platform,
+      store,
+      // Never started when `runs` is false; the floors need no mode.
+      requested: mode === 'off' ? 'shadow' : mode,
+      facts,
+      assignment,
+      telemetrySink,
+      release,
+      now,
+    }),
   );
 
   useEffect(() => {
-    if (!verger) return;
     let live = true;
     const reduceMotion = (value: boolean) =>
       verger.dispatch({ type: 'preferences', at: now(), reduceMotion: value, fidelity: 'auto' });
-    void verger.start().then((plan) => {
-      if (!live || plan.runtime === 'off') return;
+    const settings = () => {
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(AppState.currentState) });
       AccessibilityInfo.isReduceMotionEnabled()
         .then((value) => live && reduceMotion(value))
         .catch((error: unknown) => console.error('[verger] reduce-motion query failed', error));
-    });
+    };
+    // Floors first, so settings hold from the first frame; a running launch is told again,
+    // since its policy starts from its own state.
+    settings();
+    if (runs)
+      void verger.start().then((plan) => {
+        if (live && plan.runtime !== 'off') settings();
+      });
     const appState = AppState.addEventListener('change', (status) =>
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) }),
     );
     const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', reduceMotion);
-    const stopLongTasks = observeLongTasks((durationMs) =>
-      verger.dispatch({ type: 'long-task', at: now(), durationMs }),
-    );
+    // Long tasks matter only to a running closed loop; off, nothing is observed.
+    const stopLongTasks = runs
+      ? observeLongTasks((durationMs) =>
+          verger.dispatch({ type: 'long-task', at: now(), durationMs }),
+        )
+      : () => {};
     return () => {
       live = false;
       stopLongTasks();
       motion.remove();
       appState.remove();
-      void verger.stop();
+      if (runs) void verger.stop();
     };
-  }, [verger]);
+  }, [verger, runs]);
 
-  if (!verger) return <>{children}</>;
   return (
     <VergerContext.Provider value={verger}>
-      <PresenceBoundary verger={verger}>{children}</PresenceBoundary>
+      {runs ? <PresenceBoundary verger={verger}>{children}</PresenceBoundary> : children}
       <GlobalMotion verger={verger} />
     </VergerContext.Provider>
   );
@@ -155,7 +172,7 @@ function GlobalMotion({ verger }: { verger: Verger }) {
   return forced ? <ReducedMotionConfig mode={ReduceMotion.Always} /> : null;
 }
 
-/** The current snapshot, or null when verger is off. Re-renders on change only. */
+/** The snapshot in force (verger's, or its floors while off); null outside a provider. */
 export function useVergerSnapshot(): GovernorSnapshot | null {
   const verger = useContext(VergerContext);
   return useSyncExternalStore(
@@ -164,7 +181,7 @@ export function useVergerSnapshot(): GovernorSnapshot | null {
   );
 }
 
-/** One lever's applied level (0 = full quality), or 0 when verger is off. */
+/** One lever's applied level (0 = full quality); its floor while verger is off; 0 outside a provider. */
 export function useLeverLevel(id: string): number {
   const verger = useContext(VergerContext);
   return useSyncExternalStore(

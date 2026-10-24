@@ -27,11 +27,13 @@ The one place the plan is tracked; update it with every phase. Verification ride
 | A. Core stage | recovery ladder against its model | done (found a rung-4 hole, fixed) | G2: model-based |
 | B. Sensing | B1 network and Data Saver | in code; metered treated as home | G2 contract (Kotlin and TS); Android part uncompiled |
 | B. Sensing | B2 battery level, plugged in, temperature; heat fallback below API 29 | in code; low battery is a lever-declared limit | G2 contract (Kotlin and TS), properties; temperature unit to verify on a phone; Android part uncompiled |
-| B. Sensing | B3 data budget: no network assumed free; daily allowances for metered and unmetered; Wi-Fi or night window | **next** | — |
+| B. Sensing | B3 data budget: no network assumed free; daily allowances for metered and unmetered; Wi-Fi or night window | planned (after E) | — |
 | B. Sensing | B4 storage; B5 verger's own cost; B6 user fidelity passthrough; B7 input delay | planned | — |
 | C. Envelope | verger-p5: home, ceiling, floor; expand and compress | planned | — |
 | D. Loop 2 and 3 | self-adapting rules; session recording and telemetry; dev lab; policy comparison | planned | — |
-| E. Cut-off | static floors without native code; drift test; consumers move; old governor removed | planned (signed off) | — |
+| E. Cut-off | E1 floors without native code: while verger is off (mode off, kill switch, rung 4, launch error, before start, after stop) the host's policy runs under the `static` preset on JS-only facts (`facts`, Gurudevi: expo-device memory) | done | G1: verger tests (floors before start, kill switch, after stop, stable identity, facts that throw) |
+| E. Cut-off | E2 drift test: the old governor as the differential oracle; intended differences listed | **next** | — |
+| E. Cut-off | E3 typed view (lever levels to the fields consumers read), fidelity and quiet passthrough (B6); E4 mount with configurable activation, `configure` and `tune` in React; E5 consumers move, old governor removed (signed off, gated on E2) | planned | — |
 | F. Phones | first Gradle build; dev client on the A52, A24 and a 2–4 GB phone; Maestro CLI flows; Stryker | needs the laptop | — |
 
 ## The pipeline

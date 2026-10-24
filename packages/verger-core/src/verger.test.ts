@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import {
+  ACTIVATION_PRESETS,
   type CapacityFacts,
   createVerger,
   defineHost,
@@ -326,7 +327,8 @@ describe('verger launch', () => {
       },
     });
     expect((await v.start()).runtime).toBe('off');
-    expect(v.getSnapshot()).toBeNull();
+    // Off, verger publishes only its floors: nothing sensed, nothing on hardware.
+    expect(v.getSnapshot()?.activation).toEqual(ACTIVATION_PRESETS.static);
     expect(JSON.parse(store.data.get('verger:sample:session') ?? '{}')).toMatchObject({
       runtime: 'off',
       phase: 'running',
@@ -434,5 +436,91 @@ describe('verger launch', () => {
       prior: {},
       grant: 0,
     });
+  });
+});
+
+describe('verger: the floors hold while verger is not running', () => {
+  const LOW_RAM: CapacityFacts = { ...CAPACITY, totalMemoryBytes: 2 * 1024 ** 3, isLowRamDevice: true };
+
+  it('before start, settings and JS-only facts set the floors; nothing native or stored is touched', () => {
+    const d = device();
+    const store = asyncStore();
+    const v = createVerger({ ...options(d, store), facts: () => LOW_RAM });
+    const notified: number[] = [];
+    v.subscribe(() => notified.push(1));
+    // A low-memory phone: the ambient lever is floored even before any event.
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+    expect(v.getSnapshot()?.levels['rows-ahead']).toBe(1);
+    v.dispatch({ type: 'preferences', at: 1, reduceMotion: false, fidelity: 'high' });
+    // Fidelity high lifts the low-capacity floor, as the old governor did.
+    expect(v.getSnapshot()?.levels.sparkle).toBe(0);
+    v.dispatch({ type: 'preferences', at: 2, reduceMotion: true, fidelity: 'high' });
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+    v.dispatch({ type: 'power', at: 3, saver: true });
+    expect(v.getSnapshot()?.levels['warm-ahead']).toBe(2);
+    expect(notified.length).toBe(3);
+    expect(d.calls).toEqual([]);
+    expect(store.data.size).toBe(0);
+  });
+
+  it('the snapshot object is stable until an output changes', () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    const first = v.getSnapshot();
+    v.dispatch({ type: 'tick', at: 5 });
+    v.dispatch({ type: 'interaction', at: 6 });
+    expect(v.getSnapshot()).toBe(first);
+  });
+
+  it('senses nothing natively: frames, heat and memory events move no floor', () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    const before = v.getSnapshot()?.levels;
+    v.dispatch({ type: 'thermal', at: 1, status: 'critical', headroom: 1.2 });
+    v.dispatch({ type: 'memory-trim', at: 2, severity: 'critical' });
+    expect(v.getSnapshot()?.levels).toEqual(before);
+  });
+
+  it('under the kill switch the floors still follow settings', async () => {
+    const d = device();
+    const v = createVerger({
+      ...options(d, asyncStore()),
+      facts: () => CAPACITY,
+      assignment: {
+        key: 'k',
+        arm: 'control',
+        bucket: 1,
+        mode: 'shadow',
+        runtime: 'off',
+        reason: 'kill-switch',
+      },
+    });
+    expect((await v.start()).reason).toBe('kill-switch');
+    v.dispatch({ type: 'preferences', at: 1, reduceMotion: false, fidelity: 'low' });
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+    expect(d.calls).toEqual([]);
+  });
+
+  it('after stop, the floors carry the settings heard while verger ran', async () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    await v.start();
+    v.dispatch({ type: 'preferences', at: 1, reduceMotion: true, fidelity: 'auto' });
+    await v.stop();
+    expect(v.getSnapshot()?.activation).toEqual(ACTIVATION_PRESETS.static);
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+  });
+
+  it('facts that throw leave the device unknown, not verger broken', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const v = createVerger({
+      ...options(device(), asyncStore()),
+      facts: () => {
+        throw new Error('no expo-device');
+      },
+    });
+    // Unknown is not low memory, and an unknown phone is not proof a capability is missing.
+    expect(v.getSnapshot()?.levels.sparkle).toBe(0);
+    expect(v.getSnapshot()?.levels.frosting).toBe(0);
   });
 });

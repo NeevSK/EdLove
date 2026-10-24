@@ -1,4 +1,5 @@
 import {
+  ACTIVATION_PRESETS,
   type ActivationPatch,
   activationForMode,
   capActivation,
@@ -40,6 +41,7 @@ import {
   type TelemetryValue,
 } from './telemetry';
 import { validateConfig } from './config';
+import { UNKNOWN_CAPACITY } from './governor';
 import type {
   CapacityFacts,
   GovernorConfig,
@@ -99,6 +101,12 @@ export interface VergerOptions {
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
   /**
+   * Device facts read in JavaScript alone (never through verger's native module), for the
+   * floors that hold while verger is not running. Read once, at construction; unknown if absent
+   * or if it throws.
+   */
+  readonly facts?: () => CapacityFacts;
+  /**
    * The host's release (app version and build). A new release starts the ladder over, and is
    * the only way off rung 4 besides a new policy version, so it is required.
    */
@@ -137,7 +145,13 @@ export interface Verger {
    * The native sensors keep the thresholds they started with.
    */
   tune(patch: Partial<GovernorConfig> | null): void;
-  /** Null while verger is not running. */
+  /**
+   * The snapshot in force. While verger is not running (before `start`, after `stop`, or when
+   * the launch stayed off) it is the floors: the host's policy under the `static` preset, on
+   * the JS-only `facts` and the events dispatched, with nothing sensed natively and no
+   * hardware. Settings (reduce motion, fidelity, battery saver, visibility, a low-memory phone)
+   * therefore hold whether verger runs or not. Null only if the floors themselves failed.
+   */
   getSnapshot(): GovernorSnapshot | null;
   subscribe(listener: () => void): () => void;
 }
@@ -155,6 +169,44 @@ const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
   grant: 0,
   reason,
 });
+
+/**
+ * Settings floors without verger running: the policy's static decision, kept current by the
+ * events the host dispatches. Pure JavaScript; no sensor, port, store or ladder. A failure here
+ * leaves the last good snapshot (or none) and is logged, never thrown into the host.
+ */
+function createFloors(host: VergerHost, facts: (() => CapacityFacts) | undefined, at: number) {
+  const policy = host.policy;
+  const capacity = (facts && guardValue(facts)) ?? UNKNOWN_CAPACITY;
+  const initial = guardValue(() =>
+    policy.create({
+      at,
+      levers: host.levers,
+      capacity,
+      config: host.config,
+      mode: 'active',
+      hardware: false,
+      activation: ACTIVATION_PRESETS.static,
+    }),
+  );
+  let state = initial;
+  // One object per output version, so React's external-store reads stay stable.
+  let snapshot = initial === null ? null : guardValue(() => policy.snapshot(initial));
+  return {
+    /** Returns true when the published floors changed. */
+    dispatch(event: GovernorEvent): boolean {
+      const current = state;
+      if (current === null || event.type === 'activation' || event.type === 'config') return false;
+      const next = guardValue(() => policy.reduce(current, event));
+      if (next === null) return false;
+      state = next;
+      if (policy.outputVersion(next) === policy.outputVersion(current)) return false;
+      snapshot = guardValue(() => policy.snapshot(next)) ?? snapshot;
+      return true;
+    },
+    getSnapshot: () => snapshot,
+  };
+}
 
 const defaultScheduler: RuntimeScheduler = {
   setTimeout: (callback, delayMs) => setTimeout(callback, delayMs),
@@ -174,7 +226,8 @@ const enqueue = <T>(work: () => Promise<T> | T): Promise<T> => {
 };
 
 /**
- * Verger for one app process. Construction does nothing; `start` runs the launch.
+ * Verger for one app process. Construction starts nothing: it only computes the floors, in
+ * JavaScript. `start` runs the launch.
  *
  * The launch is crash-only and fails closed:
  * 1. Read what the last session left. If the store cannot be read, stay off and write nothing:
@@ -203,6 +256,7 @@ export function createVerger(options: VergerOptions): Verger {
 
   let plan: LaunchPlan | null = null;
   let controller: RuntimeController | null = null;
+  const floors = createFloors(host, options.facts, now());
   const requestedActivation = options.activation ?? activationForMode(options.requested);
   /** Caps the activation to what this launch's plan allows. */
   let capFor: (activation: VergerActivation) => VergerActivation = (a) => a;
@@ -487,8 +541,13 @@ export function createVerger(options: VergerOptions): Verger {
       return plan;
     },
     dispatch(event) {
+      // The floors hear every event, so they are current whenever verger stops running.
+      const floorsChanged = floors.dispatch(event);
       const running = controller;
-      if (!running) return;
+      if (!running) {
+        if (floorsChanged) notify();
+        return;
+      }
       running.dispatch(event);
       if (event.type === 'app-state' && session) {
         const foreground = event.state === 'active';
@@ -521,7 +580,7 @@ export function createVerger(options: VergerOptions): Verger {
     get activation() {
       return controller?.getSnapshot().activation ?? null;
     },
-    getSnapshot: () => controller?.getSnapshot() ?? null,
+    getSnapshot: () => controller?.getSnapshot() ?? floors.getSnapshot(),
     subscribe(listener) {
       listeners.add(listener);
       return () => {
