@@ -1,48 +1,27 @@
-import { resolveRuntimeVisualBudget, resolveWallpaperPresentation } from '@repo/core/efficiency';
-import { visualSignalsOf } from '@repo/core/verger';
 import type { WorkspaceWallpaper as WorkspaceWallpaperAsset } from '@repo/core/types';
+import { type WallpaperReading, wallpaperOf } from '@repo/core/verger';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { View } from '@repo/ui/primitives';
 import { useVergerSnapshot } from '@repo/verger-react';
 import { Image } from 'expo-image';
-import { useEffect, useMemo, useState } from 'react';
-import { AppState, Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
+
+const UNKNOWN_READING: WallpaperReading = {
+  networkLimit: 'none',
+  powerSaver: false,
+  visibility: 'active',
+};
 
 export function WorkspaceWallpaper({
   wallpaper,
 }: Readonly<{ wallpaper?: WorkspaceWallpaperAsset }>) {
   const visualCapabilities = useVisualCapabilities();
   const snapshot = useVergerSnapshot();
-  const networkLimit = snapshot?.networkLimit;
-  const powerSaver = snapshot?.powerSaver;
-  const visibility = snapshot?.visibility;
   const { width } = useWindowDimensions();
-  const [isAppVisible, setIsAppVisible] = useState(() => AppState.currentState === 'active');
-
-  useEffect(() => {
-    setIsAppVisible(AppState.currentState === 'active');
-    const subscription = AppState.addEventListener('change', (state) => {
-      setIsAppVisible(state === 'active');
-    });
-    return () => subscription.remove();
-  }, []);
-
-  // Outside verger's provider nothing is known but what the app sees: no network or power limit.
-  const budget = useMemo(
-    () =>
-      resolveRuntimeVisualBudget(
-        visualSignalsOf(
-          {
-            networkLimit: networkLimit ?? 'none',
-            powerSaver: powerSaver ?? false,
-            visibility: visibility ?? (isAppVisible ? 'active' : 'background'),
-          },
-          visualCapabilities,
-        ),
-      ),
-    [networkLimit, powerSaver, visibility, visualCapabilities, isAppVisible],
-  );
-  const presentation = resolveWallpaperPresentation(wallpaper, budget, width);
+  // Verger's readings decide (its floors while it is off, which hear app state too); with no
+  // verger bound nothing is known, so nothing is limited.
+  const reading: WallpaperReading = snapshot ?? UNKNOWN_READING;
+  const presentation = wallpaperOf(wallpaper, visualCapabilities, reading, width);
 
   if (!presentation.enabled || !presentation.url || visualCapabilities.quality === 'essential') {
     return null;
@@ -64,7 +43,7 @@ export function WorkspaceWallpaper({
         priority="low"
         source={{ uri: presentation.url }}
         style={[StyleSheet.absoluteFill, { opacity: presentation.opacity }]}
-        transition={budget.allowAnimation ? 180 : 0}
+        transition={visualCapabilities.allowSubtleAnimation ? 180 : 0}
       />
     </View>
   );

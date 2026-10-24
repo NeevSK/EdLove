@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import {
-  ACTIVATION_PRESETS,
   type CapacityFacts,
   createVerger,
   defineHost,
@@ -13,7 +12,9 @@ import {
   type RuntimePort,
   type TelemetryValue,
   type VergerPlatform,
+  FLOORS_ACTIVATION,
   type VergerStore,
+  vergerFloors,
 } from './index';
 
 const HOST = defineHost({ name: 'sample', levers: SAMPLE_LEVERS });
@@ -328,7 +329,7 @@ describe('verger launch', () => {
     });
     expect((await v.start()).runtime).toBe('off');
     // Off, verger publishes only its floors: nothing sensed, nothing on hardware.
-    expect(v.getSnapshot()?.activation).toEqual(ACTIVATION_PRESETS.static);
+    expect(v.getSnapshot()?.activation).toEqual(FLOORS_ACTIVATION);
     expect(JSON.parse(store.data.get('verger:sample:session') ?? '{}')).toMatchObject({
       runtime: 'off',
       phase: 'running',
@@ -515,7 +516,7 @@ describe('verger: the floors hold while verger is not running', () => {
     await v.start();
     v.dispatch({ type: 'preferences', at: 1, reduceMotion: true, fidelity: 'auto' });
     await v.stop();
-    expect(v.getSnapshot()?.activation).toEqual(ACTIVATION_PRESETS.static);
+    expect(v.getSnapshot()?.activation).toEqual(FLOORS_ACTIVATION);
     expect(v.getSnapshot()?.levels.sparkle).toBe(2);
   });
 
@@ -530,5 +531,60 @@ describe('verger: the floors hold while verger is not running', () => {
     // Unknown is not low memory, and an unknown phone is not proof a capability is missing.
     expect(v.getSnapshot()?.levels.sparkle).toBe(0);
     expect(v.getSnapshot()?.levels.frosting).toBe(0);
+  });
+});
+
+describe('verger: host signals fill only what the platform does not sense', () => {
+  it('while running, a native sensor wins over the same JS reading; the floors keep the JS one', async () => {
+    const d = device();
+    const v = createVerger({
+      ...options(d, asyncStore()),
+      facts: () => CAPACITY,
+      platform: () => ({ ...d.platform(), senses: ['power'] }),
+    });
+    await v.start();
+    v.signal({ type: 'power', at: 1, saver: true });
+    expect(v.getSnapshot()?.powerSaver).toBe(false);
+    await v.stop();
+    expect(v.getSnapshot()?.powerSaver).toBe(true);
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+  });
+
+  it('while running, a sensor the platform lacks is heard from JS', async () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    await v.start();
+    v.signal({ type: 'power', at: 1, saver: true });
+    expect(v.getSnapshot()?.powerSaver).toBe(true);
+  });
+});
+
+describe('vergerFloors: a reading without an app', () => {
+  it('folds the readings into the floors and touches nothing else', () => {
+    const snapshot = vergerFloors({
+      host: HOST,
+      events: [
+        { type: 'power', at: 1, saver: true },
+        { type: 'preferences', at: 2, reduceMotion: false, fidelity: 'auto' },
+      ],
+    });
+    expect(snapshot?.powerSaver).toBe(true);
+    expect(snapshot?.levels['warm-ahead']).toBe(2);
+  });
+});
+
+describe('the floors hear the network from host signals', () => {
+  it('a JS network reading sets the network limit while verger is off', () => {
+    const v = createVerger({ ...options(device(), asyncStore()), facts: () => CAPACITY });
+    v.signal({
+      type: 'network',
+      at: 1,
+      transport: 'none',
+      validated: false,
+      metered: null,
+      downKbps: null,
+      dataSaver: null,
+    });
+    expect(v.getSnapshot()?.networkLimit).toBe('offline');
   });
 });

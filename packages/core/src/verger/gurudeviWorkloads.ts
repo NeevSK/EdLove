@@ -55,7 +55,8 @@ export const GURUDEVI_WORKLOADS: readonly WorkloadSpec[] = [
   {
     id: 'storage-eviction',
     class: 'deferrable',
-    spends: ['storage', 'cpu'],
+    // VACUUM rewrites the database: long CPU and I/O, so energy too.
+    spends: ['storage', 'cpu', 'energy'],
     source: 'storageEvictionTask, retention-scheduler',
   },
   {

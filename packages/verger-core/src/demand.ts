@@ -1,4 +1,5 @@
 import { DEFAULT_VERGER_CONFIG } from './config';
+import { isBatteryLow } from './reducer';
 import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
 /**
@@ -223,4 +224,38 @@ export function estimateAccounts(
               };
 
   return { cpu, gpu, memory, energy, thermal, network, storage: UNKNOWN };
+}
+
+export interface Admission {
+  readonly admit: boolean;
+  /** Why, for logs and telemetry: `eligible`, or the limit that held the work back. */
+  readonly reason: string;
+}
+
+/**
+ * Whether a workload may run now, by its class and the accounts it spends, on a snapshot's
+ * limits. Critical and committed work always runs. Deferrable and ornamental work waits while an
+ * account it spends is at a limit: network work for offline, Data Saver or a link back from
+ * offline under a minute; energy work for battery saver or a low, unplugged battery. Metered is
+ * home, never a limit; unknown is never a limit. For work outside the app's rhythm (background
+ * tasks); in the app, `optionalConcurrency` also counts visibility and contention.
+ */
+export function admitWork(
+  snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'battery'>,
+  workload: Pick<WorkloadSpec, 'class' | 'spends'>,
+  config: Pick<VergerConfig, 'batteryLowPercent'> = DEFAULT_VERGER_CONFIG,
+): Admission {
+  if (workload.class === 'critical' || workload.class === 'committed')
+    return { admit: true, reason: 'eligible' };
+  if (workload.spends.includes('network')) {
+    const limit = snapshot.networkLimit;
+    if (limit === 'offline' || limit === 'data-saver' || limit === 'unstable')
+      return { admit: false, reason: limit };
+  }
+  if (workload.spends.includes('energy')) {
+    if (snapshot.powerSaver) return { admit: false, reason: 'battery-saver' };
+    if (isBatteryLow(snapshot.battery, config.batteryLowPercent))
+      return { admit: false, reason: 'battery-low' };
+  }
+  return { admit: true, reason: 'eligible' };
 }

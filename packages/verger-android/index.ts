@@ -33,6 +33,9 @@ declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
   readTotals(): { frames?: number; missedVsyncs?: number; costMs?: number };
 }
 
+/** What the module senses itself; long tasks come from React Native, in JavaScript. */
+const NATIVE_SENSORS: readonly SensorId[] = ['frames', 'threads', 'memory', 'thermal', 'power', 'network'];
+
 /** Null on iOS, on web, and in any build that predates the module. */
 const native = requireOptionalNativeModule<VergerNativeModule>('Verger');
 
@@ -66,6 +69,8 @@ export function createVergerAndroidPlatform(
         }
       : {}),
     memorySensing: native !== null,
+    // Without the module nothing is sensed natively, so the host's JS readings stand in.
+    senses: native ? NATIVE_SENSORS : [],
     createPort: (now) => createVergerAndroidPort(now, onLever),
   };
 }

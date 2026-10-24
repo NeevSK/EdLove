@@ -12,8 +12,20 @@ export {
   experienceOf,
   type GurudeviExperience,
   type VisualQuality,
-  visualSignalsOf,
 } from './experience';
+export {
+  buildResponsiveWallpaperUrl,
+  type WallpaperPresentation,
+  type WallpaperReading,
+  wallpaperAllowed,
+  wallpaperOf,
+} from './wallpaper';
 export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
-export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST } from './host';
+export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST, GURUDEVI_WEB_HOST } from './host';
+export {
+  resolveVergerLaunch,
+  type RuntimeMode,
+  type VergerLaunch,
+  type VergerLaunchInputs,
+} from './launch';

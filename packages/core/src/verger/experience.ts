@@ -1,5 +1,4 @@
 import type { CapacityClass, FidelityPreference, VergerSnapshot } from '@repo/verger-core';
-import type { RuntimeVisualSignals } from '../efficiency/visualBudget';
 
 /**
  * Gurudevi's reading of verger's decision: lever levels turned into the fields its components
@@ -139,26 +138,5 @@ export function experienceOf(
       maxConcurrentSounds: sound === 'off' ? 0 : 1,
       allowAssetPrefetch: prefetch,
     },
-  };
-}
-
-/**
- * Verger's readings as the shared visual-budget signals (the contract the web app also feeds),
- * so surfaces built on that budget follow verger on mobile. A weak link reads as a poor network,
- * Data Saver or offline as data saving; motion off covers reduced motion and a hidden app.
- */
-export function visualSignalsOf(
-  snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'visibility'>,
-  experience: Pick<GurudeviExperience, 'deviceTier' | 'experience'>,
-): RuntimeVisualSignals {
-  const limit = snapshot.networkLimit;
-  return {
-    deviceTier: experience.deviceTier,
-    networkQuality:
-      limit === 'offline' ? 'offline' : limit === 'slow' || limit === 'unstable' ? 'poor' : 'good',
-    isDataSaverMode: limit === 'data-saver' || limit === 'offline',
-    isBatterySaverMode: snapshot.powerSaver,
-    isReducedMotionEnabled: experience.experience.motion === 'off',
-    isDocumentVisible: snapshot.visibility === 'active',
   };
 }

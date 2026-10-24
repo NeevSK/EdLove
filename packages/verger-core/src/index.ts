@@ -56,6 +56,7 @@ export {
   type CreateVergerStateOptions,
   createVergerState,
   type VergerState,
+  isBatteryLow,
   networkLimitOf,
   nextTimedChangeAt,
   reduceVerger,
@@ -68,6 +69,8 @@ export {
 export {
   type AccountReading,
   type AccountState,
+  type Admission,
+  admitWork,
   classesOfLever,
   estimateAccounts,
   RESOURCE_ACCOUNTS,
@@ -134,6 +137,8 @@ export { replayVerger } from './replay';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
   createVerger,
+  FLOORS_ACTIVATION,
+  vergerFloors,
   type FrameTotals,
   type Verger,
   type VergerOptions,

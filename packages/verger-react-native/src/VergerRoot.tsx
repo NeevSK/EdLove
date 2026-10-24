@@ -13,23 +13,13 @@ import {
   type VergerActivation,
   type VergerStore,
 } from '@repo/verger-core';
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { bindVerger, bindVergerEarly, observeLongTasks } from '@repo/verger-react';
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { AccessibilityInfo, AppState, type AppStateStatus, View } from 'react-native';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
-import { observeLongTasks } from './longTasks';
 
 /** `off` runs nothing; `shadow` senses and decides but applies nothing new; `active` applies. */
 export type VergerMode = 'off' | RunMode;
-
-const VergerContext = createContext<Verger | null>(null);
 
 /** Touches closer together than this are one interaction; verger needs presence, not taps. */
 const INTERACTION_THROTTLE_MS = 250;
@@ -49,7 +39,7 @@ function sendPreferences(
   verger.dispatch({ type: 'preferences', at: now(), ...current });
 }
 
-export interface VergerProviderProps {
+export interface VergerRootProps {
   readonly children: ReactNode;
   /** The host's definition (`defineHost`): its levers, rules, thresholds and recovery. */
   readonly host: VergerHost;
@@ -81,6 +71,10 @@ export interface VergerProviderProps {
 }
 
 /**
+ * Runs verger for a React Native app and binds it, so `useVergerSnapshot` and friends read it
+ * anywhere without a provider. It renders only what must sit in the tree: the touch-presence
+ * boundary and the app-wide reduced-motion config.
+ *
  * Mounts verger around an app. In `off` mode, or under the kill switch, it never starts verger:
  * no store, no native module, no sensing; only the floors run, in JavaScript, fed app state and
  * the motion preference, so settings still reach every lever. Otherwise it runs verger's
@@ -89,7 +83,7 @@ export interface VergerProviderProps {
  * lives in JavaScript: forced reduced motion for every Reanimated animation that starts while
  * it is set.
  */
-export function VergerProvider({
+export function VergerRoot({
   children,
   host,
   platform,
@@ -102,7 +96,7 @@ export function VergerProvider({
   assignment,
   telemetrySink,
   release,
-}: VergerProviderProps) {
+}: VergerRootProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   // Read once, like the rest of the launch: a new function must not restart verger.
   const [startSignals] = useState(() => signals);
@@ -130,6 +124,9 @@ export function VergerProvider({
     sendPreferences(verger, preferences.current);
   }, [verger, fidelity]);
 
+  bindVergerEarly(verger);
+  useEffect(() => bindVerger(verger), [verger]);
+
   useEffect(() => {
     let live = true;
     const reduceMotion = (value: boolean) => {
@@ -154,7 +151,7 @@ export function VergerProvider({
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) }),
     );
     const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', reduceMotion);
-    const stopSignals = startSignals?.((event) => verger.dispatch(event), now) ?? (() => {});
+    const stopSignals = startSignals?.((event) => verger.signal(event), now) ?? (() => {});
     // Long tasks matter only to a running closed loop; off, nothing is observed.
     const stopLongTasks = runs
       ? observeLongTasks((durationMs) =>
@@ -172,10 +169,10 @@ export function VergerProvider({
   }, [verger, runs, startSignals]);
 
   return (
-    <VergerContext.Provider value={verger}>
+    <>
       {runs ? <PresenceBoundary verger={verger}>{children}</PresenceBoundary> : children}
       <GlobalMotion verger={verger} />
-    </VergerContext.Provider>
+    </>
   );
 }
 
@@ -211,31 +208,3 @@ function GlobalMotion({ verger }: { verger: Verger }) {
   // Mounting the config forces reduced motion; unmounting restores what was there before.
   return forced ? <ReducedMotionConfig mode={ReduceMotion.Always} /> : null;
 }
-
-/**
- * Verger itself, for the lab and diagnostics: `configure` and `tune` change what it may do and
- * its thresholds live; `outcomes` shows how its moves turned out. Null outside a provider.
- */
-export function useVerger(): Verger | null {
-  return useContext(VergerContext);
-}
-
-/** The snapshot in force (verger's, or its floors while off); null outside a provider. */
-export function useVergerSnapshot(): VergerSnapshot | null {
-  const verger = useContext(VergerContext);
-  return useSyncExternalStore(
-    verger?.subscribe ?? noSubscription,
-    () => verger?.getSnapshot() ?? null,
-  );
-}
-
-/** One lever's applied level (0 = full quality); its floor while verger is off; 0 outside a provider. */
-export function useLeverLevel(id: string): number {
-  const verger = useContext(VergerContext);
-  return useSyncExternalStore(
-    verger?.subscribe ?? noSubscription,
-    () => verger?.getSnapshot()?.levels[id] ?? 0,
-  );
-}
-
-const noSubscription = () => () => {};

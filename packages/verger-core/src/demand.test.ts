@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { ACTIVATION_PRESETS, resolveActivation } from './activation';
-import { classesOfLever, estimateAccounts, validateWorkloads, type WorkloadSpec } from './demand';
+import {
+  admitWork,
+  classesOfLever,
+  estimateAccounts,
+  type ResourceAccount,
+  validateWorkloads,
+  type WorkloadSpec,
+} from './demand';
 import { createVergerState, reduceVerger, snapshotOf, UNKNOWN_CAPACITY } from './reducer';
 import { defineHost } from './host';
-import type { CapacityFacts, VergerEvent } from './types';
+import type { CapacityFacts, NetworkLimit, VergerEvent } from './types';
 
 const WORKLOADS: readonly WorkloadSpec[] = [
   { id: 'tap', class: 'critical', spends: ['cpu'], source: 'everywhere' },
@@ -115,5 +122,40 @@ describe('resource accounts', () => {
   it('a switched-off sensor reads as unknown, not as the last value', () => {
     const hot: VergerEvent = { type: 'thermal', at: 1, status: 'severe', headroom: 0.97 };
     expect(run([hot], { sense: { thermal: false } }).thermal.state).toBe('unknown');
+  });
+});
+
+describe('admitWork: background work against the limits of the moment', () => {
+  const base = {
+    networkLimit: 'none' as NetworkLimit,
+    powerSaver: false,
+    battery: { levelPercent: 80, pluggedIn: false, temperatureC: null },
+  };
+  const sync = { class: 'deferrable' as const, spends: ['network', 'energy'] as ResourceAccount[] };
+
+  it('metered and unknown are not limits: a teacher on mobile data still syncs', () => {
+    expect(admitWork(base, sync)).toEqual({ admit: true, reason: 'eligible' });
+    expect(admitWork({ ...base, battery: { levelPercent: null, pluggedIn: null, temperatureC: null } }, sync).admit).toBe(true);
+  });
+
+  it('waits offline, under Data Saver, and on a link just back from offline', () => {
+    for (const limit of ['offline', 'data-saver', 'unstable'] as const)
+      expect(admitWork({ ...base, networkLimit: limit }, sync)).toEqual({ admit: false, reason: limit });
+    expect(admitWork({ ...base, networkLimit: 'slow' }, sync).admit).toBe(true);
+  });
+
+  it('waits under battery saver or a low unplugged battery, at the configured threshold', () => {
+    expect(admitWork({ ...base, powerSaver: true }, sync).reason).toBe('battery-saver');
+    const low = { ...base, battery: { levelPercent: 15, pluggedIn: false, temperatureC: null } };
+    expect(admitWork(low, sync).reason).toBe('battery-low');
+    expect(admitWork(low, sync, { batteryLowPercent: 10 }).admit).toBe(true);
+    expect(admitWork({ ...low, battery: { ...low.battery, pluggedIn: true } }, sync).admit).toBe(true);
+  });
+
+  it('critical and committed work always runs; work that spends neither account is never held', () => {
+    const offline = { ...base, networkLimit: 'offline' as NetworkLimit, powerSaver: true };
+    expect(admitWork(offline, { class: 'critical', spends: ['network'] }).admit).toBe(true);
+    expect(admitWork(offline, { class: 'committed', spends: ['network'] }).admit).toBe(true);
+    expect(admitWork(offline, { class: 'deferrable', spends: ['cpu'] }).admit).toBe(true);
   });
 });

@@ -7,7 +7,6 @@ import { identity, useAuthStore } from '@repo/core/logic';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FidelityProvider, useFidelity, useFidelityOptional } from './FidelityProvider';
 import { LanguageProvider, useLanguage, useLanguageOptional } from './LanguageProvider';
-import { NetworkStatusSync } from './NetworkStatusSync';
 import { SensoryProvider } from './SensoryProvider';
 import { ThemeProvider, useThemeContext, useThemeContextOptional } from './ThemeProvider';
 import type { EnvironmentContextValue } from './types';
@@ -20,13 +19,11 @@ import { useVisualCapabilities } from './VisualCapabilities';
 export function EnvironmentProvider({ children }: { children: ReactNode }) {
   return (
     <LanguageProvider>
-      <NetworkStatusSync>
-        <SensoryProvider>
-          <ThemeProvider>
-            <FidelityProvider>{children}</FidelityProvider>
-          </ThemeProvider>
-        </SensoryProvider>
-      </NetworkStatusSync>
+      <SensoryProvider>
+        <ThemeProvider>
+          <FidelityProvider>{children}</FidelityProvider>
+        </ThemeProvider>
+      </SensoryProvider>
     </LanguageProvider>
   );
 }
@@ -114,7 +111,6 @@ export {
   useLanguage,
   useLanguageOptional,
 } from './LanguageProvider';
-export { NetworkStatusSync } from './NetworkStatusSync';
 export {
   ThemeProvider,
   useThemeContext,

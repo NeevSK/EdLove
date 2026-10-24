@@ -39,14 +39,18 @@ commit `6bc9aab`); it was retired with its oracle. This page keeps its findings.
 
 A 6 GB phone gets exactly what the old medium tier gave it.
 
+## What moved later
+
+- `@repo/core/efficiency` (memory tier, visual budget, wallpaper presentation, network
+  normalisation, efficiency policy) was retired on the same day, once the web app had verger
+  (`@repo/verger-web`) and background work had a verger reading (`vergerFloors`, `admitWork`):
+  see [everywhere.md](everywhere.md). The old background policy deferred sync on every metered
+  network; verger treats metered as home.
+- Online status is derived from verger's network reading (`networkLimit`), which hears NetInfo
+  as a signal; `NetworkStatusSync` was removed.
+
 ## What did not move, and why
 
-- `@repo/core/efficiency`'s memory tier, visual budget, wallpaper presentation, network
-  normalisation and efficiency policy stay: the web app (`apps/gurudevi-web`) uses the first
-  three, and the mobile background sync and retention tasks, which run without verger, use the
-  last two. They move when `verger-web` exists and when background work has a verger reading.
 - The user's settings stay where they were: fidelity (`FidelityProvider`), sound, haptics and
   quiet (`SensoryProvider`), and the emergency safe-mode flag (`isVisualSafeModeEnabled`).
   Verger reads them; it does not own them.
-- Online status (the core store's `isOnline`), which `RealityProvider` also published, is
-  published by `NetworkStatusSync`.

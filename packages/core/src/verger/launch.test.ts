@@ -1,6 +1,7 @@
-import { ACTIVATION_PRESETS, GURUDEVI_LEVERS } from '@repo/core/verger';
+import { ACTIVATION_PRESETS } from '@repo/verger-core';
 import { describe, expect, it } from 'vitest';
-import { resolveVergerLaunch, type VergerLaunchInputs } from '@/runtime/runtimeMode';
+import { GURUDEVI_LEVERS } from './gurudeviLevers';
+import { resolveVergerLaunch, type VergerLaunchInputs } from './launch';
 
 const base: VergerLaunchInputs = {
   override: undefined,

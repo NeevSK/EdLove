@@ -1,7 +1,7 @@
 import { GURUDEVI_MOBILE_HOST, UNKNOWN_CAPACITY, type VergerPlatform } from '@repo/core/verger';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import type { VisualCapabilities } from '@repo/ui/context/types';
-import { VergerProvider } from '@repo/verger-react';
+import { VergerRoot } from '@repo/verger-react-native';
 import { render } from '@testing-library/react-native';
 
 const GIB = 1024 ** 3;
@@ -25,7 +25,7 @@ async function read(
   const probe = <Probe onRead={(c) => (latest = c)} />;
   await render(
     withVerger ? (
-      <VergerProvider
+      <VergerRoot
         host={GURUDEVI_MOBILE_HOST}
         platform={platform}
         mode="off"
@@ -37,7 +37,7 @@ async function read(
         release="test"
       >
         {probe}
-      </VergerProvider>
+      </VergerRoot>
     ) : (
       probe
     ),

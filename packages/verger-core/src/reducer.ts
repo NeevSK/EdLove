@@ -70,10 +70,10 @@ export const UNKNOWN_BATTERY: BatteryState = {
 };
 
 /** Low only when known to be low and known to be unplugged: unknown is never low. */
-const batteryLow = (state: VergerState) =>
-  state.battery.pluggedIn === false &&
-  state.battery.levelPercent !== null &&
-  state.battery.levelPercent <= state.config.batteryLowPercent;
+export const isBatteryLow = (battery: BatteryState, lowPercent: number): boolean =>
+  battery.pluggedIn === false && battery.levelPercent !== null && battery.levelPercent <= lowPercent;
+
+const batteryLow = (state: VergerState) => isBatteryLow(state.battery, state.config.batteryLowPercent);
 
 /** No usable network: none at all, or one the platform could not validate. Unknown is not offline. */
 const offline = (n: NetworkState) => n.transport === 'none' || n.validated === false;

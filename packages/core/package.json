@@ -318,11 +318,6 @@
       "import": "./src/offline/resilience.ts",
       "default": "./src/offline/resilience.ts"
     },
-    "./efficiency": {
-      "types": "./src/efficiency/index.ts",
-      "import": "./src/efficiency/index.ts",
-      "default": "./src/efficiency/index.ts"
-    },
     "./verger": {
       "types": "./src/verger/index.ts",
       "import": "./src/verger/index.ts",

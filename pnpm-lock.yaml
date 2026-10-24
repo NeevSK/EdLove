@@ -751,6 +751,9 @@ importers:
       '@repo/verger-react':
         specifier: workspace:*
         version: link:../../packages/verger-react
+      '@repo/verger-react-native':
+        specifier: workspace:*
+        version: link:../../packages/verger-react-native
       '@repo/workforce':
         specifier: workspace:*
         version: link:../../packages/workforce
@@ -1346,6 +1349,12 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@repo/verger-react':
+        specifier: workspace:*
+        version: link:../../packages/verger-react
+      '@repo/verger-web':
+        specifier: workspace:*
+        version: link:../../packages/verger-web
       '@supabase/ssr':
         specifier: 0.12.7
         version: 0.12.7(@supabase/supabase-js@2.117.2(@opentelemetry/api@1.9.1))
@@ -3271,6 +3280,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@repo/verger-react-native':
+        specifier: workspace:*
+        version: link:../verger-react-native
       '@shopify/flash-list':
         specifier: 2.3.2
         version: 2.3.2(@babel/runtime@7.29.7)(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.0.2))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.2.2))(react@19.3.0)
@@ -3368,6 +3380,28 @@ importers:
       react:
         specifier: 19.3.0
         version: 19.3.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+
+  packages/verger-react-native:
+    dependencies:
+      '@repo/verger-core':
+        specifier: workspace:*
+        version: link:../verger-core
+      '@repo/verger-react':
+        specifier: workspace:*
+        version: link:../verger-react
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
       react-native:
         specifier: 0.88.0
         version: 0.88.0(@babel/core@7.29.7(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.0.2))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.2.2)
@@ -3384,6 +3418,31 @@ importers:
       typescript:
         specifier: 7.0.2
         version: 7.0.2
+
+  packages/verger-web:
+    dependencies:
+      '@repo/verger-core':
+        specifier: workspace:*
+        version: link:../verger-core
+      '@repo/verger-react':
+        specifier: workspace:*
+        version: link:../verger-react
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: 5.0.5
+        version: 5.0.5(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.0)(jsdom@26.1.0(supports-color@10.2.2))(msw@2.15.0(@types/node@26.6.5)(typescript@7.0.2))(vite@8.2.1(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.100.0)(terser@5.49.2)(tsx@4.23.15)(yaml@2.9.0))
 
   packages/workforce:
     dependencies:

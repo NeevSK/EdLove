@@ -4,6 +4,8 @@ import {
   activationForMode,
   capActivation,
   resolveActivation,
+  type SensorId,
+  sensorOf,
   type VergerActivation,
 } from './activation';
 import {
@@ -80,6 +82,11 @@ export interface VergerPlatform {
   readTotals?(): FrameTotals;
   /** Whether the port senses memory (absence of trims then means normal). */
   readonly memorySensing: boolean;
+  /**
+   * Sensors the port runs natively. While verger runs, a host's `signal` for one of these is
+   * ignored, so a JavaScript reading never overwrites the native one. Absent: none.
+   */
+  readonly senses?: readonly SensorId[];
   createPort(now: () => number): RuntimePort;
 }
 
@@ -126,6 +133,12 @@ export interface Verger {
   /** Feeds an event from outside the platform (app state, touches, preferences, long tasks). */
   dispatch(event: VergerEvent): void;
   /**
+   * Feeds a sensor reading the host takes in JavaScript (battery saver from expo-battery, the
+   * network from NetInfo or the browser). The floors always hear it; a running verger hears it
+   * only for sensors its platform does not run natively.
+   */
+  signal(event: VergerEvent): void;
+  /**
    * Changes what verger may do while it runs: the patch applies over the launch's activation,
    * and the result is capped by the launch exactly as at start. `null` returns to the launch's
    * activation. Ignored while verger is not running.
@@ -146,8 +159,8 @@ export interface Verger {
   tune(patch: Partial<VergerConfig> | null): void;
   /**
    * The snapshot in force. While verger is not running (before `start`, after `stop`, or when
-   * the launch stayed off) it is the floors: the host's policy under the `static` preset, on
-   * the JS-only `facts` and the events dispatched, with nothing sensed natively and no
+   * the launch stayed off) it is the floors: the host's policy under `FLOORS_ACTIVATION`, on
+   * the JS-only `facts` and the events and signals the host feeds, with nothing sensed natively and no
    * hardware. Settings (reduce motion, fidelity, battery saver, visibility, a low-memory phone)
    * therefore hold whether verger runs or not. Null only if the floors themselves failed.
    */
@@ -170,6 +183,15 @@ const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
 });
 
 /**
+ * What the floors may do: the `static` preset, also hearing the network, since Data Saver, no
+ * network and a weak link are limits like any setting. Nothing native runs for it: the host's
+ * `signal`s are all the floors hear.
+ */
+export const FLOORS_ACTIVATION: VergerActivation = resolveActivation(ACTIVATION_PRESETS.static, {
+  sense: { network: true },
+});
+
+/**
  * Settings floors without verger running: the policy's static decision, kept current by the
  * events the host dispatches. Pure JavaScript; no sensor, port, store or ladder. A failure here
  * leaves the last good snapshot (or none) and is logged, never thrown into the host.
@@ -185,7 +207,7 @@ function createFloors(host: VergerHost, facts: (() => CapacityFacts) | undefined
       config: host.config,
       mode: 'active',
       hardware: false,
-      activation: ACTIVATION_PRESETS.static,
+      activation: FLOORS_ACTIVATION,
     }),
   );
   let state = initial;
@@ -205,6 +227,22 @@ function createFloors(host: VergerHost, facts: (() => CapacityFacts) | undefined
     },
     getSnapshot: () => snapshot,
   };
+}
+
+/**
+ * The floors for a moment, without an app around them: for work that runs where verger cannot
+ * (a background task in a headless JavaScript context). The host passes the readings it has;
+ * nothing native, stored or scheduled is touched. Null only if the host's policy failed.
+ */
+export function vergerFloors(options: {
+  readonly host: VergerHost;
+  readonly facts?: () => CapacityFacts;
+  readonly events: readonly VergerEvent[];
+  readonly at?: number;
+}): VergerSnapshot | null {
+  const floors = createFloors(options.host, options.facts, options.at ?? 0);
+  for (const event of options.events) floors.dispatch(event);
+  return floors.getSnapshot();
 }
 
 const defaultScheduler: RuntimeScheduler = {
@@ -256,6 +294,8 @@ export function createVerger(options: VergerOptions): Verger {
   let plan: LaunchPlan | null = null;
   let controller: RuntimeController | null = null;
   const floors = createFloors(host, options.facts, now());
+  /** What the running platform senses natively; empty while verger is not running. */
+  let nativeSensors: ReadonlySet<SensorId> = new Set();
   const requestedActivation = options.activation ?? activationForMode(options.requested);
   /** Caps the activation to what this launch's plan allows. */
   let capFor: (activation: VergerActivation) => VergerActivation = (a) => a;
@@ -376,6 +416,7 @@ export function createVerger(options: VergerOptions): Verger {
 
     // 4. One synchronous stretch: facts, judgement, decision, start.
     const platform = options.platform();
+    nativeSensors = new Set(platform.senses ?? []);
     const exits =
       previous && previous.phase !== 'stopped' && platform.readExits
         ? platform.readExits(previous.startedAtWall)
@@ -556,6 +597,15 @@ export function createVerger(options: VergerOptions): Verger {
           persist();
         }
       }
+    },
+    signal(event) {
+      const sensor = sensorOf(event);
+      if (controller && sensor !== null && nativeSensors.has(sensor)) {
+        // The native reading wins while verger runs; the floors still keep the JS one.
+        floors.dispatch(event);
+        return;
+      }
+      verger.dispatch(event);
     },
     configure(patch) {
       const running = controller;

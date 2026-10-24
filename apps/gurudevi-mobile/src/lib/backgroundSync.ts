@@ -9,12 +9,12 @@
  * - Foreground sync coordination
  */
 
-import { evaluateEfficiency, normalizeNetworkConditions } from '@repo/core/efficiency';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
 import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
 import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
+import { admitBackgroundWork } from '@/runtime/backgroundAdmission';
 import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
 
 export { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
@@ -33,29 +33,14 @@ const SYNC_CONFIG = {
 const LEGACY_DEAD_LETTER_KEY = 'gurudevi:dead-letter-queue';
 let legacyDeadLetterMigration: Promise<void> | undefined;
 
-async function getBackgroundSyncDecision() {
+/** Background sync is the registry's deferrable `sync`; verger's admission decides. */
+async function getBackgroundSyncDecision(): Promise<{ action: 'allow' | 'defer'; reason: string }> {
   try {
-    const [{ getBatteryLevelAsync, getBatteryStateAsync }, NetInfo] = await Promise.all([
-      import('expo-battery'),
-      import('@react-native-community/netinfo'),
-    ]);
-    const [batteryLevel, batteryState, networkState] = await Promise.all([
-      getBatteryLevelAsync(),
-      getBatteryStateAsync(),
-      NetInfo.default.fetch(),
-    ]);
-
-    const normalizedNetwork = normalizeNetworkConditions(networkState as any);
-    return evaluateEfficiency('background-sync', {
-      appState: 'background',
-      network: normalizedNetwork.type,
-      isMetered: normalizedNetwork.isMetered,
-      batteryLevel,
-      isCharging: batteryState === 2,
-      freeDiskBytes: null,
-    });
-  } catch {
-    return { action: 'defer' as const, reason: 'device_state_unavailable' };
+    const { admit, reason } = await admitBackgroundWork('sync');
+    return { action: admit ? 'allow' : 'defer', reason };
+  } catch (error) {
+    console.warn('[BackgroundSync] device state unavailable', error);
+    return { action: 'defer', reason: 'device_state_unavailable' };
   }
 }
 
@@ -135,7 +120,7 @@ function calculateBackoff(retryCount: number): number {
 export async function runBackgroundSyncTask() {
   const decision = await getBackgroundSyncDecision();
   if (decision.action === 'defer') {
-    console.log(`[BackgroundSync] Deferred by efficiency policy: ${decision.reason}`);
+    console.log(`[BackgroundSync] Deferred by verger: ${decision.reason}`);
     return BackgroundTaskResult.NoData;
   }
 

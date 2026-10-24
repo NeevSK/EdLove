@@ -3,7 +3,6 @@ import {
   type CapacityFacts,
   type ExperimentAssignment,
   type FidelityPreference,
-  type VergerEvent,
   type VergerTelemetrySink,
   GURUDEVI_MOBILE_HOST,
   type VergerActivation,
@@ -11,12 +10,14 @@ import {
   type VergerStore,
 } from '@repo/core/verger';
 import { createVergerAndroidPlatform } from '@repo/verger-android';
-import { VergerProvider } from '@repo/verger-react';
+import { VergerRoot } from '@repo/verger-react-native';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import { totalMemory } from 'expo-device';
-import { type ReactNode, useState } from 'react';
-import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+import { useStore } from '@repo/core/store/useStore';
 import { useFidelityOptional } from '@repo/ui/context';
+import { useVergerSnapshot } from '@repo/verger-react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { deviceSignals } from './deviceSignals';
 import { readVergerLaunch, type RuntimeMode } from './runtimeMode';
 
 interface GurudeviVergerProps {
@@ -50,31 +51,16 @@ const platform = () => createVergerAndroidPlatform();
 const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: totalMemory });
 
 /**
- * Battery saver from the app's device adapter (expo-battery), so the floors hear it while
- * verger is off; running, the native sensor reports the same. A failed read keeps the last
- * value, as the old governor did.
+ * Whether the app is online, for the screens that show it (the network banner, notifications,
+ * link handling): downstream of verger's network reading, never a second source. Unknown reads
+ * as online, as it always has.
  */
-function signals(dispatch: (event: VergerEvent) => void, now: () => number): () => void {
-  let live = true;
-  const send = (saver: boolean) => {
-    if (live) dispatch({ type: 'power', at: now(), saver });
-  };
-  let subscription: { remove: () => void } | undefined;
-  try {
-    // The device adapter throws until the runtime is registered.
-    const device = coreRuntime.device;
-    device
-      .getPowerState?.()
-      .then((state) => send(state.lowPowerMode))
-      .catch((error: unknown) => console.warn('[verger] battery saver read failed', error));
-    subscription = device.addPowerStateListener?.(send);
-  } catch (error) {
-    console.warn('[verger] battery saver unavailable', error);
-  }
-  return () => {
-    live = false;
-    subscription?.remove();
-  };
+function OnlineStatus() {
+  const networkLimit = useVergerSnapshot()?.networkLimit;
+  useEffect(() => {
+    if (networkLimit !== undefined) useStore.getState().setIsOnline(networkLimit !== 'offline');
+  }, [networkLimit]);
+  return null;
 }
 
 /**
@@ -103,12 +89,12 @@ export function GurudeviVerger({
       : { mode: read.mode, activation: read.activation ?? undefined };
   });
   return (
-    <VergerProvider
+    <VergerRoot
       host={GURUDEVI_MOBILE_HOST}
       platform={platform}
       store={VERGER_STORE}
       facts={facts}
-      signals={signals}
+      signals={deviceSignals}
       fidelity={fidelity ?? setting}
       mode={launch.mode}
       activation={launch.activation}
@@ -116,7 +102,8 @@ export function GurudeviVerger({
       telemetrySink={telemetrySink}
       release={`${nativeApplicationVersion ?? '0'}+${nativeBuildVersion ?? '0'}`}
     >
+      <OnlineStatus />
       {children}
-    </VergerProvider>
+    </VergerRoot>
   );
 }

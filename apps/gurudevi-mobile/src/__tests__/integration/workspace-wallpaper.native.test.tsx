@@ -10,10 +10,12 @@ const runtime = vi.hoisted(() => ({
   },
   imageCapabilities: {
     deviceTier: 'medium' as 'low' | 'medium' | 'high',
+    effectiveFidelity: 'high' as 'low' | 'high',
+    allowBlur: false,
+    allowSubtleAnimation: true,
     quality: 'reduced' as 'full' | 'reduced' | 'essential',
     imageCachePolicy: 'disk' as 'disk' | 'memory-disk',
     imageDecodeFormat: 'rgb' as 'rgb' | 'argb',
-    experience: { motion: 'refined' as 'off' | 'essential' | 'refined' | 'rich' },
   },
 }));
 
@@ -57,6 +59,7 @@ describe('WorkspaceWallpaper native budget integration (G3)', () => {
     runtime.snapshot.powerSaver = false;
     runtime.snapshot.visibility = 'active';
     runtime.imageCapabilities.deviceTier = 'medium';
+    runtime.imageCapabilities.effectiveFidelity = 'high';
     runtime.imageCapabilities.quality = 'reduced';
   });
 
@@ -73,7 +76,9 @@ describe('WorkspaceWallpaper native budget integration (G3)', () => {
   });
 
   it('removes wallpaper rendering for a low-memory device', () => {
+    // A low phone's fidelity is low under verger.
     runtime.imageCapabilities.deviceTier = 'low';
+    runtime.imageCapabilities.effectiveFidelity = 'low';
 
     act(() => {
       renderer = create(<WorkspaceWallpaper wallpaper={wallpaper} />);

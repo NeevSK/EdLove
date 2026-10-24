@@ -6,7 +6,6 @@ export * from './FABContext';
 export * from './FeedbackProvider';
 export * from './FidelityProvider';
 export * from './LanguageProvider';
-export * from './NetworkStatusSync';
 export * from './SensoryProvider';
 export * from './types';
 export * from './utils';
