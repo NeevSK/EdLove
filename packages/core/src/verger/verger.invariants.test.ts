@@ -16,6 +16,7 @@ import {
   UNKNOWN_CAPACITY,
   type VergerActivation,
   VERGER_POLICY,
+  VERGER_POLICY_P5,
   type VergerPolicy,
 } from '@repo/verger-core';
 import { GURUDEVI_LEVERS } from './gurudeviLevers';
@@ -308,6 +309,32 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
         expect(checkRun(snapshots, LEVERS)).toEqual([]);
       }),
       { numRuns: RUNS },
+    );
+  });
+
+  it('verger-p5 keeps every invariant on every generated run (and its envelope)', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        const { snapshots } = run(VERGER_POLICY_P5, options, events);
+        expect(checkRun(snapshots, LEVERS)).toEqual([]);
+        for (const snapshot of snapshots)
+          for (const lever of LEVERS) {
+            const e = snapshot.envelope[lever.id];
+            if (!e) throw new Error(`no envelope for ${lever.id}`);
+            expect(e.limit <= e.ceiling && e.ceiling <= e.home && e.home <= e.floor).toBe(true);
+          }
+      }),
+      { numRuns: RUNS },
+    );
+  });
+
+  it('verger-p5 is deterministic', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        expect(run(VERGER_POLICY_P5, options, events).snapshots).toEqual(
+          run(VERGER_POLICY_P5, options, events).snapshots,
+        );
+      }),
     );
   });
 
