@@ -387,7 +387,25 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
         const blind = ledger.records().filter((r) => r.direction === 'compress' && r.verdict === 'unjudged');
         expect(blind.map((r) => `${r.lever}: ${r.reason}`)).toEqual([]);
       }),
-      { numRuns: 300 },
+      {
+        numRuns: 300,
+        // Found by this property: main-thread contention lowers a motion lever, which relieves CPU.
+        examples: [
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            [
+              { type: 'thread-load', at: 1, cores: { js: 0, main: 0.9 }, processCores: 0.9 },
+              { type: 'tick', at: 2_001 },
+            ],
+          ],
+        ],
+      },
     );
   });
 });

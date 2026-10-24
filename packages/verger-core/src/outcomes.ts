@@ -93,9 +93,14 @@ const DEFAULT_MAX_RECORDS = 64;
 const RANK: Record<AccountState, number> = { unknown: -1, ample: 0, tight: 1, overdrawn: 2 };
 const strained = (state: AccountState) => state === 'tight' || state === 'overdrawn';
 
-/** The accounts a lever relieves; easing any compute or energy load also eases heat. */
+/**
+ * The accounts a lever relieves. Animations are driven frame by frame on the UI thread, so a
+ * motion lever also relieves CPU (found by the no-blind-lowering property: main-thread
+ * contention rightly lowers ambient motion). Easing any compute or energy load also eases heat.
+ */
 export function accountsRelievedBy(lever: LeverSpec): ResourceAccount[] {
   const targets = new Set<ResourceAccount>([lever.target, ...(lever.alsoRelieves ?? [])]);
+  if (lever.motion) targets.add('cpu');
   if (targets.has('gpu') || targets.has('cpu') || targets.has('energy')) targets.add('thermal');
   return [...targets];
 }

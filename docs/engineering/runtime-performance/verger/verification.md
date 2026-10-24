@@ -239,6 +239,14 @@ The invariants are plain functions in `packages/verger-core/src/invariants.ts` (
 
 ### What the properties found (fail to pass)
 
+4. **A guarded start could lift a phone off rung 4.** A corrupt record started at rung 3 even when
+   the last session ran on rung 4, so native code suspected of crashing the app ran again. Found by
+   the ladder's model-based test (item 1); a guarded start now never goes below the last marker's
+   rung. ADR D12.1 amended.
+5. **The ledger misjudged motion levers.** Main-thread contention rightly lowers ambient motion,
+   which relieves CPU (animations run on the UI thread); the ledger mapped it to GPU only. Fixed in
+   `accountsRelievedBy`; the counterexample is pinned.
+
 1. **A lever could stay lowered forever.** Pressure stored a level including the floor it was
    lowered from; giving back the last step left the floor's value owned by nothing. One memory
    trim on a 2 GB phone left `image-cache` lowered for good. Fixed in `raiseOne`. Found by the
@@ -270,8 +278,13 @@ Ordered by risk retired per effort. Each item states its oracle.
 | 12 | **Scripted user flows** (Maestro, black box, works with Expo) to drive repeatable sessions for 7, 10 and 11 | end to end | the steady state | G5 | approval: new tool |
 | 13 | Only if 1 finds the ladder subtle: a small **model-checked spec** of the launch protocol (P or TLA+) | model checking | the spec | design | — |
 
-Items 1 to 5 need no new tool and no phone and come first. Items 6 and 12 add dependencies, which
-need sign-off under AGENTS.md. Items 9 to 12 need the laptop and the phones.
+**The golden mean (decided 2026-10-24).** Verification serves the foundation, not the other way
+round. Item 1 is done (it found a real hole in the ladder). The rest ride along with the work they
+protect, built when that work is built: item 5 with native network sensing (the first new
+payloads across the bridge); items 2 and 3 with session recording and the React shell; item 4 with
+loop 2's rules; item 6 (Stryker, local reports only, approved) once verger-core settles; item 12
+(Maestro CLI, free and local, approved; never Maestro Cloud, which is paid) with the lab on the
+phones. A new property is added when a new rule is added; a new technique when a new risk is.
 
 ## Sources
 
