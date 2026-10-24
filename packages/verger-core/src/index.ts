@@ -159,3 +159,12 @@ export {
 } from './telemetry';
 export type * from './types';
 export { isBatteryLow } from './signals';
+export {
+  type DataBudgetState,
+  type DataLedger,
+  type DataSample,
+  dataBudgetState,
+  foldDataSample,
+  inDailyWindow,
+  localDay,
+} from './dataBudget';
