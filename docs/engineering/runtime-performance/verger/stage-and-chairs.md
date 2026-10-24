@@ -98,3 +98,9 @@ caps the result; the kill switch is above everything.
   or a cheap night window.
 - Whether the breathing guide's animation, or only its timing, is critical; whether uploading an
   attendance save, or only the local write, is critical.
+- Two found by the drift test (`packages/ui/src/context/__tests__/vergerDrift.test.ts`, status
+  `decide`): whether 3 to 6 GB phones keep a class floor (the old governor capped them at
+  "refined": no ambient effects, no blur, disk image cache; verger floors only phones under 3 GB
+  and measures the rest), and whether a slow network alone stops prefetch (the old governor
+  inferred "data saver" from a poor network; verger reads the OS Data Saver, offline, and later
+  the data budget).

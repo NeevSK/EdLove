@@ -4,6 +4,15 @@
  * Everything verger exports is re-exported so existing imports keep working.
  */
 export * from '@repo/verger-core';
+export {
+  type DeviceTier,
+  type ExperienceLevel,
+  type ExperienceProfile,
+  type ExperienceSettings,
+  experienceOf,
+  type GurudeviExperience,
+  type VisualQuality,
+} from './experience';
 export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
 export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST } from './host';

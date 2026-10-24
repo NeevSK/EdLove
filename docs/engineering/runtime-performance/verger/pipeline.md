@@ -32,8 +32,9 @@ The one place the plan is tracked; update it with every phase. Verification ride
 | C. Envelope | verger-p5: home, ceiling, floor; expand and compress | planned | — |
 | D. Loop 2 and 3 | self-adapting rules; session recording and telemetry; dev lab; policy comparison | planned | — |
 | E. Cut-off | E1 floors without native code: while verger is off (mode off, kill switch, rung 4, launch error, before start, after stop) the host's policy runs under the `static` preset on JS-only facts (`facts`, Gurudevi: expo-device memory) | done | G1: verger tests (floors before start, kill switch, after stop, stable identity, facts that throw) |
-| E. Cut-off | E2 drift test: the old governor as the differential oracle; intended differences listed | **next** | — |
-| E. Cut-off | E3 typed view (lever levels to the fields consumers read), fidelity and quiet passthrough (B6); E4 mount with configurable activation, `configure` and `tune` in React; E5 consumers move, old governor removed (signed off, gated on E2) | planned | — |
+| E. Cut-off | E2 drift test: the old governor as the differential oracle, every input it distinguishes (2,880 cases) against verger's static decision read through Gurudevi's view (`experienceOf`); every difference named with its cause: six intended (low fidelity honoured, reduce motion keeps blur, saver stills ambient, saver stops prefetch, low-phone blur named, safe mode respects the user), two to decide (3–6 GB class floor, slow network and prefetch: open chairs) | done | G1: exhaustive, with a planted mutant caught (480 cases) |
+| E. Cut-off | E3 view: `experienceOf` built (levels to the fields consumers read); fidelity and quiet passthrough (B6) into verger next | **next** | the drift test |
+| E. Cut-off | E4 mount with configurable activation, `configure` and `tune` in React; E5 consumers move, old governor removed (signed off, gated on E2 and the two decisions) | planned | — |
 | F. Phones | first Gradle build; dev client on the A52, A24 and a 2–4 GB phone; Maestro CLI flows; Stryker | needs the laptop | — |
 
 ## The pipeline
