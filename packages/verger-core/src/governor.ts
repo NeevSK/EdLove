@@ -1,6 +1,7 @@
 import {
   activationForMode,
   leverActivation,
+  SENSORS,
   sensorOf,
   type SensorId,
   type VergerActivation,
@@ -159,7 +160,7 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
   validateLevers(options.levers);
   const config = { ...DEFAULT_GOVERNOR_CONFIG, ...options.config };
   const start = startingPressure(options.levers, options.initialPressure);
-  return {
+  const created: GovernorState = {
     config,
     levers: options.levers,
     capacity: options.capacity ?? UNKNOWN_CAPACITY,
@@ -205,6 +206,13 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     lastAction: 'stale',
     lastReason: start.stack.length > 0 ? 'start from learned profile' : 'start',
   };
+  // A sensor off from the start must say nothing, as one switched off later does: the platform
+  // may sense memory, but a deaf memory sensor must not report it as normal.
+  let state = created;
+  for (const sensor of SENSORS) {
+    if (!created.activation.sense[sensor]) state = forgetSensor(state, sensor);
+  }
+  return state;
 }
 
 const IMPACT_ORDER = { low: 0, medium: 1, high: 2 } as const;
@@ -378,8 +386,8 @@ function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
 
 function applyActivation(state: GovernorState, activation: VergerActivation): GovernorState {
   let next: GovernorState = { ...state, activation };
-  for (const [sensor, on] of Object.entries(activation.sense) as [SensorId, boolean][]) {
-    if (!on && state.activation.sense[sensor]) next = forgetSensor(next, sensor);
+  for (const sensor of SENSORS) {
+    if (!activation.sense[sensor] && state.activation.sense[sensor]) next = forgetSensor(next, sensor);
   }
   return next;
 }
@@ -435,12 +443,17 @@ function raiseOne(state: GovernorState, at: number, reason: string): GovernorSta
   if (id === undefined) return state;
   const current = state.pressure[id] ?? 0;
   const pressure = { ...state.pressure };
-  if (current <= 1) delete pressure[id];
+  const stack = state.stack.slice(0, -1);
+  // Pressure is a level that includes the floor it was lowered from, so giving back the last
+  // step leaves that floor's value behind. A lever off the stack owns no pressure: without this
+  // the remainder outlives the floor and the lever never returns (found by the calm-convergence
+  // property).
+  if (current <= 1 || !stack.includes(id)) delete pressure[id];
   else pressure[id] = current - 1;
   return {
     ...state,
     pressure,
-    stack: state.stack.slice(0, -1),
+    stack,
     priorDepth: Math.min(state.priorDepth, state.stack.length - 1),
     lastIncreaseAt: at,
     lastAction: 'increase',
@@ -805,10 +818,12 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
   // proposed), `off` full quality, ungoverned.
   const levels: Record<string, number> = {};
   const proposed: Record<string, number> = {};
+  const baselineLevels: Record<string, number> = {};
   for (const lever of state.levers) {
     const activation = leverActivation(state.activation, lever.id);
     const decided = loop[lever.id] ?? 0;
     proposed[lever.id] = activation === 'off' ? 0 : decided;
+    baselineLevels[lever.id] = activation === 'off' ? 0 : (baseline[lever.id] ?? 0);
     levels[lever.id] =
       activation === 'apply' ? decided : activation === 'shadow' ? (baseline[lever.id] ?? 0) : 0;
   }
@@ -823,6 +838,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     mode: state.mode,
     levels,
     proposedLevels: proposed,
+    baselineLevels,
     frameState: state.frameState,
     thermal: thermalOf(state),
     memory: memoryOf(state, at),
@@ -918,6 +934,7 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     if (
       a.proposedLevels[key] !== b.proposedLevels[key] ||
       a.levels[key] !== b.levels[key] ||
+      a.baselineLevels[key] !== b.baselineLevels[key] ||
       a.pressure[key] !== b.pressure[key] ||
       a.priorHeld[key] !== b.priorHeld[key]
     )

@@ -1,0 +1,446 @@
+import fc from 'fast-check';
+import { describe, expect, it } from 'vitest';
+import {
+  ACTIVATION_PRESETS,
+  type ActivationPatch,
+  type CapacityFacts,
+  type CreateGovernorOptions,
+  checkRun,
+  createOutcomeLedger,
+  type GovernorEvent,
+  type GovernorSnapshot,
+  resolveActivation,
+  SENSORS,
+  type SensorId,
+  sensorOf,
+  UNKNOWN_CAPACITY,
+  type VergerActivation,
+  VERGER_POLICY,
+  type VergerPolicy,
+} from '@repo/verger-core';
+import { GURUDEVI_LEVERS } from './gurudeviLevers';
+
+/**
+ * Verger's invariants, checked over generated event streams on Gurudevi's real levers and
+ * verger's real policy (Property-Based Verification). Example tests show that chosen cases
+ * work; these show that no generated stream, device or activation breaks what must always hold.
+ * The last block proves the suite is not vacuous: deliberately broken policies must be caught.
+ */
+
+const LEVERS = GURUDEVI_LEVERS;
+const GB = 1024 ** 3;
+
+// ---------------------------------------------------------------------------------------------
+// Generators
+// ---------------------------------------------------------------------------------------------
+
+const capacityArb: fc.Arbitrary<CapacityFacts> = fc.constantFrom<CapacityFacts>(
+  UNKNOWN_CAPACITY,
+  {
+    ...UNKNOWN_CAPACITY,
+    totalMemoryBytes: 2 * GB,
+    isLowRamDevice: true,
+    sdkInt: 28,
+    cpuCores: 4,
+    refreshRateHz: 60,
+    refreshRatesHz: [60],
+  },
+  {
+    ...UNKNOWN_CAPACITY,
+    totalMemoryBytes: 4 * GB,
+    isLowRamDevice: false,
+    sdkInt: 31,
+    cpuCores: 8,
+    refreshRateHz: 90,
+    refreshRatesHz: [60, 90],
+    supportsRenderEffect: true,
+    supportsCpuHints: true,
+  },
+  {
+    ...UNKNOWN_CAPACITY,
+    totalMemoryBytes: 8 * GB,
+    isLowRamDevice: false,
+    sdkInt: 34,
+    cpuCores: 8,
+    refreshRateHz: 120,
+    refreshRatesHz: [60, 120],
+    supportsRenderEffect: true,
+    supportsRuntimeShader: true,
+    supportsCpuHints: true,
+  },
+);
+
+const leverModeArb = fc.constantFrom('apply' as const, 'shadow' as const, 'off' as const);
+
+const patchArb: fc.Arbitrary<ActivationPatch> = fc.record(
+  {
+    sense: fc.record(
+      Object.fromEntries(SENSORS.map((id) => [id, fc.boolean()])) as Record<
+        SensorId,
+        fc.Arbitrary<boolean>
+      >,
+      { requiredKeys: [] },
+    ),
+    decide: fc.constantFrom('static' as const, 'closed-loop' as const),
+    reduce: fc.boolean(),
+    grow: fc.boolean(),
+    hardware: fc.boolean(),
+    defaultLever: leverModeArb,
+    admission: leverModeArb,
+    levers: fc.dictionary(fc.constantFrom(...LEVERS.map((l) => l.id)), leverModeArb, {
+      maxKeys: 4,
+    }),
+  },
+  { requiredKeys: [] },
+);
+
+const activationArb: fc.Arbitrary<VergerActivation> = fc
+  .tuple(fc.constantFrom(...Object.values(ACTIVATION_PRESETS)), patchArb)
+  .map(([preset, patch]) => resolveActivation(preset, patch));
+
+/** One event without its time; the stream gives it one. */
+type Untimed = DistributiveOmit<GovernorEvent, 'at'>;
+type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
+
+const frameArb: fc.Arbitrary<Untimed> = fc
+  .record({
+    frames: fc.integer({ min: 0, max: 60 }),
+    averageMs: fc.double({ min: 1, max: 80, noNaN: true }),
+    extraWorst: fc.double({ min: 0, max: 400, noNaN: true }),
+    targetMs: fc.constantFrom(8.33, 11.11, 16.67),
+    droppedRatio: fc.double({ min: 0, max: 1, noNaN: true }),
+    stages: fc.option(
+      fc.record({
+        uiMs: fc.double({ min: 0, max: 40, noNaN: true }),
+        renderMs: fc.double({ min: 0, max: 40, noNaN: true }),
+        gpuMs: fc.double({ min: 0, max: 40, noNaN: true }),
+        delayMs: fc.double({ min: 0, max: 40, noNaN: true }),
+      }),
+      { nil: undefined },
+    ),
+  })
+  .map((f) => ({
+    type: 'frame-window' as const,
+    // Times are filled in by the stream; a window spans the 500 ms before its event.
+    window: {
+      startMs: 0,
+      endMs: 0,
+      frames: f.frames,
+      averageMs: f.averageMs,
+      targetMs: f.targetMs,
+      worstMs: f.averageMs + f.extraWorst,
+      droppedRatio: f.droppedRatio,
+      ...(f.stages ? { stages: f.stages } : {}),
+    },
+  }));
+
+const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
+  { weight: 4, arbitrary: frameArb },
+  {
+    weight: 2,
+    arbitrary: fc.record({
+      type: fc.constant('thermal' as const),
+      status: fc.option(
+        fc.constantFrom(
+          'none' as const,
+          'light' as const,
+          'moderate' as const,
+          'severe' as const,
+          'critical' as const,
+          'emergency' as const,
+          'shutdown' as const,
+        ),
+        { nil: null },
+      ),
+      headroom: fc.option(fc.double({ min: 0, max: 1.3, noNaN: true }), { nil: null }),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('memory-trim' as const),
+      severity: fc.constantFrom('moderate' as const, 'low' as const, 'critical' as const),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('memory-state' as const),
+      availableMb: fc.double({ min: 20, max: 4000, noNaN: true }),
+      thresholdMb: fc.double({ min: 50, max: 500, noNaN: true }),
+      lowMemory: fc.boolean(),
+    }),
+  },
+  {
+    weight: 2,
+    arbitrary: fc
+      .record({
+        js: fc.double({ min: 0, max: 1.5, noNaN: true }),
+        main: fc.double({ min: 0, max: 1.5, noNaN: true }),
+      })
+      .map(({ js, main }) => ({
+        type: 'thread-load' as const,
+        cores: { js, main },
+        processCores: js + main,
+      })),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('long-task' as const),
+      durationMs: fc.double({ min: 50, max: 800, noNaN: true }),
+    }),
+  },
+  { weight: 1, arbitrary: fc.record({ type: fc.constant('power' as const), saver: fc.boolean() }) },
+  { weight: 2, arbitrary: fc.constant({ type: 'interaction' as const }) },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('app-state' as const),
+      state: fc.constantFrom('active' as const, 'inactive' as const, 'background' as const),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('preferences' as const),
+      reduceMotion: fc.boolean(),
+      fidelity: fc.constantFrom('auto' as const, 'low' as const, 'high' as const),
+    }),
+  },
+  { weight: 2, arbitrary: fc.constant({ type: 'tick' as const }) },
+  {
+    weight: 1,
+    arbitrary: activationArb.map((activation) => ({ type: 'activation' as const, activation })),
+  },
+);
+
+/** Gives each event a time; gaps range from a frame to over a minute, so timers come due. */
+const streamArb = (events: fc.Arbitrary<Untimed> = eventArb, maxLength = 60) =>
+  fc
+    .array(fc.tuple(fc.integer({ min: 1, max: 70_000 }), events), { maxLength })
+    .map((steps) => {
+      let at = 0;
+      return steps.map(([gap, event]) => {
+        at += gap;
+        return timed(event, at);
+      });
+    });
+
+function timed(event: Untimed, at: number): GovernorEvent {
+  if (event.type === 'frame-window')
+    return { ...event, at, window: { ...event.window, startMs: at - 500, endMs: at } };
+  return { ...event, at } as GovernorEvent;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Running a policy as the controller does: the snapshot is published when outputs change.
+// ---------------------------------------------------------------------------------------------
+
+function run(
+  policy: VergerPolicy,
+  options: CreateGovernorOptions,
+  events: readonly GovernorEvent[],
+): { snapshots: GovernorSnapshot[]; final: GovernorSnapshot } {
+  let state = policy.create(options);
+  const snapshots = [policy.snapshot(state)];
+  for (const event of events) {
+    const before = policy.outputVersion(state);
+    state = policy.reduce(state, event);
+    if (policy.outputVersion(state) !== before) snapshots.push(policy.snapshot(state));
+  }
+  return { snapshots, final: policy.snapshot(state) };
+}
+
+const optionsArb = fc
+  .tuple(capacityArb, activationArb, fc.boolean())
+  .map(([capacity, activation, memorySensing]) => ({
+    at: 0,
+    levers: LEVERS,
+    capacity,
+    activation,
+    memorySensing,
+  }));
+
+const withoutActivation = ({ activation: _, ...rest }: GovernorSnapshot) => rest;
+
+// ---------------------------------------------------------------------------------------------
+// Properties
+// ---------------------------------------------------------------------------------------------
+
+describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
+  it('every published snapshot of every generated run keeps every invariant', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        const { snapshots } = run(VERGER_POLICY, options, events);
+        expect(checkRun(snapshots, LEVERS)).toEqual([]);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it('determinism: the same events give the same snapshots, every time', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        expect(run(VERGER_POLICY, options, events).snapshots).toEqual(
+          run(VERGER_POLICY, options, events).snapshots,
+        );
+      }),
+    );
+  });
+
+  it('time-shift: moving the whole session later changes no decision', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), fc.integer({ min: 1, max: 1e9 }), (options, events, k) => {
+        const base = run(VERGER_POLICY, options, events).snapshots;
+        const shifted = run(
+          VERGER_POLICY,
+          { ...options, at: options.at + k },
+          events.map((event) =>
+            event.type === 'frame-window'
+              ? { ...event, at: event.at + k, window: { ...event.window, startMs: event.window.startMs + k, endMs: event.window.endMs + k } }
+              : { ...event, at: event.at + k },
+          ),
+        ).snapshots;
+        const strip = (s: GovernorSnapshot) => ({ ...withoutActivation(s), at: 0 });
+        expect(shifted.map(strip)).toEqual(base.map(strip));
+      }),
+    );
+  });
+
+  it('a deaf sensor: its readings make the same difference as no readings at all', () => {
+    const steady = activationArb.filter(Boolean);
+    fc.assert(
+      fc.property(
+        optionsArb,
+        steady,
+        fc.constantFrom(...SENSORS),
+        streamArb(eventArb.filter((e) => e.type !== 'activation')),
+        (options, activation, sensor, events) => {
+          const deaf = { ...activation, sense: { ...activation.sense, [sensor]: false } };
+          const hearing = { ...activation, sense: { ...activation.sense, [sensor]: true } };
+          const heardNothing = events.map((event): GovernorEvent =>
+            sensorOf(event) === sensor ? { type: 'tick', at: event.at } : event,
+          );
+          // Memory sensing is a platform fact the deaf sensor must not claim.
+          const memorySensing = sensor === 'memory' ? false : options.memorySensing;
+          const a = run(VERGER_POLICY, { ...options, activation: deaf, memorySensing }, events).final;
+          const b = run(VERGER_POLICY, { ...options, activation: hearing, memorySensing }, heardNothing).final;
+          expect(withoutActivation(a)).toEqual(withoutActivation(b));
+        },
+      ),
+    );
+  });
+
+  it('without sensor readings, nothing is lowered by pressure: no guessing', () => {
+    const appOnly = eventArb.filter((e) => sensorOf({ ...e, at: 0 } as GovernorEvent) === null);
+    fc.assert(
+      fc.property(optionsArb, streamArb(appOnly), (options, events) => {
+        for (const snapshot of run(VERGER_POLICY, options, events).snapshots)
+          expect(snapshot.pressure).toEqual({});
+      }),
+    );
+  });
+
+  it('no permanent degradation: once the phone is calm, every step of pressure is given back', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        let at = events.at(-1)?.at ?? 0;
+        const next = (gap: number) => {
+          at += gap;
+          return at;
+        };
+        const calm: GovernorEvent[] = [
+          { type: 'activation', at: next(1), activation: ACTIVATION_PRESETS.lab },
+          { type: 'app-state', at: next(1), state: 'active' },
+          { type: 'preferences', at: next(1), reduceMotion: false, fidelity: 'auto' },
+          { type: 'power', at: next(1), saver: false },
+          { type: 'thermal', at: next(1), status: 'none', headroom: 0.3 },
+          { type: 'memory-state', at: next(1), availableMb: 3000, thresholdMb: 200, lowMemory: false },
+          { type: 'thread-load', at: next(1), cores: { js: 0.1, main: 0.1 }, processCores: 0.2 },
+        ];
+        const steps = LEVERS.reduce((sum, lever) => sum + lever.maxLevel, 0) + 2;
+        for (let i = 0; i < steps; i += 1) {
+          calm.push({ type: 'interaction', at: next(70_000) });
+          const end = next(500);
+          calm.push({
+            type: 'frame-window',
+            at: end,
+            window: { startMs: end - 500, endMs: end, frames: 30, averageMs: 8, targetMs: 16.67, worstMs: 10, droppedRatio: 0 },
+          });
+          calm.push({ type: 'tick', at: next(1) });
+        }
+        const { final } = run(VERGER_POLICY, options, [...events, ...calm]);
+        expect(final.pressure).toEqual({});
+        expect(final.priorHeld).toEqual({});
+        expect(final.contentionExhausted).toBe(false);
+      }),
+      { numRuns: 60 },
+    );
+  });
+
+  it('no lever is lowered by pressure for an account that is not strained (ADR D5.2)', () => {
+    fc.assert(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        const ledger = createOutcomeLedger({ levers: LEVERS, capacity: options.capacity });
+        for (const snapshot of run(VERGER_POLICY, options, events).snapshots) ledger.observe(snapshot);
+        const blind = ledger.records().filter((r) => r.direction === 'compress' && r.verdict === 'unjudged');
+        expect(blind.map((r) => `${r.lever}: ${r.reason}`)).toEqual([]);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// The suite must catch broken policies, or it proves nothing.
+// ---------------------------------------------------------------------------------------------
+
+const mutant = (
+  name: string,
+  snapshot: (s: GovernorSnapshot) => GovernorSnapshot,
+): VergerPolicy => ({
+  ...VERGER_POLICY,
+  id: name,
+  snapshot: (state, at) => snapshot(VERGER_POLICY.snapshot(state as never, at)),
+});
+
+const firstLever = LEVERS[0]?.id ?? 'refresh-rate';
+
+const MUTANTS: readonly VergerPolicy[] = [
+  mutant('ignores-off', (s) =>
+    s.activation.levers[firstLever] === 'off' ? { ...s, levels: { ...s.levels, [firstLever]: 1 } } : s,
+  ),
+  mutant('out-of-range', (s) => ({ ...s, levels: { ...s.levels, [firstLever]: 99 } })),
+  mutant('hardware-leak', (s) => ({ ...s, refreshCapHz: 60 })),
+  mutant('deaf-leak', (s) => ({ ...s, thermal: 'hot' })),
+  mutant('shadow-applies', (s) => ({ ...s, levels: s.proposedLevels })),
+];
+
+describe('the invariant suite catches broken policies (mutation check)', { timeout: 60_000 }, () => {
+  for (const broken of MUTANTS) {
+    it(`catches ${broken.id}`, () => {
+      const result = fc.check(
+        fc.property(optionsArb, streamArb(), (options, events) => {
+          const { snapshots } = run(broken, options, events);
+          return checkRun(snapshots, LEVERS).length === 0;
+        }),
+        { numRuns: 300 },
+      );
+      expect(result.failed).toBe(true);
+    });
+  }
+
+  it('catches a nondeterministic policy', () => {
+    let flip = 0;
+    const noisy = mutant('noisy', (s) => ({ ...s, optionalConcurrency: (flip += 1) % 2 }));
+    const result = fc.check(
+      fc.property(optionsArb, streamArb(), (options, events) => {
+        const a = run(noisy, options, events).snapshots;
+        const b = run(noisy, options, events).snapshots;
+        return JSON.stringify(a) === JSON.stringify(b);
+      }),
+    );
+    expect(result.failed).toBe(true);
+  });
+});

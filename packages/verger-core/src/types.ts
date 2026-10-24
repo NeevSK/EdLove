@@ -276,6 +276,11 @@ export interface GovernorSnapshot {
   readonly levels: Readonly<Record<string, number>>;
   /** What the closed loop would apply. Equal to `levels` in active mode. */
   readonly proposedLevels: Readonly<Record<string, number>>;
+  /**
+   * The static baseline (floors from capacity, settings, power, visibility) before any measured
+   * pressure: what a shadow lever publishes, and what every decision starts from.
+   */
+  readonly baselineLevels: Readonly<Record<string, number>>;
   readonly frameState: FrameState;
   readonly thermal: ThermalLevel;
   readonly memory: MemoryLevel;
