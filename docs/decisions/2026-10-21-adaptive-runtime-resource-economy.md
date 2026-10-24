@@ -231,6 +231,16 @@ after a failed session; summaries report the quality given up beside the perform
 port) and a `VergerStore` (Gurudevi uses AsyncStorage, because MMKV stays off its startup path).
 Policy version 4.
 
+### D13. The stage before the chairs (2026-10-24)
+
+Verger is built as a full horizontal foundation of ten layers (sense, estimate, demand, decide,
+act, activate, observe, learn, recover, lab), each behind a contract and replaceable. Specific
+choices (release preset, thresholds, governed levers, telemetry destinations) are data or
+plug-ins placed later on evidence, never constants in logic. Development builds expose and
+change every layer live, as events, so sessions replay exactly. Rules and the list of open
+choices: `docs/engineering/runtime-performance/verger/stage-and-chairs.md`. Activation
+(`activation.ts`) is the first layer built under this rule.
+
 ## 3. Consequences
 
 - The facade in the spec keeps its names; its internals change.
