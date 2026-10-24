@@ -25,6 +25,8 @@ export function validateConfig(config: VergerConfig): void {
   order('lowCapacityBelowBytes', 'midCapacityBelowBytes');
   if (config.batteryLowPercent > 100)
     throw new Error('Config "batteryLowPercent" must be at most 100');
+  if (config.expandMinConfidence > 1)
+    throw new Error('Config "expandMinConfidence" must be at most 1');
   if (!(config.headroomHot <= config.headroomCritical)) {
     throw new Error('Config "headroomHot" must not exceed "headroomCritical"');
   }
@@ -60,6 +62,7 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   midCapacityBelowBytes: 9 * 1024 ** 3,
   slowNetworkKbps: 1_000,
   networkSettleMs: 60_000,
+  expandMinConfidence: 0.3,
   saturationCores: 0.9,
   saturationAfterMs: 2_000,
   longTaskWindowMs: 5_000,

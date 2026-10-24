@@ -56,7 +56,6 @@ export {
   type CreateVergerStateOptions,
   createVergerState,
   type VergerState,
-  isBatteryLow,
   networkLimitOf,
   nextTimedChangeAt,
   reduceVerger,
@@ -69,6 +68,7 @@ export {
 export {
   type AccountReading,
   type AccountState,
+  accountsRelievedBy,
   type Admission,
   admitWork,
   classesOfLever,
@@ -115,11 +115,11 @@ export {
   ladderKey,
   policyKey,
   VERGER_POLICY,
+  VERGER_POLICY_P5,
   type VergerPolicy,
   validatePolicy,
 } from './policy';
 export {
-  accountsRelievedBy,
   createOutcomeLedger,
   DEFAULT_HOLD_WINDOW_MS,
   DEFAULT_JUDGE_WINDOW_MS,
@@ -158,3 +158,4 @@ export {
   type TelemetryValue,
 } from './telemetry';
 export type * from './types';
+export { isBatteryLow } from './signals';

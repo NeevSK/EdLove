@@ -1,5 +1,5 @@
 import { DEFAULT_VERGER_CONFIG } from './config';
-import { isBatteryLow } from './reducer';
+import { isBatteryLow } from './signals';
 import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
 /**
@@ -258,4 +258,14 @@ export function admitWork(
       return { admit: false, reason: 'battery-low' };
   }
   return { admit: true, reason: 'eligible' };
+}
+
+/**
+ * The accounts a lever relieves, as the lever declares them (animation levers declare CPU: the
+ * UI thread drives every frame). Easing any compute or energy load also eases heat.
+ */
+export function accountsRelievedBy(lever: LeverSpec): ResourceAccount[] {
+  const targets = new Set<ResourceAccount>([lever.target, ...(lever.alsoRelieves ?? [])]);
+  if (targets.has('gpu') || targets.has('cpu') || targets.has('energy')) targets.add('thermal');
+  return [...targets];
 }

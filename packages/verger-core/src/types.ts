@@ -100,6 +100,19 @@ export type NetworkTransport = 'wifi' | 'cellular' | 'ethernet' | 'other' | 'non
  */
 export type DataSaver = 'disabled' | 'allowlisted' | 'enabled';
 
+/**
+ * One lever's envelope, as levels (0 is full quality, `maxLevel` the cheapest). In quality
+ * terms: `limit` is the best quality allowed (never crossed), `ceiling` the best this device
+ * has earned (the class), `home` where the lever starts and settles (the ceiling or the learned
+ * starting point), `floor` the worst quality allowed. As levels: limit <= ceiling <= home <= floor.
+ */
+export interface LeverEnvelope {
+  readonly limit: number;
+  readonly ceiling: number;
+  readonly home: number;
+  readonly floor: number;
+}
+
 /** The network's limit on optional data, strongest first. */
 export type NetworkLimit = 'offline' | 'data-saver' | 'unstable' | 'slow' | 'none';
 
@@ -321,6 +334,12 @@ export interface VergerConfig {
   /** A network back from offline counts as unstable for this long. */
   readonly networkSettleMs: number;
   /**
+   * Least confidence an account reading must carry to count as evidence for expansion (0 to 1).
+   * Below it the reading is ignored, as unknown is. Evidence must last `upgradeAfterMs` divided
+   * by the confidence: a weak witness has to stay calm longer.
+   */
+  readonly expandMinConfidence: number;
+  /**
    * Heat from battery temperature, used only where the platform gives no thermal status or
    * headroom (Android 9). Provisional until device captures calibrate them.
    */
@@ -373,6 +392,12 @@ export interface VergerSnapshot {
   readonly networkLimit: NetworkLimit;
   /** The phone's class from its memory (config thresholds); `unknown` when memory is unknown. */
   readonly capacityClass: CapacityClass;
+  /**
+   * Each governed lever's envelope, as levels (a higher level is less quality): see
+   * `LeverEnvelope`. Published by every policy; only an expanding policy (verger-p5) moves a
+   * lever between its home and its ceiling on evidence.
+   */
+  readonly envelope: Readonly<Record<string, LeverEnvelope>>;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;

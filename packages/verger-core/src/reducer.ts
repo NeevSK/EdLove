@@ -8,8 +8,15 @@ import {
 } from './activation';
 import { DEFAULT_VERGER_CONFIG } from './config';
 import { bottleneckTargets, classifyFrameWindow, frameBottleneck, gpuMeasured } from './frames';
+import {
+  accountsRelievedBy,
+  estimateAccounts,
+  RESOURCE_ACCOUNTS,
+  type ResourceAccount,
+} from './demand';
 import { chooseLeverToLower, validateLevers } from './levers';
 import {
+  isBatteryLow,
   latchMemory,
   type MemoryLatch,
   memoryLevelOf,
@@ -30,6 +37,7 @@ import type {
   VergerSnapshot,
   IndexerAction,
   LeverSpec,
+  LeverEnvelope,
   LeverTarget,
   BatteryState,
   CapacityClass,
@@ -69,9 +77,6 @@ export const UNKNOWN_BATTERY: BatteryState = {
   temperatureC: null,
 };
 
-/** Low only when known to be low and known to be unplugged: unknown is never low. */
-export const isBatteryLow = (battery: BatteryState, lowPercent: number): boolean =>
-  battery.pluggedIn === false && battery.levelPercent !== null && battery.levelPercent <= lowPercent;
 
 const batteryLow = (state: VergerState) => isBatteryLow(state.battery, state.config.batteryLowPercent);
 
@@ -186,6 +191,22 @@ export interface VergerState {
   /** What verger may do; changed only by an `activation` event, so replay reproduces it. */
   readonly activation: VergerActivation;
 
+  /**
+   * verger-p5: expand each lever on its own evidence (the accounts it relieves), instead of
+   * giving back the last decrease whenever frames are calm (verger-p4).
+   */
+  readonly expansion: boolean;
+  /** The learned starting point as levels: the home above the ceiling, fixed for the session. */
+  readonly home: Readonly<Record<string, number>>;
+  /** p5: since when each account has read ample, with enough confidence, without a break. */
+  readonly ampleSince: Readonly<Partial<Record<ResourceAccount, number>>>;
+  /** p5: each lever's own wait before it expands, doubled when an expansion is pushed back. */
+  readonly leverWait: Readonly<Record<string, number>>;
+  /** p5: when each lever last expanded, to tell an expansion that failed. */
+  readonly expandedAt: Readonly<Record<string, number>>;
+  /** p5: when each lever's expansion last failed, so its wait can decay. */
+  readonly leverFailedAt: Readonly<Record<string, number>>;
+
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
 }
@@ -212,6 +233,8 @@ export interface CreateVergerStateOptions {
   readonly initialPressure?: Readonly<Record<string, number>>;
   /** Defaults to the preset that reproduces `mode`. */
   readonly activation?: VergerActivation;
+  /** verger-p5's per-lever, evidence-weighted expansion. Default false (verger-p4). */
+  readonly expansion?: boolean;
 }
 
 export function createVergerState(options: CreateVergerStateOptions): VergerState {
@@ -264,6 +287,12 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     hardware: options.hardware ?? true,
     capacityGrant: Math.max(0, Math.floor(options.capacityGrant ?? 0)),
     activation: options.activation ?? activationForMode(options.mode ?? 'active'),
+    expansion: options.expansion ?? false,
+    home: start.pressure,
+    ampleSince: {},
+    leverWait: {},
+    expandedAt: {},
+    leverFailedAt: {},
     lastAction: 'stale',
     lastReason: start.stack.length > 0 ? 'start from learned profile' : 'start',
   };
@@ -310,20 +339,15 @@ function startingPressure(
 // ---------------------------------------------------------------------------------------------
 
 /**
- * Static floors: the open-loop behaviour (capacity class, settings, power, network,
- * visibility). The capacity class is the hardware's ceiling on quality until the phone earns
- * more by measurement (`capacityGrant`).
+ * The envelope's limit, as level floors: what the user, accessibility, the OS, the network,
+ * the battery and the device's capabilities allow, whatever the load. Never crossed.
  */
-export function staticFloors(state: VergerState, at: number = state.at): Record<string, number> {
+export function limitFloors(state: VergerState, at: number = state.at): Record<string, number> {
   const floors: Record<string, number> = {};
   const raise = (id: string, level: number) => {
     floors[id] = Math.max(floors[id] ?? 0, level);
   };
   const hidden = state.visibility !== 'active';
-  const capacityClass = capacityClassOf(state.capacity, state.config);
-  const lowCapacity = capacityClass === 'low' && state.fidelity !== 'high';
-  const midCapacity =
-    capacityClass === 'mid' && state.fidelity !== 'high' && state.capacityGrant < 1;
   const capacityReported = state.capacity.sdkInt !== null;
 
   for (const lever of state.levers) {
@@ -334,10 +358,6 @@ export function staticFloors(state: VergerState, at: number = state.at): Record<
     if (state.fidelity === 'low') raise(lever.id, lever.ambient ? max : Math.min(1, max));
     if (state.powerSaver && (lever.ambient || lever.target === 'energy')) raise(lever.id, max);
     if (state.powerSaver && lever.target === 'gpu') raise(lever.id, Math.min(1, max));
-    // A device that proved it can carry more earns these floors back, one step at a time.
-    if (lowCapacity && lever.ambient && state.capacityGrant < 2) raise(lever.id, max);
-    if (lowCapacity && !lever.ambient && lever.target !== 'energy' && state.capacityGrant < 1)
-      raise(lever.id, Math.min(1, max));
   }
   // Rules each lever declares for itself; the reducer names no lever.
   const network = state.network;
@@ -345,8 +365,6 @@ export function staticFloors(state: VergerState, at: number = state.at): Record<
   const weakLink = limit === 'slow' || limit === 'unstable';
   for (const lever of state.levers) {
     if (hidden && lever.whenHidden !== undefined) raise(lever.id, lever.whenHidden);
-    if (midCapacity && !lever.closedLoopOnly && lever.whenMidCapacity !== undefined)
-      raise(lever.id, lever.whenMidCapacity);
     if (weakLink && lever.whenSlowNetwork !== undefined) raise(lever.id, lever.whenSlowNetwork);
     if (network.metered === true && lever.whenMetered !== undefined)
       raise(lever.id, lever.whenMetered);
@@ -360,6 +378,39 @@ export function staticFloors(state: VergerState, at: number = state.at): Record<
     }
   }
   return clampToLevers(state.levers, floors);
+}
+
+/**
+ * The device class's floors: the hardware's ceiling on quality, until the phone earns more by
+ * measurement across sessions (`capacityGrant`) or the user asks for high fidelity.
+ */
+export function classFloors(state: VergerState): Record<string, number> {
+  const floors: Record<string, number> = {};
+  const raise = (id: string, level: number) => {
+    floors[id] = Math.max(floors[id] ?? 0, level);
+  };
+  const capacityClass = capacityClassOf(state.capacity, state.config);
+  const lowCapacity = capacityClass === 'low' && state.fidelity !== 'high';
+  const midCapacity =
+    capacityClass === 'mid' && state.fidelity !== 'high' && state.capacityGrant < 1;
+  for (const lever of state.levers) {
+    if (lever.closedLoopOnly) continue;
+    const max = lever.maxLevel;
+    // A device that proved it can carry more earns these floors back, one step at a time.
+    if (lowCapacity && lever.ambient && state.capacityGrant < 2) raise(lever.id, max);
+    if (lowCapacity && !lever.ambient && lever.target !== 'energy' && state.capacityGrant < 1)
+      raise(lever.id, Math.min(1, max));
+    if (midCapacity && lever.whenMidCapacity !== undefined) raise(lever.id, lever.whenMidCapacity);
+  }
+  return clampToLevers(state.levers, floors);
+}
+
+/**
+ * Static floors: the open-loop behaviour, the envelope's ceiling as levels (the limit and the
+ * device class together). Every policy publishes at least these.
+ */
+export function staticFloors(state: VergerState, at: number = state.at): Record<string, number> {
+  return combine(state.levers, limitFloors(state, at), classFloors(state));
 }
 
 /**
@@ -494,31 +545,58 @@ function lower(
   const candidates = governed(state);
   let pressure = { ...state.pressure };
   let stack = [...state.stack];
-  let moved = 0;
+  const lowered: string[] = [];
   for (let step = 0; step < steps; step += 1) {
     const effective = combine(state.levers, staticFloors(state), pressure);
     const lever = chooseLeverToLower(candidates, effective, bottleneck, match);
     if (!lever) break;
     pressure = { ...pressure, [lever.id]: (effective[lever.id] ?? 0) + 1 };
     stack = [...stack, lever.id];
-    moved += 1;
+    lowered.push(lever.id);
   }
-  if (moved === 0)
+  if (lowered.length === 0)
     return { ...state, lastAction: 'stale', lastReason: `${reason}: nothing left to lower` };
   const failedUpgrade = at - state.lastIncreaseAt < state.config.failedUpgradeWindowMs;
-  return {
+  const next: VergerState = {
     ...state,
     pressure,
     stack,
     lastDecreaseAt: at,
     lastPressureAt: at,
     comfortSeen: false,
-    upgradeAfterMs: failedUpgrade
-      ? Math.min(state.upgradeAfterMs * 2, state.config.maxUpgradeAfterMs)
-      : state.upgradeAfterMs,
+    // p4 backs off every raise after a failed one; p5 backs off only the lever that failed.
+    upgradeAfterMs:
+      failedUpgrade && !state.expansion
+        ? Math.min(state.upgradeAfterMs * 2, state.config.maxUpgradeAfterMs)
+        : state.upgradeAfterMs,
     lastAction: action,
     lastReason: reason,
   };
+  return state.expansion ? recordFailedExpansions(next, lowered, at) : next;
+}
+
+/**
+ * p5: a lever lowered again within `failedUpgradeWindowMs` of its own expansion failed to hold
+ * it: its wait doubles (up to `maxUpgradeAfterMs`), and only its own.
+ */
+function recordFailedExpansions(
+  state: VergerState,
+  lowered: readonly string[],
+  at: number,
+): VergerState {
+  let leverWait = state.leverWait;
+  let leverFailedAt = state.leverFailedAt;
+  let expandedAt = state.expandedAt;
+  for (const id of new Set(lowered)) {
+    const expanded = expandedAt[id];
+    if (expanded === undefined || at - expanded >= state.config.failedUpgradeWindowMs) continue;
+    const wait = leverWait[id] ?? state.config.upgradeAfterMs;
+    leverWait = { ...leverWait, [id]: Math.min(wait * 2, state.config.maxUpgradeAfterMs) };
+    leverFailedAt = { ...leverFailedAt, [id]: at };
+    const { [id]: _, ...rest } = expandedAt;
+    expandedAt = rest;
+  }
+  return { ...state, leverWait, leverFailedAt, expandedAt };
 }
 
 function raiseOne(state: VergerState, at: number, reason: string): VergerState {
@@ -889,9 +967,118 @@ function step(state: VergerState, event: VergerEvent): VergerState {
   }
   next = applyStandingPressure(next, at);
   next = applyContention(next, at);
-  if (next.lastAction === 'stale') next = maybeIncrease(next, at);
+  if (next.expansion) {
+    next = trackEvidence(next, at);
+    if (next.lastAction === 'stale') next = maybeExpand(next, at);
+  } else if (next.lastAction === 'stale') next = maybeIncrease(next, at);
   next = resetBackoff(next, at);
   return next;
+}
+
+// ---------------------------------------------------------------------------------------------
+// verger-p5: expansion on evidence, lever by lever.
+// ---------------------------------------------------------------------------------------------
+
+/** The account readings the policy acts on: the published snapshot's, as the ledger sees them. */
+function readingsOf(state: VergerState, at: number) {
+  return estimateAccounts(snapshotOf(state, at), state.capacity, state.config);
+}
+
+/**
+ * Keeps, for each account, since when it has read ample with at least `expandMinConfidence`
+ * without a break. Unknown, weakly witnessed, tight or overdrawn ends the run.
+ */
+function trackEvidence(state: VergerState, at: number): VergerState {
+  const readings = readingsOf(state, at);
+  const ampleSince: Partial<Record<ResourceAccount, number>> = {};
+  for (const account of RESOURCE_ACCOUNTS) {
+    const reading = readings[account];
+    if (reading.state === 'ample' && reading.confidence >= state.config.expandMinConfidence)
+      ampleSince[account] = state.ampleSince[account] ?? at;
+  }
+  return { ...state, ampleSince };
+}
+
+interface ExpansionCandidate {
+  readonly id: string;
+  /** When its evidence is enough; it may expand at or after this time. */
+  readonly readyAt: number;
+  /** The wait it was judged against, and whether that wait has decayed back to the base. */
+  readonly decayed: boolean;
+  readonly reason: string;
+}
+
+/**
+ * The levers p5 could expand, each with the time its evidence suffices. A lever qualifies when
+ * no account it relieves is strained and at least one is known ample with enough confidence;
+ * unknown accounts neither help nor block. Its evidence must last its own wait divided by the
+ * weakest confidence among its ample accounts, and expansions are paced one wait apart.
+ */
+function expansionCandidates(state: VergerState, at: number): ExpansionCandidate[] {
+  if (state.stack.length === 0 || !mayGrow(state)) return [];
+  if (state.contentionExhausted || contentionOf(state, at) !== 'none') return [];
+  const readings = readingsOf(state, at);
+  const out: ExpansionCandidate[] = [];
+  const seen = new Set<string>();
+  for (let i = state.stack.length - 1; i >= 0; i -= 1) {
+    const id = state.stack[i];
+    if (id === undefined || seen.has(id)) continue;
+    seen.add(id);
+    const lever = state.levers.find((candidate) => candidate.id === id);
+    if (!lever) continue;
+    const accounts = accountsRelievedBy(lever);
+    if (accounts.some((a) => readings[a].state === 'tight' || readings[a].state === 'overdrawn'))
+      continue;
+    const evidence = accounts.filter((a) => state.ampleSince[a] !== undefined);
+    if (evidence.length === 0) continue;
+    const confidence = Math.min(...evidence.map((a) => readings[a].confidence));
+    const failedAt = state.leverFailedAt[id];
+    const decayed =
+      failedAt !== undefined && at - failedAt >= state.config.resetBackoffAfterMs;
+    const wait = decayed ? state.upgradeAfterMs : (state.leverWait[id] ?? state.upgradeAfterMs);
+    const since = Math.max(...evidence.map((a) => state.ampleSince[a] ?? at));
+    const readyAt = Math.max(since, state.lastIncreaseAt, state.lastDecreaseAt) + wait / confidence;
+    out.push({
+      id,
+      readyAt,
+      decayed,
+      reason: `${evidence.join(' and ')} ample for ${Math.round(wait / confidence)} ms`,
+    });
+  }
+  return out;
+}
+
+/** p5: gives one step back to the most recently lowered lever whose evidence is enough. */
+function maybeExpand(state: VergerState, at: number): VergerState {
+  const ready = expansionCandidates(state, at).find((candidate) => candidate.readyAt <= at);
+  if (!ready) return state;
+  const index = state.stack.lastIndexOf(ready.id);
+  const stack = [...state.stack.slice(0, index), ...state.stack.slice(index + 1)];
+  const pressure = { ...state.pressure };
+  const current = pressure[ready.id] ?? 0;
+  // As in raiseOne: a lever off the stack owns no pressure.
+  if (current <= 1 || !stack.includes(ready.id)) delete pressure[ready.id];
+  else pressure[ready.id] = current - 1;
+  let leverWait = state.leverWait;
+  let leverFailedAt = state.leverFailedAt;
+  if (ready.decayed) {
+    const { [ready.id]: _wait, ...waits } = leverWait;
+    const { [ready.id]: _failed, ...failures } = leverFailedAt;
+    leverWait = waits;
+    leverFailedAt = failures;
+  }
+  return {
+    ...state,
+    pressure,
+    stack,
+    priorDepth: index < state.priorDepth ? state.priorDepth - 1 : state.priorDepth,
+    expandedAt: { ...state.expandedAt, [ready.id]: at },
+    leverWait,
+    leverFailedAt,
+    lastIncreaseAt: at,
+    lastAction: 'increase',
+    lastReason: `${ready.id}: ${ready.reason}`,
+  };
 }
 
 /** Folds one event into verger's state. Pure: same state and event, same result. */
@@ -944,7 +1131,18 @@ function optionalConcurrency(state: VergerState, at: number): number {
 
 /** Verger's published output at time `at` (ambient sleep depends on elapsed time). */
 export function snapshotOf(state: VergerState, at: number = state.at): VergerSnapshot {
-  const base = staticFloors(state, at);
+  const limit = limitFloors(state, at);
+  const base = combine(state.levers, limit, classFloors(state));
+  const envelope: Record<string, LeverEnvelope> = {};
+  for (const lever of state.levers) {
+    const ceiling = base[lever.id] ?? 0;
+    envelope[lever.id] = {
+      limit: limit[lever.id] ?? 0,
+      ceiling,
+      home: Math.min(lever.maxLevel, Math.max(ceiling, state.home[lever.id] ?? 0)),
+      floor: lever.maxLevel,
+    };
+  }
   const baseline = combine(state.levers, base);
   const loop = closedLoop(state)
     ? combine(state.levers, base, state.pressure, dynamicFloors(state, at))
@@ -983,6 +1181,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     network: state.network,
     networkLimit: networkLimitOf(state, at),
     capacityClass: capacityClassOf(state.capacity, state.config),
+    envelope,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at),
@@ -1076,6 +1275,15 @@ function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
     return false;
   }
   for (const key of Object.keys(b.proposedLevels)) {
+    const x = a.envelope[key];
+    const y = b.envelope[key];
+    if (
+      x?.limit !== y?.limit ||
+      x?.ceiling !== y?.ceiling ||
+      x?.home !== y?.home ||
+      x?.floor !== y?.floor
+    )
+      return false;
     if (
       a.proposedLevels[key] !== b.proposedLevels[key] ||
       a.levels[key] !== b.levels[key] ||
@@ -1111,6 +1319,9 @@ export function nextTimedChangeAt(state: VergerState): number | null {
   // An unstable network settles by time alone.
   if (state.lastOfflineAt !== null && !offline(state.network))
     candidates.push(state.lastOfflineAt + state.config.networkSettleMs);
+  // p5: each lever's evidence completes at its own time.
+  if (state.expansion)
+    for (const candidate of expansionCandidates(state, now)) candidates.push(candidate.readyAt);
   if (state.stack.length > 0) {
     const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
     candidates.push(lastChange + state.upgradeAfterMs);

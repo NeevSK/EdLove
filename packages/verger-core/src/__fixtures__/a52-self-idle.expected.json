@@ -29,6 +29,7 @@
     "midCapacityBelowBytes": 9663676416,
     "slowNetworkKbps": 1000,
     "networkSettleMs": 60000,
+    "expandMinConfidence": 0.3,
     "saturationCores": 0.9,
     "saturationAfterMs": 2000,
     "longTaskWindowMs": 5000,

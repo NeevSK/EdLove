@@ -41,6 +41,16 @@ export const VERGER_POLICY: VergerPolicy<VergerState> = {
   nextTimedChangeAt,
 };
 
+/**
+ * verger-p5: p4 plus per-lever expansion on evidence (the accounts each lever relieves, weighted
+ * by confidence, with per-lever back-off). Not the default: compare it with p4 first.
+ */
+export const VERGER_POLICY_P5: VergerPolicy<VergerState> = {
+  ...VERGER_POLICY,
+  version: 5,
+  create: (options) => createVergerState({ ...options, expansion: true }),
+};
+
 /** How a policy is named in keys and telemetry: `verger-p4`. */
 export const policyKey = (policy: Pick<VergerPolicy, 'id' | 'version'>): string =>
   `${policy.id}-p${policy.version}`;

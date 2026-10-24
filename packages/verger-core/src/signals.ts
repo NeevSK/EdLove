@@ -1,4 +1,15 @@
-import type { VergerConfig, MemoryLevel, ThermalLevel, ThermalStatus, TrimSeverity } from './types';
+import type {
+  BatteryState,
+  MemoryLevel,
+  ThermalLevel,
+  ThermalStatus,
+  TrimSeverity,
+  VergerConfig,
+} from './types';
+
+/** Low only when known to be low and known to be unplugged: unknown is never low. */
+export const isBatteryLow = (battery: BatteryState, lowPercent: number): boolean =>
+  battery.pluggedIn === false && battery.levelPercent !== null && battery.levelPercent <= lowPercent;
 
 const THERMAL_RANK: Record<ThermalLevel, number> = {
   unknown: 0,

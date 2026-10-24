@@ -1,5 +1,6 @@
 import {
   type AccountReading,
+  accountsRelievedBy,
   type AccountState,
   estimateAccounts,
   RESOURCE_ACCOUNTS,
@@ -94,16 +95,6 @@ const DEFAULT_MAX_RECORDS = 64;
 
 const RANK: Record<AccountState, number> = { unknown: -1, ample: 0, tight: 1, overdrawn: 2 };
 const strained = (state: AccountState) => state === 'tight' || state === 'overdrawn';
-
-/**
- * The accounts a lever relieves, as the lever declares them (animation levers declare CPU: the
- * UI thread drives every frame). Easing any compute or energy load also eases heat.
- */
-export function accountsRelievedBy(lever: LeverSpec): ResourceAccount[] {
-  const targets = new Set<ResourceAccount>([lever.target, ...(lever.alsoRelieves ?? [])]);
-  if (targets.has('gpu') || targets.has('cpu') || targets.has('energy')) targets.add('thermal');
-  return [...targets];
-}
 
 const EMPTY: LeverOutcomes = {
   relieved: 0,

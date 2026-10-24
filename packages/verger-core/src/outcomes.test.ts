@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { createVergerState, reduceVerger, snapshotOf } from './reducer';
-import { accountsRelievedBy, createOutcomeLedger } from './outcomes';
+import { accountsRelievedBy } from './demand';
+import { createOutcomeLedger } from './outcomes';
 import type { CapacityFacts, VergerEvent, VergerSnapshot } from './types';
 
 const CAPACITY: CapacityFacts = {
