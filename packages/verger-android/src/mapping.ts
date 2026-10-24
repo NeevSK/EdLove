@@ -6,6 +6,7 @@ import type {
   FrameState,
   GovernorConfig,
   GovernorEvent,
+  SensorId,
   ThermalStatus,
   ThreadRoleName,
   TrimSeverity,
@@ -140,6 +141,8 @@ export interface NativeSenseConfig {
   readonly jankFrameFactor: number;
   readonly headroomWarm: number;
   readonly saturationCores: number;
+  /** Which native sensors run; absent means all (`Sensors.kt`). */
+  readonly sensors?: Readonly<Record<SensorId, boolean>>;
 }
 
 /** The frame window the golden vectors were generated with. */
@@ -148,8 +151,10 @@ export const FRAME_WINDOW_MS = 500;
 export function senseConfigFrom(
   config: GovernorConfig,
   windowMs = FRAME_WINDOW_MS,
+  sensors?: Readonly<Record<SensorId, boolean>>,
 ): NativeSenseConfig {
   return {
+    ...(sensors ? { sensors } : {}),
     windowMs,
     minSamples: config.minSamples,
     stressRatio: config.stressRatio,

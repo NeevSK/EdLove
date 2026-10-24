@@ -43,6 +43,8 @@ class VergerModule : Module() {
 
     Function("stop") { sense?.stop() }
 
+    Function("setSensors") { sensors: Map<String, Any?> -> sense?.setSensors(Sensors.parse(sensors)) }
+
     Function("setRefreshCap") { hz: Double? -> sense().setRefreshCap(hz) }
 
     Function("setCpuBoost") { enabled: Boolean -> sense().setCpuBoost(enabled) }
@@ -81,6 +83,7 @@ class VergerModule : Module() {
       ),
       headroomWarm = number("headroomWarm"),
       saturationCores = number("saturationCores"),
+      sensors = Sensors.parse(options["sensors"] as? Map<*, *>),
     )
   }
 }

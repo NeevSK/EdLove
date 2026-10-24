@@ -32,6 +32,8 @@ data class SenseConfig(
   val headroomWarm: Double,
   /** Thread load the governor calls saturated; crossing it is always reported. */
   val saturationCores: Double,
+  /** Which sensors run; [setSensors] changes it while running. */
+  val sensors: Sensors = Sensors.ALL,
 )
 
 /**
@@ -95,24 +97,62 @@ class VergerSense(
   /** Starts sensing (idempotent; a second call replaces the config). */
   fun start(next: SenseConfig, activity: Activity?) {
     handler.post {
-      val wasRunning = config != null
+      // A second start replaces the config: take the old sensors down before the new go up.
+      if (config != null) {
+        if (foreground) pause()
+        unregisterCallbacks()
+      }
       config = next
       estimator?.close()
       estimator = FrameWindowEstimator(next.windowMs, next.classification, ::onWindow).also {
         levers.currentRefreshHz()?.let { hz -> it.defaultTargetMs = 1000.0 / hz }
       }
-      if (!wasRunning) {
-        app.registerComponentCallbacks(memoryCallbacks)
-        val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          app.registerReceiver(powerReceiver, filter, null, handler, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-          app.registerReceiver(powerReceiver, filter, null, handler)
-        }
-        emitPower()
-      }
+      registerCallbacks(next.sensors)
       if (foreground) resume(activity)
     }
+  }
+
+  /**
+   * Switches sensors on or off while running. Goes through the same pause and resume the app
+   * takes on leaving and returning to the foreground, so no other lifecycle exists.
+   */
+  fun setSensors(next: Sensors) {
+    handler.post {
+      val current = config ?: return@post
+      if (current.sensors == next) return@post
+      if (foreground) pause()
+      unregisterCallbacks()
+      config = current.copy(sensors = next)
+      registerCallbacks(next)
+      if (foreground) resume(currentActivity())
+    }
+  }
+
+  private var memoryRegistered = false
+  private var powerRegistered = false
+
+  private fun registerCallbacks(sensors: Sensors) {
+    if (sensors.memory) {
+      app.registerComponentCallbacks(memoryCallbacks)
+      memoryRegistered = true
+    }
+    if (sensors.power) {
+      val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        app.registerReceiver(powerReceiver, filter, null, handler, Context.RECEIVER_NOT_EXPORTED)
+      } else {
+        app.registerReceiver(powerReceiver, filter, null, handler)
+      }
+      powerRegistered = true
+      emitPower()
+    }
+  }
+
+  private fun unregisterCallbacks() {
+    if (memoryRegistered) runCatching { app.unregisterComponentCallbacks(memoryCallbacks) }
+    if (powerRegistered) runCatching { app.unregisterReceiver(powerReceiver) }
+    memoryRegistered = false
+    powerRegistered = false
   }
 
   fun stop() {
@@ -121,8 +161,7 @@ class VergerSense(
       pause()
       levers.releaseRefresh()
       levers.closeSession()
-      runCatching { app.unregisterComponentCallbacks(memoryCallbacks) }
-      runCatching { app.unregisterReceiver(powerReceiver) }
+      unregisterCallbacks()
       config = null
       estimator = null
     }
@@ -187,14 +226,15 @@ class VergerSense(
   // region lifecycle
 
   private fun resume(activity: Activity?) {
-    attachFrames(activity)
+    val sensors = config?.sensors ?: Sensors.ALL
+    if (sensors.frames) attachFrames(activity)
     estimator?.resetForwarding()
-    attachThermal()
+    if (sensors.thermal) attachThermal()
     lastThreadCores.fill(Double.NaN)
     handler.removeCallbacks(sampleThreads)
-    handler.postDelayed(sampleThreads, THREAD_SAMPLE_MS)
+    if (sensors.threads) handler.postDelayed(sampleThreads, THREAD_SAMPLE_MS)
     handler.removeCallbacks(pollMemory)
-    handler.post(pollMemory)
+    if (sensors.memory) handler.post(pollMemory)
     levers.reapply()
     if (cpuBoostWanted) levers.setCpuBoost(true, estimator?.defaultTargetMs ?: 16.667)
   }

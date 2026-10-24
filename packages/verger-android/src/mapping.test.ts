@@ -1,4 +1,4 @@
-import { DEFAULT_GOVERNOR_CONFIG, UNKNOWN_CAPACITY } from '@repo/verger-core';
+import { ACTIVATION_PRESETS, DEFAULT_GOVERNOR_CONFIG, UNKNOWN_CAPACITY } from '@repo/verger-core';
 import { describe, expect, it } from 'vitest';
 import {
   FRAME_WINDOW_MS,
@@ -9,6 +9,12 @@ import {
 } from './mapping';
 
 describe('verger-android mapping', () => {
+  it('sends the sensor set only when given one, so an absent set means every sensor', () => {
+    expect(senseConfigFrom(DEFAULT_GOVERNOR_CONFIG)).not.toHaveProperty('sensors');
+    const sensors = { ...ACTIVATION_PRESETS.static.sense };
+    expect(senseConfigFrom(DEFAULT_GOVERNOR_CONFIG, FRAME_WINDOW_MS, sensors).sensors).toEqual(sensors);
+  });
+
   it('sends the governor thresholds, so native code holds no copy of a tunable', () => {
     expect(senseConfigFrom(DEFAULT_GOVERNOR_CONFIG)).toEqual({
       windowMs: FRAME_WINDOW_MS,

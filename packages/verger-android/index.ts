@@ -1,4 +1,10 @@
-import type { GovernorConfig, GovernorEvent, RuntimePort, VergerPlatform } from '@repo/verger-core';
+import type {
+  GovernorConfig,
+  GovernorEvent,
+  RuntimePort,
+  SensorId,
+  VergerPlatform,
+} from '@repo/verger-core';
 import { NativeModule, requireOptionalNativeModule } from 'expo';
 import {
   type NativeCapacity,
@@ -19,6 +25,7 @@ declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
   readExits(sinceWallMs: number): NativeExit[] | null;
   readProcessId(): number;
   start(config: NativeSenseConfig): void;
+  setSensors(sensors: Readonly<Record<SensorId, boolean>>): void;
   stop(): void;
   setRefreshCap(hz: number | null): void;
   setCpuBoost(enabled: boolean): void;
@@ -68,7 +75,11 @@ export function createVergerAndroidPort(
   onLever?: (event: NativeLever) => void,
 ): RuntimePort {
   return {
-    start(config: GovernorConfig, onEvent: (event: GovernorEvent) => void) {
+    start(
+      config: GovernorConfig,
+      onEvent: (event: GovernorEvent) => void,
+      sensors?: Readonly<Record<SensorId, boolean>>,
+    ) {
       if (!native) return () => {};
       const subscriptions = [
         native.addListener('onFrameWindow', (payload) =>
@@ -91,11 +102,14 @@ export function createVergerAndroidPort(
         ),
         native.addListener('onLever', (payload) => onLever?.(payload)),
       ];
-      native.start(senseConfigFrom(config));
+      native.start(senseConfigFrom(config, FRAME_WINDOW_MS, sensors));
       return () => {
         native.stop();
         for (const subscription of subscriptions) subscription.remove();
       };
+    },
+    setSensors(sensors) {
+      native?.setSensors(sensors);
     },
     setRefreshCap(hz) {
       native?.setRefreshCap(hz);
