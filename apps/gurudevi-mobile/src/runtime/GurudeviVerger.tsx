@@ -5,6 +5,7 @@ import {
   type FidelityPreference,
   type GovernorTelemetrySink,
   GURUDEVI_MOBILE_HOST,
+  type VergerActivation,
   UNKNOWN_CAPACITY,
   type VergerStore,
 } from '@repo/core/governor';
@@ -13,7 +14,8 @@ import { VergerProvider } from '@repo/verger-react';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import { totalMemory } from 'expo-device';
 import { type ReactNode, useState } from 'react';
-import { type RuntimeMode, resolveRuntimeMode } from './runtimeMode';
+import { useFidelityOptional } from '@repo/ui/context';
+import { readVergerLaunch, type RuntimeMode } from './runtimeMode';
 
 interface GurudeviVergerProps {
   readonly children: ReactNode;
@@ -21,7 +23,7 @@ interface GurudeviVergerProps {
   readonly mode?: RuntimeMode;
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
-  /** The user's fidelity setting. */
+  /** The user's fidelity setting; defaults to the app's fidelity setting. */
   readonly fidelity?: FidelityPreference;
 }
 
@@ -57,12 +59,16 @@ export function GurudeviVerger({
   telemetrySink,
   fidelity,
 }: GurudeviVergerProps) {
+  const setting = useFidelityOptional().fidelityLevel;
   // A kill switch wins over everything, whichever carries it (remote override or experiment).
-  // Otherwise an explicit mode, then the assignment, then the build default (off).
-  const [resolved] = useState<RuntimeMode>(() => {
-    if (globalThis.__GURUDEVI_RUNTIME_MODE__ === 'off' || assignment?.runtime === 'off')
-      return 'off';
-    return mode ?? assignment?.runtime ?? resolveRuntimeMode();
+  // Otherwise an explicit mode, then the assignment, then the build and remote activation.
+  const [launch] = useState<{ mode: RuntimeMode; activation?: VergerActivation }>(() => {
+    const read = readVergerLaunch(GURUDEVI_MOBILE_HOST.levers);
+    if (read.rejected) console.warn('[verger] remote activation ignored:', read.rejected);
+    if (read.mode === 'off' || assignment?.runtime === 'off') return { mode: 'off' };
+    const explicit = mode ?? assignment?.runtime;
+    // An explicit mode keeps its own preset; the resolved activation belongs to the resolved mode.
+    return explicit ? { mode: explicit } : { mode: read.mode, activation: read.activation ?? undefined };
   });
   return (
     <VergerProvider
@@ -70,8 +76,9 @@ export function GurudeviVerger({
       platform={platform}
       store={VERGER_STORE}
       facts={facts}
-      fidelity={fidelity}
-      mode={resolved}
+      fidelity={fidelity ?? setting}
+      mode={launch.mode}
+      activation={launch.activation}
       assignment={assignment}
       telemetrySink={telemetrySink}
       release={`${nativeApplicationVersion ?? '0'}+${nativeBuildVersion ?? '0'}`}

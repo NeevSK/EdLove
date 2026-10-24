@@ -9,6 +9,7 @@ import {
   type Verger,
   type VergerHost,
   type VergerPlatform,
+  type VergerActivation,
   type VergerStore,
 } from '@repo/verger-core';
 import {
@@ -48,6 +49,8 @@ export interface VergerProviderProps {
   /** Durable storage for the recovery ladder, trust and the learned profile. */
   readonly store?: VergerStore;
   readonly mode: VergerMode;
+  /** What verger may do (a preset with patches); the ladder caps it. Defaults to `mode`'s preset. */
+  readonly activation?: VergerActivation;
   /**
    * Device facts read in JavaScript alone (for example `expo-device`), for the floors that hold
    * while verger is off. Never verger's native module.
@@ -77,6 +80,7 @@ export function VergerProvider({
   platform,
   store,
   mode,
+  activation,
   facts,
   fidelity = 'auto',
   assignment,
@@ -91,6 +95,7 @@ export function VergerProvider({
       store,
       // Never started when `runs` is false; the floors need no mode.
       requested: mode === 'off' ? 'shadow' : mode,
+      activation,
       facts,
       assignment,
       telemetrySink,

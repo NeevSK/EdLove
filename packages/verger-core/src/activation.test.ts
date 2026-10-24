@@ -6,6 +6,7 @@ import {
   activationForMode,
   capActivation,
   leverActivation,
+  modeForActivation,
   parseActivationPatch,
   resolveActivation,
   sensorOf,
@@ -211,5 +212,16 @@ describe('activation governs decisions', () => {
     expect(off.refreshCapHz).toBeNull();
     expect(off.levels['refresh-rate']).toBe(1);
     expect(run({ hardware: false }, [touch(0)]).snapshot.cpuBoost).toBe(false);
+  });
+});
+
+describe('modeForActivation', () => {
+  it('asks for active only when something would reach the app or the hardware', () => {
+    expect(modeForActivation(ACTIVATION_PRESETS.active)).toBe('active');
+    expect(modeForActivation(ACTIVATION_PRESETS.lab)).toBe('active');
+    expect(modeForActivation(ACTIVATION_PRESETS.static)).toBe('active');
+    expect(modeForActivation(ACTIVATION_PRESETS.shadow)).toBe('shadow');
+    const one = resolveActivation(ACTIVATION_PRESETS.shadow, { levers: { sparkle: 'apply' } });
+    expect(modeForActivation(one)).toBe('active');
   });
 });

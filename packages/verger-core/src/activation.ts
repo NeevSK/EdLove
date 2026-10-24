@@ -127,6 +127,19 @@ export type ActivationPresetName = keyof typeof ACTIVATION_PRESETS;
 /** The preset that reproduces a pre-activation mode. */
 export const activationForMode = (mode: GovernorMode): VergerActivation => ACTIVATION_PRESETS[mode];
 
+/**
+ * The launch mode an activation asks the ladder for: `active` when anything would reach the
+ * app or the hardware, else `shadow`. The ladder may still lower it.
+ */
+export function modeForActivation(activation: VergerActivation): GovernorMode {
+  const applies =
+    activation.hardware ||
+    activation.defaultLever === 'apply' ||
+    activation.admission === 'apply' ||
+    Object.values(activation.levers).includes('apply');
+  return applies ? 'active' : 'shadow';
+}
+
 /** Applies patches in order; a later patch wins field by field, and per sensor and lever. */
 export function resolveActivation(
   base: VergerActivation,

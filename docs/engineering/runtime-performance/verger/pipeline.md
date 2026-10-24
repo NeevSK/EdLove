@@ -35,8 +35,8 @@ The one place the plan is tracked; update it with every phase. Verification ride
 | E. Cut-off | E2 drift test: the old governor as the differential oracle, every input it distinguishes (2,880 cases) against verger's static decision read through Gurudevi's view (`experienceOf`); every difference named with its cause: six intended (low fidelity honoured, reduce motion keeps blur, saver stills ambient, saver stops prefetch, low-phone blur named, safe mode respects the user), two to decide (3–6 GB class floor, slow network and prefetch: open chairs) | done | G1: exhaustive, with a planted mutant caught (480 cases) |
 | E. Cut-off | Decisions from E2 built: capacity classes (low under 5 GiB, mid under 9 GiB, config; levers' `whenMidCapacity`; earned back by `capacityGrant`) and weak links (slow or back from offline under a minute; levers' `whenSlowNetwork`; one optional job at a time); snapshot carries `capacityClass` and `networkLimit`; the estimator reads the same limit | done | G1: class and network tests; drift test on six phone sizes (5,760 cases), no open difference, planted mutant caught |
 | E. Cut-off | E3 view: `experienceOf` (levels to the fields consumers read, tier from verger's class; quiet, sound, haptics and safe mode as settings); the user's fidelity reaches verger (B6) | done | the drift test; G0 for the React shell |
-| E. Cut-off | E4 mount with configurable activation (a build preset and remote patch, not decided in code); `useVerger` exposes `configure`, `tune`, `outcomes` | **next** (`useVerger` done) | — |
-| E. Cut-off | E5 consumers move to `experienceOf`, old governor removed (signed off; E2 green, no open difference) | planned | — |
+| E. Cut-off | E4 `GurudeviVerger` mounted in `EntryShell`. Activation from configuration (`resolveVergerLaunch`): build preset `EXPO_PUBLIC_GURUDEVI_VERGER_PRESET` (`active`, `shadow`, `static`, `lab`); a development build defaults to `lab`; a release with nothing set stays off (floors only) until its preset is chosen; mode override `__GURUDEVI_RUNTIME_MODE__` (`off` is the kill switch); remote patch `__GURUDEVI_VERGER_ACTIVATION__`, parsed strictly, ignored whole if malformed. `useVerger` exposes `configure`, `tune`, `outcomes` | done | G1: launch resolution 8/8; mobile suite unchanged (20 failures in 8 files, identical before the change) |
+| E. Cut-off | E5 consumers move to `experienceOf`, old governor removed (signed off; E2 green, no open difference) | **next** | — |
 | F. Phones | first Gradle build; dev client on the A52, A24 and a 2–4 GB phone; Maestro CLI flows; Stryker | needs the laptop | — |
 
 ## The pipeline
@@ -98,7 +98,7 @@ sensing layer is specified in [sensing.md](sensing.md); verification in
 | 8 | Record and report | telemetry sink, observe levels, session recordings, flight recorder | telemetry events defined, capped; flight recorder (48 lines); quality meter; session report | no sink connected; no session recording or export |
 | 9 | Compare | two policies, or verger and off, on one recording | `replayGovernor(options, events, policy)` | comparison report; recordings to feed it |
 | 10 | New version | versioned policies, deterministic experiment arms | policy versions, `assignExperiment`, ladder keyed by policy | not called from the app |
-| — | Activate | what may run, live, capped by the ladder | done | the React shell does not yet expose `configure` or `tune` |
+| — | Activate | what may run, live, capped by the ladder | done; from build and remote configuration in Gurudevi | a local (lab) layer, written by the dev lab |
 | — | Recover | the ladder, trust, growth across launches | done (G2) | open review items in the handoff note; ladder not yet under generated death schedules |
 | — | Verify ([strategy](verification.md)) | invariants over generated streams, metamorphic relations, mutation adequacy, recordings, phones | `invariants.ts`; property suite with mutation check (G2) | controller and recovery properties; golden recorded sessions (G3); phones (G5) |
 
@@ -130,7 +130,7 @@ only report. Each row is one source of variety on the phone.
 | Affordance | For | State |
 |---|---|---|
 | See every layer live | developers | snapshot and accounts exist; no lab view |
-| Change activation and thresholds live | developers | `Verger.configure`, `Verger.tune` in core; not exposed in React |
+| Change activation and thresholds live | developers | `Verger.configure`, `Verger.tune`; in React through `useVerger`; no lab screen yet |
 | Record a session and replay it | developers, loop 3 | replay exists; recording does not |
 | Compare policies, or verger against off | loop 3 | replay takes any policy; no comparison report |
 | Bring a new policy | loop 3 | the `VergerPolicy` contract |

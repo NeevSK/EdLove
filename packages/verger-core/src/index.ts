@@ -12,6 +12,7 @@ export {
   type ActivationPatch,
   type ActivationPresetName,
   activationForMode,
+  modeForActivation,
   capActivation,
   type LeverActivation,
   leverActivation,
