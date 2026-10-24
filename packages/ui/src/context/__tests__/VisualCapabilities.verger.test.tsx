@@ -16,7 +16,11 @@ function Probe({ onRead }: { onRead: (capabilities: VisualCapabilities) => void 
   return null;
 }
 
-async function read(memoryBytes: number | null, withVerger: boolean): Promise<VisualCapabilities> {
+async function read(
+  memoryBytes: number | null,
+  withVerger: boolean,
+  saver = false,
+): Promise<VisualCapabilities> {
   let latest: VisualCapabilities | null = null;
   const probe = <Probe onRead={(c) => (latest = c)} />;
   await render(
@@ -26,6 +30,10 @@ async function read(memoryBytes: number | null, withVerger: boolean): Promise<Vi
         platform={platform}
         mode="off"
         facts={() => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: memoryBytes })}
+        signals={(dispatch, now) => {
+          dispatch({ type: 'power', at: now(), saver });
+          return () => {};
+        }}
         release="test"
       >
         {probe}
@@ -51,6 +59,13 @@ describe('useVisualCapabilities reads verger inside its provider', () => {
     expect(capabilities.deviceTier).toBe('high');
     expect(capabilities.quality).toBe('full');
     expect(capabilities.allowBlur).toBe(true);
+  });
+
+  it('battery saver fed in JavaScript reaches components while verger is off', async () => {
+    const capabilities = await read(11.2 * GIB, true, true);
+    expect(capabilities.allowAmbientEffects).toBe(false);
+    expect(capabilities.shouldPrefetchAssets).toBe(false);
+    expect(capabilities.experience.motion).toBe('essential');
   });
 
   it('outside a verger provider the old governor still answers', async () => {

@@ -5,6 +5,7 @@ import {
 } from '@repo/core/efficiency';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { useReality } from '@repo/ui/context/RealityProvider';
+import { useVergerSnapshot } from '@repo/verger-react';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
@@ -35,6 +36,11 @@ const WARMUP_POLICY = { recoveryWindowMs: 30_000 };
 
 export function OptionalStartupServices() {
   const { reality } = useReality();
+  // Verger admits deferrable work (the registry's `optional-startup`): none while hidden, under
+  // battery saver, Data Saver or offline, or while a thread is saturated. Outside verger's
+  // provider the old admission still decides.
+  const snapshot = useVergerSnapshot();
+  const vergerAdmits = snapshot === null ? null : snapshot.optionalConcurrency > 0;
   const [appState, setAppState] = useState(AppState.currentState);
   const progress = useRef<OptionalStartupProgress>({ started: new Set(), inFlight: null });
   const admission = useRef<WorkAdmissionState | null>(null);
@@ -45,7 +51,8 @@ export function OptionalStartupServices() {
   }, []);
 
   useEffect(() => {
-    if (appState !== 'active' || reality.isBatterySaverMode) return;
+    if (vergerAdmits === false) return;
+    if (appState !== 'active' || (vergerAdmits === null && reality.isBatterySaverMode)) return;
     let totalMemory: number | null | undefined;
     try {
       totalMemory = coreRuntime.device.getTotalMemory?.();
@@ -66,6 +73,7 @@ export function OptionalStartupServices() {
       requestIdle: (callback) => requestIdleCallback(callback),
       cancelIdle: cancelIdleCallback,
       canRun: () => {
+        if (vergerAdmits !== null) return vergerAdmits && AppState.currentState === 'active';
         // This phase means the optional warmup lane reached a frame + JS idle
         // boundary; it is not the screen's Observe interactive/TTFD signal.
         admission.current = reduceWorkAdmission(
@@ -85,7 +93,7 @@ export function OptionalStartupServices() {
       },
       onError: (id, error) => console.warn(`[startup] Optional ${id} unavailable:`, error),
     });
-  }, [appState, reality.isBatterySaverMode]);
+  }, [appState, reality.isBatterySaverMode, vergerAdmits]);
 
   return null;
 }

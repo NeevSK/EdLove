@@ -1,8 +1,10 @@
 import { resolveRuntimeVisualBudget, resolveWallpaperPresentation } from '@repo/core/efficiency';
+import { visualSignalsOf } from '@repo/core/governor';
 import type { WorkspaceWallpaper as WorkspaceWallpaperAsset } from '@repo/core/types';
 import { useRealityOptional } from '@repo/ui/context/RealityProvider';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { View } from '@repo/ui/primitives';
+import { useVergerSnapshot } from '@repo/verger-react';
 import { Image } from 'expo-image';
 import { useEffect, useMemo, useState } from 'react';
 import { AppState, Platform, StyleSheet, useWindowDimensions } from 'react-native';
@@ -12,6 +14,10 @@ export function WorkspaceWallpaper({
 }: Readonly<{ wallpaper?: WorkspaceWallpaperAsset }>) {
   const { reality } = useRealityOptional();
   const visualCapabilities = useVisualCapabilities();
+  const snapshot = useVergerSnapshot();
+  const networkLimit = snapshot?.networkLimit;
+  const powerSaver = snapshot?.powerSaver;
+  const visibility = snapshot?.visibility;
   const { width } = useWindowDimensions();
   const [isAppVisible, setIsAppVisible] = useState(() => AppState.currentState === 'active');
 
@@ -25,15 +31,24 @@ export function WorkspaceWallpaper({
 
   const budget = useMemo(
     () =>
-      resolveRuntimeVisualBudget({
-        deviceTier: reality.deviceTier,
-        networkQuality: reality.networkQuality,
-        isDataSaverMode: reality.isDataSaverMode,
-        isBatterySaverMode: reality.isBatterySaverMode,
-        isReducedMotionEnabled: reality.isReducedMotionEnabled,
-        isDocumentVisible: isAppVisible,
-      }),
+      // Inside verger's provider its readings decide; outside it, the old reality does.
+      networkLimit !== undefined && powerSaver !== undefined && visibility !== undefined
+        ? resolveRuntimeVisualBudget(
+            visualSignalsOf({ networkLimit, powerSaver, visibility }, visualCapabilities),
+          )
+        : resolveRuntimeVisualBudget({
+            deviceTier: reality.deviceTier,
+            networkQuality: reality.networkQuality,
+            isDataSaverMode: reality.isDataSaverMode,
+            isBatterySaverMode: reality.isBatterySaverMode,
+            isReducedMotionEnabled: reality.isReducedMotionEnabled,
+            isDocumentVisible: isAppVisible,
+          }),
     [
+      networkLimit,
+      powerSaver,
+      visibility,
+      visualCapabilities,
       isAppVisible,
       reality.deviceTier,
       reality.isBatterySaverMode,

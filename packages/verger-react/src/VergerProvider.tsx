@@ -3,6 +3,7 @@ import {
   createVerger,
   type ExperimentAssignment,
   type FidelityPreference,
+  type GovernorEvent,
   type GovernorMode,
   type GovernorSnapshot,
   type GovernorTelemetrySink,
@@ -40,6 +41,14 @@ const visibilityOf = (status: AppStateStatus | string | null | undefined) =>
 
 const now = () => performance.now();
 
+/** One preferences event carries both settings, so a change to one re-sends the other. */
+function sendPreferences(
+  verger: Verger,
+  current: { readonly reduceMotion: boolean; readonly fidelity: FidelityPreference },
+): void {
+  verger.dispatch({ type: 'preferences', at: now(), ...current });
+}
+
 export interface VergerProviderProps {
   readonly children: ReactNode;
   /** The host's definition (`defineHost`): its levers, rules, thresholds and recovery. */
@@ -56,6 +65,12 @@ export interface VergerProviderProps {
    * while verger is off. Never verger's native module.
    */
   readonly facts?: () => CapacityFacts;
+  /**
+   * Signals the host reads in JavaScript (for example battery saver from expo-battery), fed to
+   * the floors and to a running verger alike: while verger is off they are all it hears. Returns
+   * a function that stops them. Events a sensor switched off would carry are ignored by verger.
+   */
+  readonly signals?: (dispatch: (event: GovernorEvent) => void, now: () => number) => () => void;
   /** The user's fidelity choice; `auto` lets the phone's class and verger decide. */
   readonly fidelity?: FidelityPreference;
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
@@ -82,12 +97,15 @@ export function VergerProvider({
   mode,
   activation,
   facts,
+  signals,
   fidelity = 'auto',
   assignment,
   telemetrySink,
   release,
 }: VergerProviderProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
+  // Read once, like the rest of the launch: a new function must not restart verger.
+  const [startSignals] = useState(() => signals);
   const [verger] = useState<Verger>(() =>
     createVerger({
       host,
@@ -104,26 +122,23 @@ export function VergerProvider({
     }),
   );
 
-  // One preferences event carries both settings, so each change re-sends the other's last value.
   const preferences = useRef({ reduceMotion: false, fidelity });
-  const sendPreferences = () =>
-    verger.dispatch({ type: 'preferences', at: now(), ...preferences.current });
 
   useEffect(() => {
     if (preferences.current.fidelity === fidelity) return;
     preferences.current = { ...preferences.current, fidelity };
-    sendPreferences();
-  });
+    sendPreferences(verger, preferences.current);
+  }, [verger, fidelity]);
 
   useEffect(() => {
     let live = true;
     const reduceMotion = (value: boolean) => {
       preferences.current = { ...preferences.current, reduceMotion: value };
-      sendPreferences();
+      sendPreferences(verger, preferences.current);
     };
     const settings = () => {
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(AppState.currentState) });
-      sendPreferences();
+      sendPreferences(verger, preferences.current);
       AccessibilityInfo.isReduceMotionEnabled()
         .then((value) => live && reduceMotion(value))
         .catch((error: unknown) => console.error('[verger] reduce-motion query failed', error));
@@ -139,6 +154,7 @@ export function VergerProvider({
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) }),
     );
     const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', reduceMotion);
+    const stopSignals = startSignals?.((event) => verger.dispatch(event), now) ?? (() => {});
     // Long tasks matter only to a running closed loop; off, nothing is observed.
     const stopLongTasks = runs
       ? observeLongTasks((durationMs) =>
@@ -148,11 +164,12 @@ export function VergerProvider({
     return () => {
       live = false;
       stopLongTasks();
+      stopSignals();
       motion.remove();
       appState.remove();
       if (runs) void verger.stop();
     };
-  }, [verger, runs]);
+  }, [verger, runs, startSignals]);
 
   return (
     <VergerContext.Provider value={verger}>

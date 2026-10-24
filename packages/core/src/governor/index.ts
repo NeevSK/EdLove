@@ -12,6 +12,7 @@ export {
   experienceOf,
   type GurudeviExperience,
   type VisualQuality,
+  visualSignalsOf,
 } from './experience';
 export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';

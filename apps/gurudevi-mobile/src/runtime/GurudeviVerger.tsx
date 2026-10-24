@@ -3,6 +3,7 @@ import {
   type CapacityFacts,
   type ExperimentAssignment,
   type FidelityPreference,
+  type GovernorEvent,
   type GovernorTelemetrySink,
   GURUDEVI_MOBILE_HOST,
   type VergerActivation,
@@ -14,6 +15,7 @@ import { VergerProvider } from '@repo/verger-react';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import { totalMemory } from 'expo-device';
 import { type ReactNode, useState } from 'react';
+import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { useFidelityOptional } from '@repo/ui/context';
 import { readVergerLaunch, type RuntimeMode } from './runtimeMode';
 
@@ -48,6 +50,34 @@ const platform = () => createVergerAndroidPlatform();
 const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: totalMemory });
 
 /**
+ * Battery saver from the app's device adapter (expo-battery), so the floors hear it while
+ * verger is off; running, the native sensor reports the same. A failed read keeps the last
+ * value, as the old governor did.
+ */
+function signals(dispatch: (event: GovernorEvent) => void, now: () => number): () => void {
+  let live = true;
+  const send = (saver: boolean) => {
+    if (live) dispatch({ type: 'power', at: now(), saver });
+  };
+  let subscription: { remove: () => void } | undefined;
+  try {
+    // The device adapter throws until the runtime is registered.
+    const device = coreRuntime.device;
+    device
+      .getPowerState?.()
+      .then((state) => send(state.lowPowerMode))
+      .catch((error: unknown) => console.warn('[verger] battery saver read failed', error));
+    subscription = device.addPowerStateListener?.(send);
+  } catch (error) {
+    console.warn('[verger] battery saver unavailable', error);
+  }
+  return () => {
+    live = false;
+    subscription?.remove();
+  };
+}
+
+/**
  * Gurudevi's mounting of verger: its mobile host, the Android platform, AsyncStorage for the
  * recovery record, and the mode Gurudevi resolves from its own build and remote settings. Off
  * unless something turns it on. A new app build restarts the recovery ladder.
@@ -68,7 +98,9 @@ export function GurudeviVerger({
     if (read.mode === 'off' || assignment?.runtime === 'off') return { mode: 'off' };
     const explicit = mode ?? assignment?.runtime;
     // An explicit mode keeps its own preset; the resolved activation belongs to the resolved mode.
-    return explicit ? { mode: explicit } : { mode: read.mode, activation: read.activation ?? undefined };
+    return explicit
+      ? { mode: explicit }
+      : { mode: read.mode, activation: read.activation ?? undefined };
   });
   return (
     <VergerProvider
@@ -76,6 +108,7 @@ export function GurudeviVerger({
       platform={platform}
       store={VERGER_STORE}
       facts={facts}
+      signals={signals}
       fidelity={fidelity ?? setting}
       mode={launch.mode}
       activation={launch.activation}

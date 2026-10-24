@@ -1,4 +1,5 @@
 import type { CapacityClass, FidelityPreference, GovernorSnapshot } from '@repo/verger-core';
+import type { RuntimeVisualSignals } from '../efficiency/visualBudget';
 
 /**
  * Gurudevi's reading of verger's decision: lever levels turned into the fields its components
@@ -97,10 +98,12 @@ export function experienceOf(
           ? 'low'
           : 'high';
   // Transitions at "instant" means no motion at all (reduced motion, or a hidden app).
-  const motion: ExperienceLevel = safe || level('transitions') >= 2 ? 'off' : stepped('ambient-motion');
+  const motion: ExperienceLevel =
+    safe || level('transitions') >= 2 ? 'off' : stepped('ambient-motion');
   const visualEffects: ExperienceLevel = safe ? 'essential' : stepped('blur');
   const celebration: ExperienceLevel = safe ? 'essential' : stepped('particles');
-  const sound: ExperienceLevel = safe || quiet || settings.soundEnabled === false ? 'off' : 'essential';
+  const sound: ExperienceLevel =
+    safe || quiet || settings.soundEnabled === false ? 'off' : 'essential';
   // Haptics have no lever: a low-memory phone's motor stays light unless the user asks for high.
   const lightHaptics = safe || (deviceTier === 'low' && settings.fidelity !== 'high');
   const haptics: ExperienceLevel =
@@ -138,5 +141,26 @@ export function experienceOf(
       maxConcurrentSounds: sound === 'off' ? 0 : 1,
       allowAssetPrefetch: prefetch,
     },
+  };
+}
+
+/**
+ * Verger's readings as the shared visual-budget signals (the contract the web app also feeds),
+ * so surfaces built on that budget follow verger on mobile. A weak link reads as a poor network,
+ * Data Saver or offline as data saving; motion off covers reduced motion and a hidden app.
+ */
+export function visualSignalsOf(
+  snapshot: Pick<GovernorSnapshot, 'networkLimit' | 'powerSaver' | 'visibility'>,
+  experience: Pick<GurudeviExperience, 'deviceTier' | 'experience'>,
+): RuntimeVisualSignals {
+  const limit = snapshot.networkLimit;
+  return {
+    deviceTier: experience.deviceTier,
+    networkQuality:
+      limit === 'offline' ? 'offline' : limit === 'slow' || limit === 'unstable' ? 'poor' : 'good',
+    isDataSaverMode: limit === 'data-saver' || limit === 'offline',
+    isBatterySaverMode: snapshot.powerSaver,
+    isReducedMotionEnabled: experience.experience.motion === 'off',
+    isDocumentVisible: snapshot.visibility === 'active',
   };
 }

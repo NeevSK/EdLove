@@ -25,11 +25,16 @@ export function useVisualCapabilities(): VisualCapabilities {
   return useMemo(() => {
     const safeMode = isVisualSafeModeEnabled();
     if (levels && capacityClass)
-      return experienceOf({ levels, capacityClass }, {
-        fidelity: fidelityLevel,
-        ...sensoryPreferences,
-        safeMode,
-      });
-    return applyVisualSafeMode(resolveVisualCapabilities(reality, fidelityLevel, sensoryPreferences));
+      return experienceOf(
+        { levels, capacityClass },
+        {
+          fidelity: fidelityLevel,
+          ...sensoryPreferences,
+          safeMode,
+        },
+      );
+    return applyVisualSafeMode(
+      resolveVisualCapabilities(reality, fidelityLevel, sensoryPreferences),
+    );
   }, [levels, capacityClass, reality, fidelityLevel, sensoryPreferences]);
 }
