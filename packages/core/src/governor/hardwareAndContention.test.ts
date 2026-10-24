@@ -13,7 +13,8 @@ import {
 } from './index';
 
 const PHONE_90HZ: CapacityFacts = {
-  totalMemoryBytes: 6 * 1024 ** 3,
+  // High-class memory, so no capacity floor hides the rules under test.
+  totalMemoryBytes: 12 * 1024 ** 3,
   isLowRamDevice: false,
   memoryClassMb: 256,
   sdkInt: 34,

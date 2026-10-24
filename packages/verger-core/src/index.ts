@@ -51,9 +51,11 @@ export {
   shouldForwardWindow,
 } from './frames';
 export {
+  capacityClassOf,
   type CreateGovernorOptions,
   createGovernor,
   type GovernorState,
+  networkLimitOf,
   nextTimedChangeAt,
   reduceGovernor,
   snapshotOf,

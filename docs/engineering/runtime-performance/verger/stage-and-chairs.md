@@ -98,9 +98,10 @@ caps the result; the kill switch is above everything.
   or a cheap night window.
 - Whether the breathing guide's animation, or only its timing, is critical; whether uploading an
   attendance save, or only the local write, is critical.
-- Two found by the drift test (`packages/ui/src/context/__tests__/vergerDrift.test.ts`, status
-  `decide`): whether 3 to 6 GB phones keep a class floor (the old governor capped them at
-  "refined": no ambient effects, no blur, disk image cache; verger floors only phones under 3 GB
-  and measures the rest), and whether a slow network alone stops prefetch (the old governor
-  inferred "data saver" from a poor network; verger reads the OS Data Saver, offline, and later
-  the data budget).
+
+Placed (2026-10-24, from the drift test): **the hardware is the ceiling.** Phones are classed by
+reported memory, low below `lowCapacityBelowBytes` (5 GiB: 4 GB phones and below), mid below
+`midCapacityBelowBytes` (9 GiB: 6 and 8 GB), high above; each lever declares what it gives up on
+a mid phone (`whenMidCapacity`), and a phone earns quality back by measurement. **Weak links
+wait:** optional data stops on a slow link (`slowNetworkKbps`) and for `networkSettleMs` after the
+network returns (`whenSlowNetwork`). The values are chairs, provisional until phones are measured.

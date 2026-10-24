@@ -100,6 +100,12 @@ export type NetworkTransport = 'wifi' | 'cellular' | 'ethernet' | 'other' | 'non
  */
 export type DataSaver = 'disabled' | 'allowlisted' | 'enabled';
 
+/** The network's limit on optional data, strongest first. */
+export type NetworkLimit = 'offline' | 'data-saver' | 'unstable' | 'slow' | 'none';
+
+/** A phone's capacity class, from its memory. */
+export type CapacityClass = 'low' | 'mid' | 'high' | 'unknown';
+
 export type GovernorEvent =
   | { readonly type: 'frame-window'; readonly at: number; readonly window: FrameWindow }
   | {
@@ -229,6 +235,18 @@ export interface LeverSpec {
   /** Floor while the battery is low and the phone is not plugged in (config `batteryLowPercent`). */
   readonly whenBatteryLow?: number;
   /**
+   * Floor while the network is slow (below config `slowNetworkKbps`) or unstable (back from
+   * offline less than config `networkSettleMs` ago). A limit for optional data: intermittent
+   * links are normal, so work that can wait does not spend a weak one.
+   */
+  readonly whenSlowNetwork?: number;
+  /**
+   * Floor on a mid-capacity phone (config `lowCapacityBelowBytes` to `midCapacityBelowBytes`):
+   * what this lever gives up by default on hardware that cannot carry everything at once. Lifted
+   * when the user asks for high fidelity, or once the phone has earned it back by measurement.
+   */
+  readonly whenMidCapacity?: number;
+  /**
    * The app-wide effect verger itself applies for this lever, if any. A host lever without an
    * actuator is applied by the host's own consumers reading its level.
    */
@@ -291,6 +309,18 @@ export interface GovernorConfig {
   /** At or below this level, and not plugged in, the battery is low (the governor spec's 20%). */
   readonly batteryLowPercent: number;
   /**
+   * Total memory, as the OS reports it, below which a phone is low capacity. The OS reports less
+   * than the marketed size (it keeps some for itself), so the default (5 GiB) puts 4 GB phones
+   * here. Provisional until phones confirm what they report.
+   */
+  readonly lowCapacityBelowBytes: number;
+  /** Below this, a phone is mid capacity (default 9 GiB: 6 and 8 GB phones); at or above, high. */
+  readonly midCapacityBelowBytes: number;
+  /** A downstream estimate below this is a slow network (kbps). */
+  readonly slowNetworkKbps: number;
+  /** A network back from offline counts as unstable for this long. */
+  readonly networkSettleMs: number;
+  /**
    * Heat from battery temperature, used only where the platform gives no thermal status or
    * headroom (Android 9). Provisional until device captures calibrate them.
    */
@@ -339,6 +369,10 @@ export interface GovernorSnapshot {
   readonly battery: BatteryState;
   readonly thermalSource: ThermalSource;
   readonly network: NetworkState;
+  /** What the network limits now, strongest first; `none` when unknown or fine. */
+  readonly networkLimit: NetworkLimit;
+  /** The phone's class from its memory (config thresholds); `unknown` when memory is unknown. */
+  readonly capacityClass: CapacityClass;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;

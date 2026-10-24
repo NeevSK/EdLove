@@ -1,4 +1,4 @@
-import type { FidelityPreference, GovernorSnapshot } from '@repo/verger-core';
+import type { CapacityClass, FidelityPreference, GovernorSnapshot } from '@repo/verger-core';
 
 /**
  * Gurudevi's reading of verger's decision: lever levels turned into the fields its components
@@ -41,7 +41,6 @@ export interface GurudeviExperience {
 
 export interface ExperienceSettings {
   readonly fidelity: FidelityPreference;
-  readonly deviceTier: DeviceTier;
   readonly soundEnabled?: boolean;
   readonly hapticsEnabled?: boolean;
   readonly quietMode?: boolean;
@@ -58,10 +57,20 @@ const PARTICLES: Readonly<Record<ExperienceLevel, number>> = {
   off: 0,
 };
 
+/** Verger's capacity class as the tier consumers read; an unknown phone reads as medium. */
+const TIER: Readonly<Record<CapacityClass, DeviceTier>> = {
+  low: 'low',
+  mid: 'medium',
+  high: 'high',
+  unknown: 'medium',
+};
+
 export function experienceOf(
-  snapshot: Pick<GovernorSnapshot, 'levels'>,
+  snapshot: Pick<GovernorSnapshot, 'levels' | 'capacityClass'>,
   settings: ExperienceSettings,
 ): GurudeviExperience {
+  // One source for the memory thresholds: verger's config, through its capacity class.
+  const deviceTier = TIER[snapshot.capacityClass];
   const level = (id: string) => snapshot.levels[id] ?? 0;
   const stepped = (id: string) => BY_LEVEL[Math.min(level(id), 2)] ?? 'essential';
   const safe = settings.safeMode === true;
@@ -72,7 +81,7 @@ export function experienceOf(
       ? 'low'
       : settings.fidelity === 'high'
         ? 'high'
-        : settings.deviceTier === 'low'
+        : deviceTier === 'low'
           ? 'low'
           : 'high';
   // Transitions at "instant" means no motion at all (reduced motion, or a hidden app).
@@ -81,7 +90,7 @@ export function experienceOf(
   const celebration: ExperienceLevel = safe ? 'essential' : stepped('particles');
   const sound: ExperienceLevel = safe || quiet || settings.soundEnabled === false ? 'off' : 'essential';
   // Haptics have no lever: a low-memory phone's motor stays light unless the user asks for high.
-  const lightHaptics = safe || (settings.deviceTier === 'low' && settings.fidelity !== 'high');
+  const lightHaptics = safe || (deviceTier === 'low' && settings.fidelity !== 'high');
   const haptics: ExperienceLevel =
     quiet || settings.hapticsEnabled === false ? 'off' : lightHaptics ? 'essential' : 'refined';
   const prefetch = !safe && level('prefetch') === 0;
@@ -90,7 +99,7 @@ export function experienceOf(
   const allowRichAnimation = !safe && level('ambient-motion') === 0;
   const allowSubtleAnimation = motion !== 'off';
   return {
-    deviceTier: settings.deviceTier,
+    deviceTier,
     effectiveFidelity,
     quality: safe
       ? 'essential'

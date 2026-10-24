@@ -22,6 +22,7 @@ export function validateConfig(config: GovernorConfig): void {
   order('upgradeAfterMs', 'maxUpgradeAfterMs');
   order('batteryWarmC', 'batteryHotC');
   order('batteryHotC', 'batteryCriticalC');
+  order('lowCapacityBelowBytes', 'midCapacityBelowBytes');
   if (config.batteryLowPercent > 100) throw new Error('Config "batteryLowPercent" must be at most 100');
   if (!(config.headroomHot <= config.headroomCritical)) {
     throw new Error('Config "headroomHot" must not exceed "headroomCritical"');
@@ -54,6 +55,10 @@ export const DEFAULT_GOVERNOR_CONFIG: GovernorConfig = {
   batteryWarmC: 40,
   batteryHotC: 45,
   batteryCriticalC: 50,
+  lowCapacityBelowBytes: 5 * 1024 ** 3,
+  midCapacityBelowBytes: 9 * 1024 ** 3,
+  slowNetworkKbps: 1_000,
+  networkSettleMs: 60_000,
   saturationCores: 0.9,
   saturationAfterMs: 2_000,
   longTaskWindowMs: 5_000,

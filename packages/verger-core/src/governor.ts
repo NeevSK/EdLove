@@ -32,6 +32,8 @@ import type {
   LeverSpec,
   LeverTarget,
   BatteryState,
+  CapacityClass,
+  NetworkLimit,
   NetworkState,
   ThermalLevel,
   ThermalSource,
@@ -53,8 +55,6 @@ export const UNKNOWN_CAPACITY: CapacityFacts = {
   buildFingerprint: null,
 };
 
-const LOW_MEMORY_DEVICE_BYTES = 3 * 1024 * 1024 * 1024;
-
 export const UNKNOWN_NETWORK: NetworkState = {
   transport: null,
   validated: null,
@@ -75,6 +75,32 @@ const batteryLow = (state: GovernorState) =>
 const offline = (n: NetworkState) => n.transport === 'none' || n.validated === false;
 /** Data Saver restricts this app; allowlisted means the user exempted it. */
 const savingData = (n: NetworkState) => n.dataSaver === 'enabled';
+
+/** The phone's class from its memory; the OS's own low-RAM flag always means low. */
+export function capacityClassOf(
+  capacity: CapacityFacts,
+  config: Pick<GovernorConfig, 'lowCapacityBelowBytes' | 'midCapacityBelowBytes'>,
+): CapacityClass {
+  if (capacity.isLowRamDevice === true) return 'low';
+  const bytes = capacity.totalMemoryBytes;
+  if (bytes === null) return 'unknown';
+  if (bytes < config.lowCapacityBelowBytes) return 'low';
+  return bytes < config.midCapacityBelowBytes ? 'mid' : 'high';
+}
+
+/**
+ * The network's limit on optional data, strongest first. Unstable: back from offline less than
+ * `networkSettleMs` ago, since a link that just dropped often drops again. Unknown limits nothing.
+ */
+export function networkLimitOf(state: GovernorState, at: number = state.at): NetworkLimit {
+  const n = state.network;
+  if (offline(n)) return 'offline';
+  if (savingData(n)) return 'data-saver';
+  if (state.lastOfflineAt !== null && at - state.lastOfflineAt < state.config.networkSettleMs)
+    return 'unstable';
+  if (n.downKbps !== null && n.downKbps < state.config.slowNetworkKbps) return 'slow';
+  return 'none';
+}
 
 export interface GovernorState {
   readonly config: GovernorConfig;
@@ -111,6 +137,8 @@ export interface GovernorState {
   readonly powerSaver: boolean;
   readonly battery: BatteryState;
   readonly network: NetworkState;
+  /** When the network was last seen offline; null if never (or the network sensor is off). */
+  readonly lastOfflineAt: number | null;
   readonly visibility: AppVisibility;
   readonly lastInteractionAt: number;
   readonly reduceMotion: boolean;
@@ -210,6 +238,7 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     powerSaver: false,
     battery: UNKNOWN_BATTERY,
     network: UNKNOWN_NETWORK,
+    lastOfflineAt: null,
     visibility: 'active',
     lastInteractionAt: options.at,
     reduceMotion: false,
@@ -276,19 +305,21 @@ function startingPressure(
 // Floors: what users, the system and the hardware require regardless of measured load.
 // ---------------------------------------------------------------------------------------------
 
-function isLowCapacity(capacity: CapacityFacts): boolean {
-  if (capacity.isLowRamDevice === true) return true;
-  return capacity.totalMemoryBytes !== null && capacity.totalMemoryBytes < LOW_MEMORY_DEVICE_BYTES;
-}
-
-/** Static floors: today's open-loop behaviour (capacity, settings, power, visibility). */
-export function staticFloors(state: GovernorState): Record<string, number> {
+/**
+ * Static floors: the open-loop behaviour (capacity class, settings, power, network,
+ * visibility). The capacity class is the hardware's ceiling on quality until the phone earns
+ * more by measurement (`capacityGrant`).
+ */
+export function staticFloors(state: GovernorState, at: number = state.at): Record<string, number> {
   const floors: Record<string, number> = {};
   const raise = (id: string, level: number) => {
     floors[id] = Math.max(floors[id] ?? 0, level);
   };
   const hidden = state.visibility !== 'active';
-  const lowCapacity = isLowCapacity(state.capacity) && state.fidelity !== 'high';
+  const capacityClass = capacityClassOf(state.capacity, state.config);
+  const lowCapacity = capacityClass === 'low' && state.fidelity !== 'high';
+  const midCapacity =
+    capacityClass === 'mid' && state.fidelity !== 'high' && state.capacityGrant < 1;
   const capacityReported = state.capacity.sdkInt !== null;
 
   for (const lever of state.levers) {
@@ -306,8 +337,13 @@ export function staticFloors(state: GovernorState): Record<string, number> {
   }
   // Rules each lever declares for itself; the reducer names no lever.
   const network = state.network;
+  const limit = networkLimitOf(state, at);
+  const weakLink = limit === 'slow' || limit === 'unstable';
   for (const lever of state.levers) {
     if (hidden && lever.whenHidden !== undefined) raise(lever.id, lever.whenHidden);
+    if (midCapacity && !lever.closedLoopOnly && lever.whenMidCapacity !== undefined)
+      raise(lever.id, lever.whenMidCapacity);
+    if (weakLink && lever.whenSlowNetwork !== undefined) raise(lever.id, lever.whenSlowNetwork);
     if (network.metered === true && lever.whenMetered !== undefined) raise(lever.id, lever.whenMetered);
     if (savingData(network) && lever.whenDataSaver !== undefined) raise(lever.id, lever.whenDataSaver);
     if (offline(network) && lever.whenOffline !== undefined) raise(lever.id, lever.whenOffline);
@@ -413,7 +449,7 @@ function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'network':
-      return { ...state, network: UNKNOWN_NETWORK };
+      return { ...state, network: UNKNOWN_NETWORK, lastOfflineAt: null };
   }
 }
 
@@ -817,18 +853,17 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
     case 'config':
       next = { ...next, config: input.config, upgradeAfterMs: input.config.upgradeAfterMs };
       break;
-    case 'network':
-      next = {
-        ...next,
-        network: {
-          transport: input.transport,
-          validated: input.validated,
-          metered: input.metered,
-          downKbps: input.downKbps,
-          dataSaver: input.dataSaver,
-        },
+    case 'network': {
+      const network: NetworkState = {
+        transport: input.transport,
+        validated: input.validated,
+        metered: input.metered,
+        downKbps: input.downKbps,
+        dataSaver: input.dataSaver,
       };
+      next = { ...next, network, lastOfflineAt: offline(network) ? at : next.lastOfflineAt };
       break;
+    }
     case 'tick':
       break;
   }
@@ -866,26 +901,30 @@ function optionalConcurrency(state: GovernorState, at: number): number {
   const closedLoop = admission === 'apply' && state.activation.decide === 'closed-loop';
   if (state.visibility !== 'active' || state.powerSaver) return 0;
   // The user's Data Saver and a missing network are limits: no optional data work at all.
-  if (savingData(state.network) || offline(state.network)) return 0;
+  const limit = networkLimitOf(state, at);
+  if (limit === 'data-saver' || limit === 'offline') return 0;
   if (closedLoop && contentionOf(state, at) !== 'none') return 0;
   const thermal = thermalOf(state);
   const memory = memoryOf(state, at);
   if (closedLoop && (thermal === 'critical' || memory === 'low')) return 0;
-  const limit =
+  const allowed =
     state.network.metered === true
       ? Math.min(state.config.maxOptionalConcurrency, state.config.meteredOptionalConcurrency)
       : state.config.maxOptionalConcurrency;
   const constrained =
-    isLowCapacity(state.capacity) ||
+    // A weak link carries one optional task at a time.
+    limit === 'slow' ||
+    limit === 'unstable' ||
+    capacityClassOf(state.capacity, state.config) === 'low' ||
     state.capacity.totalMemoryBytes === null ||
     (closedLoop &&
       (thermal === 'hot' || thermal === 'warm' || memory === 'trimmed' || state.stack.length > 0));
-  return constrained ? Math.min(1, limit) : limit;
+  return constrained ? Math.min(1, allowed) : allowed;
 }
 
 /** The governor's published output at time `at` (ambient sleep depends on elapsed time). */
 export function snapshotOf(state: GovernorState, at: number = state.at): GovernorSnapshot {
-  const base = staticFloors(state);
+  const base = staticFloors(state, at);
   const baseline = combine(state.levers, base);
   const loop = closedLoop(state)
     ? combine(state.levers, base, state.pressure, dynamicFloors(state, at))
@@ -922,6 +961,8 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     battery: state.battery,
     thermalSource: thermalReading(state).source,
     network: state.network,
+    networkLimit: networkLimitOf(state, at),
+    capacityClass: capacityClassOf(state.capacity, state.config),
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at),
@@ -998,6 +1039,8 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     a.memory !== b.memory ||
     a.powerSaver !== b.powerSaver ||
     a.network !== b.network ||
+    a.networkLimit !== b.networkLimit ||
+    a.capacityClass !== b.capacityClass ||
     a.battery !== b.battery ||
     a.thermalSource !== b.thermalSource ||
     a.visibility !== b.visibility ||
@@ -1027,7 +1070,7 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
 
 /**
  * When the next change that depends only on elapsed time is due, so the caller schedules one
- * tick instead of polling: ambient sleep, contention starting after a sustained saturation,
+ * tick instead of polling: ambient sleep, a network settling, contention starting after a sustained saturation,
  * the next contention step while it lasts, long tasks ageing out, and an upgrade becoming due.
  * Native sensors report only changes, so without this a steady saturated thread would never
  * be acted on.
@@ -1045,6 +1088,9 @@ export function nextTimedChangeAt(state: GovernorState): number | null {
   for (const t of state.longTasks) candidates.push(t + longTaskWindowMs + 1);
   if (state.contentionExhausted)
     candidates.push(state.lastContentionActionAt + 5 * saturationAfterMs + 1);
+  // An unstable network settles by time alone.
+  if (state.lastOfflineAt !== null && !offline(state.network))
+    candidates.push(state.lastOfflineAt + state.config.networkSettleMs);
   if (state.stack.length > 0) {
     const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
     candidates.push(lastChange + state.upgradeAfterMs);

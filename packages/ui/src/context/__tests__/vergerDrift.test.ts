@@ -10,7 +10,7 @@ import {
 } from '@repo/core/governor';
 import type { SensoryPreferences } from '@repo/ui/context/experiencePolicy';
 import type { FidelityLevel, NetworkQuality, RealityState } from '@repo/ui/context/types';
-import { resolveVisualCapabilities } from '@repo/ui/context/visualPolicy';
+import { classifyDeviceTier, resolveVisualCapabilities } from '@repo/ui/context/visualPolicy';
 import { applyVisualSafeMode } from '@repo/ui/context/visualSafety';
 import { describe, expect, it } from 'vitest';
 
@@ -22,15 +22,27 @@ import { describe, expect, it } from 'vitest';
  * moving consumers to verger may change behaviour only on purpose.
  */
 
-const GB = 1024 ** 3;
-const TIERS = { low: 2 * GB, medium: 4 * GB, high: 8 * GB } as const;
-type Tier = keyof typeof TIERS;
+const GIB = 1024 ** 3;
+/**
+ * Phones by marketed size, with the memory they report (below the marketed size: the OS keeps
+ * some). The 8 GB figure is the A52's, measured; the others are typical, to confirm on phones.
+ */
+const PHONES = {
+  '2GB': 1.8 * GIB,
+  '3GB': 2.8 * GIB,
+  '4GB': 3.7 * GIB,
+  '6GB': 5.5 * GIB,
+  '8GB': 7_668_940 * 1024,
+  '12GB': 11.2 * GIB,
+} as const;
+type Phone = keyof typeof PHONES;
+const VERGER_LOW: readonly Phone[] = ['2GB', '3GB', '4GB'];
 const FIDELITY: readonly FidelityLevel[] = ['auto', 'low', 'high'];
 const NETWORK: readonly NetworkQuality[] = ['excellent', 'good', 'fair', 'poor', 'offline'];
 const BOOL = [false, true] as const;
 
 interface Case {
-  readonly tier: Tier;
+  readonly phone: Phone;
   readonly fidelity: FidelityLevel;
   readonly saver: boolean;
   readonly reduceMotion: boolean;
@@ -42,7 +54,7 @@ interface Case {
 }
 
 function* cases(): Generator<Case> {
-  for (const tier of Object.keys(TIERS) as Tier[])
+  for (const phone of Object.keys(PHONES) as Phone[])
     for (const fidelity of FIDELITY)
       for (const saver of BOOL)
         for (const reduceMotion of BOOL)
@@ -51,14 +63,14 @@ function* cases(): Generator<Case> {
               for (const haptics of BOOL)
                 for (const quiet of BOOL)
                   for (const safe of BOOL)
-                    yield { tier, fidelity, saver, reduceMotion, network, sound, haptics, quiet, safe };
+                    yield { phone, fidelity, saver, reduceMotion, network, sound, haptics, quiet, safe };
 }
 
 /** The old governor, as RealityProvider and collectRealitySignals feed it. */
 function oldGovernor(c: Case) {
   const reality: RealityState = {
-    deviceTier: c.tier,
-    totalMemoryGB: TIERS[c.tier] / GB,
+    deviceTier: classifyDeviceTier(PHONES[c.phone]),
+    totalMemoryGB: PHONES[c.phone] / GIB,
     networkQuality: c.network,
     // collectRealitySignals' rule: data saver is inferred from a poor or absent network.
     isDataSaverMode: c.network === 'poor' || c.network === 'offline',
@@ -102,7 +114,7 @@ function networkEvent(quality: NetworkQuality, at: number): GovernorEvent {
  * preset, hearing power and network (verger senses both natively when it runs).
  */
 function verger(c: Case) {
-  const capacity: CapacityFacts = { ...UNKNOWN_CAPACITY, totalMemoryBytes: TIERS[c.tier] };
+  const capacity: CapacityFacts = { ...UNKNOWN_CAPACITY, totalMemoryBytes: PHONES[c.phone] };
   const activation = resolveActivation(ACTIVATION_PRESETS.static, { sense: { network: true } });
   let state = VERGER_POLICY.create({ at: 0, levers: GURUDEVI_LEVERS, capacity, activation, hardware: false });
   const events: GovernorEvent[] = [
@@ -114,7 +126,6 @@ function verger(c: Case) {
   for (const event of events) state = VERGER_POLICY.reduce(state, event);
   return experienceOf(VERGER_POLICY.snapshot(state), {
     fidelity: c.fidelity,
-    deviceTier: c.tier,
     soundEnabled: c.sound,
     hapticsEnabled: c.haptics,
     quietMode: c.quiet,
@@ -133,7 +144,8 @@ function flatten(value: object, prefix = ''): Record<string, unknown> {
 
 /**
  * Every intended difference, by cause. `decide`: verger's behaviour differs and the choice is
- * open (a chair, stage-and-chairs.md); the test keeps it visible until it is made.
+ * open (a chair, stage-and-chairs.md); the test keeps it visible until it is made. None is open
+ * now: both found on 2026-10-24 were decided the same day.
  */
 interface Difference {
   readonly id: string;
@@ -150,24 +162,41 @@ const AMBIENT_FIELDS = [
   'maxCelebrationParticles',
 ] as const;
 
+/** Everything a phone's class sets: its tier, and what the class floors and fidelity give it. */
+const CLASS_FIELDS = [
+  ...AMBIENT_FIELDS,
+  'deviceTier',
+  'effectiveFidelity',
+  'quality',
+  'allowAmbientEffects',
+  'allowRichAnimation',
+  'allowBlur',
+  'imageCachePolicy',
+  'imageDecodeFormat',
+  'experience.visualEffects',
+  'experience.haptics',
+] as const;
+
 export const DIFFERENCES: readonly Difference[] = [
   {
-    id: 'medium-phone-floor',
-    status: 'decide',
+    id: 'four-gb-phones-are-low',
+    status: 'intended',
     why:
-      'The old governor capped 3-6 GB phones at "refined" (no ambient effects, no blur, disk image ' +
-      'cache) by class. Verger floors only phones under 3 GB and compresses the rest by ' +
-      'measurement while it runs; while it is off a 4 GB phone gets the full experience.',
-    applies: (c) => c.tier === 'medium' && c.fidelity === 'auto',
-    fields: [
-      ...AMBIENT_FIELDS,
-      'allowAmbientEffects',
-      'allowRichAnimation',
-      'allowBlur',
-      'quality',
-      'experience.visualEffects',
-      'imageCachePolicy',
-    ],
+      'Decided 2026-10-24: the hardware is the ceiling, and 4 GB phones are low end. The old ' +
+      'governor (low below 3 GiB) gave them its medium tier; verger classes them low ' +
+      '(`lowCapacityBelowBytes`, 5 GiB): ambient stilled, the rest one step down.',
+    applies: (c) => c.phone === '4GB',
+    fields: CLASS_FIELDS,
+  },
+  {
+    id: 'eight-gb-phones-are-mid',
+    status: 'intended',
+    why:
+      'Decided 2026-10-24: 8 GB is the middle. The old governor (high from 6 GiB) gave the A52 ' +
+      'everything; verger classes it mid (`midCapacityBelowBytes`, 9 GiB): it gives up what ' +
+      'Gurudevi\'s levers declare for mid phones until it earns it back by measurement.',
+    applies: (c) => c.phone === '8GB',
+    fields: CLASS_FIELDS,
   },
   {
     id: 'low-fidelity-is-honoured',
@@ -209,22 +238,29 @@ export const DIFFERENCES: readonly Difference[] = [
     id: 'low-phone-blur-reduced-not-flat',
     status: 'intended',
     why:
-      'On a phone under 3 GB verger lowers blur one step (reduced radius, "refined"); the old ' +
-      'governor named the level "essential". Both allow no full blur.',
-    applies: (c) => c.tier === 'low' && c.fidelity !== 'high',
+      'On a low phone verger lowers blur one step (reduced radius, "refined"); the old governor ' +
+      'named the level "essential". Both allow no full blur.',
+    applies: (c) => VERGER_LOW.includes(c.phone) && c.fidelity !== 'high',
     fields: ['experience.visualEffects'],
   },
   {
-    id: 'inferred-data-saver',
-    status: 'decide',
+    id: 'weak-links-wait',
+    status: 'intended',
     why:
-      'The old governor inferred "data saver" from a poor or absent network and then stopped ' +
-      'prefetch and the memory image cache. Verger reads the OS Data Saver and offline; a slow ' +
-      'network alone limits nothing, and the daily data budget (B3) is where cost belongs; the ' +
-      'image cache is memory, not data, so a network never sets it. Whether slow networks should ' +
-      'also stop prefetch is open.',
+      'Decided 2026-10-24: be resilient, intermittent and slow links are normal. Optional ' +
+      'prefetch waits on any slow link (below `slowNetworkKbps`, so 3G-class "fair" too), and ' +
+      'for a minute after the network returns; the old governor still prefetched on "fair".',
+    applies: (c) => c.network === 'fair',
+    fields: ['experience.allowAssetPrefetch', 'shouldPrefetchAssets'],
+  },
+  {
+    id: 'image-cache-is-memory-not-data',
+    status: 'intended',
+    why:
+      'The old governor inferred "data saver" from a poor or absent network and then also dropped ' +
+      'the memory image cache. The cache is memory, not data: verger sets it by memory alone.',
     applies: (c) => c.network === 'poor' || c.network === 'offline',
-    fields: ['experience.allowAssetPrefetch', 'shouldPrefetchAssets', 'imageCachePolicy'],
+    fields: ['imageCachePolicy'],
   },
   {
     id: 'safe-mode-respects-the-user',
@@ -259,7 +295,7 @@ describe('drift: the old governor against verger (exhaustive)', () => {
   }
 
   it('covers every combination the old governor distinguishes', () => {
-    expect(total).toBe(3 * 3 * 2 * 2 * 5 * 2 * 2 * 2 * 2);
+    expect(total).toBe(6 * 3 * 2 * 2 * 5 * 2 * 2 * 2 * 2);
   });
 
   it('every difference has a named cause', () => {

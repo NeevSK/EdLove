@@ -2,6 +2,9 @@ import { type LeverSpec, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from '@repo/
 
 /**
  * Gurudevi's levers. Consumers own what each level means; the descriptions are the contract.
+ * `whenMidCapacity` on 6 and 8 GB phones (Neev, 2026-10-24: the hardware is the ceiling; 4 GB
+ * and below are low): ambient motion paced, half the particles, reduced blur, glass without
+ * refraction, half the image cache. Provisional until phones are measured.
  * Adding a lever never changes another lever's behaviour, only the order levers are lowered in.
  */
 /** Gurudevi's own levers: the app-specific half of its manifest. */
@@ -17,6 +20,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     motion: true,
     levels: ['full motion', 'paced at half the refresh rate', 'still'],
     whenBatteryLow: 1,
+    whenMidCapacity: 1,
   },
   {
     id: 'loading-shimmer',
@@ -40,6 +44,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     motion: true,
     levels: ['full count', 'half count', 'none'],
     whenBatteryLow: 1,
+    whenMidCapacity: 1,
   },
   {
     id: 'blur',
@@ -50,6 +55,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     motion: false,
     levels: ['full radius', 'reduced radius', 'flat tint'],
     requires: [{ capability: 'renderEffect', otherwiseLevel: 2 }],
+    whenMidCapacity: 1,
   },
   {
     id: 'glass-material',
@@ -63,6 +69,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
       { capability: 'renderEffect', otherwiseLevel: 2 },
       { capability: 'runtimeShader', otherwiseLevel: 1 },
     ],
+    whenMidCapacity: 1,
   },
   {
     id: 'image-decode',
@@ -81,6 +88,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     ambient: false,
     motion: false,
     levels: ['full memory cache', 'half', 'quarter'],
+    whenMidCapacity: 1,
   },
   {
     id: 'list-window',
@@ -115,6 +123,8 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     whenDataSaver: 2,
     whenBatteryLow: 1,
     whenOffline: 2,
+    // Intermittent links are normal: optional prefetch waits for a steady, fast one.
+    whenSlowNetwork: 2,
   },
 ];
 

@@ -33,6 +33,12 @@ const A52: CapacityFacts = {
   supportsCpuHints: true,
 };
 
+/**
+ * The A52's profile with high-class memory. The loop's mechanics are tested where no capacity
+ * class floor applies; the class floors (the real A52, 8 GB, is mid) have their own tests below.
+ */
+const HIGH_END: CapacityFacts = { ...A52, totalMemoryBytes: 12 * 1024 ** 3 };
+
 const LOW_END: CapacityFacts = {
   ...A52,
   totalMemoryBytes: 2 * 1024 ** 3,
@@ -96,7 +102,7 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
     }));
     events.push({ type: 'tick', at: 10_000 });
     const { final } = replayGovernor(
-      { at: 0, capacity: A52, levers: GURUDEVI_LEVERS, memorySensing: true },
+      { at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS, memorySensing: true },
       events,
     );
     expect(final.interactionIdle).toBe(true);
@@ -110,7 +116,7 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
   it('in shadow mode decides the same but applies the open-loop baseline', () => {
     const events: GovernorEvent[] = [{ type: 'tick', at: 12_000 }];
     const { final } = replayGovernor(
-      { at: 0, capacity: A52, levers: GURUDEVI_LEVERS, mode: 'shadow' },
+      { at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS, mode: 'shadow' },
       events,
     );
     expect(final.proposedLevels['ambient-motion']).toBe(2);
@@ -120,7 +126,7 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
 
 describe('closed-loop lowering and restoring', () => {
   it('lowers the least visible lever aimed at the bottleneck first, after 750 ms of stress', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     state = reduceGovernor(state, { type: 'interaction', at: 0 });
     for (const event of frames(0, 500, 25)) state = reduceGovernor(state, event);
     expect(snapshotOf(state).lastAction).toBe('stale');
@@ -133,7 +139,7 @@ describe('closed-loop lowering and restoring', () => {
   });
 
   it('keeps lowering in a stable order under sustained stress and never touches energy first', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     for (const event of frames(0, 6000, 30)) state = reduceGovernor(state, event);
     // One decrease per two over-budget windows (750 ms needs two 500 ms windows).
     expect(state.stack.length).toBe(6);
@@ -142,7 +148,7 @@ describe('closed-loop lowering and restoring', () => {
   });
 
   it('restores last-in first-out after sustained comfort, and backs off after a failed upgrade', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     for (const event of frames(0, 1000, 25)) state = reduceGovernor(state, event);
     expect(state.stack).toEqual(['ambient-motion']);
     for (const event of frames(1000, 5500, 8)) state = reduceGovernor(state, event);
@@ -172,7 +178,7 @@ describe('thermal and memory pressure', () => {
   });
 
   it('lowers continuous gpu work first when hot, spaced by the thermal delay, and blocks upgrades', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     state = reduceGovernor(state, { type: 'thermal', at: 100, status: 'moderate', headroom: 0.97 });
     expect(state.stack).toEqual(['ambient-motion']);
     state = reduceGovernor(state, { type: 'tick', at: 1000 });
@@ -193,7 +199,7 @@ describe('thermal and memory pressure', () => {
   });
 
   it('fast-decreases and stops optional work when critical', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     state = reduceGovernor(state, { type: 'thermal', at: 50, status: 'critical', headroom: 1.05 });
     expect(state.stack.length).toBe(3);
     expect(snapshotOf(state).optionalConcurrency).toBe(0);
@@ -203,7 +209,7 @@ describe('thermal and memory pressure', () => {
   it('relieves memory levers first on a trim and latches for 30 s', () => {
     let state = createGovernor({
       at: 0,
-      capacity: A52,
+      capacity: HIGH_END,
       levers: GURUDEVI_LEVERS,
       memorySensing: true,
     });
@@ -221,7 +227,7 @@ describe('thermal and memory pressure', () => {
 
 describe('floors: users, the system and the hardware come first', () => {
   it('honours reduce motion and never raises a motion lever above its floor', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     state = reduceGovernor(state, {
       type: 'preferences',
       at: 1,
@@ -256,7 +262,7 @@ describe('floors: users, the system and the hardware come first', () => {
   });
 
   it('stills everything ambient and stops optional work in the background', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     state = reduceGovernor(state, { type: 'app-state', at: 10, state: 'background' });
     const snap = snapshotOf(state);
     expect(snap.levels['ambient-motion']).toBe(2);
@@ -265,7 +271,7 @@ describe('floors: users, the system and the hardware come first', () => {
   });
 
   it('wakes ambient levers on the next touch', () => {
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     state = reduceGovernor(state, { type: 'tick', at: 15_000 });
     expect(snapshotOf(state).levels['ambient-motion']).toBe(2);
     state = reduceGovernor(state, { type: 'interaction', at: 15_100 });
@@ -276,8 +282,8 @@ describe('floors: users, the system and the hardware come first', () => {
 describe('determinism and validation', () => {
   it('produces identical snapshots for identical streams', () => {
     const events = [...frames(0, 3000, 28), { type: 'tick', at: 13_000 } as GovernorEvent];
-    const a = replayGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS }, events);
-    const b = replayGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS }, events);
+    const a = replayGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS }, events);
+    const b = replayGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS }, events);
     expect(a.snapshots).toEqual(b.snapshots);
   });
 
@@ -341,7 +347,7 @@ describe('telemetry', () => {
       experimentKey: 'governor-v1',
       maxEvents: 4,
     });
-    let state = createGovernor({ at: 0, capacity: A52, levers: GURUDEVI_LEVERS });
+    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     telemetry.onSnapshot(snapshotOf(state));
     telemetry.onSnapshot(snapshotOf(state));
     expect(events.map(([name]) => name)).toEqual(['governor_started']);

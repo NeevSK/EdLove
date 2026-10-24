@@ -12,7 +12,8 @@ import {
 import { GURUDEVI_LEVERS } from './gurudeviLevers';
 
 /** An Android 9 phone: no thermal service, so battery temperature is the only witness of heat. */
-const ANDROID_9 = { ...UNKNOWN_CAPACITY, totalMemoryBytes: 4 * 1024 ** 3, sdkInt: 28 };
+// High-class memory, so no capacity floor hides the battery rule under test.
+const ANDROID_9 = { ...UNKNOWN_CAPACITY, totalMemoryBytes: 12 * 1024 ** 3, sdkInt: 28 };
 
 const battery = (levelPercent: number | null, pluggedIn: boolean | null, temperatureC: number | null = 30): GovernorEvent => ({
   type: 'battery',
