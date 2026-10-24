@@ -37,6 +37,7 @@ tags: [performance, runtime-performance, index, catalog, registry]
 | :--- | :--- | :--- | :--- | :--- |
 | **[`verger/vision-feasibility-and-plan.md`](verger/vision-feasibility-and-plan.md)** | Gurudevi Adaptive Runtime: Vision, Feasibility and Plan | Why verger exists (the lieutenant to the OS), its atoms, signals, demand registry, architecture, control testing and phases. | Active Design | 2026-10-24 |
 | **[`verger/stage-and-chairs.md`](verger/stage-and-chairs.md)** | Verger: the stage and the chairs | Canonical build doctrine: a full, modular foundation of ten layers; specific choices are data placed later. Lists the open choices. | Active Doctrine | 2026-10-24 |
+| **[`verger/pipeline.md`](verger/pipeline.md)** | Verger: the pipeline, needed against built | One-page top-down pipeline (sense to new policy version); needed against built per stage; requisite variety (every disturbance seen and countered); affordance. Kept current. | Active Status | 2026-10-24 |
 | **[`verger/second-order-loop.md`](verger/second-order-loop.md)** | Verger: the second-order loop | Verger watches and changes its own adapting (outcomes of moves, its own cost, self-reduction); telemetry as its eyes; prior art connected; implementation plan. | Active Doctrine | 2026-10-24 |
 | **[`verger/lineage-and-recovery.md`](verger/lineage-and-recovery.md)** | Verger: Lineage and Recovery | Prior art (Odyssey, MAPE-K, brownout, lite apps) and the mission-critical lessons behind the recovery ladder. | Active Design | 2026-10-24 |
 
