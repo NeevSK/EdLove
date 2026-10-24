@@ -30,6 +30,7 @@ import {
   type SessionOutcome,
   type VergerRecord,
 } from './recovery';
+import { createOutcomeLedger, type MoveRecord, type OutcomeLedger, type OutcomeSummary } from './outcomes';
 import { canonicalLadderKey, ladderKey as ladderKeyOf } from './policy';
 import { createSessionLedger, type SessionLedger } from './session';
 import {
@@ -126,6 +127,11 @@ export interface Verger {
   /** The activation in force, or null while verger is not running. */
   readonly activation: VergerActivation | null;
   /**
+   * How every move this session turned out (loop 2's evidence), judged up to now; null while
+   * verger is not running.
+   */
+  outcomes(): { readonly records: readonly MoveRecord[]; readonly summary: OutcomeSummary } | null;
+  /**
    * Changes thresholds while verger runs: the patch applies over the host's config and must
    * validate, or nothing changes and the error is thrown. `null` returns to the host's config.
    * The native sensors keep the thresholds they started with.
@@ -203,6 +209,7 @@ export function createVerger(options: VergerOptions): Verger {
   let session: {
     marker: SessionMarker;
     ledger: SessionLedger;
+    outcomes: OutcomeLedger;
     flight: FlightRecorder;
     unsubscribe: () => void;
     timer: unknown;
@@ -387,9 +394,11 @@ export function createVerger(options: VergerOptions): Verger {
       },
     });
     const ledger = createSessionLedger(host.levers);
+    const outcomes = createOutcomeLedger({ levers: host.levers, capacity });
     const flight = createFlightRecorder(now());
     const initial = started.getSnapshot();
     ledger.onSnapshot(initial);
+    outcomes.observe(initial);
     flight.record(initial);
     controller = started;
     session = {
@@ -400,12 +409,14 @@ export function createVerger(options: VergerOptions): Verger {
         exercise: decided.exercise,
       },
       ledger,
+      outcomes,
       flight,
       timer: null,
       lastPersistAt: now(),
       unsubscribe: started.subscribe(() => {
         const snapshot = started.getSnapshot();
         guard(() => ledger.onSnapshot(snapshot));
+        guard(() => outcomes.observe(snapshot));
         guard(() => flight.record(snapshot));
         persistSoon();
         notify();
@@ -496,6 +507,12 @@ export function createVerger(options: VergerOptions): Verger {
       const config: GovernorConfig = { ...host.config, ...patch };
       validateConfig(config);
       running.dispatch({ type: 'config', at: now(), config });
+    },
+    outcomes() {
+      const current = session;
+      if (!current) return null;
+      current.outcomes.settle(now());
+      return { records: current.outcomes.records(), summary: current.outcomes.summary() };
     },
     get activation() {
       return controller?.getSnapshot().activation ?? null;

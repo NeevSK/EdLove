@@ -109,6 +109,20 @@ export {
   type VergerPolicy,
   validatePolicy,
 } from './policy';
+export {
+  accountsRelievedBy,
+  createOutcomeLedger,
+  DEFAULT_HOLD_WINDOW_MS,
+  DEFAULT_JUDGE_WINDOW_MS,
+  type LeverOutcomes,
+  type MoveCause,
+  type MoveDirection,
+  type MoveRecord,
+  type OutcomeLedger,
+  type OutcomeLedgerOptions,
+  type OutcomeSummary,
+  type Verdict,
+} from './outcomes';
 export { replayGovernor } from './replay';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {

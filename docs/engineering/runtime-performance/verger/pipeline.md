@@ -49,7 +49,7 @@ compare). Update this page whenever a stage changes. Doctrine:
 | 2 | Estimate | seven accounts, each with a state and a confidence | `estimateAccounts` (read model) | network and storage unknown; confidences provisional; no policy reads it yet |
 | 3 | Decide | a swappable policy inside the envelope (limit, ceiling, home, floor); compress and expand | `VergerPolicy`, verger-p4: compresses, returns to start; static floors; live tuning | home, ceiling and in-session expansion (verger-p5) |
 | 4 | Act | every lever reaches a component; hardware levers; deferrable work admitted | refresh cap and CPU hints (native), global reduced motion (React); `optionalConcurrency` computed | **no app component reads a lever**; admission read by nothing; the old governor still decides the app |
-| 5 | Judge | every move judged: relieved, held or withdrawn, agility, quality cost | contention "not relievable" only | **the outcome ledger** |
+| 5 | Judge | every move judged: relieved, held or withdrawn, agility, quality cost | **outcome ledger** (`outcomes.ts`): every applied move by pressure judged; floor moves counted; joint attribution; kept by every launch, read with `Verger.outcomes()` | not yet in telemetry or the flight recorder; shadow proposals not judged (counterfactual); judging windows are fixed defaults |
 | 6 | Self-cost | verger's own wakeups, CPU, bridge events, memory, against off | none | self-cost meter |
 | 7 | Adapt self | declared rules: stop unhelpful moves, slow flapping, withdraw failed growth, own budget | recovery ladder (on harm), failed-raise back-off, contention stop | the rules for every account |
 | 8 | Record and report | telemetry sink, observe levels, session recordings, flight recorder | telemetry events defined, capped; flight recorder (48 lines); quality meter; session report | no sink connected; no session recording or export |
@@ -79,7 +79,7 @@ only report. Each row is one source of variety on the phone.
 | User's choices (fidelity, quiet) | reduce motion only | limits in the envelope | **fidelity not sent** |
 | Verger's own failure | exits, markers | the recovery ladder | seen and countered |
 | Verger's own cost | **not measured** | its own budget rules | unseen |
-| Moves that do not help | contention only | stop rules | mostly unseen until the outcome ledger |
+| Moves that do not help | the outcome ledger, every account | stop rules (loop 2, phase 3) | seen; not yet countered except for contention |
 
 ## Affordance: what the stage lets people do
 
