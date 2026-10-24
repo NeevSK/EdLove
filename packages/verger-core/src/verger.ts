@@ -31,24 +31,23 @@ import {
   type SessionOutcome,
   type VergerRecord,
 } from './recovery';
-import { createOutcomeLedger, type MoveRecord, type OutcomeLedger, type OutcomeSummary } from './outcomes';
+import {
+  createOutcomeLedger,
+  type MoveRecord,
+  type OutcomeLedger,
+  type OutcomeSummary,
+} from './outcomes';
 import { canonicalLadderKey, ladderKey as ladderKeyOf } from './policy';
 import { createSessionLedger, type SessionLedger } from './session';
 import {
-  createGovernorTelemetry,
-  type GovernorTelemetry,
-  type GovernorTelemetrySink,
+  createVergerTelemetry,
+  type VergerTelemetry,
+  type VergerTelemetrySink,
   type TelemetryValue,
 } from './telemetry';
 import { validateConfig } from './config';
-import { UNKNOWN_CAPACITY } from './governor';
-import type {
-  CapacityFacts,
-  GovernorConfig,
-  GovernorEvent,
-  GovernorMode,
-  GovernorSnapshot,
-} from './types';
+import { UNKNOWN_CAPACITY } from './reducer';
+import type { CapacityFacts, VergerConfig, VergerEvent, RunMode, VergerSnapshot } from './types';
 
 /**
  * Durable key-value storage the host supplies. It may be asynchronous: the launch waits for
@@ -91,7 +90,7 @@ export interface VergerOptions {
   /** Without a store verger has no memory across launches: no ladder, no trust, no profile. */
   readonly store?: VergerStore;
   /** The most verger may do this launch; the ladder can only lower it. */
-  readonly requested: GovernorMode;
+  readonly requested: RunMode;
   /**
    * The activation asked for (a preset with any overrides); the ladder caps it. Defaults to the
    * preset that reproduces `requested`.
@@ -99,7 +98,7 @@ export interface VergerOptions {
   readonly activation?: VergerActivation;
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
-  readonly telemetrySink?: GovernorTelemetrySink;
+  readonly telemetrySink?: VergerTelemetrySink;
   /**
    * Device facts read in JavaScript alone (never through verger's native module), for the
    * floors that hold while verger is not running. Read once, at construction; unknown if absent
@@ -125,7 +124,7 @@ export interface Verger {
   stop(): Promise<void>;
   readonly plan: LaunchPlan | null;
   /** Feeds an event from outside the platform (app state, touches, preferences, long tasks). */
-  dispatch(event: GovernorEvent): void;
+  dispatch(event: VergerEvent): void;
   /**
    * Changes what verger may do while it runs: the patch applies over the launch's activation,
    * and the result is capped by the launch exactly as at start. `null` returns to the launch's
@@ -144,7 +143,7 @@ export interface Verger {
    * validate, or nothing changes and the error is thrown. `null` returns to the host's config.
    * The native sensors keep the thresholds they started with.
    */
-  tune(patch: Partial<GovernorConfig> | null): void;
+  tune(patch: Partial<VergerConfig> | null): void;
   /**
    * The snapshot in force. While verger is not running (before `start`, after `stop`, or when
    * the launch stayed off) it is the floors: the host's policy under the `static` preset, on
@@ -152,7 +151,7 @@ export interface Verger {
    * hardware. Settings (reduce motion, fidelity, battery saver, visibility, a low-memory phone)
    * therefore hold whether verger runs or not. Null only if the floors themselves failed.
    */
-  getSnapshot(): GovernorSnapshot | null;
+  getSnapshot(): VergerSnapshot | null;
   subscribe(listener: () => void): () => void;
 }
 
@@ -194,7 +193,7 @@ function createFloors(host: VergerHost, facts: (() => CapacityFacts) | undefined
   let snapshot = initial === null ? null : guardValue(() => policy.snapshot(initial));
   return {
     /** Returns true when the published floors changed. */
-    dispatch(event: GovernorEvent): boolean {
+    dispatch(event: VergerEvent): boolean {
       const current = state;
       if (current === null || event.type === 'activation' || event.type === 'config') return false;
       const next = guardValue(() => policy.reduce(current, event));
@@ -410,7 +409,7 @@ export function createVerger(options: VergerOptions): Verger {
     }
 
     const telemetry = options.telemetrySink
-      ? createGovernorTelemetry({
+      ? createVergerTelemetry({
           sink: options.telemetrySink,
           // From the assignment or the request, never from the ladder: labelling crashed
           // devices `control` would bias the comparison.
@@ -567,7 +566,7 @@ export function createVerger(options: VergerOptions): Verger {
     tune(patch) {
       const running = controller;
       if (!running) return;
-      const config: GovernorConfig = { ...host.config, ...patch };
+      const config: VergerConfig = { ...host.config, ...patch };
       validateConfig(config);
       running.dispatch({ type: 'config', at: now(), config });
     },
@@ -618,7 +617,7 @@ function deviceStratum(capacity: CapacityFacts, sensing: boolean): Record<string
 }
 
 function reportLaunch(
-  telemetry: GovernorTelemetry | undefined,
+  telemetry: VergerTelemetry | undefined,
   plan: LaunchPlan,
   outcome: SessionOutcome,
   transition: {

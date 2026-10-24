@@ -3,7 +3,7 @@
  * Core types for the Environment Context system
  */
 
-import type { GurudeviExperience } from '@repo/core/governor';
+import type { GurudeviExperience } from '@repo/core/verger';
 import type { Bond } from '@repo/core/types';
 
 /**
@@ -35,14 +35,14 @@ export type Language = 'en' | 'si' | 'ta';
 
 /**
  * What components may spend, as verger decides it through Gurudevi's view
- * (`@repo/core/governor` `experienceOf`). One definition, owned by the view.
+ * (`@repo/core/verger` `experienceOf`). One definition, owned by the view.
  */
 export type {
   DeviceTier,
   ExperienceLevel,
   ExperienceProfile,
   VisualQuality,
-} from '@repo/core/governor';
+} from '@repo/core/verger';
 export type VisualCapabilities = GurudeviExperience;
 export type VisualImageCachePolicy = GurudeviExperience['imageCachePolicy'];
 export type VisualImageDecodeFormat = GurudeviExperience['imageDecodeFormat'];

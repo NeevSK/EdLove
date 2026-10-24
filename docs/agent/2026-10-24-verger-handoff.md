@@ -21,10 +21,10 @@ the state, the open items and the next step.
 | What | Where |
 | --- | --- |
 | Branch | `feat/adaptive-runtime` |
-| Pure core | `packages/verger-core`: reducer (`governor.ts`), activation, policy contract, demand and accounts, controller, recovery ladder, telemetry, `createVerger` |
+| Pure core | `packages/verger-core`: reducer (`reducer.ts`), activation, policy contract, demand and accounts, controller, recovery ladder, telemetry, `createVerger` |
 | Android | `packages/verger-android` (Kotlin Expo module `Verger`; `createVergerAndroidPlatform`) |
 | React shell | `packages/verger-react` (`VergerProvider`, hooks) |
-| Gurudevi as host | `packages/core/src/governor` (levers, workloads, `GURUDEVI_HOST`, `GURUDEVI_MOBILE_HOST`) and `apps/gurudevi-mobile/src/runtime/GurudeviVerger.tsx` (not mounted) |
+| Gurudevi as host | `packages/core/src/verger` (levers, workloads, `GURUDEVI_HOST`, `GURUDEVI_MOBILE_HOST`) and `apps/gurudevi-mobile/src/runtime/GurudeviVerger.tsx` (not mounted) |
 
 ## Decisions taken with Neev on 2026-10-24
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
-import { createGovernor, reduceGovernor, snapshotOf } from './governor';
+import { createVergerState, reduceVerger, snapshotOf } from './reducer';
 import { accountsRelievedBy, createOutcomeLedger } from './outcomes';
-import type { CapacityFacts, GovernorEvent, GovernorSnapshot } from './types';
+import type { CapacityFacts, VergerEvent, VergerSnapshot } from './types';
 
 const CAPACITY: CapacityFacts = {
   totalMemoryBytes: 8 * 1024 ** 3,
@@ -18,17 +18,17 @@ const CAPACITY: CapacityFacts = {
 };
 
 const BASE = snapshotOf(
-  createGovernor({ at: 0, levers: SAMPLE_LEVERS, capacity: CAPACITY, memorySensing: true }),
+  createVergerState({ at: 0, levers: SAMPLE_LEVERS, capacity: CAPACITY, memorySensing: true }),
 );
 
 /** A published snapshot: only what the ledger reads is varied. */
-const snap = (at: number, over: Partial<GovernorSnapshot> = {}): GovernorSnapshot => ({
+const snap = (at: number, over: Partial<VergerSnapshot> = {}): VergerSnapshot => ({
   ...BASE,
   at,
   thermal: 'nominal',
   ...over,
 });
-const lowered = (id: string, level: number, byPressure = true): Partial<GovernorSnapshot> => ({
+const lowered = (id: string, level: number, byPressure = true): Partial<VergerSnapshot> => ({
   levels: { ...BASE.levels, [id]: level },
   pressure: byPressure ? { [id]: level } : {},
 });
@@ -119,7 +119,11 @@ describe('outcome ledger: expand', () => {
   it('an expand that lasts the hold window held', () => {
     const l = afterRelief();
     l.settle(20_000);
-    expect(l.records()[1]).toMatchObject({ direction: 'expand', verdict: 'held', judgedAt: 20_000 });
+    expect(l.records()[1]).toMatchObject({
+      direction: 'expand',
+      verdict: 'held',
+      judgedAt: 20_000,
+    });
   });
 
   it('an expand pushed back by pressure within the window was withdrawn', () => {
@@ -159,16 +163,21 @@ describe('outcome ledger: what it does not judge', () => {
 describe('outcome ledger on the real policy', () => {
   it('judges verger-p4 cooling the phone: heat lowers a lever, cooling relieves it', () => {
     const l = ledger();
-    let state = createGovernor({ at: 0, levers: SAMPLE_LEVERS, capacity: CAPACITY, memorySensing: true });
+    let state = createVergerState({
+      at: 0,
+      levers: SAMPLE_LEVERS,
+      capacity: CAPACITY,
+      memorySensing: true,
+    });
     l.observe(snapshotOf(state));
-    const events: GovernorEvent[] = [
+    const events: VergerEvent[] = [
       { type: 'interaction', at: 100 },
       { type: 'thermal', at: 1_000, status: 'severe', headroom: 0.97 },
       { type: 'thermal', at: 3_500, status: 'none', headroom: 0.5 },
     ];
     for (const event of events) {
       const version = state.version;
-      state = reduceGovernor(state, event);
+      state = reduceVerger(state, event);
       // As the controller does: the ledger sees each published change.
       if (state.version !== version) l.observe(snapshotOf(state));
     }
@@ -187,7 +196,7 @@ describe('outcome ledger in a running verger', () => {
     const { defineHost } = await import('./host');
     const host = defineHost({ name: 'sample', levers: SAMPLE_LEVERS });
     let clock = 0;
-    let send: (event: GovernorEvent) => void = () => {};
+    let send: (event: VergerEvent) => void = () => {};
     const verger = createVerger({
       host,
       requested: 'active',

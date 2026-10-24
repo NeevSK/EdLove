@@ -21,7 +21,7 @@ the rules and never refers to a lever by name. Built-in levers (`VERGER_REFRESH_
 | --- | --- |
 | `activation.ts` | What may run: sensors, static or closed loop, reduce and grow, hardware, per-lever apply, shadow or off; presets, precedence, ladder caps |
 | `policy.ts` | The `VergerPolicy` contract; `VERGER_POLICY` (verger-p4); the ladder key format |
-| `governor.ts` | verger-p4's rules: floors, the indexer, contention, outputs |
+| `reducer.ts` | verger-p4's rules: floors, the indexer, contention, outputs |
 | `demand.ts` | The demand registry (workloads by class) and the seven resource accounts with confidence |
 | `outcomes.ts` | The outcome ledger: every move judged (relieved, held, withdrawn, agility, quality cost) |
 | `invariants.ts` | Verger's invariants as checks over snapshots, for tests, recordings and the lab |
@@ -29,5 +29,5 @@ the rules and never refers to a lever by name. Built-in levers (`VERGER_REFRESH_
 | `recovery.ts`, `session.ts`, `flightRecorder.ts`, `quality.ts`, `telemetry.ts` | The ladder, session reports, the recorder, quality cost, telemetry |
 
 Design and status: `docs/engineering/runtime-performance/verger/` (start with `pipeline.md`).
-Verification: `verification.md` there; the property suite runs in `packages/core/src/governor/verger.invariants.test.ts`
+Verification: `verification.md` there; the property suite runs in `packages/core/src/verger/verger.invariants.test.ts`
 on a real host.

@@ -5,8 +5,8 @@ import type {
   ExitRecord,
   FrameStages,
   FrameState,
-  GovernorConfig,
-  GovernorEvent,
+  VergerConfig,
+  VergerEvent,
   NetworkTransport,
   SensorId,
   ThermalStatus,
@@ -148,7 +148,7 @@ export type VergerAndroidEvents = {
   onBattery: (event: NativeBattery) => void;
 };
 
-/** What `start` accepts; every threshold is taken from the governor's own config. */
+/** What `start` accepts; every threshold is taken from verger's own config. */
 export interface NativeSenseConfig {
   readonly windowMs: number;
   readonly minSamples: number;
@@ -167,7 +167,7 @@ export interface NativeSenseConfig {
 export const FRAME_WINDOW_MS = 500;
 
 export function senseConfigFrom(
-  config: GovernorConfig,
+  config: VergerConfig,
   windowMs = FRAME_WINDOW_MS,
   sensors?: Readonly<Record<SensorId, boolean>>,
 ): NativeSenseConfig {
@@ -222,10 +222,10 @@ export type NativeEvent =
   | { readonly name: 'onBattery'; readonly payload: NativeBattery };
 
 /**
- * Native payload to governor event. `at` is the JavaScript clock at receipt: the governor's
+ * Native payload to verger event. `at` is the JavaScript clock at receipt: verger's
  * timing runs on one clock, and the window's own start and end stay on the sensor's timeline.
  */
-export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
+export function toVergerEvent(event: NativeEvent, at: number): VergerEvent {
   switch (event.name) {
     case 'onFrameWindow': {
       const { state: _state, stages, ...window } = event.payload;

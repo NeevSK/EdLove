@@ -129,7 +129,7 @@ Instead of choosing one at the expense of the other, the optimal architecture us
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   UNIFIED PERFORMANCE GOVERNOR                         │
-│                    (@repo/core/governor facade)                        │
+│                    (@repo/core/verger facade)                        │
 └───────────────────┬────────────────────────────────┬───────────────────┘
                     │                                │
                     ▼                                ▼
@@ -163,7 +163,7 @@ Instead of choosing one at the expense of the other, the optimal architecture us
 
 ```
 PHASE 1: IMMEDIATE PILOT HARDENING (Before Oct 26)
-  [1] Consolidate existing TypeScript governor into @repo/core/governor
+  [1] Consolidate existing TypeScript governor into @repo/core/verger
   [2] Instrument AttendanceScreen and TeacherClassroomDashboard with markInteractive()
   [3] Add defensive in-memory cache to loadGradeClassRegister (kill 15s HTTP stall)
   [4] Ensure OptionalStartupServices halts background sync during teacher interactions
@@ -181,4 +181,4 @@ PHASE 2: SOVEREIGN PERFORMANCE ENGINE (Post-Pilot)
 
 1. **The Intelligence**: Gurudevi already has well-designed symbolic abstractions (`workAdmission`, `visualBudget`, `RealityProvider`), but they are currently disconnected from the hot classroom screens.
 2. **The Waste**: Intrinsic efficiency issues (10 state variables per screen, HTTP fallback with 15s timeouts while PowerSync is disabled) represent the primary threat to the teacher evaluation.
-3. **The Consolidation**: A unified `@repo/core/governor` facade provides the single source of truth today, while providing an exact seam for a high-performance **Nitro JSI engine** in Phase 2.
+3. **The Consolidation**: A unified `@repo/core/verger` facade provides the single source of truth today, while providing an exact seam for a high-performance **Nitro JSI engine** in Phase 2.

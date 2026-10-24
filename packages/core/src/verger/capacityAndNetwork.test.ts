@@ -3,12 +3,12 @@ import {
   ACTIVATION_PRESETS,
   type CapacityFacts,
   capacityClassOf,
-  createGovernor,
-  type CreateGovernorOptions,
-  DEFAULT_GOVERNOR_CONFIG,
-  type GovernorEvent,
+  createVergerState,
+  type CreateVergerStateOptions,
+  DEFAULT_VERGER_CONFIG,
+  type VergerEvent,
   nextTimedChangeAt,
-  reduceGovernor,
+  reduceVerger,
   resolveActivation,
   snapshotOf,
   UNKNOWN_CAPACITY,
@@ -33,28 +33,35 @@ const PHONE_12GB: CapacityFacts = { ...CAPABLE, totalMemoryBytes: 11.2 * GIB };
 
 const MID_FLOORED = ['ambient-motion', 'particles', 'blur', 'glass-material', 'image-cache'];
 
-function snapshot(options: Partial<CreateGovernorOptions>, events: readonly GovernorEvent[] = []) {
-  let state = createGovernor({ at: 0, levers: GURUDEVI_LEVERS, ...options });
-  for (const event of events) state = reduceGovernor(state, event);
+function snapshot(options: Partial<CreateVergerStateOptions>, events: readonly VergerEvent[] = []) {
+  let state = createVergerState({ at: 0, levers: GURUDEVI_LEVERS, ...options });
+  for (const event of events) state = reduceVerger(state, event);
   return snapshotOf(state);
 }
 
 describe('capacity classes: the hardware is the ceiling until the phone earns more', () => {
   it('classes phones by reported memory: 4 GB low, 6 and 8 GB mid, 12 GB high', () => {
-    expect(capacityClassOf(PHONE_4GB, DEFAULT_GOVERNOR_CONFIG)).toBe('low');
-    expect(capacityClassOf({ ...PHONE_4GB, totalMemoryBytes: 5.5 * GIB }, DEFAULT_GOVERNOR_CONFIG)).toBe('mid');
-    expect(capacityClassOf(A52_8GB, DEFAULT_GOVERNOR_CONFIG)).toBe('mid');
-    expect(capacityClassOf(PHONE_12GB, DEFAULT_GOVERNOR_CONFIG)).toBe('high');
-    expect(capacityClassOf(UNKNOWN_CAPACITY, DEFAULT_GOVERNOR_CONFIG)).toBe('unknown');
+    expect(capacityClassOf(PHONE_4GB, DEFAULT_VERGER_CONFIG)).toBe('low');
+    expect(
+      capacityClassOf({ ...PHONE_4GB, totalMemoryBytes: 5.5 * GIB }, DEFAULT_VERGER_CONFIG),
+    ).toBe('mid');
+    expect(capacityClassOf(A52_8GB, DEFAULT_VERGER_CONFIG)).toBe('mid');
+    expect(capacityClassOf(PHONE_12GB, DEFAULT_VERGER_CONFIG)).toBe('high');
+    expect(capacityClassOf(UNKNOWN_CAPACITY, DEFAULT_VERGER_CONFIG)).toBe('unknown');
     // The OS's own low-RAM flag wins over memory.
-    expect(capacityClassOf({ ...PHONE_12GB, isLowRamDevice: true }, DEFAULT_GOVERNOR_CONFIG)).toBe('low');
+    expect(capacityClassOf({ ...PHONE_12GB, isLowRamDevice: true }, DEFAULT_VERGER_CONFIG)).toBe(
+      'low',
+    );
   });
 
   it('a mid phone gives up exactly what its levers declare, and nothing else', () => {
     const s = snapshot({ capacity: A52_8GB });
     expect(s.capacityClass).toBe('mid');
     for (const lever of GURUDEVI_LEVERS)
-      expect([lever.id, s.levels[lever.id]]).toEqual([lever.id, MID_FLOORED.includes(lever.id) ? 1 : 0]);
+      expect([lever.id, s.levels[lever.id]]).toEqual([
+        lever.id,
+        MID_FLOORED.includes(lever.id) ? 1 : 0,
+      ]);
   });
 
   it('a 4 GB phone is low: ambient stilled, the rest one step down', () => {
@@ -70,7 +77,7 @@ describe('capacity classes: the hardware is the ceiling until the phone earns mo
   });
 
   it('the user asking for high fidelity, or a phone that earned it, lifts the mid floors', () => {
-    const high: GovernorEvent = { type: 'preferences', at: 1, reduceMotion: false, fidelity: 'high' };
+    const high: VergerEvent = { type: 'preferences', at: 1, reduceMotion: false, fidelity: 'high' };
     expect(snapshot({ capacity: A52_8GB }, [high]).levels.blur).toBe(0);
     expect(snapshot({ capacity: A52_8GB, capacityGrant: 1 }).levels.blur).toBe(0);
   });
@@ -79,12 +86,15 @@ describe('capacity classes: the hardware is the ceiling until the phone earns mo
     const s = snapshot({ capacity: A52_8GB, config: { midCapacityBelowBytes: 7 * GIB } });
     expect(s.capacityClass).toBe('high');
     expect(() =>
-      validateConfig({ ...DEFAULT_GOVERNOR_CONFIG, lowCapacityBelowBytes: 9 * GIB }),
+      validateConfig({ ...DEFAULT_VERGER_CONFIG, lowCapacityBelowBytes: 9 * GIB }),
     ).toThrow(/lowCapacityBelowBytes/);
   });
 });
 
-const net = (at: number, over: Partial<Extract<GovernorEvent, { type: 'network' }>> = {}): GovernorEvent => ({
+const net = (
+  at: number,
+  over: Partial<Extract<VergerEvent, { type: 'network' }>> = {},
+): VergerEvent => ({
   type: 'network',
   at,
   transport: 'cellular',
@@ -116,25 +126,28 @@ describe('weak networks: optional data waits for a steady, fast link', () => {
   });
 
   it('back from offline, the link is unstable until it has held for networkSettleMs', () => {
-    let state = createGovernor({ at: 0, levers: GURUDEVI_LEVERS, capacity });
-    state = reduceGovernor(state, net(1_000, { transport: 'none', validated: false, downKbps: null }));
-    state = reduceGovernor(state, net(5_000));
+    let state = createVergerState({ at: 0, levers: GURUDEVI_LEVERS, capacity });
+    state = reduceVerger(
+      state,
+      net(1_000, { transport: 'none', validated: false, downKbps: null }),
+    );
+    state = reduceVerger(state, net(5_000));
     expect(snapshotOf(state).networkLimit).toBe('unstable');
     expect(snapshotOf(state).levels.prefetch).toBe(2);
     // The settle is a timed change, so the controller wakes for it (after ambient sleep at 10 s).
-    state = reduceGovernor(state, { type: 'tick', at: 10_000 });
-    expect(nextTimedChangeAt(state)).toBe(1_000 + DEFAULT_GOVERNOR_CONFIG.networkSettleMs);
-    state = reduceGovernor(state, { type: 'tick', at: 61_000 });
+    state = reduceVerger(state, { type: 'tick', at: 10_000 });
+    expect(nextTimedChangeAt(state)).toBe(1_000 + DEFAULT_VERGER_CONFIG.networkSettleMs);
+    state = reduceVerger(state, { type: 'tick', at: 61_000 });
     expect(snapshotOf(state).networkLimit).toBe('none');
     expect(snapshotOf(state).levels.prefetch).toBe(0);
   });
 
   it('turning the network sensor off forgets the instability with the network', () => {
-    let state = createGovernor({ at: 0, levers: GURUDEVI_LEVERS, capacity });
-    state = reduceGovernor(state, net(1_000, { transport: 'none', validated: false }));
-    state = reduceGovernor(state, net(2_000));
+    let state = createVergerState({ at: 0, levers: GURUDEVI_LEVERS, capacity });
+    state = reduceVerger(state, net(1_000, { transport: 'none', validated: false }));
+    state = reduceVerger(state, net(2_000));
     const deaf = resolveActivation(ACTIVATION_PRESETS.active, { sense: { network: false } });
-    state = reduceGovernor(state, { type: 'activation', at: 3_000, activation: deaf });
+    state = reduceVerger(state, { type: 'activation', at: 3_000, activation: deaf });
     expect(snapshotOf(state).networkLimit).toBe('none');
     expect(snapshotOf(state).levels.prefetch).toBe(0);
   });

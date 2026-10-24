@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import {
   classifySession,
-  createGovernor,
+  createVergerState,
   createSessionLedger,
   DEFAULT_RECOVERY_CONFIG as R,
   type ExitRecord,
@@ -12,7 +12,7 @@ import {
   parseRecord,
   planLaunch,
   qualityCost,
-  reduceGovernor,
+  reduceVerger,
   type SessionMarker,
   type SessionReport,
   snapshotOf,
@@ -315,7 +315,7 @@ describe('trust and growth', () => {
     };
     const floors = (grant: number) =>
       staticFloors(
-        createGovernor({ at: 0, capacity, levers: SAMPLE_LEVERS, capacityGrant: grant }),
+        createVergerState({ at: 0, capacity, levers: SAMPLE_LEVERS, capacityGrant: grant }),
       );
     expect(floors(0)).toMatchObject({ sparkle: 2, 'rows-ahead': 1 });
     expect(floors(1)).toMatchObject({ sparkle: 2 });
@@ -324,7 +324,7 @@ describe('trust and growth', () => {
   });
 
   it('a starting point enters the stack, so the closed loop gives it back like its own decreases', () => {
-    const state = createGovernor({
+    const state = createVergerState({
       at: 0,
       levers: SAMPLE_LEVERS,
       initialPressure: { 'rows-ahead': 1, frosting: 1, 'global-motion': 1 },
@@ -349,9 +349,9 @@ describe('trust and growth', () => {
       refreshRatesHz: [60, 120],
       supportsCpuHints: true,
     };
-    const on = snapshotOf(createGovernor({ at: 0, capacity, levers: SAMPLE_LEVERS }), 20_000);
+    const on = snapshotOf(createVergerState({ at: 0, capacity, levers: SAMPLE_LEVERS }), 20_000);
     const off = snapshotOf(
-      createGovernor({ at: 0, capacity, levers: SAMPLE_LEVERS, hardware: false }),
+      createVergerState({ at: 0, capacity, levers: SAMPLE_LEVERS, hardware: false }),
       20_000,
     );
     expect(on.refreshCapHz).toBe(60); // idle cap
@@ -370,7 +370,7 @@ describe('measurement', () => {
 
   it('the session ledger counts only foreground time', () => {
     const ledger = createSessionLedger(SAMPLE_LEVERS);
-    const base = snapshotOf(createGovernor({ at: 0, levers: SAMPLE_LEVERS }));
+    const base = snapshotOf(createVergerState({ at: 0, levers: SAMPLE_LEVERS }));
     ledger.onSnapshot({ ...base, at: 0, frameState: 'stressed' });
     ledger.onSnapshot({ ...base, at: 1_000, visibility: 'background' });
     ledger.onSnapshot({ ...base, at: 5_000 });
@@ -477,7 +477,7 @@ describe('review fixes', () => {
         droppedRatio: 0,
       },
     });
-    let state = createGovernor({
+    let state = createVergerState({
       at: 0,
       levers: SAMPLE_LEVERS,
       initialPressure: { 'rows-ahead': 1 },
@@ -485,13 +485,13 @@ describe('review fixes', () => {
     const ledger = createSessionLedger(SAMPLE_LEVERS);
     ledger.onSnapshot(snapshotOf(state));
     // A still screen for a minute: nothing drawn, so nothing learned.
-    state = reduceGovernor(state, { type: 'tick', at: 60_000 });
+    state = reduceVerger(state, { type: 'tick', at: 60_000 });
     ledger.onSnapshot(snapshotOf(state));
     expect(ledger.report(60_000)).toMatchObject({ evidenceMs: 0, pressure: {} });
     // Calm frames: the loop gives the starting point back.
     for (let at = 60_500; at <= 80_000; at += 500) {
-      state = reduceGovernor(state, { type: 'interaction', at });
-      state = reduceGovernor(state, window(at, 8));
+      state = reduceVerger(state, { type: 'interaction', at });
+      state = reduceVerger(state, window(at, 8));
     }
     expect(snapshotOf(state).priorHeld).toEqual({});
     expect(snapshotOf(state).levels['rows-ahead'] ?? 0).toBe(0);

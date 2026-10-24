@@ -1,4 +1,4 @@
-import { GURUDEVI_MOBILE_HOST, UNKNOWN_CAPACITY, type VergerPlatform } from '@repo/core/governor';
+import { GURUDEVI_MOBILE_HOST, UNKNOWN_CAPACITY, type VergerPlatform } from '@repo/core/verger';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import type { VisualCapabilities } from '@repo/ui/context/types';
 import { VergerProvider } from '@repo/verger-react';

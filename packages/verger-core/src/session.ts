@@ -1,5 +1,5 @@
 import { qualityCost } from './quality';
-import type { GovernorSnapshot, LeverSpec, MemoryLevel, ThermalLevel } from './types';
+import type { VergerSnapshot, LeverSpec, MemoryLevel, ThermalLevel } from './types';
 
 /**
  * What one session showed about this device, in the terms the record learns from: how long
@@ -26,7 +26,7 @@ export interface SessionReport {
 }
 
 export interface SessionLedger {
-  onSnapshot(snapshot: GovernorSnapshot): void;
+  onSnapshot(snapshot: VergerSnapshot): void;
   report(at: number): SessionReport;
 }
 
@@ -38,7 +38,7 @@ const worse = <T>(order: readonly T[], a: T, b: T): T =>
 
 /** Integrates a session from snapshots, which arrive only when an output changes. */
 export function createSessionLedger(levers: readonly LeverSpec[]): SessionLedger {
-  let last: GovernorSnapshot | null = null;
+  let last: VergerSnapshot | null = null;
   let foregroundMs = 0;
   let evidenceMs = 0;
   let stressedMs = 0;

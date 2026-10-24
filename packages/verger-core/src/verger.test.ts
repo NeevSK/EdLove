@@ -7,7 +7,7 @@ import {
   defineHost,
   type ExitRecord,
   freshRecord,
-  type GovernorEvent,
+  type VergerEvent,
   parseRecord,
   policyKey,
   type RuntimePort,
@@ -70,7 +70,7 @@ function device() {
     createPort(): RuntimePort {
       calls.push('port');
       return {
-        start(_config, _onEvent: (event: GovernorEvent) => void) {
+        start(_config, _onEvent: (event: VergerEvent) => void) {
           calls.push('start');
           if (failStart) throw new Error('native start blew up');
           return () => calls.push('stop');
@@ -342,7 +342,11 @@ describe('verger launch', () => {
   it('on a rung without hardware, never calls a hardware lever, not even to release', async () => {
     const d = device();
     const store = asyncStore();
-    const record = freshRecord(`${policyKey(HOST.policy)}:${HOST.configHash}:1.0.0`, null, HOST.recovery);
+    const record = freshRecord(
+      `${policyKey(HOST.policy)}:${HOST.configHash}:1.0.0`,
+      null,
+      HOST.recovery,
+    );
     store.data.set(
       'verger:sample:record',
       JSON.stringify({ ...record, ladder: { ...record.ladder, rung: 2 } }),
@@ -440,7 +444,11 @@ describe('verger launch', () => {
 });
 
 describe('verger: the floors hold while verger is not running', () => {
-  const LOW_RAM: CapacityFacts = { ...CAPACITY, totalMemoryBytes: 2 * 1024 ** 3, isLowRamDevice: true };
+  const LOW_RAM: CapacityFacts = {
+    ...CAPACITY,
+    totalMemoryBytes: 2 * 1024 ** 3,
+    isLowRamDevice: true,
+  };
 
   it('before start, settings and JS-only facts set the floors; nothing native or stored is touched', () => {
     const d = device();

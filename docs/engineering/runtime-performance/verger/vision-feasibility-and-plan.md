@@ -224,7 +224,7 @@ Native code measures, JavaScript decides, actuators spend
 +----------------------------------+-------------------------------------------+
                                    | change-only events: supply A and load L
                                    v
-+-- Decide: pure TypeScript (verger-core; host levers in @repo/core/governor) --+
++-- Decide: pure TypeScript (verger-core; host levers in @repo/core/verger) --+
 |  [Baseline profile]  [Demand registry]  [*Allocator*]        [Correction loop]|
 |   class, calibration  classes, ladders   budgets per account  the governor:   |
 |   learned from exits  cost vectors       admit, shed by class step down,      |
@@ -362,7 +362,7 @@ The primary outcome for each experiment is named before it runs. The others are 
 | Lab, constrained | Android emulator images at API 28, 29, 31, 34 with 2 GB RAM and 2 cores | the fallbacks work; repeatable comparisons of modes | G2 |
 | Lab, real | Galaxy A52 (8 GB, API 34) and Galaxy A24, both Neev's | real FrameMetrics, thermal, trims; how two phones of different age and update history differ | G5 |
 | Field panel | friends' phones, as many tiers and vendors as can be borrowed | the veteran profile on phones the team does not own | G5 |
-| Replay | captured sessions run through every mode by `replayGovernor` | decisions differ as intended, on real signal streams | G2 |
+| Replay | captured sessions run through every mode by `replayVerger` | decisions differ as intended, on real signal streams | G2 |
 | Field | consented telemetry from teachers' and students' own phones | outcomes on the real population | R1 |
 
 Captures follow one procedure: release or performance build, no screen mirroring, Perfetto buffer large enough for the whole session, framestats reset before each scripted run, and the device state (battery, temperature, free memory) recorded at start and end.
@@ -407,7 +407,7 @@ Before the pilot on 26 October only the TypeScript parts of phase 1 merge, with 
 | Phase | Deliverables | Acceptance |
 |---|---|---|
 | 0. Spec | this document; an ADR in `docs/decisions/` amending the governor spec (Expo module instead of Nitro, the economy model) | you sign off the atoms and the classes |
-| 1. Demand registry | `workloads.ts` in `@repo/core/governor` with every entry above; an architecture test that fails on undeclared animators, decoders and schedulers; the three idle-cost gates (shimmer, hidden FAB loop, BrandPulse) driven by the existing governor | registry test passes; the idle Self screen draws no frames after 2 s on the A52 |
+| 1. Demand registry | `workloads.ts` in `@repo/core/verger` with every entry above; an architecture test that fails on undeclared animators, decoders and schedulers; the three idle-cost gates (shimmer, hidden FAB loop, BrandPulse) driven by the existing governor | registry test passes; the idle Self screen draws no frames after 2 s on the A52 |
 | 2. Sensing complete | memory, battery, network and storage polling; JS event-loop lag sampler; Hermes heap; past exit reasons; battery temperature and drift as heat fallbacks; a diagnostics screen showing every signal with its confidence | each signal seen on emulator images at API 28, 29, 31 and 34; sensor wakeups per idle minute measured and under a set ceiling |
 | 3. Baseline | device class from facts plus a first-run calibration under 1 s; profile stored in MMKV and updated from exit reasons and session history | class stable across five launches; calibration cost measured |
 | 4. Allocator | accounts and budgets; cost vectors measured per workload by scripted isolation runs; admission and shedding by class; coupling rules; the governor kept as the correction loop; adapters for `evaluateEfficiency`, `workAdmission`, `visualBudget` | replay suite shows ordered shedding and protected critical work on recorded and synthetic streams; no deletion of working code |
@@ -423,7 +423,7 @@ The runtime is named **verger** (the keeper of a sanctuary) and is decoupled fro
 - `packages/verger-core/`: the reducer, runtime loop, telemetry, replay, experiments, `defineHost` and the built-in levers. Imports nothing; names no app.
 - `packages/verger-android/`: the Kotlin Expo module (sensing, frame estimator, CPU attribution, hardware levers) and its port.
 - `packages/verger-react/`: provider, hooks, presence, long tasks, global reduced motion.
-- `packages/core/src/governor/`: Gurudevi as the first host: its levers with their declared rules, `GURUDEVI_HOST` and `GURUDEVI_MOBILE_HOST`.
+- `packages/core/src/verger/`: Gurudevi as the first host: its levers with their declared rules, `GURUDEVI_HOST` and `GURUDEVI_MOBILE_HOST`.
 - `apps/gurudevi-mobile/src/runtime/`: `GurudeviVerger`, which mounts the mobile host; not yet in the app tree (pilot freeze).
 - `docs/engineering/runtime-performance/`: this design, capture procedure, results per experiment.
 
@@ -464,7 +464,7 @@ Opened on 2026-10-21:
 - [Cherry, Apollo 11 descent exegesis (Virtual AGC)](https://ibiblio.org/apollo/Documents/CherryApollo11Exegesis.pdf): the cause and the restart behaviour quoted in the Vision.
 - API levels for every signal in the fallback table were checked against `api-versions.xml` in the Android 35 SDK platform: thermal status and listener 29; headroom, exit reasons and low-memory-kill report support 30; performance class and frame deadline 31; vsync timestamp 26; background data status 24.
 
-Repository sources: `packages/core/src/governor/`, `apps/gurudevi-mobile/modules/runtime-sense/`, `docs/engineering/runtime-performance/governor-architecture-spec.md`, and the A52 trace `reports/mobile-performance/2026-10-19T08-35-28-711Z-7b0bfdc5/native.pftrace`.
+Repository sources: `packages/core/src/verger/`, `apps/gurudevi-mobile/modules/runtime-sense/`, `docs/engineering/runtime-performance/governor-architecture-spec.md`, and the A52 trace `reports/mobile-performance/2026-10-19T08-35-28-711Z-7b0bfdc5/native.pftrace`.
 
 ### Open questions
 

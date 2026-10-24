@@ -1,16 +1,16 @@
 import {
   ACTIVATION_PRESETS,
   type ActivationPresetName,
-  type GovernorMode,
+  type RunMode,
   type LeverSpec,
   modeForActivation,
   parseActivationPatch,
   resolveActivation,
   type VergerActivation,
-} from '@repo/core/governor';
+} from '@repo/core/verger';
 
 /** `off` runs nothing; `shadow` senses and decides but applies nothing new; `active` applies. */
-export type RuntimeMode = 'off' | GovernorMode;
+export type RuntimeMode = 'off' | RunMode;
 
 declare global {
   // Remote config or the diagnostics screen may set this; it overrides the build default.
@@ -83,7 +83,8 @@ export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
   const rejected = parsed !== null && 'error' in parsed ? parsed.error : null;
   const patch = parsed !== null && 'patch' in parsed ? parsed.patch : null;
 
-  if (inputs.override === 'off') return { mode: 'off', activation: null, source: 'override off', rejected };
+  if (inputs.override === 'off')
+    return { mode: 'off', activation: null, source: 'override off', rejected };
   const preset: ActivationPresetName | null =
     inputs.override === 'active' || inputs.override === 'shadow'
       ? inputs.override
@@ -97,7 +98,12 @@ export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
               ? 'lab'
               : null;
   if (preset === null)
-    return { mode: 'off', activation: null, source: inputs.dev ? 'build off' : 'release default', rejected };
+    return {
+      mode: 'off',
+      activation: null,
+      source: inputs.dev ? 'build off' : 'release default',
+      rejected,
+    };
   const activation = resolveActivation(ACTIVATION_PRESETS[preset], patch);
   return {
     mode: modeForActivation(activation),

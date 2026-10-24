@@ -1,10 +1,10 @@
-import { DEFAULT_GOVERNOR_CONFIG, validateConfig } from './config';
+import { DEFAULT_VERGER_CONFIG, validateConfig } from './config';
 import { validateWorkloads, type WorkloadSpec } from './demand';
 import { validateLevers } from './levers';
 import { DEFAULT_RECOVERY_CONFIG, type RecoveryConfig, validateRecoveryConfig } from './recovery';
 import { policyKey, VERGER_POLICY, type VergerPolicy, validatePolicy } from './policy';
 import { configHash } from './telemetry';
-import type { GovernorConfig, LeverSpec } from './types';
+import type { VergerConfig, LeverSpec } from './types';
 
 /**
  * Everything verger needs to know about a host app, as data. A host lists its levers (its own
@@ -17,7 +17,7 @@ export interface VergerHost {
   readonly levers: readonly LeverSpec[];
   /** The host's demand registry: its work, by class, with the accounts it spends. */
   readonly workloads: readonly WorkloadSpec[];
-  readonly config: GovernorConfig;
+  readonly config: VergerConfig;
   /** How verger recovers, heals and grows across launches on this host. */
   readonly recovery: RecoveryConfig;
   /** The rules verger decides by; `VERGER_POLICY` unless the host brings its own. */
@@ -32,7 +32,7 @@ export interface HostDefinition {
   readonly name: string;
   readonly levers: readonly LeverSpec[];
   readonly workloads?: readonly WorkloadSpec[];
-  readonly config?: Partial<GovernorConfig>;
+  readonly config?: Partial<VergerConfig>;
   readonly recovery?: Partial<RecoveryConfig>;
   readonly policy?: VergerPolicy;
 }
@@ -47,7 +47,7 @@ export function defineHost(definition: HostDefinition): VergerHost {
   validateLevers(definition.levers);
   const workloads = definition.workloads ?? [];
   validateWorkloads(workloads, definition.levers);
-  const config: GovernorConfig = { ...DEFAULT_GOVERNOR_CONFIG, ...definition.config };
+  const config: VergerConfig = { ...DEFAULT_VERGER_CONFIG, ...definition.config };
   validateConfig(config);
   const recovery: RecoveryConfig = { ...DEFAULT_RECOVERY_CONFIG, ...definition.recovery };
   validateRecoveryConfig(recovery);

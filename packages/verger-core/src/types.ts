@@ -1,9 +1,9 @@
 import type { VergerActivation } from './activation';
 
 /**
- * Adaptive runtime governor: shared types.
+ * Verger: shared types.
  *
- * The governor is a pure, deterministic reducer. Native sensing (the
+ * Verger's policy is a pure, deterministic reducer. Native sensing (the
  * `@repo/verger-android` Expo module) and web sensing feed it events; consumers read
  * lever levels and work budgets from its snapshot. Time is always injected
  * (`at`, in milliseconds on a monotonic clock) so the same event stream always
@@ -86,7 +86,7 @@ export type ThermalStatus =
   | 'emergency'
   | 'shutdown';
 
-/** Android `ComponentCallbacks2` trim levels the governor distinguishes. */
+/** Android `ComponentCallbacks2` trim levels verger distinguishes. */
 export type TrimSeverity = 'moderate' | 'low' | 'critical';
 
 export type FidelityPreference = 'auto' | 'low' | 'high';
@@ -106,7 +106,7 @@ export type NetworkLimit = 'offline' | 'data-saver' | 'unstable' | 'slow' | 'non
 /** A phone's capacity class, from its memory. */
 export type CapacityClass = 'low' | 'mid' | 'high' | 'unknown';
 
-export type GovernorEvent =
+export type VergerEvent =
   | { readonly type: 'frame-window'; readonly at: number; readonly window: FrameWindow }
   | {
       readonly type: 'thermal';
@@ -161,14 +161,14 @@ export type GovernorEvent =
       readonly dataSaver: DataSaver | null;
     }
   /** Thresholds from now on (a validated, complete config): live tuning in the lab. */
-  | { readonly type: 'config'; readonly at: number; readonly config: GovernorConfig }
+  | { readonly type: 'config'; readonly at: number; readonly config: VergerConfig }
   /** What verger may do from now on; already resolved and capped by the launch. */
   | { readonly type: 'activation'; readonly at: number; readonly activation: VergerActivation }
   /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */
   | { readonly type: 'long-task'; readonly at: number; readonly durationMs: number }
   | { readonly type: 'tick'; readonly at: number };
 
-/** Unity-style indexer action, extended with the governor's reasons. */
+/** Unity-style indexer action, extended with verger's reasons. */
 export type IndexerAction = 'fast-decrease' | 'decrease' | 'stale' | 'increase';
 
 /** Device capabilities a lever may require. `refreshCap`: the display offers a rate at or below the cap and one above it. */
@@ -203,7 +203,7 @@ export type VisualImpact = 'low' | 'medium' | 'high';
 
 /**
  * A quality lever owned by a consumer. Level 0 is full quality; `maxLevel` is the
- * cheapest setting. Consumers interpret levels; the governor only orders them.
+ * cheapest setting. Consumers interpret levels; verger only orders them.
  */
 export interface LeverSpec {
   readonly id: string;
@@ -267,9 +267,9 @@ export interface LeverSpec {
   readonly closedLoopOnly?: boolean;
 }
 
-export type GovernorMode = 'active' | 'shadow';
+export type RunMode = 'active' | 'shadow';
 
-export interface GovernorConfig {
+export interface VergerConfig {
   /** Frames counted in a window before it is judged. Fewer means the window says nothing. */
   readonly minSamples: number;
   /** average / target above this is stress. */
@@ -306,7 +306,7 @@ export interface GovernorConfig {
    * reduction, and Data Saver and a data budget protect the user instead. A host's choice.
    */
   readonly meteredOptionalConcurrency: number;
-  /** At or below this level, and not plugged in, the battery is low (the governor spec's 20%). */
+  /** At or below this level, and not plugged in, the battery is low (the original runtime spec's 20%). */
   readonly batteryLowPercent: number;
   /**
    * Total memory, as the OS reports it, below which a phone is low capacity. The OS reports less
@@ -349,10 +349,10 @@ export interface GovernorConfig {
   readonly gestureQuietMs: number;
 }
 
-export interface GovernorSnapshot {
+export interface VergerSnapshot {
   readonly version: number;
   readonly at: number;
-  readonly mode: GovernorMode;
+  readonly mode: RunMode;
   /** Levels consumers should apply. In shadow mode these are the baseline, not the proposal. */
   readonly levels: Readonly<Record<string, number>>;
   /** What the closed loop would apply. Equal to `levels` in active mode. */

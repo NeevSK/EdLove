@@ -3,10 +3,10 @@ import {
   createVerger,
   type ExperimentAssignment,
   type FidelityPreference,
-  type GovernorEvent,
-  type GovernorMode,
-  type GovernorSnapshot,
-  type GovernorTelemetrySink,
+  type VergerEvent,
+  type RunMode,
+  type VergerSnapshot,
+  type VergerTelemetrySink,
   type Verger,
   type VergerHost,
   type VergerPlatform,
@@ -27,7 +27,7 @@ import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 import { observeLongTasks } from './longTasks';
 
 /** `off` runs nothing; `shadow` senses and decides but applies nothing new; `active` applies. */
-export type VergerMode = 'off' | GovernorMode;
+export type VergerMode = 'off' | RunMode;
 
 const VergerContext = createContext<Verger | null>(null);
 
@@ -70,12 +70,12 @@ export interface VergerProviderProps {
    * the floors and to a running verger alike: while verger is off they are all it hears. Returns
    * a function that stops them. Events a sensor switched off would carry are ignored by verger.
    */
-  readonly signals?: (dispatch: (event: GovernorEvent) => void, now: () => number) => () => void;
+  readonly signals?: (dispatch: (event: VergerEvent) => void, now: () => number) => () => void;
   /** The user's fidelity choice; `auto` lets the phone's class and verger decide. */
   readonly fidelity?: FidelityPreference;
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
-  readonly telemetrySink?: GovernorTelemetrySink;
+  readonly telemetrySink?: VergerTelemetrySink;
   /** The app version and build. A new release starts the recovery ladder over (and is the way off rung 4). */
   readonly release: string;
 }
@@ -221,7 +221,7 @@ export function useVerger(): Verger | null {
 }
 
 /** The snapshot in force (verger's, or its floors while off); null outside a provider. */
-export function useVergerSnapshot(): GovernorSnapshot | null {
+export function useVergerSnapshot(): VergerSnapshot | null {
   const verger = useContext(VergerContext);
   return useSyncExternalStore(
     verger?.subscribe ?? noSubscription,

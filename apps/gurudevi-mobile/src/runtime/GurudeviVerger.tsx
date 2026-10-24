@@ -3,13 +3,13 @@ import {
   type CapacityFacts,
   type ExperimentAssignment,
   type FidelityPreference,
-  type GovernorEvent,
-  type GovernorTelemetrySink,
+  type VergerEvent,
+  type VergerTelemetrySink,
   GURUDEVI_MOBILE_HOST,
   type VergerActivation,
   UNKNOWN_CAPACITY,
   type VergerStore,
-} from '@repo/core/governor';
+} from '@repo/core/verger';
 import { createVergerAndroidPlatform } from '@repo/verger-android';
 import { VergerProvider } from '@repo/verger-react';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
@@ -24,7 +24,7 @@ interface GurudeviVergerProps {
   /** Overrides the resolved mode (tests, diagnostics). */
   readonly mode?: RuntimeMode;
   readonly assignment?: ExperimentAssignment;
-  readonly telemetrySink?: GovernorTelemetrySink;
+  readonly telemetrySink?: VergerTelemetrySink;
   /** The user's fidelity setting; defaults to the app's fidelity setting. */
   readonly fidelity?: FidelityPreference;
 }
@@ -54,7 +54,7 @@ const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: tot
  * verger is off; running, the native sensor reports the same. A failed read keeps the last
  * value, as the old governor did.
  */
-function signals(dispatch: (event: GovernorEvent) => void, now: () => number): () => void {
+function signals(dispatch: (event: VergerEvent) => void, now: () => number): () => void {
   let live = true;
   const send = (saver: boolean) => {
     if (live) dispatch({ type: 'power', at: now(), saver });

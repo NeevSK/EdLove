@@ -4,11 +4,11 @@ import {
   ACTIVATION_PRESETS,
   type ActivationPatch,
   type CapacityFacts,
-  type CreateGovernorOptions,
+  type CreateVergerStateOptions,
   checkRun,
   createOutcomeLedger,
-  type GovernorEvent,
-  type GovernorSnapshot,
+  type VergerEvent,
+  type VergerSnapshot,
   resolveActivation,
   SENSORS,
   type SensorId,
@@ -101,7 +101,7 @@ const activationArb: fc.Arbitrary<VergerActivation> = fc
   .map(([preset, patch]) => resolveActivation(preset, patch));
 
 /** One event without its time; the stream gives it one. */
-type Untimed = DistributiveOmit<GovernorEvent, 'at'>;
+type Untimed = DistributiveOmit<VergerEvent, 'at'>;
 type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
 
 const frameArb: fc.Arbitrary<Untimed> = fc
@@ -208,7 +208,13 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
     arbitrary: fc.record({
       type: fc.constant('network' as const),
       transport: fc.option(
-        fc.constantFrom('wifi' as const, 'cellular' as const, 'ethernet' as const, 'other' as const, 'none' as const),
+        fc.constantFrom(
+          'wifi' as const,
+          'cellular' as const,
+          'ethernet' as const,
+          'other' as const,
+          'none' as const,
+        ),
         { nil: null },
       ),
       validated: fc.option(fc.boolean(), { nil: null }),
@@ -245,20 +251,18 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
 
 /** Gives each event a time; gaps range from a frame to over a minute, so timers come due. */
 const streamArb = (events: fc.Arbitrary<Untimed> = eventArb, maxLength = 60) =>
-  fc
-    .array(fc.tuple(fc.integer({ min: 1, max: 70_000 }), events), { maxLength })
-    .map((steps) => {
-      let at = 0;
-      return steps.map(([gap, event]) => {
-        at += gap;
-        return timed(event, at);
-      });
+  fc.array(fc.tuple(fc.integer({ min: 1, max: 70_000 }), events), { maxLength }).map((steps) => {
+    let at = 0;
+    return steps.map(([gap, event]) => {
+      at += gap;
+      return timed(event, at);
     });
+  });
 
-function timed(event: Untimed, at: number): GovernorEvent {
+function timed(event: Untimed, at: number): VergerEvent {
   if (event.type === 'frame-window')
     return { ...event, at, window: { ...event.window, startMs: at - 500, endMs: at } };
-  return { ...event, at } as GovernorEvent;
+  return { ...event, at } as VergerEvent;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -267,9 +271,9 @@ function timed(event: Untimed, at: number): GovernorEvent {
 
 function run(
   policy: VergerPolicy,
-  options: CreateGovernorOptions,
-  events: readonly GovernorEvent[],
-): { snapshots: GovernorSnapshot[]; final: GovernorSnapshot } {
+  options: CreateVergerStateOptions,
+  events: readonly VergerEvent[],
+): { snapshots: VergerSnapshot[]; final: VergerSnapshot } {
   let state = policy.create(options);
   const snapshots = [policy.snapshot(state)];
   for (const event of events) {
@@ -290,7 +294,7 @@ const optionsArb = fc
     memorySensing,
   }));
 
-const withoutActivation = ({ activation: _, ...rest }: GovernorSnapshot) => rest;
+const withoutActivation = ({ activation: _, ...rest }: VergerSnapshot) => rest;
 
 // ---------------------------------------------------------------------------------------------
 // Properties
@@ -319,20 +323,33 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
 
   it('time-shift: moving the whole session later changes no decision', () => {
     fc.assert(
-      fc.property(optionsArb, streamArb(), fc.integer({ min: 1, max: 1e9 }), (options, events, k) => {
-        const base = run(VERGER_POLICY, options, events).snapshots;
-        const shifted = run(
-          VERGER_POLICY,
-          { ...options, at: options.at + k },
-          events.map((event) =>
-            event.type === 'frame-window'
-              ? { ...event, at: event.at + k, window: { ...event.window, startMs: event.window.startMs + k, endMs: event.window.endMs + k } }
-              : { ...event, at: event.at + k },
-          ),
-        ).snapshots;
-        const strip = (s: GovernorSnapshot) => ({ ...withoutActivation(s), at: 0 });
-        expect(shifted.map(strip)).toEqual(base.map(strip));
-      }),
+      fc.property(
+        optionsArb,
+        streamArb(),
+        fc.integer({ min: 1, max: 1e9 }),
+        (options, events, k) => {
+          const base = run(VERGER_POLICY, options, events).snapshots;
+          const shifted = run(
+            VERGER_POLICY,
+            { ...options, at: options.at + k },
+            events.map((event) =>
+              event.type === 'frame-window'
+                ? {
+                    ...event,
+                    at: event.at + k,
+                    window: {
+                      ...event.window,
+                      startMs: event.window.startMs + k,
+                      endMs: event.window.endMs + k,
+                    },
+                  }
+                : { ...event, at: event.at + k },
+            ),
+          ).snapshots;
+          const strip = (s: VergerSnapshot) => ({ ...withoutActivation(s), at: 0 });
+          expect(shifted.map(strip)).toEqual(base.map(strip));
+        },
+      ),
     );
   });
 
@@ -349,22 +366,33 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
           const hearing = { ...activation, sense: { ...activation.sense, [sensor]: true } };
           // A sensor's readings include every witness of what it senses: battery temperature is
           // a heat reading (the fallback below Android 10), so deafening heat removes it too.
-          const heardNothing = events.map((event): GovernorEvent =>
-            sensorOf(event) === sensor
-              ? { type: 'tick', at: event.at }
-              : sensor === 'thermal' && event.type === 'battery'
-                ? { ...event, temperatureC: null }
-                : event,
+          const heardNothing = events.map(
+            (event): VergerEvent =>
+              sensorOf(event) === sensor
+                ? { type: 'tick', at: event.at }
+                : sensor === 'thermal' && event.type === 'battery'
+                  ? { ...event, temperatureC: null }
+                  : event,
           );
           // Memory sensing is a platform fact the deaf sensor must not claim.
           const memorySensing = sensor === 'memory' ? false : options.memorySensing;
-          const a = run(VERGER_POLICY, { ...options, activation: deaf, memorySensing }, events).final;
-          const b = run(VERGER_POLICY, { ...options, activation: hearing, memorySensing }, heardNothing).final;
+          const a = run(
+            VERGER_POLICY,
+            { ...options, activation: deaf, memorySensing },
+            events,
+          ).final;
+          const b = run(
+            VERGER_POLICY,
+            { ...options, activation: hearing, memorySensing },
+            heardNothing,
+          ).final;
           // The raw battery temperature stays the power sensor's fact; what a deaf heat sensor
           // must not do is derive heat from it, which `thermal` and `thermalSource` show.
-          const comparable = (snap: GovernorSnapshot) => {
+          const comparable = (snap: VergerSnapshot) => {
             const rest = withoutActivation(snap);
-            return sensor === 'thermal' ? { ...rest, battery: { ...rest.battery, temperatureC: null } } : rest;
+            return sensor === 'thermal'
+              ? { ...rest, battery: { ...rest.battery, temperatureC: null } }
+              : rest;
           };
           expect(comparable(a)).toEqual(comparable(b));
         },
@@ -390,7 +418,7 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
   });
 
   it('without sensor readings, nothing is lowered by pressure: no guessing', () => {
-    const appOnly = eventArb.filter((e) => sensorOf({ ...e, at: 0 } as GovernorEvent) === null);
+    const appOnly = eventArb.filter((e) => sensorOf({ ...e, at: 0 } as VergerEvent) === null);
     fc.assert(
       fc.property(optionsArb, streamArb(appOnly), (options, events) => {
         for (const snapshot of run(VERGER_POLICY, options, events).snapshots)
@@ -407,13 +435,19 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
           at += gap;
           return at;
         };
-        const calm: GovernorEvent[] = [
+        const calm: VergerEvent[] = [
           { type: 'activation', at: next(1), activation: ACTIVATION_PRESETS.lab },
           { type: 'app-state', at: next(1), state: 'active' },
           { type: 'preferences', at: next(1), reduceMotion: false, fidelity: 'auto' },
           { type: 'power', at: next(1), saver: false },
           { type: 'thermal', at: next(1), status: 'none', headroom: 0.3 },
-          { type: 'memory-state', at: next(1), availableMb: 3000, thresholdMb: 200, lowMemory: false },
+          {
+            type: 'memory-state',
+            at: next(1),
+            availableMb: 3000,
+            thresholdMb: 200,
+            lowMemory: false,
+          },
           { type: 'thread-load', at: next(1), cores: { js: 0.1, main: 0.1 }, processCores: 0.2 },
         ];
         const steps = LEVERS.reduce((sum, lever) => sum + lever.maxLevel, 0) + 2;
@@ -423,7 +457,15 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
           calm.push({
             type: 'frame-window',
             at: end,
-            window: { startMs: end - 500, endMs: end, frames: 30, averageMs: 8, targetMs: 16.67, worstMs: 10, droppedRatio: 0 },
+            window: {
+              startMs: end - 500,
+              endMs: end,
+              frames: 30,
+              averageMs: 8,
+              targetMs: 16.67,
+              worstMs: 10,
+              droppedRatio: 0,
+            },
           });
           calm.push({ type: 'tick', at: next(1) });
         }
@@ -440,8 +482,11 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
     fc.assert(
       fc.property(optionsArb, streamArb(), (options, events) => {
         const ledger = createOutcomeLedger({ levers: LEVERS, capacity: options.capacity });
-        for (const snapshot of run(VERGER_POLICY, options, events).snapshots) ledger.observe(snapshot);
-        const blind = ledger.records().filter((r) => r.direction === 'compress' && r.verdict === 'unjudged');
+        for (const snapshot of run(VERGER_POLICY, options, events).snapshots)
+          ledger.observe(snapshot);
+        const blind = ledger
+          .records()
+          .filter((r) => r.direction === 'compress' && r.verdict === 'unjudged');
         expect(blind.map((r) => `${r.lever}: ${r.reason}`)).toEqual([]);
       }),
       {
@@ -486,10 +531,7 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
 // The suite must catch broken policies, or it proves nothing.
 // ---------------------------------------------------------------------------------------------
 
-const mutant = (
-  name: string,
-  snapshot: (s: GovernorSnapshot) => GovernorSnapshot,
-): VergerPolicy => ({
+const mutant = (name: string, snapshot: (s: VergerSnapshot) => VergerSnapshot): VergerPolicy => ({
   ...VERGER_POLICY,
   id: name,
   snapshot: (state, at) => snapshot(VERGER_POLICY.snapshot(state as never, at)),
@@ -499,7 +541,9 @@ const firstLever = LEVERS[0]?.id ?? 'refresh-rate';
 
 const MUTANTS: readonly VergerPolicy[] = [
   mutant('ignores-off', (s) =>
-    s.activation.levers[firstLever] === 'off' ? { ...s, levels: { ...s.levels, [firstLever]: 1 } } : s,
+    s.activation.levers[firstLever] === 'off'
+      ? { ...s, levels: { ...s.levels, [firstLever]: 1 } }
+      : s,
   ),
   mutant('out-of-range', (s) => ({ ...s, levels: { ...s.levels, [firstLever]: 99 } })),
   mutant('hardware-leak', (s) => ({ ...s, refreshCapHz: 60 })),
@@ -507,7 +551,9 @@ const MUTANTS: readonly VergerPolicy[] = [
   mutant('shadow-applies', (s) => ({ ...s, levels: s.proposedLevels })),
 ];
 
-describe('the invariant suite catches broken policies (mutation check)', { timeout: 60_000 }, () => {
+describe('the invariant suite catches broken policies (mutation check)', {
+  timeout: 60_000,
+}, () => {
   for (const broken of MUTANTS) {
     it(`catches ${broken.id}`, () => {
       const result = fc.check(

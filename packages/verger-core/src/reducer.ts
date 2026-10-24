@@ -6,7 +6,7 @@ import {
   type SensorId,
   type VergerActivation,
 } from './activation';
-import { DEFAULT_GOVERNOR_CONFIG } from './config';
+import { DEFAULT_VERGER_CONFIG } from './config';
 import { bottleneckTargets, classifyFrameWindow, frameBottleneck, gpuMeasured } from './frames';
 import { chooseLeverToLower, validateLevers } from './levers';
 import {
@@ -24,10 +24,10 @@ import type {
   Contention,
   FidelityPreference,
   FrameState,
-  GovernorConfig,
-  GovernorEvent,
-  GovernorMode,
-  GovernorSnapshot,
+  VergerConfig,
+  VergerEvent,
+  RunMode,
+  VergerSnapshot,
   IndexerAction,
   LeverSpec,
   LeverTarget,
@@ -63,10 +63,14 @@ export const UNKNOWN_NETWORK: NetworkState = {
   dataSaver: null,
 };
 
-export const UNKNOWN_BATTERY: BatteryState = { levelPercent: null, pluggedIn: null, temperatureC: null };
+export const UNKNOWN_BATTERY: BatteryState = {
+  levelPercent: null,
+  pluggedIn: null,
+  temperatureC: null,
+};
 
 /** Low only when known to be low and known to be unplugged: unknown is never low. */
-const batteryLow = (state: GovernorState) =>
+const batteryLow = (state: VergerState) =>
   state.battery.pluggedIn === false &&
   state.battery.levelPercent !== null &&
   state.battery.levelPercent <= state.config.batteryLowPercent;
@@ -79,7 +83,7 @@ const savingData = (n: NetworkState) => n.dataSaver === 'enabled';
 /** The phone's class from its memory; the OS's own low-RAM flag always means low. */
 export function capacityClassOf(
   capacity: CapacityFacts,
-  config: Pick<GovernorConfig, 'lowCapacityBelowBytes' | 'midCapacityBelowBytes'>,
+  config: Pick<VergerConfig, 'lowCapacityBelowBytes' | 'midCapacityBelowBytes'>,
 ): CapacityClass {
   if (capacity.isLowRamDevice === true) return 'low';
   const bytes = capacity.totalMemoryBytes;
@@ -92,7 +96,7 @@ export function capacityClassOf(
  * The network's limit on optional data, strongest first. Unstable: back from offline less than
  * `networkSettleMs` ago, since a link that just dropped often drops again. Unknown limits nothing.
  */
-export function networkLimitOf(state: GovernorState, at: number = state.at): NetworkLimit {
+export function networkLimitOf(state: VergerState, at: number = state.at): NetworkLimit {
   const n = state.network;
   if (offline(n)) return 'offline';
   if (savingData(n)) return 'data-saver';
@@ -102,11 +106,11 @@ export function networkLimitOf(state: GovernorState, at: number = state.at): Net
   return 'none';
 }
 
-export interface GovernorState {
-  readonly config: GovernorConfig;
+export interface VergerState {
+  readonly config: VergerConfig;
   readonly levers: readonly LeverSpec[];
   readonly capacity: CapacityFacts;
-  readonly mode: GovernorMode;
+  readonly mode: RunMode;
   readonly version: number;
   readonly at: number;
 
@@ -186,12 +190,12 @@ export interface GovernorState {
   readonly lastReason: string;
 }
 
-export interface CreateGovernorOptions {
+export interface CreateVergerStateOptions {
   readonly at: number;
   readonly capacity?: CapacityFacts;
   readonly levers: readonly LeverSpec[];
-  readonly mode?: GovernorMode;
-  readonly config?: Partial<GovernorConfig>;
+  readonly mode?: RunMode;
+  readonly config?: Partial<VergerConfig>;
   /** Set when a native memory sensor is attached, so absence of trims means "normal". */
   readonly memorySensing?: boolean;
   /** Whether verger may drive hardware levers and CPU hints. Default true. */
@@ -210,11 +214,11 @@ export interface CreateGovernorOptions {
   readonly activation?: VergerActivation;
 }
 
-export function createGovernor(options: CreateGovernorOptions): GovernorState {
+export function createVergerState(options: CreateVergerStateOptions): VergerState {
   validateLevers(options.levers);
-  const config = { ...DEFAULT_GOVERNOR_CONFIG, ...options.config };
+  const config = { ...DEFAULT_VERGER_CONFIG, ...options.config };
   const start = startingPressure(options.levers, options.initialPressure);
-  const created: GovernorState = {
+  const created: VergerState = {
     config,
     levers: options.levers,
     capacity: options.capacity ?? UNKNOWN_CAPACITY,
@@ -310,7 +314,7 @@ function startingPressure(
  * visibility). The capacity class is the hardware's ceiling on quality until the phone earns
  * more by measurement (`capacityGrant`).
  */
-export function staticFloors(state: GovernorState, at: number = state.at): Record<string, number> {
+export function staticFloors(state: VergerState, at: number = state.at): Record<string, number> {
   const floors: Record<string, number> = {};
   const raise = (id: string, level: number) => {
     floors[id] = Math.max(floors[id] ?? 0, level);
@@ -344,10 +348,13 @@ export function staticFloors(state: GovernorState, at: number = state.at): Recor
     if (midCapacity && !lever.closedLoopOnly && lever.whenMidCapacity !== undefined)
       raise(lever.id, lever.whenMidCapacity);
     if (weakLink && lever.whenSlowNetwork !== undefined) raise(lever.id, lever.whenSlowNetwork);
-    if (network.metered === true && lever.whenMetered !== undefined) raise(lever.id, lever.whenMetered);
-    if (savingData(network) && lever.whenDataSaver !== undefined) raise(lever.id, lever.whenDataSaver);
+    if (network.metered === true && lever.whenMetered !== undefined)
+      raise(lever.id, lever.whenMetered);
+    if (savingData(network) && lever.whenDataSaver !== undefined)
+      raise(lever.id, lever.whenDataSaver);
     if (offline(network) && lever.whenOffline !== undefined) raise(lever.id, lever.whenOffline);
-    if (batteryLow(state) && lever.whenBatteryLow !== undefined) raise(lever.id, lever.whenBatteryLow);
+    if (batteryLow(state) && lever.whenBatteryLow !== undefined)
+      raise(lever.id, lever.whenBatteryLow);
     for (const need of lever.requires ?? []) {
       if (lacks(state, need.capability, capacityReported)) raise(lever.id, need.otherwiseLevel);
     }
@@ -360,7 +367,7 @@ export function staticFloors(state: GovernorState, at: number = state.at): Recor
  * capacity has been reported (unknown is not proof of absence). A refresh cap the display
  * cannot honour saves nothing, so an unknown display counts as unable to cap.
  */
-function lacks(state: GovernorState, capability: Capability, capacityReported: boolean): boolean {
+function lacks(state: VergerState, capability: Capability, capacityReported: boolean): boolean {
   switch (capability) {
     case 'renderEffect':
       return capacityReported && !state.capacity.supportsRenderEffect;
@@ -371,22 +378,22 @@ function lacks(state: GovernorState, capability: Capability, capacityReported: b
   }
 }
 
-function leverWith(state: GovernorState, actuator: Actuator): LeverSpec | undefined {
+function leverWith(state: VergerState, actuator: Actuator): LeverSpec | undefined {
   return state.levers.find((lever) => lever.actuator === actuator);
 }
 
-function canCapRefresh(state: GovernorState): boolean {
+function canCapRefresh(state: VergerState): boolean {
   const rates = state.capacity.refreshRatesHz;
   const cap = state.config.refreshCapHz;
   return rates.some((hz) => hz > cap + 1) && rates.some((hz) => hz <= cap + 1);
 }
 
-function interactionIdle(state: GovernorState, at: number): boolean {
+function interactionIdle(state: VergerState, at: number): boolean {
   return at - state.lastInteractionAt >= state.config.ambientSleepAfterMs;
 }
 
 /** Closed-loop floors: ambient sleep when nobody is touching the screen. */
-function dynamicFloors(state: GovernorState, at: number): Record<string, number> {
+function dynamicFloors(state: VergerState, at: number): Record<string, number> {
   const floors: Record<string, number> = {};
   const idle = interactionIdle(state, at);
   const thermal = thermalOf(state);
@@ -425,21 +432,27 @@ function combine(levers: readonly LeverSpec[], ...sources: Record<string, number
 // Activation: what the closed loop may do, and which levers it may touch.
 // ---------------------------------------------------------------------------------------------
 
-const closedLoop = (state: GovernorState) => state.activation.decide === 'closed-loop';
-const mayReduce = (state: GovernorState) => closedLoop(state) && state.activation.reduce;
-const mayGrow = (state: GovernorState) => closedLoop(state) && state.activation.grow;
+const closedLoop = (state: VergerState) => state.activation.decide === 'closed-loop';
+const mayReduce = (state: VergerState) => closedLoop(state) && state.activation.reduce;
+const mayGrow = (state: VergerState) => closedLoop(state) && state.activation.grow;
 
 /** Levers verger governs at all; an `off` lever is left at full quality and never picked. */
-const governed = (state: GovernorState) =>
+const governed = (state: VergerState) =>
   state.levers.filter((lever) => leverActivation(state.activation, lever.id) !== 'off');
 
 /** What a sensor's readings left in the state, forgotten when the sensor is switched off. */
-function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
+function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
   switch (sensor) {
     case 'frames':
       return { ...state, frameState: 'quiet', stressMs: 0, stressEndMs: null, comfortSeen: false };
     case 'threads':
-      return { ...state, jsSaturatedSince: null, mainSaturatedSince: null, jsCores: 0, mainCores: 0 };
+      return {
+        ...state,
+        jsSaturatedSince: null,
+        mainSaturatedSince: null,
+        jsCores: 0,
+        mainCores: 0,
+      };
     case 'memory':
       return { ...state, memoryLatch: NO_MEMORY_LATCH, polledMemory: null, memorySensing: false };
     case 'thermal':
@@ -453,10 +466,11 @@ function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
   }
 }
 
-function applyActivation(state: GovernorState, activation: VergerActivation): GovernorState {
-  let next: GovernorState = { ...state, activation };
+function applyActivation(state: VergerState, activation: VergerActivation): VergerState {
+  let next: VergerState = { ...state, activation };
   for (const sensor of SENSORS) {
-    if (!activation.sense[sensor] && state.activation.sense[sensor]) next = forgetSensor(next, sensor);
+    if (!activation.sense[sensor] && state.activation.sense[sensor])
+      next = forgetSensor(next, sensor);
   }
   return next;
 }
@@ -466,14 +480,14 @@ function applyActivation(state: GovernorState, activation: VergerActivation): Go
 // ---------------------------------------------------------------------------------------------
 
 function lower(
-  state: GovernorState,
+  state: VergerState,
   steps: number,
   bottleneck: readonly LeverTarget[],
   at: number,
   action: IndexerAction,
   reason: string,
   match: true | 'primary' = true,
-): GovernorState {
+): VergerState {
   if (!mayReduce(state)) {
     return { ...state, lastAction: 'stale', lastReason: `${reason}: reducing is switched off` };
   }
@@ -507,7 +521,7 @@ function lower(
   };
 }
 
-function raiseOne(state: GovernorState, at: number, reason: string): GovernorState {
+function raiseOne(state: VergerState, at: number, reason: string): VergerState {
   const id = state.stack[state.stack.length - 1];
   if (id === undefined) return state;
   const current = state.pressure[id] ?? 0;
@@ -530,11 +544,11 @@ function raiseOne(state: GovernorState, at: number, reason: string): GovernorSta
   };
 }
 
-function memoryOf(state: GovernorState, at: number) {
+function memoryOf(state: VergerState, at: number) {
   return memoryLevelOf(state.memoryLatch, at, state.memorySensing, state.polledMemory);
 }
 
-function thermalOf(state: GovernorState): ThermalLevel {
+function thermalOf(state: VergerState): ThermalLevel {
   return thermalReading(state).level;
 }
 
@@ -542,19 +556,28 @@ function thermalOf(state: GovernorState): ThermalLevel {
  * Heat, and where it came from. The platform's status and headroom win; only where it gives
  * neither (Android 9) and the thermal sensor is on, battery temperature stands in.
  */
-function thermalReading(state: GovernorState): { level: ThermalLevel; source: ThermalSource } {
+function thermalReading(state: VergerState): { level: ThermalLevel; source: ThermalSource } {
   if (state.thermalStatus !== null || state.headroom !== null)
-    return { level: thermalLevelOf(state.thermalStatus, state.headroom, state.config), source: 'platform' };
+    return {
+      level: thermalLevelOf(state.thermalStatus, state.headroom, state.config),
+      source: 'platform',
+    };
   const t = state.battery.temperatureC;
   if (!state.activation.sense.thermal || t === null) return { level: 'unknown', source: 'none' };
   const c = state.config;
   const level: ThermalLevel =
-    t >= c.batteryCriticalC ? 'critical' : t >= c.batteryHotC ? 'hot' : t >= c.batteryWarmC ? 'warm' : 'nominal';
+    t >= c.batteryCriticalC
+      ? 'critical'
+      : t >= c.batteryHotC
+        ? 'hot'
+        : t >= c.batteryWarmC
+          ? 'warm'
+          : 'nominal';
   return { level, source: 'battery' };
 }
 
 /** Thermal and memory rules that apply on every event, so heat is acted on even without frames. */
-function applyStandingPressure(state: GovernorState, at: number): GovernorState {
+function applyStandingPressure(state: VergerState, at: number): VergerState {
   const thermal = thermalOf(state);
   const memory = memoryOf(state, at);
   const sinceThermal = at - state.lastThermalActionAt;
@@ -585,7 +608,7 @@ function applyStandingPressure(state: GovernorState, at: number): GovernorState 
   return next;
 }
 
-function maybeIncrease(state: GovernorState, at: number): GovernorState {
+function maybeIncrease(state: VergerState, at: number): VergerState {
   if (state.stack.length === 0 || !mayGrow(state)) return state;
   const thermal = thermalOf(state);
   if (thermal === 'warm' || thermal === 'hot' || thermal === 'critical') return state;
@@ -602,7 +625,7 @@ function maybeIncrease(state: GovernorState, at: number): GovernorState {
   return raiseOne(state, at, `comfortable for ${Math.round(state.upgradeAfterMs)} ms`);
 }
 
-function resetBackoff(state: GovernorState, at: number): GovernorState {
+function resetBackoff(state: VergerState, at: number): VergerState {
   if (state.upgradeAfterMs <= state.config.upgradeAfterMs) return state;
   const quietFor = at - Math.max(state.lastDecreaseAt, state.lastIncreaseAt);
   if (quietFor <= state.config.resetBackoffAfterMs) return state;
@@ -611,8 +634,8 @@ function resetBackoff(state: GovernorState, at: number): GovernorState {
 
 /** Free memory against the system's low-memory threshold, as a trim severity (or none). */
 function polledSeverity(
-  state: GovernorState,
-  event: Extract<GovernorEvent, { type: 'memory-state' }>,
+  state: VergerState,
+  event: Extract<VergerEvent, { type: 'memory-state' }>,
 ): TrimSeverity | null {
   if (event.lowMemory) return 'critical';
   if (!(event.thresholdMb > 0)) return null;
@@ -622,11 +645,11 @@ function polledSeverity(
 }
 
 function relieveMemory(
-  before: GovernorState,
-  after: GovernorState,
+  before: VergerState,
+  after: VergerState,
   at: number,
   why: string,
-): GovernorState {
+): VergerState {
   const was = memoryOf(before, at);
   const now = memoryOf(after, at);
   if (now === 'low' && was !== 'low') {
@@ -639,24 +662,24 @@ function relieveMemory(
 }
 
 function onMemoryPressure(
-  state: GovernorState,
+  state: VergerState,
   severity: TrimSeverity,
   at: number,
   source: string,
-): GovernorState {
+): VergerState {
   const memoryLatch = latchMemory(state.memoryLatch, severity, at, state.config);
-  const next: GovernorState = { ...state, memoryLatch, memorySensing: true, lastPressureAt: at };
+  const next: VergerState = { ...state, memoryLatch, memorySensing: true, lastPressureAt: at };
   return relieveMemory(state, next, at, `${source} (${severity})`);
 }
 
-function recentLongTasks(state: GovernorState, at: number): number {
+function recentLongTasks(state: VergerState, at: number): number {
   let count = 0;
   for (const t of state.longTasks) if (at - t <= state.config.longTaskWindowMs) count += 1;
   return count;
 }
 
 /** Which thread is saturated long enough to count, judged at `at`. */
-function contentionOf(state: GovernorState, at: number): Contention {
+function contentionOf(state: VergerState, at: number): Contention {
   const after = state.config.saturationAfterMs;
   if (state.jsSaturatedSince !== null && at - state.jsSaturatedSince >= after) return 'js';
   if (recentLongTasks(state, at) >= state.config.longTasksForContention) return 'js';
@@ -666,10 +689,10 @@ function contentionOf(state: GovernorState, at: number): Contention {
 
 /**
  * Contention is the runtime's answer to work it does not control: a component, library or
- * loop that keeps a thread busy. Whatever the cause, the governor sheds CPU-side quality one
+ * loop that keeps a thread busy. Whatever the cause, verger sheds CPU-side quality one
  * step at a time, no faster than once per saturation period, and pauses deferrable work.
  */
-function applyContention(state: GovernorState, at: number): GovernorState {
+function applyContention(state: VergerState, at: number): VergerState {
   const contention = contentionOf(state, at);
   if (contention === 'none') {
     if (
@@ -739,13 +762,10 @@ function applyContention(state: GovernorState, at: number): GovernorState {
   };
 }
 
-function onFrameWindow(
-  state: GovernorState,
-  event: Extract<GovernorEvent, { type: 'frame-window' }>,
-) {
+function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: 'frame-window' }>) {
   const frameState = classifyFrameWindow(event.window, state.config);
   const span = Math.max(0, event.window.endMs - event.window.startMs);
-  let next: GovernorState = { ...state, frameState };
+  let next: VergerState = { ...state, frameState };
   if (frameState === 'stressed') {
     // Stress must be continuous: two hitches a minute apart are not 1 s of stress.
     // A window's stress reaches as far as its worst frame: a 1 s freeze leaves the next 500 ms
@@ -777,13 +797,13 @@ function onFrameWindow(
   return next;
 }
 
-function step(state: GovernorState, event: GovernorEvent): GovernorState {
+function step(state: VergerState, event: VergerEvent): VergerState {
   const at = Math.max(state.at, event.at);
-  let next: GovernorState = { ...state, at, lastAction: 'stale', lastReason: state.lastReason };
+  let next: VergerState = { ...state, at, lastAction: 'stale', lastReason: state.lastReason };
   // A reading from a switched-off sensor is dropped here, not at the port, so replaying a raw
   // recording under a different activation gives the same result as running it live.
   const sensor = sensorOf(event);
-  const input: GovernorEvent =
+  const input: VergerEvent =
     sensor === null || state.activation.sense[sensor] ? event : { type: 'tick', at: event.at };
   switch (input.type) {
     case 'frame-window':
@@ -797,7 +817,7 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
       break;
     case 'memory-state': {
       const severity = polledSeverity(next, input);
-      const polled: GovernorState = { ...next, polledMemory: severity, memorySensing: true };
+      const polled: VergerState = { ...next, polledMemory: severity, memorySensing: true };
       next = relieveMemory(
         next,
         severity === null ? polled : { ...polled, lastPressureAt: at },
@@ -874,11 +894,11 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
   return next;
 }
 
-/** Folds one event into the governor. Pure: same state and event, same result. */
-export function reduceGovernor(state: GovernorState, event: GovernorEvent): GovernorState {
+/** Folds one event into verger's state. Pure: same state and event, same result. */
+export function reduceVerger(state: VergerState, event: VergerEvent): VergerState {
   const stepped = step(state, event);
   const published = snapshotOf(stepped, stepped.at);
-  const next: GovernorState = {
+  const next: VergerState = {
     ...stepped,
     heldRefreshCapHz: published.refreshCapHz,
     heldGlobalMotion: published.globalReducedMotion,
@@ -894,7 +914,7 @@ export function reduceGovernor(state: GovernorState, event: GovernorEvent): Gove
 // Outputs
 // ---------------------------------------------------------------------------------------------
 
-function optionalConcurrency(state: GovernorState, at: number): number {
+function optionalConcurrency(state: VergerState, at: number): number {
   const admission = state.activation.admission;
   if (admission === 'off') return state.config.maxOptionalConcurrency;
   // Measured pressure counts only when admission is applied and the loop is deciding.
@@ -922,8 +942,8 @@ function optionalConcurrency(state: GovernorState, at: number): number {
   return constrained ? Math.min(1, allowed) : allowed;
 }
 
-/** The governor's published output at time `at` (ambient sleep depends on elapsed time). */
-export function snapshotOf(state: GovernorState, at: number = state.at): GovernorSnapshot {
+/** Verger's published output at time `at` (ambient sleep depends on elapsed time). */
+export function snapshotOf(state: VergerState, at: number = state.at): VergerSnapshot {
   const base = staticFloors(state, at);
   const baseline = combine(state.levers, base);
   const loop = closedLoop(state)
@@ -993,7 +1013,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
  * change that raises quality applies at once, and heat (hot or worse) overrides the freeze.
  */
 function hardwareOf(
-  state: GovernorState,
+  state: VergerState,
   at: number,
   levels: Readonly<Record<string, number>>,
 ): { refreshCapHz: number | null; globalReducedMotion: boolean } {
@@ -1018,7 +1038,7 @@ function hardwareOf(
 }
 
 /** The loop's own pressure, apart from what remains of the learned starting point. */
-function splitPressure(state: GovernorState): {
+function splitPressure(state: VergerState): {
   pressure: Record<string, number>;
   priorHeld: Record<string, number>;
 } {
@@ -1032,7 +1052,7 @@ function splitPressure(state: GovernorState): {
   return { pressure, priorHeld };
 }
 
-function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
+function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
   if (
     a.frameState !== b.frameState ||
     a.thermal !== b.thermal ||
@@ -1075,7 +1095,7 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
  * Native sensors report only changes, so without this a steady saturated thread would never
  * be acted on.
  */
-export function nextTimedChangeAt(state: GovernorState): number | null {
+export function nextTimedChangeAt(state: VergerState): number | null {
   const now = state.at;
   const { saturationAfterMs, longTaskWindowMs, ambientSleepAfterMs } = state.config;
   const candidates: number[] = [];

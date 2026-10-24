@@ -1,4 +1,4 @@
-import type { GovernorConfig } from './types';
+import type { VergerConfig } from './types';
 
 /**
  * Defaults. Frame thresholds and back-off follow @rbayuokt/expo-adaptive-glass (MIT), whose
@@ -7,13 +7,13 @@ import type { GovernorConfig } from './types';
  * provisional until A52 and 2–3 GB release-build captures calibrate it.
  */
 /** Throws on a config no policy could run; checked at host definition and on every live change. */
-export function validateConfig(config: GovernorConfig): void {
+export function validateConfig(config: VergerConfig): void {
   for (const [key, value] of Object.entries(config)) {
     if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
       throw new Error(`Config "${key}" must be a finite positive number`);
     }
   }
-  const order = (low: keyof GovernorConfig, high: keyof GovernorConfig) => {
+  const order = (low: keyof VergerConfig, high: keyof VergerConfig) => {
     if (!(config[low] < config[high])) throw new Error(`Config "${low}" must be below "${high}"`);
   };
   order('comfortRatio', 'stressRatio');
@@ -23,7 +23,8 @@ export function validateConfig(config: GovernorConfig): void {
   order('batteryWarmC', 'batteryHotC');
   order('batteryHotC', 'batteryCriticalC');
   order('lowCapacityBelowBytes', 'midCapacityBelowBytes');
-  if (config.batteryLowPercent > 100) throw new Error('Config "batteryLowPercent" must be at most 100');
+  if (config.batteryLowPercent > 100)
+    throw new Error('Config "batteryLowPercent" must be at most 100');
   if (!(config.headroomHot <= config.headroomCritical)) {
     throw new Error('Config "headroomHot" must not exceed "headroomCritical"');
   }
@@ -31,7 +32,7 @@ export function validateConfig(config: GovernorConfig): void {
     throw new Error('Config "minSamples" must be an integer');
 }
 
-export const DEFAULT_GOVERNOR_CONFIG: GovernorConfig = {
+export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   minSamples: 4,
   stressRatio: 1.25,
   stressDroppedRatio: 0.1,

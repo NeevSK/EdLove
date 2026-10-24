@@ -1,5 +1,5 @@
 import { leverActivation } from './activation';
-import type { GovernorSnapshot, LeverSpec } from './types';
+import type { VergerSnapshot, LeverSpec } from './types';
 
 /**
  * Verger's invariants as executable checks over published snapshots. They hold for every event
@@ -16,7 +16,7 @@ export interface InvariantViolation {
 
 /** Checks one snapshot on its own. */
 export function checkSnapshot(
-  snapshot: GovernorSnapshot,
+  snapshot: VergerSnapshot,
   levers: readonly LeverSpec[],
 ): InvariantViolation[] {
   const out: InvariantViolation[] = [];
@@ -55,7 +55,8 @@ export function checkSnapshot(
   }
 
   if (!activation.hardware) {
-    if (snapshot.refreshCapHz !== null) fail('hardware-off', `refresh cap ${snapshot.refreshCapHz}`);
+    if (snapshot.refreshCapHz !== null)
+      fail('hardware-off', `refresh cap ${snapshot.refreshCapHz}`);
     if (snapshot.cpuBoost) fail('hardware-off', 'cpu boost on');
     if (snapshot.globalReducedMotion) fail('hardware-off', 'global reduced motion on');
   }
@@ -87,18 +88,22 @@ export function checkSnapshot(
 
 /** Checks a run of published snapshots, in order: each on its own, and each against the last. */
 export function checkRun(
-  snapshots: readonly GovernorSnapshot[],
+  snapshots: readonly VergerSnapshot[],
   levers: readonly LeverSpec[],
 ): InvariantViolation[] {
   const out: InvariantViolation[] = [];
-  let previous: GovernorSnapshot | null = null;
+  let previous: VergerSnapshot | null = null;
   for (const snapshot of snapshots) {
     out.push(...checkSnapshot(snapshot, levers));
     if (previous) {
       if (snapshot.at < previous.at)
         out.push({ invariant: 'time-forward', at: snapshot.at, detail: `after ${previous.at}` });
       if (snapshot.version < previous.version)
-        out.push({ invariant: 'version-forward', at: snapshot.at, detail: `${snapshot.version} after ${previous.version}` });
+        out.push({
+          invariant: 'version-forward',
+          at: snapshot.at,
+          detail: `${snapshot.version} after ${previous.version}`,
+        });
       // Under one activation: with reducing off (or static) the loop's own pressure never
       // rises; with growth off (or static) it never eases. Pressure from before a change remains.
       const same = previous.activation === snapshot.activation;
@@ -108,9 +113,17 @@ export function checkRun(
           const before = previous.pressure[lever.id] ?? 0;
           const after = snapshot.pressure[lever.id] ?? 0;
           if (after > before && (!reduce || decide === 'static'))
-            out.push({ invariant: 'no-reduction-when-reduce-off', at: snapshot.at, detail: `${lever.id} ${before}->${after}` });
+            out.push({
+              invariant: 'no-reduction-when-reduce-off',
+              at: snapshot.at,
+              detail: `${lever.id} ${before}->${after}`,
+            });
           if (after < before && (!grow || decide === 'static'))
-            out.push({ invariant: 'no-growth-when-grow-off', at: snapshot.at, detail: `${lever.id} ${before}->${after}` });
+            out.push({
+              invariant: 'no-growth-when-grow-off',
+              at: snapshot.at,
+              detail: `${lever.id} ${before}->${after}`,
+            });
         }
       }
     }

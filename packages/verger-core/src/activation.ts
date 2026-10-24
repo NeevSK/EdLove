@@ -1,4 +1,4 @@
-import type { GovernorEvent, GovernorMode, LeverSpec } from './types';
+import type { VergerEvent, RunMode, LeverSpec } from './types';
 
 /**
  * What verger is allowed to do, layer by layer. Activation is data: a build ships a preset,
@@ -125,13 +125,13 @@ export const ACTIVATION_PRESETS = {
 export type ActivationPresetName = keyof typeof ACTIVATION_PRESETS;
 
 /** The preset that reproduces a pre-activation mode. */
-export const activationForMode = (mode: GovernorMode): VergerActivation => ACTIVATION_PRESETS[mode];
+export const activationForMode = (mode: RunMode): VergerActivation => ACTIVATION_PRESETS[mode];
 
 /**
  * The launch mode an activation asks the ladder for: `active` when anything would reach the
  * app or the hardware, else `shadow`. The ladder may still lower it.
  */
-export function modeForActivation(activation: VergerActivation): GovernorMode {
+export function modeForActivation(activation: VergerActivation): RunMode {
   const applies =
     activation.hardware ||
     activation.defaultLever === 'apply' ||
@@ -166,7 +166,7 @@ export function resolveActivation(
 /** What the recovery ladder allows this launch. */
 export interface ActivationCap {
   /** `shadow`: nothing new reaches consumers (rung 3). */
-  readonly runtime: GovernorMode;
+  readonly runtime: RunMode;
   /** False on rung 2 and above, and in exercise sessions. */
   readonly hardware: boolean;
   /** False when the launch must not grow (rung 1 and above resets the profile). */
@@ -193,7 +193,7 @@ export const leverActivation = (activation: VergerActivation, id: string): Lever
   activation.levers[id] ?? activation.defaultLever;
 
 /** The sensor an event comes from, or null for events that are not sensor readings. */
-export function sensorOf(event: GovernorEvent): SensorId | null {
+export function sensorOf(event: VergerEvent): SensorId | null {
   switch (event.type) {
     case 'frame-window':
       return 'frames';
@@ -266,7 +266,8 @@ export function parseActivationPatch(
         const map: Record<string, LeverActivation> = {};
         for (const [id, mode] of Object.entries(value)) {
           if (!known.has(id)) return { error: `unknown lever "${id}"` };
-          if (!oneOf(LEVER_VALUES, mode)) return { error: `levers.${id} must be apply, shadow or off` };
+          if (!oneOf(LEVER_VALUES, mode))
+            return { error: `levers.${id} must be apply, shadow or off` };
           map[id] = mode;
         }
         out.levers = map;
@@ -278,7 +279,8 @@ export function parseActivationPatch(
         out[key] = value;
         break;
       case 'observe':
-        if (!oneOf(OBSERVE_VALUES, value)) return { error: 'observe must be off, summary or exhaustive' };
+        if (!oneOf(OBSERVE_VALUES, value))
+          return { error: 'observe must be off, summary or exhaustive' };
         out.observe = value;
         break;
       default:

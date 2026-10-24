@@ -45,7 +45,7 @@ export function validateLevers(levers: readonly LeverSpec[]): void {
   const seen = new Set<string>();
   const actuators = new Map<string, string>();
   for (const lever of levers) {
-    if (seen.has(lever.id)) throw new Error(`Duplicate governor lever "${lever.id}"`);
+    if (seen.has(lever.id)) throw new Error(`Duplicate lever "${lever.id}"`);
     seen.add(lever.id);
     if (!Number.isInteger(lever.maxLevel) || lever.maxLevel < 1) {
       throw new Error(`Lever "${lever.id}" needs an integer maxLevel of at least 1`);

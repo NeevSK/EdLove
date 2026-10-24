@@ -170,7 +170,7 @@ A host describes itself as data with `defineHost({ name, levers, config })`. Eac
 its own rules (`requires` a capability, `whenHidden`, `whenIdle`, `whenWarm`, an `actuator`); the
 reducer applies rules and never names a lever. A test fails if any host name appears in the
 three packages, or if the reducer names its own built-in levers. Gurudevi is the first host:
-`@repo/core/governor` holds its levers and its host definitions and re-exports verger, so
+`@repo/core/verger` holds its levers and its host definitions and re-exports verger, so
 existing imports keep working; the mobile build mounts `GURUDEVI_MOBILE_HOST`, which governs
 only the levers something applies today. Publishing outside the monorepo waits for device
 evidence.

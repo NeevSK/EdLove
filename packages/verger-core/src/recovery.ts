@@ -1,5 +1,5 @@
 import type { SessionReport } from './session';
-import type { GovernorMode, MemoryLevel, ThermalLevel } from './types';
+import type { RunMode, MemoryLevel, ThermalLevel } from './types';
 
 /**
  * Recovery, healing and growth across launches.
@@ -62,7 +62,7 @@ const FAILURES: ReadonlySet<ExitReason> = new Set([
  */
 export type Rung = 0 | 1 | 2 | 3 | 4;
 
-export type RuntimeLevel = 'off' | GovernorMode;
+export type RuntimeLevel = 'off' | RunMode;
 
 export interface RecoveryConfig {
   /** Failures within `failureWindowMs` that step the ladder down one rung (restart intensity). */
@@ -440,7 +440,7 @@ function learn(
  */
 export function planLaunch(
   record: VergerRecord,
-  requested: GovernorMode,
+  requested: RunMode,
   random: number,
   config: RecoveryConfig,
 ): LaunchPlan {

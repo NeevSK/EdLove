@@ -1,10 +1,4 @@
-import type {
-  GovernorConfig,
-  MemoryLevel,
-  ThermalLevel,
-  ThermalStatus,
-  TrimSeverity,
-} from './types';
+import type { VergerConfig, MemoryLevel, ThermalLevel, ThermalStatus, TrimSeverity } from './types';
 
 const THERMAL_RANK: Record<ThermalLevel, number> = {
   unknown: 0,
@@ -24,7 +18,7 @@ const THERMAL_RANK: Record<ThermalLevel, number> = {
 export function thermalLevelOf(
   status: ThermalStatus | null,
   headroom: number | null,
-  config: GovernorConfig,
+  config: VergerConfig,
 ): ThermalLevel {
   const fromStatus = statusLevel(status);
   if (headroom === null || !Number.isFinite(headroom) || headroom <= 0) return fromStatus;
@@ -67,7 +61,7 @@ export function latchMemory(
   latch: MemoryLatch,
   severity: TrimSeverity,
   at: number,
-  config: GovernorConfig,
+  config: VergerConfig,
 ): MemoryLatch {
   const rank = { moderate: 1, low: 2, critical: 3 } as const;
   const active = latch.severity !== null && at < latch.until;

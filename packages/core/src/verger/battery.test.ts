@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   ACTIVATION_PRESETS,
-  createGovernor,
-  type GovernorEvent,
-  reduceGovernor,
+  createVergerState,
+  type VergerEvent,
+  reduceVerger,
   resolveActivation,
   snapshotOf,
   UNKNOWN_CAPACITY,
@@ -15,7 +15,11 @@ import { GURUDEVI_LEVERS } from './gurudeviLevers';
 // High-class memory, so no capacity floor hides the battery rule under test.
 const ANDROID_9 = { ...UNKNOWN_CAPACITY, totalMemoryBytes: 12 * 1024 ** 3, sdkInt: 28 };
 
-const battery = (levelPercent: number | null, pluggedIn: boolean | null, temperatureC: number | null = 30): GovernorEvent => ({
+const battery = (
+  levelPercent: number | null,
+  pluggedIn: boolean | null,
+  temperatureC: number | null = 30,
+): VergerEvent => ({
   type: 'battery',
   at: 1,
   levelPercent,
@@ -24,12 +28,18 @@ const battery = (levelPercent: number | null, pluggedIn: boolean | null, tempera
 });
 
 function after(
-  events: readonly GovernorEvent[],
+  events: readonly VergerEvent[],
   activation: VergerActivation = ACTIVATION_PRESETS.active,
   config = {},
 ) {
-  let state = createGovernor({ at: 0, levers: GURUDEVI_LEVERS, capacity: ANDROID_9, activation, config });
-  for (const event of events) state = reduceGovernor(state, event);
+  let state = createVergerState({
+    at: 0,
+    levers: GURUDEVI_LEVERS,
+    capacity: ANDROID_9,
+    activation,
+    config,
+  });
+  for (const event of events) state = reduceVerger(state, event);
   return snapshotOf(state);
 }
 
@@ -44,7 +54,11 @@ describe('a low battery on Gurudevi', () => {
   it('the threshold is inclusive at 20% and configurable', () => {
     expect(after([battery(20, false)]).levels['ambient-motion']).toBe(1);
     expect(after([battery(21, false)]).levels['ambient-motion']).toBe(0);
-    expect(after([battery(25, false)], ACTIVATION_PRESETS.active, { batteryLowPercent: 30 }).levels['ambient-motion']).toBe(1);
+    expect(
+      after([battery(25, false)], ACTIVATION_PRESETS.active, { batteryLowPercent: 30 }).levels[
+        'ambient-motion'
+      ],
+    ).toBe(1);
   });
 
   it('plugged in, or plug state unknown: never low', () => {

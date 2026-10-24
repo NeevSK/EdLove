@@ -22,7 +22,7 @@ Runtime performance in the Polymath Platform is governed by an empirical doctrin
 
 This suite serves as the engineering source-of-truth for:
 1. **Telemetry Ownership**: Owning the measurement schemas and performance policies while leveraging pluggable OTLP transports (Expo Observe $\rightarrow$ self-hosted OpenTelemetry Collector).
-2. **Unified Governance**: Consolidating isolated state reducers, environmental context, and telemetry markers into a single typed facade: **`@repo/core/governor`**.
+2. **Unified Governance**: Consolidating isolated state reducers, environmental context, and telemetry markers into a single typed facade: **`@repo/core/verger`**.
 3. **Hardware-Grounded Scaling**: Balancing resource budgets across CPU, GPU, RAM, battery, and cellular data.
 
 ---
@@ -90,7 +90,7 @@ This suite serves as the engineering source-of-truth for:
                                     │
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│             SOVEREIGN PLATFORM GOVERNOR (@repo/core/governor)          │
+│             SOVEREIGN PLATFORM GOVERNOR (@repo/core/verger)          │
 │ • Enforces admission policy during runtime                             │
 │ • Emits OTLP telemetry to Expo Observe / Owned Collector               │
 └────────────────────────────────────────────────────────────────────────┘
@@ -106,7 +106,7 @@ This suite serves as the engineering source-of-truth for:
 
 ### Track 1: Pilot-Critical Hardening (Target: Monday Oct 26 Evaluation)
 * **Status**: Immediate P0 Priority.
-* **Scope**: Pure TypeScript consolidation into `@repo/core/governor` using existing abstractions (`workAdmission`, `visualBudget`, `RealityProvider`, `Observe`). Zero native compilation risk.
+* **Scope**: Pure TypeScript consolidation into `@repo/core/verger` using existing abstractions (`workAdmission`, `visualBudget`, `RealityProvider`, `Observe`). Zero native compilation risk.
 * **Deliverables**:
   1. Add `<ObserveInteractiveMarker />` or `useObserve().markInteractive()` to [`AttendanceScreen.tsx`](file:///c:/x/packages/classroom/src/screens/AttendanceScreen.tsx) and [`TeacherClassroomDashboard.tsx`](file:///c:/x/packages/classroom/src/screens/TeacherClassroomDashboard.tsx).
   2. Implement in-memory defensive caching on [`loadGradeClassRegister`](file:///c:/x/packages/classroom/src/logic/gradeClassRegister.ts#L78) to eliminate the 15-second HTTP timeout hazard during school roll-call.

@@ -6,7 +6,7 @@ import {
   type ResourceAccount,
 } from './demand';
 import { qualityCost } from './quality';
-import type { CapacityFacts, GovernorConfig, GovernorSnapshot, LeverSpec } from './types';
+import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
 /**
  * The outcome ledger: loop 2's eyes on loop 1. It watches published snapshots, of any policy,
@@ -68,7 +68,7 @@ export interface OutcomeSummary {
 }
 
 export interface OutcomeLedger {
-  observe(snapshot: GovernorSnapshot): void;
+  observe(snapshot: VergerSnapshot): void;
   /** Judges every move whose window has closed by `at`. */
   settle(at: number): void;
   /** The most recent moves by pressure, judged and pending, oldest first. */
@@ -85,7 +85,7 @@ export interface OutcomeLedgerOptions {
   readonly holdWindowMs?: number;
   readonly maxRecords?: number;
   /** The host's thresholds, so accounts are read as the policy reads them. */
-  readonly config?: Pick<GovernorConfig, 'batteryLowPercent'>;
+  readonly config?: Pick<VergerConfig, 'batteryLowPercent'>;
 }
 
 export const DEFAULT_JUDGE_WINDOW_MS = 5_000;
@@ -126,7 +126,7 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
   const maxRecords = options.maxRecords ?? DEFAULT_MAX_RECORDS;
   const relieves = new Map(levers.map((lever) => [lever.id, accountsRelievedBy(lever)]));
 
-  let previous: GovernorSnapshot | null = null;
+  let previous: VergerSnapshot | null = null;
   let previousReadings: Readonly<Record<ResourceAccount, AccountReading>> | null = null;
   /** When each account last went from ample or unknown into strain. */
   const onset = new Map<ResourceAccount, number>();
@@ -183,7 +183,7 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
     }
   };
 
-  const loopOwned = (snapshot: GovernorSnapshot, id: string) =>
+  const loopOwned = (snapshot: VergerSnapshot, id: string) =>
     (snapshot.pressure[id] ?? 0) + (snapshot.priorHeld[id] ?? 0);
 
   return {
@@ -231,7 +231,11 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
           }
           if (direction === 'compress') {
             for (const record of records) {
-              if (record.lever === lever.id && record.direction === 'expand' && record.verdict === 'pending')
+              if (
+                record.lever === lever.id &&
+                record.direction === 'expand' &&
+                record.verdict === 'pending'
+              )
                 judge(record, 'withdrawn', snapshot.at);
             }
           }

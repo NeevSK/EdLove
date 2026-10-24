@@ -1,13 +1,11 @@
-import type { CapacityClass, FidelityPreference, GovernorSnapshot } from '@repo/verger-core';
+import type { CapacityClass, FidelityPreference, VergerSnapshot } from '@repo/verger-core';
 import type { RuntimeVisualSignals } from '../efficiency/visualBudget';
 
 /**
  * Gurudevi's reading of verger's decision: lever levels turned into the fields its components
- * read (the shape the old governor's `VisualCapabilities` gave them, so consumers move without
- * rewrites). Levels decide what costs resources; the user's own choices (sound, haptics, quiet,
- * fidelity) and the emergency safe mode are passed in, since no lever owns them.
- *
- * Shapes match `@repo/ui/context/types` until the old governor is removed; they then live here.
+ * read (`VisualCapabilities` in `@repo/ui/context/types` is this shape). Levels decide what costs
+ * resources; the user's own choices (sound, haptics, quiet, fidelity) and the emergency safe mode
+ * are passed in, since no lever owns them.
  */
 
 export type DeviceTier = 'high' | 'medium' | 'low';
@@ -79,7 +77,7 @@ const TIER: Readonly<Record<CapacityClass, DeviceTier>> = {
 };
 
 export function experienceOf(
-  snapshot: Pick<GovernorSnapshot, 'levels' | 'capacityClass'>,
+  snapshot: Pick<VergerSnapshot, 'levels' | 'capacityClass'>,
   settings: ExperienceSettings,
 ): GurudeviExperience {
   // One source for the memory thresholds: verger's config, through its capacity class.
@@ -150,7 +148,7 @@ export function experienceOf(
  * Data Saver or offline as data saving; motion off covers reduced motion and a hidden app.
  */
 export function visualSignalsOf(
-  snapshot: Pick<GovernorSnapshot, 'networkLimit' | 'powerSaver' | 'visibility'>,
+  snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'visibility'>,
   experience: Pick<GurudeviExperience, 'deviceTier' | 'experience'>,
 ): RuntimeVisualSignals {
   const limit = snapshot.networkLimit;

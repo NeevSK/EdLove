@@ -210,7 +210,7 @@ Green: verified at G2 by properties. Amber: example tests only. Red: no automate
 
 | Suite | Level | What it proves | Where |
 |---|---|---|---|
-| Invariants over generated streams | G2 | 300 random runs per property, on Gurudevi's real levers and policy verger-p4, with random devices, activations and event streams: every published snapshot keeps every invariant | `packages/core/src/governor/verger.invariants.test.ts` |
+| Invariants over generated streams | G2 | 300 random runs per property, on Gurudevi's real levers and policy verger-p4, with random devices, activations and event streams: every published snapshot keeps every invariant | `packages/core/src/verger/verger.invariants.test.ts` |
 | Determinism; time shift; deaf sensor | G2 | the same events decide the same; a session moved later decides the same; a switched-off sensor equals its readings never arriving | same |
 | No guessing; no permanent degradation; no blind lowering | G2 | nothing lowered without readings (ADR D5.5); a calm phone gets every step back; nothing lowered for an unstrained account (D5.2) | same |
 | Mutation adequacy (hand-made) | G2 | six broken policies are each caught | same |
@@ -260,7 +260,7 @@ The invariants are plain functions in `packages/verger-core/src/invariants.ts` (
    lowered from; giving back the last step left the floor's value owned by nothing. One memory
    trim on a 2 GB phone left `image-cache` lowered for good. Fixed in `raiseOne`. Found by the
    no-permanent-degradation property; the old code fails it, the fix passes.
-2. **A sensor off from the start still reported memory as normal.** Fixed in `createGovernor`.
+2. **A sensor off from the start still reported memory as normal.** Fixed in `createVergerState`.
 3. **A blind spot in the checks:** a policy publishing decisions for shadow levers passed until
    the snapshot carried `baselineLevels`; found by the mutation check.
 

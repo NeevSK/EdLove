@@ -6,15 +6,15 @@ import {
   aggregateFrames,
   assignExperiment,
   classifyFrameWindow,
-  createGovernor,
-  createGovernorTelemetry,
-  DEFAULT_GOVERNOR_CONFIG,
+  createVergerState,
+  createVergerTelemetry,
+  DEFAULT_VERGER_CONFIG,
   frameRate,
-  type GovernorEvent,
+  type VergerEvent,
   GURUDEVI_LEVERS,
   type LeverSpec,
-  reduceGovernor,
-  replayGovernor,
+  reduceVerger,
+  replayVerger,
   snapshotOf,
   thermalLevelOf,
 } from './index';
@@ -62,8 +62,8 @@ const window = (
   ...overrides,
 });
 
-const frames = (start: number, end: number, averageMs: number): GovernorEvent[] => {
-  const out: GovernorEvent[] = [];
+const frames = (start: number, end: number, averageMs: number): VergerEvent[] => {
+  const out: VergerEvent[] = [];
   for (let t = start; t < end; t += 500)
     out.push({ type: 'frame-window', at: t + 500, window: window(t, averageMs) });
   return out;
@@ -81,7 +81,7 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
   });
 
   it('classifies the burst: one spike window, then near-budget frames with occasional misses', () => {
-    const states = windows.map((w) => classifyFrameWindow(w, DEFAULT_GOVERNOR_CONFIG));
+    const states = windows.map((w) => classifyFrameWindow(w, DEFAULT_VERGER_CONFIG));
     expect(states).toEqual([
       'stressed',
       'neutral',
@@ -95,13 +95,13 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
   });
 
   it('puts ambient levers to sleep on the same stream once the screen is untouched for 10 s', () => {
-    const events: GovernorEvent[] = windows.map((w) => ({
+    const events: VergerEvent[] = windows.map((w) => ({
       type: 'frame-window',
       at: w.endMs,
       window: w,
     }));
     events.push({ type: 'tick', at: 10_000 });
-    const { final } = replayGovernor(
+    const { final } = replayVerger(
       { at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS, memorySensing: true },
       events,
     );
@@ -114,8 +114,8 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
   });
 
   it('in shadow mode decides the same but applies the open-loop baseline', () => {
-    const events: GovernorEvent[] = [{ type: 'tick', at: 12_000 }];
-    const { final } = replayGovernor(
+    const events: VergerEvent[] = [{ type: 'tick', at: 12_000 }];
+    const { final } = replayVerger(
       { at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS, mode: 'shadow' },
       events,
     );
@@ -126,11 +126,11 @@ describe('frame windows from the A52 idle Self trace (golden vector)', () => {
 
 describe('closed-loop lowering and restoring', () => {
   it('lowers the least visible lever aimed at the bottleneck first, after 750 ms of stress', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'interaction', at: 0 });
-    for (const event of frames(0, 500, 25)) state = reduceGovernor(state, event);
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, { type: 'interaction', at: 0 });
+    for (const event of frames(0, 500, 25)) state = reduceVerger(state, event);
     expect(snapshotOf(state).lastAction).toBe('stale');
-    for (const event of frames(500, 1000, 25)) state = reduceGovernor(state, event);
+    for (const event of frames(500, 1000, 25)) state = reduceVerger(state, event);
     const snap = snapshotOf(state);
     expect(snap.lastAction).toBe('decrease');
     // gpu/cpu bottleneck, low impact first, ties by id: ambient-motion.
@@ -139,8 +139,8 @@ describe('closed-loop lowering and restoring', () => {
   });
 
   it('keeps lowering in a stable order under sustained stress and never touches energy first', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    for (const event of frames(0, 6000, 30)) state = reduceGovernor(state, event);
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    for (const event of frames(0, 6000, 30)) state = reduceVerger(state, event);
     // One decrease per two over-budget windows (750 ms needs two 500 ms windows).
     expect(state.stack.length).toBe(6);
     expect(state.stack.slice(0, 3)).toEqual(['ambient-motion', 'loading-shimmer', 'particles']);
@@ -148,26 +148,26 @@ describe('closed-loop lowering and restoring', () => {
   });
 
   it('restores last-in first-out after sustained comfort, and backs off after a failed upgrade', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    for (const event of frames(0, 1000, 25)) state = reduceGovernor(state, event);
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    for (const event of frames(0, 1000, 25)) state = reduceVerger(state, event);
     expect(state.stack).toEqual(['ambient-motion']);
-    for (const event of frames(1000, 5500, 8)) state = reduceGovernor(state, event);
+    for (const event of frames(1000, 5500, 8)) state = reduceVerger(state, event);
     expect(state.stack).toEqual([]);
     expect(state.lastIncreaseAt).toBe(5000);
     // Stress returns within the failed-upgrade window: hold doubles.
-    for (const event of frames(5500, 6500, 25)) state = reduceGovernor(state, event);
+    for (const event of frames(5500, 6500, 25)) state = reduceVerger(state, event);
     expect(state.upgradeAfterMs).toBe(8000);
     // Comfort for only 4 s is no longer enough.
-    for (const event of frames(6500, 11_000, 8)) state = reduceGovernor(state, event);
+    for (const event of frames(6500, 11_000, 8)) state = reduceVerger(state, event);
     expect(state.stack.length).toBe(1);
-    for (const event of frames(11_000, 15_000, 8)) state = reduceGovernor(state, event);
+    for (const event of frames(11_000, 15_000, 8)) state = reduceVerger(state, event);
     expect(state.stack.length).toBe(0);
   });
 });
 
 describe('thermal and memory pressure', () => {
   it('maps ADPF headroom before status, and treats missing data as unknown', () => {
-    const config = DEFAULT_GOVERNOR_CONFIG;
+    const config = DEFAULT_VERGER_CONFIG;
     expect(thermalLevelOf('none', 0.5, config)).toBe('nominal');
     expect(thermalLevelOf('none', 0.9, config)).toBe('warm');
     expect(thermalLevelOf('none', 0.97, config)).toBe('hot');
@@ -178,57 +178,57 @@ describe('thermal and memory pressure', () => {
   });
 
   it('lowers continuous gpu work first when hot, spaced by the thermal delay, and blocks upgrades', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'thermal', at: 100, status: 'moderate', headroom: 0.97 });
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, { type: 'thermal', at: 100, status: 'moderate', headroom: 0.97 });
     expect(state.stack).toEqual(['ambient-motion']);
-    state = reduceGovernor(state, { type: 'tick', at: 1000 });
+    state = reduceVerger(state, { type: 'tick', at: 1000 });
     expect(state.stack.length).toBe(1);
-    state = reduceGovernor(state, { type: 'tick', at: 2200 });
+    state = reduceVerger(state, { type: 'tick', at: 2200 });
     expect(state.stack.length).toBe(2);
     expect(snapshotOf(state).optionalConcurrency).toBe(1);
-    state = reduceGovernor(state, { type: 'thermal', at: 3000, status: 'light', headroom: 0.9 });
-    state = reduceGovernor(state, { type: 'tick', at: 20_000 });
+    state = reduceVerger(state, { type: 'thermal', at: 3000, status: 'light', headroom: 0.9 });
+    state = reduceVerger(state, { type: 'tick', at: 20_000 });
     expect(state.stack.length).toBe(2);
-    state = reduceGovernor(state, { type: 'thermal', at: 21_000, status: 'none', headroom: 0.6 });
+    state = reduceVerger(state, { type: 'thermal', at: 21_000, status: 'none', headroom: 0.6 });
     // Cool again, but nothing has been drawn yet: silence is not evidence, so nothing rises.
-    state = reduceGovernor(state, { type: 'tick', at: 25_100 });
+    state = reduceVerger(state, { type: 'tick', at: 25_100 });
     expect(state.stack.length).toBe(2);
     // Two calm windows of real frames are.
-    for (const event of frames(25_100, 26_100, 8)) state = reduceGovernor(state, event);
+    for (const event of frames(25_100, 26_100, 8)) state = reduceVerger(state, event);
     expect(state.stack.length).toBe(1);
   });
 
   it('fast-decreases and stops optional work when critical', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'thermal', at: 50, status: 'critical', headroom: 1.05 });
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, { type: 'thermal', at: 50, status: 'critical', headroom: 1.05 });
     expect(state.stack.length).toBe(3);
     expect(snapshotOf(state).optionalConcurrency).toBe(0);
     expect(snapshotOf(state).lastAction).toBe('fast-decrease');
   });
 
   it('relieves memory levers first on a trim and latches for 30 s', () => {
-    let state = createGovernor({
+    let state = createVergerState({
       at: 0,
       capacity: HIGH_END,
       levers: GURUDEVI_LEVERS,
       memorySensing: true,
     });
     expect(snapshotOf(state).memory).toBe('normal');
-    state = reduceGovernor(state, { type: 'memory-trim', at: 100, severity: 'moderate' });
+    state = reduceVerger(state, { type: 'memory-trim', at: 100, severity: 'moderate' });
     expect(state.stack).toEqual(['image-cache']);
-    state = reduceGovernor(state, { type: 'memory-trim', at: 200, severity: 'critical' });
+    state = reduceVerger(state, { type: 'memory-trim', at: 200, severity: 'critical' });
     expect(state.stack.slice(1, 3)).toEqual(['image-cache', 'image-decode']);
     expect(snapshotOf(state).memory).toBe('low');
     expect(snapshotOf(state).optionalConcurrency).toBe(0);
-    state = reduceGovernor(state, { type: 'tick', at: 30_300 });
+    state = reduceVerger(state, { type: 'tick', at: 30_300 });
     expect(snapshotOf(state).memory).toBe('normal');
   });
 });
 
 describe('floors: users, the system and the hardware come first', () => {
   it('honours reduce motion and never raises a motion lever above its floor', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, {
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, {
       type: 'preferences',
       at: 1,
       reduceMotion: true,
@@ -241,7 +241,7 @@ describe('floors: users, the system and the hardware come first', () => {
   });
 
   it('starts a 2 GB phone without ambient effects, refraction or a second optional job', () => {
-    const state = createGovernor({ at: 0, capacity: LOW_END, levers: GURUDEVI_LEVERS });
+    const state = createVergerState({ at: 0, capacity: LOW_END, levers: GURUDEVI_LEVERS });
     const snap = snapshotOf(state);
     expect(snap.levels['ambient-motion']).toBe(2);
     expect(snap.levels['glass-material']).toBeGreaterThanOrEqual(1);
@@ -250,8 +250,8 @@ describe('floors: users, the system and the hardware come first', () => {
   });
 
   it('lets a user who asks for high fidelity keep effects on a low-memory phone, until pressure says otherwise', () => {
-    let state = createGovernor({ at: 0, capacity: LOW_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, {
+    let state = createVergerState({ at: 0, capacity: LOW_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, {
       type: 'preferences',
       at: 1,
       reduceMotion: false,
@@ -262,8 +262,8 @@ describe('floors: users, the system and the hardware come first', () => {
   });
 
   it('stills everything ambient and stops optional work in the background', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'app-state', at: 10, state: 'background' });
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, { type: 'app-state', at: 10, state: 'background' });
     const snap = snapshotOf(state);
     expect(snap.levels['ambient-motion']).toBe(2);
     expect(snap.levels.prefetch).toBe(2);
@@ -271,27 +271,27 @@ describe('floors: users, the system and the hardware come first', () => {
   });
 
   it('wakes ambient levers on the next touch', () => {
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    state = reduceGovernor(state, { type: 'tick', at: 15_000 });
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    state = reduceVerger(state, { type: 'tick', at: 15_000 });
     expect(snapshotOf(state).levels['ambient-motion']).toBe(2);
-    state = reduceGovernor(state, { type: 'interaction', at: 15_100 });
+    state = reduceVerger(state, { type: 'interaction', at: 15_100 });
     expect(snapshotOf(state).levels['ambient-motion']).toBe(0);
   });
 });
 
 describe('determinism and validation', () => {
   it('produces identical snapshots for identical streams', () => {
-    const events = [...frames(0, 3000, 28), { type: 'tick', at: 13_000 } as GovernorEvent];
-    const a = replayGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS }, events);
-    const b = replayGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS }, events);
+    const events = [...frames(0, 3000, 28), { type: 'tick', at: 13_000 } as VergerEvent];
+    const a = replayVerger({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS }, events);
+    const b = replayVerger({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS }, events);
     expect(a.snapshots).toEqual(b.snapshots);
   });
 
   it('rejects malformed lever catalogues', () => {
     const bad: LeverSpec = { ...GURUDEVI_LEVERS[0]!, levels: ['one'] };
-    expect(() => createGovernor({ at: 0, levers: [bad] })).toThrow(/must describe/);
+    expect(() => createVergerState({ at: 0, levers: [bad] })).toThrow(/must describe/);
     expect(() =>
-      createGovernor({ at: 0, levers: [GURUDEVI_LEVERS[0]!, GURUDEVI_LEVERS[0]!] }),
+      createVergerState({ at: 0, levers: [GURUDEVI_LEVERS[0]!, GURUDEVI_LEVERS[0]!] }),
     ).toThrow(/Duplicate/);
   });
 });
@@ -302,13 +302,13 @@ describe('controlled experiment', () => {
     for (let i = 0; i < 10_000; i += 1) {
       const a = assignExperiment({
         installId: `install-${i}`,
-        key: 'governor-v1',
+        key: 'verger-v1',
         treatmentPercent: 50,
         killSwitch: false,
       });
       const b = assignExperiment({
         installId: `install-${i}`,
-        key: 'governor-v1',
+        key: 'verger-v1',
         treatmentPercent: 50,
         killSwitch: false,
       });
@@ -322,7 +322,7 @@ describe('controlled experiment', () => {
   it('turns the runtime off entirely when the kill switch is on', () => {
     const a = assignExperiment({
       installId: 'x',
-      key: 'governor-v1',
+      key: 'verger-v1',
       treatmentPercent: 100,
       killSwitch: true,
     });
@@ -338,42 +338,42 @@ describe('controlled experiment', () => {
 describe('telemetry', () => {
   it('emits only on change, caps events, and survives a throwing sink', () => {
     const events: Array<[string, Record<string, unknown>]> = [];
-    const telemetry = createGovernorTelemetry({
+    const telemetry = createVergerTelemetry({
       sink: (name, attributes) => {
         events.push([name, attributes]);
         if (events.length === 2) throw new Error('transport down');
       },
       arm: 'treatment',
-      experimentKey: 'governor-v1',
+      experimentKey: 'verger-v1',
       maxEvents: 4,
     });
-    let state = createGovernor({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
     telemetry.onSnapshot(snapshotOf(state));
     telemetry.onSnapshot(snapshotOf(state));
-    expect(events.map(([name]) => name)).toEqual(['governor_started']);
-    state = reduceGovernor(state, { type: 'tick', at: 11_000 });
+    expect(events.map(([name]) => name)).toEqual(['verger_started']);
+    state = reduceVerger(state, { type: 'tick', at: 11_000 });
     telemetry.onSnapshot(snapshotOf(state));
     expect(events.length).toBe(4);
     expect(telemetry.emitted).toBe(4);
     for (let i = 0; i < 20; i += 1)
       telemetry.onSnapshot(
-        snapshotOf(reduceGovernor(state, { type: 'interaction', at: 12_000 + i })),
+        snapshotOf(reduceVerger(state, { type: 'interaction', at: 12_000 + i })),
       );
     expect(events.length).toBe(4);
-    expect(events[0]?.[1]).toMatchObject({ experiment: 'governor-v1', arm: 'treatment' });
+    expect(events[0]?.[1]).toMatchObject({ experiment: 'verger-v1', arm: 'treatment' });
   });
 
   it('summarises idle drawing from the A52 trace without per-frame events', () => {
     const names: string[] = [];
-    const telemetry = createGovernorTelemetry({
+    const telemetry = createVergerTelemetry({
       sink: (name) => names.push(name),
       arm: 'control',
-      experimentKey: 'governor-v1',
+      experimentKey: 'verger-v1',
       summaryEveryMs: 5000,
     });
     const windows = aggregateFrames(a52.frames, 500, a52.vsyncAppMedianGapMs);
     for (const w of windows) telemetry.onFrameWindow(w, true);
     telemetry.flush(6000);
-    expect(names).toEqual(['governor_summary']);
+    expect(names).toEqual(['verger_summary']);
   });
 });

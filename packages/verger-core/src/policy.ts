@@ -1,13 +1,13 @@
 import {
-  type CreateGovernorOptions,
-  createGovernor,
-  type GovernorState,
+  type CreateVergerStateOptions,
+  createVergerState,
+  type VergerState,
   nextTimedChangeAt,
-  reduceGovernor,
+  reduceVerger,
   snapshotOf,
-} from './governor';
-import { GOVERNOR_POLICY_VERSION } from './telemetry';
-import type { GovernorEvent, GovernorSnapshot } from './types';
+} from './reducer';
+import { VERGER_POLICY_VERSION } from './telemetry';
+import type { VergerEvent, VergerSnapshot } from './types';
 
 /**
  * A policy: the rules that turn events into decisions, as one swappable, versioned unit. Its
@@ -21,21 +21,21 @@ export interface VergerPolicy<State = unknown> {
   /** Stable name: lowercase letters, digits and dashes. */
   readonly id: string;
   readonly version: number;
-  create(options: CreateGovernorOptions): State;
-  reduce(state: State, event: GovernorEvent): State;
-  snapshot(state: State, at?: number): GovernorSnapshot;
+  create(options: CreateVergerStateOptions): State;
+  reduce(state: State, event: VergerEvent): State;
+  snapshot(state: State, at?: number): VergerSnapshot;
   /** Increments exactly when the published outputs change. */
   outputVersion(state: State): number;
   /** When the next change that depends only on elapsed time is due, or null. */
   nextTimedChangeAt(state: State): number | null;
 }
 
-/** Verger's own rules: the governor in `governor.ts`. */
-export const VERGER_POLICY: VergerPolicy<GovernorState> = {
+/** Verger's own rules: the reducer in `reducer.ts`. */
+export const VERGER_POLICY: VergerPolicy<VergerState> = {
   id: 'verger',
-  version: GOVERNOR_POLICY_VERSION,
-  create: createGovernor,
-  reduce: reduceGovernor,
+  version: VERGER_POLICY_VERSION,
+  create: createVergerState,
+  reduce: reduceVerger,
   snapshot: snapshotOf,
   outputVersion: (state) => state.version,
   nextTimedChangeAt,

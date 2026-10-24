@@ -1,13 +1,13 @@
 import type { SensorId, VergerActivation } from './activation';
-import type { CreateGovernorOptions } from './governor';
+import type { CreateVergerStateOptions } from './reducer';
 import { VERGER_POLICY, type VergerPolicy } from './policy';
-import type { GovernorTelemetry } from './telemetry';
+import type { VergerTelemetry } from './telemetry';
 import type {
   CapacityFacts,
-  GovernorConfig,
-  GovernorEvent,
-  GovernorMode,
-  GovernorSnapshot,
+  VergerConfig,
+  VergerEvent,
+  RunMode,
+  VergerSnapshot,
   LeverSpec,
 } from './types';
 
@@ -20,8 +20,8 @@ export interface RuntimePort {
   /** Starts sensing; returns a function that stops it. Must tolerate being called once only. */
   /** `sensors` says which sensors to run; a port may run fewer, never more. */
   start(
-    config: GovernorConfig,
-    onEvent: (event: GovernorEvent) => void,
+    config: VergerConfig,
+    onEvent: (event: VergerEvent) => void,
     sensors?: Readonly<Record<SensorId, boolean>>,
   ): () => void;
   /** Starts or stops individual sensors while running. A port without it keeps its start set. */
@@ -40,16 +40,19 @@ export interface RuntimeControllerOptions {
   /** What the device is, read once by the platform. */
   readonly capacity: CapacityFacts;
   readonly levers: readonly LeverSpec[];
-  readonly mode: GovernorMode;
-  readonly config: GovernorConfig;
+  readonly mode: RunMode;
+  readonly config: VergerConfig;
   /** Monotonic milliseconds, the clock every event is stamped with. */
   readonly now: () => number;
   readonly scheduler: RuntimeScheduler;
-  readonly telemetry?: GovernorTelemetry;
+  readonly telemetry?: VergerTelemetry;
   /** Whether the port senses memory (absence of trims then means normal). */
   readonly memorySensing: boolean;
   /** What this launch may do, from the recovery ladder and the learned profile. */
-  readonly launch?: Pick<CreateGovernorOptions, 'hardware' | 'capacityGrant' | 'initialPressure'>;
+  readonly launch?: Pick<
+    CreateVergerStateOptions,
+    'hardware' | 'capacityGrant' | 'initialPressure'
+  >;
   /** What verger may do at start, already capped by the launch; defaults to the mode's preset. */
   readonly activation?: VergerActivation;
   /** The rules to decide by; `VERGER_POLICY` by default. */
@@ -60,8 +63,8 @@ export interface RuntimeController {
   start(): void;
   stop(): void;
   /** Feeds an event from outside the port: interactions, app state, preferences, long tasks. */
-  dispatch(event: GovernorEvent): void;
-  getSnapshot(): GovernorSnapshot;
+  dispatch(event: VergerEvent): void;
+  getSnapshot(): VergerSnapshot;
   subscribe(listener: () => void): () => void;
 }
 
@@ -69,7 +72,7 @@ export interface RuntimeController {
  * The runtime loop: events in, one pure reduction, outputs applied only when they change.
  * It owns no policy. Decisions come from the reducer; this file sequences them, applies the
  * hardware levers through the port, wakes itself for time-only changes, and isolates every
- * consumer and sink so that a failure outside the governor cannot stop it.
+ * consumer and sink so that a failure outside verger cannot stop it.
  */
 export function createRuntimeController(options: RuntimeControllerOptions): RuntimeController {
   const { port, scheduler, telemetry } = options;
@@ -97,7 +100,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   let running = false;
   const listeners = new Set<() => void>();
 
-  const applyHardware = (next: GovernorSnapshot) => {
+  const applyHardware = (next: VergerSnapshot) => {
     if (!running) return;
     if (next.refreshCapHz !== appliedRefresh) {
       appliedRefresh = next.refreshCapHz;
@@ -124,7 +127,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     );
   };
 
-  const observe = (event: GovernorEvent) => {
+  const observe = (event: VergerEvent) => {
     if (!telemetry) return;
     if (event.type === 'thread-load')
       telemetry.onThreadLoad(event.at, event.cores.js ?? 0, event.cores.main ?? 0);
@@ -134,7 +137,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     else if (event.type === 'app-state' && event.state !== 'active') telemetry.flush(event.at);
   };
 
-  const dispatch = (event: GovernorEvent) => {
+  const dispatch = (event: VergerEvent) => {
     if (!running || !isValidEvent(event)) return;
     const before = policy.outputVersion(state);
     state = policy.reduce(state, event);
@@ -160,7 +163,9 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
       running = true;
       guard(() => telemetry?.onSnapshot(snapshot));
       applyHardware(snapshot);
-      const stop = guardValue(() => port.start(options.config, dispatch, snapshot.activation.sense));
+      const stop = guardValue(() =>
+        port.start(options.config, dispatch, snapshot.activation.sense),
+      );
       stopSensing = stop ?? (() => {});
       schedule();
     },
@@ -192,13 +197,13 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
 
 /**
  * Runs a side effect that must not break the loop. The error is reported to the console
- * because a broken actuator is a defect to find, but the governor keeps governing.
+ * because a broken actuator is a defect to find, but verger keeps running.
  */
 function guard(effect: () => void): void {
   try {
     effect();
   } catch (error) {
-    console.error('[governor] side effect failed', error);
+    console.error('[verger] side effect failed', error);
   }
 }
 
@@ -206,7 +211,7 @@ function guardValue<T>(effect: () => T): T | null {
   try {
     return effect();
   } catch (error) {
-    console.error('[governor] side effect failed', error);
+    console.error('[verger] side effect failed', error);
     return null;
   }
 }
@@ -215,9 +220,9 @@ const finite = (n: unknown): boolean => typeof n === 'number' && Number.isFinite
 
 /**
  * Rejects events a defective sensor could produce. One NaN timestamp would otherwise become the
- * governor's clock for good (max(x, NaN) is NaN) and freeze every timed decision.
+ * verger's clock for good (max(x, NaN) is NaN) and freeze every timed decision.
  */
-export function isValidEvent(event: GovernorEvent): boolean {
+export function isValidEvent(event: VergerEvent): boolean {
   if (!finite(event.at)) return false;
   if (event.type === 'frame-window') {
     const w = event.window;

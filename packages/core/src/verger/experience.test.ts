@@ -13,7 +13,16 @@ describe("Gurudevi's experience view", () => {
       { levels: {}, capacityClass: 'high' },
       { fidelity: 'auto', hapticsEnabled: false, safeMode: true },
     );
-    expect(view).toMatchObject({ quality: 'essential', allowBlur: false, shouldPrefetchAssets: false });
-    expect(view.experience).toMatchObject({ motion: 'off', sound: 'off', haptics: 'off', maxParticles: 0 });
+    expect(view).toMatchObject({
+      quality: 'essential',
+      allowBlur: false,
+      shouldPrefetchAssets: false,
+    });
+    expect(view.experience).toMatchObject({
+      motion: 'off',
+      sound: 'off',
+      haptics: 'off',
+      maxParticles: 0,
+    });
   });
 });

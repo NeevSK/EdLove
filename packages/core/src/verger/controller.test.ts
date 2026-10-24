@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   type CapacityFacts,
-  createGovernorTelemetry,
+  createVergerTelemetry,
   createRuntimeController,
-  DEFAULT_GOVERNOR_CONFIG,
-  type GovernorEvent,
+  DEFAULT_VERGER_CONFIG,
+  type VergerEvent,
   GURUDEVI_LEVERS,
   type RuntimePort,
   type RuntimeScheduler,
@@ -56,7 +56,7 @@ function fakeTime() {
 
 function fakePort(capacity = CAPACITY) {
   const calls: string[] = [];
-  let emit: ((event: GovernorEvent) => void) | null = null;
+  let emit: ((event: VergerEvent) => void) | null = null;
   const port: RuntimePort & { readonly capacity: CapacityFacts } = {
     capacity,
     start(_config, onEvent) {
@@ -74,7 +74,7 @@ function fakePort(capacity = CAPACITY) {
       calls.push(`boost:${enabled}`);
     },
   };
-  return { port, calls, emit: (e: GovernorEvent) => emit?.(e) };
+  return { port, calls, emit: (e: VergerEvent) => emit?.(e) };
 }
 
 afterEach(() => {
@@ -90,7 +90,7 @@ describe('runtime controller', () => {
       capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       now: time.now,
       scheduler: time.scheduler,
       memorySensing: true,
@@ -121,7 +121,7 @@ describe('runtime controller', () => {
       capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       now: time.now,
       scheduler: time.scheduler,
       memorySensing: true,
@@ -146,7 +146,7 @@ describe('runtime controller', () => {
       capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'shadow',
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       now: time.now,
       scheduler: time.scheduler,
       memorySensing: true,
@@ -172,7 +172,7 @@ describe('runtime controller', () => {
         throw new Error('hint session refused');
       },
     };
-    const telemetry = createGovernorTelemetry({
+    const telemetry = createVergerTelemetry({
       sink: () => {
         throw new Error('sink down');
       },
@@ -184,7 +184,7 @@ describe('runtime controller', () => {
       capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       now: time.now,
       scheduler: time.scheduler,
       telemetry,
@@ -208,10 +208,10 @@ describe('runtime controller', () => {
       capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       now: time.now,
       scheduler: time.scheduler,
-      telemetry: createGovernorTelemetry({
+      telemetry: createVergerTelemetry({
         sink: (name, attributes) => events.push([name, attributes]),
         arm: 'treatment',
         experimentKey: 'adaptive-runtime',
@@ -221,7 +221,7 @@ describe('runtime controller', () => {
     controller.start();
     emit({ type: 'thread-load', at: 0, cores: { js: 0.99 }, processCores: 1 });
     time.advance(2500);
-    const lever = events.find(([name]) => name === 'governor_lever');
+    const lever = events.find(([name]) => name === 'verger_lever');
     expect(lever?.[1].policy).toBeGreaterThan(0);
     expect(String(lever?.[1].reason)).toMatch(/^JS thread saturated \(# cores, # long tasks\)$/);
   });
@@ -234,7 +234,7 @@ describe('runtime controller', () => {
       capacity: port.capacity,
       levers: GURUDEVI_LEVERS,
       mode: 'active',
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       now: time.now,
       scheduler: time.scheduler,
       memorySensing: true,

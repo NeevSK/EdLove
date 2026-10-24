@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   ACTIVATION_PRESETS,
-  createGovernor,
-  type GovernorEvent,
-  reduceGovernor,
+  createVergerState,
+  type VergerEvent,
+  reduceVerger,
   resolveActivation,
   snapshotOf,
   UNKNOWN_CAPACITY,
@@ -13,7 +13,7 @@ import { GURUDEVI_LEVERS } from './gurudeviLevers';
 
 const CAPACITY = { ...UNKNOWN_CAPACITY, totalMemoryBytes: 8 * 1024 ** 3, sdkInt: 34 };
 
-const net = (over: Partial<Extract<GovernorEvent, { type: 'network' }>>): GovernorEvent => ({
+const net = (over: Partial<Extract<VergerEvent, { type: 'network' }>>): VergerEvent => ({
   type: 'network',
   at: 1,
   transport: 'wifi',
@@ -24,9 +24,12 @@ const net = (over: Partial<Extract<GovernorEvent, { type: 'network' }>>): Govern
   ...over,
 });
 
-function after(event: GovernorEvent | null, activation: VergerActivation = ACTIVATION_PRESETS.active) {
-  let state = createGovernor({ at: 0, levers: GURUDEVI_LEVERS, capacity: CAPACITY, activation });
-  if (event) state = reduceGovernor(state, event);
+function after(
+  event: VergerEvent | null,
+  activation: VergerActivation = ACTIVATION_PRESETS.active,
+) {
+  let state = createVergerState({ at: 0, levers: GURUDEVI_LEVERS, capacity: CAPACITY, activation });
+  if (event) state = reduceVerger(state, event);
   return snapshotOf(state);
 }
 
@@ -44,14 +47,14 @@ describe('network limits on Gurudevi (the user and the OS decide; verger respect
   });
 
   it('a host may still cap optional work on metered networks, as configuration', () => {
-    let state = createGovernor({
+    let state = createVergerState({
       at: 0,
       levers: GURUDEVI_LEVERS,
       capacity: CAPACITY,
       activation: ACTIVATION_PRESETS.active,
       config: { meteredOptionalConcurrency: 1 },
     });
-    state = reduceGovernor(state, net({ transport: 'cellular', metered: true }));
+    state = reduceVerger(state, net({ transport: 'cellular', metered: true }));
     expect(snapshotOf(state).optionalConcurrency).toBe(1);
   });
 
@@ -81,7 +84,9 @@ describe('network limits on Gurudevi (the user and the OS decide; verger respect
   it('limits hold in static mode, and a deaf network sensor limits nothing', () => {
     const saving = net({ metered: true, dataSaver: 'enabled' });
     expect(after(saving, ACTIVATION_PRESETS.static).levels.prefetch).toBe(0); // static preset: network sensor off
-    const staticHearing = resolveActivation(ACTIVATION_PRESETS.static, { sense: { network: true } });
+    const staticHearing = resolveActivation(ACTIVATION_PRESETS.static, {
+      sense: { network: true },
+    });
     expect(after(saving, staticHearing).levels.prefetch).toBe(2);
   });
 });

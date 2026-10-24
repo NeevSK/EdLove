@@ -95,7 +95,7 @@ When thermal throttling or frame drops occur:
   1. The Teacher Evaluation Pilot focuses on attendance, grading, and offline data sync (`AttendanceScreen.tsx`). It does not require liquid glass sheets.
   2. Introducing a new native module risks native build pipeline churn (Swift/Kotlin compilation and prebuild overhead) during a freeze window.
 - **Actionable Takeaways Adopted for Pilot:**
-  - Adopt the **Scroll-Freeze Invariant** into `@repo/core/governor` to lock Tutii mascot physics and list overscan during active scroll.
+  - Adopt the **Scroll-Freeze Invariant** into `@repo/core/verger` to lock Tutii mascot physics and list overscan during active scroll.
   - Adopt the **Priority-Shed Contract** in `@repo/ui/tokens` so components gracefully drop from transparent blur to solid token fills (`#1E293B`) under `Low` governor states.
 
 ### 5.2 Post-Pilot Roadmap (Wave 2 / Q4 2026)

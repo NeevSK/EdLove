@@ -6,12 +6,12 @@ import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import {
   aggregateFrames,
   classifyFrameWindow,
-  DEFAULT_GOVERNOR_CONFIG,
+  DEFAULT_VERGER_CONFIG,
   type FrameSample,
   type FrameState,
   frameBottleneck,
-  type GovernorEvent,
-  replayGovernor,
+  type VergerEvent,
+  replayVerger,
   shouldForwardWindow,
 } from './index';
 
@@ -28,7 +28,7 @@ function reference() {
   const windows = aggregateFrames(a52.frames, WINDOW_MS, a52.vsyncAppMedianGapMs);
   let forwarded: FrameState | null = null;
   return windows.map((w) => {
-    const state = classifyFrameWindow(w, DEFAULT_GOVERNOR_CONFIG);
+    const state = classifyFrameWindow(w, DEFAULT_VERGER_CONFIG);
     const forward = shouldForwardWindow(state, forwarded);
     if (forward) forwarded = state;
     const round = (n: number) => Math.round(n * 1e6) / 1e6;
@@ -91,7 +91,7 @@ describe('golden vectors shared with the Kotlin estimator', () => {
     const round = (n: number) => Math.round(n * 1e6) / 1e6;
     let forwarded: FrameState | null = null;
     const windows = aggregateFrames(samples, WINDOW_MS, 16.667).map((w) => {
-      const state = classifyFrameWindow(w, DEFAULT_GOVERNOR_CONFIG);
+      const state = classifyFrameWindow(w, DEFAULT_VERGER_CONFIG);
       const forward = shouldForwardWindow(state, forwarded);
       if (forward) forwarded = state;
       return {
@@ -114,7 +114,7 @@ describe('golden vectors shared with the Kotlin estimator', () => {
     const actual = {
       windowMs: WINDOW_MS,
       defaultTargetMs: 16.667,
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       windows,
     };
     if (process.env.UPDATE_GOLDEN === '1') {
@@ -131,7 +131,7 @@ describe('golden vectors shared with the Kotlin estimator', () => {
     const actual = {
       windowMs: WINDOW_MS,
       targetMs: a52.vsyncAppMedianGapMs,
-      config: DEFAULT_GOVERNOR_CONFIG,
+      config: DEFAULT_VERGER_CONFIG,
       windows: reference(),
     };
     if (process.env.UPDATE_GOLDEN === '1')
@@ -140,13 +140,13 @@ describe('golden vectors shared with the Kotlin estimator', () => {
     expect(actual).toEqual(expected);
   });
 
-  it('reaches identical governor decisions from the forwarded subset as from every window', () => {
+  it('reaches identical decisions from the forwarded subset as from every window', () => {
     // A synthetic mixed stream: comfortable animation, a stress run, recovery, near-budget frames.
     const costs = [
       6, 6, 6, 25, 25, 25, 6, 6, 6, 6, 6, 6, 6, 6, 15, 15, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
     ];
-    const all: GovernorEvent[] = [];
-    const forwarded: GovernorEvent[] = [];
+    const all: VergerEvent[] = [];
+    const forwarded: VergerEvent[] = [];
     let previous: FrameState | null = null;
     costs.forEach((cost, index) => {
       const start = index * WINDOW_MS;
@@ -159,18 +159,18 @@ describe('golden vectors shared with the Kotlin estimator', () => {
         worstMs: cost,
         droppedRatio: 0,
       };
-      const event: GovernorEvent = { type: 'frame-window', at: start + WINDOW_MS, window };
+      const event: VergerEvent = { type: 'frame-window', at: start + WINDOW_MS, window };
       all.push(event);
-      const state = classifyFrameWindow(window, DEFAULT_GOVERNOR_CONFIG);
+      const state = classifyFrameWindow(window, DEFAULT_VERGER_CONFIG);
       if (shouldForwardWindow(state, previous)) {
         forwarded.push(event);
         previous = state;
       }
     });
-    const end: GovernorEvent = { type: 'tick', at: costs.length * WINDOW_MS + 1 };
+    const end: VergerEvent = { type: 'tick', at: costs.length * WINDOW_MS + 1 };
     const options = { at: 0, levers: SAMPLE_LEVERS, memorySensing: true };
-    const full = replayGovernor(options, [...all, end]);
-    const subset = replayGovernor(options, [...forwarded, end]);
+    const full = replayVerger(options, [...all, end]);
+    const subset = replayVerger(options, [...forwarded, end]);
     expect(forwarded.length).toBeLessThan(all.length);
     expect(subset.final.proposedLevels).toEqual(full.final.proposedLevels);
   });

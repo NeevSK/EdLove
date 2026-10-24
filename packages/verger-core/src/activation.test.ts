@@ -12,9 +12,9 @@ import {
   sensorOf,
 } from './activation';
 import { VERGER_BUILTIN_LEVERS } from './builtins';
-import { DEFAULT_GOVERNOR_CONFIG } from './config';
-import { createGovernor, reduceGovernor, snapshotOf } from './governor';
-import type { CapacityFacts, GovernorEvent } from './types';
+import { DEFAULT_VERGER_CONFIG } from './config';
+import { createVergerState, reduceVerger, snapshotOf } from './reducer';
+import type { CapacityFacts, VergerEvent } from './types';
 
 describe('activation', () => {
   it('later patches win field by field, and per sensor and lever', () => {
@@ -53,26 +53,43 @@ describe('activation', () => {
 
   it('rejects any malformed remote patch whole', () => {
     const levers = VERGER_BUILTIN_LEVERS;
-    expect(parseActivationPatch({ sense: { thermal: false }, levers: { 'refresh-rate': 'off' } }, levers)).toEqual({
+    expect(
+      parseActivationPatch(
+        { sense: { thermal: false }, levers: { 'refresh-rate': 'off' } },
+        levers,
+      ),
+    ).toEqual({
       patch: { sense: { thermal: false }, levers: { 'refresh-rate': 'off' } },
     });
-    expect(parseActivationPatch({ levers: { blur: 'off' } }, levers)).toEqual({ error: 'unknown lever "blur"' });
-    expect(parseActivationPatch({ sense: { gps: true } }, levers)).toEqual({ error: 'unknown sensor "gps"' });
-    expect(parseActivationPatch({ reduce: 'yes' }, levers)).toEqual({ error: 'reduce must be a boolean' });
+    expect(parseActivationPatch({ levers: { blur: 'off' } }, levers)).toEqual({
+      error: 'unknown lever "blur"',
+    });
+    expect(parseActivationPatch({ sense: { gps: true } }, levers)).toEqual({
+      error: 'unknown sensor "gps"',
+    });
+    expect(parseActivationPatch({ reduce: 'yes' }, levers)).toEqual({
+      error: 'reduce must be a boolean',
+    });
     expect(parseActivationPatch({ extra: 1 }, levers)).toEqual({ error: 'unknown field "extra"' });
     expect(parseActivationPatch([], levers)).toEqual({ error: 'not an object' });
   });
 
   it('names the sensor behind each reading and none for app events', () => {
     expect(sensorOf({ type: 'thermal', at: 0, status: 'none', headroom: null })).toBe('thermal');
-    expect(sensorOf({ type: 'memory-state', at: 0, availableMb: 1, thresholdMb: 1, lowMemory: false })).toBe('memory');
+    expect(
+      sensorOf({ type: 'memory-state', at: 0, availableMb: 1, thresholdMb: 1, lowMemory: false }),
+    ).toBe('memory');
     expect(sensorOf({ type: 'interaction', at: 0 })).toBeNull();
   });
 
   it('travels through the reducer as an event and onto the snapshot', () => {
-    const state = createGovernor({ at: 0, levers: VERGER_BUILTIN_LEVERS, mode: 'shadow' });
+    const state = createVergerState({ at: 0, levers: VERGER_BUILTIN_LEVERS, mode: 'shadow' });
     expect(snapshotOf(state).activation).toBe(ACTIVATION_PRESETS.shadow);
-    const next = reduceGovernor(state, { type: 'activation', at: 1, activation: ACTIVATION_PRESETS.lab });
+    const next = reduceVerger(state, {
+      type: 'activation',
+      at: 1,
+      activation: ACTIVATION_PRESETS.lab,
+    });
     expect(next.version).toBe(state.version + 1);
     expect(snapshotOf(next).activation).toBe(ACTIVATION_PRESETS.lab);
   });
@@ -96,7 +113,7 @@ const CAPACITY: CapacityFacts = {
   supportsCpuHints: true,
 };
 
-const frames = (startMs: number, averageMs: number, droppedRatio: number): GovernorEvent => ({
+const frames = (startMs: number, averageMs: number, droppedRatio: number): VergerEvent => ({
   type: 'frame-window',
   at: startMs + 500,
   window: {
@@ -111,17 +128,17 @@ const frames = (startMs: number, averageMs: number, droppedRatio: number): Gover
 });
 const stressed = (startMs: number) => frames(startMs, 30, 0.3);
 const calm = (startMs: number) => frames(startMs, 8, 0);
-const touch = (at: number): GovernorEvent => ({ type: 'interaction', at });
+const touch = (at: number): VergerEvent => ({ type: 'interaction', at });
 
-function run(patch: ActivationPatch | null, events: readonly GovernorEvent[]) {
-  let state = createGovernor({
+function run(patch: ActivationPatch | null, events: readonly VergerEvent[]) {
+  let state = createVergerState({
     at: 0,
     levers: SAMPLE_LEVERS,
     capacity: CAPACITY,
     memorySensing: true,
     activation: resolveActivation(ACTIVATION_PRESETS.active, patch),
   });
-  for (const event of events) state = reduceGovernor(state, event);
+  for (const event of events) state = reduceVerger(state, event);
   return { state, snapshot: snapshotOf(state) };
 }
 
@@ -140,7 +157,7 @@ describe('activation governs decisions', () => {
   });
 
   it('reduce off: contention is reported, never judged unrelievable', () => {
-    const load: GovernorEvent[] = [0, 1000, 2000, 3000, 4000].map((at) => ({
+    const load: VergerEvent[] = [0, 1000, 2000, 3000, 4000].map((at) => ({
       type: 'thread-load',
       at,
       cores: { js: 1 },
@@ -153,13 +170,19 @@ describe('activation governs decisions', () => {
   });
 
   it('grow off: quality lowered under stress stays lowered after calm frames', () => {
-    const recover = [...STRESS, touch(1000), calm(1000), touch(6000), { type: 'tick', at: 6000 } as const];
+    const recover = [
+      ...STRESS,
+      touch(1000),
+      calm(1000),
+      touch(6000),
+      { type: 'tick', at: 6000 } as const,
+    ];
     expect(run(null, recover).snapshot.pressure).toEqual({});
     expect(Object.keys(run({ grow: false }, recover).snapshot.pressure)).not.toHaveLength(0);
   });
 
   it('an off lever is never picked and is left at full quality, floors included', () => {
-    const saver: GovernorEvent = { type: 'power', at: 1, saver: true };
+    const saver: VergerEvent = { type: 'power', at: 1, saver: true };
     expect(run(null, [saver]).snapshot.levels.sparkle).toBe(2);
     const { snapshot } = run({ levers: { sparkle: 'off' } }, [saver, ...STRESS]);
     expect(snapshot.levels.sparkle).toBe(0);
@@ -169,7 +192,9 @@ describe('activation governs decisions', () => {
 
   it('a shadow lever publishes the baseline and records the decision as proposed', () => {
     const { snapshot } = run(
-      { levers: { sparkle: 'off', 'refresh-rate': 'off', 'rows-ahead': 'off', frosting: 'shadow' } },
+      {
+        levers: { sparkle: 'off', 'refresh-rate': 'off', 'rows-ahead': 'off', frosting: 'shadow' },
+      },
       STRESS,
     );
     expect(snapshot.proposedLevels.frosting).toBe(1);
@@ -186,7 +211,7 @@ describe('activation governs decisions', () => {
   });
 
   it('a switched-off sensor is not heard, and what it said is forgotten', () => {
-    const hot: GovernorEvent = { type: 'thermal', at: 10, status: 'critical', headroom: 1.2 };
+    const hot: VergerEvent = { type: 'thermal', at: 10, status: 'critical', headroom: 1.2 };
     expect(run(null, [hot]).snapshot.thermal).toBe('critical');
     const deaf = run({ sense: { thermal: false } }, [hot]).snapshot;
     expect(deaf.thermal).toBe('unknown');
@@ -197,10 +222,10 @@ describe('activation governs decisions', () => {
   });
 
   it('admission off admits the maximum even under battery saver', () => {
-    const saver: GovernorEvent = { type: 'power', at: 1, saver: true };
+    const saver: VergerEvent = { type: 'power', at: 1, saver: true };
     expect(run(null, [saver]).snapshot.optionalConcurrency).toBe(0);
     expect(run({ admission: 'off' }, [saver]).snapshot.optionalConcurrency).toBe(
-      DEFAULT_GOVERNOR_CONFIG.maxOptionalConcurrency,
+      DEFAULT_VERGER_CONFIG.maxOptionalConcurrency,
     );
   });
 

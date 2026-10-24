@@ -176,8 +176,8 @@ The ladder, trust, the per-build profile with growth, the flight recorder and th
 | Rung 4 left only by a new policy version or release | Done | verger.ts | G2 |
 | Trust halves on failure, +0.1 per clean session | Done | recovery.ts | G2 |
 | Profile keyed by OS build fingerprint, relearned after an update | Done | recovery.ts | G2 |
-| Growth: capacity floors earned back after 3 proving sessions, given back on strain | Done | recovery.ts, governor.ts | G2 |
-| Learned starting point, given back by the closed loop | Done | governor.ts | G2 |
+| Growth: capacity floors earned back after 3 proving sessions, given back on strain | Done | recovery.ts, reducer.ts | G2 |
+| Learned starting point, given back by the closed loop | Done | reducer.ts | G2 |
 | Flight recorder: 48 lines, sent once after a failure | Done | flightRecorder.ts | G2 |
 | Exercise share | Done, default 0 % | recovery.ts | G2 |
 | Quality given up, reported beside performance | Done | quality.ts | G2 |

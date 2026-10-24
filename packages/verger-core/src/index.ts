@@ -25,7 +25,7 @@ export {
   type VergerActivation,
 } from './activation';
 export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from './builtins';
-export { DEFAULT_GOVERNOR_CONFIG, validateConfig } from './config';
+export { DEFAULT_VERGER_CONFIG, validateConfig } from './config';
 export {
   createRuntimeController,
   isValidEvent,
@@ -53,18 +53,18 @@ export {
 } from './frames';
 export {
   capacityClassOf,
-  type CreateGovernorOptions,
-  createGovernor,
-  type GovernorState,
+  type CreateVergerStateOptions,
+  createVergerState,
+  type VergerState,
   networkLimitOf,
   nextTimedChangeAt,
-  reduceGovernor,
+  reduceVerger,
   snapshotOf,
   staticFloors,
   UNKNOWN_CAPACITY,
   UNKNOWN_BATTERY,
   UNKNOWN_NETWORK,
-} from './governor';
+} from './reducer';
 export {
   type AccountReading,
   type AccountState,
@@ -130,7 +130,7 @@ export {
   type Verdict,
 } from './outcomes';
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
-export { replayGovernor } from './replay';
+export { replayVerger } from './replay';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
   createVerger,
@@ -144,11 +144,11 @@ export { thermalLevelOf } from './signals';
 export {
   bucketMs,
   configHash,
-  createGovernorTelemetry,
-  GOVERNOR_POLICY_VERSION,
-  type GovernorTelemetry,
-  type GovernorTelemetryOptions,
-  type GovernorTelemetrySink,
+  createVergerTelemetry,
+  VERGER_POLICY_VERSION,
+  type VergerTelemetry,
+  type VergerTelemetryOptions,
+  type VergerTelemetrySink,
   reasonCode,
   type TelemetryValue,
 } from './telemetry';

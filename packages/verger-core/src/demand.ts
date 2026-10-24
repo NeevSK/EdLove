@@ -1,5 +1,5 @@
-import { DEFAULT_GOVERNOR_CONFIG } from './config';
-import type { CapacityFacts, GovernorConfig, GovernorSnapshot, LeverSpec } from './types';
+import { DEFAULT_VERGER_CONFIG } from './config';
+import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
 /**
  * Demand and supply as data. The registry says what the host's work is, which class it is in and
@@ -9,7 +9,14 @@ import type { CapacityFacts, GovernorConfig, GovernorSnapshot, LeverSpec } from 
  */
 
 /** The seven resources the device holds and the app spends. */
-export type ResourceAccount = 'cpu' | 'gpu' | 'memory' | 'energy' | 'thermal' | 'network' | 'storage';
+export type ResourceAccount =
+  | 'cpu'
+  | 'gpu'
+  | 'memory'
+  | 'energy'
+  | 'thermal'
+  | 'network'
+  | 'storage';
 
 export const RESOURCE_ACCOUNTS: readonly ResourceAccount[] = [
   'cpu',
@@ -68,13 +75,17 @@ export function validateWorkloads(
       }
     }
     for (const id of workload.levers ?? []) {
-      if (!leverIds.has(id)) throw new Error(`Workload "${workload.id}" reads unknown lever "${id}"`);
+      if (!leverIds.has(id))
+        throw new Error(`Workload "${workload.id}" reads unknown lever "${id}"`);
     }
   }
 }
 
 /** The classes a lever's workloads are in: what lowering it would cost the user. */
-export function classesOfLever(workloads: readonly WorkloadSpec[], leverId: string): WorkloadClass[] {
+export function classesOfLever(
+  workloads: readonly WorkloadSpec[],
+  leverId: string,
+): WorkloadClass[] {
   const classes = new Set<WorkloadClass>();
   for (const workload of workloads) {
     if (workload.levers?.includes(leverId)) classes.add(workload.class);
@@ -105,9 +116,9 @@ const UNKNOWN: AccountReading = { state: 'unknown', confidence: 0, source: 'no s
  * numbers are provisional until device captures calibrate them.
  */
 export function estimateAccounts(
-  snapshot: GovernorSnapshot,
+  snapshot: VergerSnapshot,
   capacity: CapacityFacts,
-  config: Pick<GovernorConfig, 'batteryLowPercent'> = DEFAULT_GOVERNOR_CONFIG,
+  config: Pick<VergerConfig, 'batteryLowPercent'> = DEFAULT_VERGER_CONFIG,
 ): Readonly<Record<ResourceAccount, AccountReading>> {
   const lowPercent = config.batteryLowPercent;
   const sense = snapshot.activation.sense;
@@ -119,7 +130,11 @@ export function estimateAccounts(
       ? UNKNOWN
       : {
           state:
-            snapshot.thermal === 'nominal' ? 'ample' : snapshot.thermal === 'warm' ? 'tight' : 'overdrawn',
+            snapshot.thermal === 'nominal'
+              ? 'ample'
+              : snapshot.thermal === 'warm'
+                ? 'tight'
+                : 'overdrawn',
           // Battery temperature lags the chip's: a weaker witness.
           confidence: fromBattery ? 0.4 : sdk >= 30 ? 0.9 : 0.7,
           source: fromBattery
@@ -133,7 +148,12 @@ export function estimateAccounts(
     !sense.memory || snapshot.memory === 'unknown'
       ? UNKNOWN
       : {
-          state: snapshot.memory === 'normal' ? 'ample' : snapshot.memory === 'trimmed' ? 'tight' : 'overdrawn',
+          state:
+            snapshot.memory === 'normal'
+              ? 'ample'
+              : snapshot.memory === 'trimmed'
+                ? 'tight'
+                : 'overdrawn',
           confidence: 0.8,
           source: sdk >= 34 ? 'polled free memory' : 'trim callbacks and polled free memory',
         };
@@ -157,7 +177,11 @@ export function estimateAccounts(
           : UNKNOWN;
 
   const gpu: AccountReading = framesHeard
-    ? { state: frameState(), confidence: sdk >= 31 ? 0.7 : 0.4, source: sdk >= 31 ? 'frame GPU time' : 'frame cost' }
+    ? {
+        state: frameState(),
+        confidence: sdk >= 31 ? 0.7 : 0.4,
+        source: sdk >= 31 ? 'frame GPU time' : 'frame cost',
+      }
     : UNKNOWN;
 
   const b = snapshot.battery;
@@ -184,13 +208,19 @@ export function estimateAccounts(
         : n.dataSaver === 'enabled'
           ? { state: 'overdrawn', confidence: 0.9, source: 'Data Saver restricts this app' }
           : // Slow or unstable as the policy reads it (config `slowNetworkKbps`, `networkSettleMs`).
-            n.metered === true || snapshot.networkLimit === 'slow' || snapshot.networkLimit === 'unstable'
+            n.metered === true ||
+              snapshot.networkLimit === 'slow' ||
+              snapshot.networkLimit === 'unstable'
             ? {
                 state: 'tight',
                 confidence: 0.7,
                 source: n.metered === true ? 'metered network' : `${snapshot.networkLimit} link`,
               }
-            : { state: 'ample', confidence: n.validated === true ? 0.8 : 0.5, source: `${n.transport} network` };
+            : {
+                state: 'ample',
+                confidence: n.validated === true ? 0.8 : 0.5,
+                source: `${n.transport} network`,
+              };
 
   return { cpu, gpu, memory, energy, thermal, network, storage: UNKNOWN };
 }

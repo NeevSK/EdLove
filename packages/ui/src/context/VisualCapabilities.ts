@@ -1,4 +1,4 @@
-import { experienceOf } from '@repo/core/governor';
+import { experienceOf } from '@repo/core/verger';
 import { useVergerSnapshot } from '@repo/verger-react';
 import { useMemo } from 'react';
 import { useFidelityOptional } from './FidelityProvider';

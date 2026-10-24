@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   ACTIVATION_PRESETS,
-  DEFAULT_GOVERNOR_CONFIG,
-  type GovernorEvent,
+  DEFAULT_VERGER_CONFIG,
+  type VergerEvent,
   isValidEvent,
   UNKNOWN_CAPACITY,
 } from '@repo/verger-core';
@@ -15,27 +15,27 @@ import {
   senseConfigFrom,
   toCapacityFacts,
   toExitRecords,
-  toGovernorEvent,
+  toVergerEvent,
 } from './mapping';
 
 describe('verger-android mapping', () => {
   it('sends the sensor set only when given one, so an absent set means every sensor', () => {
-    expect(senseConfigFrom(DEFAULT_GOVERNOR_CONFIG)).not.toHaveProperty('sensors');
+    expect(senseConfigFrom(DEFAULT_VERGER_CONFIG)).not.toHaveProperty('sensors');
     const sensors = { ...ACTIVATION_PRESETS.static.sense };
-    expect(senseConfigFrom(DEFAULT_GOVERNOR_CONFIG, FRAME_WINDOW_MS, sensors).sensors).toEqual(sensors);
+    expect(senseConfigFrom(DEFAULT_VERGER_CONFIG, FRAME_WINDOW_MS, sensors).sensors).toEqual(sensors);
   });
 
-  it('sends the governor thresholds, so native code holds no copy of a tunable', () => {
-    expect(senseConfigFrom(DEFAULT_GOVERNOR_CONFIG)).toEqual({
+  it('sends the thresholds from verger config, so native code holds no copy of a tunable', () => {
+    expect(senseConfigFrom(DEFAULT_VERGER_CONFIG)).toEqual({
       windowMs: FRAME_WINDOW_MS,
-      minSamples: DEFAULT_GOVERNOR_CONFIG.minSamples,
-      stressRatio: DEFAULT_GOVERNOR_CONFIG.stressRatio,
-      stressDroppedRatio: DEFAULT_GOVERNOR_CONFIG.stressDroppedRatio,
-      comfortRatio: DEFAULT_GOVERNOR_CONFIG.comfortRatio,
-      comfortDroppedRatio: DEFAULT_GOVERNOR_CONFIG.comfortDroppedRatio,
-      jankFrameFactor: DEFAULT_GOVERNOR_CONFIG.jankFrameFactor,
-      headroomWarm: DEFAULT_GOVERNOR_CONFIG.headroomWarm,
-      saturationCores: DEFAULT_GOVERNOR_CONFIG.saturationCores,
+      minSamples: DEFAULT_VERGER_CONFIG.minSamples,
+      stressRatio: DEFAULT_VERGER_CONFIG.stressRatio,
+      stressDroppedRatio: DEFAULT_VERGER_CONFIG.stressDroppedRatio,
+      comfortRatio: DEFAULT_VERGER_CONFIG.comfortRatio,
+      comfortDroppedRatio: DEFAULT_VERGER_CONFIG.comfortDroppedRatio,
+      jankFrameFactor: DEFAULT_VERGER_CONFIG.jankFrameFactor,
+      headroomWarm: DEFAULT_VERGER_CONFIG.headroomWarm,
+      saturationCores: DEFAULT_VERGER_CONFIG.saturationCores,
     });
   });
 
@@ -60,7 +60,7 @@ describe('verger-android mapping', () => {
     expect(facts).not.toHaveProperty('supportsThermalHeadroom');
   });
 
-  it('maps each native event to the governor vocabulary on the JS clock', () => {
+  it('maps each native event to the verger vocabulary on the JS clock', () => {
     const window = {
       startMs: 500,
       endMs: 1000,
@@ -71,14 +71,14 @@ describe('verger-android mapping', () => {
       droppedRatio: 0.03,
     };
     expect(
-      toGovernorEvent({ name: 'onFrameWindow', payload: { ...window, state: 'neutral' } }, 42),
+      toVergerEvent({ name: 'onFrameWindow', payload: { ...window, state: 'neutral' } }, 42),
     ).toEqual({
       type: 'frame-window',
       at: 42,
       window,
     });
     expect(
-      toGovernorEvent({ name: 'onThermal', payload: { status: 'light', headroom: Number.NaN } }, 1),
+      toVergerEvent({ name: 'onThermal', payload: { status: 'light', headroom: Number.NaN } }, 1),
     ).toEqual({
       type: 'thermal',
       at: 1,
@@ -86,20 +86,20 @@ describe('verger-android mapping', () => {
       headroom: null,
     });
     expect(
-      toGovernorEvent({ name: 'onMemoryTrim', payload: { severity: 'low', level: 60 } }, 2),
+      toVergerEvent({ name: 'onMemoryTrim', payload: { severity: 'low', level: 60 } }, 2),
     ).toEqual({
       type: 'memory-trim',
       at: 2,
       severity: 'low',
     });
-    expect(toGovernorEvent({ name: 'onPowerSaver', payload: { saver: true } }, 3)).toEqual({
+    expect(toVergerEvent({ name: 'onPowerSaver', payload: { saver: true } }, 3)).toEqual({
       type: 'power',
       at: 3,
       saver: true,
     });
   });
 
-  it('carries frame stages, thread load and polled memory into the governor vocabulary', () => {
+  it('carries frame stages, thread load and polled memory into the verger vocabulary', () => {
     const stages = { uiMs: 9, renderMs: 3, gpuMs: 4, delayMs: 0.5 };
     const window = {
       startMs: 0,
@@ -111,7 +111,7 @@ describe('verger-android mapping', () => {
       droppedRatio: 0.2,
     };
     expect(
-      toGovernorEvent(
+      toVergerEvent(
         { name: 'onFrameWindow', payload: { ...window, state: 'stressed', stages } },
         5,
       ),
@@ -121,7 +121,7 @@ describe('verger-android mapping', () => {
       window: { ...window, stages },
     });
     expect(
-      toGovernorEvent(
+      toVergerEvent(
         { name: 'onFrameWindow', payload: { ...window, state: 'stressed', stages: null } },
         5,
       ),
@@ -131,7 +131,7 @@ describe('verger-android mapping', () => {
       window,
     });
     expect(
-      toGovernorEvent(
+      toVergerEvent(
         {
           name: 'onThreadLoad',
           payload: {
@@ -147,7 +147,7 @@ describe('verger-android mapping', () => {
       ),
     ).toEqual({ type: 'thread-load', at: 7, cores: { js: 0.9, main: 0.3 }, processCores: 1.4 });
     expect(
-      toGovernorEvent(
+      toVergerEvent(
         {
           name: 'onMemory',
           payload: { availableMb: 420, thresholdMb: 216, lowMemory: false, rssMb: 300 },
@@ -173,7 +173,7 @@ describe('verger-android mapping', () => {
       worstMs: 12,
       droppedRatio: 0,
     };
-    const event = toGovernorEvent(
+    const event = toVergerEvent(
       {
         name: 'onFrameWindow',
         payload: {
@@ -226,8 +226,8 @@ describe('the native event contract (shared with NetworkContractTest.kt)', () =>
   const contract = JSON.parse(
     readFileSync(fileURLToPath(new URL('../contract/native-events.json', import.meta.url)), 'utf8'),
   ) as {
-    network: { case: string; payload: NativeNetwork; event: GovernorEvent }[];
-    battery: { case: string; payload: NativeBattery; event: GovernorEvent }[];
+    network: { case: string; payload: NativeNetwork; event: VergerEvent }[];
+    battery: { case: string; payload: NativeBattery; event: VergerEvent }[];
   };
 
   it('holds network and battery cases', () => {
@@ -238,7 +238,7 @@ describe('the native event contract (shared with NetworkContractTest.kt)', () =>
   it.each(contract.battery.map((c) => [c.case, c] as const))(
     'maps the battery payload Kotlin builds into exactly its event: %s',
     (_name, c) => {
-      const event = toGovernorEvent({ name: 'onBattery', payload: c.payload }, 0);
+      const event = toVergerEvent({ name: 'onBattery', payload: c.payload }, 0);
       expect(event).toEqual(c.event);
       expect(isValidEvent(event)).toBe(true);
     },
@@ -247,7 +247,7 @@ describe('the native event contract (shared with NetworkContractTest.kt)', () =>
   it.each(contract.network.map((c) => [c.case, c] as const))(
     'maps the payload Kotlin builds into exactly its event: %s',
     (_name, c) => {
-      const event = toGovernorEvent({ name: 'onNetwork', payload: c.payload }, 0);
+      const event = toVergerEvent({ name: 'onNetwork', payload: c.payload }, 0);
       expect(event).toEqual(c.event);
       expect(isValidEvent(event)).toBe(true);
     },

@@ -3,7 +3,7 @@ package expo.modules.verger
 import kotlin.math.floor
 
 /**
- * Frame classification thresholds. Values come from JavaScript (`DEFAULT_GOVERNOR_CONFIG` in
+ * Frame classification thresholds. Values come from JavaScript (`DEFAULT_VERGER_CONFIG` in
  * `@repo/verger-core`) so the native side never holds its own copy of a tunable.
  */
 data class FrameClassification(

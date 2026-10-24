@@ -119,7 +119,7 @@ From the device inspection on actual Android test hardware recorded in `reports/
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   UNIFIED PERFORMANCE GOVERNOR                         │
-│                    (@repo/core/governor facade)                        │
+│                    (@repo/core/verger facade)                        │
 └───────────────────┬────────────────────────────────┬───────────────────┘
                     │                                │
                     ▼                                ▼
@@ -153,7 +153,7 @@ From the device inspection on actual Android test hardware recorded in `reports/
 
 ```
 PHASE 1: IMMEDIATE PILOT HARDENING (Before Oct 26)
-  [1] Consolidate existing TypeScript governor into @repo/core/governor
+  [1] Consolidate existing TypeScript governor into @repo/core/verger
   [2] Instrument AttendanceScreen and TeacherClassroomDashboard with markInteractive()
   [3] Add defensive in-memory cache to loadGradeClassRegister (kill 15s HTTP stall)
   [4] Ensure OptionalStartupServices halts background sync during teacher interactions

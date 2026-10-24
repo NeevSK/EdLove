@@ -2,17 +2,27 @@ import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { ACTIVATION_PRESETS, resolveActivation } from './activation';
 import { classesOfLever, estimateAccounts, validateWorkloads, type WorkloadSpec } from './demand';
-import { createGovernor, reduceGovernor, snapshotOf, UNKNOWN_CAPACITY } from './governor';
+import { createVergerState, reduceVerger, snapshotOf, UNKNOWN_CAPACITY } from './reducer';
 import { defineHost } from './host';
-import type { CapacityFacts, GovernorEvent } from './types';
+import type { CapacityFacts, VergerEvent } from './types';
 
 const WORKLOADS: readonly WorkloadSpec[] = [
   { id: 'tap', class: 'critical', spends: ['cpu'], source: 'everywhere' },
   { id: 'glitter', class: 'ornamental', spends: ['gpu'], levers: ['sparkle'], source: 'hero' },
-  { id: 'gallery', class: 'committed', spends: ['memory'], levers: ['photo-cache', 'sparkle'], source: 'gallery' },
+  {
+    id: 'gallery',
+    class: 'committed',
+    spends: ['memory'],
+    levers: ['photo-cache', 'sparkle'],
+    source: 'gallery',
+  },
 ];
 
-const CAPACITY: CapacityFacts = { ...UNKNOWN_CAPACITY, sdkInt: 34, totalMemoryBytes: 8 * 1024 ** 3 };
+const CAPACITY: CapacityFacts = {
+  ...UNKNOWN_CAPACITY,
+  sdkInt: 34,
+  totalMemoryBytes: 8 * 1024 ** 3,
+};
 
 describe('demand registry', () => {
   it('a host carries its workloads, checked against its levers', () => {
@@ -24,12 +34,20 @@ describe('demand registry', () => {
   it('rejects duplicates, unknown levers, unknown accounts and work that spends nothing', () => {
     const tap = WORKLOADS[0] as WorkloadSpec;
     expect(() => validateWorkloads([tap, tap], SAMPLE_LEVERS)).toThrow(/Duplicate/);
-    expect(() => validateWorkloads([{ ...tap, levers: ['nope'] }], SAMPLE_LEVERS)).toThrow(/unknown lever/);
-    expect(() => validateWorkloads([{ ...tap, spends: [] }], SAMPLE_LEVERS)).toThrow(/at least one/);
+    expect(() => validateWorkloads([{ ...tap, levers: ['nope'] }], SAMPLE_LEVERS)).toThrow(
+      /unknown lever/,
+    );
+    expect(() => validateWorkloads([{ ...tap, spends: [] }], SAMPLE_LEVERS)).toThrow(
+      /at least one/,
+    );
     // A registry read from data can hold anything; the check must not trust the type.
-    const bad = JSON.parse('{"id":"x","class":"urgent","spends":["cpu"],"source":"s"}') as WorkloadSpec;
+    const bad = JSON.parse(
+      '{"id":"x","class":"urgent","spends":["cpu"],"source":"s"}',
+    ) as WorkloadSpec;
     expect(() => validateWorkloads([bad], SAMPLE_LEVERS)).toThrow(/unknown class/);
-    const badAccount = JSON.parse('{"id":"x","class":"critical","spends":["disk"],"source":"s"}') as WorkloadSpec;
+    const badAccount = JSON.parse(
+      '{"id":"x","class":"critical","spends":["disk"],"source":"s"}',
+    ) as WorkloadSpec;
     expect(() => validateWorkloads([badAccount], SAMPLE_LEVERS)).toThrow(/unknown account/);
   });
 
@@ -40,15 +58,15 @@ describe('demand registry', () => {
 });
 
 describe('resource accounts', () => {
-  const run = (events: readonly GovernorEvent[], patch = {}) => {
-    let state = createGovernor({
+  const run = (events: readonly VergerEvent[], patch = {}) => {
+    let state = createVergerState({
       at: 0,
       levers: SAMPLE_LEVERS,
       capacity: CAPACITY,
       memorySensing: true,
       activation: resolveActivation(ACTIVATION_PRESETS.active, patch),
     });
-    for (const event of events) state = reduceGovernor(state, event);
+    for (const event of events) state = reduceVerger(state, event);
     return estimateAccounts(snapshotOf(state), CAPACITY);
   };
 
@@ -67,7 +85,15 @@ describe('resource accounts', () => {
       {
         type: 'frame-window',
         at: 500,
-        window: { startMs: 0, endMs: 500, frames: 30, averageMs: 30, targetMs: 16.7, worstMs: 35, droppedRatio: 0.3 },
+        window: {
+          startMs: 0,
+          endMs: 500,
+          frames: 30,
+          averageMs: 30,
+          targetMs: 16.7,
+          worstMs: 35,
+          droppedRatio: 0.3,
+        },
       },
     ]);
     expect(accounts.thermal.state).toBe('overdrawn');
@@ -77,7 +103,7 @@ describe('resource accounts', () => {
   });
 
   it('a saturated thread overdraws cpu, whatever the frames say', () => {
-    const load: GovernorEvent[] = [0, 2500].map((at) => ({
+    const load: VergerEvent[] = [0, 2500].map((at) => ({
       type: 'thread-load',
       at,
       cores: { js: 1 },
@@ -87,7 +113,7 @@ describe('resource accounts', () => {
   });
 
   it('a switched-off sensor reads as unknown, not as the last value', () => {
-    const hot: GovernorEvent = { type: 'thermal', at: 1, status: 'severe', headroom: 0.97 };
+    const hot: VergerEvent = { type: 'thermal', at: 1, status: 'severe', headroom: 0.97 };
     expect(run([hot], { sense: { thermal: false } }).thermal.state).toBe('unknown');
   });
 });

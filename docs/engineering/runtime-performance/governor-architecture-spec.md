@@ -10,7 +10,7 @@ tags: [performance, runtime-performance, specification, governor, nitro, expo-ob
 
 # Performance Governor Technical Specification
 
-> **Package**: `@repo/core/governor` (with native bindings in `apps/gurudevi-mobile`)  
+> **Package**: `@repo/core/verger` (with native bindings in `apps/gurudevi-mobile`)  
 > **Status**: Approved Architectural Spec  
 > **Target SDK**: Expo SDK 58 / React Native 0.88 / Nitro Modules 0.37.1
 
@@ -28,7 +28,7 @@ The **Performance Governor** is the centralized control plane for runtime perfor
                                      |
                                      v
 +-------------------------------------------------------------------------+
-|                 @repo/core/governor (Unified Facade)                    |
+|                 @repo/core/verger (Unified Facade)                    |
 |                                                                         |
 |  .sense()                 -> Synchronous hardware snapshot              |
 |  .admit(workDescriptor)   -> Deterministic work admission decision      |

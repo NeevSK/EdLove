@@ -34,7 +34,7 @@ data class SenseConfig(
   val windowMs: Double,
   val classification: FrameClassification,
   val headroomWarm: Double,
-  /** Thread load the governor calls saturated; crossing it is always reported. */
+  /** Thread load verger calls saturated; crossing it is always reported. */
   val saturationCores: Double,
   /** Which sensors run; [setSensors] changes it while running. */
   val sensors: Sensors = Sensors.ALL,
@@ -474,7 +474,7 @@ class VergerSense(
       val before = lastThreadCores[role.ordinal]
       val now = load.of(role)
       // Report any move of 0.1 cores, and always a crossing of the saturation line, so the
-      // governor's saturated flag can never be left set (or unset) by a small change.
+      // verger's saturated flag can never be left set (or unset) by a small change.
       val crossed = !before.isNaN() && ((before >= line) != (now >= line))
       if (before.isNaN() || crossed || kotlin.math.abs(now - before) >= THREAD_CHANGE_CORES) changed = true
     }

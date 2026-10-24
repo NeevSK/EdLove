@@ -1,4 +1,4 @@
-import type { GovernorMode } from './types';
+import type { RunMode } from './types';
 
 export type ExperimentArm = 'control' | 'treatment';
 
@@ -7,13 +7,13 @@ export interface ExperimentAssignment {
   readonly arm: ExperimentArm;
   /** Bucket 0–99 the install fell into; stable for an install and key. */
   readonly bucket: number;
-  /** Control runs the governor in shadow: it decides and reports, but applies the open-loop baseline. */
-  readonly mode: GovernorMode;
+  /** Control runs verger in shadow: it decides and reports, but applies the open-loop baseline. */
+  readonly mode: RunMode;
   /**
    * Whether the runtime runs at all. The kill switch turns it off entirely, native sensing
    * included: shadow mode still runs the native module, so it cannot stop a native fault.
    */
-  readonly runtime: 'off' | GovernorMode;
+  readonly runtime: 'off' | RunMode;
   readonly reason: 'assigned' | 'kill-switch' | 'forced';
 }
 
@@ -65,6 +65,6 @@ export function assignExperiment(options: {
   }
   const percent = Math.min(100, Math.max(0, options.treatmentPercent));
   const arm: ExperimentArm = bucket < percent ? 'treatment' : 'control';
-  const mode: GovernorMode = arm === 'treatment' ? 'active' : 'shadow';
+  const mode: RunMode = arm === 'treatment' ? 'active' : 'shadow';
   return { key: options.key, arm, bucket, mode, runtime: mode, reason: 'assigned' };
 }

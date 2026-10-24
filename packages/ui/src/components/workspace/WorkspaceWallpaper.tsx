@@ -1,5 +1,5 @@
 import { resolveRuntimeVisualBudget, resolveWallpaperPresentation } from '@repo/core/efficiency';
-import { visualSignalsOf } from '@repo/core/governor';
+import { visualSignalsOf } from '@repo/core/verger';
 import type { WorkspaceWallpaper as WorkspaceWallpaperAsset } from '@repo/core/types';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { View } from '@repo/ui/primitives';

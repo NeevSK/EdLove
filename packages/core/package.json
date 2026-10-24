@@ -323,10 +323,10 @@
       "import": "./src/efficiency/index.ts",
       "default": "./src/efficiency/index.ts"
     },
-    "./governor": {
-      "types": "./src/governor/index.ts",
-      "import": "./src/governor/index.ts",
-      "default": "./src/governor/index.ts"
+    "./verger": {
+      "types": "./src/verger/index.ts",
+      "import": "./src/verger/index.ts",
+      "default": "./src/verger/index.ts"
     },
     "./storage-wrapper": {
       "types": "./src/lib/storageWrapper.ts",

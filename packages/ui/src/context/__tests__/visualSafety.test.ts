@@ -1,4 +1,4 @@
-import { experienceOf } from '@repo/core/governor';
+import { experienceOf } from '@repo/core/verger';
 import { isVisualSafeModeEnabled } from '../visualSafety';
 
 /** A high phone with nothing lowered: everything the safe mode must take away. */

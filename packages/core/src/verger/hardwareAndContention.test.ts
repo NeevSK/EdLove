@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   type CapacityFacts,
   chooseLeverToLower,
-  DEFAULT_GOVERNOR_CONFIG,
-  createGovernor,
-  type GovernorEvent,
-  type GovernorState,
+  DEFAULT_VERGER_CONFIG,
+  createVergerState,
+  type VergerEvent,
+  type VergerState,
   GURUDEVI_LEVERS,
-  reduceGovernor,
-  replayGovernor,
+  reduceVerger,
+  replayVerger,
   snapshotOf,
 } from './index';
 
@@ -39,12 +39,12 @@ const PHONE_LOW: CapacityFacts = {
   supportsCpuHints: false,
 };
 
-function run(state: GovernorState, events: GovernorEvent[]): GovernorState {
-  return events.reduce(reduceGovernor, state);
+function run(state: VergerState, events: VergerEvent[]): VergerState {
+  return events.reduce(reduceVerger, state);
 }
 
 /** One thread-load sample per second with the JS thread at `js` cores. */
-function jsLoad(from: number, seconds: number, js: number, main = 0.3): GovernorEvent[] {
+function jsLoad(from: number, seconds: number, js: number, main = 0.3): VergerEvent[] {
   return Array.from({ length: seconds }, (_, i) => ({
     type: 'thread-load' as const,
     at: from + (i + 1) * 1000,
@@ -55,7 +55,7 @@ function jsLoad(from: number, seconds: number, js: number, main = 0.3): Governor
 
 describe('containment of work the runtime does not control', () => {
   it('treats a JS thread pinned for 2 s as contention, pauses deferrable work and sheds CPU-side quality', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [{ type: 'interaction', at: 0 }, ...jsLoad(0, 1, 0.98)]);
     expect(snapshotOf(state).contention).toBe('none');
     state = run(state, jsLoad(1000, 2, 0.98));
@@ -71,7 +71,7 @@ describe('containment of work the runtime does not control', () => {
   });
 
   it('acts at most once per saturation period', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, jsLoad(0, 3, 0.99));
     const first = state.stack.length;
     state = run(state, [{ type: 'tick', at: 3500 }]);
@@ -82,13 +82,13 @@ describe('containment of work the runtime does not control', () => {
 
   it('never lets one busy JS loop strip levers that do not relieve the JS thread', () => {
     // A minute of a pinned JS thread that no lever relieves (the load never drops).
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, jsLoad(0, 60, 1.0));
     const cpuLevers = new Set(GURUDEVI_LEVERS.filter((l) => l.target === 'cpu').map((l) => l.id));
     expect(state.stack.length).toBeGreaterThan(0);
     expect(state.stack.every((id) => cpuLevers.has(id))).toBe(true);
     expect(state.stack.length).toBeLessThanOrEqual(
-      DEFAULT_GOVERNOR_CONFIG.maxUnrelievedContentionSteps + 1,
+      DEFAULT_VERGER_CONFIG.maxUnrelievedContentionSteps + 1,
     );
     const snap = snapshotOf(state);
     expect(snap.contentionExhausted).toBe(true);
@@ -99,7 +99,7 @@ describe('containment of work the runtime does not control', () => {
   });
 
   it('keeps shedding while each step relieves the saturated thread', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, jsLoad(0, 3, 1.0)); // first step at ~2 s
     const first = state.stack.length;
     state = run(state, jsLoad(3000, 2, 0.94)); // relieved by 0.06 cores, still saturated
@@ -128,12 +128,12 @@ describe('containment of work the runtime does not control', () => {
     expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, ['cpu'], 'primary')).toBeNull();
     // Main-thread contention may: animations run on the UI thread.
     expect(chooseLeverToLower(GURUDEVI_LEVERS, levels, ['cpu'], true)?.id).toBe('global-motion');
-    const low = createGovernor({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS });
+    const low = createVergerState({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS });
     expect(snapshotOf(low).globalReducedMotion).toBe(false);
   });
 
   it('counts three long tasks within 5 s as JS contention even when CPU sampling is absent', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [
       { type: 'long-task', at: 1000, durationMs: 120 },
       { type: 'long-task', at: 2000, durationMs: 80 },
@@ -146,7 +146,7 @@ describe('containment of work the runtime does not control', () => {
   });
 
   it('clears contention as soon as the thread drops below the line', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [...jsLoad(0, 3, 0.95), ...jsLoad(3000, 1, 0.4)]);
     expect(snapshotOf(state).contention).toBe('none');
   });
@@ -154,7 +154,7 @@ describe('containment of work the runtime does not control', () => {
 
 describe('memory pressure on Android 14+, where foreground apps get no trims', () => {
   it('turns polled free memory near the system threshold into the same latch a trim would set', () => {
-    let state = createGovernor({
+    let state = createVergerState({
       at: 0,
       capacity: PHONE_90HZ,
       levers: GURUDEVI_LEVERS,
@@ -180,7 +180,7 @@ describe('memory pressure on Android 14+, where foreground apps get no trims', (
 
 describe('hardware levers', () => {
   it('caps the refresh rate when idle, warm, or saving power, and releases it on touch', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [
       { type: 'interaction', at: 0 },
       { type: 'tick', at: 5000 },
@@ -202,7 +202,7 @@ describe('hardware levers', () => {
     ]);
     expect(snapshotOf(state).refreshCapHz).toBe(60);
 
-    const saver = run(createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS }), [
+    const saver = run(createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS }), [
       { type: 'power', at: 1, saver: true },
       { type: 'tick', at: 1_500 }, // launch counts as a touch; the gesture freeze has passed
     ]);
@@ -210,7 +210,7 @@ describe('hardware levers', () => {
   });
 
   it('never asks a 60 Hz display for a cap it cannot honour', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS });
     state = run(state, [
       { type: 'tick', at: 20_000 },
       { type: 'power', at: 20_001, saver: true },
@@ -219,7 +219,7 @@ describe('hardware levers', () => {
   });
 
   it('boosts the UI threads only while someone interacts on a cool, unrestricted, capable device', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [{ type: 'interaction', at: 0 }]);
     expect(snapshotOf(state).cpuBoost).toBe(true);
     expect(snapshotOf(run(state, [{ type: 'tick', at: 10_001 }])).cpuBoost).toBe(false);
@@ -231,19 +231,19 @@ describe('hardware levers', () => {
     expect(
       snapshotOf(run(state, [{ type: 'app-state', at: 1, state: 'background' }])).cpuBoost,
     ).toBe(false);
-    const low = run(createGovernor({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS }), [
+    const low = run(createVergerState({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS }), [
       { type: 'interaction', at: 0 },
     ]);
     expect(snapshotOf(low).cpuBoost).toBe(false);
   });
 
   it('in shadow mode proposes but applies no hardware lever', () => {
-    const events: GovernorEvent[] = [
+    const events: VergerEvent[] = [
       { type: 'interaction', at: 0 },
       ...jsLoad(0, 10, 1.0),
       { type: 'tick', at: 61_000 },
     ];
-    const { final } = replayGovernor(
+    const { final } = replayVerger(
       { at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS, mode: 'shadow' },
       events,
     );
@@ -255,7 +255,7 @@ describe('hardware levers', () => {
 });
 
 describe('review findings, held as regressions', () => {
-  const stressed = (start: number, overrides: Record<string, number> = {}): GovernorEvent => ({
+  const stressed = (start: number, overrides: Record<string, number> = {}): VergerEvent => ({
     type: 'frame-window',
     at: start + 500,
     window: {
@@ -271,7 +271,7 @@ describe('review findings, held as regressions', () => {
   });
 
   it('classifies a window of a few very long frames as stress, not quiet', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [
       stressed(0, { frames: 3, averageMs: 160, worstMs: 170, droppedRatio: 0.9 }),
       stressed(500, { frames: 3, averageMs: 160, worstMs: 170, droppedRatio: 0.9 }),
@@ -281,7 +281,7 @@ describe('review findings, held as regressions', () => {
   });
 
   it('does not add up stressed windows that are not contiguous', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [stressed(0), stressed(60_000)]);
     expect(state.stack.length).toBe(0);
     state = run(state, [stressed(60_500)]);
@@ -289,10 +289,10 @@ describe('review findings, held as regressions', () => {
   });
 
   it('does not raise quality on an idle screen, only on calm frames', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [stressed(0), stressed(500), { type: 'tick', at: 30_000 }]);
     expect(state.stack.length).toBe(1);
-    const calm = (start: number): GovernorEvent => ({
+    const calm = (start: number): VergerEvent => ({
       type: 'frame-window',
       at: start + 500,
       window: {
@@ -310,13 +310,13 @@ describe('review findings, held as regressions', () => {
   });
 
   it('never lets a stale headroom hide a fresh severe status', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [{ type: 'thermal', at: 1, status: 'severe', headroom: 0.5 }]);
     expect(snapshotOf(state).thermal).toBe('hot');
   });
 
   it('keeps a steadily low polled memory reading low beyond the trim latch', () => {
-    let state = createGovernor({
+    let state = createVergerState({
       at: 0,
       capacity: PHONE_90HZ,
       levers: GURUDEVI_LEVERS,
@@ -340,7 +340,7 @@ describe('second review findings, held as regressions', () => {
     start: number,
     averageMs: number,
     extra: Record<string, unknown> = {},
-  ): GovernorEvent => ({
+  ): VergerEvent => ({
     type: 'frame-window',
     at: start + 500,
     window: {
@@ -356,7 +356,7 @@ describe('second review findings, held as regressions', () => {
   });
 
   it('raises again from the forwarded stream, where a run of calm windows arrives as one', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [win(0, 25), win(500, 25), win(1000, 25), win(1500, 25)]);
     expect(state.stack.length).toBe(2);
     // Only the first calm window crosses the bridge; the rest are suppressed as repeats.
@@ -365,7 +365,7 @@ describe('second review findings, held as regressions', () => {
   });
 
   it('holds the published cap through a tap instead of switching the display mode twice', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, [{ type: 'thermal', at: 2_000, status: 'light', headroom: 0.9 }]);
     expect(snapshotOf(state).refreshCapHz).toBe(60);
     state = run(state, [{ type: 'interaction', at: 3_000 }]);
@@ -378,14 +378,14 @@ describe('second review findings, held as regressions', () => {
     const applied = GURUDEVI_LEVERS.filter(
       (l) => l.id === 'refresh-rate' || l.id === 'global-motion',
     );
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: applied });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: applied });
     const stages = { uiMs: 20, renderMs: 3, gpuMs: 2, delayMs: 0 };
     state = run(state, [win(0, 25, { stages }), win(500, 25, { stages })]);
     expect(state.stack).toEqual(['refresh-rate']);
   });
 
   it('accumulates freeze-type jank across the empty slot a long frame leaves', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     const freeze = (start: number) =>
       win(start, 1000, { frames: 1, worstMs: 1000, droppedRatio: 0.98 });
     state = run(state, [freeze(0)]);
@@ -393,7 +393,7 @@ describe('second review findings, held as regressions', () => {
   });
 
   it('keeps the "not relievable" verdict through a load flickering across the line', () => {
-    let state = createGovernor({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
+    let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
     state = run(state, jsLoad(0, 12, 1.0));
     expect(snapshotOf(state).contentionExhausted).toBe(true);
     const before = state.stack.length;

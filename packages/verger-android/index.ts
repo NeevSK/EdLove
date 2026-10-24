@@ -1,6 +1,6 @@
 import type {
-  GovernorConfig,
-  GovernorEvent,
+  VergerConfig,
+  VergerEvent,
   RuntimePort,
   SensorId,
   VergerPlatform,
@@ -15,7 +15,7 @@ import {
   senseConfigFrom,
   toCapacityFacts,
   toExitRecords,
-  toGovernorEvent,
+  toVergerEvent,
   type VergerAndroidEvents,
 } from './src/mapping';
 
@@ -77,35 +77,35 @@ export function createVergerAndroidPort(
 ): RuntimePort {
   return {
     start(
-      config: GovernorConfig,
-      onEvent: (event: GovernorEvent) => void,
+      config: VergerConfig,
+      onEvent: (event: VergerEvent) => void,
       sensors?: Readonly<Record<SensorId, boolean>>,
     ) {
       if (!native) return () => {};
       const subscriptions = [
         native.addListener('onFrameWindow', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onFrameWindow', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onFrameWindow', payload }, now())),
         ),
         native.addListener('onThermal', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onThermal', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onThermal', payload }, now())),
         ),
         native.addListener('onMemoryTrim', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onMemoryTrim', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onMemoryTrim', payload }, now())),
         ),
         native.addListener('onPowerSaver', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onPowerSaver', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onPowerSaver', payload }, now())),
         ),
         native.addListener('onThreadLoad', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onThreadLoad', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onThreadLoad', payload }, now())),
         ),
         native.addListener('onMemory', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onMemory', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onMemory', payload }, now())),
         ),
         native.addListener('onNetwork', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onNetwork', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onNetwork', payload }, now())),
         ),
         native.addListener('onBattery', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onBattery', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onBattery', payload }, now())),
         ),
         native.addListener('onLever', (payload) => onLever?.(payload)),
       ];

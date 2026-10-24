@@ -37,7 +37,7 @@ import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import type { NetworkLimit } from '@repo/core/governor';
+import type { NetworkLimit } from '@repo/core/verger';
 import { useVergerSnapshot } from '@repo/verger-react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, TextInput } from 'react-native';
