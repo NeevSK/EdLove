@@ -48,6 +48,18 @@ export interface ExperienceSettings {
   readonly safeMode?: boolean;
 }
 
+/** The levers this view reads: the ones Gurudevi's components apply through it. */
+export const EXPERIENCE_LEVER_IDS = [
+  'ambient-motion',
+  'transitions',
+  'blur',
+  'particles',
+  'prefetch',
+  'image-cache',
+  'image-decode',
+] as const;
+type ExperienceLever = (typeof EXPERIENCE_LEVER_IDS)[number];
+
 /** A three-step lever's level as an experience level: 0 rich, 1 refined, 2 essential. */
 const BY_LEVEL: readonly ExperienceLevel[] = ['rich', 'refined', 'essential'];
 const PARTICLES: Readonly<Record<ExperienceLevel, number>> = {
@@ -71,8 +83,8 @@ export function experienceOf(
 ): GurudeviExperience {
   // One source for the memory thresholds: verger's config, through its capacity class.
   const deviceTier = TIER[snapshot.capacityClass];
-  const level = (id: string) => snapshot.levels[id] ?? 0;
-  const stepped = (id: string) => BY_LEVEL[Math.min(level(id), 2)] ?? 'essential';
+  const level = (id: ExperienceLever) => snapshot.levels[id] ?? 0;
+  const stepped = (id: ExperienceLever) => BY_LEVEL[Math.min(level(id), 2)] ?? 'essential';
   const safe = settings.safeMode === true;
   const quiet = settings.quietMode === true;
 

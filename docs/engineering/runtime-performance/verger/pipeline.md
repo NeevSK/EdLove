@@ -36,7 +36,8 @@ The one place the plan is tracked; update it with every phase. Verification ride
 | E. Cut-off | Decisions from E2 built: capacity classes (low under 5 GiB, mid under 9 GiB, config; levers' `whenMidCapacity`; earned back by `capacityGrant`) and weak links (slow or back from offline under a minute; levers' `whenSlowNetwork`; one optional job at a time); snapshot carries `capacityClass` and `networkLimit`; the estimator reads the same limit | done | G1: class and network tests; drift test on six phone sizes (5,760 cases), no open difference, planted mutant caught |
 | E. Cut-off | E3 view: `experienceOf` (levels to the fields consumers read, tier from verger's class; quiet, sound, haptics and safe mode as settings); the user's fidelity reaches verger (B6) | done | the drift test; G0 for the React shell |
 | E. Cut-off | E4 `GurudeviVerger` mounted in `EntryShell`. Activation from configuration (`resolveVergerLaunch`): build preset `EXPO_PUBLIC_GURUDEVI_VERGER_PRESET` (`active`, `shadow`, `static`, `lab`); a development build defaults to `lab`; a release with nothing set stays off (floors only) until its preset is chosen; mode override `__GURUDEVI_RUNTIME_MODE__` (`off` is the kill switch); remote patch `__GURUDEVI_VERGER_ACTIVATION__`, parsed strictly, ignored whole if malformed. `useVerger` exposes `configure`, `tune`, `outcomes` | done | G1: launch resolution 8/8; mobile suite unchanged (20 failures in 8 files, identical before the change) |
-| E. Cut-off | E5 consumers move to `experienceOf`, old governor removed (signed off; E2 green, no open difference) | **next** | — |
+| E. Cut-off | E5a every component that reads `useVisualCapabilities` (and `useEnvironment().visualCapabilities`) now reads verger inside its provider, through `experienceOf`; the old governor answers only outside a verger provider. The mobile host governs the seven levers the view reads (`EXPERIENCE_LEVER_IDS`), no lever nobody applies | done | G1/G3: hook under a real `VergerProvider` 3/3; ui suite and mobile suite: the same failures as before the change (ui 1 in 2 files, mobile 20 in 8 files) |
+| E. Cut-off | E5b the direct readers: optional startup work (battery saver and work admission) to verger's `optionalConcurrency`; the workspace wallpaper's budget; the settings screen's device panel. E5c remove the old governor (signed off; the exact list shown before deleting) | **next** | — |
 | F. Phones | first Gradle build; dev client on the A52, A24 and a 2–4 GB phone; Maestro CLI flows; Stryker | needs the laptop | — |
 
 ## The pipeline
@@ -54,7 +55,7 @@ flowchart LR
     S1["1 Sense<br/>platform port"]:::partial
     S2["2 Estimate<br/>accounts + confidence"]:::partial
     S3["3 Decide<br/>policy, envelope"]:::partial
-    S4["4 Act<br/>levers, hardware, admission"]:::missing
+    S4["4 Act<br/>levers, hardware, admission"]:::partial
   end
   subgraph L2["Loop 2 · adapt verger · seconds to sessions"]
     S5["5 Judge<br/>outcome ledger"]:::built
@@ -79,8 +80,8 @@ flowchart LR
   VER -.-> S3 & S5
 ```
 
-Stage 4 is red because no app component reads a lever yet: the policy decides, and only
-verger's own refresh cap and global reduced motion carry a decision to the phone. The full
+Stage 4 is amber: inside verger's provider every component that reads visual capabilities
+reads verger's levels (E5a); direct readers of the old governor move next (E5b). The full
 sensing layer is specified in [sensing.md](sensing.md); verification in
 [verification.md](verification.md).
 

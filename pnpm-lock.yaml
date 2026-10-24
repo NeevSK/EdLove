@@ -3117,6 +3117,9 @@ importers:
       '@repo/core':
         specifier: workspace:*
         version: link:../core
+      '@repo/verger-react':
+        specifier: workspace:*
+        version: link:../verger-react
       '@tanstack/react-query':
         specifier: ^5.104.3
         version: 5.104.3(react@19.3.0)

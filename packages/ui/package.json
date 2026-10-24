@@ -882,6 +882,7 @@
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@react-native-community/slider": "5.2.1",
     "@repo/core": "workspace:*",
+    "@repo/verger-react": "workspace:*",
     "@tanstack/react-query": "^5.104.3",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.12",

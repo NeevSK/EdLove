@@ -3,7 +3,7 @@ import {
   type CapacityFacts,
   experienceOf,
   type GovernorEvent,
-  GURUDEVI_LEVERS,
+  GURUDEVI_MOBILE_HOST,
   resolveActivation,
   UNKNOWN_CAPACITY,
   VERGER_POLICY,
@@ -116,7 +116,7 @@ function networkEvent(quality: NetworkQuality, at: number): GovernorEvent {
 function verger(c: Case) {
   const capacity: CapacityFacts = { ...UNKNOWN_CAPACITY, totalMemoryBytes: PHONES[c.phone] };
   const activation = resolveActivation(ACTIVATION_PRESETS.static, { sense: { network: true } });
-  let state = VERGER_POLICY.create({ at: 0, levers: GURUDEVI_LEVERS, capacity, activation, hardware: false });
+  let state = VERGER_POLICY.create({ at: 0, levers: GURUDEVI_MOBILE_HOST.levers, capacity, activation, hardware: false });
   const events: GovernorEvent[] = [
     { type: 'app-state', at: 1, state: 'active' },
     { type: 'preferences', at: 2, reduceMotion: c.reduceMotion, fidelity: c.fidelity },
