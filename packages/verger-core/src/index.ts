@@ -59,6 +59,18 @@ export {
   staticFloors,
   UNKNOWN_CAPACITY,
 } from './governor';
+export {
+  type AccountReading,
+  type AccountState,
+  classesOfLever,
+  estimateAccounts,
+  RESOURCE_ACCOUNTS,
+  type ResourceAccount,
+  validateWorkloads,
+  WORKLOAD_CLASSES,
+  type WorkloadClass,
+  type WorkloadSpec,
+} from './demand';
 export { defineHost, type VergerHost } from './host';
 export { chooseLeverToLower, relieves, validateLevers } from './levers';
 export {

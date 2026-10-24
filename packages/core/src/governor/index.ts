@@ -5,4 +5,5 @@
  */
 export * from '@repo/verger-core';
 export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
+export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
 export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST } from './host';

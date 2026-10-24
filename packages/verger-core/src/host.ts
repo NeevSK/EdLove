@@ -1,4 +1,5 @@
 import { DEFAULT_GOVERNOR_CONFIG, validateConfig } from './config';
+import { validateWorkloads, type WorkloadSpec } from './demand';
 import { validateLevers } from './levers';
 import { DEFAULT_RECOVERY_CONFIG, type RecoveryConfig, validateRecoveryConfig } from './recovery';
 import { policyKey, VERGER_POLICY, type VergerPolicy, validatePolicy } from './policy';
@@ -14,6 +15,8 @@ export interface VergerHost {
   /** Stable host name, used in experiment keys and telemetry. */
   readonly name: string;
   readonly levers: readonly LeverSpec[];
+  /** The host's demand registry: its work, by class, with the accounts it spends. */
+  readonly workloads: readonly WorkloadSpec[];
   readonly config: GovernorConfig;
   /** How verger recovers, heals and grows across launches on this host. */
   readonly recovery: RecoveryConfig;
@@ -28,6 +31,7 @@ export interface VergerHost {
 export interface HostDefinition {
   readonly name: string;
   readonly levers: readonly LeverSpec[];
+  readonly workloads?: readonly WorkloadSpec[];
   readonly config?: Partial<GovernorConfig>;
   readonly recovery?: Partial<RecoveryConfig>;
   readonly policy?: VergerPolicy;
@@ -41,6 +45,8 @@ export function defineHost(definition: HostDefinition): VergerHost {
     throw new Error(`Host name "${definition.name}" must be lowercase letters, digits and dashes`);
   }
   validateLevers(definition.levers);
+  const workloads = definition.workloads ?? [];
+  validateWorkloads(workloads, definition.levers);
   const config: GovernorConfig = { ...DEFAULT_GOVERNOR_CONFIG, ...definition.config };
   validateConfig(config);
   const recovery: RecoveryConfig = { ...DEFAULT_RECOVERY_CONFIG, ...definition.recovery };
@@ -50,6 +56,7 @@ export function defineHost(definition: HostDefinition): VergerHost {
   return Object.freeze({
     name: definition.name,
     levers: Object.freeze([...definition.levers]),
+    workloads: Object.freeze([...workloads]),
     config: Object.freeze(config),
     recovery: Object.freeze(recovery),
     policy,
