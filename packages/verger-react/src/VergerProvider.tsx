@@ -2,6 +2,7 @@ import {
   type CapacityFacts,
   createVerger,
   type ExperimentAssignment,
+  type FidelityPreference,
   type GovernorMode,
   type GovernorSnapshot,
   type GovernorTelemetrySink,
@@ -52,6 +53,8 @@ export interface VergerProviderProps {
    * while verger is off. Never verger's native module.
    */
   readonly facts?: () => CapacityFacts;
+  /** The user's fidelity choice; `auto` lets the phone's class and verger decide. */
+  readonly fidelity?: FidelityPreference;
   /** The experiment assignment, if any: its kill switch wins, its arm labels telemetry. */
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
@@ -75,6 +78,7 @@ export function VergerProvider({
   store,
   mode,
   facts,
+  fidelity = 'auto',
   assignment,
   telemetrySink,
   release,
@@ -95,12 +99,26 @@ export function VergerProvider({
     }),
   );
 
+  // One preferences event carries both settings, so each change re-sends the other's last value.
+  const preferences = useRef({ reduceMotion: false, fidelity });
+  const sendPreferences = () =>
+    verger.dispatch({ type: 'preferences', at: now(), ...preferences.current });
+
+  useEffect(() => {
+    if (preferences.current.fidelity === fidelity) return;
+    preferences.current = { ...preferences.current, fidelity };
+    sendPreferences();
+  });
+
   useEffect(() => {
     let live = true;
-    const reduceMotion = (value: boolean) =>
-      verger.dispatch({ type: 'preferences', at: now(), reduceMotion: value, fidelity: 'auto' });
+    const reduceMotion = (value: boolean) => {
+      preferences.current = { ...preferences.current, reduceMotion: value };
+      sendPreferences();
+    };
     const settings = () => {
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(AppState.currentState) });
+      sendPreferences();
       AccessibilityInfo.isReduceMotionEnabled()
         .then((value) => live && reduceMotion(value))
         .catch((error: unknown) => console.error('[verger] reduce-motion query failed', error));
@@ -170,6 +188,14 @@ function GlobalMotion({ verger }: { verger: Verger }) {
   );
   // Mounting the config forces reduced motion; unmounting restores what was there before.
   return forced ? <ReducedMotionConfig mode={ReduceMotion.Always} /> : null;
+}
+
+/**
+ * Verger itself, for the lab and diagnostics: `configure` and `tune` change what it may do and
+ * its thresholds live; `outcomes` shows how its moves turned out. Null outside a provider.
+ */
+export function useVerger(): Verger | null {
+  return useContext(VergerContext);
 }
 
 /** The snapshot in force (verger's, or its floors while off); null outside a provider. */

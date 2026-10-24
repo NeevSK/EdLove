@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   type CapacityFacts,
   type ExperimentAssignment,
+  type FidelityPreference,
   type GovernorTelemetrySink,
   GURUDEVI_MOBILE_HOST,
   UNKNOWN_CAPACITY,
@@ -20,6 +21,8 @@ interface GurudeviVergerProps {
   readonly mode?: RuntimeMode;
   readonly assignment?: ExperimentAssignment;
   readonly telemetrySink?: GovernorTelemetrySink;
+  /** The user's fidelity setting. */
+  readonly fidelity?: FidelityPreference;
 }
 
 /**
@@ -47,7 +50,13 @@ const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: tot
  * recovery record, and the mode Gurudevi resolves from its own build and remote settings. Off
  * unless something turns it on. A new app build restarts the recovery ladder.
  */
-export function GurudeviVerger({ children, mode, assignment, telemetrySink }: GurudeviVergerProps) {
+export function GurudeviVerger({
+  children,
+  mode,
+  assignment,
+  telemetrySink,
+  fidelity,
+}: GurudeviVergerProps) {
   // A kill switch wins over everything, whichever carries it (remote override or experiment).
   // Otherwise an explicit mode, then the assignment, then the build default (off).
   const [resolved] = useState<RuntimeMode>(() => {
@@ -61,6 +70,7 @@ export function GurudeviVerger({ children, mode, assignment, telemetrySink }: Gu
       platform={platform}
       store={VERGER_STORE}
       facts={facts}
+      fidelity={fidelity}
       mode={resolved}
       assignment={assignment}
       telemetrySink={telemetrySink}
