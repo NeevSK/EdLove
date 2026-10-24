@@ -92,3 +92,33 @@ describe('verger-p5: expansion on each lever’s own evidence', () => {
     }
   });
 });
+
+describe('verger-p5: a lever that cannot hold its expansion backs off alone', () => {
+  it('doubles only that lever’s wait; p4’s global wait is untouched', () => {
+    let state = VERGER_POLICY_P5.create({
+      at: 0,
+      levers: SAMPLE_LEVERS,
+      capacity: HIGH,
+      memorySensing: true,
+      activation: ACTIVATION_PRESETS.active,
+    });
+    let expanded: string | null = null;
+    let at = 0;
+    for (const event of story()) {
+      const before = VERGER_POLICY_P5.snapshot(state).levels;
+      state = VERGER_POLICY_P5.reduce(state, event);
+      at = event.at;
+      const after = VERGER_POLICY_P5.snapshot(state).levels;
+      expanded = Object.keys(after).find((id) => (after[id] ?? 0) < (before[id] ?? 0)) ?? null;
+      if (expanded) break;
+    }
+    if (!expanded) throw new Error('nothing expanded in the story');
+    // Strain returns at once: the frames go over budget again.
+    for (let t = at + 100; t <= at + 1600; t += 500) state = VERGER_POLICY_P5.reduce(state, frames(t, 40, 0.5));
+    const base = state.config.upgradeAfterMs;
+    const lowered = Object.keys(state.leverWait);
+    expect(lowered.length).toBeGreaterThan(0);
+    for (const id of lowered) expect(state.leverWait[id]).toBe(base * 2);
+    expect(state.upgradeAfterMs).toBe(base);
+  });
+});
