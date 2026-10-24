@@ -1,7 +1,6 @@
 import { resolveRuntimeVisualBudget, resolveWallpaperPresentation } from '@repo/core/efficiency';
 import { visualSignalsOf } from '@repo/core/governor';
 import type { WorkspaceWallpaper as WorkspaceWallpaperAsset } from '@repo/core/types';
-import { useRealityOptional } from '@repo/ui/context/RealityProvider';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { View } from '@repo/ui/primitives';
 import { useVergerSnapshot } from '@repo/verger-react';
@@ -12,7 +11,6 @@ import { AppState, Platform, StyleSheet, useWindowDimensions } from 'react-nativ
 export function WorkspaceWallpaper({
   wallpaper,
 }: Readonly<{ wallpaper?: WorkspaceWallpaperAsset }>) {
-  const { reality } = useRealityOptional();
   const visualCapabilities = useVisualCapabilities();
   const snapshot = useVergerSnapshot();
   const networkLimit = snapshot?.networkLimit;
@@ -29,33 +27,20 @@ export function WorkspaceWallpaper({
     return () => subscription.remove();
   }, []);
 
+  // Outside verger's provider nothing is known but what the app sees: no network or power limit.
   const budget = useMemo(
     () =>
-      // Inside verger's provider its readings decide; outside it, the old reality does.
-      networkLimit !== undefined && powerSaver !== undefined && visibility !== undefined
-        ? resolveRuntimeVisualBudget(
-            visualSignalsOf({ networkLimit, powerSaver, visibility }, visualCapabilities),
-          )
-        : resolveRuntimeVisualBudget({
-            deviceTier: reality.deviceTier,
-            networkQuality: reality.networkQuality,
-            isDataSaverMode: reality.isDataSaverMode,
-            isBatterySaverMode: reality.isBatterySaverMode,
-            isReducedMotionEnabled: reality.isReducedMotionEnabled,
-            isDocumentVisible: isAppVisible,
-          }),
-    [
-      networkLimit,
-      powerSaver,
-      visibility,
-      visualCapabilities,
-      isAppVisible,
-      reality.deviceTier,
-      reality.isBatterySaverMode,
-      reality.isDataSaverMode,
-      reality.isReducedMotionEnabled,
-      reality.networkQuality,
-    ],
+      resolveRuntimeVisualBudget(
+        visualSignalsOf(
+          {
+            networkLimit: networkLimit ?? 'none',
+            powerSaver: powerSaver ?? false,
+            visibility: visibility ?? (isAppVisible ? 'active' : 'background'),
+          },
+          visualCapabilities,
+        ),
+      ),
+    [networkLimit, powerSaver, visibility, visualCapabilities, isAppVisible],
   );
   const presentation = resolveWallpaperPresentation(wallpaper, budget, width);
 

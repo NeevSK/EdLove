@@ -1,10 +1,3 @@
-import {
-  reduceWorkAdmission,
-  resolveWorkAdmission,
-  type WorkAdmissionState,
-} from '@repo/core/efficiency';
-import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
-import { useReality } from '@repo/ui/context/RealityProvider';
 import { useVergerSnapshot } from '@repo/verger-react';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
@@ -31,19 +24,14 @@ const WARMUPS: readonly OptionalStartupTask[] = [
   },
 ];
 
-// Provisional recovery window; no escalation beyond one optional task is enabled.
-const WARMUP_POLICY = { recoveryWindowMs: 30_000 };
-
 export function OptionalStartupServices() {
-  const { reality } = useReality();
   // Verger admits deferrable work (the registry's `optional-startup`): none while hidden, under
   // battery saver, Data Saver or offline, or while a thread is saturated. Outside verger's
-  // provider the old admission still decides.
+  // provider nothing is known, so the work runs once the app is active and idle.
   const snapshot = useVergerSnapshot();
-  const vergerAdmits = snapshot === null ? null : snapshot.optionalConcurrency > 0;
+  const admits = snapshot === null || snapshot.optionalConcurrency > 0;
   const [appState, setAppState] = useState(AppState.currentState);
   const progress = useRef<OptionalStartupProgress>({ started: new Set(), inFlight: null });
-  const admission = useRef<WorkAdmissionState | null>(null);
 
   useEffect(() => {
     const listener = AppState.addEventListener('change', setAppState);
@@ -51,49 +39,17 @@ export function OptionalStartupServices() {
   }, []);
 
   useEffect(() => {
-    if (vergerAdmits === false) return;
-    if (appState !== 'active' || (vergerAdmits === null && reality.isBatterySaverMode)) return;
-    let totalMemory: number | null | undefined;
-    try {
-      totalMemory = coreRuntime.device.getTotalMemory?.();
-    } catch (error) {
-      console.warn(
-        '[startup] Capacity signal unavailable; retaining conservative warmup budget:',
-        error,
-      );
-    }
-    const capacityKnown =
-      totalMemory !== null &&
-      totalMemory !== undefined &&
-      Number.isFinite(totalMemory) &&
-      totalMemory > 0;
+    if (!admits || appState !== 'active') return;
     return scheduleOptionalStartupWork(WARMUPS, progress.current, {
       requestFrame: (callback) => requestAnimationFrame(callback),
       cancelFrame: cancelAnimationFrame,
       requestIdle: (callback) => requestIdleCallback(callback),
       cancelIdle: cancelIdleCallback,
-      canRun: () => {
-        if (vergerAdmits !== null) return vergerAdmits && AppState.currentState === 'active';
-        // This phase means the optional warmup lane reached a frame + JS idle
-        // boundary; it is not the screen's Observe interactive/TTFD signal.
-        admission.current = reduceWorkAdmission(
-          admission.current,
-          {
-            capacityKnown,
-            phase: 'settled',
-            appState: AppState.currentState === 'active' ? 'active' : 'background',
-            pressure: 'unknown',
-            observedAt: performance.now(),
-          },
-          WARMUP_POLICY,
-        );
-        return (
-          !reality.isBatterySaverMode && resolveWorkAdmission(admission.current).optionalWorkAllowed
-        );
-      },
+      // A frame and a JS idle boundary have passed; verger's admission is re-read through `admits`.
+      canRun: () => AppState.currentState === 'active',
       onError: (id, error) => console.warn(`[startup] Optional ${id} unavailable:`, error),
     });
-  }, [appState, reality.isBatterySaverMode, vergerAdmits]);
+  }, [appState, admits]);
 
   return null;
 }

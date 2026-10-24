@@ -1,29 +1,12 @@
-import type { VisualCapabilities } from '../types';
-import { applyVisualSafeMode } from '../visualSafety';
+import { experienceOf } from '@repo/core/governor';
+import { isVisualSafeModeEnabled } from '../visualSafety';
 
-const capabilities: VisualCapabilities = {
-  deviceTier: 'high',
-  effectiveFidelity: 'high',
-  quality: 'full',
-  allowAmbientEffects: true,
-  allowBlur: true,
-  allowRichAnimation: true,
-  allowSubtleAnimation: true,
-  imageCachePolicy: 'memory-disk',
-  imageDecodeFormat: 'argb',
-  shouldPrefetchAssets: true,
-  maxCelebrationParticles: 200,
-  experience: {
-    motion: 'rich',
-    visualEffects: 'rich',
-    haptics: 'refined',
-    sound: 'essential',
-    celebration: 'rich',
-    maxParticles: 200,
-    maxConcurrentSounds: 1,
-    allowAssetPrefetch: true,
-  },
-};
+/** A high phone with nothing lowered: everything the safe mode must take away. */
+const capabilities = () =>
+  experienceOf(
+    { levels: {}, capacityClass: 'high' },
+    { fidelity: 'auto', safeMode: isVisualSafeModeEnabled() },
+  );
 
 describe('visual safe mode', () => {
   afterEach(() => {
@@ -31,9 +14,14 @@ describe('visual safe mode', () => {
     delete process.env.EXPO_PUBLIC_GURUDEVI_VISUAL_SAFE_MODE;
   });
 
+  it('is off unless something turns it on', () => {
+    expect(isVisualSafeModeEnabled()).toBe(false);
+    expect(capabilities().allowBlur).toBe(true);
+  });
+
   it('removes expensive layers without changing the device identity', () => {
     globalThis.__GURUDEVI_VISUAL_SAFE_MODE__ = true;
-    const safe = applyVisualSafeMode(capabilities);
+    const safe = capabilities();
 
     expect(safe.deviceTier).toBe('high');
     expect(safe.allowBlur).toBe(false);
@@ -44,8 +32,6 @@ describe('visual safe mode', () => {
 
   it('also honors the deployment-level environment override', () => {
     process.env.EXPO_PUBLIC_GURUDEVI_VISUAL_SAFE_MODE = 'true';
-    const safe = applyVisualSafeMode(capabilities);
-
-    expect(safe.quality).toBe('essential');
+    expect(capabilities().quality).toBe('essential');
   });
 });

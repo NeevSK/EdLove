@@ -9,7 +9,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { SensoryPreferences } from './experiencePolicy';
+
+/** The user's sensory choices. Verger's view reads them; no lever owns them. */
+export interface SensoryPreferences {
+  hapticsEnabled?: boolean;
+  soundEnabled?: boolean;
+  quietMode?: boolean;
+}
 
 export type SensoryPreferenceKey = keyof Required<SensoryPreferences>;
 

@@ -46,7 +46,7 @@ async function read(
   return latest;
 }
 
-describe('useVisualCapabilities reads verger inside its provider', () => {
+describe('useVisualCapabilities reads verger', () => {
   it('a 4 GB phone is low under verger, even with verger off (its floors)', async () => {
     const capabilities = await read(3.7 * GIB, true);
     expect(capabilities.deviceTier).toBe('low');
@@ -68,8 +68,9 @@ describe('useVisualCapabilities reads verger inside its provider', () => {
     expect(capabilities.experience.motion).toBe('essential');
   });
 
-  it('outside a verger provider the old governor still answers', async () => {
-    // The old governor's default reality is a medium phone.
-    expect((await read(null, false)).deviceTier).toBe('medium');
+  it('outside a verger provider nothing is known: no floor, only the settings', async () => {
+    const capabilities = await read(null, false);
+    expect(capabilities.deviceTier).toBe('medium');
+    expect(capabilities.quality).toBe('full');
   });
 });

@@ -1,4 +1,4 @@
-import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import { accountPin, coreRuntime, cryptoManager, storage, useStore } from '@repo/core/logic';
 import { authAPI } from '@repo/core/api/auth';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
@@ -37,6 +37,8 @@ import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import type { NetworkLimit } from '@repo/core/governor';
+import { useVergerSnapshot } from '@repo/verger-react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, TextInput } from 'react-native';
 
@@ -201,6 +203,15 @@ function SectionHeader({ title, description }: { title: string; description?: st
 
 SectionHeader.displayName = 'SectionHeader';
 
+/** Verger's network limit, as the device panel shows it (diagnostic, not translated, as before). */
+const NETWORK_LIMIT_LABEL: Readonly<Record<NetworkLimit, string>> = {
+  none: 'Good',
+  slow: 'Slow',
+  unstable: 'Unstable',
+  'data-saver': 'Data Saver',
+  offline: 'Offline',
+};
+
 const AppSettingsScreen = memo(function AppSettingsScreen({
   navigation,
 }: {
@@ -221,12 +232,22 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     setLanguage,
     isVeilActive,
     toggleVeil,
-    reality,
     enableLivingTheme,
     setEnableLivingTheme,
     visualCapabilities,
   } = useEnvironment();
   const { preferences: sensoryPreferences, setPreference } = useSensoryPreferences();
+  const networkLimit = useVergerSnapshot()?.networkLimit ?? null;
+  const isOnline = useStore((state) => state.isOnline);
+  const totalMemoryGB = useMemo(() => {
+    try {
+      const bytes = coreRuntime.device.getTotalMemory?.();
+      return typeof bytes === 'number' && bytes > 0 ? bytes / 1024 ** 3 : null;
+    } catch (error) {
+      console.warn('[settings] total memory unavailable', error);
+      return null;
+    }
+  }, []);
   const { emit: emitFeedback } = useFeedbackOptional();
   const _isDemoMode = useStore((state) => state.isDemoMode);
   const _setDemoMode = useStore((state) => state.setDemoMode);
@@ -637,7 +658,8 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
       {
         id: 'adaptive',
         label: 'Adaptive Smart (Recommended)',
-        description: 'Full Global Header on overview hub, focused task bar with back button in sub-tasks.',
+        description:
+          'Full Global Header on overview hub, focused task bar with back button in sub-tasks.',
         icon: <Sparkles size={20} color={accent.action} />,
         isSelected: navPreferences.headerStyle === 'adaptive',
       },
@@ -651,7 +673,8 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
       {
         id: 'classic_global',
         label: 'Full Global Header Always',
-        description: 'Spacious sanctuary header with prominent title and avatar greeting everywhere.',
+        description:
+          'Spacious sanctuary header with prominent title and avatar greeting everywhere.',
         icon: <Layers size={20} color={accent.action} />,
         isSelected: navPreferences.headerStyle === 'classic_global',
       },
@@ -937,10 +960,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
             navPreferences.headerStyle === 'adaptive'
               ? 'Adaptive Smart (Recommended)'
               : navPreferences.headerStyle === 'compact_domain'
-              ? 'Compact Domain Bar'
-              : navPreferences.headerStyle === 'classic_global'
-              ? 'Full Global Header Always'
-              : 'Active Sub-Tabs Only'
+                ? 'Compact Domain Bar'
+                : navPreferences.headerStyle === 'classic_global'
+                  ? 'Full Global Header Always'
+                  : 'Active Sub-Tabs Only'
           }
           onPress={() => setShowHeaderModal(true)}
           accessibilityLabel="Header layout style"
@@ -950,7 +973,9 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
         <Box className="bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px]">
           <HStack className="gap-4 items-center justify-between">
             <VStack className="flex-1 gap-1">
-              <Text className="text-base font-semibold text-phase-primary">Active Sub-Tabs Strip</Text>
+              <Text className="text-base font-semibold text-phase-primary">
+                Active Sub-Tabs Strip
+              </Text>
               <Text className="text-sm text-phase-secondary">
                 Display running tasks and activities beneath the header for fluid switching.
               </Text>
@@ -974,9 +999,12 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
         <Box className="bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px]">
           <HStack className="gap-4 items-center justify-between">
             <VStack className="flex-1 gap-1">
-              <Text className="text-base font-semibold text-phase-primary">Catalog Opens in Sub-Tab</Text>
+              <Text className="text-base font-semibold text-phase-primary">
+                Catalog Opens in Sub-Tab
+              </Text>
               <Text className="text-sm text-phase-secondary">
-                Selecting a feature from the bottom tab catalog automatically adds it as an active sub-tab.
+                Selecting a feature from the bottom tab catalog automatically adds it as an active
+                sub-tab.
               </Text>
             </VStack>
             <Switch
@@ -992,7 +1020,9 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
               accessible={true}
               accessibilityRole="switch"
               accessibilityLabel="Open catalog items in sub-tabs"
-              accessibilityState={{ checked: navPreferences.catalogDefaultAction === 'open_in_subtab' }}
+              accessibilityState={{
+                checked: navPreferences.catalogDefaultAction === 'open_in_subtab',
+              }}
             />
           </HStack>
         </Box>
@@ -1000,9 +1030,12 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
         <Box className="bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px]">
           <HStack className="gap-4 items-center justify-between">
             <VStack className="flex-1 gap-1">
-              <Text className="text-base font-semibold text-phase-primary">Auto-Collapse on Scroll</Text>
+              <Text className="text-base font-semibold text-phase-primary">
+                Auto-Collapse on Scroll
+              </Text>
               <Text className="text-sm text-phase-secondary">
-                Collapse header and bottom tabs while scrolling down; flick up or reach the top to reveal.
+                Collapse header and bottom tabs while scrolling down; flick up or reach the top to
+                reveal.
               </Text>
             </VStack>
             <Switch
@@ -1139,10 +1172,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
                   }}
                   className="flex-1 text-phase-primary text-sm h-full"
                 />
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setShowAiKey(!showAiKey)}
-                >
+                <Pressable accessibilityRole="button" onPress={() => setShowAiKey(!showAiKey)}>
                   <Box className="text-phase-secondary">
                     {showAiKey ? <EyeOff size={20} /> : <Eye size={20} />}
                   </Box>
@@ -1297,22 +1327,27 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
             <HStack className="justify-between items-center">
               <Text className="text-phase-secondary">{t('settings.device.tier')}</Text>
               <Text className="text-phase-primary font-semibold">
-                {reality.deviceTier.charAt(0).toUpperCase() + reality.deviceTier.slice(1)}
+                {visualCapabilities.deviceTier.charAt(0).toUpperCase() +
+                  visualCapabilities.deviceTier.slice(1)}
               </Text>
             </HStack>
             <HStack className="justify-between items-center">
               <Text className="text-phase-secondary">{t('settings.device.memory')}</Text>
               <Text className="text-phase-primary font-semibold">
-                {reality.totalMemoryGB.toFixed(1)} GB
+                {totalMemoryGB === null ? '—' : `${totalMemoryGB.toFixed(1)} GB`}
               </Text>
             </HStack>
             <HStack className="justify-between items-center">
               <Text className="text-phase-secondary">{t('settings.device.network')}</Text>
               <Text className="text-phase-primary font-semibold">
-                {reality.networkQuality.charAt(0).toUpperCase() + reality.networkQuality.slice(1)}
+                {networkLimit === null
+                  ? isOnline
+                    ? 'Online'
+                    : 'Offline'
+                  : NETWORK_LIMIT_LABEL[networkLimit]}
               </Text>
             </HStack>
-            {reality.isDataSaverMode && (
+            {networkLimit === 'data-saver' && (
               <Box className="bg-phase-world p-3 rounded-xl border border-phase-border flex-row items-center gap-2">
                 <Box className="text-phase-primary">
                   <Info size={16} />

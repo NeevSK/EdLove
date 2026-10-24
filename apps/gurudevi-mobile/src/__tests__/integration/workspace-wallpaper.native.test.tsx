@@ -3,23 +3,22 @@ import { WorkspaceWallpaper } from '@repo/ui/components/workspace/WorkspaceWallp
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 
 const runtime = vi.hoisted(() => ({
-  reality: {
-    deviceTier: 'medium' as 'low' | 'medium' | 'high',
-    totalMemoryGB: 4,
-    networkQuality: 'good' as 'good' | 'fair' | 'poor' | 'offline' | 'excellent',
-    isDataSaverMode: false,
-    isBatterySaverMode: false,
-    isReducedMotionEnabled: false,
+  snapshot: {
+    networkLimit: 'none' as 'none' | 'slow' | 'unstable' | 'data-saver' | 'offline',
+    powerSaver: false,
+    visibility: 'active' as 'active' | 'inactive' | 'background',
   },
   imageCapabilities: {
+    deviceTier: 'medium' as 'low' | 'medium' | 'high',
     quality: 'reduced' as 'full' | 'reduced' | 'essential',
     imageCachePolicy: 'disk' as 'disk' | 'memory-disk',
     imageDecodeFormat: 'rgb' as 'rgb' | 'argb',
+    experience: { motion: 'refined' as 'off' | 'essential' | 'refined' | 'rich' },
   },
 }));
 
-vi.mock('@repo/ui/context/RealityProvider', () => ({
-  useRealityOptional: () => ({ reality: runtime.reality }),
+vi.mock('@repo/verger-react', () => ({
+  useVergerSnapshot: () => runtime.snapshot,
 }));
 
 vi.mock('@repo/ui/context/VisualCapabilities', () => ({
@@ -54,11 +53,10 @@ describe('WorkspaceWallpaper native budget integration (G3)', () => {
   afterEach(() => {
     act(() => renderer?.unmount());
     renderer = undefined;
-    runtime.reality.deviceTier = 'medium';
-    runtime.reality.networkQuality = 'good';
-    runtime.reality.isBatterySaverMode = false;
-    runtime.reality.isDataSaverMode = false;
-    runtime.reality.isReducedMotionEnabled = false;
+    runtime.snapshot.networkLimit = 'none';
+    runtime.snapshot.powerSaver = false;
+    runtime.snapshot.visibility = 'active';
+    runtime.imageCapabilities.deviceTier = 'medium';
     runtime.imageCapabilities.quality = 'reduced';
   });
 
@@ -75,7 +73,7 @@ describe('WorkspaceWallpaper native budget integration (G3)', () => {
   });
 
   it('removes wallpaper rendering for a low-memory device', () => {
-    runtime.reality.deviceTier = 'low';
+    runtime.imageCapabilities.deviceTier = 'low';
 
     act(() => {
       renderer = create(<WorkspaceWallpaper wallpaper={wallpaper} />);
@@ -85,7 +83,7 @@ describe('WorkspaceWallpaper native budget integration (G3)', () => {
   });
 
   it('removes wallpaper rendering while battery saver is active', () => {
-    runtime.reality.isBatterySaverMode = true;
+    runtime.snapshot.powerSaver = true;
 
     act(() => {
       renderer = create(<WorkspaceWallpaper wallpaper={wallpaper} />);
