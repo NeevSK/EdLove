@@ -101,7 +101,14 @@ export {
   validateRecoveryConfig,
   type VergerRecord,
 } from './recovery';
-export { policyKey, VERGER_POLICY, type VergerPolicy, validatePolicy } from './policy';
+export {
+  canonicalLadderKey,
+  ladderKey,
+  policyKey,
+  VERGER_POLICY,
+  type VergerPolicy,
+  validatePolicy,
+} from './policy';
 export { replayGovernor } from './replay';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {

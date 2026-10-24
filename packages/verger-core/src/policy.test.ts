@@ -3,7 +3,14 @@ import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { DEFAULT_GOVERNOR_CONFIG } from './config';
 import { createGovernor, reduceGovernor } from './governor';
 import { defineHost } from './host';
-import { policyKey, VERGER_POLICY, type VergerPolicy, validatePolicy } from './policy';
+import {
+  canonicalLadderKey,
+  ladderKey,
+  policyKey,
+  VERGER_POLICY,
+  type VergerPolicy,
+  validatePolicy,
+} from './policy';
 import { replayGovernor } from './replay';
 import type { CapacityFacts, GovernorEvent, GovernorSnapshot } from './types';
 import { createVerger, type VergerPlatform } from './verger';
@@ -88,6 +95,21 @@ describe('policy as a swappable unit', () => {
   it('rejects a policy with a bad name or version', () => {
     expect(() => validatePolicy({ ...VERGER_POLICY, id: 'Bad Name' })).toThrow();
     expect(() => validatePolicy({ ...VERGER_POLICY, version: 0 })).toThrow();
+  });
+});
+
+describe('the ladder key, a persisted format', () => {
+  it('is pinned: changing it needs a migration and a new pin', () => {
+    expect(ladderKey(VERGER_POLICY, 'abc', '1.2.0+34')).toBe(`verger-p${VERGER_POLICY.version}:abc:1.2.0+34`);
+    expect(ladderKey(EAGER, 'abc', '1')).toBe('eager-p1:abc:1');
+  });
+
+  it('reads keys from before policies were named as verger\'s own, and leaves others alone', () => {
+    expect(canonicalLadderKey('p4:abc:1.0.0')).toBe('verger-p4:abc:1.0.0');
+    expect(canonicalLadderKey('verger-p4:abc:1.0.0')).toBe('verger-p4:abc:1.0.0');
+    expect(canonicalLadderKey('eager-p1:abc:1')).toBe('eager-p1:abc:1');
+    // A release that merely contains "p4:" is not a legacy prefix.
+    expect(canonicalLadderKey('verger-p5:abc:p4:x')).toBe('verger-p5:abc:p4:x');
   });
 });
 

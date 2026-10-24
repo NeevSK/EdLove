@@ -30,7 +30,7 @@ import {
   type SessionOutcome,
   type VergerRecord,
 } from './recovery';
-import { policyKey } from './policy';
+import { canonicalLadderKey, ladderKey as ladderKeyOf } from './policy';
 import { createSessionLedger, type SessionLedger } from './session';
 import {
   createGovernorTelemetry,
@@ -193,8 +193,7 @@ export function createVerger(options: VergerOptions): Verger {
     marker: `verger:${host.name}:session`,
     flight: `verger:${host.name}:flight`,
   };
-  // A new policy, config or release starts the ladder over.
-  const ladderKey = `${policyKey(host.policy)}:${host.configHash}:${options.release}`;
+  const ladderKey = ladderKeyOf(host.policy, host.configHash, options.release);
 
   let plan: LaunchPlan | null = null;
   let controller: RuntimeController | null = null;
@@ -282,8 +281,8 @@ export function createVerger(options: VergerOptions): Verger {
     const texts = await readAll([keys.marker, keys.record, keys.flight]);
     if (!texts) return offPlan('store-unreadable');
     const [markerText = null, recordText = null, flightText = null] = texts;
-    let previous = parseMarker(markerText);
-    const parsed = lastRecord ?? parseRecord(recordText);
+    let previous = migrateMarker(parseMarker(markerText));
+    const parsed = lastRecord ?? migrateRecord(parseRecord(recordText));
     const corrupt = recordText !== null && parsed === null;
     let base =
       parsed ??
@@ -511,6 +510,11 @@ export function createVerger(options: VergerOptions): Verger {
   };
   return verger;
 }
+
+const migrateMarker = (marker: SessionMarker | null): SessionMarker | null =>
+  marker && { ...marker, key: canonicalLadderKey(marker.key) };
+const migrateRecord = (record: VergerRecord | null): VergerRecord | null =>
+  record && { ...record, key: canonicalLadderKey(record.key) };
 
 function deviceStratum(capacity: CapacityFacts, sensing: boolean): Record<string, TelemetryValue> {
   const bytes = capacity.totalMemoryBytes;

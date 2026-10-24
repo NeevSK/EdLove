@@ -351,6 +351,24 @@ describe('verger launch', () => {
     expect(d.calls.filter((c) => c.startsWith('refresh') || c.startsWith('boost'))).toEqual([]);
   });
 
+  it('a record filed under the unnamed key format keeps its rung: migrated, not reset', async () => {
+    const d = device();
+    const store = asyncStore();
+    // Written before policies had names: `p4:<config>:<release>`.
+    const record = freshRecord(`p4:${HOST.configHash}:1.0.0`, null, HOST.recovery);
+    store.data.set(
+      'verger:sample:record',
+      JSON.stringify({ ...record, ladder: { ...record.ladder, rung: 2 } }),
+    );
+    const v = launcher(d, store);
+    const plan = await v.start();
+    expect(plan.rung).toBe(2);
+    expect(plan.hardware).toBe(false);
+    await v.stop();
+    const saved = parseRecord(store.data.get('verger:sample:record'));
+    expect(saved?.key).toBe(`verger-p4:${HOST.configHash}:1.0.0`);
+  });
+
   it('a second instance starts only after the first has stopped (one native singleton)', async () => {
     const d = device();
     const store = asyncStore();

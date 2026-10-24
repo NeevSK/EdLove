@@ -45,6 +45,25 @@ export const VERGER_POLICY: VergerPolicy<GovernorState> = {
 export const policyKey = (policy: Pick<VergerPolicy, 'id' | 'version'>): string =>
   `${policy.id}-p${policy.version}`;
 
+/**
+ * The key verger's memory on a device is filed under: a new policy, config or release starts the
+ * recovery ladder over. This is a persisted format; changing it needs a migration below and a
+ * new pin in policy.test.ts.
+ */
+export const ladderKey = (policy: VergerPolicy, configHash: string, release: string): string =>
+  `${policyKey(policy)}:${configHash}:${release}`;
+
+/** Keys written before policies had names (`p4:hash:release`): only verger's own policy existed. */
+const UNNAMED = /^p(\d+):/;
+
+/**
+ * Reads a stored key in today's format. A key from before policies were named is verger's own
+ * policy's, so it is renamed rather than treated as a different policy (which would reset the
+ * ladder and lose a rung the device earned).
+ */
+export const canonicalLadderKey = (stored: string): string =>
+  stored.replace(UNNAMED, `${VERGER_POLICY.id}-p$1:`);
+
 const ID = /^[a-z][a-z0-9-]{1,40}$/;
 
 export function validatePolicy(policy: VergerPolicy): void {
