@@ -98,6 +98,9 @@ export interface AccountReading {
 
 const UNKNOWN: AccountReading = { state: 'unknown', confidence: 0, source: 'no signal' };
 
+/** Below this downstream estimate a link is tight (provisional; the platform's estimate is coarse). */
+const SLOW_LINK_KBPS = 1_000;
+
 /**
  * Reads the accounts from a snapshot and the device's facts. Confidence reflects how direct the
  * signal is on this device (thermal headroom from Android 11, GPU time from Android 12); its
@@ -159,5 +162,17 @@ export function estimateAccounts(
       }
     : UNKNOWN;
 
-  return { cpu, gpu, memory, energy, thermal, network: UNKNOWN, storage: UNKNOWN };
+  const n = snapshot.network;
+  const network: AccountReading =
+    !sense.network || n.transport === null
+      ? UNKNOWN
+      : n.transport === 'none' || n.validated === false
+        ? { state: 'overdrawn', confidence: 0.8, source: 'no validated network' }
+        : n.dataSaver === 'enabled'
+          ? { state: 'overdrawn', confidence: 0.9, source: 'Data Saver restricts this app' }
+          : n.metered === true || (n.downKbps !== null && n.downKbps < SLOW_LINK_KBPS)
+            ? { state: 'tight', confidence: 0.7, source: n.metered === true ? 'metered network' : 'slow link' }
+            : { state: 'ample', confidence: n.validated === true ? 0.8 : 0.5, source: `${n.transport} network` };
+
+  return { cpu, gpu, memory, energy, thermal, network, storage: UNKNOWN };
 }

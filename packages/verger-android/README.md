@@ -10,12 +10,21 @@ and actuates; every decision is made by `@repo/verger-core` in JavaScript. It kn
 | Display | `DisplayModes.kt` | Chooses the display mode for a refresh cap without changing resolution. |
 | Mappings | `Signals.kt` | Trim levels, thermal status, headroom validity and poll pacing. |
 | Sensor set | `Sensors.kt` | Which sensors run, from verger's activation; parsed on the calling thread. |
+| Network | `NetworkSignals.kt` | Transport, validation, metering, bucketed bandwidth and Data Saver to payloads; held to `contract/native-events.json`. |
 | Levers | `HardwareLevers.kt` | Refresh cap (preferred display mode) and the ADPF hint session; released on stop, destroy and reload. |
 | Sensors | `VergerSense.kt` | FrameMetrics stages, thermal, memory, battery saver, thread load; one thread; only changes cross; a sensor switched off registers nothing. |
-| Binding | `VergerModule.kt` | Expo Modules API: `readCapacity`, `start`, `setSensors`, `stop`, `setRefreshCap`, `setCpuBoost`, `readTotals`, seven events. |
+| Binding | `VergerModule.kt` | Expo Modules API: `readCapacity`, `start`, `setSensors`, `stop`, `setRefreshCap`, `setCpuBoost`, `readTotals`, eight events. |
 | JS | `index.ts`, `src/mapping.ts` | `createVergerAndroidPort()`: a `RuntimePort` for verger-core. |
 
 A host app adds this package as a dependency; Expo autolinking finds `expo-module.config.json`.
+The module declares `ACCESS_NETWORK_STATE` (install-time, no prompt) for network sensing.
+
+## The native event contract
+
+`contract/native-events.json` holds what crosses to JavaScript. Kotlin (`NetworkContractTest.kt`,
+system property `verger.contract`) builds each payload from its inputs; TypeScript
+(`mapping.test.ts`) maps each payload to its event. A change on one side that the other does not
+share fails one of them.
 
 ## Parity
 

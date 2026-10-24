@@ -1,11 +1,13 @@
 import type {
   CapacityFacts,
+  DataSaver,
   ExitReason,
   ExitRecord,
   FrameStages,
   FrameState,
   GovernorConfig,
   GovernorEvent,
+  NetworkTransport,
   SensorId,
   ThermalStatus,
   ThreadRoleName,
@@ -49,6 +51,14 @@ export interface NativeMemory {
   readonly thresholdMb: number;
   readonly lowMemory: boolean;
   readonly rssMb: number | null;
+}
+/** The default network as `NetworkSignals.kt` builds it; bandwidth is bucketed natively. */
+export interface NativeNetwork {
+  readonly transport: NetworkTransport;
+  readonly validated: boolean | null;
+  readonly metered: boolean | null;
+  readonly downKbps: number | null;
+  readonly dataSaver: DataSaver | null;
 }
 /** What a hardware lever actually did; for diagnostics and telemetry, not for decisions. */
 export interface NativeLever {
@@ -128,6 +138,7 @@ export type VergerAndroidEvents = {
   onThreadLoad: (event: NativeThreadLoad) => void;
   onMemory: (event: NativeMemory) => void;
   onLever: (event: NativeLever) => void;
+  onNetwork: (event: NativeNetwork) => void;
 };
 
 /** What `start` accepts; every threshold is taken from the governor's own config. */
@@ -193,13 +204,14 @@ export function toCapacityFacts(native: NativeCapacity | null | undefined): Capa
   };
 }
 
-type NativeEvent =
+export type NativeEvent =
   | { readonly name: 'onFrameWindow'; readonly payload: NativeFrameWindow }
   | { readonly name: 'onThermal'; readonly payload: NativeThermal }
   | { readonly name: 'onMemoryTrim'; readonly payload: NativeMemoryTrim }
   | { readonly name: 'onPowerSaver'; readonly payload: NativePowerSaver }
   | { readonly name: 'onThreadLoad'; readonly payload: NativeThreadLoad }
-  | { readonly name: 'onMemory'; readonly payload: NativeMemory };
+  | { readonly name: 'onMemory'; readonly payload: NativeMemory }
+  | { readonly name: 'onNetwork'; readonly payload: NativeNetwork };
 
 /**
  * Native payload to governor event. `at` is the JavaScript clock at receipt: the governor's
@@ -238,6 +250,16 @@ export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
         availableMb: event.payload.availableMb,
         thresholdMb: event.payload.thresholdMb,
         lowMemory: event.payload.lowMemory,
+      };
+    case 'onNetwork':
+      return {
+        type: 'network',
+        at,
+        transport: event.payload.transport,
+        validated: event.payload.validated,
+        metered: event.payload.metered,
+        downKbps: finite(event.payload.downKbps),
+        dataSaver: event.payload.dataSaver,
       };
   }
 }

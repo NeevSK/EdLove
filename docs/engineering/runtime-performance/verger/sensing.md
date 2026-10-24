@@ -80,8 +80,8 @@ check at minSdk 28 flags any call above the minimum.
 | JS long tasks | React Native `PerformanceObserver` | RN 0.88 | push | none | built |
 | Battery saver | `PowerManager.isPowerSaveMode`, broadcast | 28+ | on change | none needed | built |
 | Visibility, touches, reduce motion | React Native `AppState`, responder capture, `AccessibilityInfo` | — | on change | none needed | built |
-| **Network** | `ConnectivityManager` default network callback; `NetworkCapabilities` (transport, validated, not metered, downstream bandwidth) | capabilities class 21; callback and field levels *verify* | on change | none (unknown means unknown) | missing (task 2) |
-| **Data Saver** | `ConnectivityManager.getRestrictBackgroundStatus` (disabled, whitelisted, enabled) | 24 (verified) | on change | none | missing (task 2) |
+| **Network** | `ConnectivityManager` default network callback; `NetworkCapabilities` (transport, validated, not metered, downstream bandwidth) | capabilities class 21; callback and field levels *verify* (all at or below minSdk 28 is enough) | on change; bandwidth bucketed to powers of two | none (unknown means unknown) | **in code** (`NetworkSignals.kt`, `VergerSense.kt`): contract-tested on the JVM and in TypeScript; Android part uncompiled until the first Gradle build |
+| **Data Saver** | `ConnectivityManager.getRestrictBackgroundStatus` (disabled, whitelisted, enabled) | 24 (verified) | on change (`ACTION_RESTRICT_BACKGROUND_CHANGED`) | none | **in code**, as above |
 | **Battery level, charging** | `ACTION_BATTERY_CHANGED` sticky broadcast; `BatteryManager` | 28+; property levels *verify* | on change | none | missing |
 | **Battery temperature** | `BatteryManager.EXTRA_TEMPERATURE` (unit *verify*) | 28+ | with battery | — | missing |
 | **Heat fallback below API 29** | battery temperature, and frame cost drifting up at unchanged work | 28 | derived | — | missing |
@@ -103,7 +103,8 @@ check at minSdk 28 flags any call above the minimum.
 
 ## Order of work
 
-1. Network and Data Saver (task 2): the largest unseen disturbance on prepaid data.
+1. ~~Network and Data Saver~~ (in code 2026-10-24; levers declare `whenMetered`, `whenDataSaver`,
+   `whenOffline`; Data Saver and offline admit no optional work, metered admits one at a time).
 2. Battery level, charging and temperature, with the heat fallback below API 29.
 3. Storage.
 4. Verger's own cost (loop 2, phase 2).

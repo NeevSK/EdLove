@@ -192,6 +192,23 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
     }),
   },
   { weight: 1, arbitrary: fc.record({ type: fc.constant('power' as const), saver: fc.boolean() }) },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('network' as const),
+      transport: fc.option(
+        fc.constantFrom('wifi' as const, 'cellular' as const, 'ethernet' as const, 'other' as const, 'none' as const),
+        { nil: null },
+      ),
+      validated: fc.option(fc.boolean(), { nil: null }),
+      metered: fc.option(fc.boolean(), { nil: null }),
+      downKbps: fc.option(fc.integer({ min: 0, max: 200_000 }), { nil: null }),
+      dataSaver: fc.option(
+        fc.constantFrom('disabled' as const, 'allowlisted' as const, 'enabled' as const),
+        { nil: null },
+      ),
+    }),
+  },
   { weight: 2, arbitrary: fc.constant({ type: 'interaction' as const }) },
   {
     weight: 1,

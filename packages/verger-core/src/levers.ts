@@ -64,6 +64,9 @@ export function validateLevers(levers: readonly LeverSpec[]): void {
     inRange('whenHidden', lever.whenHidden, 0);
     inRange('whenIdle', lever.whenIdle, 0);
     inRange('whenWarm', lever.whenWarm, 0);
+    inRange('whenMetered', lever.whenMetered, 0);
+    inRange('whenDataSaver', lever.whenDataSaver, 0);
+    inRange('whenOffline', lever.whenOffline, 0);
     for (const need of lever.requires ?? [])
       inRange(`requires ${need.capability}`, need.otherwiseLevel, 1);
     if (lever.actuator !== undefined) {

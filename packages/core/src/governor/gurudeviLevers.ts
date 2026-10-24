@@ -97,10 +97,14 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     maxLevel: 2,
     visualImpact: 'low',
     target: 'energy',
+    alsoRelieves: ['network'],
     ambient: false,
     motion: false,
     levels: ['prefetch next screens', 'prefetch on idle only', 'no prefetch'],
     whenHidden: 2,
+    whenMetered: 1,
+    whenDataSaver: 2,
+    whenOffline: 2,
   },
 ];
 

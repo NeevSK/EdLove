@@ -31,6 +31,7 @@ import type {
   IndexerAction,
   LeverSpec,
   LeverTarget,
+  NetworkState,
   ThermalLevel,
   ThermalStatus,
   TrimSeverity,
@@ -51,6 +52,19 @@ export const UNKNOWN_CAPACITY: CapacityFacts = {
 };
 
 const LOW_MEMORY_DEVICE_BYTES = 3 * 1024 * 1024 * 1024;
+
+export const UNKNOWN_NETWORK: NetworkState = {
+  transport: null,
+  validated: null,
+  metered: null,
+  downKbps: null,
+  dataSaver: null,
+};
+
+/** No usable network: none at all, or one the platform could not validate. Unknown is not offline. */
+const offline = (n: NetworkState) => n.transport === 'none' || n.validated === false;
+/** Data Saver restricts this app; allowlisted means the user exempted it. */
+const savingData = (n: NetworkState) => n.dataSaver === 'enabled';
 
 export interface GovernorState {
   readonly config: GovernorConfig;
@@ -85,6 +99,7 @@ export interface GovernorState {
   readonly memorySensing: boolean;
 
   readonly powerSaver: boolean;
+  readonly network: NetworkState;
   readonly visibility: AppVisibility;
   readonly lastInteractionAt: number;
   readonly reduceMotion: boolean;
@@ -182,6 +197,7 @@ export function createGovernor(options: CreateGovernorOptions): GovernorState {
     memoryLatch: NO_MEMORY_LATCH,
     memorySensing: options.memorySensing ?? false,
     powerSaver: false,
+    network: UNKNOWN_NETWORK,
     visibility: 'active',
     lastInteractionAt: options.at,
     reduceMotion: false,
@@ -277,8 +293,12 @@ export function staticFloors(state: GovernorState): Record<string, number> {
       raise(lever.id, Math.min(1, max));
   }
   // Rules each lever declares for itself; the reducer names no lever.
+  const network = state.network;
   for (const lever of state.levers) {
     if (hidden && lever.whenHidden !== undefined) raise(lever.id, lever.whenHidden);
+    if (network.metered === true && lever.whenMetered !== undefined) raise(lever.id, lever.whenMetered);
+    if (savingData(network) && lever.whenDataSaver !== undefined) raise(lever.id, lever.whenDataSaver);
+    if (offline(network) && lever.whenOffline !== undefined) raise(lever.id, lever.whenOffline);
     for (const need of lever.requires ?? []) {
       if (lacks(state, need.capability, capacityReported)) raise(lever.id, need.otherwiseLevel);
     }
@@ -380,7 +400,7 @@ function forgetSensor(state: GovernorState, sensor: SensorId): GovernorState {
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'network':
-      return state;
+      return { ...state, network: UNKNOWN_NETWORK };
   }
 }
 
@@ -757,6 +777,17 @@ function step(state: GovernorState, event: GovernorEvent): GovernorState {
       next = { ...next, config: input.config, upgradeAfterMs: input.config.upgradeAfterMs };
       break;
     case 'network':
+      next = {
+        ...next,
+        network: {
+          transport: input.transport,
+          validated: input.validated,
+          metered: input.metered,
+          downKbps: input.downKbps,
+          dataSaver: input.dataSaver,
+        },
+      };
+      break;
     case 'tick':
       break;
   }
@@ -793,11 +824,14 @@ function optionalConcurrency(state: GovernorState, at: number): number {
   // Measured pressure counts only when admission is applied and the loop is deciding.
   const closedLoop = admission === 'apply' && state.activation.decide === 'closed-loop';
   if (state.visibility !== 'active' || state.powerSaver) return 0;
+  // The user's Data Saver and a missing network are limits: no optional data work at all.
+  if (savingData(state.network) || offline(state.network)) return 0;
   if (closedLoop && contentionOf(state, at) !== 'none') return 0;
   const thermal = thermalOf(state);
   const memory = memoryOf(state, at);
   if (closedLoop && (thermal === 'critical' || memory === 'low')) return 0;
   const constrained =
+    state.network.metered === true ||
     isLowCapacity(state.capacity) ||
     state.capacity.totalMemoryBytes === null ||
     (closedLoop &&
@@ -843,6 +877,7 @@ export function snapshotOf(state: GovernorState, at: number = state.at): Governo
     thermal: thermalOf(state),
     memory: memoryOf(state, at),
     powerSaver: state.powerSaver,
+    network: state.network,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at),
@@ -918,6 +953,7 @@ function outputsEqual(a: GovernorSnapshot, b: GovernorSnapshot): boolean {
     a.thermal !== b.thermal ||
     a.memory !== b.memory ||
     a.powerSaver !== b.powerSaver ||
+    a.network !== b.network ||
     a.visibility !== b.visibility ||
     a.interactionIdle !== b.interactionIdle ||
     a.optionalConcurrency !== b.optionalConcurrency ||

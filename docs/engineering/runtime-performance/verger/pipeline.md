@@ -93,7 +93,7 @@ only report. Each row is one source of variety on the phone.
 | Memory pressure | trims, polled free memory | image decode and cache, list window | seen; levers unread |
 | Battery saver | power broadcast | ambient and energy levers, GPU floors | seen |
 | Battery low over a school day | **not sensed** | prefetch, sync, refresh cap | unseen |
-| Poor, metered or saved network | **not sensed** (task 2) | prefetch, image cache, telemetry flush | unseen |
+| Poor, metered or saved network | network callback, Data Saver status (in code, uncompiled) | levers' `whenMetered`, `whenDataSaver`, `whenOffline` (Gurudevi: prefetch); no optional work under Data Saver or offline | seen and countered in the reducer; native part awaits the Gradle build |
 | Storage low | **not sensed** | eviction, caches | unseen |
 | Other apps competing | free-memory trend, process CPU | as memory and CPU | partly seen |
 | OS update, uncompiled code | build fingerprint (profile relearned) | the profile's caution | seen at launch; compile state unverified |

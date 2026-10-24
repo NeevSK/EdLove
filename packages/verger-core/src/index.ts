@@ -27,6 +27,7 @@ export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from 
 export { DEFAULT_GOVERNOR_CONFIG, validateConfig } from './config';
 export {
   createRuntimeController,
+  isValidEvent,
   type RuntimeController,
   type RuntimeControllerOptions,
   type RuntimePort,
@@ -58,6 +59,7 @@ export {
   snapshotOf,
   staticFloors,
   UNKNOWN_CAPACITY,
+  UNKNOWN_NETWORK,
 } from './governor';
 export {
   type AccountReading,

@@ -67,6 +67,8 @@ export function checkSnapshot(
   if (!sense.frames && snapshot.frameState !== 'quiet')
     fail('deaf-sensor-silent', `frames ${snapshot.frameState}`);
   if (!sense.power && snapshot.powerSaver) fail('deaf-sensor-silent', 'power saver');
+  if (!sense.network && Object.values(snapshot.network).some((v) => v !== null))
+    fail('deaf-sensor-silent', 'network');
   if (!sense.memory && snapshot.memory !== 'unknown')
     fail('deaf-sensor-silent', `memory ${snapshot.memory}`);
   if (!sense.threads && !sense.longTasks && snapshot.contention !== 'none')

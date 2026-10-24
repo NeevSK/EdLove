@@ -8,6 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
@@ -73,6 +76,8 @@ class VergerSense(
   private var lastLowMemory = false
   private var cpuBoostWanted = false
   private val power = app.getSystemService(Context.POWER_SERVICE) as PowerManager
+  private val connectivity = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  private var lastNetwork: Map<String, Any?>? = null
   // Default priority, not background: on Android 9–13 the background group is starved under
   // exactly the load the runtime must see, and the platform then drops frame reports.
   private val thread = HandlerThread("VergerSense", Process.THREAD_PRIORITY_DEFAULT).apply { start() }
@@ -130,6 +135,7 @@ class VergerSense(
 
   private var memoryRegistered = false
   private var powerRegistered = false
+  private var networkRegistered = false
 
   private fun registerCallbacks(sensors: Sensors) {
     if (sensors.memory) {
@@ -146,13 +152,32 @@ class VergerSense(
       powerRegistered = true
       emitPower()
     }
+    if (sensors.network) {
+      val ok = runCatching {
+        connectivity.registerDefaultNetworkCallback(networkCallback, handler)
+        val filter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          app.registerReceiver(dataSaverReceiver, filter, null, handler, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+          app.registerReceiver(dataSaverReceiver, filter, null, handler)
+        }
+      }.isSuccess
+      networkRegistered = ok
+      if (ok) emitNetwork(connectivity.getNetworkCapabilities(connectivity.activeNetwork))
+    }
   }
 
   private fun unregisterCallbacks() {
     if (memoryRegistered) runCatching { app.unregisterComponentCallbacks(memoryCallbacks) }
     if (powerRegistered) runCatching { app.unregisterReceiver(powerReceiver) }
+    if (networkRegistered) {
+      runCatching { connectivity.unregisterNetworkCallback(networkCallback) }
+      runCatching { app.unregisterReceiver(dataSaverReceiver) }
+    }
     memoryRegistered = false
     powerRegistered = false
+    networkRegistered = false
+    lastNetwork = null
   }
 
   fun stop() {
@@ -521,6 +546,53 @@ class VergerSense(
 
   // endregion
 
+  // region network
+
+  private var lastCapabilities: NetworkCapabilities? = null
+
+  private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+    // Delivered on [handler]'s thread.
+    override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) =
+      emitNetwork(capabilities)
+
+    override fun onLost(network: Network) = emitNetwork(null)
+  }
+
+  /** Data Saver changes arrive only to registered receivers; the capabilities do not change with it. */
+  private val dataSaverReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) = emitNetwork(lastCapabilities)
+  }
+
+  private fun emitNetwork(capabilities: NetworkCapabilities?) {
+    lastCapabilities = capabilities
+    val c = capabilities
+    val payload = NetworkSignals.payload(
+      transport = NetworkSignals.transport(
+        present = c != null,
+        wifi = c?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true,
+        cellular = c?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true,
+        ethernet = c?.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) == true,
+      ),
+      validated = c?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED),
+      metered = c?.let { !it.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) },
+      downKbps = c?.let { NetworkSignals.bucketKbps(it.linkDownstreamBandwidthKbps) },
+      dataSaver = runCatching {
+        NetworkSignals.dataSaver(
+          connectivity.restrictBackgroundStatus,
+          ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED,
+          ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED,
+          ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED,
+        )
+      }.getOrNull(),
+    )
+    // Only a change crosses to JavaScript.
+    if (payload == lastNetwork) return
+    lastNetwork = payload
+    emit(EVENT_NETWORK, payload)
+  }
+
+  // endregion
+
   /** The one exit to JavaScript: dropped after destroy, and never allowed to throw. */
   private fun emit(name: String, body: Map<String, Any?>) {
     if (destroyed) return
@@ -547,9 +619,10 @@ class VergerSense(
     const val EVENT_THREAD_LOAD = "onThreadLoad"
     const val EVENT_MEMORY = "onMemory"
     const val EVENT_LEVER = "onLever"
+    const val EVENT_NETWORK = "onNetwork"
     val EVENTS = arrayOf(
       EVENT_FRAME_WINDOW, EVENT_THERMAL, EVENT_MEMORY_TRIM, EVENT_POWER_SAVER,
-      EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER,
+      EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER, EVENT_NETWORK,
     )
 
     private const val THREAD_SAMPLE_MS = 1_000L

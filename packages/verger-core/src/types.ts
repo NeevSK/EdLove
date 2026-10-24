@@ -164,7 +164,16 @@ export type Capability = 'renderEffect' | 'runtimeShader' | 'refreshCap';
 export type Actuator = 'refresh-cap' | 'global-reduced-motion';
 
 /** What a lever primarily relieves. Used to match levers to the current bottleneck. */
-export type LeverTarget = 'gpu' | 'cpu' | 'memory' | 'energy';
+export type LeverTarget = 'gpu' | 'cpu' | 'memory' | 'energy' | 'network';
+
+/** The network as verger last heard it; every field null until the network sensor reports. */
+export interface NetworkState {
+  readonly transport: NetworkTransport | null;
+  readonly validated: boolean | null;
+  readonly metered: boolean | null;
+  readonly downKbps: number | null;
+  readonly dataSaver: DataSaver | null;
+}
 export type VisualImpact = 'low' | 'medium' | 'high';
 
 /**
@@ -192,6 +201,12 @@ export interface LeverSpec {
   readonly whenIdle?: number;
   /** Floor while the device is warm or hotter (closed loop). */
   readonly whenWarm?: number;
+  /** Floor on a metered network. A limit: it applies in static mode too. */
+  readonly whenMetered?: number;
+  /** Floor while Android Data Saver restricts this app (the user's choice). A limit. */
+  readonly whenDataSaver?: number;
+  /** Floor while there is no validated network. A limit. */
+  readonly whenOffline?: number;
   /**
    * The app-wide effect verger itself applies for this lever, if any. A host lever without an
    * actuator is applied by the host's own consumers reading its level.
@@ -285,6 +300,7 @@ export interface GovernorSnapshot {
   readonly thermal: ThermalLevel;
   readonly memory: MemoryLevel;
   readonly powerSaver: boolean;
+  readonly network: NetworkState;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;

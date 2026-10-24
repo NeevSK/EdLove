@@ -1,7 +1,16 @@
-import { ACTIVATION_PRESETS, DEFAULT_GOVERNOR_CONFIG, UNKNOWN_CAPACITY } from '@repo/verger-core';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import {
+  ACTIVATION_PRESETS,
+  DEFAULT_GOVERNOR_CONFIG,
+  type GovernorEvent,
+  isValidEvent,
+  UNKNOWN_CAPACITY,
+} from '@repo/verger-core';
 import { describe, expect, it } from 'vitest';
 import {
   FRAME_WINDOW_MS,
+  type NativeNetwork,
   senseConfigFrom,
   toCapacityFacts,
   toExitRecords,
@@ -210,4 +219,23 @@ describe('verger-android mapping', () => {
       { reason: 'crash', atWallMs: 5, foreground: false, pid: 42 },
     ]);
   });
+});
+
+describe('the native event contract (shared with NetworkContractTest.kt)', () => {
+  const contract = JSON.parse(
+    readFileSync(fileURLToPath(new URL('../contract/native-events.json', import.meta.url)), 'utf8'),
+  ) as { network: { case: string; payload: NativeNetwork; event: GovernorEvent }[] };
+
+  it('holds network cases', () => {
+    expect(contract.network.length).toBeGreaterThan(0);
+  });
+
+  it.each(contract.network.map((c) => [c.case, c] as const))(
+    'maps the payload Kotlin builds into exactly its event: %s',
+    (_name, c) => {
+      const event = toGovernorEvent({ name: 'onNetwork', payload: c.payload }, 0);
+      expect(event).toEqual(c.event);
+      expect(isValidEvent(event)).toBe(true);
+    },
+  );
 });
