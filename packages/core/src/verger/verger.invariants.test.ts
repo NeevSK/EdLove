@@ -7,6 +7,9 @@ import {
   type CreateVergerStateOptions,
   checkRun,
   createOutcomeLedger,
+  createRuntimeController,
+  DEFAULT_VERGER_CONFIG,
+  replayRecording,
   type VergerEvent,
   type VergerSnapshot,
   resolveActivation,
@@ -335,6 +338,44 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
           run(VERGER_POLICY_P5, options, events).snapshots,
         );
       }),
+    );
+  });
+
+  it('a session recording replays to exactly the snapshots the controller published (D1)', () => {
+    fc.assert(
+      fc.property(
+        optionsArb,
+        streamArb(),
+        fc.constantFrom(VERGER_POLICY, VERGER_POLICY_P5),
+        (options, events, policy) => {
+          let at = 0;
+          const controller = createRuntimeController({
+            port: { start: () => () => {}, setRefreshCap: () => {}, setCpuBoost: () => {} },
+            capacity: options.capacity,
+            levers: LEVERS,
+            mode: 'active',
+            config: DEFAULT_VERGER_CONFIG,
+            now: () => at,
+            scheduler: { setTimeout: () => 0, clearTimeout: () => {} },
+            memorySensing: options.memorySensing,
+            activation: options.activation,
+            policy,
+            recordEvents: 1000,
+          });
+          const published = [controller.getSnapshot()];
+          controller.subscribe(() => published.push(controller.getSnapshot()));
+          controller.start();
+          for (const event of events) {
+            at = event.at;
+            controller.dispatch(event);
+          }
+          const recording = controller.recording();
+          if (!recording) throw new Error('recording was asked for');
+          expect(recording.dropped).toBe(0);
+          expect(replayRecording(recording, policy).snapshots).toEqual(published);
+        },
+      ),
+      { numRuns: RUNS },
     );
   });
 

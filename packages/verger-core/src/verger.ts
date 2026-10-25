@@ -17,6 +17,7 @@ import {
 import type { ExperimentAssignment } from './experiment';
 import { fnv1a32 } from './experiment';
 import { createFlightRecorder, type FlightRecorder } from './flightRecorder';
+import type { VergerRecording } from './recording';
 import type { SelfCost } from './selfCost';
 import type { VergerHost } from './host';
 import {
@@ -123,6 +124,11 @@ export interface VergerOptions {
   readonly scheduler?: RuntimeScheduler;
   /** Uniform [0, 1), for the exercise share. */
   readonly random?: () => number;
+  /**
+   * Records up to this many events per session for exact replay (D1). For development builds
+   * and the dev lab; leave unset in a release.
+   */
+  readonly recordEvents?: number;
 }
 
 export interface Verger {
@@ -160,6 +166,8 @@ export interface Verger {
   tune(patch: Partial<VergerConfig> | null): void;
   /** What verger has cost this session (D3); null while verger is not running. */
   selfCost(): SelfCost | null;
+  /** This session's inputs, replayable exactly (D1); null when not running or not recording. */
+  recording(): VergerRecording | null;
   /**
    * The snapshot in force. While verger is not running (before `start`, after `stop`, or when
    * the launch stayed off) it is the floors: the host's policy under `FLOORS_ACTIVATION`, on
@@ -487,6 +495,7 @@ export function createVerger(options: VergerOptions): Verger {
       memorySensing: platform.memorySensing,
       activation,
       policy: host.policy,
+      recordEvents: options.recordEvents,
       launch: {
         hardware: decided.hardware,
         // Growth is a direction activation can switch off; the earned grant is kept, unused.
@@ -630,6 +639,7 @@ export function createVerger(options: VergerOptions): Verger {
       return { records: current.outcomes.records(), summary: current.outcomes.summary() };
     },
     selfCost: () => controller?.selfCost() ?? null,
+    recording: () => controller?.recording() ?? null,
     get activation() {
       return controller?.getSnapshot().activation ?? null;
     },

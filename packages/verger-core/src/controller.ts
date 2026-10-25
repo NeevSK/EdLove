@@ -1,6 +1,7 @@
 import type { SensorId, VergerActivation } from './activation';
 import type { CreateVergerStateOptions } from './reducer';
 import { VERGER_POLICY, type VergerPolicy } from './policy';
+import { createSessionRecorder, type SessionRecorder, type VergerRecording } from './recording';
 import { createSelfCostMeter, type SelfCost } from './selfCost';
 import type { VergerTelemetry } from './telemetry';
 import type {
@@ -60,6 +61,8 @@ export interface RuntimeControllerOptions {
   readonly policy?: VergerPolicy;
   /** A high-resolution clock for verger's own cost; `now` by default. */
   readonly measure?: () => number;
+  /** Records up to this many events for exact replay (D1); off when absent. Development only. */
+  readonly recordEvents?: number;
 }
 
 export interface RuntimeController {
@@ -71,6 +74,8 @@ export interface RuntimeController {
   subscribe(listener: () => void): () => void;
   /** What verger has cost since this controller was created. */
   selfCost(): SelfCost;
+  /** The session's inputs so far, or null when recording is off. */
+  recording(): VergerRecording | null;
 }
 
 /**
@@ -82,7 +87,7 @@ export interface RuntimeController {
 export function createRuntimeController(options: RuntimeControllerOptions): RuntimeController {
   const { port, scheduler, telemetry } = options;
   const policy = options.policy ?? VERGER_POLICY;
-  let state = policy.create({
+  const createOptions: CreateVergerStateOptions = {
     at: options.now(),
     capacity: options.capacity,
     levers: options.levers,
@@ -91,7 +96,12 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     memorySensing: options.memorySensing,
     activation: options.activation,
     ...options.launch,
-  });
+  };
+  let state = policy.create(createOptions);
+  const recorder: SessionRecorder | null =
+    options.recordEvents === undefined
+      ? null
+      : createSessionRecorder(policy.version, createOptions, options.recordEvents);
   let snapshot = policy.snapshot(state);
   const measure = options.measure ?? options.now;
   const cost = createSelfCostMeter(options.now());
@@ -148,6 +158,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   const dispatch = (event: VergerEvent) => {
     if (!running || !isValidEvent(event)) return;
     const before = policy.outputVersion(state);
+    recorder?.record(event);
     const reduceStart = measure();
     state = policy.reduce(state, event);
     cost.onReduce(measure() - reduceStart);
@@ -197,6 +208,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     dispatch,
     getSnapshot: () => snapshot,
     selfCost: () => cost.read(options.now()),
+    recording: () => recorder?.recording() ?? null,
     subscribe(listener) {
       listeners.add(listener);
       return () => {

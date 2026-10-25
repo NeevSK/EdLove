@@ -134,6 +134,13 @@ export {
 } from './outcomes';
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
 export { comparePolicies, type PolicyReport } from './compare';
+export {
+  createSessionRecorder,
+  DEFAULT_RECORDING_EVENTS,
+  replayRecording,
+  type SessionRecorder,
+  type VergerRecording,
+} from './recording';
 export { replayVerger } from './replay';
 export { createSelfCostMeter, type SelfCost, type SelfCostMeter } from './selfCost';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
