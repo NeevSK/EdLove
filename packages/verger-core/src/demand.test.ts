@@ -159,3 +159,19 @@ describe('admitWork: background work against the limits of the moment', () => {
     expect(admitWork(offline, { class: 'deferrable', spends: ['cpu'] }).admit).toBe(true);
   });
 });
+
+describe('admitWork and the daily data budget', () => {
+  const base = {
+    networkLimit: 'none' as NetworkLimit,
+    powerSaver: false,
+    battery: { levelPercent: 80, pluggedIn: false, temperatureC: null },
+  };
+  it('a spent budget holds optional network work, never critical work; unknown holds nothing', () => {
+    const sync = { class: 'deferrable' as const, spends: ['network'] as ResourceAccount[] };
+    expect(admitWork({ ...base, dataBudget: 'spent' }, sync)).toEqual({ admit: false, reason: 'data-budget-spent' });
+    expect(admitWork({ ...base, dataBudget: 'within' }, sync).admit).toBe(true);
+    expect(admitWork({ ...base, dataBudget: 'unknown' }, sync).admit).toBe(true);
+    expect(admitWork({ ...base, dataBudget: 'spent' }, { class: 'critical', spends: ['network'] }).admit).toBe(true);
+    expect(admitWork({ ...base, dataBudget: 'spent' }, { class: 'deferrable', spends: ['cpu'] }).admit).toBe(true);
+  });
+});

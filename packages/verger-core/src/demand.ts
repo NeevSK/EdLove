@@ -1,4 +1,5 @@
 import { DEFAULT_VERGER_CONFIG } from './config';
+import type { DataBudgetState } from './dataBudget';
 import { isBatteryLow } from './signals';
 import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
@@ -237,11 +238,14 @@ export interface Admission {
  * limits. Critical and committed work always runs. Deferrable and ornamental work waits while an
  * account it spends is at a limit: network work for offline, Data Saver or a link back from
  * offline under a minute; energy work for battery saver or a low, unplugged battery. Metered is
- * home, never a limit; unknown is never a limit. For work outside the app's rhythm (background
+ * home, never a limit; unknown is never a limit; a spent daily data budget holds network work. For work outside the app's rhythm (background
  * tasks); in the app, `optionalConcurrency` also counts visibility and contention.
  */
 export function admitWork(
-  snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'battery'>,
+  snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'battery'> & {
+    /** Today's data budget (`dataBudgetState`); spent holds optional network work. */
+    readonly dataBudget?: DataBudgetState;
+  },
   workload: Pick<WorkloadSpec, 'class' | 'spends'>,
   config: Pick<VergerConfig, 'batteryLowPercent'> = DEFAULT_VERGER_CONFIG,
 ): Admission {
@@ -251,6 +255,7 @@ export function admitWork(
     const limit = snapshot.networkLimit;
     if (limit === 'offline' || limit === 'data-saver' || limit === 'unstable')
       return { admit: false, reason: limit };
+    if (snapshot.dataBudget === 'spent') return { admit: false, reason: 'data-budget-spent' };
   }
   if (workload.spends.includes('energy')) {
     if (snapshot.powerSaver) return { admit: false, reason: 'battery-saver' };
