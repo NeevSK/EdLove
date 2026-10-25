@@ -197,3 +197,21 @@ export {
   inDailyWindow,
   localDay,
 } from './dataBudget';
+export {
+  type ClosedLoopOptions,
+  runClosedLoop,
+  type SessionSegment,
+  SIM_SESSIONS,
+  type SimSession,
+  type SimTick,
+} from './sim/closedLoop';
+export {
+  defaultEffect,
+  type Demand,
+  type LeverEffect,
+  type PhoneModel,
+  type PlantState,
+  type PlantStep,
+  SIM_PHONES,
+  stepPlant,
+} from './sim/plant';

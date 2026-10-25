@@ -93,6 +93,15 @@ simulator first, because every fix after it must be shown by it.
 | P6 | **Lever gain estimation** (system identification): the outcome ledger measures each compress's effect (frame cost before and after, per step), an EWMA per lever with a confidence; shown in the lab and telemetry. | gains converge to the simulator's true gains within a tolerance |
 | P7 | **Gain-guided choice in p5**: among levers that may relieve the bottleneck, prefer the highest estimated gain per unit of quality given up, once confident; the declared order otherwise. | in P2, p5 gives up less quality for equal strain than before; P3 still passes |
 
+| P8 | **Relief check in the frames loop** (found by P1): in the burst session, jank comes from work no lever reduces, yet p4 and p5 walk the whole ladder down (8 steps in 9 s: frame cost 19.6 → 17.7 ms against an 11.1 ms budget) and give up 25–28% of quality for no less jank. Once K steps have not reduced frame cost by a meaningful share within the episode, stop lowering until the stress ends, and say so (the thread-load loop already has this: `contentionExhausted`). | in P2, quality given up in the burst session falls with jank unchanged; P3 passes |
+
+**P1 status (`sim/`):** built. Three phones (low: 3 GB, Android 9, battery temperature only; mid; high,
+120 Hz), four sessions (classroom, heat soak, boundary, burst), seeded sensor noise (headroom
+jitter, battery temperature in tenths with jitter). First readings: on a heat soak the closed loop
+cuts jank from 60% to 0% and peak heat by 4 °C on the mid phone for 30% of quality given up; the
+low phone sits at its class floors already (55% given up with verger off), so heat finds nothing
+left to lower there; the burst session exposes P8.
+
 **Not now, planned:** feedforward from workload announcements (needs the app to announce work);
 setpoints for heat and energy (needs battery and heat curves from phones); coupling rules (need
 measured couplings). Each needs phase F's recordings to be more than a guess.
