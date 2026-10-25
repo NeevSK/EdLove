@@ -211,6 +211,8 @@ export interface VergerState {
   readonly expandedAt: Readonly<Record<string, number>>;
   /** p5: when each lever's expansion last failed, so its wait can decay. */
   readonly leverFailedAt: Readonly<Record<string, number>>;
+  /** p5: when each lever was lowered again after its own expansion, within `flapWindowMs`. */
+  readonly leverFlaps: Readonly<Record<string, readonly number[]>>;
   /** p5: the targets each lever proved not to relieve this session (loop 2, D4). */
   readonly ineffective: Readonly<Record<string, readonly LeverTarget[]>>;
 
@@ -302,6 +304,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     leverWait: {},
     expandedAt: {},
     leverFailedAt: {},
+    leverFlaps: {},
     ineffective: {},
     lastAction: 'stale',
     lastReason: start.stack.length > 0 ? 'start from learned profile' : 'start',
@@ -642,17 +645,41 @@ function recordFailedExpansions(
 ): VergerState {
   let leverWait = state.leverWait;
   let leverFailedAt = state.leverFailedAt;
+  let leverFlaps = state.leverFlaps;
   let expandedAt = state.expandedAt;
+  const { failedUpgradeWindowMs, flapWindowMs, upgradeAfterMs, maxUpgradeAfterMs } = state.config;
   for (const id of new Set(lowered)) {
     const expanded = expandedAt[id];
-    if (expanded === undefined || at - expanded >= state.config.failedUpgradeWindowMs) continue;
-    const wait = leverWait[id] ?? state.config.upgradeAfterMs;
-    leverWait = { ...leverWait, [id]: Math.min(wait * 2, state.config.maxUpgradeAfterMs) };
-    leverFailedAt = { ...leverFailedAt, [id]: at };
+    if (expanded === undefined) continue;
+    // Each expansion is answered once: by this lowering, whenever it comes.
     const { [id]: _, ...rest } = expandedAt;
     expandedAt = rest;
+    const since = at - expanded;
+    if (since < flapWindowMs) {
+      const recent = (leverFlaps[id] ?? []).filter((t) => at - t < flapWindowMs);
+      leverFlaps = { ...leverFlaps, [id]: [...recent, at] };
+    }
+    if (since >= failedUpgradeWindowMs) continue;
+    const wait = leverWait[id] ?? upgradeAfterMs;
+    leverWait = { ...leverWait, [id]: Math.min(wait * 2, maxUpgradeAfterMs) };
+    leverFailedAt = { ...leverFailedAt, [id]: at };
   }
-  return { ...state, leverWait, leverFailedAt, expandedAt };
+  return { ...state, leverWait, leverFailedAt, leverFlaps, expandedAt };
+}
+
+/**
+ * p5: whether a lever is flapping: as of its last lowering it had been lowered after its own
+ * expansion `flapCycles` times within `flapWindowMs`, and it has not gone a whole window since
+ * without being lowered again. Judged at the last flap, so the rule holds through the calm that
+ * follows instead of lifting as the oldest flap slides out.
+ */
+function flapping(state: VergerState, id: string, at: number): boolean {
+  const flaps = state.leverFlaps[id];
+  const last = flaps?.[flaps.length - 1];
+  if (!flaps || last === undefined || at - last >= state.config.flapWindowMs) return false;
+  let recent = 0;
+  for (const t of flaps) if (last - t < state.config.flapWindowMs) recent += 1;
+  return recent >= state.config.flapCycles;
 }
 
 function raiseOne(state: VergerState, at: number, reason: string): VergerState {
@@ -1105,16 +1132,22 @@ function expansionCandidates(state: VergerState, at: number): ExpansionCandidate
     if (evidence.length === 0) continue;
     const confidence = Math.min(...evidence.map((a) => readings[a].confidence));
     const failedAt = state.leverFailedAt[id];
+    // A flapping lever waits the longest, and its back-off does not decay while it flaps.
+    const flaps = flapping(state, id, at);
     const decayed =
-      failedAt !== undefined && at - failedAt >= state.config.resetBackoffAfterMs;
-    const wait = decayed ? state.upgradeAfterMs : (state.leverWait[id] ?? state.upgradeAfterMs);
+      !flaps && failedAt !== undefined && at - failedAt >= state.config.resetBackoffAfterMs;
+    const wait = flaps
+      ? state.config.maxUpgradeAfterMs
+      : decayed
+        ? state.upgradeAfterMs
+        : (state.leverWait[id] ?? state.upgradeAfterMs);
     const since = Math.max(...evidence.map((a) => state.ampleSince[a] ?? at));
     const readyAt = Math.max(since, state.lastIncreaseAt, state.lastDecreaseAt) + wait / confidence;
     out.push({
       id,
       readyAt,
       decayed,
-      reason: `${evidence.join(' and ')} ample for ${Math.round(wait / confidence)} ms`,
+      reason: `${evidence.join(' and ')} ample for ${Math.round(wait / confidence)} ms${flaps ? ' (flapping: longest wait)' : ''}`,
     });
   }
   return out;
@@ -1398,8 +1431,15 @@ export function nextTimedChangeAt(state: VergerState): number | null {
   if (state.lastOfflineAt !== null && !offline(state.network))
     candidates.push(state.lastOfflineAt + state.config.networkSettleMs);
   // p5: each lever's evidence completes at its own time.
-  if (state.expansion)
+  if (state.expansion) {
     for (const candidate of expansionCandidates(state, now)) candidates.push(candidate.readyAt);
+    // A flapping lever's longest wait ends a whole window after its last flap.
+    for (const [id, flaps] of Object.entries(state.leverFlaps)) {
+      const last = flaps[flaps.length - 1];
+      if (last !== undefined && flapping(state, id, now))
+        candidates.push(last + state.config.flapWindowMs);
+    }
+  }
   if (state.stack.length > 0) {
     const lastChange = Math.max(state.lastPressureAt, state.lastDecreaseAt, state.lastIncreaseAt);
     candidates.push(lastChange + state.upgradeAfterMs);

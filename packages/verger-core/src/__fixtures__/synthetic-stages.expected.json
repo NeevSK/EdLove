@@ -11,6 +11,8 @@
     "upgradeAfterMs": 4000,
     "maxUpgradeAfterMs": 60000,
     "failedUpgradeWindowMs": 10000,
+    "flapWindowMs": 120000,
+    "flapCycles": 3,
     "resetBackoffAfterMs": 30000,
     "thermalActionDelayMs": 2000,
     "headroomWarm": 0.85,

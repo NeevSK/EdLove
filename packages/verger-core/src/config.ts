@@ -32,6 +32,8 @@ export function validateConfig(config: VergerConfig): void {
   }
   if (!Number.isInteger(config.minSamples))
     throw new Error('Config "minSamples" must be an integer');
+  if (!Number.isInteger(config.flapCycles))
+    throw new Error('Config "flapCycles" must be an integer');
 }
 
 export const DEFAULT_VERGER_CONFIG: VergerConfig = {
@@ -44,6 +46,8 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   upgradeAfterMs: 4_000,
   maxUpgradeAfterMs: 60_000,
   failedUpgradeWindowMs: 10_000,
+  flapWindowMs: 120_000,
+  flapCycles: 3,
   resetBackoffAfterMs: 30_000,
   thermalActionDelayMs: 2_000,
   headroomWarm: 0.85,

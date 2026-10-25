@@ -334,6 +334,13 @@ export interface VergerConfig {
   readonly maxUpgradeAfterMs: number;
   /** A downgrade within this long after an upgrade marks the upgrade as failed. */
   readonly failedUpgradeWindowMs: number;
+  /**
+   * p5's flapping rule (D4): a lever lowered again after its own expansion `flapCycles` times
+   * within `flapWindowMs` waits `maxUpgradeAfterMs` (over its evidence's confidence, as every
+   * p5 wait) before it returns, without decay, until it goes a whole window without a flap.
+   */
+  readonly flapWindowMs: number;
+  readonly flapCycles: number;
   /** Back-off resets after this long without any level change. */
   readonly resetBackoffAfterMs: number;
   /** Minimum spacing between thermal-driven decreases. */
