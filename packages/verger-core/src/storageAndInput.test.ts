@@ -84,3 +84,14 @@ describe('input delay as evidence of contention (B7)', () => {
     expect(heard).toEqual(quiet);
   });
 });
+
+describe('event-loop lag and GC pauses as stall evidence', () => {
+  const at = [1000, 1500, 2000, 2500];
+  it('lag and GC share at or above their thresholds count; below do not', () => {
+    const active = ACTIVATION_PRESETS.active;
+    expect(after(at.map((t) => ({ type: 'event-loop-lag', at: t, lagMs: 250 }) as const), active).contention).not.toBe('none');
+    expect(after(at.map((t) => ({ type: 'event-loop-lag', at: t, lagMs: 30 }) as const), active).contention).toBe('none');
+    expect(after(at.map((t) => ({ type: 'js-heap', at: t, gcPauseShare: 0.2, allocatedBytes: null }) as const), active).contention).not.toBe('none');
+    expect(after(at.map((t) => ({ type: 'js-heap', at: t, gcPauseShare: 0.01, allocatedBytes: 1 }) as const), active).contention).toBe('none');
+  });
+});

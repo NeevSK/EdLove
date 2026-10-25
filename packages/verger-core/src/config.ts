@@ -25,6 +25,8 @@ export function validateConfig(config: VergerConfig): void {
   order('lowCapacityBelowBytes', 'midCapacityBelowBytes');
   if (config.batteryLowPercent > 100)
     throw new Error('Config "batteryLowPercent" must be at most 100');
+  if (config.gcPauseShareStall > 1)
+    throw new Error('Config "gcPauseShareStall" must be at most 1');
   if (config.expandMinConfidence > 1)
     throw new Error('Config "expandMinConfidence" must be at most 1');
   if (!(config.headroomHot <= config.headroomCritical)) {
@@ -72,6 +74,8 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   longTaskWindowMs: 5_000,
   longTasksForContention: 3,
   inputDelayLongMs: 100,
+  eventLoopLagLongMs: 100,
+  gcPauseShareStall: 0.05,
   storageLowBytes: 512 * 1024 ** 2,
   outcomeJudgeWindowMs: 5_000,
   outcomeHoldWindowMs: 10_000,

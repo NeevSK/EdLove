@@ -600,6 +600,12 @@ function lower(
  * p5 (D4): records that a lever did not relieve a target. A lever the host does not govern, a
  * target it does not claim to relieve, or one already recorded changes nothing; p4 ignores it.
  */
+/** A JS stall at `at`, kept for `longTaskWindowMs` as contention evidence. */
+function noteStall(state: VergerState, at: number): VergerState {
+  const window = state.config.longTaskWindowMs;
+  return { ...state, longTasks: [...state.longTasks.filter((t) => at - t <= window), at] };
+}
+
 function storageOf(state: VergerState): StorageLevel {
   const free = state.storageFreeBytes;
   if (free === null) return 'unknown';
@@ -1000,11 +1006,9 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       };
       break;
     }
-    case 'long-task': {
-      const window = next.config.longTaskWindowMs;
-      next = { ...next, longTasks: [...next.longTasks.filter((t) => at - t <= window), at] };
+    case 'long-task':
+      next = noteStall(next, at);
       break;
-    }
     case 'power':
       next = { ...next, powerSaver: input.saver };
       break;
@@ -1051,13 +1055,18 @@ function step(state: VergerState, event: VergerEvent): VergerState {
     case 'storage':
       next = { ...next, storageFreeBytes: input.freeBytes === null ? null : Math.max(0, input.freeBytes) };
       break;
-    case 'input-delay': {
-      // A long-delayed input is the same evidence as a long task: the thread could not yield.
-      if (input.durationMs < next.config.inputDelayLongMs) break;
-      const window = next.config.longTaskWindowMs;
-      next = { ...next, longTasks: [...next.longTasks.filter((t) => at - t <= window), at] };
+    // A long-delayed input, a late timer and a heavy GC pause are the same evidence as a long
+    // task: the JS thread could not yield. One stall may be seen by two of them; counting it twice
+    // reaches contention sooner, the cautious side.
+    case 'input-delay':
+      if (input.durationMs >= next.config.inputDelayLongMs) next = noteStall(next, at);
       break;
-    }
+    case 'event-loop-lag':
+      if (input.lagMs >= next.config.eventLoopLagLongMs) next = noteStall(next, at);
+      break;
+    case 'js-heap':
+      if (input.gcPauseShare >= next.config.gcPauseShareStall) next = noteStall(next, at);
+      break;
     case 'lever-ineffective':
       next = markIneffective(next, input.lever, input.target);
       break;

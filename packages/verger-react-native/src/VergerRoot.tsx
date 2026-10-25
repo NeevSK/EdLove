@@ -17,7 +17,9 @@ import {
 import {
   bindVerger,
   bindVergerEarly,
+  observeEventLoopLag,
   observeInputDelay,
+  observeJsHeap,
   observeLongTasks,
 } from '@repo/verger-react';
 import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -177,8 +179,28 @@ export function VergerRoot({
           verger.dispatch({ type: 'input-delay', at: now(), durationMs }),
         )
       : () => {};
+    // JS stalls the scheduler's long tasks miss: late timers and Hermes GC pauses; paused while
+    // the app is not visible, as verger itself reads it.
+    const hidden = () => verger.getSnapshot()?.visibility !== 'active';
+    const stopLag = runs
+      ? observeEventLoopLag(
+          (lagMs) => verger.dispatch({ type: 'event-loop-lag', at: now(), lagMs }),
+          hidden,
+          now,
+        )
+      : () => {};
+    const stopHeap = runs
+      ? observeJsHeap(
+          (gcPauseShare, allocatedBytes) =>
+            verger.dispatch({ type: 'js-heap', at: now(), gcPauseShare, allocatedBytes }),
+          hidden,
+          now,
+        )
+      : () => {};
     return () => {
       live = false;
+      stopHeap();
+      stopLag();
       stopInputDelay();
       stopLongTasks();
       stopSignals();

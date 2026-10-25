@@ -152,6 +152,20 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
   {
     weight: 1,
     arbitrary: fc.record({
+      type: fc.constant('event-loop-lag' as const),
+      lagMs: fc.double({ min: 0, max: 2000, noNaN: true }),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('js-heap' as const),
+      gcPauseShare: fc.double({ min: 0, max: 1, noNaN: true }),
+      allocatedBytes: fc.option(fc.integer({ min: 0, max: 2 ** 31 }), { nil: null }),
+    }),
+  },  {
+    weight: 1,
+    arbitrary: fc.record({
       type: fc.constant('input-delay' as const),
       durationMs: fc.double({ min: 0, max: 600, noNaN: true }),
     }),

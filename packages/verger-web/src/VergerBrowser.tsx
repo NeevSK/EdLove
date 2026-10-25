@@ -14,7 +14,9 @@ import {
 import {
   bindVerger,
   bindVergerEarly,
+  observeEventLoopLag,
   observeInputDelay,
+  observeJsHeap,
   observeLongTasks,
 } from '@repo/verger-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
@@ -155,6 +157,24 @@ export function VergerBrowser({
           verger.dispatch({ type: 'input-delay', at: now(), durationMs }),
         )
       : () => {};
+    // JS stalls the scheduler's long tasks miss: late timers and Hermes GC pauses; paused while
+    // the app is not visible, as verger itself reads it.
+    const hidden = () => verger.getSnapshot()?.visibility !== 'active';
+    const stopLag = runs
+      ? observeEventLoopLag(
+          (lagMs) => verger.dispatch({ type: 'event-loop-lag', at: now(), lagMs }),
+          hidden,
+          now,
+        )
+      : () => {};
+    const stopHeap = runs
+      ? observeJsHeap(
+          (gcPauseShare, allocatedBytes) =>
+            verger.dispatch({ type: 'js-heap', at: now(), gcPauseShare, allocatedBytes }),
+          hidden,
+          now,
+        )
+      : () => {};
     const applyMotion = () => {
       const root = document.documentElement;
       if (verger.getSnapshot()?.globalReducedMotion)
@@ -167,6 +187,8 @@ export function VergerBrowser({
     return () => {
       stopMotion();
       document.documentElement.removeAttribute(REDUCED_MOTION_ATTRIBUTE);
+      stopHeap();
+      stopLag();
       stopInputDelay();
       stopLongTasks();
       window.removeEventListener('pointerdown', onInteraction);

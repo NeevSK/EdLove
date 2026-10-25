@@ -198,6 +198,22 @@ export type VergerEvent =
    */
   | { readonly type: 'input-delay'; readonly at: number; readonly durationMs: number }
   /**
+   * The JS event loop's lag: how late a timer fired, the worst over the sampler's window. Catches
+   * stalls the scheduler's long tasks miss (timers, synchronous native calls). Heard with long tasks.
+   */
+  | { readonly type: 'event-loop-lag'; readonly at: number; readonly lagMs: number }
+  /**
+   * Hermes' garbage collector over the sampler's window (`HermesInternal.getInstrumentedStats`):
+   * the share of wall time the JS thread spent paused for collections, and the live heap. A GC
+   * pause is a JS stall, so it is heard with long tasks.
+   */
+  | {
+      readonly type: 'js-heap';
+      readonly at: number;
+      readonly gcPauseShare: number;
+      readonly allocatedBytes: number | null;
+    }
+  /**
    * Loop 2's finding (D4): this lever's compressions did not relieve `target`, judged by the
    * outcome ledger. verger-p5 stops lowering it for that target for the rest of the session;
    * p4 ignores it. Sent by the launcher, so it is recorded and replays like any event.
@@ -398,6 +414,10 @@ export interface VergerConfig {
   readonly longTasksForContention: number;
   /** An input delayed this long counts as a long task for contention (B7). Provisional. */
   readonly inputDelayLongMs: number;
+  /** Event-loop lag at or above this counts as a long task for contention. Provisional. */
+  readonly eventLoopLagLongMs: number;
+  /** A GC pause share of wall time at or above this counts as a long task. Provisional. */
+  readonly gcPauseShareStall: number;
   /** Free storage below this is low: levers' `whenStorageLow` apply (B4). Provisional. */
   readonly storageLowBytes: number;
   /** How long a compression has to relieve its account before it is judged not relieved. */

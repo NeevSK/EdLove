@@ -259,6 +259,9 @@ export function isValidEvent(event: VergerEvent): boolean {
   if (event.type === 'thread-load') return finite(event.processCores);
   if (event.type === 'memory-state') return finite(event.availableMb) && finite(event.thresholdMb);
   if (event.type === 'long-task' || event.type === 'input-delay') return finite(event.durationMs);
+  if (event.type === 'event-loop-lag') return finite(event.lagMs);
+  if (event.type === 'js-heap')
+    return finite(event.gcPauseShare) && (event.allocatedBytes === null || finite(event.allocatedBytes));
   if (event.type === 'storage') return event.freeBytes === null || finite(event.freeBytes);
   return true;
 }

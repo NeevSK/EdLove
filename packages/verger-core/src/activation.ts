@@ -214,6 +214,8 @@ export function sensorOf(event: VergerEvent): SensorId | null {
       return 'network';
     case 'long-task':
     case 'input-delay':
+    case 'event-loop-lag':
+    case 'js-heap':
       return 'longTasks';
     case 'storage':
       return 'storage';
