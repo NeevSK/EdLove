@@ -2,6 +2,7 @@ export { INPUT_DELAY_DURATION_THRESHOLD_MS, observeInputDelay } from './inputDel
 export { useVergerLab } from './lab';
 export { observeEventLoopLag, observeJsHeap } from './jsSamplers';
 export { observeLongTasks } from './longTasks';
+export { useScrollPresence } from './scrollPresence';
 export {
   bindVerger,
   bindVergerEarly,

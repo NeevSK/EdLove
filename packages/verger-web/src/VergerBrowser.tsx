@@ -119,6 +119,17 @@ export function VergerBrowser({
       lastInteraction = at;
       verger.dispatch({ type: 'interaction', at });
     };
+    let lastScroll = Number.NEGATIVE_INFINITY;
+    const onScroll = () => {
+      const at = now();
+      if (at - lastScroll < INTERACTION_THROTTLE_MS) return;
+      lastScroll = at;
+      verger.dispatch({ type: 'scroll', at, active: true });
+    };
+    const onScrollEnd = () => {
+      lastScroll = Number.NEGATIVE_INFINITY;
+      verger.dispatch({ type: 'scroll', at: now(), active: false });
+    };
     const settings = () => {
       onVisibility();
       onMotion();
@@ -140,6 +151,10 @@ export function VergerBrowser({
     if (runs) {
       window.addEventListener('pointerdown', onInteraction, { passive: true });
       window.addEventListener('keydown', onInteraction, { passive: true });
+      // A scrolling page holds quality-lowering changes (invariant 7); `scrollend` (where the
+      // browser has it) ends that, otherwise it lapses after config `scrollQuietMs`.
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('scrollend', onScrollEnd, { passive: true });
     }
     const stopLongTasks = runs
       ? observeLongTasks(
@@ -188,6 +203,8 @@ export function VergerBrowser({
       stopLongTasks();
       window.removeEventListener('pointerdown', onInteraction);
       window.removeEventListener('keydown', onInteraction);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scrollend', onScrollEnd);
       stopSignals();
       motionQuery?.removeEventListener('change', onMotion);
       document.removeEventListener('visibilitychange', onVisibility);

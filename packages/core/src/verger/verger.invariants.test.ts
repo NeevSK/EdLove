@@ -151,6 +151,9 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
   },
   {
     weight: 1,
+    arbitrary: fc.record({ type: fc.constant('scroll' as const), active: fc.boolean() }),
+  },  {
+    weight: 1,
     arbitrary: fc.record({
       type: fc.constant('event-loop-lag' as const),
       lagMs: fc.double({ min: 0, max: 2000, noNaN: true }),

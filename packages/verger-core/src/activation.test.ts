@@ -195,7 +195,9 @@ describe('activation governs decisions', () => {
       {
         levers: { sparkle: 'off', 'refresh-rate': 'off', 'rows-ahead': 'off', frosting: 'shadow' },
       },
-      STRESS,
+      // Read once the last touch is over: a decision made during a gesture waits for it to end
+      // (invariant 7, tested in gestureFreeze.test.ts), and this test is about shadow levers.
+      [...STRESS, { type: 'tick', at: 2000 }],
     );
     expect(snapshot.proposedLevels.frosting).toBe(1);
     expect(snapshot.levels.frosting).toBe(0);

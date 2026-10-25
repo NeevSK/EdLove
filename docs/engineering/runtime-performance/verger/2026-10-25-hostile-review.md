@@ -78,7 +78,14 @@ storage rule moved into `VergerConfig`, and the default policy chosen by experim
    `__GURUDEVI_VERGER_ACTIVATION__` (no GrowthBook or remote-config binding found). The kill switch
    works only through a new build. Lineage invariant 1 ("reachable from the next launch, without a
    release") holds for the ladder, not for people.
-3. **Invariant 7 is half kept.** The vision: "no quality changes while a gesture or list momentum is
+3. **Update (3): kept, bounded.** A lowering decided while a finger is down (`gestureQuietMs`) or
+   a list scrolls (`scroll` events from `SovereignVirtualList` through `useScrollPresence`, and the
+   page's `scroll`/`scrollend` on the web; a missing end lapses after `scrollQuietMs`) now waits,
+   for levels as well as hardware; limits, the class and every raise apply at once; heat at hot or
+   worse and low memory override; and no lowering waits longer than `gestureFreezeMaxMs` (2 s,
+   provisional), so a finger that never lifts cannot pin quality high through sustained jank. That
+   bound departs from the vision's "decisions wait until it stops", deliberately. Was:
+   **Invariant 7 is half kept.** The vision: "no quality changes while a gesture or list momentum is
    active". The reducer freezes only hardware outputs (`hardwareOf`, `reducer.ts:1316`), and only on
    touches. Lever levels (list window, image decode, blur) can change mid-scroll, and scroll momentum
    is not sensed at all. Worst case: `drawDistance` shrinks while a teacher flings a roster.

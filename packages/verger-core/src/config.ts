@@ -98,6 +98,8 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   maxUnrelievedContentionSteps: 2,
   contentionReliefCores: 0.05,
   gestureQuietMs: 1_000,
+  gestureFreezeMaxMs: 2_000,
+  scrollQuietMs: 3_000,
 };
 
 /**

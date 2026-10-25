@@ -189,6 +189,12 @@ export interface VergerState {
   /** Hardware outputs as last published, held while a finger is on the screen. */
   readonly heldRefreshCapHz: number | null;
   readonly heldGlobalMotion: boolean;
+  /** The decisions last published, so a lowering can wait out a gesture (invariant 7). */
+  readonly heldDecided: Readonly<Record<string, number>> | null;
+  /** Since when a lowering has been waiting for a gesture to end; null when none waits. */
+  readonly freezeSince: number | null;
+  /** A scroll counts as under way until this time (its end, or `scrollQuietMs` after it was seen). */
+  readonly scrollingUntil: number;
   /** Whether verger may drive hardware at all (the recovery ladder turns this off). */
   readonly hardware: boolean;
   /** Steps of capacity floor this device has earned back (0 = none, 2 = all). */
@@ -295,6 +301,9 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     comfortSeen: false,
     heldRefreshCapHz: null,
     heldGlobalMotion: false,
+    heldDecided: null,
+    freezeSince: null,
+    scrollingUntil: Number.NEGATIVE_INFINITY,
     hardware: options.hardware ?? true,
     capacityGrant: Math.max(0, Math.floor(options.capacityGrant ?? 0)),
     activation: options.activation ?? activationForMode(options.mode ?? 'active'),
@@ -454,6 +463,35 @@ function canCapRefresh(state: VergerState): boolean {
   const rates = state.capacity.refreshRatesHz;
   const cap = state.config.refreshCapHz;
   return rates.some((hz) => hz > cap + 1) && rates.some((hz) => hz <= cap + 1);
+}
+
+/** A finger on the screen within `gestureQuietMs`, or a scroll under way. */
+function gestureActive(state: VergerState, at: number): boolean {
+  return at - state.lastInteractionAt < state.config.gestureQuietMs || at < state.scrollingUntil;
+}
+
+/** Strain that may not wait for a gesture: heat at hot or worse, or low memory. */
+function strainOverrides(state: VergerState, at: number): boolean {
+  const thermal = thermalOf(state);
+  return thermal === 'hot' || thermal === 'critical' || memoryOf(state, at) === 'low';
+}
+
+/** Whether a gesture holds lowerings now: active, not overridden, and not past its longest wait. */
+function freezeHolds(state: VergerState, at: number): boolean {
+  return (
+    state.freezeSince !== null &&
+    at - state.freezeSince < state.config.gestureFreezeMaxMs &&
+    gestureActive(state, at) &&
+    !strainOverrides(state, at)
+  );
+}
+
+/** Whether the unfrozen decision lowers any lever below what was last published. */
+function loweringPending(state: VergerState, at: number): boolean {
+  const held = state.heldDecided;
+  if (held === null) return false;
+  const unfrozen = snapshotOf({ ...state, freezeSince: null }, at).proposedLevels;
+  return state.levers.some((lever) => (unfrozen[lever.id] ?? 0) > (held[lever.id] ?? 0));
 }
 
 function interactionIdle(state: VergerState, at: number): boolean {
@@ -1025,6 +1063,13 @@ function step(state: VergerState, event: VergerEvent): VergerState {
     case 'interaction':
       next = { ...next, lastInteractionAt: at };
       break;
+    case 'scroll':
+      next = {
+        ...next,
+        lastInteractionAt: at,
+        scrollingUntil: input.active ? at + next.config.scrollQuietMs : at,
+      };
+      break;
     case 'app-state':
       next = { ...next, visibility: input.state };
       if (input.state === 'active') next = { ...next, lastInteractionAt: at };
@@ -1197,12 +1242,16 @@ function maybeExpand(state: VergerState, at: number): VergerState {
 
 /** Folds one event into verger's state. Pure: same state and event, same result. */
 export function reduceVerger(state: VergerState, event: VergerEvent): VergerState {
-  const stepped = step(state, event);
+  const moved = step(state, event);
+  // A lowering that a gesture holds back is pending from the first event that wanted it.
+  const pending = gestureActive(moved, moved.at) && !strainOverrides(moved, moved.at) && loweringPending(moved, moved.at);
+  const stepped: VergerState = { ...moved, freezeSince: pending ? (state.freezeSince ?? moved.at) : null };
   const published = snapshotOf(stepped, stepped.at);
   const next: VergerState = {
     ...stepped,
     heldRefreshCapHz: published.refreshCapHz,
     heldGlobalMotion: published.globalReducedMotion,
+    heldDecided: published.proposedLevels,
   };
   const before = snapshotOf(state, state.at);
   const after = snapshotOf(next, next.at);
@@ -1258,9 +1307,22 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     };
   }
   const baseline = combine(state.levers, base);
-  const loop = closedLoop(state)
+  const raw = closedLoop(state)
     ? combine(state.levers, base, state.pressure, dynamicFloors(state, at))
     : baseline;
+  // Invariant 7: while a gesture or scroll is under way, a lowering waits (at most
+  // `gestureFreezeMaxMs`); limits and the class (the baseline) and every raise apply at once.
+  const held = state.heldDecided;
+  const holding = held !== null && freezeHolds(state, at);
+  const loop: Record<string, number> = {};
+  for (const lever of state.levers) {
+    const decided = raw[lever.id] ?? 0;
+    const was = held?.[lever.id];
+    loop[lever.id] =
+      holding && was !== undefined
+        ? Math.max(Math.min(decided, was), baseline[lever.id] ?? 0)
+        : decided;
+  }
   // Per lever: `apply` publishes the decision, `shadow` the baseline (the decision is only
   // proposed), `off` full quality, ungoverned.
   const levels: Record<string, number> = {};
@@ -1344,7 +1406,7 @@ function hardwareOf(
       : null;
   const wantMotion = applied(motionLever) && (levels[motionLever.id] ?? 0) >= 1;
   const thermal = thermalOf(state);
-  const touching = at - state.lastInteractionAt < state.config.gestureQuietMs;
+  const touching = gestureActive(state, at);
   const forced = thermal === 'hot' || thermal === 'critical';
   if (!touching || forced) return { refreshCapHz: wantCap, globalReducedMotion: wantMotion };
   return {
@@ -1429,6 +1491,8 @@ export function nextTimedChangeAt(state: VergerState): number | null {
   const candidates: number[] = [];
   if (!interactionIdle(state, now)) candidates.push(state.lastInteractionAt + ambientSleepAfterMs);
   candidates.push(state.lastInteractionAt + state.config.gestureQuietMs);
+  if (Number.isFinite(state.scrollingUntil)) candidates.push(state.scrollingUntil);
+  if (state.freezeSince !== null) candidates.push(state.freezeSince + state.config.gestureFreezeMaxMs);
   for (const since of [state.jsSaturatedSince, state.mainSaturatedSince]) {
     if (since === null) continue;
     candidates.push(since + saturationAfterMs, state.lastContentionActionAt + saturationAfterMs);

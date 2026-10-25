@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, RefreshControl, type StyleProp, type ViewStyle } from 'react-native';
 import { FlashList, type FlashListProps, type ListRenderItem } from '@shopify/flash-list';
+import { useScrollPresence } from '@repo/verger-react';
 import { useVisualCapabilities } from '../context/VisualCapabilities';
 import { LayoutLoopSentinel } from '../sentinels/LayoutLoopSentinel';
 import { BrandedEmptyState } from './BrandedEmptyState';
@@ -39,10 +40,16 @@ export function SovereignVirtualList<T>({
   ListEmptyComponent,
   refreshControl,
   drawDistance,
+  onScrollBeginDrag,
+  onMomentumScrollBegin,
+  onMomentumScrollEnd,
   ...flashListProps
 }: SovereignVirtualListProps<T>) {
   // verger's `list-window` lever narrows how far ahead rows render; a caller's value wins.
   const { listDrawDistance } = useVisualCapabilities();
+  // A fling tells verger to hold quality-lowering changes until it settles; the caller's own
+  // scroll handlers still run, first.
+  const scroll = useScrollPresence({ onScrollBeginDrag, onMomentumScrollBegin, onMomentumScrollEnd });
   if (isLoading && (!data || data.length === 0)) {
     return (
       <View style={[styles.container, containerStyle]} testID={testID ? `${testID}-loading` : undefined}>
@@ -76,6 +83,7 @@ export function SovereignVirtualList<T>({
         refreshControl={resolvedRefreshControl}
         drawDistance={drawDistance ?? listDrawDistance}
         {...flashListProps}
+        {...scroll}
       />
     </LayoutLoopSentinel>
   );

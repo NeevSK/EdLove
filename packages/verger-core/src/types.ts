@@ -224,6 +224,11 @@ export type VergerEvent =
       readonly lever: string;
       readonly target: LeverTarget;
     }
+  /**
+   * A list or scroll view began (`active`) or finished (momentum ended) scrolling. Presence, and
+   * a gesture: quality-lowering changes wait while it lasts (the vision's invariant 7).
+   */
+  | { readonly type: 'scroll'; readonly at: number; readonly active: boolean }
   | { readonly type: 'tick'; readonly at: number };
 
 /** Unity-style indexer action, extended with verger's reasons. */
@@ -453,8 +458,15 @@ export interface VergerConfig {
   readonly maxUnrelievedContentionSteps: number;
   /** Drops in cores, or in long tasks, that count as relief after a contention step. */
   readonly contentionReliefCores: number;
-  /** Quality-lowering hardware changes wait this long after the last touch (gesture freeze). */
+  /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
+  /**
+   * The longest a pending lowering waits for a gesture or scroll to end, then it applies anyway:
+   * under sustained jank with a finger always down, quality must still be able to drop. Provisional.
+   */
+  readonly gestureFreezeMaxMs: number;
+  /** A scroll whose end is never reported counts as over this long after it was last seen. */
+  readonly scrollQuietMs: number;
 }
 
 export interface VergerSnapshot {
