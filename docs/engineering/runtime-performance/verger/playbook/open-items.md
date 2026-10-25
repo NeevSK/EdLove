@@ -20,7 +20,7 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
 
 ## Unexplained
 
-- **One failed run of `packages/core/src/verger` on 2026-10-24** (1 failed of 96), not kept. Every
+- **Resolved 2026-10-25:** the ladder's mutation checks relied on random search to find the broken ladders and occasionally missed; each now pins the sequence that exposes it (commit 2802d75). Was: **one failed run of `packages/core/src/verger` on 2026-10-24** (1 failed of 96), not kept. Every
   run since passed, including 3000 cases per property. If it recurs: keep the full output (the
   fast-check seed and counterexample), pin it, fix it. Never re-run until green.
 
