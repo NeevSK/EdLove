@@ -6,7 +6,12 @@ import {
 } from '@repo/verger-core';
 import { observeInputDelay } from '@repo/verger-react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { BrowserBattery, BrowserConnection, BrowserNavigator } from './browser';
+import type {
+  BrowserBattery,
+  BrowserConnection,
+  BrowserNavigator,
+  BrowserPressureRecord,
+} from './browser';
 import {
   batteryEventOfBrowser,
   capacityOfBrowser,
@@ -169,6 +174,65 @@ describe('browserSignals', () => {
     );
     expect(events).toEqual([expect.objectContaining({ type: 'network', transport: 'none' })]);
     stop();
+  });
+
+  /** A fake Compute Pressure observer: records reach `emit`, observe resolves or rejects. */
+  function pressureFake(observe: () => Promise<void>) {
+    const made: { emit: (records: readonly BrowserPressureRecord[]) => void; disconnected: boolean; options?: unknown }[] = [];
+    class FakePressureObserver {
+      private readonly entry: (typeof made)[number];
+      constructor(callback: (records: readonly BrowserPressureRecord[]) => void) {
+        this.entry = { emit: callback, disconnected: false };
+        made.push(this.entry);
+      }
+      observe(_source: 'cpu', options?: { readonly sampleInterval?: number }) {
+        this.entry.options = options;
+        return observe();
+      }
+      disconnect() {
+        this.entry.disconnected = true;
+      }
+    }
+    return { PressureObserver: FakePressureObserver, made };
+  }
+
+  it('compute pressure (R10): the last cpu record of a batch is an event; stop disconnects', () => {
+    const { PressureObserver, made } = pressureFake(async () => undefined);
+    const events: VergerEvent[] = [];
+    const stop = browserSignals(
+      { window: new EventTarget() as Window, navigator: { onLine: true }, PressureObserver },
+      (e) => events.push(e),
+      () => 3,
+    );
+    const observer = made[0];
+    expect(observer?.options).toEqual({ sampleInterval: 2_000 });
+    observer?.emit([
+      { source: 'cpu', state: 'fair', time: 1 },
+      { source: 'cpu', state: 'serious', time: 2 },
+    ]);
+    observer?.emit([]);
+    expect(events.filter((e) => e.type === 'compute-pressure')).toEqual([
+      { type: 'compute-pressure', at: 3, state: 'serious' },
+    ]);
+    stop();
+    expect(observer?.disconnected).toBe(true);
+    observer?.emit([{ source: 'cpu', state: 'critical', time: 3 }]);
+    expect(events.filter((e) => e.type === 'compute-pressure')).toHaveLength(1);
+  });
+
+  it('compute pressure refused (no permission, no cpu source) only warns', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { PressureObserver } = pressureFake(() => Promise.reject(new Error('NotAllowedError')));
+    const stop = browserSignals(
+      { window: new EventTarget() as Window, navigator: { onLine: true }, PressureObserver },
+      () => undefined,
+      () => 0,
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(warn).toHaveBeenCalledWith('[verger] compute pressure unavailable', expect.any(Error));
+    stop();
+    warn.mockRestore();
   });
 });
 

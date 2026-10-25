@@ -129,6 +129,12 @@ const frames = (startMs: number, averageMs: number, droppedRatio: number): Verge
 const stressed = (startMs: number) => frames(startMs, 30, 0.3);
 const calm = (startMs: number) => frames(startMs, 8, 0);
 const touch = (at: number): VergerEvent => ({ type: 'interaction', at });
+/** A comfortable frame report: the CPU boost acts on reported frame work (R9). */
+const calmFrames = (at: number): VergerEvent => ({
+  type: 'frame-window',
+  at,
+  window: { startMs: at - 500, endMs: at, frames: 30, averageMs: 8, targetMs: 16.67, worstMs: 10, droppedRatio: 0 },
+});
 
 function run(patch: ActivationPatch | null, events: readonly VergerEvent[]) {
   let state = createVergerState({
@@ -234,11 +240,11 @@ describe('activation governs decisions', () => {
   it('hardware off: no refresh cap and no CPU boost, while levels still decide', () => {
     const idle = [touch(0), { type: 'tick', at: 20_000 } as const];
     expect(run(null, idle).snapshot.refreshCapHz).toBe(60);
-    expect(run(null, [touch(0)]).snapshot.cpuBoost).toBe(true);
+    expect(run(null, [calmFrames(500), touch(600)]).snapshot.cpuBoost).toBe(true);
     const off = run({ hardware: false }, idle).snapshot;
     expect(off.refreshCapHz).toBeNull();
     expect(off.levels['refresh-rate']).toBe(1);
-    expect(run({ hardware: false }, [touch(0)]).snapshot.cpuBoost).toBe(false);
+    expect(run({ hardware: false }, [calmFrames(500), touch(600)]).snapshot.cpuBoost).toBe(false);
   });
 });
 

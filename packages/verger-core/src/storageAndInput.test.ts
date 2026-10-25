@@ -105,3 +105,44 @@ describe('low storage and admission: a per-workload decision', () => {
     expect(admitWork({ ...low, storage: 'unknown' }, { class: 'deferrable', spends: ['storage'], whenStorageLow: 'wait' }).admit).toBe(true);
   });
 });
+
+describe('compute pressure as evidence of contention (R10)', () => {
+  const pressure = (state: 'nominal' | 'fair' | 'serious' | 'critical', at = 1000): VergerEvent => ({
+    type: 'compute-pressure',
+    at,
+    state,
+  });
+
+  const stall: VergerEvent = { type: 'long-task', at: 1500, durationMs: 120 };
+
+  it('under serious or critical, one long task is JS contention; under nominal or fair it is not', () => {
+    const active = ACTIVATION_PRESETS.active;
+    for (const policy of [VERGER_POLICY, VERGER_POLICY_P5]) {
+      expect(after([pressure('serious'), stall], active, policy).contention).toBe('js');
+      expect(after([pressure('critical'), stall], active, policy).contention).toBe('js');
+      expect(after([pressure('fair'), stall], active, policy).contention).toBe('none');
+      expect(after([pressure('critical'), pressure('nominal', 1200), stall], active, policy).contention).toBe('none');
+    }
+  });
+
+  it('pressure alone is never contention, and the long task ages out: no reading means no hold', () => {
+    const active = ACTIVATION_PRESETS.active;
+    expect(after([pressure('critical')], active).contention).toBe('none');
+    expect(after([pressure('critical'), stall, { type: 'tick', at: 30_000 }], active).contention).toBe('none');
+  });
+
+  it('is heard with the threads sensor: deaf, it changes nothing, and deafening forgets it', () => {
+    const deaf = resolveActivation(ACTIVATION_PRESETS.active, { sense: { threads: false } });
+    expect(after([pressure('critical'), stall], deaf).contention).toBe('none');
+    expect(
+      after([pressure('critical'), { type: 'activation', at: 1200, activation: deaf }, stall], ACTIVATION_PRESETS.active)
+        .contention,
+    ).toBe('none');
+  });
+
+  it('rejects a state the spec does not define', () => {
+    expect(isValidEvent(pressure('serious'))).toBe(true);
+    const bogus = { type: 'compute-pressure', at: 1, state: 'hot' };
+    expect(isValidEvent(bogus as VergerEvent)).toBe(false);
+  });
+});

@@ -36,7 +36,7 @@ next): [pipeline.md](../pipeline.md). Verification doctrine: [verification.md](.
 |---|---|---|---|
 | 1 | **F. Phones**: first Gradle build, dev client on real phones, measured thresholds, then fit the simulator's phones to recordings (F6) | [F-phones.md](F-phones.md) | Naveen's laptop and phones |
 | 2 | **B3. Data budget** accounting (B3.1, TrafficStats); the limit (B3.2) is built | [B3-data-budget.md](B3-data-budget.md) | a small native addition |
-| 3 | **B. Web sensing**: Compute Pressure | [B-sensing.md](B-sensing.md) | small, independent |
+| — | B. Web sensing, Compute Pressure: built 2026-10-25 (R10) | [B-sensing.md](B-sensing.md) | — |
 | — | **P. Control layer** (simulator, stability suite, hysteresis, relief check, gains): built 2026-10-25; read before changing any decision rule | [P-control.md](P-control.md) | nothing; pure TypeScript |
 | — | C. Envelope (verger-p5), D. Loops 2 and 3, B4 and B7: built; their guides stay as reference | [C-envelope.md](C-envelope.md), [D-loops.md](D-loops.md), [B-sensing.md](B-sensing.md) | — |
 | — | Open items and known hazards | [open-items.md](open-items.md) | read before any phase |

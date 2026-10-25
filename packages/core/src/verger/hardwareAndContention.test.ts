@@ -219,8 +219,18 @@ describe('hardware levers', () => {
   });
 
   it('boosts the UI threads only while someone interacts on a cool, unrestricted, capable device', () => {
+    // The boost acts on reported frame work, so it waits for the first frame report (R9).
+    const reported: VergerEvent = {
+      type: 'frame-window',
+      at: 0,
+      window: { startMs: -500, endMs: 0, frames: 30, averageMs: 8, targetMs: 16.667, worstMs: 10, droppedRatio: 0 },
+    };
+    expect(
+      snapshotOf(run(createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS }), [{ type: 'interaction', at: 0 }]))
+        .cpuBoost,
+    ).toBe(false);
     let state = createVergerState({ at: 0, capacity: PHONE_90HZ, levers: GURUDEVI_LEVERS });
-    state = run(state, [{ type: 'interaction', at: 0 }]);
+    state = run(state, [reported, { type: 'interaction', at: 0 }]);
     expect(snapshotOf(state).cpuBoost).toBe(true);
     expect(snapshotOf(run(state, [{ type: 'tick', at: 10_001 }])).cpuBoost).toBe(false);
     expect(
@@ -232,6 +242,7 @@ describe('hardware levers', () => {
       snapshotOf(run(state, [{ type: 'app-state', at: 1, state: 'background' }])).cpuBoost,
     ).toBe(false);
     const low = run(createVergerState({ at: 0, capacity: PHONE_LOW, levers: GURUDEVI_LEVERS }), [
+      reported,
       { type: 'interaction', at: 0 },
     ]);
     expect(snapshotOf(low).cpuBoost).toBe(false);

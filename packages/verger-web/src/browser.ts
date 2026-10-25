@@ -30,6 +30,26 @@ export interface BrowserNavigator {
   readonly storage?: { estimate(): Promise<BrowserStorageEstimate> };
 }
 
+/**
+ * Compute Pressure (W3C Compute Pressure Level 1, IDL read from the spec source on 2026-10-25):
+ * `new PressureObserver(callback)`, `observe(source, { sampleInterval })` returning a promise that
+ * rejects where the source or the permissions policy (`compute-pressure`) is unavailable,
+ * `disconnect()`. Records carry `source`, `state` and `time`. Chromium only, secure contexts.
+ */
+export type BrowserPressureState = 'nominal' | 'fair' | 'serious' | 'critical';
+export interface BrowserPressureRecord {
+  readonly source: string;
+  readonly state: BrowserPressureState;
+  readonly time: number;
+}
+export interface BrowserPressureObserver {
+  observe(source: 'cpu', options?: { readonly sampleInterval?: number }): Promise<void>;
+  disconnect(): void;
+}
+export type BrowserPressureObserverConstructor = new (
+  callback: (records: readonly BrowserPressureRecord[]) => void,
+) => BrowserPressureObserver;
+
 export interface BrowserStorageEstimate {
   readonly quota?: number;
   readonly usage?: number;

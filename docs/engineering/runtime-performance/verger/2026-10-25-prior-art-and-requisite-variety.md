@@ -164,6 +164,22 @@ the reason).
 which comes only from frame metrics. The reducer now never asks for the boost with the frames
 sensor off (and the deaf-sensor invariant checks it), and the native side refuses it too, on a
 request and on resume. Kotlin compiled against `android.jar` 35, 34 JUnit tests pass.
+Refined with R10: the reducer waits for the first frame report rather than reading the frames
+switch, so a deaf frames sensor acts exactly like a silent one (the deaf-sensor property found
+the difference at 3000 runs, seed 970816213; pinned). The boost now starts after the first frame
+window, about half a second after launch.
+
+**R10 built (Compute Pressure on the web).** `browserSignals` observes `PressureObserver` on the
+`cpu` source (every 2 s at most, where the browser has it: Chromium, secure contexts) and sends
+the newest state of each batch as a `compute-pressure` event, heard with the threads sensor; a
+refused observer (no permission policy, no source) only warns. Under `serious` or `critical`, one
+recent long task counts as JS contention instead of three. Pressure alone never does: the
+browser reports changes only, so a held `critical` with no later record would have held a lever
+forever. The no-permanent-degradation property found exactly that on the first version
+(pinned). The pressure is a cause (the whole machine is busy), the long task the symptom on the
+page; requiring both is the fusion the Compute Pressure explainer itself asks for. It rides the
+threads sensor rather than a new sensor id: it is CPU contention evidence, and deafening threads
+forgets it. G1 (Vitest, a fake observer): verger-web 17 tests, verger-core 296.
 
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the

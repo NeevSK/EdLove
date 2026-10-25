@@ -238,6 +238,17 @@ export type VergerEvent =
    * the next visit (R4, feedforward from memory).
    */
   | { readonly type: 'screen'; readonly at: number; readonly name: string; readonly transitionMs?: number }
+  /**
+   * The system's CPU pressure as the browser reports it (Compute Pressure, `PressureObserver`
+   * on source `cpu`; R10). Under `serious` or `critical`, one recent long task counts as JS
+   * contention (the page's one thread shares an overloaded machine); alone it is never contention,
+   * since the browser sends no reading while the state holds. Heard with the threads sensor.
+   */
+  | {
+      readonly type: 'compute-pressure';
+      readonly at: number;
+      readonly state: 'nominal' | 'fair' | 'serious' | 'critical';
+    }
   | { readonly type: 'tick'; readonly at: number };
 
 /** Unity-style indexer action, extended with verger's reasons. */

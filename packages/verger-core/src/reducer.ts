@@ -213,6 +213,8 @@ export interface VergerState {
   readonly mainSaturatedSince: number | null;
   readonly jsCores: number;
   readonly mainCores: number;
+  /** The browser's CPU pressure (R10); null until reported or while the threads sensor is deaf. */
+  readonly computePressure: 'nominal' | 'fair' | 'serious' | 'critical' | null;
   /** Recent long-task end times, newest last, pruned to the long-task window. */
   readonly longTasks: readonly number[];
   readonly lastContentionActionAt: number;
@@ -240,6 +242,8 @@ export interface VergerState {
   } | null;
   /** Frame cost over stressed windows, smoothed (an EWMA of 0.5), to judge relief through noise. */
   readonly frameCostMs: number | null;
+  /** A frame report has arrived since frames were last heard from (R9: the boost acts on them). */
+  readonly framesHeard: boolean;
   /** The episode's lowerings did not relieve the frames: no more until the stress ends. */
   readonly framesExhausted: boolean;
   /** Frame load (average cost over budget), smoothed (an EWMA of 0.5) within one frame state. */
@@ -392,6 +396,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     mainSaturatedSince: null,
     jsCores: 0,
     mainCores: 0,
+    computePressure: null,
     longTasks: [],
     lastContentionActionAt: Number.NEGATIVE_INFINITY,
     contentionBaseline: null,
@@ -399,6 +404,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     contentionExhausted: false,
     frameEpisode: null,
     frameCostMs: null,
+    framesHeard: false,
     framesExhausted: false,
     frameLoad: null,
     gainProbe: null,
@@ -710,6 +716,7 @@ function forgetReadings(state: VergerState, sensor: SensorId): VergerState {
         comfortSeen: false,
         frameEpisode: null,
         frameCostMs: null,
+        framesHeard: false,
         framesExhausted: false,
         frameLoad: null,
         gainProbe: null,
@@ -721,6 +728,7 @@ function forgetReadings(state: VergerState, sensor: SensorId): VergerState {
         mainSaturatedSince: null,
         jsCores: 0,
         mainCores: 0,
+        computePressure: null,
       };
     case 'memory':
       return { ...state, memoryLatch: NO_MEMORY_LATCH, polledMemory: null, memorySensing: false };
@@ -1269,7 +1277,12 @@ function recentLongTasks(state: VergerState, at: number): number {
 function contentionOf(state: VergerState, at: number): Contention {
   const after = state.config.saturationAfterMs;
   if (state.jsSaturatedSince !== null && at - state.jsSaturatedSince >= after) return 'js';
-  if (recentLongTasks(state, at) >= state.config.longTasksForContention) return 'js';
+  const longTasks = recentLongTasks(state, at);
+  if (longTasks >= state.config.longTasksForContention) return 'js';
+  // The system's CPU pressure (R10) is a cause, not a symptom, and the browser reports only its
+  // changes: a held `critical` with no later record would hold the levers forever. So it only
+  // lowers the bar for the page's own stall evidence to one long task, which ages out.
+  if ((state.computePressure === 'serious' || state.computePressure === 'critical') && longTasks >= 1) return 'js';
   if (state.mainSaturatedSince !== null && at - state.mainSaturatedSince >= after) return 'main';
   return 'none';
 }
@@ -1491,7 +1504,8 @@ function onScreen(state: VergerState, event: Extract<VergerEvent, { type: 'scree
   };
 }
 
-function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: 'frame-window' }>) {
+function onFrameWindow(previous: VergerState, event: Extract<VergerEvent, { type: 'frame-window' }>) {
+  const state = previous.framesHeard ? previous : { ...previous, framesHeard: true };
   // Frames within an announced transition are the app's expected work: neither stress nor comfort.
   if (event.at < state.transitionUntil) return state;
   const frameState = classifyFrameWindow(event.window, state.config);
@@ -1632,6 +1646,9 @@ function step(state: VergerState, event: VergerEvent): VergerState {
     }
     case 'long-task':
       next = noteStall(next, at);
+      break;
+    case 'compute-pressure':
+      next = { ...next, computePressure: input.state };
       break;
     case 'power':
       next = { ...next, powerSaver: input.saver };
@@ -1999,8 +2016,9 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     cpuBoost:
       hardwareAllowed &&
       state.capacity.supportsCpuHints &&
-      // The hint session acts on reported frame work; with frames deaf it would boost blind (R9).
-      state.activation.sense.frames &&
+      // The hint session acts on reported frame work; deaf, or before the first report, it would
+      // boost blind (R9). Reports, not the switch: a deaf sensor must act like a silent one.
+      state.framesHeard &&
       state.visibility === 'active' &&
       !state.powerSaver &&
       !idle &&

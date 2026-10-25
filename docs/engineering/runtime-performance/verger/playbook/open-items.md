@@ -59,7 +59,8 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
   foreground). A `stopped` marker skipping the exit check is kept, by design: `stopped` means verger
   shut its native side down cleanly, so a later crash is code verger no longer runs, and charging it
   to verger would step healthy devices down the ladder.
-- **Resolved 2026-10-25 (R9):** the ADPF CPU boost is never asked for with the frames sensor off (the reducer, and the native side refuses it too), since its session acts on reported frame work. Was: the boost got no frame reports when the frames sensor was off.
+- **Resolved 2026-10-25 (R9):** the ADPF CPU boost is never asked for with the frames sensor off (the reducer, and the native side refuses it too), since its session acts on reported frame work. Was: the boost got no frame reports when the frames sensor was off. Refined with R10: it waits for the first frame report instead of reading the switch, so a deaf sensor acts like a silent one.
+- **Resolved 2026-10-25 (R10):** Compute Pressure on the web feeds contention. Known limit: it is Chromium only, and a held state is never re-reported, so it only lowers the long-task bar; on a phone browser without it nothing changes.
 - Web: no battery saver and no metered flag exist in browsers; Battery Status and Network
   Information are Chromium-only; device class is `unknown` where memory is hidden.
 - Web has no fidelity setting yet (verger reads `auto`).

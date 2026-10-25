@@ -115,7 +115,7 @@ describe('runtime controller', () => {
 
   it('applies hardware levers only on change, and hands the hardware back on stop', () => {
     const time = fakeTime();
-    const { port, calls } = fakePort();
+    const { port, calls, emit } = fakePort();
     const controller = createRuntimeController({
       port,
       capacity: port.capacity,
@@ -127,6 +127,12 @@ describe('runtime controller', () => {
       memorySensing: true,
     });
     controller.start();
+    // The boost acts on reported frame work, so it waits for the first frame report (R9).
+    emit({
+      type: 'frame-window',
+      at: 0,
+      window: { startMs: -500, endMs: 0, frames: 30, averageMs: 8, targetMs: 16.67, worstMs: 10, droppedRatio: 0 },
+    });
     controller.dispatch({ type: 'interaction', at: 0 });
     controller.dispatch({ type: 'interaction', at: 100 });
     expect(calls.filter((c) => c.startsWith('boost:true'))).toHaveLength(1);
@@ -240,7 +246,8 @@ describe('runtime controller', () => {
       memorySensing: true,
     });
     controller.start();
-    expect(calls.slice(0, 2)).toEqual(['refresh:null', 'boost:true']);
+    // Before any frame report the boost is off, which also releases one a previous instance left.
+    expect(calls.slice(0, 2)).toEqual(['refresh:null', 'boost:false']);
     controller.dispatch({ type: 'tick', at: Number.NaN });
     expect(controller.getSnapshot().at).toBe(0);
     controller.stop();

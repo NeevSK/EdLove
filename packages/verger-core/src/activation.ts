@@ -200,6 +200,7 @@ export function sensorOf(event: VergerEvent): SensorId | null {
     case 'frame-window':
       return 'frames';
     case 'thread-load':
+    case 'compute-pressure':
       return 'threads';
     case 'memory-trim':
     case 'memory-state':

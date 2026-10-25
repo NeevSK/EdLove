@@ -19,7 +19,7 @@ import {
   observeLongTasks,
 } from '@repo/verger-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import type { BrowserNavigator } from './browser';
+import type { BrowserNavigator, BrowserPressureObserverConstructor } from './browser';
 import { capacityOfBrowser } from './mapping';
 import { browserStore, createVergerBrowserPlatform } from './platform';
 import { browserSignals } from './signals';
@@ -32,6 +32,9 @@ export const REDUCED_MOTION_ATTRIBUTE = 'data-verger-reduced-motion';
 
 const now = () => performance.now();
 const navigatorOf = () => window.navigator as Navigator & BrowserNavigator;
+/** Compute Pressure (R10) is not in every DOM lib yet; absent where the browser lacks it. */
+const pressureObserverOf = () =>
+  (window as Window & { PressureObserver?: BrowserPressureObserverConstructor }).PressureObserver;
 
 export interface VergerBrowserProps {
   readonly children: ReactNode;
@@ -147,8 +150,9 @@ export function VergerBrowser({
       });
     document.addEventListener('visibilitychange', onVisibility);
     motionQuery?.addEventListener('change', onMotion);
+    const PressureObserver = pressureObserverOf();
     const stopSignals = browserSignals(
-      { window, navigator: navigatorOf() },
+      { window, navigator: navigatorOf(), ...(PressureObserver ? { PressureObserver } : {}) },
       (event) => verger.signal(event),
       now,
     );

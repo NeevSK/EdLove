@@ -30,10 +30,13 @@ tasks), event type `input-delay` with duration; contention reads it.
 
 ## Web: Compute Pressure
 
-`PressureObserver` (Chromium 125+, secure contexts) reports CPU pressure states (nominal, fair,
-serious, critical) that blend utilisation and thermal state. It is not the platform thermal
-status: give it its own event and sensor id, and let the estimator weigh it with low
-confidence. Feature-detect; most browsers lack it.
+**Built 2026-10-25 (R10).** `PressureObserver` (Chromium 125+, secure contexts) reports CPU
+pressure states (nominal, fair, serious, critical) that blend utilisation and thermal state. It
+is not the platform thermal status: it has its own event, `compute-pressure`, heard with the
+threads sensor (it is CPU contention evidence, not heat). Weighed with low confidence as
+designed: under `serious` or `critical` one long task counts as contention instead of three,
+and pressure alone never does, because the browser sends no record while a state holds.
+Feature-detected in `VergerBrowser`; most browsers lack it.
 
 ## Web: device class without memory
 

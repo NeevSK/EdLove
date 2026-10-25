@@ -29,6 +29,9 @@ wallpaper, online status, background work). The old governor is retired; never r
   `Verger.signal` (native readings win while verger runs).
 - No providers: hooks read the bound verger; shells (`VergerRoot`, `VergerBrowser`) bind it.
 - In code a higher lever **level** is **less** quality; "floor" in code is a quality ceiling.
+- A deaf sensor acts exactly like a silent one: gate on readings received, never on the sense
+  switch. A reading that is only re-sent on change (Compute Pressure) never holds a lever on its
+  own; pair it with a symptom that ages out.
 - Do not decide open chairs (release preset, calibrated thresholds, budgets); make them config.
 - No paid services (Maestro CLI and Stryker locally only).
 - Report evidence as level (G0 to G5), suite, count, and what it does not prove.

@@ -185,7 +185,15 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
       type: fc.constant('input-delay' as const),
       durationMs: fc.double({ min: 0, max: 600, noNaN: true }),
     }),
-  },  {
+  },  // R10: the browser's CPU pressure, heard with the threads sensor.
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('compute-pressure' as const),
+      state: fc.constantFrom('nominal' as const, 'fair' as const, 'serious' as const, 'critical' as const),
+    }),
+  },
+  {
     weight: 1,
     arbitrary: fc.record({
       type: fc.constant('data-budget' as const),
@@ -580,6 +588,20 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
             'thermal' as SensorId,
             [{ type: 'battery', at: 1, levelPercent: null, pluggedIn: null, temperatureC: 15 }],
           ],
+          // Found at 3000 runs (seed 970816213): the CPU boost read the frames switch, so a deaf
+          // frames sensor differed from a silent one. It now waits for a frame report (R9).
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: { ...UNKNOWN_CAPACITY, supportsCpuHints: true, refreshRatesHz: [60, 90] },
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            ACTIVATION_PRESETS.active,
+            'frames' as SensorId,
+            [],
+          ],
         ],
       },
     );
@@ -642,7 +664,23 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
         expect(final.priorHeld).toEqual({});
         expect(final.contentionExhausted).toBe(false);
       }),
-      { numRuns: 60 },
+      {
+        numRuns: 60,
+        // Found by this property (R10): a held critical pressure, which the browser never
+        // re-reports while it holds, counted as contention on its own and held a lever forever.
+        examples: [
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            [{ type: 'compute-pressure', at: 1, state: 'critical' }],
+          ],
+        ],
+      },
     );
   });
 
