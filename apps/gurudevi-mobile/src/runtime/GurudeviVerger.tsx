@@ -15,6 +15,7 @@ import {
   type VergerHost,
   VERGER_LAB_RECORD_EVENTS,
   type VergerStore,
+  screenNameOf,
 } from '@repo/core/verger';
 import { createVergerAndroidPlatform } from '@repo/verger-android';
 import { VergerRoot } from '@repo/verger-react-native';
@@ -22,7 +23,8 @@ import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import { totalMemory } from 'expo-device';
 import { useStore } from '@repo/core/store/useStore';
 import { useFidelityOptional } from '@repo/ui/context';
-import { useVerger, useVergerSnapshot } from '@repo/verger-react';
+import { useScreenAnnouncement, useVerger, useVergerSnapshot } from '@repo/verger-react';
+import { usePathname } from 'expo-router';
 import { type ReactNode, useEffect, useState } from 'react';
 import { deviceSignals } from './deviceSignals';
 import { readVergerConfig, readVergerLaunch, readVergerPolicy, type RuntimeMode } from './runtimeMode';
@@ -68,6 +70,16 @@ function OnlineStatus() {
   useEffect(() => {
     if (networkLimit !== undefined) useStore.getState().setIsOnline(networkLimit !== 'offline');
   }, [networkLimit]);
+  return null;
+}
+
+/**
+ * Each route the user opens, announced to verger as a screen (R3): a new regime for its frames
+ * loop, and in verger-p5 the levels it settled on there last time (R4). Record ids fold into one
+ * screen (`screenNameOf`).
+ */
+function ScreenAnnouncer() {
+  useScreenAnnouncement(screenNameOf(usePathname()));
   return null;
 }
 
@@ -164,6 +176,7 @@ export function GurudeviVerger({
       recordEvents={__DEV__ ? VERGER_LAB_RECORD_EVENTS : undefined}
     >
       <OnlineStatus />
+      <ScreenAnnouncer />
       <SavedLab host={host} />
       {children}
     </VergerRoot>

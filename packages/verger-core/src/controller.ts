@@ -263,5 +263,11 @@ export function isValidEvent(event: VergerEvent): boolean {
   if (event.type === 'js-heap')
     return finite(event.gcPauseShare) && (event.allocatedBytes === null || finite(event.allocatedBytes));
   if (event.type === 'storage') return event.freeBytes === null || finite(event.freeBytes);
+  if (event.type === 'screen')
+    return (
+      typeof event.name === 'string' &&
+      event.name.length > 0 &&
+      (event.transitionMs === undefined || (finite(event.transitionMs) && event.transitionMs >= 0))
+    );
   return true;
 }

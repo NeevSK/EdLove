@@ -18,7 +18,7 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## Build plan and progress
 
-**Prior art and requisite variety:** [what verger lacks against Unity, ADPF, Unreal, APT and the rest](2026-10-25-prior-art-and-requisite-variety.md) (R1 to R12) Built: R1 heat trend; P5 heat time-scale separation (latch, rate-limited climb, derivative gate); pressure causes; three pre-existing bugs found by 3000-case runs fixed and pinned.
+**Prior art and requisite variety:** [what verger lacks against Unity, ADPF, Unreal, APT and the rest](2026-10-25-prior-art-and-requisite-variety.md) (R1 to R12) Built: R1 heat trend; P5 heat time-scale separation (latch, rate-limited climb, derivative gate); pressure causes; three pre-existing bugs found by 3000-case runs fixed and pinned. Then R2 proportional lowering, R3 screen annotations (wired in both apps), R4 screen memory; lowering no longer spends steps on sleeping levers; gain estimates unbiased (steps given back measured too).
 
 **Control review and plan:** [verger as a control system](2026-10-25-control-review-and-plan.md) (missing, sound, P1 to P8). Built: P1 simulator, P2 control metrics, P3 stability suite in the gate, P4 thermal and storage hysteresis, P8 relief check in the frames loop, P6 lever gain estimation (`snapshot.gains`), P7 gain-guided choice in p5, P5 as a guard (no thermal limit cycle, bounded in P3). Next: phase F fits the plant to phone recordings.
 

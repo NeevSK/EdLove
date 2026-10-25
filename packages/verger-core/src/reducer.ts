@@ -209,9 +209,21 @@ export interface VergerState {
   /** Frame load (average cost over budget), smoothed (an EWMA of 0.5) within one frame state. */
   readonly frameLoad: number | null;
   /** A single-step lowering published at `at`, waiting for a frame window after it (P6). */
-  readonly gainProbe: { readonly lever: string; readonly beforeLoad: number; readonly at: number } | null;
+  readonly gainProbe: {
+    readonly lever: string;
+    readonly beforeLoad: number;
+    readonly at: number;
+    /** A step down (lowered) or a step given back (raised). */
+    readonly direction: 'lowered' | 'raised';
+  } | null;
   /** Each lever's measured gain (P6), learned this session. */
   readonly leverGains: Readonly<Record<string, LeverGain>>;
+  /** The screen the app last announced (R3); null until one is. */
+  readonly screen: string | null;
+  /** Frames before this time are the announced transition's, not evidence (R3). */
+  readonly transitionUntil: number;
+  /** p5: the frames-caused pressure verger settled on per screen, applied on return (R4). */
+  readonly screenMemory: Readonly<Record<string, Readonly<Record<string, number>>>>;
 
   /** Last polled memory reading as a trim severity; holds until the next poll. */
   readonly polledMemory: TrimSeverity | null;
@@ -347,6 +359,9 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     frameLoad: null,
     gainProbe: null,
     leverGains: {},
+    screen: null,
+    transitionUntil: Number.NEGATIVE_INFINITY,
+    screenMemory: {},
     polledMemory: null,
     stressEndMs: null,
     comfortSeen: false,
@@ -702,8 +717,11 @@ function lower(
   let pressure = { ...state.pressure };
   let stack = [...state.stack];
   const lowered: string[] = [];
+  // Choose from what is published: a lever already held at its cheapest by a dynamic floor (ambient
+  // sleep, a warm floor) has nothing left to give, and lowering it would spend a step on nothing.
+  const dynamic = closedLoop(state) ? dynamicFloors(state, at) : {};
   for (let step = 0; step < steps; step += 1) {
-    const effective = combine(state.levers, staticFloors(state), pressure);
+    const effective = combine(state.levers, staticFloors(state), dynamic, pressure);
     const declared = chooseLeverToLower(candidates, effective, bottleneck, match);
     const lever = state.expansion ? byMeasuredGain(state, declared, candidates, effective, bottleneck, match) : declared;
     if (!lever) break;
@@ -1278,7 +1296,9 @@ function applyContention(state: VergerState, at: number): VergerState {
 function measureGain(state: VergerState, window: FrameWindow, load: number): VergerState {
   const probe = state.gainProbe;
   if (probe === null || window.startMs < probe.at) return state;
-  const sample = Math.max(-1, Math.min(1, 1 - load / probe.beforeLoad));
+  // Lowered: load after = load before × (1 − gain). Raised: load before = load after × (1 − gain).
+  const ratio = probe.direction === 'lowered' ? load / probe.beforeLoad : probe.beforeLoad / load;
+  const sample = Math.max(-1, Math.min(1, 1 - ratio));
   const known = state.leverGains[probe.lever];
   const alpha = state.config.gainAlpha;
   const gain: LeverGain =
@@ -1288,18 +1308,131 @@ function measureGain(state: VergerState, window: FrameWindow, load: number): Ver
   return { ...state, gainProbe: null, leverGains: { ...state.leverGains, [probe.lever]: gain } };
 }
 
-/** A published change that lowered exactly one lever by one step starts a probe; any other ends it. */
+/**
+ * A published change that moved exactly one lever by one step starts a probe; any other ends it.
+ * A step given back is the cleaner evidence: it comes after seconds of comfort, so its baseline is
+ * ordinary windows, while a step down comes right after the windows that were high enough to
+ * trigger it.
+ */
 function probeOf(state: VergerState, before: VergerSnapshot, after: VergerSnapshot): VergerState['gainProbe'] {
   const changed = state.levers.filter((l) => (before.levels[l.id] ?? 0) !== (after.levels[l.id] ?? 0));
   if (changed.length === 0) return state.gainProbe;
   const [only] = changed;
   if (changed.length > 1 || only === undefined || state.frameLoad === null || state.visibility !== 'active')
     return null;
-  if ((after.levels[only.id] ?? 0) !== (before.levels[only.id] ?? 0) + 1) return null;
-  return { lever: only.id, beforeLoad: state.frameLoad, at: after.at };
+  const from = before.levels[only.id] ?? 0;
+  const to = after.levels[only.id] ?? 0;
+  if (to === from - 1) return { lever: only.id, beforeLoad: state.frameLoad, at: after.at, direction: 'raised' };
+  if (to !== from + 1) return null;
+  // A step down taken on a load not over the stress line on average was triggered by windows that
+  // noise pushed high; against them, regression to the mean reads as the lever's gain. Such a step
+  // is no evidence (found with a lever of true gain 0.01 measured at 0.06).
+  if (state.frameLoad < state.config.stressRatio) return null;
+  return { lever: only.id, beforeLoad: state.frameLoad, at: after.at, direction: 'lowered' };
+}
+
+/** A lever's measured gain once confident and useful (P6, P7); null otherwise. */
+function confidentGain(state: VergerState, id: string | undefined): number | null {
+  const known = id === undefined ? undefined : state.leverGains[id];
+  if (known === undefined || known.samples < state.config.gainMinSamples) return null;
+  return known.gain >= state.config.gainUselessBelow ? known.gain : null;
+}
+
+/**
+ * The frames loop's action (R2). One step, as the ladder always took; in p5, more steps while the
+ * measured gains of the levers taken say frames would still be over budget (load above 1), up to
+ * `maxStepsPerAction`. A step onto a lever without a confident gain is not taken: proportional
+ * action is earned by measurement, never assumed.
+ */
+function lowerProportionally(
+  state: VergerState,
+  targets: readonly LeverTarget[],
+  at: number,
+  detail: string,
+  load: number,
+): { readonly state: VergerState; readonly steps: number } {
+  const first = lower(state, 1, targets, at, 'decrease', detail, 'frames');
+  if (first.lastAction === 'stale') return { state: first, steps: 0 };
+  if (!state.expansion) return { state: first, steps: 1 };
+  let current = first;
+  let steps = 1;
+  let projected = load;
+  const firstGain = confidentGain(state, first.stack[first.stack.length - 1]);
+  if (firstGain === null) return { state: first, steps };
+  projected *= 1 - firstGain;
+  while (steps < state.config.maxStepsPerAction && projected > 1) {
+    const candidate = lower(current, 1, targets, at, 'decrease', detail, 'frames');
+    if (candidate.lastAction === 'stale') break;
+    const gain = confidentGain(state, candidate.stack[candidate.stack.length - 1]);
+    if (gain === null) break;
+    current = candidate;
+    steps += 1;
+    projected *= 1 - gain;
+  }
+  if (steps === 1) return { state: first, steps };
+  return { state: { ...current, lastReason: `${detail}: ${steps} steps, sized by measured gains` }, steps };
+}
+
+/**
+ * A new screen (R3): a new regime for the frames loop. In p5, the pressure the frames loop holds
+ * is remembered for the screen left, and the memory of the screen entered is applied (R4): levers
+ * lowered on the last visit, and measured to help, are lowered on arrival, before its first frames,
+ * and given back by the usual evidence if this visit is lighter.
+ */
+function onScreen(state: VergerState, event: Extract<VergerEvent, { type: 'screen' }>, at: number): VergerState {
+  let next: VergerState = {
+    ...state,
+    screen: event.name,
+    transitionUntil: at + (event.transitionMs ?? 0),
+    gainProbe: null,
+    frameLoad: null,
+    frameCostMs: null,
+    frameEpisode: null,
+    framesExhausted: false,
+    stressMs: 0,
+    stressEndMs: null,
+  };
+  if (!state.expansion || event.name === state.screen) return next;
+  if (state.screen !== null) {
+    const held: Record<string, number> = {};
+    for (const [id, cause] of Object.entries(state.pressureCause))
+      if (cause === 'frames' && (state.pressure[id] ?? 0) > 0) held[id] = state.pressure[id] ?? 0;
+    next = { ...next, screenMemory: { ...state.screenMemory, [state.screen]: held } };
+  }
+  const remembered = next.screenMemory[event.name];
+  if (!remembered || !mayReduce(next)) return next;
+  const pressure = { ...next.pressure };
+  const stack = [...next.stack];
+  const pressureCause = { ...next.pressureCause };
+  let applied = 0;
+  for (const lever of governed(next)) {
+    // Only what is known to work is replayed: an unmeasured or useless lever is left to the loop,
+    // which measures it a step at a time (memory must not freeze a first visit's guesses).
+    if (confidentGain(next, lever.id) === null) continue;
+    const want = Math.min(lever.maxLevel, remembered[lever.id] ?? 0);
+    const have = pressure[lever.id] ?? 0;
+    if (want <= have) continue;
+    pressure[lever.id] = want;
+    for (let i = have; i < want; i += 1) stack.push(lever.id);
+    pressureCause[lever.id] = 'frames';
+    applied += want - have;
+  }
+  if (applied === 0) return next;
+  return {
+    ...next,
+    pressure,
+    stack,
+    pressureCause,
+    lastDecreaseAt: at,
+    lastPressureAt: at,
+    lastAction: 'decrease',
+    lastReason: `${event.name}: ${applied} steps remembered from the last visit`,
+  };
 }
 
 function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: 'frame-window' }>) {
+  // Frames within an announced transition are the app's expected work: neither stress nor comfort.
+  if (event.at < state.transitionUntil) return state;
   const frameState = classifyFrameWindow(event.window, state.config);
   const span = Math.max(0, event.window.endMs - event.window.startMs);
   const load = event.window.targetMs > 0 ? event.window.averageMs / event.window.targetMs : null;
@@ -1343,14 +1476,15 @@ function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: '
         };
       } else {
         const targets = bottleneckTargets(stage, gpuMeasured(event.window));
-        next = lower(next, 1, targets, event.at, 'decrease', detail, 'frames');
-        if (next.lastAction !== 'stale')
+        const lowered = lowerProportionally(next, targets, event.at, detail, costMs / w.targetMs);
+        next = lowered.state;
+        if (lowered.steps > 0)
           next = {
             ...next,
             frameEpisode: {
               startCostMs: episode?.startCostMs ?? costMs,
               targetMs: episode?.targetMs ?? w.targetMs,
-              steps: (episode?.steps ?? 0) + 1,
+              steps: (episode?.steps ?? 0) + lowered.steps,
             },
           };
       }
@@ -1488,6 +1622,9 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       break;
     case 'lever-ineffective':
       next = markIneffective(next, input.lever, input.target);
+      break;
+    case 'screen':
+      next = onScreen(next, input, at);
       break;
     case 'tick':
       break;

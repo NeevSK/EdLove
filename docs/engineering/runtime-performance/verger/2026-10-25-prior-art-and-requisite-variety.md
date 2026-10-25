@@ -93,6 +93,34 @@ lift everything, warm again), so **P5 was built**, not left a guard. See
 - heat pacing (P5, this work) held closed-loop decisions after a switch to static: pacing applies
   only while the closed loop decides.
 
+**R2, R3, R4 built.**
+- *R3, screen annotations*: a `screen` event (`name`, optional `transitionMs`). A new screen is a
+  new regime: frame smoothing, the stress episode and the gain probe start over; frames inside an
+  announced transition are neither stress nor comfort. Gurudevi announces every route on mobile
+  (expo-router `usePathname`) and on the web (Next `usePathname`) through `useScreenAnnouncement`
+  (verger-react), with record ids folded into `:id` (`screenNameOf`).
+- *R4, screen memory (p5)*: leaving a screen, p5 remembers the frames-caused pressure it held there;
+  returning, it applies the part measured to help (confident, useful gains) before the first frame.
+  Unmeasured levers are left to the loop, so memory never freezes a first visit's guesses.
+- *R2, proportional lowering (p5)*: when the measured gains of the levers taken say one step leaves
+  frames over budget, one action takes up to `maxStepsPerAction` (3) steps; a step onto an
+  unmeasured lever is never taken this way.
+On the screen the user keeps returning to (identify, mid phone): jank 10% → 1% for p5 (quality
+given up 34 → 40%), 10% → 4% for p4.
+
+**Found and fixed on the way:**
+- *Lowering spent steps on levers already asleep.* `lower()` chose from static floors only, so an
+  untouched phone "lowered" an ambient lever its idle floor already held at its cheapest: a step
+  with no effect, counted by the relief check (P8). It now chooses from what is published. This
+  alone cut p4's jank on identify from 10% to 4%.
+- *Gains were biased by selection.* A step down follows the windows that were high enough to
+  trigger it, so measured against them, regression to the mean read as gain (a lever of true gain
+  0.01 measured 0.06). Steps given back are now measured too (they follow seconds of comfort, so
+  their baseline is ordinary windows), and a step down counts only when the load was over the
+  stress line on average. Noise-free, the estimate was exact (0.0104 against 0.01).
+- *The ledger credited pressure on a shadowed lever* (from the P8 gesture-hold fix): a lever not
+  applied publishes its baseline, so none of its moves are pressure's. Found at 3000 runs, pinned.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).

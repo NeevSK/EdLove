@@ -19,6 +19,8 @@ export interface SessionSegment {
   readonly disturbance?: boolean;
   /** Air temperature for this stretch, if not the phone's usual (heat from outside the app). */
   readonly ambientC?: number;
+  /** The screen shown; a change is announced to verger as the app would on navigation (R3). */
+  readonly screen?: string;
 }
 
 export interface SimSession {
@@ -36,19 +38,19 @@ export const SIM_SESSIONS = {
   classroom: {
     name: 'classroom: lists, detail, reading, a sync',
     segments: [
-      { durationMs: 2 * min, baseCostMs: 6, touching: true, scrolling: true },
-      { durationMs: 1 * min, baseCostMs: 9, touching: true },
-      { durationMs: 3 * min, baseCostMs: 5 },
-      { durationMs: 1 * min, baseCostMs: 6, extraCostMs: 4, touching: true, disturbance: true },
+      { durationMs: 2 * min, baseCostMs: 6, touching: true, scrolling: true, screen: 'list' },
+      { durationMs: 1 * min, baseCostMs: 9, touching: true, screen: 'detail' },
+      { durationMs: 3 * min, baseCostMs: 5, screen: 'reading' },
+      { durationMs: 1 * min, baseCostMs: 6, extraCostMs: 4, touching: true, disturbance: true, screen: 'list' },
       { durationMs: 3 * min, baseCostMs: 6, touching: true, scrolling: true },
     ],
   },
   heatSoak: {
     name: 'heat soak: a rich screen in use for 12 minutes, then reading',
     segments: [
-      { durationMs: 12 * min, baseCostMs: 12, touching: true, disturbance: true },
+      { durationMs: 12 * min, baseCostMs: 12, touching: true, disturbance: true, screen: 'rich' },
       // Reading still taps now and then: the screen stays awake, so recovery is measurable.
-      { durationMs: 8 * min, baseCostMs: 5, touching: true },
+      { durationMs: 8 * min, baseCostMs: 5, touching: true, screen: 'reading' },
     ],
   },
   boundary: {
@@ -79,8 +81,8 @@ export const SIM_SESSIONS = {
     // Calm first: untouched, the ambient levers sleep after 10 s, and that is the state each
     // rich stretch should settle back to.
     segments: Array.from({ length: 10 }, () => [
-      { durationMs: 1 * min, baseCostMs: 4 },
-      { durationMs: 0.5 * min, baseCostMs: 26, disturbance: true },
+      { durationMs: 1 * min, baseCostMs: 4, screen: 'calm' },
+      { durationMs: 0.5 * min, baseCostMs: 26, disturbance: true, screen: 'rich' },
     ]).flat(),
   },
 } as const satisfies Record<string, SimSession>;
@@ -144,6 +146,7 @@ export function runClosedLoop(options: ClosedLoopOptions): { readonly ticks: Sim
   let snapshot = policy.snapshot(state);
   let plant: PlantState = { temperatureC: phone.thermal.ambientC + 2 };
   let visible = true;
+  let screen: string | null = null;
   const ticks: SimTick[] = [];
   const reduce = (event: VergerEvent) => {
     state = policy.reduce(state, event);
@@ -153,6 +156,10 @@ export function runClosedLoop(options: ClosedLoopOptions): { readonly ticks: Sim
   for (const [index, segment] of session.segments.entries()) {
     const end = at + segment.durationMs;
     const segmentVisible = segment.visible ?? true;
+    if (segment.screen !== undefined && segment.screen !== screen) {
+      screen = segment.screen;
+      reduce({ type: 'screen', at: at + 1, name: screen });
+    }
     for (; at < end; at += stepMs) {
       const now = at + stepMs;
       if (segmentVisible !== visible) {

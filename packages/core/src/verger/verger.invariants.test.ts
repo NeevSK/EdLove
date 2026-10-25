@@ -152,6 +152,19 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
   {
     weight: 1,
     arbitrary: fc.record({ type: fc.constant('scroll' as const), active: fc.boolean() }),
+  },
+  // R3/R4: navigation, with an optional announced transition; few names, so screens recur and
+  // p5's screen memory is exercised.
+  {
+    weight: 1,
+    arbitrary: fc.record(
+      {
+        type: fc.constant('screen' as const),
+        name: fc.constantFrom('home', 'workspace', 'reflect'),
+        transitionMs: fc.integer({ min: 0, max: 2000 }),
+      },
+      { requiredKeys: ['type', 'name'] },
+    ),
   },  {
     weight: 1,
     arbitrary: fc.record({
@@ -741,6 +754,20 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
               { type: 'memory-trim', at: 1, severity: 'moderate' },
               { type: 'activation', at: 2, activation: { ...ACTIVATION_PRESETS.active, decide: 'static' } },
               { type: 'activation', at: 30_001, activation: ACTIVATION_PRESETS.active },
+            ],
+          ],
+          // And: a floor moving a shadowed lever is the floor's, though its pressure is proposed.
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: { ...ACTIVATION_PRESETS.active, defaultLever: 'shadow' },
+              memorySensing: false,
+            },
+            [
+              { type: 'memory-trim', at: 1, severity: 'moderate' },
+              { type: 'preferences', at: 30_001, reduceMotion: false, fidelity: 'low' },
             ],
           ],
         ],

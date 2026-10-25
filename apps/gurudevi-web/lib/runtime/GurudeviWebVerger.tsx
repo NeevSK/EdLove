@@ -13,7 +13,10 @@ import {
   VERGER_LAB_RECORD_EVENTS,
   type VergerActivation,
   type VergerHost,
+  screenNameOf,
 } from '@repo/core/verger';
+import { useScreenAnnouncement } from '@repo/verger-react';
+import { usePathname } from 'next/navigation';
 import { VergerBrowser } from '@repo/verger-web/react';
 import { type ReactNode, useState } from 'react';
 
@@ -46,6 +49,17 @@ function readLab(key: string): unknown {
 }
 
 const dev = process.env.NODE_ENV !== 'production';
+
+/**
+ * Each route, announced to verger as a screen (R3; in verger-p5 also its screen memory, R4).
+ * Record ids fold into one screen (`screenNameOf`).
+ */
+function ScreenAnnouncer() {
+  // Typed `string`, but null outside the App Router (tests, a Pages Router fallback): no screen yet.
+  const pathname: string | null = usePathname();
+  useScreenAnnouncement(pathname === null ? null : screenNameOf(pathname));
+  return null;
+}
 
 export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }>) {
   // Thresholds hold whether verger runs or not (the floors read them): the host's, the lab's,
@@ -95,6 +109,7 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
       release={process.env.NEXT_PUBLIC_GURUDEVI_RELEASE ?? 'web'}
       recordEvents={dev ? VERGER_LAB_RECORD_EVENTS : undefined}
     >
+      <ScreenAnnouncer />
       {children}
     </VergerBrowser>
   );

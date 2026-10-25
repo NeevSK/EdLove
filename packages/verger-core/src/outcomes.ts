@@ -253,7 +253,11 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
           const switched =
             before.activation.decide !== snapshot.activation.decide ||
             leverActivation(before.activation, lever.id) !== leverActivation(snapshot.activation, lever.id);
+          // A lever not applied publishes its baseline: its pressure is only proposed, so none of
+          // its moves are pressure's (found by the ADR D5.2 property at 3000 runs).
+          const applied = leverActivation(snapshot.activation, lever.id) === 'apply';
           const byPressure =
+            applied &&
             !switched &&
             (direction === 'compress' ? ownAfter > ownBefore || ownAfter > from : ownAfter < ownBefore);
           if (!byPressure) {

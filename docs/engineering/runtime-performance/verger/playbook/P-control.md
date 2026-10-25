@@ -28,6 +28,9 @@ loop, lever choice, the outcome ledger. The why is in
 | Gain-guided choice (P7) | `reducer.ts` `byMeasuredGain` | p5 only: skips confidently useless levers, prefers relief per unit of quality. |
 | Heat trend (R1) | `reducer.ts` `thermalProjected`, `thermalActing` | Slope over the trend window projects heat ahead; tightening only; `snapshot.thermalProjected`. |
 | Heat time-scale separation (P5) | `reducer.ts` `heatRecovering`, `heatPacing`, `heatStepReady`, the pacing block in `snapshotOf` | Latch after heat, then a rate-limited climb gated on the heat slope's projected steady state. |
+| Proportional lowering (R2) | `reducer.ts` `lowerProportionally`, `confidentGain` | p5: up to `maxStepsPerAction` steps when measured gains say one is not enough. |
+| Screen annotations (R3) | `screen` event; `reducer.ts` `onScreen`; `useScreenAnnouncement` (verger-react); `screenNameOf` (core/verger) | A new regime per screen; transitions are not stress. |
+| Screen memory (R4) | `reducer.ts` `onScreen`, `screenMemory` | p5: measured, useful pressure replayed on return. |
 | Pressure causes | `reducer.ts` `pressureCause`, `releaseCause` | Each lowering remembers the sensor that caused it; a deafened sensor takes its lowering with it. |
 
 ## Rules for this layer
@@ -72,6 +75,13 @@ loop, lever choice, the outcome ledger. The why is in
 - **A three-point slope is noise.** Projected over a time constant it decides at random; give a
   gate a minute of readings.
 - **One lowering given back is not a cycle.** Slow reversals count a reversal of a reversal.
+- **Choose from what is published.** A lever held at its cheapest by a dynamic floor (ambient
+  sleep, warm floors) has nothing to give; choosing it spends a step on nothing.
+- **Steps down are selected by noise.** Measure gains on steps given back too; never trust a gain
+  measured only on the windows that triggered the step.
+- **A controller cannot tell its own effect from a change of screen unless told.** Announce
+  screens (R3); in the simulator, name segments' screens.
+- **Memory must not freeze guesses.** Replay only what was measured to help.
 - **Deep runs find what 300 cases do not.** Three pre-existing bugs (shadowed decisions published
   through a sensor switch-off or a decide switch) surfaced only at `VERGER_RUNS=3000`: run it for
   every policy change, and pin what it finds.

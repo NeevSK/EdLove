@@ -20,7 +20,17 @@ const frames = (at: number, averageMs: number, dropped: number): VergerEvent => 
  * return took, from the first calm frame to the last lever back.
  */
 function flap(policy: VergerPolicy, cycles: number, holdMs: number): number[] {
-  let state = policy.create({ at: 0, levers: SAMPLE_LEVERS, capacity, memorySensing: true, activation: ACTIVATION_PRESETS.active });
+  // These frames ignore the levers, so measured gains would read every lever useless and p5 would
+  // stop choosing the same one (P7): right for such frames, but this test isolates the flapping
+  // rule, so gains never become confident here.
+  let state = policy.create({
+    at: 0,
+    levers: SAMPLE_LEVERS,
+    capacity,
+    memorySensing: true,
+    activation: ACTIVATION_PRESETS.active,
+    config: { gainMinSamples: 1_000_000 },
+  });
   let at = 0;
   const step = (event: VergerEvent) => {
     state = policy.reduce(state, event);

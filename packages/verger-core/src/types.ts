@@ -229,6 +229,15 @@ export type VergerEvent =
    * a gesture: quality-lowering changes wait while it lasts (the vision's invariant 7).
    */
   | { readonly type: 'scroll'; readonly at: number; readonly active: boolean }
+  /**
+   * The app moved to another screen (R3, an annotation as Android Performance Tuner attaches to
+   * frames). The new screen is a new regime: verger's frame smoothing, stress episode and gain
+   * probe start over, so a change of demand is never read as a lever's effect. `transitionMs`: work
+   * the app expects (a navigation animation, a loading state); frames within it are neither stress
+   * nor comfort. verger-p5 also remembers per screen the pressure it settled on, and applies it on
+   * the next visit (R4, feedforward from memory).
+   */
+  | { readonly type: 'screen'; readonly at: number; readonly name: string; readonly transitionMs?: number }
   | { readonly type: 'tick'; readonly at: number };
 
 /** Unity-style indexer action, extended with verger's reasons. */
@@ -510,6 +519,12 @@ export interface VergerConfig {
   readonly gainMinSamples: number;
   /** A confidently measured gain below this is no help: p5 passes the lever over (P7). */
   readonly gainUselessBelow: number;
+  /**
+   * Proportional lowering (R2, p5): the most frames-loop steps one action may take when the
+   * measured gains of the levers it would lower say one step leaves frames over budget (Unreal's
+   * dynamic resolution sizes its change to the overshoot). 1 is the plain ladder. Provisional.
+   */
+  readonly maxStepsPerAction: number;
   /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
   /**

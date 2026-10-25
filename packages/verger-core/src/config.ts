@@ -38,6 +38,8 @@ export function validateConfig(config: VergerConfig): void {
   order('thermalRecoverMs', 'thermalPaceMs');
   if (!Number.isInteger(config.thermalTrendMinSamples) || config.thermalTrendMinSamples < 2)
     throw new Error('Config "thermalTrendMinSamples" must be an integer of at least 2');
+  if (!Number.isInteger(config.maxStepsPerAction))
+    throw new Error('Config "maxStepsPerAction" must be an integer');
   if (!Number.isInteger(config.gainMinSamples))
     throw new Error('Config "gainMinSamples" must be an integer');
   if (!Number.isInteger(config.frameReliefSteps))
@@ -127,6 +129,7 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   gainAlpha: 0.3,
   gainMinSamples: 3,
   gainUselessBelow: 0.02,
+  maxStepsPerAction: 3,
   gestureQuietMs: 1_000,
   gestureFreezeMaxMs: 2_000,
   scrollQuietMs: 3_000,
