@@ -18,6 +18,8 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## Build plan and progress
 
+**Control review and plan:** [verger as a control system](2026-10-25-control-review-and-plan.md) (missing, sound, P1 to P7).
+
 **Latest review:** [hostile review, 2026-10-25](2026-10-25-hostile-review.md) (configuration doors, findings, Expo Modules 2.0, remaining work in order).
 
 **Continuing this work?** Start with the [playbook](playbook/README.md) (rules, nuances, one
