@@ -31,6 +31,7 @@ const row = (name: string, m: ControlMetrics) =>
     pct(m.qualityGivenUp),
     pct(m.qualityWhileJanking),
     m.flapsPerMinute.toFixed(2).padStart(6),
+    m.slowReversalsPerMinute.toFixed(2).padStart(5),
     m.thermalFlipsPerMinute.toFixed(2).padStart(6),
     m.thermalChatterPerMinute.toFixed(2).padStart(7),
     `${m.peakTemperatureC.toFixed(1)}`.padStart(6),
@@ -41,7 +42,7 @@ const row = (name: string, m: ControlMetrics) =>
 for (const [phoneName, phone] of Object.entries(SIM_PHONES)) {
   for (const [sessionName, session] of Object.entries(SIM_SESSIONS)) {
     console.log(`\n${phoneName} · ${sessionName}`);
-    console.log('arm   jank  given  w/jank  flaps  heatΔ chatter   peak    hot settle');
+    console.log('arm   jank  given  w/jank  flaps  slow  heatΔ chatter   peak    hot settle');
     const report = compareClosedLoop({ phone, session, levers: SAMPLE_LEVERS, arms: ARMS });
     for (const [name, metrics] of Object.entries(report)) console.log(row(name, metrics));
   }

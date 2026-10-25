@@ -18,6 +18,11 @@ export interface ControlMetrics {
   readonly qualityWhileJanking: number;
   /** A lever moving against its previous move within `flapWindowMs`, per minute: oscillation. */
   readonly flapsPerMinute: number;
+  /**
+   * The same within `slowWindowMs` (5 minutes): a reversal on the scale of the phone's thermal time
+   * constant, the signature of a thermal limit cycle (lower under heat, cool, lift, heat again).
+   */
+  readonly slowReversalsPerMinute: number;
   /** Changes of the published heat level per minute, the first reading aside: threshold chatter. */
   readonly thermalFlipsPerMinute: number;
   /**
@@ -43,6 +48,7 @@ export function controlMetrics(
   levers: readonly LeverSpec[],
   flapWindowMs = 30_000,
   chatterDeltaC = 0.5,
+  slowWindowMs = 300_000,
 ): ControlMetrics {
   const visible = ticks.filter((t) => t.visible);
   const janky = visible.filter((t) => t.costMs > t.targetMs * 1.25);
@@ -50,22 +56,27 @@ export function controlMetrics(
     xs.length === 0 ? 0 : xs.reduce((sum, t) => sum + f(t), 0) / xs.length;
   const minutes = ticks.length === 0 ? 1 : (ticks[ticks.length - 1]?.at ?? 0) / 60_000;
 
-  let flaps = 0;
-  for (const lever of levers) {
-    let lastDelta = 0;
-    let lastAt = Number.NEGATIVE_INFINITY;
-    for (let i = 1; i < ticks.length; i += 1) {
-      const now = ticks[i];
-      const before = ticks[i - 1];
-      if (!now || !before) continue;
-      const delta = (now.levels[lever.id] ?? 0) - (before.levels[lever.id] ?? 0);
-      if (delta === 0) continue;
-      if (lastDelta !== 0 && Math.sign(delta) !== Math.sign(lastDelta) && now.at - lastAt < flapWindowMs)
-        flaps += 1;
-      lastDelta = delta;
-      lastAt = now.at;
+  /** Moves of a lever against its previous move within `windowMs`. */
+  const reversals = (windowMs: number) => {
+    let count = 0;
+    for (const lever of levers) {
+      let lastDelta = 0;
+      let lastAt = Number.NEGATIVE_INFINITY;
+      for (let i = 1; i < ticks.length; i += 1) {
+        const now = ticks[i];
+        const before = ticks[i - 1];
+        if (!now || !before) continue;
+        const delta = (now.levels[lever.id] ?? 0) - (before.levels[lever.id] ?? 0);
+        if (delta === 0) continue;
+        if (lastDelta !== 0 && Math.sign(delta) !== Math.sign(lastDelta) && now.at - lastAt < windowMs) count += 1;
+        lastDelta = delta;
+        lastAt = now.at;
+      }
     }
-  }
+    return count;
+  };
+  const flaps = reversals(flapWindowMs);
+  const slowReversals = reversals(slowWindowMs);
   let thermalFlips = 0;
   let thermalChatter = 0;
   let lastChangeC: number | null = null;
@@ -111,6 +122,7 @@ export function controlMetrics(
     qualityGivenUp: mean(visible, (t) => t.qualityCost),
     qualityWhileJanking: mean(janky, (t) => t.qualityCost),
     flapsPerMinute: flaps / minutes,
+    slowReversalsPerMinute: slowReversals / minutes,
     thermalFlipsPerMinute: thermalFlips / minutes,
     thermalChatterPerMinute: thermalChatter / minutes,
     peakTemperatureC: Math.max(...ticks.map((t) => t.temperatureC)),

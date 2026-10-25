@@ -154,6 +154,17 @@ instead of 33.5% on the high phone, for the same 0% jank, and 27.6–28.2% inste
 mid phone, which no lever can bring under budget. The low phone's burst bound
 (`P7_PENDING`) stays: its steps come in touched sessions, where too few are measured to steer.
 
+**P5 status:** a guard, not a latch. With P4's dwell, no session on any phone shows a thermal
+limit cycle: lever reversals within 5 minutes (`slowReversalsPerMinute`) are at most 0.15 per
+minute (mid edge, the status quantisation), mostly 0. P3 now bounds them at 0.2 per minute on
+every session without a periodic disturbance; if a cycle appears on a phone's recording, the
+latch (warm floors and heat-relieving raises waiting `thermalRecoverMs` of nominal) is the fix,
+and this bound is its test. Building a latch the model does not need would be untested control
+effort.
+
+**The plan is done in the model (G2).** What it cannot show: that real phones have these
+dynamics. Phase F replaces the plant's parameters with fits to recordings, and reruns this suite.
+
 **Not now, planned:** feedforward from workload announcements (needs the app to announce work);
 setpoints for heat and energy (needs battery and heat curves from phones); coupling rules (need
 measured couplings). Each needs phase F's recordings to be more than a guess.
