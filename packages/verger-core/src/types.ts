@@ -525,6 +525,16 @@ export interface VergerConfig {
    * dynamic resolution sizes its change to the overshoot). 1 is the plain ladder. Provisional.
    */
   readonly maxStepsPerAction: number;
+  /**
+   * The energy setpoint (R5): while unplugged, battery drain is estimated over
+   * `energyDrainWindowMs` (a slope needing a third of the window and a drop of
+   * `energyDrainMinDropPercent`); if the hours left at that drain fall below `energyReserveHours`,
+   * energy is short and levers' `whenBatteryLow` apply before the battery is low. Plugged in, or
+   * not measurably draining, it is never a limit. Provisional: a school day is the setpoint's sense.
+   */
+  readonly energyReserveHours: number;
+  readonly energyDrainWindowMs: number;
+  readonly energyDrainMinDropPercent: number;
   /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
   /**
@@ -569,6 +579,10 @@ export interface VergerSnapshot {
    * Lowering, raises, warm floors and admission act on the worse of this and `thermal`.
    */
   readonly thermalProjected: ThermalLevel;
+  /** Hours of battery left at the measured drain (R5); null when plugged in or not measurable. */
+  readonly batteryHoursLeft: number | null;
+  /** The hours left are under config `energyReserveHours` (R5): levers' `whenBatteryLow` apply. */
+  readonly energyShort: boolean;
   readonly network: NetworkState;
   /** What the network limits now, strongest first; `none` when unknown or fine. */
   readonly networkLimit: NetworkLimit;

@@ -81,6 +81,10 @@ export function checkSnapshot(
     fail('deaf-sensor-silent', 'battery');
   if (!sense.thermal && snapshot.thermalSource !== 'none')
     fail('deaf-sensor-silent', `thermal source ${snapshot.thermalSource}`);
+  if (!sense.thermal && snapshot.thermalProjected !== 'unknown')
+    fail('deaf-sensor-silent', `projected heat ${snapshot.thermalProjected}`);
+  if (!sense.power && (snapshot.batteryHoursLeft !== null || snapshot.energyShort))
+    fail('deaf-sensor-silent', 'battery drain');
   if (!sense.network && Object.values(snapshot.network).some((v) => v !== null))
     fail('deaf-sensor-silent', 'network');
   if (!sense.network && snapshot.networkLimit !== 'none')

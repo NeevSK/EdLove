@@ -84,7 +84,33 @@ export const UNKNOWN_BATTERY: BatteryState = {
 };
 
 
-const batteryLow = (state: VergerState) => isBatteryLow(state.battery, state.config.batteryLowPercent);
+const batteryLow = (state: VergerState) =>
+  isBatteryLow(state.battery, state.config.batteryLowPercent) || energyShort(state);
+
+/**
+ * Hours of battery left at the drain measured while unplugged (R5): the level over the least-
+ * squares drain of `levelTrace`. Null without a third of the window of readings, a drop of
+ * `energyDrainMinDropPercent`, or a drain at all.
+ */
+function batteryHoursLeft(state: VergerState): number | null {
+  const level = state.battery.levelPercent;
+  const trace = state.levelTrace;
+  const first = trace[0];
+  const last = trace[trace.length - 1];
+  if (level === null || state.battery.pluggedIn !== false || !first || !last) return null;
+  const c = state.config;
+  if (last[0] - first[0] < c.energyDrainWindowMs / 3 || first[1] - last[1] < c.energyDrainMinDropPercent)
+    return null;
+  const slope = slopeOf(trace, 2);
+  if (slope === null || slope >= 0) return null;
+  return level / (-slope * 3600);
+}
+
+/** The energy setpoint (R5): fewer hours left than `energyReserveHours`. */
+function energyShort(state: VergerState): boolean {
+  const hours = batteryHoursLeft(state);
+  return hours !== null && hours < state.config.energyReserveHours;
+}
 
 /** No usable network: none at all, or one the platform could not validate. Unknown is not offline. */
 const offline = (n: NetworkState) => n.transport === 'none' || n.validated === false;
@@ -158,6 +184,8 @@ export interface VergerState {
   /** Recent headroom and battery temperature readings `[at, value]`, for the heat trend (R1). */
   readonly headroomTrace: readonly (readonly [number, number])[];
   readonly batteryTrace: readonly (readonly [number, number])[];
+  /** Battery level readings `[at, percent]` while unplugged, for the drain (R5). */
+  readonly levelTrace: readonly (readonly [number, number])[];
   /** The last time heat, as verger acts on it, was warm or worse (P5); null if never. */
   readonly heatTouchedAt: number | null;
   /** When the last paced raise was published (P5). */
@@ -330,6 +358,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     headroomTrace: [],
     batteryTrace: [],
     heatTouchedAt: null,
+    levelTrace: [],
     heatStepAt: Number.NEGATIVE_INFINITY,
     memoryLatch: NO_MEMORY_LATCH,
     memorySensing: options.memorySensing ?? false,
@@ -675,7 +704,7 @@ function forgetReadings(state: VergerState, sensor: SensorId): VergerState {
         heatTouchedAt: null,
       };
     case 'power':
-      return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY, batteryTrace: [] };
+      return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY, batteryTrace: [], levelTrace: [] };
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'storage':
@@ -1566,6 +1595,11 @@ function step(state: VergerState, event: VergerEvent): VergerState {
           temperatureC: input.temperatureC,
         },
         batteryTrace: traced(next.batteryTrace, at, input.temperatureC, next.config.thermalTrendWindowMs),
+        // A drain is measured only while unplugged; plugging in starts it over.
+        levelTrace:
+          input.pluggedIn === false && input.levelPercent !== null
+            ? traced(next.levelTrace, at, input.levelPercent, next.config.energyDrainWindowMs)
+            : [],
       };
       break;
     case 'interaction':
@@ -1894,6 +1928,8 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     battery: state.battery,
     thermalSource: thermalReading(state).source,
     thermalProjected: thermalProjected(state),
+    batteryHoursLeft: batteryHoursLeft(state),
+    energyShort: energyShort(state),
     network: state.network,
     networkLimit: networkLimitOf(state, at),
     dataBudget: state.dataBudget,
@@ -1985,6 +2021,7 @@ function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
     a.battery !== b.battery ||
     a.thermalSource !== b.thermalSource ||
     a.thermalProjected !== b.thermalProjected ||
+    a.energyShort !== b.energyShort ||
     a.visibility !== b.visibility ||
     a.interactionIdle !== b.interactionIdle ||
     a.optionalConcurrency !== b.optionalConcurrency ||
@@ -2044,6 +2081,9 @@ export function nextTimedChangeAt(state: VergerState): number | null {
     if (heatPacing(state, now))
       candidates.push(state.heatStepAt + state.config.thermalStepMs);
   }
+  // A drain estimate changes as its oldest reading leaves the window.
+  const oldestLevel = state.levelTrace[0];
+  if (oldestLevel !== undefined) candidates.push(oldestLevel[0] + state.config.energyDrainWindowMs + 1);
   // A trend fades as its oldest reading leaves the window.
   for (const trace of [state.headroomTrace, state.batteryTrace]) {
     const oldest = trace[0];

@@ -71,6 +71,9 @@
     "gainMinSamples": 3,
     "gainUselessBelow": 0.02,
     "maxStepsPerAction": 3,
+    "energyReserveHours": 3,
+    "energyDrainWindowMs": 1800000,
+    "energyDrainMinDropPercent": 2,
     "gestureQuietMs": 1000,
     "gestureFreezeMaxMs": 2000,
     "scrollQuietMs": 3000

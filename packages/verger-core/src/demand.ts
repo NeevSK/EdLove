@@ -210,6 +210,12 @@ export function estimateAccounts(
               confidence: b.levelPercent !== null ? 0.8 : 0.5,
               source: snapshot.powerSaver ? 'battery saver' : `battery at ${b.levelPercent}%`,
             }
+          : snapshot.energyShort
+            ? {
+                state: 'tight',
+                confidence: 0.6,
+                source: `battery for about ${Math.round((snapshot.batteryHoursLeft ?? 0) * 10) / 10} h at this drain`,
+              }
           : { state: 'ample', confidence: b.levelPercent !== null ? 0.7 : 0.4, source: 'battery' };
 
   const n = snapshot.network;
@@ -267,6 +273,8 @@ export function admitWork(
     readonly dataBudget?: DataBudgetState;
     /** Free storage (the snapshot's); low holds work that declares `whenStorageLow: 'wait'`. */
     readonly storage?: StorageLevel;
+    /** The battery will not last the reserve at its drain (R5); holds optional energy work. */
+    readonly energyShort?: boolean;
   },
   workload: Pick<WorkloadSpec, 'class' | 'spends' | 'whenStorageLow'>,
   config: Pick<VergerConfig, 'batteryLowPercent'> = DEFAULT_VERGER_CONFIG,
@@ -283,7 +291,7 @@ export function admitWork(
     return { admit: false, reason: 'storage-low' };
   if (workload.spends.includes('energy')) {
     if (snapshot.powerSaver) return { admit: false, reason: 'battery-saver' };
-    if (isBatteryLow(snapshot.battery, config.batteryLowPercent))
+    if (isBatteryLow(snapshot.battery, config.batteryLowPercent) || snapshot.energyShort === true)
       return { admit: false, reason: 'battery-low' };
   }
   return { admit: true, reason: 'eligible' };

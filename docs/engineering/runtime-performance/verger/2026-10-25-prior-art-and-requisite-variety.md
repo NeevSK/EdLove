@@ -121,6 +121,15 @@ given up 34 → 40%), 10% → 4% for p4.
 - *The ledger credited pressure on a shadowed lever* (from the P8 gesture-hold fix): a lever not
   applied publishes its baseline, so none of its moves are pressure's. Found at 3000 runs, pinned.
 
+**R5 built (energy setpoint).** While unplugged, a least-squares drain over 30 minutes (needing
+10 minutes of readings and a 2-point drop, so a jittery reading is never a drain) gives
+`snapshot.batteryHoursLeft`. Fewer hours than `energyReserveHours` (3, provisional: the sense is a
+school day) is `energyShort`: levers' `whenBatteryLow` apply, the energy account reads tight,
+energy-spending optional work waits, all before the battery reaches 20%. Plugged in or not
+measurably draining, never a limit. The deaf-sensor invariant now covers `batteryHoursLeft`,
+`energyShort` and R1's `thermalProjected`. G1 only: a ten-minute simulator session cannot show a
+school day's drain; phase F measures real drains.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).
