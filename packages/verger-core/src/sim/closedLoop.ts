@@ -45,7 +45,8 @@ export const SIM_SESSIONS = {
     name: 'heat soak: a rich screen in use for 12 minutes, then reading',
     segments: [
       { durationMs: 12 * min, baseCostMs: 12, touching: true, disturbance: true },
-      { durationMs: 8 * min, baseCostMs: 5 },
+      // Reading still taps now and then: the screen stays awake, so recovery is measurable.
+      { durationMs: 8 * min, baseCostMs: 5, touching: true },
     ],
   },
   boundary: {

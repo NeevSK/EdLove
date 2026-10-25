@@ -215,3 +215,4 @@ export {
   SIM_PHONES,
   stepPlant,
 } from './sim/plant';
+export { compareClosedLoop, type ControlMetrics, controlMetrics, type SimArm } from './sim/metrics';
