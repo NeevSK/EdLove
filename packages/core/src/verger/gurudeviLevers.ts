@@ -125,6 +125,7 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     whenOffline: 2,
     // Intermittent links are normal: optional prefetch waits for a steady, fast one.
     whenSlowNetwork: 2,
+    whenDataBudgetSpent: 2,
   },
 ];
 

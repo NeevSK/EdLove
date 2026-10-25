@@ -208,6 +208,7 @@ export function sensorOf(event: VergerEvent): SensorId | null {
     case 'battery':
       return 'power';
     case 'network':
+    case 'data-budget':
       return 'network';
     case 'long-task':
       return 'longTasks';

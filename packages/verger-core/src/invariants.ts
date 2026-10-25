@@ -85,6 +85,8 @@ export function checkSnapshot(
     fail('deaf-sensor-silent', 'network');
   if (!sense.network && snapshot.networkLimit !== 'none')
     fail('deaf-sensor-silent', `network limit ${snapshot.networkLimit}`);
+  if (!sense.network && snapshot.dataBudget !== 'unknown')
+    fail('deaf-sensor-silent', `data budget ${snapshot.dataBudget}`);
   if (!sense.memory && snapshot.memory !== 'unknown')
     fail('deaf-sensor-silent', `memory ${snapshot.memory}`);
   if (!sense.threads && !sense.longTasks && snapshot.contention !== 'none')

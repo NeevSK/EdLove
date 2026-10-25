@@ -143,6 +143,13 @@ const frameArb: fc.Arbitrary<Untimed> = fc
 const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
   { weight: 4, arbitrary: frameArb },
   {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('data-budget' as const),
+      state: fc.constantFrom('within' as const, 'spent' as const, 'unknown' as const),
+    }),
+  },
+  {
     weight: 2,
     arbitrary: fc.record({
       type: fc.constant('thermal' as const),

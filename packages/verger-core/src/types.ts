@@ -1,3 +1,4 @@
+import type { DataBudgetState } from './dataBudget';
 import type { VergerActivation } from './activation';
 
 /**
@@ -180,6 +181,11 @@ export type VergerEvent =
   /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */
   | { readonly type: 'long-task'; readonly at: number; readonly durationMs: number }
   /**
+   * Today's data budget, from the host's byte ledger (`dataBudgetState`, B3): `spent` is a limit
+   * on optional data; `unknown` is never one. Heard through the network sensor.
+   */
+  | { readonly type: 'data-budget'; readonly at: number; readonly state: DataBudgetState }
+  /**
    * Loop 2's finding (D4): this lever's compressions did not relieve `target`, judged by the
    * outcome ledger. verger-p5 stops lowering it for that target for the rest of the session;
    * p4 ignores it. Sent by the launcher, so it is recorded and replays like any event.
@@ -256,6 +262,11 @@ export interface LeverSpec {
   readonly whenDataSaver?: number;
   /** Floor while there is no validated network. A limit. */
   readonly whenOffline?: number;
+  /**
+   * Floor while today's data budget is spent (B3): optional data waits for tomorrow, or for
+   * the user. A limit; an unknown budget never applies it.
+   */
+  readonly whenDataBudgetSpent?: number;
   /** Floor while the battery is low and the phone is not plugged in (config `batteryLowPercent`). */
   readonly whenBatteryLow?: number;
   /**
@@ -401,6 +412,8 @@ export interface VergerSnapshot {
   readonly network: NetworkState;
   /** What the network limits now, strongest first; `none` when unknown or fine. */
   readonly networkLimit: NetworkLimit;
+  /** Today's data budget as the host last reported it; `unknown` until then, or while deaf. */
+  readonly dataBudget: DataBudgetState;
   /** The phone's class from its memory (config thresholds); `unknown` when memory is unknown. */
   readonly capacityClass: CapacityClass;
   /**

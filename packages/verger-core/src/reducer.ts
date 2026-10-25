@@ -6,6 +6,7 @@ import {
   type SensorId,
   type VergerActivation,
 } from './activation';
+import type { DataBudgetState } from './dataBudget';
 import { DEFAULT_VERGER_CONFIG } from './config';
 import { bottleneckTargets, classifyFrameWindow, frameBottleneck, gpuMeasured } from './frames';
 import {
@@ -148,6 +149,7 @@ export interface VergerState {
   readonly network: NetworkState;
   /** When the network was last seen offline; null if never (or the network sensor is off). */
   readonly lastOfflineAt: number | null;
+  readonly dataBudget: DataBudgetState;
   readonly visibility: AppVisibility;
   readonly lastInteractionAt: number;
   readonly reduceMotion: boolean;
@@ -268,6 +270,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     battery: UNKNOWN_BATTERY,
     network: UNKNOWN_NETWORK,
     lastOfflineAt: null,
+    dataBudget: 'unknown',
     visibility: 'active',
     lastInteractionAt: options.at,
     reduceMotion: false,
@@ -374,6 +377,8 @@ export function limitFloors(state: VergerState, at: number = state.at): Record<s
     if (savingData(network) && lever.whenDataSaver !== undefined)
       raise(lever.id, lever.whenDataSaver);
     if (offline(network) && lever.whenOffline !== undefined) raise(lever.id, lever.whenOffline);
+    if (state.dataBudget === 'spent' && lever.whenDataBudgetSpent !== undefined)
+      raise(lever.id, lever.whenDataBudgetSpent);
     if (batteryLow(state) && lever.whenBatteryLow !== undefined)
       raise(lever.id, lever.whenBatteryLow);
     for (const need of lever.requires ?? []) {
@@ -516,7 +521,7 @@ function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'network':
-      return { ...state, network: UNKNOWN_NETWORK, lastOfflineAt: null };
+      return { ...state, network: UNKNOWN_NETWORK, lastOfflineAt: null, dataBudget: 'unknown' };
   }
 }
 
@@ -999,6 +1004,9 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       next = { ...next, network, lastOfflineAt: offline(network) ? at : next.lastOfflineAt };
       break;
     }
+    case 'data-budget':
+      next = { ...next, dataBudget: input.state };
+      break;
     case 'lever-ineffective':
       next = markIneffective(next, input.lever, input.target);
       break;
@@ -1220,6 +1228,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     thermalSource: thermalReading(state).source,
     network: state.network,
     networkLimit: networkLimitOf(state, at),
+    dataBudget: state.dataBudget,
     capacityClass: capacityClassOf(state.capacity, state.config),
     envelope,
     ineffective: state.ineffective,
@@ -1300,6 +1309,7 @@ function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
     a.powerSaver !== b.powerSaver ||
     a.network !== b.network ||
     a.networkLimit !== b.networkLimit ||
+    a.dataBudget !== b.dataBudget ||
     a.capacityClass !== b.capacityClass ||
     a.battery !== b.battery ||
     a.thermalSource !== b.thermalSource ||

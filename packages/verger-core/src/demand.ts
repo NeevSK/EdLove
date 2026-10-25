@@ -209,7 +209,9 @@ export function estimateAccounts(
         ? { state: 'overdrawn', confidence: 0.8, source: 'no validated network' }
         : n.dataSaver === 'enabled'
           ? { state: 'overdrawn', confidence: 0.9, source: 'Data Saver restricts this app' }
-          : // Slow or unstable as the policy reads it (config `slowNetworkKbps`, `networkSettleMs`).
+          : snapshot.dataBudget === 'spent'
+            ? { state: 'overdrawn', confidence: 0.8, source: "today's data budget is spent" }
+            : // Slow or unstable as the policy reads it (config `slowNetworkKbps`, `networkSettleMs`).
             n.metered === true ||
               snapshot.networkLimit === 'slow' ||
               snapshot.networkLimit === 'unstable'
@@ -243,7 +245,7 @@ export interface Admission {
  */
 export function admitWork(
   snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'battery'> & {
-    /** Today's data budget (`dataBudgetState`); spent holds optional network work. */
+    /** Today's data budget (the snapshot's, or `dataBudgetState`); spent holds optional network work. */
     readonly dataBudget?: DataBudgetState;
   },
   workload: Pick<WorkloadSpec, 'class' | 'spends'>,
