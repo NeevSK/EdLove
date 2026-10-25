@@ -52,7 +52,16 @@ storage rule moved into `VergerConfig`, and the default policy chosen by experim
 
 ## 2. Findings, most severe first
 
-1. **Telemetry goes nowhere.** `EntryShell` mounts `GurudeviVerger` without `telemetrySink`
+1. **Update (2c): resolved for mobile.** `GurudeviVerger` now sends verger's telemetry through
+   the app's own analytics port as one typed event, `verger_telemetry` (registered in
+   `PRODUCT_ANALYTICS_EVENTS`), under the existing consent opt-out and sanitizer (`policy_id` is
+   sent as `policy_name`, since the sanitizer drops every `*_id`). It reaches PostHog the day the
+   app injects it; today nothing is injected, so it goes nowhere and costs nothing. Volume is now
+   config (`telemetryMaxEvents`, `telemetryMaxSummaries`, `telemetrySummaryEveryMs`), and
+   Gurudevi's hosts budget 24 events and 4 summaries (one per 15 minutes) per launch for prepaid
+   data, where the defaults allowed 184. The web has no analytics provider, so it gets no sink.
+   Was:
+   **Telemetry goes nowhere.** `EntryShell` mounts `GurudeviVerger` without `telemetrySink`
    (`apps/gurudevi-mobile/src/entry/EntryShell.tsx:74`). `verger_outcomes`, `verger_flight`,
    `verger_self_budget` and the summaries are built and dropped. Loop 3 has no field data, and the
    vision's "report back" and success criterion 4 cannot be met. A sink is your call (no new SaaS):

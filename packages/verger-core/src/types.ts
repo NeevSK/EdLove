@@ -431,6 +431,13 @@ export interface VergerConfig {
    */
   readonly selfBudgetMaxDutyRatio: number;
   readonly selfBudgetWindowMs: number;
+  /**
+   * Telemetry volume per launch (one-off events, periodic summaries, and their cadence): a data
+   * cost on users' plans, so a host chair, remotely tunable. Integers.
+   */
+  readonly telemetryMaxEvents: number;
+  readonly telemetryMaxSummaries: number;
+  readonly telemetrySummaryEveryMs: number;
   /** How long a compression has to relieve its account before it is judged not relieved. */
   readonly outcomeJudgeWindowMs: number;
   /** How long an expansion must last, not pushed back by pressure, to be judged held. */

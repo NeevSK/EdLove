@@ -12,6 +12,7 @@ export const PRODUCT_ANALYTICS_EVENTS = [
   'feature_action_completed',
   'feature_action_failed',
   'efficiency_policy_decision',
+  'verger_telemetry',
 ] as const;
 
 export type ProductAnalyticsEventName = (typeof PRODUCT_ANALYTICS_EVENTS)[number];
@@ -67,4 +68,10 @@ export interface ProductAnalyticsEventProperties {
     action: 'defer' | 'reduce';
     reason: string;
   };
+  /**
+   * One event of the adaptive runtime's telemetry (`verger_*`: launch, summary, outcomes, flight
+   * record, self-budget), its name in `verger_event` and its own coded, scalar attributes. No
+   * personal data: device strata are coarse buckets; reasons are codes.
+   */
+  verger_telemetry: { verger_event: string; [attribute: string]: ProductAnalyticsScalar };
 }

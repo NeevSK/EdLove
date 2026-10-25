@@ -26,6 +26,7 @@ import { useVerger, useVergerSnapshot } from '@repo/verger-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import { deviceSignals } from './deviceSignals';
 import { readVergerConfig, readVergerLaunch, type RuntimeMode } from './runtimeMode';
+import { vergerTelemetrySink } from './telemetrySink';
 
 interface GurudeviVergerProps {
   readonly children: ReactNode;
@@ -154,7 +155,7 @@ export function GurudeviVerger({
       mode={launch.mode}
       activation={launch.activation}
       assignment={assignment}
-      telemetrySink={telemetrySink}
+      telemetrySink={telemetrySink ?? vergerTelemetrySink}
       release={`${nativeApplicationVersion ?? '0'}+${nativeBuildVersion ?? '0'}`}
       recordEvents={__DEV__ ? VERGER_LAB_RECORD_EVENTS : undefined}
     >

@@ -38,6 +38,8 @@ export function validateConfig(config: VergerConfig): void {
     throw new Error('Config "ineffectiveAfterMoves" must be an integer');
   if (config.selfBudgetMaxDutyRatio > 1)
     throw new Error('Config "selfBudgetMaxDutyRatio" must be at most 1 (1 is no budget)');
+  for (const key of ['telemetryMaxEvents', 'telemetryMaxSummaries'] as const)
+    if (!Number.isInteger(config[key])) throw new Error(`Config "${key}" must be an integer`);
   if (!Number.isInteger(config.flapCycles))
     throw new Error('Config "flapCycles" must be an integer');
 }
@@ -86,6 +88,9 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   ineffectiveAfterMoves: 3,
   selfBudgetMaxDutyRatio: 1,
   selfBudgetWindowMs: 60_000,
+  telemetryMaxEvents: 64,
+  telemetryMaxSummaries: 120,
+  telemetrySummaryEveryMs: 60_000,
   memoryLowFactor: 1.5,
   memoryModerateFactor: 2,
   refreshCapHz: 60,

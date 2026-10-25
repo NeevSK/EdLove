@@ -3,6 +3,17 @@ import { EXPERIENCE_LEVER_IDS } from './experience';
 import { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 import { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
 
+/**
+ * Gurudevi's telemetry budget per launch, for users on prepaid data (the vision asks for a few
+ * kilobytes a day): at most 28 events, a summary every 15 minutes. A chair, remotely tunable
+ * (`gurudevi.verger.config`).
+ */
+const FIELD_TELEMETRY = {
+  telemetryMaxEvents: 24,
+  telemetryMaxSummaries: 4,
+  telemetrySummaryEveryMs: 15 * 60_000,
+} as const;
+
 /** Gurudevi's full manifest: every lever it can govern, on verger's default thresholds. */
 export const GURUDEVI_HOST = defineHost({
   name: 'gurudevi',
@@ -25,6 +36,7 @@ export const GURUDEVI_MOBILE_HOST = defineHost({
   name: 'gurudevi',
   levers: MOBILE_LEVERS,
   workloads: workloadsFor(MOBILE_LEVERS),
+  config: FIELD_TELEMETRY,
 });
 
 /**
@@ -48,4 +60,5 @@ export const GURUDEVI_WEB_HOST = defineHost({
   name: 'gurudevi-web',
   levers: WEB_LEVERS,
   workloads: workloadsFor(WEB_LEVERS),
+  config: FIELD_TELEMETRY,
 });

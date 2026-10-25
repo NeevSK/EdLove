@@ -488,6 +488,9 @@ export function createVerger(options: VergerOptions): Verger {
           levers: host.levers,
           readTotals: platform.readTotals,
           device: deviceStratum(capacity, platform.memorySensing),
+          maxEvents: host.config.telemetryMaxEvents,
+          maxSummaries: host.config.telemetryMaxSummaries,
+          summaryEveryMs: host.config.telemetrySummaryEveryMs,
         })
       : undefined;
     capFor = (activation) =>
