@@ -63,6 +63,13 @@ storage rule moved into `VergerConfig`, and the default policy chosen by experim
 7. **Sensing gaps from the vision's signal table.** No JS event-loop lag sampler, no Hermes heap or GC
    pauses (`HermesInternal` unread), no frame-drift heat inference for Android 9, no storage reading
    natively (JS only), no Android performance class, no first-run calibration (phase 3).
+   **Update, same day:** the lag sampler and Hermes GC pressure are built (`e656b33`). Frame-drift
+   heat is **decided against**: the vision proposed it for Android 9, which has no thermal status,
+   before the battery-temperature fallback (B2) existed; verger's native module reads battery
+   temperature from the battery broadcast on every API level it supports, so drift would be a weaker
+   second witness. It is also confounded: verger has no route signal, so a heavier screen reads as
+   heat, and acting on it (warm floors) changes the very workload it measures. Revisit only if phones
+   show battery temperature missing or lagging badly.
 8. **Input delay may be silent on phones.** React Native 0.88 ships `PerformanceEventTiming`, but the
    supported entry types come from native (`NativePerformance.getSupportedPerformanceEntryTypes`). The
    observer feature-detects, so the worst case is silence, never a crash. Unverified on a device.
