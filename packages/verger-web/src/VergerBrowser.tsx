@@ -9,6 +9,7 @@ import {
   type VergerActivation,
   type VergerHost,
   type VergerTelemetrySink,
+  type SelfBudget,
 } from '@repo/verger-core';
 import {
   bindVerger,
@@ -44,6 +45,10 @@ export interface VergerBrowserProps {
   readonly telemetrySink?: VergerTelemetrySink;
   /** The site's release: a new one starts the recovery ladder over. */
   readonly release: string;
+  /** Records each session for the dev lab's export (D1); development builds only. */
+  readonly recordEvents?: number;
+  /** Verger's budget for itself (D4); unset, it never reduces itself for cost. */
+  readonly selfBudget?: SelfBudget;
 }
 
 /**
@@ -62,6 +67,8 @@ export function VergerBrowser({
   assignment,
   telemetrySink,
   release,
+  recordEvents,
+  selfBudget,
 }: VergerBrowserProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   const [verger] = useState<Verger | null>(() =>
@@ -78,6 +85,8 @@ export function VergerBrowser({
           assignment,
           telemetrySink,
           release,
+          recordEvents,
+          selfBudget,
           now,
         }),
   );

@@ -11,6 +11,7 @@ import {
   type VergerHost,
   type VergerPlatform,
   type VergerActivation,
+  type SelfBudget,
   type VergerStore,
 } from '@repo/verger-core';
 import {
@@ -73,6 +74,10 @@ export interface VergerRootProps {
   readonly telemetrySink?: VergerTelemetrySink;
   /** The app version and build. A new release starts the recovery ladder over (and is the way off rung 4). */
   readonly release: string;
+  /** Records each session for the dev lab's export (D1); development builds only. */
+  readonly recordEvents?: number;
+  /** Verger's budget for itself (D4); unset, it never reduces itself for cost. */
+  readonly selfBudget?: SelfBudget;
 }
 
 /**
@@ -101,6 +106,8 @@ export function VergerRoot({
   assignment,
   telemetrySink,
   release,
+  recordEvents,
+  selfBudget,
 }: VergerRootProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   // Read once, like the rest of the launch: a new function must not restart verger.
@@ -117,6 +124,8 @@ export function VergerRoot({
       assignment,
       telemetrySink,
       release,
+      recordEvents,
+      selfBudget,
       now,
     }),
   );

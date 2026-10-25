@@ -10,6 +10,12 @@ import {
   type VergerActivation,
 } from '@repo/verger-core';
 
+/** Where the dev lab keeps its saved activation patch (`localPatch`), in each app's own store. */
+export const VERGER_LAB_PATCH_KEY = 'gurudevi:verger:lab-patch';
+
+/** Events a development build records per session for the lab's export (D1). */
+export const VERGER_LAB_RECORD_EVENTS = 4000;
+
 /** `off` runs only the floors; `shadow` senses and decides but applies nothing new; `active` applies. */
 export type RuntimeMode = 'off' | RunMode;
 

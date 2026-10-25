@@ -137,6 +137,14 @@ export {
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
 export { comparePolicies, type PolicyReport } from './compare';
 export {
+  type LabLever,
+  type LabReport,
+  type LabResult,
+  labConfigure,
+  labReport,
+  labTune,
+} from './lab';
+export {
   createSessionRecorder,
   DEFAULT_RECORDING_EVENTS,
   replayRecording,
