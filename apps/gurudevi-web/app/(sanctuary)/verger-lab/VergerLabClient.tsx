@@ -129,6 +129,7 @@ export function VergerLabClient() {
               <th>limit ≤ ceiling ≤ home ≤ floor</th>
               <th>pressure</th>
               <th>not for</th>
+              <th>gain (samples)</th>
             </tr>
           </thead>
           <tbody>
@@ -142,6 +143,7 @@ export function VergerLabClient() {
                 </td>
                 <td>{lever.pressure}</td>
                 <td>{lever.ineffective.join(', ') || '–'}</td>
+                <td>{lever.gain ? `${Math.round(lever.gain.gain * 100)}% (${lever.gain.samples})` : '–'}</td>
               </tr>
             ))}
           </tbody>

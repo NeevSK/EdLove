@@ -126,6 +126,22 @@ exemption is lifted except one bound on the low phone, which waits on P7 (its tw
 levers are the costliest). Found on the way: the outcome ledger misfiled a gesture-held lowering
 as a floor move; fixed.
 
+**P6 status:** built. When a published snapshot lowers exactly one lever by one step (after any
+gesture hold, when the phone actually feels it), verger notes the smoothed frame load (cost over
+budget, smoothed within one frame state so a demand jump is not read as the lever's effect); the
+first frame window wholly after the change is a sample, `1 - load after / load before`. Each
+lever keeps an EWMA (`gainAlpha` 0.3) and a sample count, published as `snapshot.gains` and shown
+in both labs. Any other change before the sample confounds it, and it is dropped. A new reference
+session, `identify` (calm and rich stretches untouched, so steps publish one at a time),
+converges on the model: rows-ahead 0.06–0.12 against 0.10, frosting 0.12–0.16 against 0.14,
+from 6–18 samples (seeds 1–3); the refresh cap measured 0.32 and 0.49 against 0.33 and 0.50 when
+it moved alone. In touched sessions most steps are batched by the gesture hold and rightly go
+unmeasured, and a refresh cap held while a finger is down measures about 0, which is true.
+
+The stability bound on quality given up while janking now applies where verger did not cut jank
+by a fifth: on `identify` verger cuts jank from 33% to 10–18% (to 0% on the high phone), and the
+quality it gave up bought that. Every session covered before passes the stricter old form too.
+
 **Not now, planned:** feedforward from workload announcements (needs the app to announce work);
 setpoints for heat and energy (needs battery and heat curves from phones); coupling rules (need
 measured couplings). Each needs phase F's recordings to be more than a guess.

@@ -6,7 +6,7 @@ import { qualityCost } from './quality';
 import { UNKNOWN_CAPACITY } from './reducer';
 import type { LaunchPlan } from './recovery';
 import type { SelfCost } from './selfCost';
-import type { CapacityFacts, LeverSpec, LeverTarget, VergerConfig, VergerSnapshot } from './types';
+import type { CapacityFacts, LeverGain, LeverSpec, LeverTarget, VergerConfig, VergerSnapshot } from './types';
 import type { Verger } from './verger';
 
 /** One lever as the lab shows it: where it is, what it proposes, and its envelope. */
@@ -24,6 +24,8 @@ export interface LabLever {
   readonly pressure: number;
   /** Targets loop 2 proved it does not relieve this session (p5). */
   readonly ineffective: readonly LeverTarget[];
+  /** Measured gain of one step down (P6), or null until measured. */
+  readonly gain: LeverGain | null;
 }
 
 /**
@@ -74,6 +76,7 @@ export function labReport(
             floor: envelope?.floor ?? lever.maxLevel,
             pressure: snapshot.pressure[lever.id] ?? 0,
             ineffective: snapshot.ineffective[lever.id] ?? [],
+            gain: snapshot.gains[lever.id] ?? null,
           };
         })
       : [],

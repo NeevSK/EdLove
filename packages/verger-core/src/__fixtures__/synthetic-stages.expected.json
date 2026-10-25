@@ -60,6 +60,7 @@
     "contentionReliefCores": 0.05,
     "frameReliefSteps": 2,
     "frameReliefGapShare": 0.25,
+    "gainAlpha": 0.3,
     "gestureQuietMs": 1000,
     "gestureFreezeMaxMs": 2000,
     "scrollQuietMs": 3000

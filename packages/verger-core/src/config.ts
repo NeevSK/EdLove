@@ -37,6 +37,7 @@ export function validateConfig(config: VergerConfig): void {
   order('thermalExitBandC', 'batteryWarmC');
   if (!Number.isInteger(config.frameReliefSteps))
     throw new Error('Config "frameReliefSteps" must be an integer');
+  if (config.gainAlpha > 1) throw new Error('Config "gainAlpha" must be at most 1');
   if (config.frameReliefGapShare > 1)
     throw new Error('Config "frameReliefGapShare" must be at most 1');
   if (!Number.isInteger(config.minSamples))
@@ -110,6 +111,7 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   contentionReliefCores: 0.05,
   frameReliefSteps: 2,
   frameReliefGapShare: 0.25,
+  gainAlpha: 0.3,
   gestureQuietMs: 1_000,
   gestureFreezeMaxMs: 2_000,
   scrollQuietMs: 3_000,

@@ -114,6 +114,7 @@ export function VergerLabScreen() {
               {lever.floor}
               {lever.pressure > 0 ? ` · pressure ${lever.pressure}` : ''}
               {lever.ineffective.length > 0 ? ` · not for ${lever.ineffective.join(', ')}` : ''}
+              {lever.gain ? ` · gain ${Math.round(lever.gain.gain * 100)}% (${lever.gain.samples})` : ''}
             </Text>
           </View>
         ))}

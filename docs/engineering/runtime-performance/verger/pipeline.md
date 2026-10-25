@@ -18,7 +18,7 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## Build plan and progress
 
-**Control review and plan:** [verger as a control system](2026-10-25-control-review-and-plan.md) (missing, sound, P1 to P8). Built: P1 simulator, P2 control metrics, P3 stability suite in the gate, P4 thermal and storage hysteresis, P8 relief check in the frames loop; next P6, P7, P5 as a guard.
+**Control review and plan:** [verger as a control system](2026-10-25-control-review-and-plan.md) (missing, sound, P1 to P8). Built: P1 simulator, P2 control metrics, P3 stability suite in the gate, P4 thermal and storage hysteresis, P8 relief check in the frames loop, P6 lever gain estimation (`snapshot.gains`); next P7, P5 as a guard.
 
 **Latest review:** [hostile review, 2026-10-25](2026-10-25-hostile-review.md) (configuration doors, findings, Expo Modules 2.0, remaining work in order).
 

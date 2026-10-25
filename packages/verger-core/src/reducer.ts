@@ -33,6 +33,8 @@ import type {
   Contention,
   FidelityPreference,
   FrameState,
+  FrameWindow,
+  LeverGain,
   VergerConfig,
   VergerEvent,
   RunMode,
@@ -191,6 +193,12 @@ export interface VergerState {
   readonly frameCostMs: number | null;
   /** The episode's lowerings did not relieve the frames: no more until the stress ends. */
   readonly framesExhausted: boolean;
+  /** Frame load (average cost over budget), smoothed (an EWMA of 0.5) within one frame state. */
+  readonly frameLoad: number | null;
+  /** A single-step lowering published at `at`, waiting for a frame window after it (P6). */
+  readonly gainProbe: { readonly lever: string; readonly beforeLoad: number; readonly at: number } | null;
+  /** Each lever's measured gain (P6), learned this session. */
+  readonly leverGains: Readonly<Record<string, LeverGain>>;
 
   /** Last polled memory reading as a trim severity; holds until the next poll. */
   readonly polledMemory: TrimSeverity | null;
@@ -318,6 +326,9 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     frameEpisode: null,
     frameCostMs: null,
     framesExhausted: false,
+    frameLoad: null,
+    gainProbe: null,
+    leverGains: {},
     polledMemory: null,
     stressEndMs: null,
     comfortSeen: false,
@@ -581,6 +592,8 @@ function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
         frameEpisode: null,
         frameCostMs: null,
         framesExhausted: false,
+        frameLoad: null,
+        gainProbe: null,
       };
     case 'threads':
       return {
@@ -1044,10 +1057,48 @@ function applyContention(state: VergerState, at: number): VergerState {
   };
 }
 
+/**
+ * System identification (P6): the first frame window wholly after a single-step lowering was
+ * published is one sample of that lever's gain, against the smoothed load before it.
+ */
+function measureGain(state: VergerState, window: FrameWindow, load: number): VergerState {
+  const probe = state.gainProbe;
+  if (probe === null || window.startMs < probe.at) return state;
+  const sample = Math.max(-1, Math.min(1, 1 - load / probe.beforeLoad));
+  const known = state.leverGains[probe.lever];
+  const alpha = state.config.gainAlpha;
+  const gain: LeverGain =
+    known === undefined
+      ? { gain: sample, samples: 1 }
+      : { gain: known.gain + alpha * (sample - known.gain), samples: known.samples + 1 };
+  return { ...state, gainProbe: null, leverGains: { ...state.leverGains, [probe.lever]: gain } };
+}
+
+/** A published change that lowered exactly one lever by one step starts a probe; any other ends it. */
+function probeOf(state: VergerState, before: VergerSnapshot, after: VergerSnapshot): VergerState['gainProbe'] {
+  const changed = state.levers.filter((l) => (before.levels[l.id] ?? 0) !== (after.levels[l.id] ?? 0));
+  if (changed.length === 0) return state.gainProbe;
+  const [only] = changed;
+  if (changed.length > 1 || only === undefined || state.frameLoad === null || state.visibility !== 'active')
+    return null;
+  if ((after.levels[only.id] ?? 0) !== (before.levels[only.id] ?? 0) + 1) return null;
+  return { lever: only.id, beforeLoad: state.frameLoad, at: after.at };
+}
+
 function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: 'frame-window' }>) {
   const frameState = classifyFrameWindow(event.window, state.config);
   const span = Math.max(0, event.window.endMs - event.window.startMs);
-  let next: VergerState = { ...state, frameState };
+  const load = event.window.targetMs > 0 ? event.window.averageMs / event.window.targetMs : null;
+  const measured = load === null ? state : measureGain(state, event.window, load);
+  // Smoothed within one frame state only: a calm screen turning rich is a new regime, and blending
+  // across it would read the demand's jump as the lever's (negative) gain.
+  const frameLoad =
+    load === null
+      ? state.frameLoad
+      : state.frameLoad === null || frameState !== state.frameState
+        ? load
+        : (state.frameLoad + load) / 2;
+  let next: VergerState = { ...measured, frameState, frameLoad };
   if (frameState === 'stressed') {
     // Stress must be continuous: two hitches a minute apart are not 1 s of stress.
     // A window's stress reaches as far as its worst frame: a 1 s freeze leaves the next 500 ms
@@ -1354,9 +1405,10 @@ export function reduceVerger(state: VergerState, event: VergerEvent): VergerStat
   };
   const before = snapshotOf(state, state.at);
   const after = snapshotOf(next, next.at);
+  const probed: VergerState = { ...next, gainProbe: probeOf(next, before, after) };
   return outputsEqual(before, after)
-    ? { ...next, version: state.version }
-    : { ...next, version: state.version + 1 };
+    ? { ...probed, version: state.version }
+    : { ...probed, version: state.version + 1 };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1460,6 +1512,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     capacityClass: capacityClassOf(state.capacity, state.config),
     envelope,
     ineffective: state.ineffective,
+    gains: state.leverGains,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at),

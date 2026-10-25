@@ -478,6 +478,8 @@ export interface VergerConfig {
    */
   readonly frameReliefSteps: number;
   readonly frameReliefGapShare: number;
+  /** Weight of each new sample in a lever's gain estimate (P6). Provisional. */
+  readonly gainAlpha: number;
   /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
   /**
@@ -487,6 +489,15 @@ export interface VergerConfig {
   readonly gestureFreezeMaxMs: number;
   /** A scroll whose end is never reported counts as over this long after it was last seen. */
   readonly scrollQuietMs: number;
+}
+
+/**
+ * A lever's estimated gain (P6): an EWMA (config `gainAlpha`) of `1 - load after / load before`
+ * over single-step lowerings, and how many it has seen. Confidence grows with `samples`.
+ */
+export interface LeverGain {
+  readonly gain: number;
+  readonly samples: number;
 }
 
 export interface VergerSnapshot {
@@ -527,6 +538,11 @@ export interface VergerSnapshot {
    * pressure no longer lowers it for. Empty under p4.
    */
   readonly ineffective: Readonly<Record<string, readonly LeverTarget[]>>;
+  /**
+   * Measured effect of one step down per lever (P6, system identification): how much lighter
+   * frames got, as a share of the frame load (cost over budget). Only levers measured appear.
+   */
+  readonly gains: Readonly<Record<string, LeverGain>>;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;

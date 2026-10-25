@@ -60,6 +60,17 @@ export const SIM_SESSIONS = {
       { durationMs: 0.5 * min, baseCostMs: 5, extraCostMs: 10, touching: true, disturbance: true },
     ]).flat(),
   },
+  identify: {
+    name: 'identify: a rich screen and a calm one, alternating, watched without touching',
+    // No touch, so each step publishes on its own (no gesture holds steps together): the
+    // session in which lever gains can be measured one step at a time (P6).
+    // Calm first: untouched, the ambient levers sleep after 10 s, and that is the state each
+    // rich stretch should settle back to.
+    segments: Array.from({ length: 10 }, () => [
+      { durationMs: 1 * min, baseCostMs: 4 },
+      { durationMs: 0.5 * min, baseCostMs: 26, disturbance: true },
+    ]).flat(),
+  },
 } as const satisfies Record<string, SimSession>;
 
 /** One 500 ms step of a closed-loop run: the plant's truth and what verger published. */
