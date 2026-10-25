@@ -1,0 +1,45 @@
+import { createVerger, GURUDEVI_WEB_HOST, UNKNOWN_CAPACITY, VERGER_LAB_PATCH_KEY } from '@repo/core/verger';
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { applyWebLabPatch, VergerLabClient } from '../../app/(sanctuary)/verger-lab/VergerLabClient';
+import { GurudeviWebVerger } from '../../lib/runtime/GurudeviWebVerger';
+
+describe('the web dev lab (D2, jsdom)', () => {
+  it('shows every layer of the page’s verger', async () => {
+    render(
+      <GurudeviWebVerger>
+        <VergerLabClient />
+      </GurudeviWebVerger>,
+    );
+    await waitFor(() => expect(screen.getByText('Self-cost')).toBeTruthy());
+    for (const title of ['Launch', 'Readings', 'Accounts', 'Outcomes', 'Levers'])
+      expect(screen.getByText(title)).toBeTruthy();
+    for (const lever of GURUDEVI_WEB_HOST.levers) expect(screen.getByText(lever.id)).toBeTruthy();
+  });
+
+  it('keeps a patch only when it applied', async () => {
+    const verger = createVerger({
+      host: GURUDEVI_WEB_HOST,
+      platform: () => ({
+        readCapacity: () => UNKNOWN_CAPACITY,
+        memorySensing: false,
+        createPort: () => ({ start: () => () => {}, setRefreshCap: () => {}, setCpuBoost: () => {} }),
+      }),
+      requested: 'active',
+      release: 'test',
+      now: () => 0,
+    });
+    await verger.start();
+    const kept = new Map<string, string>();
+    const storage = {
+      setItem: (key: string, value: string) => void kept.set(key, value),
+      removeItem: (key: string) => void kept.delete(key),
+    };
+    expect(applyWebLabPatch(verger, '{"defaultLever":"sideways"}', storage)).toMatchObject({ ok: false });
+    expect(kept.size).toBe(0);
+    expect(applyWebLabPatch(verger, '{"grow":false}', storage)).toEqual({ ok: true });
+    expect(kept.get(VERGER_LAB_PATCH_KEY)).toBe('{"grow":false}');
+    const full = { setItem: () => { throw new Error('quota'); }, removeItem: () => {} };
+    expect(applyWebLabPatch(verger, '{"grow":false}', full)).toMatchObject({ ok: false, error: expect.stringMatching(/not saved/) });
+  });
+});
