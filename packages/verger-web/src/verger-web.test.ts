@@ -4,9 +4,15 @@ import {
   VERGER_GLOBAL_MOTION,
   type VergerEvent,
 } from '@repo/verger-core';
-import { describe, expect, it } from 'vitest';
+import { observeInputDelay } from '@repo/verger-react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BrowserBattery, BrowserConnection, BrowserNavigator } from './browser';
-import { batteryEventOfBrowser, capacityOfBrowser, networkEventOfBrowser } from './mapping';
+import {
+  batteryEventOfBrowser,
+  capacityOfBrowser,
+  networkEventOfBrowser,
+  storageEventOfEstimate,
+} from './mapping';
 import { browserStore, createVergerBrowserPlatform } from './platform';
 import { browserSignals } from './signals';
 
@@ -64,6 +70,62 @@ describe('browser readings as verger events', () => {
     expect(batteryEventOfBrowser({ level: 1, charging: false }, 0)).toMatchObject({
       pluggedIn: null,
     });
+  });
+});
+
+describe('storage and input delay from the browser (B4, B7)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('the storage estimate: what the origin may still write; unknown when either half is missing', () => {
+    expect(storageEventOfEstimate({ quota: 1000, usage: 400 }, 3)).toEqual({ type: 'storage', at: 3, freeBytes: 600 });
+    expect(storageEventOfEstimate({ quota: 100, usage: 400 }, 3)).toMatchObject({ freeBytes: 0 });
+    expect(storageEventOfEstimate({ usage: 400 }, 3)).toMatchObject({ freeBytes: null });
+  });
+
+  it('browserSignals reads the estimate at start and on focus', async () => {
+    const win = new EventTarget();
+    const events: VergerEvent[] = [];
+    const nav: BrowserNavigator = { onLine: true, storage: { estimate: async () => ({ quota: 10, usage: 4 }) } };
+    const stop = browserSignals({ window: win as Window, navigator: nav }, (e) => events.push(e), () => 1);
+    await Promise.resolve();
+    await Promise.resolve();
+    win.dispatchEvent(new Event('focus'));
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(events.filter((e) => e.type === 'storage')).toHaveLength(2);
+    stop();
+    win.dispatchEvent(new Event('focus'));
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(events.filter((e) => e.type === 'storage')).toHaveLength(2);
+  });
+
+  it('input delay is processingStart minus startTime of Event Timing entries; inert without them', () => {
+    type Deliver = (list: { getEntries(): readonly { startTime: number; processingStart?: number }[] }) => void;
+    const fake: { deliver: Deliver | null } = { deliver: null };
+    const observed: unknown[] = [];
+    class FakeObserver {
+      static supportedEntryTypes = ['event'];
+      constructor(callback: Deliver) {
+        fake.deliver = callback;
+      }
+      observe(options: unknown) {
+        observed.push(options);
+      }
+      disconnect() {
+        fake.deliver = null;
+      }
+    }
+    vi.stubGlobal('PerformanceObserver', FakeObserver);
+    const delays: number[] = [];
+    const stop = observeInputDelay((d) => delays.push(d));
+    expect(observed).toEqual([{ type: 'event', durationThreshold: 104 }]);
+    fake.deliver?.({ getEntries: () => [{ startTime: 100, processingStart: 250 }, { startTime: 5 }, { startTime: 10, processingStart: 4 }] });
+    expect(delays).toEqual([150]);
+    stop();
+    expect(fake.deliver).toBeNull();
+    vi.stubGlobal('PerformanceObserver', class { static supportedEntryTypes = ['longtask']; });
+    expect(observeInputDelay(() => {})).toBeTypeOf('function');
   });
 });
 

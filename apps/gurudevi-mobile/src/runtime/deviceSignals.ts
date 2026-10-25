@@ -1,10 +1,12 @@
 import NetInfo, { type NetInfoState } from '@react-native-community/netinfo';
 import type { NetworkTransport, VergerEvent } from '@repo/core/verger';
 import * as Battery from 'expo-battery';
+import { Paths } from 'expo-file-system';
+import { AppState } from 'react-native';
 
 /**
  * Gurudevi's device readings in JavaScript, as verger events: the network from NetInfo, the
- * battery and battery saver from expo-battery. Verger hears them as host signals: always in its
+ * battery and battery saver from expo-battery, free storage from expo-file-system. Verger hears them as host signals: always in its
  * floors, and while it runs only where the platform does not sense them natively. Background
  * tasks, which run without verger, read them once.
  */
@@ -57,6 +59,15 @@ export function batteryEventOf(
   };
 }
 
+/** expo-file-system's free disk space as verger's storage event; a bad reading is unknown. */
+export function storageEventOf(availableBytes: number, at: number): VergerEvent {
+  const known = Number.isFinite(availableBytes) && availableBytes >= 0;
+  return { type: 'storage', at, freeBytes: known ? availableBytes : null };
+}
+
+/** `Paths.availableDiskSpace` is a synchronous native read: cheap, but it may throw. */
+const readStorage = (at: number): VergerEvent => storageEventOf(Paths.availableDiskSpace, at);
+
 /** Live signals for `VergerRoot`: every change is sent; a failed source is logged and skipped. */
 export function deviceSignals(
   dispatch: (event: VergerEvent) => void,
@@ -105,6 +116,23 @@ export function deviceSignals(
   } catch (error) {
     failed('battery')(error);
   }
+  // Free space has no change event: read at start and whenever the app comes to the front.
+  const storage = () => {
+    try {
+      send(readStorage(now()));
+    } catch (error) {
+      failed('storage')(error);
+    }
+  };
+  storage();
+  try {
+    const subscription = AppState.addEventListener('change', (status) => {
+      if (status === 'active') storage();
+    });
+    stops.push(() => subscription.remove());
+  } catch (error) {
+    failed('storage')(error);
+  }
   return () => {
     live = false;
     for (const stop of stops) stop();
@@ -127,5 +155,10 @@ export async function readDeviceEvents(at: number): Promise<VergerEvent[]> {
     events.push({ type: 'power', at, saver: power.value.lowPowerMode });
     events.push(batteryEventOf(power.value.batteryLevel, power.value.batteryState, at));
   } else console.warn('[verger] battery unavailable', power.reason);
+  try {
+    events.push(readStorage(at));
+  } catch (error) {
+    console.warn('[verger] storage unavailable', error);
+  }
   return events;
 }

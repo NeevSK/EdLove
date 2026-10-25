@@ -7,8 +7,10 @@ vi.mock('@react-native-community/netinfo', () => ({
 vi.mock('expo-battery', () => ({
   BatteryState: { UNKNOWN: 0, UNPLUGGED: 1, CHARGING: 2, FULL: 3, NOT_CHARGING: 4 },
 }));
+vi.mock('expo-file-system', () => ({ Paths: { availableDiskSpace: 0 } }));
+vi.mock('react-native', () => ({ AppState: { addEventListener: () => ({ remove: () => {} }) } }));
 
-const { batteryEventOf, networkEventOf } = await import('@/runtime/deviceSignals');
+const { batteryEventOf, networkEventOf, storageEventOf } = await import('@/runtime/deviceSignals');
 const { NetInfoStateType } = await import('@react-native-community/netinfo');
 
 describe('device readings as verger events', () => {
@@ -56,5 +58,11 @@ describe('device readings as verger events', () => {
     expect(batteryEventOf(1, 3, 0)).toMatchObject({ pluggedIn: true });
     // Plugged in but not charging (a full or limited battery) is still plugged in.
     expect(batteryEventOf(0.8, 4, 0)).toMatchObject({ pluggedIn: true });
+  });
+
+  it('maps free disk space; a negative or non-finite reading is unknown', () => {
+    expect(storageEventOf(2_000_000_000, 4)).toEqual({ type: 'storage', at: 4, freeBytes: 2_000_000_000 });
+    expect(storageEventOf(-1, 4)).toMatchObject({ freeBytes: null });
+    expect(storageEventOf(Number.NaN, 4)).toMatchObject({ freeBytes: null });
   });
 });

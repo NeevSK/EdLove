@@ -10,7 +10,12 @@ import {
   type VergerHost,
   type VergerTelemetrySink,
 } from '@repo/verger-core';
-import { bindVerger, bindVergerEarly, observeLongTasks } from '@repo/verger-react';
+import {
+  bindVerger,
+  bindVergerEarly,
+  observeInputDelay,
+  observeLongTasks,
+} from '@repo/verger-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import type { BrowserNavigator } from './browser';
 import { capacityOfBrowser } from './mapping';
@@ -136,6 +141,11 @@ export function VergerBrowser({
           ['long-animation-frame', 'longtask'],
         )
       : () => {};
+    const stopInputDelay = runs
+      ? observeInputDelay((durationMs) =>
+          verger.dispatch({ type: 'input-delay', at: now(), durationMs }),
+        )
+      : () => {};
     const applyMotion = () => {
       const root = document.documentElement;
       if (verger.getSnapshot()?.globalReducedMotion)
@@ -148,6 +158,7 @@ export function VergerBrowser({
     return () => {
       stopMotion();
       document.documentElement.removeAttribute(REDUCED_MOTION_ATTRIBUTE);
+      stopInputDelay();
       stopLongTasks();
       window.removeEventListener('pointerdown', onInteraction);
       window.removeEventListener('keydown', onInteraction);

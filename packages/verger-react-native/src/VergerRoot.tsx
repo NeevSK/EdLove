@@ -13,7 +13,12 @@ import {
   type VergerActivation,
   type VergerStore,
 } from '@repo/verger-core';
-import { bindVerger, bindVergerEarly, observeLongTasks } from '@repo/verger-react';
+import {
+  bindVerger,
+  bindVergerEarly,
+  observeInputDelay,
+  observeLongTasks,
+} from '@repo/verger-react';
 import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { AccessibilityInfo, AppState, type AppStateStatus, View } from 'react-native';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
@@ -152,14 +157,20 @@ export function VergerRoot({
     );
     const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', reduceMotion);
     const stopSignals = startSignals?.((event) => verger.signal(event), now) ?? (() => {});
-    // Long tasks matter only to a running closed loop; off, nothing is observed.
+    // Long tasks and input delay matter only to a running closed loop; off, nothing is observed.
     const stopLongTasks = runs
       ? observeLongTasks((durationMs) =>
           verger.dispatch({ type: 'long-task', at: now(), durationMs }),
         )
       : () => {};
+    const stopInputDelay = runs
+      ? observeInputDelay((durationMs) =>
+          verger.dispatch({ type: 'input-delay', at: now(), durationMs }),
+        )
+      : () => {};
     return () => {
       live = false;
+      stopInputDelay();
       stopLongTasks();
       stopSignals();
       motion.remove();

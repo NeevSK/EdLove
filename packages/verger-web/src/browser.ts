@@ -6,6 +6,8 @@
  * - Device Memory: `navigator.deviceMemory`, GiB rounded to a power of two, clamped to
  *   browser-specific bounds.
  * - Battery Status: `navigator.getBattery()`, secure contexts only.
+ * - Storage: `navigator.storage.estimate()` (StorageManager, secure contexts): the origin's
+ *   quota and usage, not the disk; either may be missing.
  */
 export interface BrowserConnection extends EventTarget {
   readonly type?: string;
@@ -25,4 +27,10 @@ export interface BrowserNavigator {
   readonly deviceMemory?: number;
   readonly connection?: BrowserConnection;
   getBattery?(): Promise<BrowserBattery>;
+  readonly storage?: { estimate(): Promise<BrowserStorageEstimate> };
+}
+
+export interface BrowserStorageEstimate {
+  readonly quota?: number;
+  readonly usage?: number;
 }

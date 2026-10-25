@@ -4,7 +4,7 @@ import {
   UNKNOWN_CAPACITY,
   type VergerEvent,
 } from '@repo/verger-core';
-import type { BrowserBattery, BrowserNavigator } from './browser';
+import type { BrowserBattery, BrowserNavigator, BrowserStorageEstimate } from './browser';
 
 const GIB = 1024 ** 3;
 
@@ -78,4 +78,16 @@ export function batteryEventOfBrowser(
     pluggedIn: battery.charging ? true : level >= 1 ? null : false,
     temperatureC: null,
   };
+}
+
+/**
+ * The origin's storage estimate as verger's storage event: what this site may still write
+ * (quota minus usage), which is what limits a web app, not the disk. Unknown when either is
+ * missing.
+ */
+export function storageEventOfEstimate(estimate: BrowserStorageEstimate, at: number): VergerEvent {
+  const { quota, usage } = estimate;
+  const known =
+    typeof quota === 'number' && typeof usage === 'number' && Number.isFinite(quota - usage);
+  return { type: 'storage', at, freeBytes: known ? Math.max(0, quota - usage) : null };
 }
