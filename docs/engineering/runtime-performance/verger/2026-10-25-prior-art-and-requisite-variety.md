@@ -160,6 +160,11 @@ on each return to the foreground (mobile) or page show (web); set after launch, 
 the floors remain. The `stopped` marker skipping the exit check stays, by design (open items has
 the reason).
 
+**R9 built (no blind boost).** The ADPF hint session boosts from the frame work reported to it,
+which comes only from frame metrics. The reducer now never asks for the boost with the frames
+sensor off (and the deaf-sensor invariant checks it), and the native side refuses it too, on a
+request and on resume. Kotlin compiled against `android.jar` 35, 34 JUnit tests pass.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).

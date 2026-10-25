@@ -85,6 +85,7 @@ export function checkSnapshot(
     fail('deaf-sensor-silent', `projected heat ${snapshot.thermalProjected}`);
   if (!sense.power && (snapshot.batteryHoursLeft !== null || snapshot.energyShort))
     fail('deaf-sensor-silent', 'battery drain');
+  if (!sense.frames && snapshot.cpuBoost) fail('deaf-sensor-silent', 'CPU boost without frame reports');
   if (!sense.network && Object.values(snapshot.network).some((v) => v !== null))
     fail('deaf-sensor-silent', 'network');
   if (!sense.network && snapshot.networkLimit !== 'none')

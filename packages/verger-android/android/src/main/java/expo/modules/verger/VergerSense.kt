@@ -291,11 +291,16 @@ class VergerSense(
     }
   }
 
-  /** Opens or closes the ADPF hint session for the UI and render threads. */
+  /**
+   * Opens or closes the ADPF hint session for the UI and render threads. The session acts on the
+   * frame work reported to it, which comes from frame metrics: with the frames sensor off it would
+   * boost blind, so it is refused.
+   */
   fun setCpuBoost(enabled: Boolean) {
     handler.post {
       cpuBoostWanted = enabled
-      val open = levers.setCpuBoost(enabled && foreground, estimator?.defaultTargetMs ?: 16.667)
+      val framesOn = (config?.sensors ?: Sensors.ALL).frames
+      val open = levers.setCpuBoost(enabled && foreground && framesOn, estimator?.defaultTargetMs ?: 16.667)
       emit(EVENT_LEVER, mapOf("lever" to "cpu-boost", "requested" to enabled, "applied" to open))
     }
   }
@@ -315,7 +320,7 @@ class VergerSense(
     handler.removeCallbacks(pollMemory)
     if (sensors.memory) handler.post(pollMemory)
     levers.reapply()
-    if (cpuBoostWanted) levers.setCpuBoost(true, estimator?.defaultTargetMs ?: 16.667)
+    if (cpuBoostWanted && sensors.frames) levers.setCpuBoost(true, estimator?.defaultTargetMs ?: 16.667)
   }
 
   private fun pause() {

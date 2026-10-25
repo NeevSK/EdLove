@@ -1999,6 +1999,8 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     cpuBoost:
       hardwareAllowed &&
       state.capacity.supportsCpuHints &&
+      // The hint session acts on reported frame work; with frames deaf it would boost blind (R9).
+      state.activation.sense.frames &&
       state.visibility === 'active' &&
       !state.powerSaver &&
       !idle &&
