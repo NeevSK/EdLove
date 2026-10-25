@@ -44,7 +44,11 @@ describe('verger over its own budget', () => {
     const now = () => (clock += 1);
     const sent: string[] = [];
     const v = createVerger({
-      host: defineHost({ name: 'budget', levers: SAMPLE_LEVERS }),
+      host: defineHost({
+        name: 'budget',
+        levers: SAMPLE_LEVERS,
+        config: { selfBudgetMaxDutyRatio: 0.01, selfBudgetWindowMs: 200 },
+      }),
       platform: () => ({
         readCapacity: () => ({
           totalMemoryBytes: null, isLowRamDevice: null, memoryClassMb: null, sdkInt: null, cpuCores: null,
@@ -60,7 +64,6 @@ describe('verger over its own budget', () => {
       telemetrySink: (name, attributes) => {
         if (name === 'verger_self_budget') sent.push(String(attributes.stage));
       },
-      selfBudget: { maxDutyRatio: 0.01, windowMs: 200 },
     });
     await v.start();
     expect(v.activation?.sense.threads).toBe(true);

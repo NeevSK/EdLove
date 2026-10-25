@@ -420,6 +420,17 @@ export interface VergerConfig {
   readonly gcPauseShareStall: number;
   /** Free storage below this is low: levers' `whenStorageLow` apply (B4). Provisional. */
   readonly storageLowBytes: number;
+  /**
+   * Loop 2's unhelpful-lever rule (D4): judged not-relieved this many times for a target, never
+   * relieved, and p5 stops lowering that lever for it. Provisional.
+   */
+  readonly ineffectiveAfterMoves: number;
+  /**
+   * Verger's budget for itself (D4): the share of each `selfBudgetWindowMs` it may spend deciding.
+   * 1 (the default) is no budget: a share can never exceed it. Set below 1 only from a measurement.
+   */
+  readonly selfBudgetMaxDutyRatio: number;
+  readonly selfBudgetWindowMs: number;
   /** How long a compression has to relieve its account before it is judged not relieved. */
   readonly outcomeJudgeWindowMs: number;
   /** How long an expansion must last, not pushed back by pressure, to be judged held. */

@@ -34,6 +34,10 @@ export function validateConfig(config: VergerConfig): void {
   }
   if (!Number.isInteger(config.minSamples))
     throw new Error('Config "minSamples" must be an integer');
+  if (!Number.isInteger(config.ineffectiveAfterMoves))
+    throw new Error('Config "ineffectiveAfterMoves" must be an integer');
+  if (config.selfBudgetMaxDutyRatio > 1)
+    throw new Error('Config "selfBudgetMaxDutyRatio" must be at most 1 (1 is no budget)');
   if (!Number.isInteger(config.flapCycles))
     throw new Error('Config "flapCycles" must be an integer');
 }
@@ -79,6 +83,9 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   storageLowBytes: 512 * 1024 ** 2,
   outcomeJudgeWindowMs: 5_000,
   outcomeHoldWindowMs: 10_000,
+  ineffectiveAfterMoves: 3,
+  selfBudgetMaxDutyRatio: 1,
+  selfBudgetWindowMs: 60_000,
   memoryLowFactor: 1.5,
   memoryModerateFactor: 2,
   refreshCapHz: 60,

@@ -19,7 +19,7 @@ import { fnv1a32 } from './experiment';
 import { createFlightRecorder, type FlightRecorder } from './flightRecorder';
 import type { VergerRecording } from './recording';
 import type { SelfCost } from './selfCost';
-import { createSelfBudgetGuard, SELF_BUDGET_SHED, type SelfBudget } from './selfBudget';
+import { createSelfBudgetGuard, SELF_BUDGET_SHED } from './selfBudget';
 import { ineffectiveFindings } from './selfRules';
 import type { VergerHost } from './host';
 import {
@@ -134,8 +134,6 @@ export interface VergerOptions {
    * and the dev lab; leave unset in a release.
    */
   readonly recordEvents?: number;
-  /** Verger's budget for itself (D4); unset, it never reduces itself for cost. */
-  readonly selfBudget?: SelfBudget;
 }
 
 export interface Verger {
@@ -548,7 +546,17 @@ export function createVerger(options: VergerOptions): Verger {
     selfPatch = null;
     // D4: verger over its own budget sheds its contention sensing, then hands over to the
     // floors. Acted on after the current dispatch, never inside it.
-    const budget = options.selfBudget ? createSelfBudgetGuard(options.selfBudget, now()) : null;
+    // From the host's config (`selfBudgetMaxDutyRatio` 1, the default, is no budget).
+    const budget =
+      host.config.selfBudgetMaxDutyRatio < 1
+        ? createSelfBudgetGuard(
+            {
+              maxDutyRatio: host.config.selfBudgetMaxDutyRatio,
+              windowMs: host.config.selfBudgetWindowMs,
+            },
+            now(),
+          )
+        : null;
     checkBudget = () => {
       if (!budget) return;
       const before = budget.stage;
@@ -571,7 +579,7 @@ export function createVerger(options: VergerOptions): Verger {
     // the recorded session and replays exactly. Sent after the current dispatch finishes, never
     // from inside it.
     const learn = () => {
-      for (const finding of ineffectiveFindings(outcomes.records())) {
+      for (const finding of ineffectiveFindings(outcomes.records(), host.config.ineffectiveAfterMoves)) {
         const key = `${finding.lever} ${finding.target}`;
         if (learned.has(key)) continue;
         learned.add(key);

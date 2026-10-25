@@ -1,7 +1,7 @@
 import { DEFAULT_VERGER_CONFIG } from './config';
 import type { DataBudgetState } from './dataBudget';
 import { isBatteryLow } from './signals';
-import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
+import type { CapacityFacts, LeverSpec, StorageLevel, VergerConfig, VergerSnapshot } from './types';
 
 /**
  * Demand and supply as data. The registry says what the host's work is, which class it is in and
@@ -52,6 +52,12 @@ export interface WorkloadSpec {
   readonly spends: readonly ResourceAccount[];
   /** Levers that set its quality; none for work verger only admits or protects. */
   readonly levers?: readonly string[];
+  /**
+   * `wait`: deferrable or ornamental work that should not run while free storage is low (it
+   * writes optional data). Undeclared, low storage never holds it: work that frees space, or
+   * that carries the user's records out, must keep running. A host decision per workload.
+   */
+  readonly whenStorageLow?: 'wait';
   /** Where it lives in the host, for people reading the registry. */
   readonly source: string;
 }
@@ -254,8 +260,10 @@ export function admitWork(
   snapshot: Pick<VergerSnapshot, 'networkLimit' | 'powerSaver' | 'battery'> & {
     /** Today's data budget (the snapshot's, or `dataBudgetState`); spent holds optional network work. */
     readonly dataBudget?: DataBudgetState;
+    /** Free storage (the snapshot's); low holds work that declares `whenStorageLow: 'wait'`. */
+    readonly storage?: StorageLevel;
   },
-  workload: Pick<WorkloadSpec, 'class' | 'spends'>,
+  workload: Pick<WorkloadSpec, 'class' | 'spends' | 'whenStorageLow'>,
   config: Pick<VergerConfig, 'batteryLowPercent'> = DEFAULT_VERGER_CONFIG,
 ): Admission {
   if (workload.class === 'critical' || workload.class === 'committed')
@@ -266,6 +274,8 @@ export function admitWork(
       return { admit: false, reason: limit };
     if (snapshot.dataBudget === 'spent') return { admit: false, reason: 'data-budget-spent' };
   }
+  if (workload.whenStorageLow === 'wait' && snapshot.storage === 'low')
+    return { admit: false, reason: 'storage-low' };
   if (workload.spends.includes('energy')) {
     if (snapshot.powerSaver) return { admit: false, reason: 'battery-saver' };
     if (isBatteryLow(snapshot.battery, config.batteryLowPercent))

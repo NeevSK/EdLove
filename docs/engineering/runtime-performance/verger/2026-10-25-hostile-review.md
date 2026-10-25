@@ -29,6 +29,12 @@ remotely configurable".
 | Recovery ladder (N, K, window) | host `recovery` config | remote |
 | Gurudevi's lever rules (`whenStorageLow`, `whenDataBudgetSpent`, ...) | code, by design (a lever rule is a host fact) | none needed; the per-lever activation patch can switch any lever off remotely |
 
+**Update, same day (2a):** the unhelpful-lever count (`ineffectiveAfterMoves`) and the self-budget
+(`selfBudgetMaxDutyRatio`, 1 = none, and `selfBudgetWindowMs`) are now `VergerConfig`, so every door
+that reaches config reaches them; the `selfBudget` option added earlier that day is gone (one source).
+Low storage holds a workload only if the host declares `whenStorageLow: 'wait'` on it; Gurudevi
+declares none yet (your decision).
+
 **Verdict:** yes, they need it. The seam is one: a remote **config patch** beside the remote activation
 patch, parsed strictly like it (`parseConfigPatch`, refused whole), layered build < lab < remote, with
 the ladder and the kill switch still above it; plus `selfBudget`, `ineffectiveAfterMoves` and the

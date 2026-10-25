@@ -1,12 +1,9 @@
+import { DEFAULT_VERGER_CONFIG } from './config';
 import type { MoveRecord } from './outcomes';
 import type { LeverTarget } from './types';
 
-/**
- * Loop 2's first self-rule (D4): a lever whose compressions for a target were judged
- * not-relieved this many times, and never relieved it, stops being lowered for that target.
- * Provisional, like every threshold, until phones judge it (phase F).
- */
-export const INEFFECTIVE_AFTER_MOVES = 3;
+/** The default of config `ineffectiveAfterMoves` (one source: the config). */
+export const INEFFECTIVE_AFTER_MOVES = DEFAULT_VERGER_CONFIG.ineffectiveAfterMoves;
 
 const TARGETS: ReadonlySet<string> = new Set<LeverTarget>(['gpu', 'cpu', 'memory', 'energy', 'network']);
 const isTarget = (account: string): account is LeverTarget => TARGETS.has(account);

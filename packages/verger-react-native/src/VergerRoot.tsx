@@ -11,7 +11,6 @@ import {
   type VergerHost,
   type VergerPlatform,
   type VergerActivation,
-  type SelfBudget,
   type VergerStore,
 } from '@repo/verger-core';
 import {
@@ -78,8 +77,6 @@ export interface VergerRootProps {
   readonly release: string;
   /** Records each session for the dev lab's export (D1); development builds only. */
   readonly recordEvents?: number;
-  /** Verger's budget for itself (D4); unset, it never reduces itself for cost. */
-  readonly selfBudget?: SelfBudget;
 }
 
 /**
@@ -109,7 +106,6 @@ export function VergerRoot({
   telemetrySink,
   release,
   recordEvents,
-  selfBudget,
 }: VergerRootProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   // Read once, like the rest of the launch: a new function must not restart verger.
@@ -127,7 +123,6 @@ export function VergerRoot({
       telemetrySink,
       release,
       recordEvents,
-      selfBudget,
       now,
     }),
   );

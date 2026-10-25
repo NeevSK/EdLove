@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { ACTIVATION_PRESETS, resolveActivation, type VergerActivation } from './activation';
 import { isValidEvent } from './controller';
-import { estimateAccounts } from './demand';
+import { admitWork, estimateAccounts } from './demand';
 import { checkSnapshot } from './invariants';
 import { VERGER_POLICY, VERGER_POLICY_P5 } from './policy';
 import { UNKNOWN_CAPACITY } from './reducer';
@@ -93,5 +93,15 @@ describe('event-loop lag and GC pauses as stall evidence', () => {
     expect(after(at.map((t) => ({ type: 'event-loop-lag', at: t, lagMs: 30 }) as const), active).contention).toBe('none');
     expect(after(at.map((t) => ({ type: 'js-heap', at: t, gcPauseShare: 0.2, allocatedBytes: null }) as const), active).contention).not.toBe('none');
     expect(after(at.map((t) => ({ type: 'js-heap', at: t, gcPauseShare: 0.01, allocatedBytes: 1 }) as const), active).contention).toBe('none');
+  });
+});
+
+describe('low storage and admission: a per-workload decision', () => {
+  const low = { networkLimit: 'none', powerSaver: false, battery: { levelPercent: null, pluggedIn: null, temperatureC: null }, storage: 'low' } as const;
+  it('holds only deferrable work that declares it waits; never critical work, never undeclared work', () => {
+    expect(admitWork(low, { class: 'deferrable', spends: ['storage'], whenStorageLow: 'wait' })).toEqual({ admit: false, reason: 'storage-low' });
+    expect(admitWork(low, { class: 'deferrable', spends: ['storage', 'cpu'] }).admit).toBe(true);
+    expect(admitWork(low, { class: 'critical', spends: ['storage'], whenStorageLow: 'wait' }).admit).toBe(true);
+    expect(admitWork({ ...low, storage: 'unknown' }, { class: 'deferrable', spends: ['storage'], whenStorageLow: 'wait' }).admit).toBe(true);
   });
 });
