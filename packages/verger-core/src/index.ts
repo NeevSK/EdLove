@@ -133,6 +133,7 @@ export {
   type Verdict,
 } from './outcomes';
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
+export { comparePolicies, type PolicyReport } from './compare';
 export { replayVerger } from './replay';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
