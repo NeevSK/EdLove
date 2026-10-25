@@ -193,8 +193,11 @@ describe('thermal and memory pressure', () => {
     // Cool again, but nothing has been drawn yet: silence is not evidence, so nothing rises.
     state = reduceVerger(state, { type: 'tick', at: 25_100 });
     expect(state.stack.length).toBe(2);
-    // Two calm windows of real frames are.
+    // Calm frames are evidence, but heat steps down only after the thermal dwell (P4).
     for (const event of frames(25_100, 26_100, 8)) state = reduceVerger(state, event);
+    expect(state.stack.length).toBe(2);
+    const cooled = 21_000 + DEFAULT_VERGER_CONFIG.thermalDwellMs;
+    for (const event of frames(cooled, cooled + 1_000, 8)) state = reduceVerger(state, event);
     expect(state.stack.length).toBe(1);
   });
 

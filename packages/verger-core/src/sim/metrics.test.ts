@@ -47,6 +47,29 @@ describe('control metrics', () => {
     expect(m.settlingMs).toBe(1000);
   });
 
+  it('counts heat-level changes as chatter, but not the first reading', () => {
+    const ticks = [
+      tick(0, { thermal: 'unknown' }),
+      tick(30_000, { thermal: 'nominal' }),
+      tick(45_000, { thermal: 'warm' }),
+      tick(60_000, { thermal: 'nominal' }),
+    ];
+    expect(controlMetrics(ticks, phone, SAMPLE_LEVERS).thermalFlipsPerMinute).toBe(2);
+  });
+
+  it('counts as chatter only the changes the true temperature does not explain', () => {
+    const ticks = [
+      tick(0, { thermal: 'nominal', temperatureC: 38 }),
+      tick(15_000, { thermal: 'warm', temperatureC: 40.1 }),
+      tick(30_000, { thermal: 'nominal', temperatureC: 39.9 }), // 0.2 °C: chatter
+      tick(45_000, { thermal: 'warm', temperatureC: 41 }), // 1.1 °C: heat really rose
+      tick(60_000, { thermal: 'warm', temperatureC: 41 }),
+    ];
+    const m = controlMetrics(ticks, phone, SAMPLE_LEVERS);
+    expect(m.thermalFlipsPerMinute).toBe(3);
+    expect(m.thermalChatterPerMinute).toBe(1);
+  });
+
   it('a disturbance that ends the session is not a failure to settle', () => {
     expect(controlMetrics([tick(500), tick(1000, { disturbance: true, qualityCost: 0.5 })], phone, SAMPLE_LEVERS).settlingMs).toBe(0);
   });

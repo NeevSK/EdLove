@@ -11,7 +11,7 @@ import type {
 export const isBatteryLow = (battery: BatteryState, lowPercent: number): boolean =>
   battery.pluggedIn === false && battery.levelPercent !== null && battery.levelPercent <= lowPercent;
 
-const THERMAL_RANK: Record<ThermalLevel, number> = {
+export const THERMAL_RANK: Record<ThermalLevel, number> = {
   unknown: 0,
   nominal: 1,
   warm: 2,

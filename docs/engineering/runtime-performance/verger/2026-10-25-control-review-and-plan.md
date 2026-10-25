@@ -102,6 +102,23 @@ cuts jank from 60% to 0% and peak heat by 4 °C on the mid phone for 30% of qual
 low phone sits at its class floors already (55% given up with verger off), so heat finds nothing
 left to lower there; the burst session exposes P8.
 
+**P3 status (`sim/stability.test.ts`, in the gate):** every reference phone and session plus a
+threshold-parked edge session per phone (seeds 1–3), p4 and p5 against verger off on the same
+seed. Bounds: heat chatter ≤ 0.2 per minute (changes the true temperature does not explain);
+jank ≤ off + 1 point; peak heat ≤ off + 0.5 °C; settling within the phone's thermal time constant
+plus two dwells; flaps ≤ 0.5 per minute and quality given up while janking ≤ off + 15 points,
+except in the burst session until P8. Before P4 the low phone's edge session failed the chatter
+bound (0.30–0.50 per minute).
+
+**P4 status:** built. Heat rises at once; it steps down only past an exit band
+(`thermalExitBandHeadroom` 0.05, `thermalExitBandC` 1 °C) held for `thermalDwellMs` (20 s); the
+OS status, being discrete, gets the dwell alone; a lost reading is unknown at once. Lowering acts
+on the reading (it stops the moment heat eases, no overshoot through the dwell); raises, warm
+floors and admission wait on the held level. The outcome ledger gives a compress that relieves
+heat the dwell on top of its judge window, or heat relief could never be credited. Storage leaves
+low only `storageExitBandBytes` (64 MiB) above the threshold. Low phone edge chatter 0.30–0.50 →
+0 per minute; see [the baseline](sim/2026-10-25-baseline.md#after-p4-thermal-and-storage-hysteresis).
+
 **Not now, planned:** feedforward from workload announcements (needs the app to announce work);
 setpoints for heat and energy (needs battery and heat curves from phones); coupling rules (need
 measured couplings). Each needs phase F's recordings to be more than a guess.

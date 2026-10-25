@@ -67,10 +67,11 @@ describe('outcome ledger: compress', () => {
     const l = ledger();
     l.observe(snap(0));
     l.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
-    l.settle(9_000);
-    expect(l.records()[0]).toMatchObject({ verdict: 'not-relieved', judgedAt: 6_000 });
+    // Heat relief has the judge window plus the thermal dwell (P4): 1 s + 5 s + 20 s.
+    l.settle(26_500);
+    expect(l.records()[0]).toMatchObject({ verdict: 'not-relieved', judgedAt: 26_000 });
     // Relief after the deadline is too late to count.
-    l.observe(snap(9_500, { thermal: 'nominal', ...lowered('frosting', 1) }));
+    l.observe(snap(27_000, { thermal: 'nominal', ...lowered('frosting', 1) }));
     expect(l.records()[0]?.verdict).toBe('not-relieved');
   });
 
@@ -175,6 +176,8 @@ describe('outcome ledger on the real policy', () => {
       { type: 'interaction', at: 100 },
       { type: 'thermal', at: 1_000, status: 'severe', headroom: 0.97 },
       { type: 'thermal', at: 3_500, status: 'none', headroom: 0.5 },
+      // Heat steps down only after the thermal dwell (P4): cool from 3.5 s, nominal at 23.5 s.
+      { type: 'tick', at: 23_500 },
     ];
     for (const event of events) {
       const version = state.version;
@@ -186,7 +189,7 @@ describe('outcome ledger on the real policy', () => {
     expect(compresses.length).toBeGreaterThan(0);
     for (const move of compresses) {
       expect(move.verdict).toBe('relieved');
-      expect(move.agilityMs).toBe(2_500);
+      expect(move.agilityMs).toBe(22_500);
     }
   });
 });
@@ -222,6 +225,8 @@ describe('outcome ledger in a running verger', () => {
     send({ type: 'thermal', at: 1_000, status: 'severe', headroom: 0.97 });
     clock = 3_000;
     send({ type: 'thermal', at: 3_000, status: 'none', headroom: 0.5 });
+    clock = 23_000;
+    send({ type: 'tick', at: 23_000 });
     const report = verger.outcomes();
     expect(report?.records.length).toBeGreaterThan(0);
     expect(report?.records.every((r) => r.verdict === 'relieved')).toBe(true);
@@ -232,15 +237,17 @@ describe('outcome ledger in a running verger', () => {
 
 describe('stage 5 into the record: windows, verdict lines, telemetry', () => {
   it('the judge window comes from config; an explicit option still wins', () => {
-    const fromConfig = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, config: { outcomeJudgeWindowMs: 2_000 } });
+    // Both the judge window and the thermal dwell come from config: 1 s + 2 s + 1 s.
+    const config = { outcomeJudgeWindowMs: 2_000, thermalDwellMs: 1_000 };
+    const fromConfig = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, config });
     fromConfig.observe(snap(0));
     fromConfig.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
-    fromConfig.settle(3_500);
-    expect(fromConfig.records()[0]).toMatchObject({ verdict: 'not-relieved', judgedAt: 3_000 });
-    const explicit = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, judgeWindowMs: 8_000, config: { outcomeJudgeWindowMs: 2_000 } });
+    fromConfig.settle(4_500);
+    expect(fromConfig.records()[0]).toMatchObject({ verdict: 'not-relieved', judgedAt: 4_000 });
+    const explicit = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, judgeWindowMs: 8_000, config });
     explicit.observe(snap(0));
     explicit.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
-    explicit.settle(3_500);
+    explicit.settle(4_500);
     expect(explicit.records()[0]?.verdict).toBe('pending');
   });
 

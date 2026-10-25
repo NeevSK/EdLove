@@ -18,8 +18,14 @@ export interface ControlMetrics {
   readonly qualityWhileJanking: number;
   /** A lever moving against its previous move within `flapWindowMs`, per minute: oscillation. */
   readonly flapsPerMinute: number;
-  /** Changes of the published heat level per minute: threshold chatter. */
+  /** Changes of the published heat level per minute, the first reading aside: threshold chatter. */
   readonly thermalFlipsPerMinute: number;
+  /**
+   * Of those, changes the plant does not explain: the true temperature moved less than
+   * `chatterDeltaC` since the previous change. Heat following a real load is not chatter; a
+   * level flipping on sensor noise or quantisation is.
+   */
+  readonly thermalChatterPerMinute: number;
   readonly peakTemperatureC: number;
   /** Time at or above the phone's throttling onset plus 2 °C (moderate throttling). */
   readonly hotMs: number;
@@ -36,6 +42,7 @@ export function controlMetrics(
   phone: PhoneModel,
   levers: readonly LeverSpec[],
   flapWindowMs = 30_000,
+  chatterDeltaC = 0.5,
 ): ControlMetrics {
   const visible = ticks.filter((t) => t.visible);
   const janky = visible.filter((t) => t.costMs > t.targetMs * 1.25);
@@ -60,8 +67,19 @@ export function controlMetrics(
     }
   }
   let thermalFlips = 0;
-  for (let i = 1; i < ticks.length; i += 1)
-    if (ticks[i]?.thermal !== ticks[i - 1]?.thermal) thermalFlips += 1;
+  let thermalChatter = 0;
+  let lastChangeC: number | null = null;
+  // Leaving unknown is the first reading (or a sensor heard again), not chatter.
+  for (let i = 1; i < ticks.length; i += 1) {
+    const was = ticks[i - 1]?.thermal;
+    const now = ticks[i];
+    if (!now || now.thermal === was) continue;
+    if (was !== 'unknown') {
+      thermalFlips += 1;
+      if (lastChangeC !== null && Math.abs(now.temperatureC - lastChangeC) < chatterDeltaC) thermalChatter += 1;
+    }
+    lastChangeC = now.temperatureC;
+  }
 
   const step = ticks.length > 1 ? (ticks[1]?.at ?? 0) - (ticks[0]?.at ?? 0) : 0;
   const hotFrom = phone.thermal.throttleFromC + 2;
@@ -94,6 +112,7 @@ export function controlMetrics(
     qualityWhileJanking: mean(janky, (t) => t.qualityCost),
     flapsPerMinute: flaps / minutes,
     thermalFlipsPerMinute: thermalFlips / minutes,
+    thermalChatterPerMinute: thermalChatter / minutes,
     peakTemperatureC: Math.max(...ticks.map((t) => t.temperatureC)),
     hotMs,
     settlingMs,

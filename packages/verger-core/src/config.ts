@@ -32,6 +32,9 @@ export function validateConfig(config: VergerConfig): void {
   if (!(config.headroomHot <= config.headroomCritical)) {
     throw new Error('Config "headroomHot" must not exceed "headroomCritical"');
   }
+  // An exit band as wide as the first threshold would leave a level no reading could exit.
+  order('thermalExitBandHeadroom', 'headroomWarm');
+  order('thermalExitBandC', 'batteryWarmC');
   if (!Number.isInteger(config.minSamples))
     throw new Error('Config "minSamples" must be an integer');
   if (!Number.isInteger(config.ineffectiveAfterMoves))
@@ -70,6 +73,9 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   batteryWarmC: 40,
   batteryHotC: 45,
   batteryCriticalC: 50,
+  thermalExitBandHeadroom: 0.05,
+  thermalExitBandC: 1,
+  thermalDwellMs: 20_000,
   lowCapacityBelowBytes: 5 * 1024 ** 3,
   midCapacityBelowBytes: 9 * 1024 ** 3,
   slowNetworkKbps: 1_000,
@@ -83,6 +89,7 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   eventLoopLagLongMs: 100,
   gcPauseShareStall: 0.05,
   storageLowBytes: 512 * 1024 ** 2,
+  storageExitBandBytes: 64 * 1024 ** 2,
   outcomeJudgeWindowMs: 5_000,
   outcomeHoldWindowMs: 10_000,
   ineffectiveAfterMoves: 3,

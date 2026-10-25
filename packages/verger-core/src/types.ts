@@ -410,6 +410,16 @@ export interface VergerConfig {
   readonly batteryWarmC: number;
   readonly batteryHotC: number;
   readonly batteryCriticalC: number;
+  /**
+   * Thermal hysteresis (P4, control review): heat steps down a level only once the reading is
+   * below that level's threshold by a band (headroom, and battery temperature in °C) and has
+   * stayed so for `thermalDwellMs`. Rising heat applies at once. The OS's status is discrete, so
+   * only the dwell applies to it. Bands sit above the sensors' jitter (ADPF headroom ±0.03,
+   * battery ±0.4 °C on the simulator's phones). Provisional.
+   */
+  readonly thermalExitBandHeadroom: number;
+  readonly thermalExitBandC: number;
+  readonly thermalDwellMs: number;
   /** A thread role using at least this many cores is saturated. */
   readonly saturationCores: number;
   /** Saturation must last this long before it counts as contention. */
@@ -425,6 +435,8 @@ export interface VergerConfig {
   readonly gcPauseShareStall: number;
   /** Free storage below this is low: levers' `whenStorageLow` apply (B4). Provisional. */
   readonly storageLowBytes: number;
+  /** Low storage ends only once free storage is this far above `storageLowBytes` (P4). */
+  readonly storageExitBandBytes: number;
   /**
    * Loop 2's unhelpful-lever rule (D4): judged not-relieved this many times for a target, never
    * relieved, and p5 stops lowering that lever for it. Provisional.

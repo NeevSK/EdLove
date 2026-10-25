@@ -22,6 +22,7 @@ import {
   type MemoryLatch,
   memoryLevelOf,
   NO_MEMORY_LATCH,
+  THERMAL_RANK,
   thermalLevelOf,
 } from './signals';
 import type {
@@ -142,6 +143,10 @@ export interface VergerState {
   readonly thermalStatus: ThermalStatus | null;
   readonly headroom: number | null;
   readonly lastThermalActionAt: number;
+  /** Heat as published, with hysteresis (P4): rises at once, steps down after a band and a dwell. */
+  readonly thermalHeld: ThermalLevel;
+  /** Since when the exit-band reading has been below `thermalHeld`; null while it is not. */
+  readonly thermalCoolerSince: number | null;
   readonly memoryLatch: MemoryLatch;
   readonly memorySensing: boolean;
 
@@ -153,6 +158,8 @@ export interface VergerState {
   readonly dataBudget: DataBudgetState;
   /** Free storage as last reported; null until then, or while the storage sensor is deaf. */
   readonly storageFreeBytes: number | null;
+  /** Storage was low and has not yet risen past the exit band (P4). */
+  readonly storageLowHeld: boolean;
   readonly visibility: AppVisibility;
   readonly lastInteractionAt: number;
   readonly reduceMotion: boolean;
@@ -275,6 +282,8 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     thermalStatus: null,
     headroom: null,
     lastThermalActionAt: Number.NEGATIVE_INFINITY,
+    thermalHeld: 'unknown',
+    thermalCoolerSince: null,
     memoryLatch: NO_MEMORY_LATCH,
     memorySensing: options.memorySensing ?? false,
     powerSaver: false,
@@ -283,6 +292,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     lastOfflineAt: null,
     dataBudget: 'unknown',
     storageFreeBytes: null,
+    storageLowHeld: false,
     visibility: 'active',
     lastInteractionAt: options.at,
     reduceMotion: false,
@@ -562,13 +572,13 @@ function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
     case 'memory':
       return { ...state, memoryLatch: NO_MEMORY_LATCH, polledMemory: null, memorySensing: false };
     case 'thermal':
-      return { ...state, thermalStatus: null, headroom: null };
+      return { ...state, thermalStatus: null, headroom: null, thermalHeld: 'unknown', thermalCoolerSince: null };
     case 'power':
       return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY };
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'storage':
-      return { ...state, storageFreeBytes: null };
+      return { ...state, storageFreeBytes: null, storageLowHeld: false };
     case 'network':
       return { ...state, network: UNKNOWN_NETWORK, lastOfflineAt: null, dataBudget: 'unknown' };
   }
@@ -647,7 +657,10 @@ function noteStall(state: VergerState, at: number): VergerState {
 function storageOf(state: VergerState): StorageLevel {
   const free = state.storageFreeBytes;
   if (free === null) return 'unknown';
-  return free < state.config.storageLowBytes ? 'low' : 'ample';
+  const { storageLowBytes, storageExitBandBytes } = state.config;
+  // A phone hovering at the threshold must not chatter: low ends only past the exit band (P4).
+  const line = state.storageLowHeld ? storageLowBytes + storageExitBandBytes : storageLowBytes;
+  return free < line ? 'low' : 'ample';
 }
 
 function markIneffective(state: VergerState, id: string, target: LeverTarget): VergerState {
@@ -753,37 +766,80 @@ function memoryOf(state: VergerState, at: number) {
   return memoryLevelOf(state.memoryLatch, at, state.memorySensing, state.polledMemory);
 }
 
+/** Heat as verger acts on it: the held level, with hysteresis (P4). */
 function thermalOf(state: VergerState): ThermalLevel {
-  return thermalReading(state).level;
+  return state.thermalHeld;
 }
 
 /**
- * Heat, and where it came from. The platform's status and headroom win; only where it gives
- * neither (Android 9) and the thermal sensor is on, battery temperature stands in.
+ * Heat, and where it came from, on the entry thresholds. The platform's status and headroom win;
+ * only where it gives neither (Android 9) and the thermal sensor is on, battery temperature
+ * stands in. `band` lowers every threshold by the exit band, for judging a step down.
  */
-function thermalReading(state: VergerState): { level: ThermalLevel; source: ThermalSource } {
+function thermalReading(
+  state: VergerState,
+  band = false,
+): { level: ThermalLevel; source: ThermalSource } {
+  const c = state.config;
+  const h = band ? c.thermalExitBandHeadroom : 0;
   if (state.thermalStatus !== null || state.headroom !== null)
     return {
-      level: thermalLevelOf(state.thermalStatus, state.headroom, state.config),
+      level: thermalLevelOf(state.thermalStatus, state.headroom, {
+        ...c,
+        headroomWarm: c.headroomWarm - h,
+        headroomHot: c.headroomHot - h,
+        headroomCritical: c.headroomCritical - h,
+      }),
       source: 'platform',
     };
   const t = state.battery.temperatureC;
   if (!state.activation.sense.thermal || t === null) return { level: 'unknown', source: 'none' };
-  const c = state.config;
+  const d = band ? c.thermalExitBandC : 0;
   const level: ThermalLevel =
-    t >= c.batteryCriticalC
+    t >= c.batteryCriticalC - d
       ? 'critical'
-      : t >= c.batteryHotC
+      : t >= c.batteryHotC - d
         ? 'hot'
-        : t >= c.batteryWarmC
+        : t >= c.batteryWarmC - d
           ? 'warm'
           : 'nominal';
   return { level, source: 'battery' };
 }
 
+/**
+ * Thermal hysteresis (P4, control review finding 2). Rising heat, and losing the reading, apply
+ * at once: safety first, and unknown is never proof of cool. Stepping down needs the reading
+ * below the held level even with every threshold lowered by its exit band, continuously for
+ * `thermalDwellMs`; then heat drops to what that banded reading says, and the next step down
+ * waits a dwell of its own.
+ */
+function holdThermal(state: VergerState, at: number): VergerState {
+  const raw = thermalReading(state).level;
+  const held = state.thermalHeld;
+  if (raw === 'unknown' || held === 'unknown' || THERMAL_RANK[raw] >= THERMAL_RANK[held]) {
+    if (raw === held && state.thermalCoolerSince === null) return state;
+    return { ...state, thermalHeld: raw, thermalCoolerSince: null };
+  }
+  const banded = thermalReading(state, true).level;
+  if (THERMAL_RANK[banded] >= THERMAL_RANK[held])
+    return state.thermalCoolerSince === null ? state : { ...state, thermalCoolerSince: null };
+  const since = state.thermalCoolerSince ?? at;
+  if (at - since < state.config.thermalDwellMs)
+    return since === state.thermalCoolerSince ? state : { ...state, thermalCoolerSince: since };
+  return { ...state, thermalHeld: banded, thermalCoolerSince: null };
+}
+
+function holdStorage(state: VergerState): VergerState {
+  const low = storageOf(state) === 'low';
+  return low === state.storageLowHeld ? state : { ...state, storageLowHeld: low };
+}
+
 /** Thermal and memory rules that apply on every event, so heat is acted on even without frames. */
 function applyStandingPressure(state: VergerState, at: number): VergerState {
-  const thermal = thermalOf(state);
+  // Lowering acts on the reading itself: it starts at once and stops at once when heat eases.
+  // Only relaxing (raises, warm floors, admission) waits out the held level's dwell (P4); acting
+  // on the held level would keep lowering for a dwell after the phone cooled, an overshoot.
+  const thermal = thermalReading(state).level;
   const memory = memoryOf(state, at);
   const sinceThermal = at - state.lastThermalActionAt;
   let next = state;
@@ -1118,6 +1174,7 @@ function step(state: VergerState, event: VergerEvent): VergerState {
     case 'tick':
       break;
   }
+  next = holdStorage(holdThermal(next, at));
   next = applyStandingPressure(next, at);
   next = applyContention(next, at);
   if (next.expansion) {
@@ -1493,6 +1550,8 @@ export function nextTimedChangeAt(state: VergerState): number | null {
   candidates.push(state.lastInteractionAt + state.config.gestureQuietMs);
   if (Number.isFinite(state.scrollingUntil)) candidates.push(state.scrollingUntil);
   if (state.freezeSince !== null) candidates.push(state.freezeSince + state.config.gestureFreezeMaxMs);
+  if (state.thermalCoolerSince !== null)
+    candidates.push(state.thermalCoolerSince + state.config.thermalDwellMs);
   for (const since of [state.jsSaturatedSince, state.mainSaturatedSince]) {
     if (since === null) continue;
     candidates.push(since + saturationAfterMs, state.lastContentionActionAt + saturationAfterMs);

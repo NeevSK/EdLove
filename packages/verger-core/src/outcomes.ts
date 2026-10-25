@@ -88,7 +88,10 @@ export interface OutcomeLedgerOptions {
   readonly maxRecords?: number;
   /** The host's thresholds, so accounts are read as the policy reads them. */
   readonly config?: Partial<
-    Pick<VergerConfig, 'batteryLowPercent' | 'outcomeJudgeWindowMs' | 'outcomeHoldWindowMs'>
+    Pick<
+      VergerConfig,
+      'batteryLowPercent' | 'outcomeJudgeWindowMs' | 'outcomeHoldWindowMs' | 'thermalDwellMs'
+    >
   >;
   /** Called once per move as its verdict is reached (the flight recorder's evidence). */
   readonly onJudged?: (record: MoveRecord) => void;
@@ -122,6 +125,11 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
     options.judgeWindowMs ?? options.config?.outcomeJudgeWindowMs ?? DEFAULT_JUDGE_WINDOW_MS;
   const holdWindowMs =
     options.holdWindowMs ?? options.config?.outcomeHoldWindowMs ?? DEFAULT_HOLD_WINDOW_MS;
+  // Heat steps down only after the thermal dwell (P4), so a compress that relieves heat cannot
+  // show it sooner: its window is the dwell longer.
+  const thermalDwellMs = options.config?.thermalDwellMs ?? DEFAULT_VERGER_CONFIG.thermalDwellMs;
+  const windowOf = (record: MoveRecord) =>
+    judgeWindowMs + (record.accounts.thermal !== undefined ? thermalDwellMs : 0);
   const readingConfig = { batteryLowPercent: options.config?.batteryLowPercent ?? DEFAULT_VERGER_CONFIG.batteryLowPercent };
   const maxRecords = options.maxRecords ?? DEFAULT_MAX_RECORDS;
   const relieves = new Map(levers.map((lever) => [lever.id, accountsRelievedBy(lever)]));
@@ -184,8 +192,8 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
   const settle = (at: number) => {
     for (const record of records) {
       if (record.verdict !== 'pending') continue;
-      if (record.direction === 'compress' && at - record.at >= judgeWindowMs) {
-        judge(record, 'not-relieved', record.at + judgeWindowMs);
+      if (record.direction === 'compress' && at - record.at >= windowOf(record)) {
+        judge(record, 'not-relieved', record.at + windowOf(record));
       } else if (record.direction === 'expand' && at - record.at >= holdWindowMs) {
         judge(record, 'held', record.at + holdWindowMs);
       }
