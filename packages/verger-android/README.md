@@ -33,6 +33,20 @@ The Kotlin estimator is tested against the golden vectors the TypeScript referen
 then run both suites. In a prebuilt Android project: `./gradlew :repo_verger-android:testDebugUnitTest`
 (the Gradle project name follows the autolinked package name; confirm it in `settings.gradle`).
 
+Without an Android project or SDK: `pnpm verger:android-jvm` compiles every file but the Expo
+binding against the real `android.jar` (API 35) and runs the JUnit suite on the desktop JVM.
+
+## Evidence (2026-10-25)
+
+- Every Kotlin file but `VergerModule.kt` compiles against `android.jar` 35 with Kotlin 2.1.20,
+  including `VergerSense.kt` with the switchable sensors, network, battery and the lifecycle adapter (G0).
+- 34 JUnit tests on the desktop JVM, among them `PresenceTest` (G2).
+- Foreground and background now come from `Application.ActivityLifecycleCallbacks` inside
+  `VergerSense` (`Presence.kt`), not Expo's `OnActivityEnters*` hooks: the binding uses nothing
+  Expo Modules 2.0 is not known to offer.
+- `VergerModule.kt` is still uncompiled (it needs expo-modules-core). The first Gradle build must
+  compile it; nothing here has run on a device.
+
 ## Evidence (2026-10-24)
 
 - Android-free Kotlin (estimator, sampler, exits, display modes, sensor set): 25 JUnit tests on the desktop JVM with Kotlin 2.1.20 (G2).

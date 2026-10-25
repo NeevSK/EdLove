@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "verger:check": "bash scripts/verger-check.sh",
+    "verger:android-jvm": "bash scripts/verger-android-jvm.sh",
     "audit:db-trust": "node scripts/check-db-trust.mjs",
     "audit:query-plans": "node scripts/check-query-plans.mjs",
     "audit:db-behavior": "node scripts/check-db-behavior.mjs",

@@ -51,10 +51,8 @@ class VergerModule : Module() {
 
     Function("readTotals") { sense?.totals() ?: emptyMap<String, Any?>() }
 
-    OnActivityEntersForeground { sense?.onForeground(appContext.currentActivity) }
-
-    OnActivityEntersBackground { sense?.onBackground() }
-
+    // Foreground and background are followed by VergerSense itself, from the platform's
+    // activity callbacks: this binding keeps only what any module API offers.
     OnDestroy {
       sense?.destroy()
       sense = null

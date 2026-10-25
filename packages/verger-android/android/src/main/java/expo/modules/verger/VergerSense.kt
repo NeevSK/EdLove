@@ -2,6 +2,7 @@ package expo.modules.verger
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.ComponentCallbacks2
 import android.content.Context
@@ -13,6 +14,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
@@ -90,6 +92,30 @@ class VergerSense(
   private var window: WeakReference<Window>? = null
   private var foreground = isProcessForeground()
   private var flushPending = false
+
+  // Foreground and background come from the platform's activity callbacks, not from Expo's
+  // lifecycle hooks: sensing keeps no Expo-only dependency (Expo Modules 2.0 readiness). The
+  // callbacks run on the main thread, where [presence] lives; the work goes to [handler].
+  private val presence = Presence(startedAlready = foreground)
+  private val lifecycle = object : Application.ActivityLifecycleCallbacks {
+    override fun onActivityStarted(activity: Activity) {
+      if (presence.onStarted() == Presence.Action.FOREGROUND) onForeground(activity)
+    }
+    override fun onActivityResumed(activity: Activity) {
+      if (presence.onResumed() == Presence.Action.REBIND) rebind(activity)
+    }
+    override fun onActivityStopped(activity: Activity) {
+      if (presence.onStopped() == Presence.Action.BACKGROUND) onBackground()
+    }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+    override fun onActivityPaused(activity: Activity) {}
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+    override fun onActivityDestroyed(activity: Activity) {}
+  }
+
+  init {
+    (app as? Application)?.registerActivityLifecycleCallbacks(lifecycle)
+  }
   @Volatile private var destroyed = false
 
   private var thermalStatus = -1
@@ -209,21 +235,32 @@ class VergerSense(
     }
   }
 
-  fun onForeground(activity: Activity?) {
+  private fun onForeground(activity: Activity?) {
     handler.post {
       foreground = true
       if (config != null) resume(activity)
     }
   }
 
-  fun onBackground() {
+  private fun onBackground() {
     handler.post {
       foreground = false
       if (config != null) pause()
     }
   }
 
+  /** Another activity came to the front while the app stayed visible: follow its window. */
+  private fun rebind(activity: Activity) {
+    handler.post {
+      val sensors = config?.sensors ?: return@post
+      if (!foreground) return@post
+      if (sensors.frames) attachFrames(activity)
+      levers.reapply()
+    }
+  }
+
   fun destroy() {
+    (app as? Application)?.unregisterActivityLifecycleCallbacks(lifecycle)
     stop()
     handler.post {
       // After teardown nothing may reach the JS side: the runtime is gone and an emit throws.

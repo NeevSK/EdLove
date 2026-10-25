@@ -109,6 +109,10 @@ built even once (phase F). Migrating an uncompiled module onto a beta runtime st
 Verger gains little from v2's call cost: it crosses the bridge on change only (500 ms windows), which
 is why the ADR chose the Expo module over Nitro in the first place.
 
+**Update, same day:** item 1 below is done (`Presence.kt`, an `Application.ActivityLifecycleCallbacks`
+adapter inside `VergerSense`), and every Kotlin file but the binding now compiles against
+`android.jar` 35 for the first time (`pnpm verger:android-jvm`, 34 JUnit tests).
+
 **What to do now, cheaply, to be v2-ready:**
 
 1. Move the foreground and background hooks out of Expo into `VergerSense`, through
