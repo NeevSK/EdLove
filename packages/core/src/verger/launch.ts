@@ -1,5 +1,6 @@
 import {
   ACTIVATION_PRESETS,
+  type ActivationPatch,
   type ActivationPresetName,
   type LeverSpec,
   modeForActivation,
@@ -26,6 +27,11 @@ export interface VergerLaunchInputs {
   readonly buildPreset: unknown;
   /** Remote activation patch (`__GURUDEVI_VERGER_ACTIVATION__`), untrusted. */
   readonly remotePatch: unknown;
+  /**
+   * The dev lab's saved patch (D2), untrusted (it comes back from storage). Honoured only in a
+   * development build: a release never runs what a lab left behind.
+   */
+  readonly localPatch?: unknown;
   /** A development build. */
   readonly dev: boolean;
   readonly levers: readonly LeverSpec[];
@@ -39,6 +45,19 @@ export interface VergerLaunch {
   readonly source: string;
   /** A remote patch that was rejected, and why. */
   readonly rejected: string | null;
+  /** A lab patch that was rejected, and why (the lab shows it, never swallows it). */
+  readonly rejectedLocal: string | null;
+}
+
+function parsePatch(
+  input: unknown,
+  levers: readonly LeverSpec[],
+): { readonly patch: ActivationPatch | null; readonly rejected: string | null } {
+  if (input === undefined || input === null) return { patch: null, rejected: null };
+  const parsed = parseActivationPatch(input, levers);
+  return 'patch' in parsed
+    ? { patch: parsed.patch, rejected: null }
+    : { patch: null, rejected: parsed.error };
 }
 
 /**
@@ -49,15 +68,13 @@ export interface VergerLaunch {
  * in configuration, not here.
  */
 export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
-  const parsed =
-    inputs.remotePatch === undefined || inputs.remotePatch === null
-      ? null
-      : parseActivationPatch(inputs.remotePatch, inputs.levers);
-  const rejected = parsed !== null && 'error' in parsed ? parsed.error : null;
-  const patch = parsed !== null && 'patch' in parsed ? parsed.patch : null;
+  const remote = parsePatch(inputs.remotePatch, inputs.levers);
+  const local = inputs.dev ? parsePatch(inputs.localPatch, inputs.levers) : { patch: null, rejected: null };
+  const rejected = remote.rejected;
+  const rejectedLocal = local.rejected;
 
   if (inputs.override === 'off')
-    return { mode: 'off', activation: null, source: 'override off', rejected };
+    return { mode: 'off', activation: null, source: 'override off', rejected, rejectedLocal };
   const preset: ActivationPresetName | null =
     inputs.override === 'active' || inputs.override === 'shadow'
       ? inputs.override
@@ -76,12 +93,17 @@ export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
       activation: null,
       source: inputs.dev ? 'build off' : 'release default',
       rejected,
+      rejectedLocal,
     };
-  const activation = resolveActivation(ACTIVATION_PRESETS[preset], patch);
+  // The lab's patch sits under the remote one: remote config can still overrule a lab setting.
+  const activation = resolveActivation(ACTIVATION_PRESETS[preset], local.patch, remote.patch);
   return {
     mode: modeForActivation(activation),
     activation,
-    source: patch ? `${preset} + remote patch` : preset,
+    source: [preset, local.patch && 'lab patch', remote.patch && 'remote patch']
+      .filter(Boolean)
+      .join(' + '),
     rejected,
+    rejectedLocal,
   };
 }

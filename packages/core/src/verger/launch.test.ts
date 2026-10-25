@@ -68,6 +68,33 @@ describe('what verger may do this launch', () => {
     expect(bad.rejected).toMatch(/unknown lever/);
   });
 
+  it('a development build applies the lab patch over the preset', () => {
+    const lab = launch({ dev: true, localPatch: { grow: false } });
+    expect(lab.activation?.grow).toBe(false);
+    expect(lab.source).toBe('lab + lab patch');
+  });
+
+  it('a release ignores a lab patch left in storage, even a malformed one', () => {
+    const release = launch({ buildPreset: 'active', localPatch: { grow: false } });
+    expect(release.activation).toEqual(ACTIVATION_PRESETS.active);
+    expect(release.source).toBe('active');
+    expect(launch({ buildPreset: 'active', localPatch: 'junk' }).rejectedLocal).toBeNull();
+  });
+
+  it('remote config overrules the lab; the kill switch beats both', () => {
+    const both = launch({ dev: true, localPatch: { grow: false }, remotePatch: { grow: true } });
+    expect(both.activation?.grow).toBe(true);
+    expect(both.source).toBe('lab + lab patch + remote patch');
+    expect(launch({ dev: true, localPatch: { grow: false }, override: 'off' }).mode).toBe('off');
+  });
+
+  it('a malformed lab patch is ignored whole and reported apart from the remote one', () => {
+    const bad = launch({ dev: true, localPatch: { levers: { 'no-such-lever': 'off' }, grow: false } });
+    expect(bad.activation).toEqual(ACTIVATION_PRESETS.lab);
+    expect(bad.rejectedLocal).toMatch(/unknown lever/);
+    expect(bad.rejected).toBeNull();
+  });
+
   it('an unknown build preset is not a preset', () => {
     expect(launch({ buildPreset: 'turbo' }).mode).toBe('off');
   });
