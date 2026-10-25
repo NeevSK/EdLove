@@ -19,6 +19,7 @@ import { fnv1a32 } from './experiment';
 import { createFlightRecorder, type FlightRecorder } from './flightRecorder';
 import type { VergerRecording } from './recording';
 import type { SelfCost } from './selfCost';
+import { ineffectiveFindings } from './selfRules';
 import type { VergerHost } from './host';
 import {
   classifySession,
@@ -315,6 +316,8 @@ export function createVerger(options: VergerOptions): Verger {
     ledger: SessionLedger;
     outcomes: OutcomeLedger;
     flight: FlightRecorder;
+    /** Loop 2's findings already sent to the reducer, as `lever target`. */
+    learned: Set<string>;
     unsubscribe: () => void;
     timer: unknown;
     lastPersistAt: number;
@@ -506,6 +509,25 @@ export function createVerger(options: VergerOptions): Verger {
     const ledger = createSessionLedger(host.levers);
     const outcomes = createOutcomeLedger({ levers: host.levers, capacity, config: host.config });
     const flight = createFlightRecorder(now());
+    const learned = new Set<string>();
+    // Loop 2 (D4): the ledger's verdicts go back to the policy as events, so the rule is part of
+    // the recorded session and replays exactly. Sent after the current dispatch finishes, never
+    // from inside it.
+    const learn = () => {
+      for (const finding of ineffectiveFindings(outcomes.records())) {
+        const key = `${finding.lever} ${finding.target}`;
+        if (learned.has(key)) continue;
+        learned.add(key);
+        void Promise.resolve().then(() =>
+          started.dispatch({
+            type: 'lever-ineffective',
+            at: now(),
+            lever: finding.lever,
+            target: finding.target,
+          }),
+        );
+      }
+    };
     const initial = started.getSnapshot();
     ledger.onSnapshot(initial);
     outcomes.observe(initial);
@@ -521,6 +543,7 @@ export function createVerger(options: VergerOptions): Verger {
       ledger,
       outcomes,
       flight,
+      learned,
       timer: null,
       lastPersistAt: now(),
       unsubscribe: started.subscribe(() => {
@@ -528,6 +551,7 @@ export function createVerger(options: VergerOptions): Verger {
         guard(() => ledger.onSnapshot(snapshot));
         guard(() => outcomes.observe(snapshot));
         guard(() => flight.record(snapshot));
+        guard(learn);
         persistSoon();
         notify();
       }),

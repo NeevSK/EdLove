@@ -588,3 +588,38 @@ describe('the floors hear the network from host signals', () => {
     expect(v.getSnapshot()?.networkLimit).toBe('offline');
   });
 });
+
+describe('verger: loop 2 feeds its findings back to the policy (D4)', () => {
+  it('a lever that never relieves strain, episode after episode, is reported to the policy once, and recorded', async () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), recordEvents: 4000 });
+    await v.start();
+    v.dispatch({ type: 'app-state', at: d.now(), state: 'active' });
+    const window = (averageMs: number, droppedRatio: number) => ({
+      startMs: d.now() - 500,
+      endMs: d.now(),
+      frames: 30,
+      averageMs,
+      targetMs: 16.67,
+      worstMs: averageMs * 2,
+      droppedRatio,
+    });
+    // Three episodes of strain no lever relieves, each followed by calm that gives levels back:
+    // a lever with two steps fails at most twice per episode, so the rule needs a second one.
+    for (let episode = 0; episode < 3; episode += 1) {
+      for (const [count, averageMs, dropped] of [[40, 40, 0.5], [240, 8, 0]] as const) {
+        for (let i = 0; i < count; i += 1) {
+          d.pass(500);
+          v.dispatch({ type: 'interaction', at: d.now() - 1 });
+          v.dispatch({ type: 'frame-window', at: d.now(), window: window(averageMs, dropped) });
+          await Promise.resolve();
+        }
+      }
+    }
+    const findings = (v.recording()?.events ?? []).flatMap((e) =>
+      e.type === 'lever-ineffective' ? [`${e.lever} ${e.target}`] : [],
+    );
+    expect(findings.length).toBeGreaterThan(0);
+    expect(new Set(findings).size).toBe(findings.length);
+  });
+});

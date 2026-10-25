@@ -143,6 +143,7 @@ export {
 } from './recording';
 export { replayVerger } from './replay';
 export { createSelfCostMeter, type SelfCost, type SelfCostMeter } from './selfCost';
+export { INEFFECTIVE_AFTER_MOVES, type IneffectiveFinding, ineffectiveFindings } from './selfRules';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
   createVerger,

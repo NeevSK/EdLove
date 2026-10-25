@@ -46,6 +46,11 @@ Rules are data, versioned with the policy, each with a test and a reason string:
   to the floors, which is the doctrine's "reduce itself".
 Every rule must be visible in the outcome ledger and in the snapshot's reasons.
 
+Status 2026-10-25: the first rule is in code (p5 only; see the pipeline's D row). Pattern for
+the next rules: the finding is computed outside the reducer from the ledger, sent back as an
+event (so recordings replay it), and the reducer narrows a choice; it never lifts a limit. The
+flapping and cost-budget rules remain; the failed-expansion back-off landed with C3.
+
 ## D5. Loop 3: compare (people decide)
 
 A script (not a test) that replays recordings through p4, p5 and the floors only (verger off),

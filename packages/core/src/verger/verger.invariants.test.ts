@@ -331,6 +331,31 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
     );
   });
 
+  it('verger-p5 with loop 2 findings keeps every invariant, and never lowers by pressure a lever proved useless for all it relieves (D4)', () => {
+    const findingArb: fc.Arbitrary<Untimed> = fc.record({
+      type: fc.constant('lever-ineffective' as const),
+      lever: fc.constantFrom(...LEVERS.map((lever) => lever.id)),
+      target: fc.constantFrom('gpu' as const, 'cpu' as const, 'memory' as const, 'energy' as const, 'network' as const),
+    });
+    const mixed = fc.oneof({ weight: 5, arbitrary: eventArb }, { weight: 1, arbitrary: findingArb });
+    fc.assert(
+      fc.property(
+        optionsArb,
+        fc.constantFrom(...LEVERS),
+        streamArb(mixed, 80),
+        (options, useless, events) => {
+          const marked: VergerEvent[] = [useless.target, ...(useless.alsoRelieves ?? [])].map(
+            (target) => ({ type: 'lever-ineffective', at: 0, lever: useless.id, target }),
+          );
+          const { snapshots } = run(VERGER_POLICY_P5, options, [...marked, ...events]);
+          expect(checkRun(snapshots, LEVERS)).toEqual([]);
+          for (const snapshot of snapshots.slice(1)) expect(snapshot.pressure[useless.id] ?? 0).toBe(0);
+        },
+      ),
+      { numRuns: RUNS },
+    );
+  });
+
   it('verger-p5 is deterministic', () => {
     fc.assert(
       fc.property(optionsArb, streamArb(), (options, events) => {

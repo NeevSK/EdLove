@@ -14,7 +14,7 @@ import {
   RESOURCE_ACCOUNTS,
   type ResourceAccount,
 } from './demand';
-import { chooseLeverToLower, validateLevers } from './levers';
+import { chooseLeverToLower, relieves, validateLevers } from './levers';
 import {
   isBatteryLow,
   latchMemory,
@@ -206,6 +206,8 @@ export interface VergerState {
   readonly expandedAt: Readonly<Record<string, number>>;
   /** p5: when each lever's expansion last failed, so its wait can decay. */
   readonly leverFailedAt: Readonly<Record<string, number>>;
+  /** p5: the targets each lever proved not to relieve this session (loop 2, D4). */
+  readonly ineffective: Readonly<Record<string, readonly LeverTarget[]>>;
 
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
@@ -293,6 +295,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     leverWait: {},
     expandedAt: {},
     leverFailedAt: {},
+    ineffective: {},
     lastAction: 'stale',
     lastReason: start.stack.length > 0 ? 'start from learned profile' : 'start',
   };
@@ -542,7 +545,9 @@ function lower(
   if (!mayReduce(state)) {
     return { ...state, lastAction: 'stale', lastReason: `${reason}: reducing is switched off` };
   }
-  const candidates = governed(state);
+  const candidates = governed(state).filter((lever) =>
+    stillRelieves(lever, bottleneck, state.ineffective[lever.id], match),
+  );
   let pressure = { ...state.pressure };
   let stack = [...state.stack];
   const lowered: string[] = [];
@@ -573,6 +578,38 @@ function lower(
     lastReason: reason,
   };
   return state.expansion ? recordFailedExpansions(next, lowered, at) : next;
+}
+
+/**
+ * p5 (D4): records that a lever did not relieve a target. A lever the host does not govern, a
+ * target it does not claim to relieve, or one already recorded changes nothing; p4 ignores it.
+ */
+function markIneffective(state: VergerState, id: string, target: LeverTarget): VergerState {
+  if (!state.expansion) return state;
+  const lever = state.levers.find((l) => l.id === id);
+  if (!lever || !relieves(lever, [target])) return state;
+  const known = state.ineffective[id] ?? [];
+  if (known.includes(target)) return state;
+  return { ...state, ineffective: { ...state.ineffective, [id]: [...known, target].sort() } };
+}
+
+/**
+ * Whether pressure on `bottleneck` may still lower this lever: it must relieve some bottleneck
+ * target it has not proved useless for. Only narrows the choice; limits and floors are applied
+ * apart, so this rule can never lift one.
+ */
+function stillRelieves(
+  lever: LeverSpec,
+  bottleneck: readonly LeverTarget[],
+  ineffective: readonly LeverTarget[] | undefined,
+  match: true | 'primary',
+): boolean {
+  if (!ineffective || ineffective.length === 0) return true;
+  return bottleneck.some(
+    (target) =>
+      !ineffective.includes(target) &&
+      (match === 'primary' ? lever.target === target : relieves(lever, [target])),
+  );
 }
 
 /**
@@ -962,6 +999,9 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       next = { ...next, network, lastOfflineAt: offline(network) ? at : next.lastOfflineAt };
       break;
     }
+    case 'lever-ineffective':
+      next = markIneffective(next, input.lever, input.target);
+      break;
     case 'tick':
       break;
   }
@@ -1182,6 +1222,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     networkLimit: networkLimitOf(state, at),
     capacityClass: capacityClassOf(state.capacity, state.config),
     envelope,
+    ineffective: state.ineffective,
     visibility: state.visibility,
     interactionIdle: interactionIdle(state, at),
     optionalConcurrency: optionalConcurrency(state, at),
@@ -1270,7 +1311,8 @@ function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
     a.refreshCapHz !== b.refreshCapHz ||
     a.cpuBoost !== b.cpuBoost ||
     a.globalReducedMotion !== b.globalReducedMotion ||
-    a.activation !== b.activation
+    a.activation !== b.activation ||
+    a.ineffective !== b.ineffective
   ) {
     return false;
   }

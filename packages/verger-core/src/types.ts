@@ -179,6 +179,17 @@ export type VergerEvent =
   | { readonly type: 'activation'; readonly at: number; readonly activation: VergerActivation }
   /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */
   | { readonly type: 'long-task'; readonly at: number; readonly durationMs: number }
+  /**
+   * Loop 2's finding (D4): this lever's compressions did not relieve `target`, judged by the
+   * outcome ledger. verger-p5 stops lowering it for that target for the rest of the session;
+   * p4 ignores it. Sent by the launcher, so it is recorded and replays like any event.
+   */
+  | {
+      readonly type: 'lever-ineffective';
+      readonly at: number;
+      readonly lever: string;
+      readonly target: LeverTarget;
+    }
   | { readonly type: 'tick'; readonly at: number };
 
 /** Unity-style indexer action, extended with verger's reasons. */
@@ -398,6 +409,11 @@ export interface VergerSnapshot {
    * lever between its home and its ceiling on evidence.
    */
   readonly envelope: Readonly<Record<string, LeverEnvelope>>;
+  /**
+   * Loop 2's self-rule (p5): the targets each lever proved not to relieve this session, which
+   * pressure no longer lowers it for. Empty under p4.
+   */
+  readonly ineffective: Readonly<Record<string, readonly LeverTarget[]>>;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;
