@@ -52,6 +52,15 @@ export function checkSnapshot(
       fail('decision-respects-baseline', `${lever.id} proposed=${proposed} baseline=${baseline}`);
     if (activation.decide === 'static' && proposed !== baseline)
       fail('static-is-baseline', `${lever.id} proposed=${proposed} baseline=${baseline}`);
+    // The envelope (levels): limit <= ceiling <= home <= floor, and the baseline is the ceiling.
+    const e = snapshot.envelope[lever.id];
+    if (e === undefined) fail('envelope-published', `${lever.id} has no envelope`);
+    else {
+      if (!(e.limit <= e.ceiling && e.ceiling <= e.home && e.home <= e.floor))
+        fail('envelope-ordered', `${lever.id} ${JSON.stringify(e)}`);
+      if (mode !== 'off' && baseline !== e.ceiling)
+        fail('baseline-is-ceiling', `${lever.id} baseline=${baseline} ceiling=${e.ceiling}`);
+    }
   }
 
   if (!activation.hardware) {

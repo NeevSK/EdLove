@@ -566,6 +566,20 @@ const mutant = (name: string, snapshot: (s: VergerSnapshot) => VergerSnapshot): 
 
 const firstLever = LEVERS[0]?.id ?? 'refresh-rate';
 
+/** Breaks verger-p5's envelope, lever by lever, where it has a ceiling to break. */
+const p5Mutant = (
+  name: string,
+  edit: (s: VergerSnapshot, id: string, ceiling: number) => VergerSnapshot,
+): VergerPolicy => ({
+  ...VERGER_POLICY_P5,
+  id: name,
+  snapshot: (state, at) => {
+    let s = VERGER_POLICY_P5.snapshot(state as never, at);
+    for (const [id, e] of Object.entries(s.envelope)) if (e.ceiling > 0) s = edit(s, id, e.ceiling);
+    return s;
+  },
+});
+
 const MUTANTS: readonly VergerPolicy[] = [
   mutant('ignores-off', (s) =>
     s.activation.levers[firstLever] === 'off'
@@ -576,6 +590,19 @@ const MUTANTS: readonly VergerPolicy[] = [
   mutant('hardware-leak', (s) => ({ ...s, refreshCapHz: 60 })),
   mutant('deaf-leak', (s) => ({ ...s, thermal: 'hot' })),
   mutant('shadow-applies', (s) => ({ ...s, levels: s.proposedLevels })),
+  p5Mutant('p5-expands-past-ceiling', (s, id, ceiling) => ({
+    ...s,
+    levels: { ...s.levels, [id]: ceiling - 1 },
+    proposedLevels: { ...s.proposedLevels, [id]: ceiling - 1 },
+  })),
+  p5Mutant('p5-envelope-lies', (s, id) => {
+    const e = s.envelope[id];
+    return e ? { ...s, envelope: { ...s.envelope, [id]: { ...e, limit: 0, ceiling: 0 } } } : s;
+  }),
+  p5Mutant('p5-envelope-unordered', (s, id, ceiling) => {
+    const e = s.envelope[id];
+    return e ? { ...s, envelope: { ...s.envelope, [id]: { ...e, home: ceiling - 1 } } } : s;
+  }),
 ];
 
 describe('the invariant suite catches broken policies (mutation check)', {

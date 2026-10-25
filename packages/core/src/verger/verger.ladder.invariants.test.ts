@@ -427,7 +427,23 @@ describe('the recovery ladder against its model (stateful, model-based)', {
       levers: GURUDEVI_HOST.levers,
       recovery: { cleanToRecover: 2 },
     });
-    expect((await fc.check(ladderProperty(hasty), { numRuns: 200 })).failed).toBe(true);
+    const result = await fc.check(ladderProperty(hasty), {
+      numRuns: 200,
+      // Pinned so the check never depends on random search finding it: two crashes in an hour
+      // step down; two clean sessions recover the hasty ladder, where the ADR needs three.
+      examples: [
+        [
+          [
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'stop', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'stop', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'stop', foregroundMs: 45_000, gapMs: HOUR },
+          ],
+        ],
+      ],
+    });
+    expect(result.failed).toBe(true);
   });
 
   it('is not vacuous: a ladder that tolerates more failures than the ADR says is caught', async () => {
@@ -436,7 +452,20 @@ describe('the recovery ladder against its model (stateful, model-based)', {
       levers: GURUDEVI_HOST.levers,
       recovery: { failuresToEscalate: 3 },
     });
-    expect((await fc.check(ladderProperty(lenient), { numRuns: 200 })).failed).toBe(true);
+    const result = await fc.check(ladderProperty(lenient), {
+      numRuns: 200,
+      // Pinned: two crashes in an hour must step down; the lenient ladder waits for a third.
+      examples: [
+        [
+          [
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'stop', foregroundMs: 45_000, gapMs: HOUR },
+          ],
+        ],
+      ],
+    });
+    expect(result.failed).toBe(true);
   });
 });
 
