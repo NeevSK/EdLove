@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { DEFAULT_VERGER_CONFIG } from './config';
 import { defineHost } from './host';
-import { labConfigure, labReport, labTune } from './lab';
+import { labConfigure, labReport, labSections, labTune } from './lab';
 import { UNKNOWN_CAPACITY } from './reducer';
 import { createVerger } from './verger';
 
@@ -65,5 +65,18 @@ describe('the dev lab model (D2)', () => {
     expect(labTune(verger, DEFAULT_VERGER_CONFIG, '{"upgradeAfterMs":"x"}')).toMatchObject({ ok: false });
     expect(labTune(verger, DEFAULT_VERGER_CONFIG, '[1]')).toMatchObject({ ok: false });
     expect(labTune(verger, DEFAULT_VERGER_CONFIG, '')).toEqual({ ok: true });
+  });
+
+  it('the read-out: launch and floors before start; every block while running', async () => {
+    const { verger, host } = lab();
+    const before = labSections(labReport(verger, host.levers)).map((s) => s.title);
+    expect(before).toEqual(['Launch', 'Readings', 'Quality given up', 'Accounts']);
+    await verger.start();
+    const sections = labSections(labReport(verger, host.levers));
+    expect(sections.map((s) => s.title)).toEqual(['Launch', 'Readings', 'Quality given up', 'Accounts', 'Outcomes', 'Self-cost']);
+    const launch = sections[0]?.rows ?? [];
+    expect(launch).toContainEqual(['running', 'yes']);
+    expect(launch.find(([label]) => label === 'sensors')?.[1]).toContain('frames');
+    for (const section of sections) for (const [, value] of section.rows) expect(value).not.toContain('undefined');
   });
 });

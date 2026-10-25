@@ -153,3 +153,115 @@ export function labTune(verger: Verger, base: VergerConfig, text: string): LabRe
     return { ok: false, error: error instanceof Error ? error.message : String(error) };
   }
 }
+
+/** One block of the lab's read-out: a heading and its label/value rows, already formatted. */
+export interface LabSection {
+  readonly title: string;
+  readonly rows: readonly (readonly [label: string, value: string])[];
+}
+
+const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
+const ms = (x: number) => `${x < 10 ? x.toFixed(2) : Math.round(x)} ms`;
+const onOff = (on: boolean) => (on ? 'on' : 'off');
+
+/**
+ * The lab's read-out as text, the same on every platform (the screens only lay it out): what
+ * runs and why, what verger reads, the accounts, outcomes and self-cost. Levers are shown apart,
+ * as a table (`LabReport.levers`).
+ */
+export function labSections(report: LabReport): LabSection[] {
+  const sections: LabSection[] = [];
+  const plan = report.plan;
+  const activation = report.activation;
+  sections.push({
+    title: 'Launch',
+    rows: [
+      ['running', report.running ? 'yes' : 'no (floors only)'],
+      ...(plan
+        ? ([
+            ['runtime', plan.runtime],
+            ['rung', String(plan.rung)],
+            ['hardware', onOff(plan.hardware)],
+            ['grant', String(plan.grant)],
+            ['reason', plan.reason],
+          ] as const)
+        : []),
+      ...(activation
+        ? ([
+            ['decide', activation.decide],
+            ['reduce / grow', `${onOff(activation.reduce)} / ${onOff(activation.grow)}`],
+            [
+              'sensors',
+              Object.entries(activation.sense)
+                .filter(([, on]) => on)
+                .map(([id]) => id)
+                .join(', ') || 'none',
+            ],
+            ['admission', activation.admission],
+            ['observe', activation.observe],
+          ] as const)
+        : []),
+    ],
+  });
+  const s = report.snapshot;
+  if (s) {
+    sections.push({
+      title: 'Readings',
+      rows: [
+        ['frames', s.frameState],
+        ['thermal', `${s.thermal} (${s.thermalSource})`],
+        ['memory', s.memory],
+        ['capacity class', s.capacityClass],
+        ['network', s.networkLimit === 'none' ? (s.network.transport ?? 'unknown') : s.networkLimit],
+        ['data budget', s.dataBudget],
+        ['storage', s.storage],
+        [
+          'battery',
+          s.battery.levelPercent === null
+            ? 'unknown'
+            : `${s.battery.levelPercent}%${s.battery.pluggedIn ? ', plugged in' : ''}`,
+        ],
+        ['battery saver', onOff(s.powerSaver)],
+        ['visibility', s.visibility + (s.interactionIdle ? ', idle' : '')],
+        ['contention', s.contention + (s.contentionExhausted ? ' (exhausted)' : '')],
+        ['optional work', String(s.optionalConcurrency)],
+        ['refresh cap', s.refreshCapHz === null ? 'none' : `${s.refreshCapHz} Hz`],
+        ['last action', `${s.lastAction}: ${s.lastReason}`],
+      ],
+    });
+  }
+  if (report.qualityCost)
+    sections.push({
+      title: 'Quality given up',
+      rows: [
+        ['applied', pct(report.qualityCost.applied)],
+        ['proposed', pct(report.qualityCost.proposed)],
+      ],
+    });
+  if (report.accounts)
+    sections.push({
+      title: 'Accounts',
+      rows: Object.entries(report.accounts).map(
+        ([account, reading]) =>
+          [account, `${reading.state} (${reading.confidence.toFixed(2)}, ${reading.source})`] as const,
+      ),
+    });
+  if (report.outcomeTotals)
+    sections.push({
+      title: 'Outcomes',
+      rows: Object.entries(report.outcomeTotals).map(([key, value]) => [key, String(value)] as const),
+    });
+  const cost = report.selfCost;
+  if (cost)
+    sections.push({
+      title: 'Self-cost',
+      rows: [
+        ['events', `${cost.events} (${cost.eventsPerMinute.toFixed(0)}/min)`],
+        ['wake-ups', String(cost.wakeups)],
+        ['reduce mean / p95 / max', `${ms(cost.reduceMeanMs)} / ${ms(cost.reduceP95Ms)} / ${ms(cost.reduceMaxMs)}`],
+        ['duty', pct(cost.dutyRatio)],
+        ['recorded', report.recorded === null ? 'not recording' : `${report.recorded} events`],
+      ],
+    });
+  return sections;
+}

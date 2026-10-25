@@ -24,7 +24,7 @@ step "test verger-core" bash -c "cd packages/verger-core && npx vitest run"
 step "test verger-android" bash -c "cd packages/verger-android && npx vitest run"
 step "test verger-web" bash -c "cd packages/verger-web && npx vitest run"
 step "test gurudevi host (core/src/verger, property suites)" bash -c "cd packages/core && npx vitest run src/verger"
-step "test ui context" bash -c "cd packages/ui && pnpm exec vitest run --config vitest.config.mts src/context/__tests__"
+step "test ui context" bash -c "cd packages/ui && pnpm exec vitest run --config vitest.config.mts src/context/__tests__ src/components/__tests__/Skeleton.verger.test.tsx src/components/__tests__/SovereignVirtualList.verger.test.tsx"
 step "test mobile runtime" bash -c "cd apps/gurudevi-mobile && npx vitest run src/__tests__/runtime src/__tests__/architecture/efficiency-policy-boundaries.test.ts"
 step "test web verger" bash -c "cd apps/gurudevi-web && npx vitest run tests/integration/gurudeviWebVerger.test.tsx tests/integration/workspaceWallpaperLayer.test.tsx"
 

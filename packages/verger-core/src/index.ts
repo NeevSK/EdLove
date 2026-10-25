@@ -140,8 +140,10 @@ export {
   type LabLever,
   type LabReport,
   type LabResult,
+  type LabSection,
   labConfigure,
   labReport,
+  labSections,
   labTune,
 } from './lab';
 export {
