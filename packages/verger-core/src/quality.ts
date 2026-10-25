@@ -24,6 +24,11 @@ export function qualityCost(
   return total === 0 ? 0 : lost / total;
 }
 
+/** What one step down on `lever` costs in `qualityCost` terms, before normalising by the total. */
+export function stepQualityCost(lever: LeverSpec): number {
+  return lever.maxLevel <= 0 ? 0 : WEIGHT[lever.visualImpact] / lever.maxLevel;
+}
+
 export interface QualityMeter {
   onSnapshot(snapshot: VergerSnapshot): void;
   /** Time-weighted means since the last take (or creation), then restarts the span at `at`. */

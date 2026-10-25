@@ -142,6 +142,18 @@ The stability bound on quality given up while janking now applies where verger d
 by a fifth: on `identify` verger cuts jank from 33% to 10–18% (to 0% on the high phone), and the
 quality it gave up bought that. Every session covered before passes the stricter old form too.
 
+**P7 status:** built, in p5 only. A lever confidently measured (`gainMinSamples` 3) to do almost
+nothing (`gainUselessBelow` 0.02) is passed over, so the ladder reaches levers that help before
+the relief check gives up. Then the declared choice stands unless another eligible, confidently
+measured lever buys more relief per unit of quality (`stepQualityCost`). An unmeasured choice is
+taken as declared, so measuring continues. On the reference matrix it changes nothing, and that is
+the honest result: the sample host's declared order (least visible first) already matches the
+measured value, and touched sessions rarely reach three samples. With a misdeclared host
+(rows-ahead declared cheapest but 0.99 per step, frosting 0.80) on `identify`, p5 gives up 31%
+instead of 33.5% on the high phone, for the same 0% jank, and 27.6–28.2% instead of 28.8% on the
+mid phone, which no lever can bring under budget. The low phone's burst bound
+(`P7_PENDING`) stays: its steps come in touched sessions, where too few are measured to steer.
+
 **Not now, planned:** feedforward from workload announcements (needs the app to announce work);
 setpoints for heat and energy (needs battery and heat curves from phones); coupling rules (need
 measured couplings). Each needs phase F's recordings to be more than a guess.

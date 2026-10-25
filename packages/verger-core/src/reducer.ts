@@ -16,6 +16,7 @@ import {
   type ResourceAccount,
 } from './demand';
 import { chooseLeverToLower, relieves, validateLevers } from './levers';
+import { stepQualityCost } from './quality';
 import {
   isBatteryLow,
   latchMemory,
@@ -651,7 +652,8 @@ function lower(
   const lowered: string[] = [];
   for (let step = 0; step < steps; step += 1) {
     const effective = combine(state.levers, staticFloors(state), pressure);
-    const lever = chooseLeverToLower(candidates, effective, bottleneck, match);
+    const declared = chooseLeverToLower(candidates, effective, bottleneck, match);
+    const lever = state.expansion ? byMeasuredGain(state, declared, candidates, effective, bottleneck, match) : declared;
     if (!lever) break;
     pressure = { ...pressure, [lever.id]: (effective[lever.id] ?? 0) + 1 };
     stack = [...stack, lever.id];
@@ -682,6 +684,53 @@ function lower(
  * p5 (D4): records that a lever did not relieve a target. A lever the host does not govern, a
  * target it does not claim to relieve, or one already recorded changes nothing; p4 ignores it.
  */
+/**
+ * p5 (P7): a lever measured with confidence to do almost nothing (`gainUselessBelow`) is passed
+ * over, so the ladder reaches the levers that help before the relief check (P8) gives up. Then the
+ * declared choice stands unless it is confidently measured and another eligible lever, also
+ * confidently measured, buys more frame relief per unit of quality. An unmeasured declared choice
+ * is taken as it is, so every lever keeps being measured. If every lever is useless, the declared
+ * choice stands and the relief check decides.
+ */
+function byMeasuredGain(
+  state: VergerState,
+  declared: LeverSpec | null,
+  candidates: readonly LeverSpec[],
+  levels: Readonly<Record<string, number>>,
+  bottleneck: readonly LeverTarget[],
+  match: true | 'primary',
+): LeverSpec | null {
+  if (declared === null) return null;
+  const confident = (lever: LeverSpec) => {
+    const known = state.leverGains[lever.id];
+    return known !== undefined && known.samples >= state.config.gainMinSamples ? known.gain : null;
+  };
+  const value = (lever: LeverSpec): number | null => {
+    const gain = confident(lever);
+    const cost = stepQualityCost(lever);
+    return gain === null || cost <= 0 ? null : gain / cost;
+  };
+  const useful = candidates.filter((lever) => {
+    const gain = confident(lever);
+    return gain === null || gain >= state.config.gainUselessBelow;
+  });
+  const first = chooseLeverToLower(useful, levels, bottleneck, match) ?? declared;
+  const declaredValue = value(first);
+  if (declaredValue === null) return first;
+  let best = first;
+  let bestValue = declaredValue;
+  for (const lever of useful) {
+    // Eligible exactly as the declared order would judge it, one lever at a time.
+    if (chooseLeverToLower([lever], levels, bottleneck, match) === null) continue;
+    const v = value(lever);
+    if (v !== null && v > bestValue) {
+      best = lever;
+      bestValue = v;
+    }
+  }
+  return best;
+}
+
 /** A JS stall at `at`, kept for `longTaskWindowMs` as contention evidence. */
 function noteStall(state: VergerState, at: number): VergerState {
   const window = state.config.longTaskWindowMs;

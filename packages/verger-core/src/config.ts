@@ -35,8 +35,11 @@ export function validateConfig(config: VergerConfig): void {
   // An exit band as wide as the first threshold would leave a level no reading could exit.
   order('thermalExitBandHeadroom', 'headroomWarm');
   order('thermalExitBandC', 'batteryWarmC');
+  if (!Number.isInteger(config.gainMinSamples))
+    throw new Error('Config "gainMinSamples" must be an integer');
   if (!Number.isInteger(config.frameReliefSteps))
     throw new Error('Config "frameReliefSteps" must be an integer');
+  if (config.gainUselessBelow > 1) throw new Error('Config "gainUselessBelow" must be at most 1');
   if (config.gainAlpha > 1) throw new Error('Config "gainAlpha" must be at most 1');
   if (config.frameReliefGapShare > 1)
     throw new Error('Config "frameReliefGapShare" must be at most 1');
@@ -112,6 +115,8 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   frameReliefSteps: 2,
   frameReliefGapShare: 0.25,
   gainAlpha: 0.3,
+  gainMinSamples: 3,
+  gainUselessBelow: 0.02,
   gestureQuietMs: 1_000,
   gestureFreezeMaxMs: 2_000,
   scrollQuietMs: 3_000,

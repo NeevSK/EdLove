@@ -61,6 +61,8 @@
     "frameReliefSteps": 2,
     "frameReliefGapShare": 0.25,
     "gainAlpha": 0.3,
+    "gainMinSamples": 3,
+    "gainUselessBelow": 0.02,
     "gestureQuietMs": 1000,
     "gestureFreezeMaxMs": 2000,
     "scrollQuietMs": 3000

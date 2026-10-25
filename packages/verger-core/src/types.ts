@@ -480,6 +480,10 @@ export interface VergerConfig {
   readonly frameReliefGapShare: number;
   /** Weight of each new sample in a lever's gain estimate (P6). Provisional. */
   readonly gainAlpha: number;
+  /** Samples a gain needs before p5 chooses levers by it (P7). Provisional. */
+  readonly gainMinSamples: number;
+  /** A confidently measured gain below this is no help: p5 passes the lever over (P7). */
+  readonly gainUselessBelow: number;
   /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
   /**
