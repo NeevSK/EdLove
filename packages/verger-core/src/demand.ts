@@ -1,6 +1,6 @@
 import { DEFAULT_VERGER_CONFIG } from './config';
 import type { DataBudgetState } from './dataBudget';
-import { isBatteryLow } from './signals';
+import { isBatteryLow, THERMAL_RANK } from './signals';
 import type { CapacityFacts, LeverSpec, StorageLevel, VergerConfig, VergerSnapshot } from './types';
 
 /**
@@ -133,14 +133,19 @@ export function estimateAccounts(
   const sdk = capacity.sdkInt ?? 0;
 
   const fromBattery = snapshot.thermalSource === 'battery';
+  // The worse of the held level and the trend's projection (R1): the account a policy acts on.
+  const heat =
+    THERMAL_RANK[snapshot.thermalProjected] > THERMAL_RANK[snapshot.thermal]
+      ? snapshot.thermalProjected
+      : snapshot.thermal;
   const thermal: AccountReading =
-    !sense.thermal || snapshot.thermal === 'unknown'
+    !sense.thermal || heat === 'unknown'
       ? UNKNOWN
       : {
           state:
-            snapshot.thermal === 'nominal'
+            heat === 'nominal'
               ? 'ample'
-              : snapshot.thermal === 'warm'
+              : heat === 'warm'
                 ? 'tight'
                 : 'overdrawn',
           // Battery temperature lags the chip's: a weaker witness.

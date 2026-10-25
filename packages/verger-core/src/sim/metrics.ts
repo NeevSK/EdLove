@@ -19,8 +19,9 @@ export interface ControlMetrics {
   /** A lever moving against its previous move within `flapWindowMs`, per minute: oscillation. */
   readonly flapsPerMinute: number;
   /**
-   * The same within `slowWindowMs` (5 minutes): a reversal on the scale of the phone's thermal time
-   * constant, the signature of a thermal limit cycle (lower under heat, cool, lift, heat again).
+   * Sustained reversals within `slowWindowMs` (5 minutes): a lever reversing a reversal (down, up,
+   * down again) on the scale of the phone's thermal time constant, the signature of a thermal limit
+   * cycle (lower under heat, cool, lift, heat again). One lowering given back is not counted.
    */
   readonly slowReversalsPerMinute: number;
   /** Changes of the published heat level per minute, the first reading aside: threshold chatter. */
@@ -56,27 +57,34 @@ export function controlMetrics(
     xs.length === 0 ? 0 : xs.reduce((sum, t) => sum + f(t), 0) / xs.length;
   const minutes = ticks.length === 0 ? 1 : (ticks[ticks.length - 1]?.at ?? 0) / 60_000;
 
-  /** Moves of a lever against its previous move within `windowMs`. */
-  const reversals = (windowMs: number) => {
+  /**
+   * Moves of a lever against its previous move within `windowMs`. With `sustained`, only a
+   * reversal of a reversal counts (down, up, down again): the shape of an oscillation, where a
+   * single lower-then-give-back is ordinary disturbance rejection.
+   */
+  const reversals = (windowMs: number, sustained: boolean) => {
     let count = 0;
     for (const lever of levers) {
       let lastDelta = 0;
       let lastAt = Number.NEGATIVE_INFINITY;
+      let lastWasReversal = false;
       for (let i = 1; i < ticks.length; i += 1) {
         const now = ticks[i];
         const before = ticks[i - 1];
         if (!now || !before) continue;
         const delta = (now.levels[lever.id] ?? 0) - (before.levels[lever.id] ?? 0);
         if (delta === 0) continue;
-        if (lastDelta !== 0 && Math.sign(delta) !== Math.sign(lastDelta) && now.at - lastAt < windowMs) count += 1;
+        const reversal = lastDelta !== 0 && Math.sign(delta) !== Math.sign(lastDelta) && now.at - lastAt < windowMs;
+        if (reversal && (!sustained || lastWasReversal)) count += 1;
+        lastWasReversal = reversal;
         lastDelta = delta;
         lastAt = now.at;
       }
     }
     return count;
   };
-  const flaps = reversals(flapWindowMs);
-  const slowReversals = reversals(slowWindowMs);
+  const flaps = reversals(flapWindowMs, false);
+  const slowReversals = reversals(slowWindowMs, true);
   let thermalFlips = 0;
   let thermalChatter = 0;
   let lastChangeC: number | null = null;

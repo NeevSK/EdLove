@@ -84,6 +84,15 @@ describe('outcome ledger: compress', () => {
     expect(l.records()[0]).toMatchObject({ lever: 'frosting', direction: 'compress', cause: 'pressure', at: 2_500 });
   });
 
+  it('a level that changes because its lever was switched from shadow to apply is the switch\u2019s move', () => {
+    const l = ledger();
+    const shadowed = { ...BASE.activation, defaultLever: 'shadow' as const };
+    l.observe(snap(0, { activation: shadowed, pressure: { frosting: 1 } }));
+    l.observe(snap(1_000, { ...lowered('frosting', 1) }));
+    expect(l.records()).toEqual([]);
+    expect(l.summary().levers.frosting?.floorMoves).toBe(1);
+  });
+
   it('a compress with no strained account it relieves is unjudged, not credited', () => {
     const l = ledger();
     l.observe(snap(0));

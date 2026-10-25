@@ -68,6 +68,31 @@ Each is shown in the closed-loop simulator where it touches decisions
 | R11 | **Android sensing**: CPU and GPU headroom (API 36) as contention evidence; TrafficStats data accounting (B3.1) | Kotlin compiled against android.jar, JUnit |
 | R12 | **Web fidelity setting**; retention metrics read the metered flag from verger | tests |
 
+## 4. Progress
+
+**R1 built (heat trend).** A least-squares slope over `thermalTrendWindowMs` (120 s, at least 3
+readings) of headroom, or battery temperature, projects heat `thermalTrendHorizonMs` (30 s) ahead;
+`snapshot.thermalProjected`. Lowering, raises, warm floors, admission and the CPU boost act on the
+worse of the held and projected levels; the thermal account reads it too; a falling trend relaxes
+nothing. In the model it changed nothing until heat led: every reference session drove frames
+first. A new session, **sun** (a calm screen while the room heats to 38 °C), is the disturbance
+where heat leads: peak heat 45.5 → 43.8 °C (mid), time hot 296 → 139 s (high), before P5.
+
+**The sun session also exposed a thermal limit cycle** (period about 200 s: warm, lower, cool,
+lift everything, warm again), so **P5 was built**, not left a guard. See
+[the control plan](2026-10-25-control-review-and-plan.md), P5 status.
+
+**Found by the deep property runs on the way, and fixed** (all existed before this work; only
+3000-case runs reach them):
+- a lowering proposed while a lever was shadowed was published when the switch to apply also
+  deafened the sensor that caused it: pressure now records its cause (`pressureCause`), and a
+  sensor switched off takes its lowering with it;
+- a shadowed lowering applied after its strain had passed, or pressure republished when the
+  decide mode went static and back, was judged a blind pressure move: the outcome ledger now
+  counts moves that appear with an activation or decide switch as the switch's (with the floors);
+- heat pacing (P5, this work) held closed-loop decisions after a switch to static: pacing applies
+  only while the closed loop decides.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).

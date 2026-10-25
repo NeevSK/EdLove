@@ -209,6 +209,10 @@ describe('thermal and memory pressure', () => {
     expect(state.stack.length).toBe(2);
     const cooled = 21_000 + DEFAULT_VERGER_CONFIG.thermalDwellMs;
     for (const event of frames(cooled, cooled + 1_000, 8)) state = reduceVerger(state, event);
+    // Heat moves in minutes: raises wait `thermalRecoverMs` after the last heat (P5).
+    expect(state.stack.length).toBe(2);
+    const recovered = cooled + DEFAULT_VERGER_CONFIG.thermalRecoverMs;
+    for (const event of frames(recovered, recovered + 1_000, 8)) state = reduceVerger(state, event);
     expect(state.stack.length).toBe(1);
   });
 

@@ -130,6 +130,11 @@ export interface VergerState {
   /** Lowered lever ids in order, restored last-in first-out. */
   readonly stack: readonly string[];
   /**
+   * The sensor whose readings last lowered each lever. A sensor switched off takes its lowering
+   * with it (the deaf-sensor rule; found by the ADR D5.2 property at 3000 runs).
+   */
+  readonly pressureCause: Readonly<Record<string, SensorId>>;
+  /**
    * How many entries at the bottom of the stack are still the learned starting point. The
    * loop gives back its own decreases first; this shrinks as it reaches the starting point.
    */
@@ -150,6 +155,13 @@ export interface VergerState {
   readonly thermalHeld: ThermalLevel;
   /** Since when the exit-band reading has been below `thermalHeld`; null while it is not. */
   readonly thermalCoolerSince: number | null;
+  /** Recent headroom and battery temperature readings `[at, value]`, for the heat trend (R1). */
+  readonly headroomTrace: readonly (readonly [number, number])[];
+  readonly batteryTrace: readonly (readonly [number, number])[];
+  /** The last time heat, as verger acts on it, was warm or worse (P5); null if never. */
+  readonly heatTouchedAt: number | null;
+  /** When the last paced raise was published (P5). */
+  readonly heatStepAt: number;
   readonly memoryLatch: MemoryLatch;
   readonly memorySensing: boolean;
 
@@ -290,6 +302,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     at: options.at,
     pressure: start.pressure,
     stack: start.stack,
+    pressureCause: {},
     priorDepth: start.stack.length,
     frameState: 'quiet',
     stressMs: 0,
@@ -302,6 +315,10 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     lastThermalActionAt: Number.NEGATIVE_INFINITY,
     thermalHeld: 'unknown',
     thermalCoolerSince: null,
+    headroomTrace: [],
+    batteryTrace: [],
+    heatTouchedAt: null,
+    heatStepAt: Number.NEGATIVE_INFINITY,
     memoryLatch: NO_MEMORY_LATCH,
     memorySensing: options.memorySensing ?? false,
     powerSaver: false,
@@ -506,7 +523,7 @@ function gestureActive(state: VergerState, at: number): boolean {
 
 /** Strain that may not wait for a gesture: heat at hot or worse, or low memory. */
 function strainOverrides(state: VergerState, at: number): boolean {
-  const thermal = thermalOf(state);
+  const thermal = thermalActing(state);
   return thermal === 'hot' || thermal === 'critical' || memoryOf(state, at) === 'low';
 }
 
@@ -536,8 +553,10 @@ function interactionIdle(state: VergerState, at: number): boolean {
 function dynamicFloors(state: VergerState, at: number): Record<string, number> {
   const floors: Record<string, number> = {};
   const idle = interactionIdle(state, at);
-  const thermal = thermalOf(state);
-  const warm = thermal === 'warm' || thermal === 'hot' || thermal === 'critical';
+  const thermal = thermalActing(state);
+  // Warm floors outlast the heat by `thermalRecoverMs` (P5): heat moves in minutes.
+  const warm =
+    thermal === 'warm' || thermal === 'hot' || thermal === 'critical' || heatRecovering(state, at);
   const raise = (id: string, level: number) => {
     floors[id] = Math.max(floors[id] ?? 0, level);
   };
@@ -580,8 +599,32 @@ const mayGrow = (state: VergerState) => closedLoop(state) && state.activation.gr
 const governed = (state: VergerState) =>
   state.levers.filter((lever) => leverActivation(state.activation, lever.id) !== 'off');
 
+/**
+ * Gives back every step a sensor's readings lowered: its levers' own stack entries go, and their
+ * pressure falls back to what the learned starting point holds (or none).
+ */
+function releaseCause(state: VergerState, sensor: SensorId): VergerState {
+  const ids = Object.keys(state.pressureCause).filter((id) => state.pressureCause[id] === sensor);
+  if (ids.length === 0) return state;
+  const prior = state.stack.slice(0, state.priorDepth);
+  const own = state.stack.slice(state.priorDepth).filter((id) => !ids.includes(id));
+  const pressure = { ...state.pressure };
+  const pressureCause = { ...state.pressureCause };
+  for (const id of ids) {
+    const held = prior.filter((entry) => entry === id).length;
+    if (held === 0) delete pressure[id];
+    else pressure[id] = held;
+    delete pressureCause[id];
+  }
+  return { ...state, pressure, pressureCause, stack: [...prior, ...own] };
+}
+
 /** What a sensor's readings left in the state, forgotten when the sensor is switched off. */
 function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
+  return forgetReadings(releaseCause(state, sensor), sensor);
+}
+
+function forgetReadings(state: VergerState, sensor: SensorId): VergerState {
   switch (sensor) {
     case 'frames':
       return {
@@ -607,9 +650,17 @@ function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
     case 'memory':
       return { ...state, memoryLatch: NO_MEMORY_LATCH, polledMemory: null, memorySensing: false };
     case 'thermal':
-      return { ...state, thermalStatus: null, headroom: null, thermalHeld: 'unknown', thermalCoolerSince: null };
+      return {
+        ...state,
+        thermalStatus: null,
+        headroom: null,
+        thermalHeld: 'unknown',
+        thermalCoolerSince: null,
+        headroomTrace: [],
+        heatTouchedAt: null,
+      };
     case 'power':
-      return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY };
+      return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY, batteryTrace: [] };
     case 'longTasks':
       return { ...state, longTasks: [] };
     case 'storage':
@@ -639,6 +690,7 @@ function lower(
   at: number,
   action: IndexerAction,
   reason: string,
+  cause: SensorId,
   match: true | 'primary' = true,
 ): VergerState {
   if (!mayReduce(state)) {
@@ -662,10 +714,13 @@ function lower(
   if (lowered.length === 0)
     return { ...state, lastAction: 'stale', lastReason: `${reason}: nothing left to lower` };
   const failedUpgrade = at - state.lastIncreaseAt < state.config.failedUpgradeWindowMs;
+  const pressureCause = { ...state.pressureCause };
+  for (const id of lowered) pressureCause[id] = cause;
   const next: VergerState = {
     ...state,
     pressure,
     stack,
+    pressureCause,
     lastDecreaseAt: at,
     lastPressureAt: at,
     comfortSeen: false,
@@ -889,6 +944,112 @@ function thermalReading(
   return { level, source: 'battery' };
 }
 
+/** A least-squares slope of `[at, value]` readings, per second; null below the minimum count. */
+function slopeOf(trace: readonly (readonly [number, number])[], minSamples: number): number | null {
+  if (trace.length < minSamples) return null;
+  const n = trace.length;
+  const meanT = trace.reduce((sum, [t]) => sum + t, 0) / n;
+  const meanV = trace.reduce((sum, [, v]) => sum + v, 0) / n;
+  let num = 0;
+  let den = 0;
+  for (const [t, v] of trace) {
+    num += (t - meanT) * (v - meanV);
+    den += (t - meanT) ** 2;
+  }
+  return den === 0 ? null : (num / den) * 1000;
+}
+
+/**
+ * Heat projected `thermalTrendHorizonMs` ahead on the rising slope of its own source (R1). Only a
+ * rise is projected: a falling trend relaxes nothing, the held level (P4) decides that.
+ */
+function thermalProjected(state: VergerState): ThermalLevel {
+  const reading = thermalReading(state);
+  if (reading.level === 'unknown') return 'unknown';
+  const c = state.config;
+  const ahead = c.thermalTrendHorizonMs / 1000;
+  let projected: ThermalLevel = reading.level;
+  if (reading.source === 'platform' && state.headroom !== null) {
+    const slope = slopeOf(state.headroomTrace, c.thermalTrendMinSamples);
+    if (slope !== null && slope > 0)
+      projected = thermalLevelOf(state.thermalStatus, state.headroom + slope * ahead, c);
+  } else if (reading.source === 'battery' && state.battery.temperatureC !== null) {
+    const slope = slopeOf(state.batteryTrace, c.thermalTrendMinSamples);
+    if (slope !== null && slope > 0) {
+      const t = state.battery.temperatureC + slope * ahead;
+      projected =
+        t >= c.batteryCriticalC ? 'critical' : t >= c.batteryHotC ? 'hot' : t >= c.batteryWarmC ? 'warm' : 'nominal';
+    }
+  }
+  return THERMAL_RANK[projected] > THERMAL_RANK[reading.level] ? projected : reading.level;
+}
+
+/** The heat verger acts on: the held level, or the projected one when the trend says worse. */
+function thermalActing(state: VergerState): ThermalLevel {
+  const held = thermalOf(state);
+  const projected = thermalProjected(state);
+  return THERMAL_RANK[projected] > THERMAL_RANK[held] ? projected : held;
+}
+
+/** Within `thermalRecoverMs` of the last heat (P5). */
+function heatRecovering(state: VergerState, at: number): boolean {
+  return state.heatTouchedAt !== null && at - state.heatTouchedAt < state.config.thermalRecoverMs;
+}
+
+/**
+ * Within `thermalPaceMs` of the last heat, with published decisions to pace from, while the
+ * closed loop decides (P5): a static or off decision publishes its baseline at once.
+ */
+function heatPacing(state: VergerState, at: number): boolean {
+  return (
+    closedLoop(state) &&
+    state.heatTouchedAt !== null &&
+    state.heldDecided !== null &&
+    at - state.heatTouchedAt < state.config.thermalPaceMs
+  );
+}
+
+/**
+ * Whether a paced one-step raise may be published now (P5): past the recovery latch, a step's
+ * interval after the last, and the heat readings since then (headroom where the platform gives
+ * it, battery temperature otherwise) either too few to judge, not rising, or rising toward a
+ * steady state (`thermalTimeConstantMs` ahead) that stays an exit band clear of warm. A step that tips the phone
+ * toward heat stops the next; the climb resumes when the phone is steady, cooling, or clearly
+ * safe. Derivative feedback on the plant's slowest state.
+ */
+function heatStepReady(state: VergerState, at: number): boolean {
+  const touched = state.heatTouchedAt;
+  if (touched === null) return true;
+  const c = state.config;
+  if (at - touched < c.thermalRecoverMs || at - state.heatStepAt < c.thermalStepMs) return false;
+  const since = Math.max(touched, state.heatStepAt);
+  const tau = c.thermalTimeConstantMs / 1000;
+  const platform = state.headroomTrace.length >= c.thermalTrendMinSamples;
+  const trace = (platform ? state.headroomTrace : state.batteryTrace).filter(([t]) => t > since);
+  const slope = slopeOf(trace, c.thermalTrendMinSamples);
+  const latest = trace[trace.length - 1]?.[1];
+  // No readings since (status by listener only, or a quiet sensor): no evidence of warming, so the
+  // step comes at the paced rate alone.
+  if (slope === null || latest === undefined) return true;
+  if (slope <= 0) return true;
+  // Rising, but toward a steady state (first order: value + slope × τ) well clear of heat.
+  const projected = latest + slope * tau;
+  return platform
+    ? projected < c.headroomWarm - c.thermalExitBandHeadroom
+    : projected < c.batteryWarmC - c.thermalExitBandC;
+}
+
+/** Keeps `[at, value]` readings within the trend window. */
+function traced(
+  trace: readonly (readonly [number, number])[],
+  at: number,
+  value: number | null,
+  windowMs: number,
+): readonly (readonly [number, number])[] {
+  const kept = trace.filter(([t]) => at - t <= windowMs);
+  return value === null || !Number.isFinite(value) ? kept : [...kept, [at, value] as const];
+}
+
 /**
  * Thermal hysteresis (P4, control review finding 2). Rising heat, and losing the reading, apply
  * at once: safety first, and unknown is never proof of cool. Stepping down needs the reading
@@ -921,8 +1082,9 @@ function holdStorage(state: VergerState): VergerState {
 function applyStandingPressure(state: VergerState, at: number): VergerState {
   // Lowering acts on the reading itself: it starts at once and stops at once when heat eases.
   // Only relaxing (raises, warm floors, admission) waits out the held level's dwell (P4); acting
-  // on the held level would keep lowering for a dwell after the phone cooled, an overshoot.
-  const thermal = thermalReading(state).level;
+  // on the held level would keep lowering for a dwell after the phone cooled, an overshoot. A
+  // rising trend lowers early (R1): the projection is never below the reading.
+  const thermal = thermalProjected(state);
   const memory = memoryOf(state, at);
   const sinceThermal = at - state.lastThermalActionAt;
   let next = state;
@@ -934,10 +1096,11 @@ function applyStandingPressure(state: VergerState, at: number): VergerState {
       at,
       'fast-decrease',
       'thermal critical',
+      'thermal',
     );
     next = { ...next, lastThermalActionAt: at };
   } else if (thermal === 'hot' && sinceThermal >= state.config.thermalActionDelayMs) {
-    next = lower(next, 1, ['energy', 'gpu', 'cpu'], at, 'decrease', 'thermal hot');
+    next = lower(next, 1, ['energy', 'gpu', 'cpu'], at, 'decrease', 'thermal hot', 'thermal');
     next = { ...next, lastThermalActionAt: at };
   }
   if (
@@ -954,7 +1117,9 @@ function applyStandingPressure(state: VergerState, at: number): VergerState {
 
 function maybeIncrease(state: VergerState, at: number): VergerState {
   if (state.stack.length === 0 || !mayGrow(state)) return state;
-  const thermal = thermalOf(state);
+  // No raise while heat is recovering (P5); pacing after it is in the snapshot.
+  if (heatRecovering(state, at)) return state;
+  const thermal = thermalActing(state);
   if (thermal === 'warm' || thermal === 'hot' || thermal === 'critical') return state;
   const memory = memoryOf(state, at);
   if (memory === 'trimmed' || memory === 'low') return state;
@@ -997,10 +1162,10 @@ function relieveMemory(
   const was = memoryOf(before, at);
   const now = memoryOf(after, at);
   if (now === 'low' && was !== 'low') {
-    return lower(after, after.config.fastDecreaseSteps, ['memory'], at, 'fast-decrease', why);
+    return lower(after, after.config.fastDecreaseSteps, ['memory'], at, 'fast-decrease', why, 'memory');
   }
   if (now === 'trimmed' && was !== 'trimmed' && was !== 'low') {
-    return lower(after, 1, ['memory'], at, 'decrease', why);
+    return lower(after, 1, ['memory'], at, 'decrease', why, 'memory');
   }
   return after;
 }
@@ -1091,11 +1256,11 @@ function applyContention(state: VergerState, at: number): VergerState {
   // resource is CPU work count; a refresh cap relieves the UI and render threads, not JS.
   const next =
     contention === 'js'
-      ? lower(state, 1, ['cpu'], at, 'decrease', detail, 'primary')
+      ? lower(state, 1, ['cpu'], at, 'decrease', detail, 'threads', 'primary')
       : // The main thread is CPU: only levers that relieve it count. A GPU-only lever (blur)
         // lowered here would shed quality without relieving the thread (ADR D5.2; found by the
         // no-blind-lowering property). Animation levers declare that they relieve CPU.
-        lower(state, 1, ['cpu'], at, 'decrease', detail);
+        lower(state, 1, ['cpu'], at, 'decrease', detail, 'threads');
   return {
     ...next,
     lastContentionActionAt: at,
@@ -1178,7 +1343,7 @@ function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: '
         };
       } else {
         const targets = bottleneckTargets(stage, gpuMeasured(event.window));
-        next = lower(next, 1, targets, event.at, 'decrease', detail);
+        next = lower(next, 1, targets, event.at, 'decrease', detail, 'frames');
         if (next.lastAction !== 'stale')
           next = {
             ...next,
@@ -1213,7 +1378,17 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       next = onFrameWindow(next, input);
       break;
     case 'thermal':
-      next = { ...next, thermalStatus: input.status, headroom: input.headroom };
+      next = {
+        ...next,
+        thermalStatus: input.status,
+        headroom: input.headroom,
+        headroomTrace: traced(
+          next.headroomTrace,
+          at,
+          input.headroom !== null && input.headroom > 0 ? input.headroom : null,
+          next.config.thermalTrendWindowMs,
+        ),
+      };
       break;
     case 'memory-trim':
       next = onMemoryPressure(next, input.severity, at, 'memory trim');
@@ -1256,6 +1431,7 @@ function step(state: VergerState, event: VergerEvent): VergerState {
           pluggedIn: input.pluggedIn,
           temperatureC: input.temperatureC,
         },
+        batteryTrace: traced(next.batteryTrace, at, input.temperatureC, next.config.thermalTrendWindowMs),
       };
       break;
     case 'interaction':
@@ -1317,6 +1493,8 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       break;
   }
   next = holdStorage(holdThermal(next, at));
+  const heat = thermalActing(next);
+  if (heat === 'warm' || heat === 'hot' || heat === 'critical') next = { ...next, heatTouchedAt: at };
   next = applyStandingPressure(next, at);
   next = applyContention(next, at);
   if (next.expansion) {
@@ -1367,7 +1545,7 @@ interface ExpansionCandidate {
  * weakest confidence among its ample accounts, and expansions are paced one wait apart.
  */
 function expansionCandidates(state: VergerState, at: number): ExpansionCandidate[] {
-  if (state.stack.length === 0 || !mayGrow(state)) return [];
+  if (state.stack.length === 0 || !mayGrow(state) || heatRecovering(state, at)) return [];
   if (state.contentionExhausted || contentionOf(state, at) !== 'none') return [];
   const readings = readingsOf(state, at);
   const out: ExpansionCandidate[] = [];
@@ -1446,11 +1624,17 @@ export function reduceVerger(state: VergerState, event: VergerEvent): VergerStat
   const pending = gestureActive(moved, moved.at) && !strainOverrides(moved, moved.at) && loweringPending(moved, moved.at);
   const stepped: VergerState = { ...moved, freezeSince: pending ? (state.freezeSince ?? moved.at) : null };
   const published = snapshotOf(stepped, stepped.at);
+  const prior = stepped.heldDecided;
+  const pacedStep =
+    prior !== null &&
+    heatPacing(stepped, stepped.at) &&
+    stepped.levers.some((l) => (published.proposedLevels[l.id] ?? 0) < (prior[l.id] ?? 0));
   const next: VergerState = {
     ...stepped,
     heldRefreshCapHz: published.refreshCapHz,
     heldGlobalMotion: published.globalReducedMotion,
     heldDecided: published.proposedLevels,
+    heatStepAt: pacedStep ? stepped.at : stepped.heatStepAt,
   };
   const before = snapshotOf(state, state.at);
   const after = snapshotOf(next, next.at);
@@ -1474,7 +1658,7 @@ function optionalConcurrency(state: VergerState, at: number): number {
   const limit = networkLimitOf(state, at);
   if (limit === 'data-saver' || limit === 'offline') return 0;
   if (closedLoop && contentionOf(state, at) !== 'none') return 0;
-  const thermal = thermalOf(state);
+  const thermal = thermalActing(state);
   const memory = memoryOf(state, at);
   if (closedLoop && (thermal === 'critical' || memory === 'low')) return 0;
   const allowed =
@@ -1523,6 +1707,24 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
         ? Math.max(Math.min(decided, was), baseline[lever.id] ?? 0)
         : decided;
   }
+  // P5: after heat, published quality climbs one lever step at a time, on evidence. Lowering and
+  // the baseline apply at once; the step goes to the lever lowered last (the stack's top).
+  if (held !== null && heatPacing(state, at)) {
+    const ready = heatStepReady(state, at);
+    const order = [...state.stack].reverse();
+    for (const lever of state.levers) if (!order.includes(lever.id)) order.push(lever.id);
+    let released = false;
+    for (const id of order) {
+      const decided = loop[id] ?? 0;
+      const was = held[id];
+      if (was === undefined || decided >= was) continue;
+      const floor = baseline[id] ?? 0;
+      if (ready && !released) {
+        loop[id] = Math.max(was - 1, decided, floor);
+        released = true;
+      } else loop[id] = Math.max(was, floor);
+    }
+  }
   // Per lever: `apply` publishes the decision, `shadow` the baseline (the decision is only
   // proposed), `off` full quality, ungoverned.
   const levels: Record<string, number> = {};
@@ -1537,7 +1739,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
       activation === 'apply' ? decided : activation === 'shadow' ? (baseline[lever.id] ?? 0) : 0;
   }
   const hardwareAllowed = state.activation.hardware && state.hardware;
-  const thermal = thermalOf(state);
+  const thermal = thermalActing(state);
   const idle = interactionIdle(state, at);
   const cool = thermal === 'unknown' || thermal === 'nominal';
   const hardware = hardwareOf(state, at, levels);
@@ -1554,6 +1756,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     powerSaver: state.powerSaver,
     battery: state.battery,
     thermalSource: thermalReading(state).source,
+    thermalProjected: thermalProjected(state),
     network: state.network,
     networkLimit: networkLimitOf(state, at),
     dataBudget: state.dataBudget,
@@ -1606,7 +1809,7 @@ function hardwareOf(
       ? state.config.refreshCapHz
       : null;
   const wantMotion = applied(motionLever) && (levels[motionLever.id] ?? 0) >= 1;
-  const thermal = thermalOf(state);
+  const thermal = thermalActing(state);
   const touching = gestureActive(state, at);
   const forced = thermal === 'hot' || thermal === 'critical';
   if (!touching || forced) return { refreshCapHz: wantCap, globalReducedMotion: wantMotion };
@@ -1644,6 +1847,7 @@ function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
     a.capacityClass !== b.capacityClass ||
     a.battery !== b.battery ||
     a.thermalSource !== b.thermalSource ||
+    a.thermalProjected !== b.thermalProjected ||
     a.visibility !== b.visibility ||
     a.interactionIdle !== b.interactionIdle ||
     a.optionalConcurrency !== b.optionalConcurrency ||
@@ -1696,6 +1900,18 @@ export function nextTimedChangeAt(state: VergerState): number | null {
   if (state.freezeSince !== null) candidates.push(state.freezeSince + state.config.gestureFreezeMaxMs);
   if (state.thermalCoolerSince !== null)
     candidates.push(state.thermalCoolerSince + state.config.thermalDwellMs);
+  // Heat's recovery and pacing end by time alone (P5).
+  if (state.heatTouchedAt !== null) {
+    candidates.push(state.heatTouchedAt + state.config.thermalRecoverMs);
+    candidates.push(state.heatTouchedAt + state.config.thermalPaceMs);
+    if (heatPacing(state, now))
+      candidates.push(state.heatStepAt + state.config.thermalStepMs);
+  }
+  // A trend fades as its oldest reading leaves the window.
+  for (const trace of [state.headroomTrace, state.batteryTrace]) {
+    const oldest = trace[0];
+    if (oldest !== undefined) candidates.push(oldest[0] + state.config.thermalTrendWindowMs + 1);
+  }
   for (const since of [state.jsSaturatedSince, state.mainSaturatedSince]) {
     if (since === null) continue;
     candidates.push(since + saturationAfterMs, state.lastContentionActionAt + saturationAfterMs);

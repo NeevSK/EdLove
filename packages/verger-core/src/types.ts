@@ -420,6 +420,32 @@ export interface VergerConfig {
   readonly thermalExitBandHeadroom: number;
   readonly thermalExitBandC: number;
   readonly thermalDwellMs: number;
+  /**
+   * Heat trend (R1, prior-art review): the slope of headroom and battery temperature over
+   * `thermalTrendWindowMs`, from at least `thermalTrendMinSamples` readings, projects the level
+   * `thermalTrendHorizonMs` ahead. A projected rise tightens early (Unity's temperature trend;
+   * ADPF's forecast where the platform has one); it never relaxes anything. Provisional.
+   */
+  readonly thermalTrendWindowMs: number;
+  readonly thermalTrendHorizonMs: number;
+  readonly thermalTrendMinSamples: number;
+  /**
+   * Time-scale separation for heat (P5): heat moves in minutes, so after heat (warm or worse)
+   * warm floors stay and raises wait `thermalRecoverMs` of calm. Then, until `thermalPaceMs`
+   * after the heat, published quality climbs at most one lever step per `thermalStepMs`, and
+   * only while heat readings since the last step are not rising: quality settles at a level the
+   * phone can sustain instead of cycling (ADPF: "find a sustainable quality level").
+   */
+  readonly thermalRecoverMs: number;
+  readonly thermalPaceMs: number;
+  /** While paced, the least time between two one-step raises of published quality (P5). */
+  readonly thermalStepMs: number;
+  /**
+   * The phone's thermal time constant, assumed (P5): a first-order phone heading somewhere at a
+   * slope settles near `value + slope × τ`, so a paced step waits unless that steady state stays an
+   * exit band clear of warm. Phones show 1 to 3 minutes; phase F measures it. Provisional.
+   */
+  readonly thermalTimeConstantMs: number;
   /** A thread role using at least this many cores is saturated. */
   readonly saturationCores: number;
   /** Saturation must last this long before it counts as contention. */
@@ -523,6 +549,11 @@ export interface VergerSnapshot {
   readonly powerSaver: boolean;
   readonly battery: BatteryState;
   readonly thermalSource: ThermalSource;
+  /**
+   * Heat as the trend projects it `thermalTrendHorizonMs` ahead (R1), never below the reading.
+   * Lowering, raises, warm floors and admission act on the worse of this and `thermal`.
+   */
+  readonly thermalProjected: ThermalLevel;
   readonly network: NetworkState;
   /** What the network limits now, strongest first; `none` when unknown or fine. */
   readonly networkLimit: NetworkLimit;

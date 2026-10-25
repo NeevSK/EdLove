@@ -6,6 +6,7 @@ import {
   RESOURCE_ACCOUNTS,
   type ResourceAccount,
 } from './demand';
+import { leverActivation } from './activation';
 import { DEFAULT_VERGER_CONFIG } from './config';
 import { qualityCost } from './quality';
 import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
@@ -57,7 +58,10 @@ export interface LeverOutcomes {
   readonly unjudged: number;
   readonly held: number;
   readonly withdrawn: number;
-  /** Moves caused by floors (settings, visibility, idleness): counted, not judged. */
+  /**
+   * Moves caused by floors (settings, visibility, idleness) or by the lever's activation changing
+   * (a shadowed decision applied, an applied one switched off): counted, not judged.
+   */
   readonly floorMoves: number;
   readonly agilityCount: number;
   readonly agilityTotalMs: number;
@@ -244,8 +248,14 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
           // A lowering held back by a gesture (invariant 7) is published after the loop's pressure
           // already rose, so a compress is the loop's whenever the loop owns more than the level it
           // left, not only when its ownership rose in this very snapshot.
+          // A move that appears because the lever's activation or the decide mode changed is the
+          // switch's, not this snapshot's pressure (found by the ADR D5.2 property at 3000 runs).
+          const switched =
+            before.activation.decide !== snapshot.activation.decide ||
+            leverActivation(before.activation, lever.id) !== leverActivation(snapshot.activation, lever.id);
           const byPressure =
-            direction === 'compress' ? ownAfter > ownBefore || ownAfter > from : ownAfter < ownBefore;
+            !switched &&
+            (direction === 'compress' ? ownAfter > ownBefore || ownAfter > from : ownAfter < ownBefore);
           if (!byPressure) {
             tally(lever.id).floorMoves += 1;
             continue;

@@ -35,6 +35,9 @@ export function validateConfig(config: VergerConfig): void {
   // An exit band as wide as the first threshold would leave a level no reading could exit.
   order('thermalExitBandHeadroom', 'headroomWarm');
   order('thermalExitBandC', 'batteryWarmC');
+  order('thermalRecoverMs', 'thermalPaceMs');
+  if (!Number.isInteger(config.thermalTrendMinSamples) || config.thermalTrendMinSamples < 2)
+    throw new Error('Config "thermalTrendMinSamples" must be an integer of at least 2');
   if (!Number.isInteger(config.gainMinSamples))
     throw new Error('Config "gainMinSamples" must be an integer');
   if (!Number.isInteger(config.frameReliefSteps))
@@ -84,6 +87,13 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   thermalExitBandHeadroom: 0.05,
   thermalExitBandC: 1,
   thermalDwellMs: 20_000,
+  thermalTrendWindowMs: 120_000,
+  thermalTrendHorizonMs: 30_000,
+  thermalTrendMinSamples: 3,
+  thermalRecoverMs: 60_000,
+  thermalPaceMs: 600_000,
+  thermalStepMs: 60_000,
+  thermalTimeConstantMs: 120_000,
   lowCapacityBelowBytes: 5 * 1024 ** 3,
   midCapacityBelowBytes: 9 * 1024 ** 3,
   slowNetworkKbps: 1_000,

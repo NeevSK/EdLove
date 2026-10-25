@@ -364,7 +364,32 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
             expect(e.limit <= e.ceiling && e.ceiling <= e.home && e.home <= e.floor).toBe(true);
           }
       }),
-      { numRuns: RUNS },
+      {
+        numRuns: RUNS,
+        // Found by this property (seed 1926791109): heat pacing (P5) held closed-loop decisions
+        // after the activation switched to a static decision, which must publish its baseline.
+        examples: [
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: {
+                ...UNKNOWN_CAPACITY,
+                supportsRenderEffect: false,
+                supportsRuntimeShader: false,
+                refreshRatesHz: [],
+                supportsCpuHints: false,
+              },
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            [
+              { type: 'thermal', status: 'shutdown', headroom: null, at: 1 },
+              { type: 'activation', activation: { ...ACTIVATION_PRESETS.active, decide: 'static' }, at: 2 },
+            ],
+          ],
+        ],
+      },
     );
   });
 
@@ -649,6 +674,73 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
             [
               { type: 'thread-load', at: 1, cores: { js: 0, main: 0.9 }, processCores: 0.9 },
               { type: 'tick', at: 2_001 },
+            ],
+          ],
+          // Found by this property at 3000 runs (seeds 831391197 and 2088257491): a lowering
+          // proposed while shadowed was published when the switch to apply also deafened the sensor
+          // that caused it. A sensor switched off now takes its lowering with it.
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: { ...ACTIVATION_PRESETS.active, defaultLever: 'shadow' },
+              memorySensing: false,
+            },
+            [
+              { type: 'memory-state', at: 1, availableMb: 20, thresholdMb: 50, lowMemory: false },
+              {
+                type: 'activation',
+                at: 2,
+                activation: { ...ACTIVATION_PRESETS.active, sense: { ...ACTIVATION_PRESETS.active.sense, memory: false } },
+              },
+            ],
+          ],
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: { ...ACTIVATION_PRESETS.active, levers: { 'list-window': 'shadow' } },
+              memorySensing: false,
+            },
+            [
+              { type: 'thermal', at: 1, status: 'shutdown', headroom: null },
+              {
+                type: 'activation',
+                at: 6_002,
+                activation: { ...ACTIVATION_PRESETS.active, sense: { ...ACTIVATION_PRESETS.active.sense, thermal: false } },
+              },
+            ],
+          ],
+          // And (3000 runs): a shadowed lowering applied after its strain had passed is the
+          // switch's move, not pressure's; the ledger now counts it with the floors.
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: { ...ACTIVATION_PRESETS.active, defaultLever: 'shadow' },
+              memorySensing: false,
+            },
+            [
+              { type: 'memory-trim', at: 1, severity: 'moderate' },
+              { type: 'activation', at: 30_001, activation: ACTIVATION_PRESETS.active },
+            ],
+          ],
+          // The same through the decide mode: closed loop, static, closed loop again.
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            [
+              { type: 'memory-trim', at: 1, severity: 'moderate' },
+              { type: 'activation', at: 2, activation: { ...ACTIVATION_PRESETS.active, decide: 'static' } },
+              { type: 'activation', at: 30_001, activation: ACTIVATION_PRESETS.active },
             ],
           ],
         ],

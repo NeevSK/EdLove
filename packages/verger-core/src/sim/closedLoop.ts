@@ -17,6 +17,8 @@ export interface SessionSegment {
   readonly visible?: boolean;
   /** Marks a disturbance, so settling after it can be measured. */
   readonly disturbance?: boolean;
+  /** Air temperature for this stretch, if not the phone's usual (heat from outside the app). */
+  readonly ambientC?: number;
 }
 
 export interface SimSession {
@@ -59,6 +61,16 @@ export const SIM_SESSIONS = {
       { durationMs: 1.5 * min, baseCostMs: 5, touching: true },
       { durationMs: 0.5 * min, baseCostMs: 5, extraCostMs: 10, touching: true, disturbance: true },
     ]).flat(),
+  },
+  sun: {
+    name: 'sun: a calm screen while the room heats to 38 °C for 12 minutes, then 12 minutes cooler',
+    // Heat from outside the app: frames stay within budget until throttling bites, so heat is
+    // the leading signal (in every other session load drives frames first).
+    segments: [
+      { durationMs: 2 * min, baseCostMs: 7, touching: true },
+      { durationMs: 12 * min, baseCostMs: 7, touching: true, ambientC: 38, disturbance: true },
+      { durationMs: 12 * min, baseCostMs: 7, touching: true },
+    ],
   },
   identify: {
     name: 'identify: a rich screen and a calm one, alternating, watched without touching',
@@ -154,7 +166,12 @@ export function runClosedLoop(options: ClosedLoopOptions): { readonly ticks: Sim
       const step = stepPlant(
         phone,
         plant,
-        { baseCostMs: segment.baseCostMs, extraCostMs: segment.extraCostMs ?? 0, visible },
+        {
+          baseCostMs: segment.baseCostMs,
+          extraCostMs: segment.extraCostMs ?? 0,
+          visible,
+          ...(segment.ambientC === undefined ? {} : { ambientC: segment.ambientC }),
+        },
         snapshot,
         levers,
         effects,

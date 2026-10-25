@@ -158,6 +158,8 @@ export interface Demand {
   /** Extra CPU work (a sync, a decode burst) in ms per frame, not reducible by levers. */
   readonly extraCostMs: number;
   readonly visible: boolean;
+  /** Air around the phone, if not the phone's usual ambient: a hot classroom, sun, a charger. */
+  readonly ambientC?: number;
 }
 
 /** One step's truth: what the phone did, and what its sensors would say. */
@@ -175,14 +177,20 @@ export function throttleOf(phone: PhoneModel, temperatureC: number): number {
   return 1 + Math.max(0, temperatureC - phone.thermal.throttleFromC) * phone.thermal.throttlePerC;
 }
 
-/** Thermal status as Android's bands would read the temperature (an assumption, named). */
+/**
+ * Thermal status, consistent with headroom as the ADPF thermal guide relates them: headroom 0.85
+ * "could be LIGHT", 0.95 "MODERATE or higher", 1.0 SEVERE. (An earlier model put LIGHT at
+ * 1 °C below throttling, a headroom near 0.65, so status and headroom disagreed.) Critical is
+ * 3 °C past severe, an assumption.
+ */
 export function statusOf(phone: PhoneModel, temperatureC: number): ThermalStatus | null {
   if (!phone.thermal.reportsStatus) return null;
-  const from = phone.thermal.throttleFromC;
-  if (temperatureC >= from + 8) return 'critical';
-  if (temperatureC >= from + 5) return 'severe';
-  if (temperatureC >= from + 2) return 'moderate';
-  if (temperatureC >= from - 1) return 'light';
+  const { ambientC, throttleFromC } = phone.thermal;
+  const at = (headroom: number) => ambientC + headroom * (throttleFromC + 5 - ambientC);
+  if (temperatureC >= at(1) + 3) return 'critical';
+  if (temperatureC >= at(1)) return 'severe';
+  if (temperatureC >= at(0.95)) return 'moderate';
+  if (temperatureC >= at(0.85)) return 'light';
   return 'none';
 }
 
@@ -236,7 +244,7 @@ export function stepPlant(
   // Utilisation of the frame budget, capped: a phone past its budget runs flat out, no hotter.
   // A capped refresh rate draws fewer frames, so the same cost per frame is less work per second.
   const utilisation = demand.visible ? Math.min(1.2, (costMs / targetMs) * (hz / phone.panelHz)) : 0.05;
-  const steady = phone.thermal.ambientC + phone.thermal.risePerLoadC * utilisation;
+  const steady = (demand.ambientC ?? phone.thermal.ambientC) + phone.thermal.risePerLoadC * utilisation;
   const alpha = 1 - Math.exp(-dtMs / phone.thermal.tauMs);
   const temperatureC = state.temperatureC + (steady - state.temperatureC) * alpha;
   const availableMb = phone.memory.totalMb - phone.memory.usedMb + freedMb;

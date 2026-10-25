@@ -52,8 +52,14 @@ const PERIODIC = new Set(['classroom', 'burst', 'identify']);
  */
 const P7_PENDING = new Set(['low · burst']);
 
+/** Sessions whose disturbance is heat, so recovery is paced by P5. */
+const HEAT_PACED = new Set(['heatSoak', 'sun']);
+
 const cases = Object.entries(SIM_PHONES).flatMap(([phoneName, phone]) => [
-  ...Object.entries(SIM_SESSIONS).map(([sessionName, session]) => ({ phoneName, phone, sessionName, session, seed: 1 })),
+  // Heat sessions on three seeds: P5's pacing must not rest on one noise draw.
+  ...Object.entries(SIM_SESSIONS).flatMap(([sessionName, session]) =>
+    (HEAT_PACED.has(sessionName) ? [1, 2, 3] : [1]).map((seed) => ({ phoneName, phone, sessionName, session, seed })),
+  ),
   ...[1, 2, 3].map((seed) => ({
     phoneName,
     phone,
@@ -81,9 +87,13 @@ describe('closed-loop stability (P3)', () => {
         expect(m.jankShare, `${where}: jank`).toBeLessThanOrEqual(off.jankShare + 0.01);
         expect(m.peakTemperatureC, `${where}: peak heat`).toBeLessThanOrEqual(off.peakTemperatureC + 0.5);
         // Quality comes back after a disturbance: within one thermal time constant and two
-        // dwells (heat steps down a level per dwell), never stuck.
+        // dwells (heat steps down a level per dwell), never stuck. After heat, P5 paces the climb
+        // on purpose (one step per thermalStepMs while heat is not rising), trading settling time
+        // for no limit cycle: there the bound is the pacing window.
         expect(m.settlingMs, `${where}: settling`).toBeLessThanOrEqual(
-          phone.thermal.tauMs + 2 * DEFAULT_VERGER_CONFIG.thermalDwellMs,
+          HEAT_PACED.has(sessionName)
+            ? DEFAULT_VERGER_CONFIG.thermalPaceMs
+            : phone.thermal.tauMs + 2 * DEFAULT_VERGER_CONFIG.thermalDwellMs,
         );
         // No limit cycle in the levers.
         expect(m.flapsPerMinute, `${where}: flaps`).toBeLessThanOrEqual(MAX_FLAPS_PER_MIN);

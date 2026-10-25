@@ -154,7 +154,32 @@ instead of 33.5% on the high phone, for the same 0% jank, and 27.6–28.2% inste
 mid phone, which no lever can bring under budget. The low phone's burst bound
 (`P7_PENDING`) stays: its steps come in touched sessions, where too few are measured to steer.
 
-**P5 status:** a guard, not a latch. With P4's dwell, no session on any phone shows a thermal
+**P5 status (updated): built.** The new sun session (heat from outside the app) showed the cycle
+the guard was waiting for: under a 38 °C room the mid and high phones lowered, cooled, lifted
+everything within seconds and heated again (sustained reversals 0.65 and 0.35 per minute). The
+fix is time-scale separation as control engineering does it:
+1. *Latch*: warm floors stay and raises wait `thermalRecoverMs` (60 s) after the last heat.
+2. *Rate limit*: until `thermalPaceMs` (10 min) after heat, published quality climbs at most one
+   lever step per `thermalStepMs` (60 s), whatever the loop decided (warm floors and the loop's
+   raises alike; lowering is never paced).
+3. *Derivative feedback*: a step waits while heat readings since the last step rise toward a
+   steady state (first order, `value + slope × thermalTimeConstantMs`, 120 s) within an exit band
+   of warm. Too few readings: the step comes at the paced rate alone.
+Tried and refused on the way: pacing every raise for 10 minutes (settling never completed),
+pacing only near the threshold (the lowered phone cools well clear, so the cycle returned), a
+30 s step (three noisy readings decide at random), back-off on repeated steps (no effect in the
+model: removed). The model's OS status was also corrected to agree with headroom as ADPF relates
+them (LIGHT about 0.85, MODERATE 0.95); it had reported LIGHT at a headroom near 0.65.
+
+Sun, before and after (p4; p5 alike): sustained reversals mid 0.65 → 0.04, high 0.35 → 0.08;
+peak 45.5 → 44.1 °C and 46.5 → 44.8 °C; time hot 483 → 329 s and 424 → 201 s. The cost, stated
+plainly: quality given up while the room is hot rises (mid 20 → 34%, high 16 → 18%) because the
+cycling controller kept lifting quality, which is what kept heating the phone; and recovery after
+heat takes 7 to 9 minutes instead of about one, by design. The stability suite's settling bound
+for heat sessions is the pacing window; sustained reversals count a reversal of a reversal (one
+lowering given back is disturbance rejection, not a cycle). Heat sessions run on seeds 1 to 3.
+
+**Earlier P5 status:** a guard, not a latch. With P4's dwell, no session on any phone shows a thermal
 limit cycle: lever reversals within 5 minutes (`slowReversalsPerMinute`) are at most 0.15 per
 minute (mid edge, the status quantisation), mostly 0. P3 now bounds them at 0.2 per minute on
 every session without a periodic disturbance; if a cycle appears on a phone's recording, the

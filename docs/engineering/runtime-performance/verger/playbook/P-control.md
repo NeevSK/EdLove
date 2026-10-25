@@ -26,6 +26,9 @@ loop, lever choice, the outcome ledger. The why is in
 | Relief check (P8) | `reducer.ts` `onFrameWindow` | After `frameReliefSteps` lowerings that closed less than `frameReliefGapShare` of the gap to the budget, the frames loop stops until frames are back near budget. |
 | Gain estimation (P6) | `reducer.ts` `probeOf`, `measureGain` | One sample per single-step published lowering; `snapshot.gains`; shown in both labs. |
 | Gain-guided choice (P7) | `reducer.ts` `byMeasuredGain` | p5 only: skips confidently useless levers, prefers relief per unit of quality. |
+| Heat trend (R1) | `reducer.ts` `thermalProjected`, `thermalActing` | Slope over the trend window projects heat ahead; tightening only; `snapshot.thermalProjected`. |
+| Heat time-scale separation (P5) | `reducer.ts` `heatRecovering`, `heatPacing`, `heatStepReady`, the pacing block in `snapshotOf` | Latch after heat, then a rate-limited climb gated on the heat slope's projected steady state. |
+| Pressure causes | `reducer.ts` `pressureCause`, `releaseCause` | Each lowering remembers the sensor that caused it; a deafened sensor takes its lowering with it. |
 
 ## Rules for this layer
 
@@ -61,6 +64,17 @@ loop, lever choice, the outcome ledger. The why is in
   measures settling against a state before idle; open with a calm stretch.
 - **One noisy step is not evidence.** `frameReliefSteps` 1 was tried: heat-soak jank on the high
   phone went from 0 to 55%.
+- **Load-driven sessions never show heat leading.** Heat from outside the app (the sun session,
+  `ambientC` on a segment) is the disturbance that does; add such a disturbance before judging a
+  heat rule.
+- **The model's status must agree with its headroom.** It once reported LIGHT at headroom 0.65,
+  which made every headroom-based rule disagree with the status-based level.
+- **A three-point slope is noise.** Projected over a time constant it decides at random; give a
+  gate a minute of readings.
+- **One lowering given back is not a cycle.** Slow reversals count a reversal of a reversal.
+- **Deep runs find what 300 cases do not.** Three pre-existing bugs (shadowed decisions published
+  through a sensor switch-off or a decide switch) surfaced only at `VERGER_RUNS=3000`: run it for
+  every policy change, and pin what it finds.
 - **The model's OS status has no hysteresis of its own.** Real thermal HALs do; the mid phone's
   residual chatter (0.15 per minute) is that pessimism.
 

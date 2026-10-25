@@ -27,6 +27,10 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
   steps come while touching, where too few are measured for P7 to steer.
 - Mid phone heat chatter of 0.15 per minute at a status boundary: the model's OS status has no
   hysteresis (real HALs do). Measure the real status bands on a phone before acting on it.
+- P5's constants are assumptions: `thermalTimeConstantMs` (120 s), `thermalStepMs` (60 s),
+  `thermalRecoverMs` (60 s), `thermalPaceMs` (10 min). Phase F measures each phone's time
+  constant and how fast its heat readings respond; until then recovery after heat is slow by
+  design (7 to 9 minutes in the model).
 - Gains are learned per session and not kept across launches; persisting them (like the learned
   profile) is open, and needs phones to say whether they are stable.
 - In touched use most steps publish batched by the gesture hold and are not measured; whether

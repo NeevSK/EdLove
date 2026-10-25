@@ -30,8 +30,11 @@ describe('control metrics', () => {
     expect(controlMetrics(fast, phone, SAMPLE_LEVERS).flapsPerMinute).toBe(1);
     const slow = [tick(0), tick(1000, { levels: { sparkle: 1 } }), tick(45_000, { levels: { sparkle: 0 } }), tick(60_000)];
     expect(controlMetrics(slow, phone, SAMPLE_LEVERS).flapsPerMinute).toBe(0);
-    // ...but it is a slow reversal, the shape a thermal limit cycle would have.
-    expect(controlMetrics(slow, phone, SAMPLE_LEVERS).slowReversalsPerMinute).toBe(1);
+    // ...nor, alone, a slow cycle: one lowering given back is disturbance rejection.
+    expect(controlMetrics(slow, phone, SAMPLE_LEVERS).slowReversalsPerMinute).toBe(0);
+    // Down, up, down again within five minutes is.
+    const cycle = [...slow.slice(0, 3), tick(50_000, { levels: { sparkle: 1 } }), tick(60_000, { levels: { sparkle: 1 } })];
+    expect(controlMetrics(cycle, phone, SAMPLE_LEVERS).slowReversalsPerMinute).toBe(1);
   });
 
   it('measures jank, quality while janking, heat time and settling on the plant truth', () => {
