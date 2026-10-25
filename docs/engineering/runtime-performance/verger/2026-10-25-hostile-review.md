@@ -45,6 +45,14 @@ thresholds that applied (web: read at the next launch; mobile: applied live once
 the mobile app (nothing resolves flags), and turning it on (client key, flag registration under the
 manifest) is your decision.
 
+**Update (2d):** the policy is a launch choice: p4 by default, then the build
+(`EXPO_PUBLIC_GURUDEVI_VERGER_POLICY` / `NEXT_PUBLIC_…`), a deterministic split of installs to p5
+(`EXPO_PUBLIC_GURUDEVI_VERGER_P5_PERCENT`, hashed from the Android ID on the device, never sent),
+the lab (web: applies on reload), then remote (`__GURUDEVI_VERGER_POLICY__`, flag
+`gurudevi.verger.policy`). Unknown names are refused and reported. Another policy keys its own
+recovery ladder and experiment key, and every telemetry event carries `policy_name` and `policy`.
+Making p5 the default stays a decision for phone recordings.
+
 **Verdict:** yes, they need it. The seam is one: a remote **config patch** beside the remote activation
 patch, parsed strictly like it (`parseConfigPatch`, refused whole), layered build < lab < remote, with
 the ladder and the kill switch still above it; plus `selfBudget`, `ineffectiveAfterMoves` and the

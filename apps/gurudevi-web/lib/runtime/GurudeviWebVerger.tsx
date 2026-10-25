@@ -2,11 +2,13 @@
 
 import {
   GURUDEVI_WEB_HOST,
-  hostWithConfig,
+  hostWith,
   resolveVergerConfig,
+  resolveVergerPolicy,
   resolveVergerLaunch,
   type RuntimeMode,
   VERGER_LAB_CONFIG_KEY,
+  VERGER_LAB_POLICY_KEY,
   VERGER_LAB_PATCH_KEY,
   VERGER_LAB_RECORD_EVENTS,
   type VergerActivation,
@@ -20,6 +22,7 @@ declare global {
   var __GURUDEVI_RUNTIME_MODE__: RuntimeMode | undefined;
   var __GURUDEVI_VERGER_ACTIVATION__: unknown;
   var __GURUDEVI_VERGER_CONFIG__: unknown;
+  var __GURUDEVI_VERGER_POLICY__: unknown;
 }
 
 /**
@@ -58,7 +61,16 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
     if (read.rejectedConfig) console.warn('[verger] remote thresholds ignored:', read.rejectedConfig);
     if (read.rejectedLocalConfig)
       console.warn('[verger] lab thresholds ignored:', read.rejectedLocalConfig);
-    return read.patched ? hostWithConfig(GURUDEVI_WEB_HOST, read.config) : GURUDEVI_WEB_HOST;
+    const policy = resolveVergerPolicy({
+      build: process.env.NEXT_PUBLIC_GURUDEVI_VERGER_POLICY,
+      local: dev ? readLab(VERGER_LAB_POLICY_KEY) : undefined,
+      remote: typeof window === 'undefined' ? undefined : globalThis.__GURUDEVI_VERGER_POLICY__,
+      dev,
+    });
+    if (policy.rejected) console.warn('[verger] policy choice ignored:', policy.rejected);
+    return read.patched || policy.policy !== GURUDEVI_WEB_HOST.policy
+      ? hostWith(GURUDEVI_WEB_HOST, { config: read.config, policy: policy.policy })
+      : GURUDEVI_WEB_HOST;
   });
   const [launch] = useState<{ mode: RuntimeMode; activation?: VergerActivation }>(() => {
     const read = resolveVergerLaunch({

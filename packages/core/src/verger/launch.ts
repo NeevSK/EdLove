@@ -12,10 +12,17 @@ import {
   type VergerConfig,
   type VergerHost,
   defineHost,
+  assignExperiment,
+  VERGER_POLICY,
+  VERGER_POLICY_P5,
+  type VergerPolicy,
 } from '@repo/verger-core';
 
 /** Where the dev lab keeps its saved activation patch (`localPatch`), in each app's own store. */
 export const VERGER_LAB_PATCH_KEY = 'gurudevi:verger:lab-patch';
+
+/** Where the dev lab keeps its chosen policy (`localPolicy`). */
+export const VERGER_LAB_POLICY_KEY = 'gurudevi:verger:lab-policy';
 
 /** Where the dev lab keeps its saved threshold patch (`localConfig`). */
 export const VERGER_LAB_CONFIG_KEY = 'gurudevi:verger:lab-config';
@@ -168,14 +175,98 @@ export function resolveVergerConfig(inputs: VergerConfigInputs): VergerConfigLau
 
 /** The host on another config (its own hash, so telemetry splits by the thresholds that ran). */
 export function hostWithConfig(host: VergerHost, config: VergerConfig): VergerHost {
+  return hostWith(host, { config });
+}
+
+/**
+ * The host with another config or policy. Another policy keys its own recovery ladder and its own
+ * experiment key: p5's failures never count against p4's record, nor the other way round.
+ */
+export function hostWith(
+  host: VergerHost,
+  change: { readonly config?: VergerConfig; readonly policy?: VergerPolicy },
+): VergerHost {
   return defineHost({
     name: host.name,
     levers: host.levers,
     workloads: host.workloads,
-    config,
+    config: change.config ?? host.config,
     recovery: host.recovery,
-    policy: host.policy,
+    policy: change.policy ?? host.policy,
   });
+}
+
+/** The policies a launch may choose by name. */
+export const VERGER_POLICIES = { p4: VERGER_POLICY, p5: VERGER_POLICY_P5 } as const;
+export type VergerPolicyName = keyof typeof VERGER_POLICIES;
+
+const isPolicyName = (value: unknown): value is VergerPolicyName =>
+  typeof value === 'string' && Object.hasOwn(VERGER_POLICIES, value);
+
+export interface VergerPolicyInputs {
+  /** The build's policy (`EXPO_PUBLIC_GURUDEVI_VERGER_POLICY`). */
+  readonly build: unknown;
+  /** The dev lab's choice; honoured only in a development build. */
+  readonly local?: unknown;
+  /** Remote config's choice (`__GURUDEVI_VERGER_POLICY__`), untrusted. */
+  readonly remote: unknown;
+  /**
+   * A deterministic split for a controlled comparison: `treatmentPercent` of installs, by a hash
+   * of `installId` and `key`, run p5; the rest p4. The id never leaves the device. A forced
+   * choice (remote, lab) overrules the split.
+   */
+  readonly split?: {
+    readonly installId: string;
+    readonly key: string;
+    readonly treatmentPercent: unknown;
+  };
+  readonly dev: boolean;
+}
+
+export interface VergerPolicyLaunch {
+  readonly name: VergerPolicyName;
+  readonly policy: VergerPolicy;
+  readonly source: 'default' | 'build' | 'split' | 'lab' | 'remote';
+  /** A named policy no one knows, refused (the next layer down decides). */
+  readonly rejected: string | null;
+}
+
+/**
+ * Which policy decides this launch. Weakest first: p4 by default, the build, the split, the lab
+ * (development only), then remote config. An unknown name is refused and reported; the layer
+ * below it decides. Choosing p5 by default is a decision for evidence from phones (`compare`).
+ */
+export function resolveVergerPolicy(inputs: VergerPolicyInputs): VergerPolicyLaunch {
+  let name: VergerPolicyName = 'p4';
+  let source: VergerPolicyLaunch['source'] = 'default';
+  const rejections: string[] = [];
+  const consider = (value: unknown, from: VergerPolicyLaunch['source']) => {
+    if (value === undefined || value === null || value === '') return;
+    if (isPolicyName(value)) {
+      name = value;
+      source = from;
+    } else rejections.push(`${from}: unknown policy ${JSON.stringify(value)}`);
+  };
+  consider(inputs.build, 'build');
+  const split = inputs.split;
+  if (split && typeof split.treatmentPercent === 'number' && split.treatmentPercent > 0) {
+    const arm = assignExperiment({
+      installId: split.installId,
+      key: split.key,
+      treatmentPercent: split.treatmentPercent,
+      killSwitch: false,
+    }).arm;
+    name = arm === 'treatment' ? 'p5' : 'p4';
+    source = 'split';
+  }
+  if (inputs.dev) consider(inputs.local, 'lab');
+  consider(inputs.remote, 'remote');
+  return {
+    name,
+    policy: VERGER_POLICIES[name],
+    source,
+    rejected: rejections.length > 0 ? rejections.join('; ') : null,
+  };
 }
 
 /** GrowthBook keys for verger's remote inputs (ADR-012 naming: `gurudevi.<domain>.<feature>`). */
@@ -183,12 +274,14 @@ export const VERGER_REMOTE_FLAG_KEYS = {
   mode: 'gurudevi.verger.runtime-mode',
   activation: 'gurudevi.verger.activation',
   config: 'gurudevi.verger.config',
+  policy: 'gurudevi.verger.policy',
 } as const;
 
 export interface VergerRemoteInputs {
   readonly override: unknown;
   readonly remotePatch: unknown;
   readonly remoteConfig: unknown;
+  readonly remotePolicy: unknown;
 }
 
 /**
@@ -211,8 +304,10 @@ export function vergerRemoteFromFlags(
     }
   };
   const mode = flags[VERGER_REMOTE_FLAG_KEYS.mode];
+  const policy = flags[VERGER_REMOTE_FLAG_KEYS.policy];
   return {
     override: typeof mode === 'string' && mode !== '' ? mode : undefined,
+    remotePolicy: typeof policy === 'string' && policy !== '' ? policy : undefined,
     remotePatch: json(VERGER_REMOTE_FLAG_KEYS.activation),
     remoteConfig: json(VERGER_REMOTE_FLAG_KEYS.config),
   };

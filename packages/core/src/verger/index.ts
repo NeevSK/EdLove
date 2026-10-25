@@ -24,7 +24,14 @@ export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
 export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST, GURUDEVI_WEB_HOST, WEB_VIEW_LEVER_IDS } from './host';
 export {
+  hostWith,
   hostWithConfig,
+  resolveVergerPolicy,
+  VERGER_LAB_POLICY_KEY,
+  VERGER_POLICIES,
+  type VergerPolicyInputs,
+  type VergerPolicyLaunch,
+  type VergerPolicyName,
   resolveVergerConfig,
   resolveVergerLaunch,
   VERGER_LAB_CONFIG_KEY,

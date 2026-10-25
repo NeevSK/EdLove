@@ -5,7 +5,7 @@ import {
   type FidelityPreference,
   type VergerTelemetrySink,
   GURUDEVI_MOBILE_HOST,
-  hostWithConfig,
+  hostWith,
   labConfigure,
   labTune,
   type VergerActivation,
@@ -25,7 +25,7 @@ import { useFidelityOptional } from '@repo/ui/context';
 import { useVerger, useVergerSnapshot } from '@repo/verger-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import { deviceSignals } from './deviceSignals';
-import { readVergerConfig, readVergerLaunch, type RuntimeMode } from './runtimeMode';
+import { readVergerConfig, readVergerLaunch, readVergerPolicy, type RuntimeMode } from './runtimeMode';
 import { vergerTelemetrySink } from './telemetrySink';
 
 interface GurudeviVergerProps {
@@ -126,11 +126,15 @@ export function GurudeviVerger({
   fidelity,
 }: GurudeviVergerProps) {
   const setting = useFidelityOptional().fidelityLevel;
-  // Thresholds hold whether verger runs or not (the floors read them): resolved first.
+  // Thresholds and policy hold whether verger runs or not (the floors run the policy too).
   const [host] = useState<VergerHost>(() => {
     const read = readVergerConfig(GURUDEVI_MOBILE_HOST.config);
     if (read.rejectedConfig) console.warn('[verger] remote thresholds ignored:', read.rejectedConfig);
-    return read.patched ? hostWithConfig(GURUDEVI_MOBILE_HOST, read.config) : GURUDEVI_MOBILE_HOST;
+    const policy = readVergerPolicy();
+    if (policy.rejected) console.warn('[verger] policy choice ignored:', policy.rejected);
+    return read.patched || policy.policy !== GURUDEVI_MOBILE_HOST.policy
+      ? hostWith(GURUDEVI_MOBILE_HOST, { config: read.config, policy: policy.policy })
+      : GURUDEVI_MOBILE_HOST;
   });
   // A kill switch wins over everything, whichever carries it (remote override or experiment).
   // Otherwise an explicit mode, then the assignment, then the build and remote activation.

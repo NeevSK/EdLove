@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { GURUDEVI_LEVERS } from './gurudeviLevers';
 import { GURUDEVI_MOBILE_HOST } from './host';
 import {
+  hostWith,
   hostWithConfig,
+  resolveVergerPolicy,
+  VERGER_POLICIES,
   resolveVergerConfig,
   resolveVergerLaunch,
   VERGER_REMOTE_FLAG_KEYS,
@@ -161,5 +164,45 @@ describe('verger\'s remote inputs from feature flags', () => {
     const read = resolveVergerConfig({ base: GURUDEVI_MOBILE_HOST.config, remoteConfig: inputs.remoteConfig, dev: false });
     expect(read.patched).toBe(false);
     expect(read.rejectedConfig).toMatch(/object of thresholds/);
+  });
+});
+
+describe('which policy decides this launch', () => {
+  const pick = (over: Partial<Parameters<typeof resolveVergerPolicy>[0]>) =>
+    resolveVergerPolicy({ build: undefined, remote: undefined, dev: false, ...over });
+
+  it('p4 by default; then build, lab (development only) and remote, weakest first', () => {
+    expect(pick({})).toMatchObject({ name: 'p4', source: 'default', rejected: null });
+    expect(pick({ build: 'p5' })).toMatchObject({ name: 'p5', source: 'build' });
+    expect(pick({ build: 'p5', local: 'p4' })).toMatchObject({ name: 'p5', source: 'build' });
+    expect(pick({ build: 'p5', local: 'p4', dev: true })).toMatchObject({ name: 'p4', source: 'lab' });
+    expect(pick({ local: 'p4', remote: 'p5', dev: true })).toMatchObject({ name: 'p5', source: 'remote' });
+    expect(pick({ remote: 'p5' }).policy).toBe(VERGER_POLICIES.p5);
+  });
+
+  it('an unknown name is refused and reported; the layer below decides', () => {
+    const read = pick({ build: 'p5', remote: 'p9' });
+    expect(read).toMatchObject({ name: 'p5', source: 'build' });
+    expect(read.rejected).toMatch(/remote: unknown policy "p9"/);
+    expect(pick({ remote: 'constructor' }).name).toBe('p4');
+  });
+
+  it('a split sends a stable share of installs to p5; a forced choice overrules it', () => {
+    const arms = Array.from({ length: 1000 }, (_, i) =>
+      pick({ split: { installId: `install-${i}`, key: 'k', treatmentPercent: 20 } }),
+    );
+    const p5 = arms.filter((a) => a.name === 'p5').length;
+    expect(p5).toBeGreaterThan(150);
+    expect(p5).toBeLessThan(250);
+    const one = { installId: 'install-7', key: 'k', treatmentPercent: 20 };
+    expect(pick({ split: one }).name).toBe(pick({ split: one }).name);
+    expect(pick({ split: one, remote: 'p4' })).toMatchObject({ name: 'p4', source: 'remote' });
+    expect(pick({ split: { ...one, treatmentPercent: 0 } }).source).toBe('default');
+  });
+
+  it('another policy keys its own recovery ladder', () => {
+    const p5 = hostWith(GURUDEVI_MOBILE_HOST, { policy: VERGER_POLICIES.p5 });
+    expect(p5.experimentKey).not.toBe(GURUDEVI_MOBILE_HOST.experimentKey);
+    expect(p5.config).toEqual(GURUDEVI_MOBILE_HOST.config);
   });
 });

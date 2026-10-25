@@ -8,6 +8,8 @@ import {
   labTune,
   VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
+  VERGER_LAB_POLICY_KEY,
+  type VergerPolicyName,
   type Verger,
 } from '@repo/core/verger';
 import { useVergerLab } from '@repo/verger-react';
@@ -50,6 +52,23 @@ export function applyWebLabTune(
     return { ok: true };
   } catch (error) {
     return { ok: false, error: `applied, not saved: ${String(error)}` };
+  }
+}
+
+/**
+ * Keeps a policy choice for the next load (a policy is fixed when verger is created); `null`
+ * returns to the build's choice.
+ */
+export function chooseWebLabPolicy(
+  name: VergerPolicyName | null,
+  storage: Pick<Storage, 'setItem' | 'removeItem'>,
+): LabResult {
+  try {
+    if (name === null) storage.removeItem(VERGER_LAB_POLICY_KEY);
+    else storage.setItem(VERGER_LAB_POLICY_KEY, JSON.stringify(name));
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: `not saved: ${String(error)}` };
   }
 }
 
@@ -176,6 +195,21 @@ export function VergerLabClient() {
           >
             Download session recording
           </button>
+          {(['p4', 'p5', null] as const).map((name) => (
+            <button
+              key={name ?? 'build'}
+              type="button"
+              className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-ink"
+              onClick={() =>
+                setResult({
+                  what: `policy ${name ?? 'from the build'} (applies on reload)`,
+                  outcome: chooseWebLabPolicy(name, window.localStorage),
+                })
+              }
+            >
+              {name === null ? 'Policy: build default' : `Policy: ${name}`}
+            </button>
+          ))}
         </div>
         {result ? (
           <p role="status" className={result.outcome.ok ? 'text-sm text-ink' : 'text-sm text-ember-red'}>
