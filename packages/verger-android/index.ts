@@ -36,13 +36,28 @@ declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
 /** What the module senses itself; long tasks come from React Native, in JavaScript. */
 const NATIVE_SENSORS: readonly SensorId[] = ['frames', 'threads', 'memory', 'thermal', 'power', 'network'];
 
-/** Null on iOS, on web, and in any build that predates the module. */
-const native = requireOptionalNativeModule<VergerNativeModule>('Verger');
+let looked = false;
+let found: VergerNativeModule | null = null;
 
-export const isVergerAndroidAvailable = native !== null;
+/**
+ * The native module, looked up on first use and never at import: a launch the kill switch keeps
+ * off never touches it (as `VergerRoot` promises). Null on iOS, on web, and in any build that
+ * predates the module.
+ */
+function nativeModule(): VergerNativeModule | null {
+  if (!looked) {
+    found = requireOptionalNativeModule<VergerNativeModule>('Verger');
+    looked = true;
+  }
+  return found;
+}
+
+export function isVergerAndroidAvailable(): boolean {
+  return nativeModule() !== null;
+}
 
 export function readFrameTotals(): { frames: number; missedVsyncs: number; costMs: number } {
-  const totals = native?.readTotals() ?? {};
+  const totals = nativeModule()?.readTotals() ?? {};
   return {
     frames: totals.frames ?? 0,
     missedVsyncs: totals.missedVsyncs ?? 0,
@@ -59,6 +74,7 @@ export function readFrameTotals(): { frames: number; missedVsyncs: number; costM
 export function createVergerAndroidPlatform(
   onLever?: (event: NativeLever) => void,
 ): VergerPlatform {
+  const native = nativeModule();
   return {
     readCapacity: () => toCapacityFacts(native?.readCapacity()),
     ...(native
@@ -80,6 +96,7 @@ export function createVergerAndroidPort(
   now: () => number = () => performance.now(),
   onLever?: (event: NativeLever) => void,
 ): RuntimePort {
+  const native = nativeModule();
   return {
     start(
       config: VergerConfig,

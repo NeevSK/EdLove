@@ -71,6 +71,11 @@ export interface RecoveryConfig {
   /** Clean sessions needed to step back up one rung; doubled for each escalation after the first. */
   readonly cleanToRecover: number;
   readonly maxRelapseDoublings: number;
+  /**
+   * Clean sessions at full trust (rung 0) that forgive one relapse, so a device that crashed once
+   * long ago recovers at the ordinary pace again; without it, relapses never decayed.
+   */
+  readonly relapseDecayClean: number;
   /** A session shorter than this in the foreground is evidence of nothing. */
   readonly minEvidenceForegroundMs: number;
   readonly trustInitial: number;
@@ -98,6 +103,7 @@ export const DEFAULT_RECOVERY_CONFIG: RecoveryConfig = {
   failureWindowMs: 24 * 60 * 60 * 1000,
   cleanToRecover: 3,
   maxRelapseDoublings: 3,
+  relapseDecayClean: 20,
   minEvidenceForegroundMs: 30_000,
   trustInitial: 0.5,
   trustPerCleanSession: 0.1,
@@ -378,10 +384,12 @@ export function foldSession(
         2 ** Math.min(Math.max(0, ladder.relapses - 1), config.maxRelapseDoublings);
       const clean = ladder.clean + 1;
       const recovers = ladder.rung > 0 && ladder.rung < 4 && clean >= needed;
+      const forgives = ladder.rung === 0 && ladder.relapses > 0 && clean >= config.relapseDecayClean;
       ladder = {
         ...ladder,
         rung: recovers ? ((ladder.rung - 1) as Rung) : ladder.rung,
-        clean: recovers ? 0 : clean,
+        clean: recovers || forgives ? 0 : clean,
+        relapses: forgives ? ladder.relapses - 1 : ladder.relapses,
       };
       profile = { ...profile, trust: round2(clamp01(profile.trust + config.trustPerCleanSession)) };
       const learns =

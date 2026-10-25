@@ -52,9 +52,13 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
 
 ## Known gaps, by design or deferred
 
-- Recovery ladder review items: a `stopped` marker skips the exit check; relapses never decay;
-  the native module is looked up at import time; a kill switch set after mount is not observed
-  live.
+- **Resolved 2026-10-25 (R8):** the recovery ladder review items. Relapses now decay
+  (`relapseDecayClean`, 20 clean sessions at rung 0 forgive one); the native module is looked up
+  on first use, never at import (a kill-switched launch touches no native code); the kill switch is
+  read live (`killed` on `VergerRoot` and `VergerBrowser`, checked on each return to the
+  foreground). A `stopped` marker skipping the exit check is kept, by design: `stopped` means verger
+  shut its native side down cleanly, so a later crash is code verger no longer runs, and charging it
+  to verger would step healthy devices down the ladder.
 - The ADPF CPU boost gets no frame reports when the frames sensor is off.
 - Web: no battery saver and no metered flag exist in browsers; Battery Status and Network
   Information are Chromium-only; device class is `unknown` where memory is hidden.

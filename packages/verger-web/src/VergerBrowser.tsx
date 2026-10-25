@@ -48,6 +48,11 @@ export interface VergerBrowserProps {
   readonly release: string;
   /** Records each session for the dev lab's export (D1); development builds only. */
   readonly recordEvents?: number;
+  /**
+   * The kill switch, read live (R8): checked each time the page becomes visible; once it reads
+   * true, a running verger stops and only the floors remain until the next load.
+   */
+  readonly killed?: () => boolean;
 }
 
 /**
@@ -67,6 +72,7 @@ export function VergerBrowser({
   telemetrySink,
   release,
   recordEvents,
+  killed,
 }: VergerBrowserProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   const [verger] = useState<Verger | null>(() =>
@@ -106,12 +112,11 @@ export function VergerBrowser({
       preferences.current = { ...preferences.current, reduceMotion: motionQuery?.matches ?? false };
       sendPreferences();
     };
-    const onVisibility = () =>
-      verger.dispatch({
-        type: 'app-state',
-        at: now(),
-        state: document.visibilityState === 'hidden' ? 'background' : 'active',
-      });
+    const onVisibility = () => {
+      const visible = document.visibilityState !== 'hidden';
+      verger.dispatch({ type: 'app-state', at: now(), state: visible ? 'active' : 'background' });
+      if (visible && verger.activation !== null && killed?.()) void verger.stop();
+    };
     let lastInteraction = Number.NEGATIVE_INFINITY;
     const onInteraction = () => {
       const at = now();

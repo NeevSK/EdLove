@@ -77,6 +77,11 @@ export interface VergerRootProps {
   readonly release: string;
   /** Records each session for the dev lab's export (D1); development builds only. */
   readonly recordEvents?: number;
+  /**
+   * The kill switch, read live (R8): checked each time the app returns to the foreground; once it
+   * reads true, a running verger stops and only the floors remain until the next launch.
+   */
+  readonly killed?: () => boolean;
 }
 
 /**
@@ -106,6 +111,7 @@ export function VergerRoot({
   telemetrySink,
   release,
   recordEvents,
+  killed,
 }: VergerRootProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   // Read once, like the rest of the launch: a new function must not restart verger.
@@ -158,9 +164,10 @@ export function VergerRoot({
       void verger.start().then((plan) => {
         if (live && plan.runtime !== 'off') settings();
       });
-    const appState = AppState.addEventListener('change', (status) =>
-      verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) }),
-    );
+    const appState = AppState.addEventListener('change', (status) => {
+      verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) });
+      if (status === 'active' && verger.activation !== null && killed?.()) void verger.stop();
+    });
     const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', reduceMotion);
     const stopSignals = startSignals?.((event) => verger.signal(event), now) ?? (() => {});
     // Long tasks and input delay matter only to a running closed loop; off, nothing is observed.

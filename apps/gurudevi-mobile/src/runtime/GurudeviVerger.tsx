@@ -53,6 +53,9 @@ const VERGER_STORE: VergerStore = {
 
 const platform = () => createVergerAndroidPlatform();
 
+/** Remote config's kill switch, read live: set after launch, verger stops on the next foreground. */
+const killSwitchOn = () => globalThis.__GURUDEVI_RUNTIME_MODE__ === 'off';
+
 /**
  * What the floors know of the phone while verger is off: its memory, from expo-device (which
  * the app loads anyway), never from verger's module. The rest stays unknown, so no capability
@@ -174,6 +177,7 @@ export function GurudeviVerger({
       telemetrySink={telemetrySink ?? vergerTelemetrySink}
       release={`${nativeApplicationVersion ?? '0'}+${nativeBuildVersion ?? '0'}`}
       recordEvents={__DEV__ ? VERGER_LAB_RECORD_EVENTS : undefined}
+      killed={killSwitchOn}
     >
       <OnlineStatus />
       <ScreenAnnouncer />

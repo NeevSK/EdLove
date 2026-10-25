@@ -411,6 +411,34 @@ describe('persistence is strict', () => {
   });
 });
 
+describe('relapses decay (R8)', () => {
+  it('clean sessions at full trust forgive one relapse at a time, then recovery runs at the ordinary pace', () => {
+    let record: VergerRecord = {
+      ...freshRecord(KEY, 'dev1', R),
+      ladder: { rung: 0, failures: [], clean: 0, relapses: 2 },
+    };
+    let wall = 10 * HOUR;
+    for (let i = 0; i < R.relapseDecayClean - 1; i += 1) record = fold(record, marker(), null, (wall += HOUR));
+    expect(record.ladder.relapses).toBe(2);
+    record = fold(record, marker(), null, (wall += HOUR));
+    expect(record.ladder).toMatchObject({ relapses: 1, clean: 0 });
+    for (let i = 0; i < R.relapseDecayClean; i += 1) record = fold(record, marker(), null, (wall += HOUR));
+    expect(record.ladder.relapses).toBe(0);
+    // Nothing left to forgive: clean sessions just count.
+    record = fold(record, marker(), null, (wall += HOUR));
+    expect(record.ladder).toMatchObject({ relapses: 0, clean: 1 });
+  });
+
+  it('a session that is not clean forgives nothing', () => {
+    let record: VergerRecord = {
+      ...freshRecord(KEY, 'dev1', R),
+      ladder: { rung: 0, failures: [], clean: R.relapseDecayClean - 1, relapses: 1 },
+    };
+    record = fold(record, marker({ foreground: true, report: null }), [crash(20 * HOUR)], 20 * HOUR + 1);
+    expect(record.ladder.relapses).toBe(1);
+  });
+});
+
 describe('review fixes', () => {
   it('charges a session only with its own process exit when both sides carry a pid', () => {
     const mine = marker({ pid: 42 });

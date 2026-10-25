@@ -286,6 +286,10 @@ function fold(model: Model, wall: number): void {
   if (model.rung > 0 && model.rung < 4 && model.clean >= needed) {
     model.rung = (model.rung - 1) as Model['rung'];
     model.clean = 0;
+  } else if (model.rung === 0 && model.relapses > 0 && model.clean >= config.relapseDecayClean) {
+    // Clean sessions at full trust forgive a relapse.
+    model.relapses -= 1;
+    model.clean = 0;
   }
 }
 

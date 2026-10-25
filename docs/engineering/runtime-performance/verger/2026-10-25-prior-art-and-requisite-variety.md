@@ -153,6 +153,13 @@ read. Writing the tests found that aging ran only in sessions that reported gain
 Low phone, burst: quality given up while janking 84 → 59% (p4) and 67% (p5), inside the bound;
 mid and high p5 10 → 8%. `P7_PENDING` is gone: the stability suite has no exemptions.
 
+**R8 built (recovery review items).** Relapses decay after clean sessions at full trust; the
+reference model of the ladder's property test carries the same rule. The Android native module
+is looked up on first use, never at import, as `VergerRoot` promised. The kill switch is read live
+on each return to the foreground (mobile) or page show (web); set after launch, verger stops and
+the floors remain. The `stopped` marker skipping the exit check stays, by design (open items has
+the reason).
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).

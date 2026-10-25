@@ -50,6 +50,9 @@ function readLab(key: string): unknown {
 
 const dev = process.env.NODE_ENV !== 'production';
 
+/** Remote config's kill switch, read live: set after load, verger stops when the page is next shown. */
+const killSwitchOn = () => typeof window !== 'undefined' && globalThis.__GURUDEVI_RUNTIME_MODE__ === 'off';
+
 /**
  * Each route, announced to verger as a screen (R3; in verger-p5 also its screen memory, R4).
  * Record ids fold into one screen (`screenNameOf`).
@@ -108,6 +111,7 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
       activation={launch.activation}
       release={process.env.NEXT_PUBLIC_GURUDEVI_RELEASE ?? 'web'}
       recordEvents={dev ? VERGER_LAB_RECORD_EVENTS : undefined}
+      killed={killSwitchOn}
     >
       <ScreenAnnouncer />
       {children}
