@@ -83,7 +83,7 @@ export function VergerLabClient() {
 
       <section className="rounded-xl border border-line p-4 overflow-x-auto">
         <h2 className="text-sm font-semibold text-ink mb-2">Levers</h2>
-        <table className="text-xs w-full">
+        <table className="text-xs w-full border-separate border-spacing-x-2 border-spacing-y-1">
           <thead>
             <tr className="text-left text-ink-soft">
               <th>lever</th>
