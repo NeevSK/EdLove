@@ -48,6 +48,7 @@ import type {
   ThermalSource,
   ThermalStatus,
   TrimSeverity,
+  StorageLevel,
 } from './types';
 
 export const UNKNOWN_CAPACITY: CapacityFacts = {
@@ -150,6 +151,8 @@ export interface VergerState {
   /** When the network was last seen offline; null if never (or the network sensor is off). */
   readonly lastOfflineAt: number | null;
   readonly dataBudget: DataBudgetState;
+  /** Free storage as last reported; null until then, or while the storage sensor is deaf. */
+  readonly storageFreeBytes: number | null;
   readonly visibility: AppVisibility;
   readonly lastInteractionAt: number;
   readonly reduceMotion: boolean;
@@ -271,6 +274,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     network: UNKNOWN_NETWORK,
     lastOfflineAt: null,
     dataBudget: 'unknown',
+    storageFreeBytes: null,
     visibility: 'active',
     lastInteractionAt: options.at,
     reduceMotion: false,
@@ -379,6 +383,8 @@ export function limitFloors(state: VergerState, at: number = state.at): Record<s
     if (offline(network) && lever.whenOffline !== undefined) raise(lever.id, lever.whenOffline);
     if (state.dataBudget === 'spent' && lever.whenDataBudgetSpent !== undefined)
       raise(lever.id, lever.whenDataBudgetSpent);
+    if (storageOf(state) === 'low' && lever.whenStorageLow !== undefined)
+      raise(lever.id, lever.whenStorageLow);
     if (batteryLow(state) && lever.whenBatteryLow !== undefined)
       raise(lever.id, lever.whenBatteryLow);
     for (const need of lever.requires ?? []) {
@@ -520,6 +526,8 @@ function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
       return { ...state, powerSaver: false, battery: UNKNOWN_BATTERY };
     case 'longTasks':
       return { ...state, longTasks: [] };
+    case 'storage':
+      return { ...state, storageFreeBytes: null };
     case 'network':
       return { ...state, network: UNKNOWN_NETWORK, lastOfflineAt: null, dataBudget: 'unknown' };
   }
@@ -589,6 +597,12 @@ function lower(
  * p5 (D4): records that a lever did not relieve a target. A lever the host does not govern, a
  * target it does not claim to relieve, or one already recorded changes nothing; p4 ignores it.
  */
+function storageOf(state: VergerState): StorageLevel {
+  const free = state.storageFreeBytes;
+  if (free === null) return 'unknown';
+  return free < state.config.storageLowBytes ? 'low' : 'ample';
+}
+
 function markIneffective(state: VergerState, id: string, target: LeverTarget): VergerState {
   if (!state.expansion) return state;
   const lever = state.levers.find((l) => l.id === id);
@@ -1007,6 +1021,16 @@ function step(state: VergerState, event: VergerEvent): VergerState {
     case 'data-budget':
       next = { ...next, dataBudget: input.state };
       break;
+    case 'storage':
+      next = { ...next, storageFreeBytes: input.freeBytes === null ? null : Math.max(0, input.freeBytes) };
+      break;
+    case 'input-delay': {
+      // A long-delayed input is the same evidence as a long task: the thread could not yield.
+      if (input.durationMs < next.config.inputDelayLongMs) break;
+      const window = next.config.longTaskWindowMs;
+      next = { ...next, longTasks: [...next.longTasks.filter((t) => at - t <= window), at] };
+      break;
+    }
     case 'lever-ineffective':
       next = markIneffective(next, input.lever, input.target);
       break;
@@ -1229,6 +1253,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     network: state.network,
     networkLimit: networkLimitOf(state, at),
     dataBudget: state.dataBudget,
+    storage: storageOf(state),
     capacityClass: capacityClassOf(state.capacity, state.config),
     envelope,
     ineffective: state.ineffective,
@@ -1310,6 +1335,7 @@ function outputsEqual(a: VergerSnapshot, b: VergerSnapshot): boolean {
     a.network !== b.network ||
     a.networkLimit !== b.networkLimit ||
     a.dataBudget !== b.dataBudget ||
+    a.storage !== b.storage ||
     a.capacityClass !== b.capacityClass ||
     a.battery !== b.battery ||
     a.thermalSource !== b.thermalSource ||

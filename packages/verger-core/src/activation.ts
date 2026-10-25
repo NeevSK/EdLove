@@ -14,7 +14,8 @@ export type SensorId =
   | 'thermal'
   | 'power'
   | 'network'
-  | 'longTasks';
+  | 'longTasks'
+  | 'storage';
 
 export const SENSORS: readonly SensorId[] = [
   'frames',
@@ -24,6 +25,7 @@ export const SENSORS: readonly SensorId[] = [
   'power',
   'network',
   'longTasks',
+  'storage',
 ];
 
 /**
@@ -211,7 +213,10 @@ export function sensorOf(event: VergerEvent): SensorId | null {
     case 'data-budget':
       return 'network';
     case 'long-task':
+    case 'input-delay':
       return 'longTasks';
+    case 'storage':
+      return 'storage';
     default:
       return null;
   }

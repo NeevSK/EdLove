@@ -126,6 +126,8 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     // Intermittent links are normal: optional prefetch waits for a steady, fast one.
     whenSlowNetwork: 2,
     whenDataBudgetSpent: 2,
+    // Prefetched screens are written to disk: they wait while storage is low.
+    whenStorageLow: 2,
   },
 ];
 

@@ -145,6 +145,19 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
   {
     weight: 1,
     arbitrary: fc.record({
+      type: fc.constant('storage' as const),
+      freeBytes: fc.option(fc.integer({ min: 0, max: 8 * 1024 ** 3 }), { nil: null }),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('input-delay' as const),
+      durationMs: fc.double({ min: 0, max: 600, noNaN: true }),
+    }),
+  },  {
+    weight: 1,
+    arbitrary: fc.record({
       type: fc.constant('data-budget' as const),
       state: fc.constantFrom('within' as const, 'spent' as const, 'unknown' as const),
     }),

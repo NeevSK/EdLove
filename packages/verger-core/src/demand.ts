@@ -226,7 +226,14 @@ export function estimateAccounts(
                 source: `${n.transport} network`,
               };
 
-  return { cpu, gpu, memory, energy, thermal, network, storage: UNKNOWN };
+  const storage: AccountReading =
+    !sense.storage || snapshot.storage === 'unknown'
+      ? UNKNOWN
+      : snapshot.storage === 'low'
+        ? { state: 'overdrawn', confidence: 0.8, source: 'free storage low' }
+        : { state: 'ample', confidence: 0.6, source: 'free storage' };
+
+  return { cpu, gpu, memory, energy, thermal, network, storage };
 }
 
 export interface Admission {

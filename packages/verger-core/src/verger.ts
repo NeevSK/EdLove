@@ -195,12 +195,12 @@ const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
 });
 
 /**
- * What the floors may do: the `static` preset, also hearing the network, since Data Saver, no
- * network and a weak link are limits like any setting. Nothing native runs for it: the host's
+ * What the floors may do: the `static` preset, also hearing the network and storage, since Data
+ * Saver, no network, a weak link and a full disk are limits like any setting. Nothing native runs for it: the host's
  * `signal`s are all the floors hear.
  */
 export const FLOORS_ACTIVATION: VergerActivation = resolveActivation(ACTIVATION_PRESETS.static, {
-  sense: { network: true },
+  sense: { network: true, storage: true },
 });
 
 /**

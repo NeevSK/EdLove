@@ -67,6 +67,8 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   saturationAfterMs: 2_000,
   longTaskWindowMs: 5_000,
   longTasksForContention: 3,
+  inputDelayLongMs: 100,
+  storageLowBytes: 512 * 1024 ** 2,
   memoryLowFactor: 1.5,
   memoryModerateFactor: 2,
   refreshCapHz: 60,

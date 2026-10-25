@@ -75,6 +75,8 @@ export interface FrameStages {
 export type FrameState = 'quiet' | 'calm' | 'neutral' | 'stressed';
 export type ThermalLevel = 'unknown' | 'nominal' | 'warm' | 'hot' | 'critical';
 export type MemoryLevel = 'unknown' | 'normal' | 'trimmed' | 'low';
+/** Free storage against config `storageLowBytes`; `unknown` until reported, or while deaf. */
+export type StorageLevel = 'unknown' | 'ample' | 'low';
 export type AppVisibility = 'active' | 'inactive' | 'background';
 
 /** Android `PowerManager.THERMAL_STATUS_*`, by name. */
@@ -186,6 +188,16 @@ export type VergerEvent =
    */
   | { readonly type: 'data-budget'; readonly at: number; readonly state: DataBudgetState }
   /**
+   * Free bytes where the app keeps its data (Android `StatFs(filesDir).availableBytes`, or
+   * expo-file-system's free disk storage as a host signal); `null` when the platform cannot say.
+   */
+  | { readonly type: 'storage'; readonly at: number; readonly freeBytes: number | null }
+  /**
+   * How long an input waited before its handler ran (Event Timing on the web, React Native's
+   * `event` entries): a busy main or JS thread, as the user feels it. Heard with long tasks.
+   */
+  | { readonly type: 'input-delay'; readonly at: number; readonly durationMs: number }
+  /**
    * Loop 2's finding (D4): this lever's compressions did not relieve `target`, judged by the
    * outcome ledger. verger-p5 stops lowering it for that target for the rest of the session;
    * p4 ignores it. Sent by the launcher, so it is recorded and replays like any event.
@@ -267,6 +279,8 @@ export interface LeverSpec {
    * the user. A limit; an unknown budget never applies it.
    */
   readonly whenDataBudgetSpent?: number;
+  /** Floor while free storage is low (config `storageLowBytes`): optional writes wait. A limit. */
+  readonly whenStorageLow?: number;
   /** Floor while the battery is low and the phone is not plugged in (config `batteryLowPercent`). */
   readonly whenBatteryLow?: number;
   /**
@@ -375,6 +389,10 @@ export interface VergerConfig {
   /** Long tasks within this window that also count as JS contention. */
   readonly longTaskWindowMs: number;
   readonly longTasksForContention: number;
+  /** An input delayed this long counts as a long task for contention (B7). Provisional. */
+  readonly inputDelayLongMs: number;
+  /** Free storage below this is low: levers' `whenStorageLow` apply (B4). Provisional. */
+  readonly storageLowBytes: number;
   /** Free memory below threshold × factor is treated as a trim of that severity. */
   readonly memoryLowFactor: number;
   readonly memoryModerateFactor: number;
@@ -414,6 +432,7 @@ export interface VergerSnapshot {
   readonly networkLimit: NetworkLimit;
   /** Today's data budget as the host last reported it; `unknown` until then, or while deaf. */
   readonly dataBudget: DataBudgetState;
+  readonly storage: StorageLevel;
   /** The phone's class from its memory (config thresholds); `unknown` when memory is unknown. */
   readonly capacityClass: CapacityClass;
   /**

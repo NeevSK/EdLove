@@ -34,6 +34,8 @@
     "saturationAfterMs": 2000,
     "longTaskWindowMs": 5000,
     "longTasksForContention": 3,
+    "inputDelayLongMs": 100,
+    "storageLowBytes": 536870912,
     "memoryLowFactor": 1.5,
     "memoryModerateFactor": 2,
     "refreshCapHz": 60,
