@@ -58,6 +58,8 @@
     "jankFrameFactor": 6,
     "maxUnrelievedContentionSteps": 2,
     "contentionReliefCores": 0.05,
+    "frameReliefSteps": 2,
+    "frameReliefGapShare": 0.25,
     "gestureQuietMs": 1000,
     "gestureFreezeMaxMs": 2000,
     "scrollQuietMs": 3000

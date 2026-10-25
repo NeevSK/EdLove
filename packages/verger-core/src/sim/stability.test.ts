@@ -37,8 +37,13 @@ const EDGE: Record<keyof typeof SIM_PHONES, SimSession> = {
 const MAX_THERMAL_CHATTER_PER_MIN = 0.2;
 /** A lever reversing within 30 s, at most once every two minutes across all levers. */
 const MAX_FLAPS_PER_MIN = 0.5;
-/** Burst: work no lever reduces. P8 (relief check in the frames loop) brings it under the bounds. */
-const P8_PENDING = new Set(['burst']);
+/**
+ * Low phone, burst: P8 stops the frames loop after two unrelieved steps, but on this phone (at its
+ * class floors already) the two left are forced reduced motion and rows-ahead, 31 points of
+ * quality. Choosing the lever by measured gain per unit of quality is P7; until then this one
+ * bound waits on it.
+ */
+const P7_PENDING = new Set(['low · burst']);
 
 const cases = Object.entries(SIM_PHONES).flatMap(([phoneName, phone]) => [
   ...Object.entries(SIM_SESSIONS).map(([sessionName, session]) => ({ phoneName, phone, sessionName, session, seed: 1 })),
@@ -73,9 +78,9 @@ describe('closed-loop stability (P3)', () => {
         expect(m.settlingMs, `${where}: settling`).toBeLessThanOrEqual(
           phone.thermal.tauMs + 2 * DEFAULT_VERGER_CONFIG.thermalDwellMs,
         );
-        if (P8_PENDING.has(sessionName)) continue;
         // No limit cycle in the levers.
         expect(m.flapsPerMinute, `${where}: flaps`).toBeLessThanOrEqual(MAX_FLAPS_PER_MIN);
+        if (P7_PENDING.has(`${phoneName} · ${sessionName}`)) continue;
         // Quality is not given up where it does not prevent jank.
         expect(m.qualityWhileJanking, `${where}: quality while janking`).toBeLessThanOrEqual(
           off.qualityWhileJanking + 0.15,

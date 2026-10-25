@@ -119,6 +119,13 @@ heat the dwell on top of its judge window, or heat relief could never be credite
 low only `storageExitBandBytes` (64 MiB) above the threshold. Low phone edge chatter 0.30–0.50 →
 0 per minute; see [the baseline](sim/2026-10-25-baseline.md#after-p4-thermal-and-storage-hysteresis).
 
+**P8 status:** built. After two lowerings in a stress episode that closed less than a quarter of
+the gap to the frame budget (smoothed cost), the frames loop stops until the stress ends. Mid
+burst: quality given up 30 → 7%, flaps 0.4 → 0; high 23 → 2%; jank unchanged. P3's burst
+exemption is lifted except one bound on the low phone, which waits on P7 (its two remaining
+levers are the costliest). Found on the way: the outcome ledger misfiled a gesture-held lowering
+as a floor move; fixed.
+
 **Not now, planned:** feedforward from workload announcements (needs the app to announce work);
 setpoints for heat and energy (needs battery and heat curves from phones); coupling rules (need
 measured couplings). Each needs phase F's recordings to be more than a guess.

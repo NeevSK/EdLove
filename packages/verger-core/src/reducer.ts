@@ -182,6 +182,15 @@ export interface VergerState {
   readonly contentionUnrelieved: number;
   /** Levers cannot relieve the current contention: the cause is code, not quality settings. */
   readonly contentionExhausted: boolean;
+  /**
+   * The frames loop's stress episode (P8): smoothed frame cost when it first lowered, the budget,
+   * and how many steps it has taken since. Null outside an episode.
+   */
+  readonly frameEpisode: { readonly startCostMs: number; readonly targetMs: number; readonly steps: number } | null;
+  /** Frame cost over stressed windows, smoothed (an EWMA of 0.5), to judge relief through noise. */
+  readonly frameCostMs: number | null;
+  /** The episode's lowerings did not relieve the frames: no more until the stress ends. */
+  readonly framesExhausted: boolean;
 
   /** Last polled memory reading as a trim severity; holds until the next poll. */
   readonly polledMemory: TrimSeverity | null;
@@ -306,6 +315,9 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     contentionBaseline: null,
     contentionUnrelieved: 0,
     contentionExhausted: false,
+    frameEpisode: null,
+    frameCostMs: null,
+    framesExhausted: false,
     polledMemory: null,
     stressEndMs: null,
     comfortSeen: false,
@@ -560,7 +572,16 @@ const governed = (state: VergerState) =>
 function forgetSensor(state: VergerState, sensor: SensorId): VergerState {
   switch (sensor) {
     case 'frames':
-      return { ...state, frameState: 'quiet', stressMs: 0, stressEndMs: null, comfortSeen: false };
+      return {
+        ...state,
+        frameState: 'quiet',
+        stressMs: 0,
+        stressEndMs: null,
+        comfortSeen: false,
+        frameEpisode: null,
+        frameCostMs: null,
+        framesExhausted: false,
+      };
     case 'threads':
       return {
         ...state,
@@ -1035,23 +1056,44 @@ function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: '
     const contiguous = state.stressEndMs !== null && w.startMs <= state.stressEndMs;
     const stressMs = (contiguous ? state.stressMs : 0) + Math.max(span, w.worstMs);
     const reach = Math.max(w.endMs, w.startMs + w.worstMs);
-    next = { ...next, stressMs, stressEndMs: reach, lastPressureAt: event.at, comfortSeen: false };
+    const costMs = state.frameCostMs === null ? w.averageMs : (state.frameCostMs + w.averageMs) / 2;
+    next = { ...next, stressMs, stressEndMs: reach, lastPressureAt: event.at, comfortSeen: false, frameCostMs: costMs };
     if (stressMs >= state.config.downgradeAfterMs) {
       const stage = frameBottleneck(event.window);
       const where = stage === null ? '' : `, ${stage}-bound`;
-      const targets = bottleneckTargets(stage, gpuMeasured(event.window));
-      next = lower(
-        next,
-        1,
-        targets,
-        event.at,
-        'decrease',
-        `frames over budget for ${Math.round(stressMs)} ms${where}`,
-      );
+      const detail = `frames over budget for ${Math.round(stressMs)} ms${where}`;
+      const episode = state.frameEpisode;
+      const c = state.config;
+      // Relief check (P8): lowering that has not closed a fair share of the gap to the budget is
+      // giving up quality to work no lever reaches. Stop, and say so, until the stress ends.
+      const unrelieved =
+        episode !== null &&
+        episode.steps >= c.frameReliefSteps &&
+        episode.startCostMs - costMs < c.frameReliefGapShare * (episode.startCostMs - episode.targetMs);
+      if (state.framesExhausted || unrelieved) {
+        next = {
+          ...next,
+          framesExhausted: true,
+          lastReason: state.framesExhausted ? state.lastReason : `${detail}: not relieved by levers`,
+        };
+      } else {
+        const targets = bottleneckTargets(stage, gpuMeasured(event.window));
+        next = lower(next, 1, targets, event.at, 'decrease', detail);
+        if (next.lastAction !== 'stale')
+          next = {
+            ...next,
+            frameEpisode: {
+              startCostMs: episode?.startCostMs ?? costMs,
+              targetMs: episode?.targetMs ?? w.targetMs,
+              steps: (episode?.steps ?? 0) + 1,
+            },
+          };
+      }
       next = { ...next, stressMs: 0, stressEndMs: null };
     }
   } else {
-    next = { ...next, stressMs: 0, stressEndMs: null };
+    // Frames back near or within budget end the episode, whatever its verdict.
+    next = { ...next, stressMs: 0, stressEndMs: null, frameEpisode: null, frameCostMs: null, framesExhausted: false };
     if (frameState === 'neutral') next = { ...next, lastPressureAt: event.at, comfortSeen: false };
     if (frameState === 'calm') next = { ...next, comfortSeen: true };
   }

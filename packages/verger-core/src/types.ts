@@ -470,6 +470,14 @@ export interface VergerConfig {
   readonly maxUnrelievedContentionSteps: number;
   /** Drops in cores, or in long tasks, that count as relief after a contention step. */
   readonly contentionReliefCores: number;
+  /**
+   * The frames loop's relief check (P8, control review): after this many lowerings in one stress
+   * episode, if smoothed frame cost has closed less than `frameReliefGapShare` of the gap to the
+   * frame budget, the levers are not what costs the frames (a sync, a decode burst), and the loop
+   * stops lowering until the stress ends. Provisional.
+   */
+  readonly frameReliefSteps: number;
+  readonly frameReliefGapShare: number;
   /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
   /**

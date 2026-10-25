@@ -241,7 +241,11 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
           const direction: MoveDirection = to > from ? 'compress' : 'expand';
           const ownBefore = loopOwned(before, lever.id);
           const ownAfter = loopOwned(snapshot, lever.id);
-          const byPressure = direction === 'compress' ? ownAfter > ownBefore : ownAfter < ownBefore;
+          // A lowering held back by a gesture (invariant 7) is published after the loop's pressure
+          // already rose, so a compress is the loop's whenever the loop owns more than the level it
+          // left, not only when its ownership rose in this very snapshot.
+          const byPressure =
+            direction === 'compress' ? ownAfter > ownBefore || ownAfter > from : ownAfter < ownBefore;
           if (!byPressure) {
             tally(lever.id).floorMoves += 1;
             continue;

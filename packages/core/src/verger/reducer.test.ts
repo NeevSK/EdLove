@@ -140,11 +140,22 @@ describe('closed-loop lowering and restoring', () => {
 
   it('keeps lowering in a stable order under sustained stress and never touches energy first', () => {
     let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
-    for (const event of frames(0, 6000, 30)) state = reduceVerger(state, event);
+    // Frames that answer the levers: each window a little cheaper, still over budget throughout.
+    for (let i = 0; i < 12; i += 1) {
+      const averageMs = 21 + 9 * 0.85 ** i;
+      state = reduceVerger(state, { type: 'frame-window', at: i * 500 + 500, window: window(i * 500, averageMs) });
+    }
     // One decrease per two over-budget windows (750 ms needs two 500 ms windows).
     expect(state.stack.length).toBe(6);
     expect(state.stack.slice(0, 3)).toEqual(['ambient-motion', 'loading-shimmer', 'particles']);
     expect(snapshotOf(state, 6000).proposedLevels.prefetch).toBe(0);
+  });
+
+  it('stops lowering when its steps do not bring frames toward the budget (P8)', () => {
+    let state = createVergerState({ at: 0, capacity: HIGH_END, levers: GURUDEVI_LEVERS });
+    for (const event of frames(0, 6000, 30)) state = reduceVerger(state, event);
+    expect(state.stack.length).toBe(DEFAULT_VERGER_CONFIG.frameReliefSteps);
+    expect(snapshotOf(state).lastReason).toMatch(/not relieved by levers/);
   });
 
   it('restores last-in first-out after sustained comfort, and backs off after a failed upgrade', () => {

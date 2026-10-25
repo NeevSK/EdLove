@@ -75,6 +75,15 @@ describe('outcome ledger: compress', () => {
     expect(l.records()[0]?.verdict).toBe('not-relieved');
   });
 
+  it('a lowering a gesture held back is still credited to the loop when released', () => {
+    const l = ledger();
+    l.observe(snap(0));
+    // The loop decided at 1 s (pressure), the gesture held the level until 2.5 s (invariant 7).
+    l.observe(snap(1_000, { thermal: 'hot', pressure: { frosting: 1 } }));
+    l.observe(snap(2_500, { thermal: 'hot', ...lowered('frosting', 1) }));
+    expect(l.records()[0]).toMatchObject({ lever: 'frosting', direction: 'compress', cause: 'pressure', at: 2_500 });
+  });
+
   it('a compress with no strained account it relieves is unjudged, not credited', () => {
     const l = ledger();
     l.observe(snap(0));
