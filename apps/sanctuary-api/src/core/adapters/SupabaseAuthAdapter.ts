@@ -1,9 +1,8 @@
-import { verifySupabaseJwt } from '../../jwt';
 import type { AuthProviderPort, AuthVerificationResult } from '../ports/AuthProviderPort';
+import { verifySupabaseSession } from './verifySupabaseSession';
 
 /**
- * Adapter implementing AuthProviderPort using Supabase Asymmetric Cryptographic JWT Verification.
- * Supports ES256/RS256 signature verification with in-memory caching and JWKS retrieval.
+ * Verifies Supabase signatures, then checks the live provider session without caching it.
  */
 export class SupabaseAuthAdapter implements AuthProviderPort {
   readonly providerName = 'supabase';
@@ -12,7 +11,10 @@ export class SupabaseAuthAdapter implements AuthProviderPort {
     token: string,
     env?: Record<string, unknown>,
   ): Promise<AuthVerificationResult | null> {
-    const verifiedPayload = await verifySupabaseJwt(token, env as Record<string, string> | undefined);
+    const verifiedPayload = await verifySupabaseSession(
+      token,
+      env as Record<string, string> | undefined,
+    );
     if (!verifiedPayload || !verifiedPayload.sub) {
       return null;
     }

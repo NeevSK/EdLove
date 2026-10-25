@@ -27,7 +27,7 @@ describe('OpenTelemetry boundary', () => {
   });
 
   it('normalizes identifiers so routes stay low-cardinality', () => {
-    expect(normalizeRoutePath('/api/users/123/orders/123e4567-e89b-12d3-a456-426614174000')).toBe(
+    expect(normalizeRoutePath('/api/users/123/orders/123e4567-e89b-8101-8000-426614174000')).toBe(
       '/api/users/:id/orders/:id',
     );
     expect(normalizeRoutePath('/api/search?q=secret')).toBe('/api/search');
@@ -62,7 +62,7 @@ describe('OpenTelemetry boundary', () => {
     app.use('*', otelMiddleware());
     app.get('/api/users/:id', (c) => c.json({ ok: true }));
 
-    const response = await app.request('/api/users/123e4567-e89b-12d3-a456-426614174000', {
+    const response = await app.request('/api/users/123e4567-e89b-8101-8000-426614174000', {
       headers: { traceparent: carrier.traceparent },
     });
 

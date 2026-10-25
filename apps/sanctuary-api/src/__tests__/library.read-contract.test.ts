@@ -14,7 +14,7 @@ const resource = {
   grades: [5],
   language: ['english'],
   visibility: 'public',
-  creator_id: '123e4567-e89b-12d3-a456-426614174000',
+  creator_id: '123e4567-e89b-8101-8000-426614174000',
   creator_role: 'teacher',
   verified: false,
   is_community: true,
@@ -32,7 +32,7 @@ const resource = {
 const collection = {
   id: 'a23e4567-e89b-12d3-a456-426614174000',
   name: 'Fractions',
-  creator_id: '123e4567-e89b-12d3-a456-426614174000',
+  creator_id: '123e4567-e89b-8101-8000-426614174000',
   visibility: 'public',
   subjects: ['mathematics'],
   topics: [],

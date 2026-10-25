@@ -8,7 +8,7 @@ import {
   setMockZenStackDbAvailable,
 } from './setup';
 
-const accountId = '123e4567-e89b-12d3-a456-426614174000';
+const accountId = '123e4567-e89b-8101-8000-426614174000';
 const identityId = '123e4567-e89b-12d3-a456-426614174001';
 const headers = { Authorization: `Bearer ${accountId}` };
 const row = {
@@ -20,7 +20,7 @@ const row = {
   revoked_at: null,
 };
 const consentRow = {
-  id: '123e4567-e89b-12d3-a456-426614174002',
+  id: '123e4567-e89b-8101-8000-426614174002',
   account_id: accountId,
   channel_identity_id: identityId,
   purpose: 'operational_updates',

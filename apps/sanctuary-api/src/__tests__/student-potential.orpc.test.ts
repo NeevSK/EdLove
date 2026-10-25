@@ -9,7 +9,7 @@ import {
 } from './setup';
 
 describe('Sanctuary API: Student Potential', () => {
-  const teacherId = '123e4567-e89b-12d3-a456-426614174000';
+  const teacherId = '123e4567-e89b-8101-8000-426614174000';
   const studentId = '223e4567-e89b-12d3-a456-426614174000';
   const classroomId = '323e4567-e89b-12d3-a456-426614174000';
   const schoolId = '423e4567-e89b-12d3-a456-426614174000';

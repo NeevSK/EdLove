@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { queueChannelDelivery } from '../core/channelDelivery';
 
-const id = '123e4567-e89b-12d3-a456-426614174000';
+const id = '123e4567-e89b-8101-8000-426614174000';
 const request = {
   accountId: id,
   provider: 'whatsapp' as const,
@@ -11,7 +11,7 @@ const request = {
   capability: 'channel.delivery',
   delegationAgentKey: null,
   resourceScope: {},
-  idempotencyKey: '123e4567-e89b-12d3-a456-426614174002',
+  idempotencyKey: '123e4567-e89b-8101-8000-426614174002',
   payloadRef: 'channel-payload:opaque-reference',
   expiresAt: null,
 };

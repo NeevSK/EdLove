@@ -8,8 +8,8 @@ it('diag: raw rewards vs self app.fetch', async () => {
   setMockZenStackDbAvailable(true);
   setMockActiveBond({
     id: 'bond-rewards',
-    user_id: '123e4567-e89b-12d3-a456-426614174000',
-    entity_id: '123e4567-e89b-12d3-a456-426614174002',
+    user_id: '123e4567-e89b-8101-8000-426614174000',
+    entity_id: '123e4567-e89b-8101-8000-426614174002',
     entity_type: 'SCHOOL',
     capacity: 'teacher',
     status: 'active',
@@ -20,7 +20,7 @@ it('diag: raw rewards vs self app.fetch', async () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+        authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000',
       },
       body: JSON.stringify([]),
     }),
@@ -32,7 +32,7 @@ it('diag: raw rewards vs self app.fetch', async () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+        authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000',
       },
       body: JSON.stringify([]),
     }),
@@ -40,7 +40,7 @@ it('diag: raw rewards vs self app.fetch', async () => {
   console.log('RAW self status:', rawSelf.status, 'body:', (await rawSelf.text()).slice(0, 180));
 
   const client = createTestORPCClient({
-    Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+    Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000',
   });
   try {
     const r = await (client as any).rewards.getRewards({});

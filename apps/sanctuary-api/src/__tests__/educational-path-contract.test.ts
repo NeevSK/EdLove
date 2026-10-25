@@ -23,7 +23,7 @@ describe('educational detailed-input path contracts', () => {
   });
 
   it('reads upcoming assignments using the URL identity without a duplicate query identity', async () => {
-    const studentId = '123e4567-e89b-12d3-a456-426614174000';
+    const studentId = '123e4567-e89b-8101-8000-426614174000';
     const impl = implement({
       getUpcomingAssignments: educationalContract.getUpcomingAssignments,
     }).$context();
@@ -48,7 +48,7 @@ describe('educational detailed-input path contracts', () => {
     ['getStudentSubmissions', 'studentId'],
     ['getUpcomingAssignments', 'studentId'],
   ] as const)('%s maps the URL ID and rejects a duplicate query ID', async (name, field) => {
-    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const id = '123e4567-e89b-8101-8000-426614174000';
     const route = educationalContract[name];
     const receive = vi.fn((_input: unknown) => []);
     const impl = implement({ probe: route }).$context();
@@ -74,7 +74,7 @@ describe('educational detailed-input path contracts', () => {
     ['gradeAssignmentSubmission', 'id', { grade: 5 }],
   ] as const)('%s rejects a stale body ID even alongside valid params', (name, field, body) => {
     const route = educationalContract[name];
-    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const id = '123e4567-e89b-8101-8000-426614174000';
     expect(route.request.params.safeParse({ [field]: id }).success).toBe(true);
     expect(route.request.body.safeParse(body).success).toBe(true);
     expect(route.request.body.safeParse({ ...body, [field]: id }).success).toBe(false);

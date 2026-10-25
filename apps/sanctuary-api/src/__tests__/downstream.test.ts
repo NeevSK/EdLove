@@ -42,7 +42,7 @@ async function requestDailyContent(headers: Record<string, string>) {
 }
 
 describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () => {
-  const schoolId = '123e4567-e89b-12d3-a456-426614174000';
+  const schoolId = '123e4567-e89b-8101-8000-426614174000';
   const classroomId = '123e4567-e89b-12d3-a456-426614174004';
 
   const setHydratedAdmin = () => {
@@ -198,13 +198,13 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
 
     await expect(
       createTestORPCClient({
-        Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174002',
+        Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174002',
         'x-capacity': 'student',
         'x-school-id': schoolId,
       }).grading.submitGrade({
         body: {
           schoolId,
-          academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
+          academicCycleId: '123e4567-e89b-8101-8000-426614174010',
           gradeClassId: classroomId,
           termId: '123e4567-e89b-12d3-a456-426614174011',
           subjectId: '123e4567-e89b-12d3-a456-426614174012',
@@ -228,7 +228,7 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
     }).grading.submitGrade({
       body: {
         schoolId,
-        academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
+        academicCycleId: '123e4567-e89b-8101-8000-426614174010',
         gradeClassId: classroomId,
         termId: '123e4567-e89b-12d3-a456-426614174011',
         subjectId: '123e4567-e89b-12d3-a456-426614174012',
@@ -266,19 +266,19 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
     setHydratedTeacher();
 
     const body = await createTestORPCClient({
-      Authorization: 'Bearer fe889249-5929-431e-bdc9-2c1e81dd25b2',
+      Authorization: 'Bearer fe889249-5929-8101-8000-2c1e81dd25b2',
       'x-capacity': 'teacher',
       'x-school-id': schoolId,
-    }).identity.resolveWorkspaceContext({ params: { id: 'fe889249-5929-431e-bdc9-2c1e81dd25b2' } });
+    }).identity.resolveWorkspaceContext({ params: { id: 'fe889249-5929-8101-8000-2c1e81dd25b2' } });
 
-    expect(body).toHaveProperty('user_id', 'fe889249-5929-431e-bdc9-2c1e81dd25b2');
+    expect(body).toHaveProperty('user_id', 'fe889249-5929-8101-8000-2c1e81dd25b2');
     expect(body).toHaveProperty('real_class_count');
   });
 
   it('should guarantee absolute tenant isolation under 50 rapid parallel requests', async () => {
     const requests = Array.from({ length: 50 }).map(async (_, index) => {
       // Generate standard-compliant UUIDs for test JWT bypass
-      const tenantId = `123e4567-e89b-12d3-a456-${index.toString().padStart(12, '0')}`;
+      const tenantId = `123e4567-e89b-8101-8000-${index.toString().padStart(12, '0')}`;
       const body = await createTestORPCClient({
         Authorization: `Bearer ${tenantId}`,
         'x-capacity': 'teacher',
@@ -297,12 +297,12 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
       {
         method: 'POST',
         headers: {
-          Authorization: 'Bearer fe889249-5929-431e-bdc9-2c1e81dd25b2',
+          Authorization: 'Bearer fe889249-5929-8101-8000-2c1e81dd25b2',
           'x-capacity': 'teacher',
           'x-school-id': schoolId,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ params: { id: 'fe889249-5929-431e-bdc9-2c1e81dd25b2' } }),
+        body: JSON.stringify({ params: { id: 'fe889249-5929-8101-8000-2c1e81dd25b2' } }),
       },
       {
         // Inject offline connection details to simulate DB outages

@@ -16,9 +16,9 @@ const gate = implement(attendanceORPCContract)
   .handler(async () => [] as any);
 
 const school = '123e4567-e89b-12d3-a456-4266141740aa';
-const student = '123e4567-e89b-12d3-a456-426614174010';
+const student = '123e4567-e89b-8101-8000-426614174010';
 const otherStudent = '123e4567-e89b-12d3-a456-426614174011';
-const gradeClass = '123e4567-e89b-12d3-a456-426614174020';
+const gradeClass = '123e4567-e89b-8101-8000-426614174020';
 const otherClass = '123e4567-e89b-12d3-a456-426614174021';
 
 const as = (
@@ -57,7 +57,7 @@ describe('attendance.getStudentHistory Cedar gate', () => {
   });
 
   it('lets a parent read only children in child_student_ids', async () => {
-    const parent = '123e4567-e89b-12d3-a456-426614174030';
+    const parent = '123e4567-e89b-8101-8000-426614174030';
     const ctx = as(parent, 'parent', { child_student_ids: [student] });
     await expect(read(ctx, { studentId: student })).resolves.toEqual([]);
     await expect(read(ctx, { studentId: otherStudent })).rejects.toMatchObject({
@@ -69,7 +69,7 @@ describe('attendance.getStudentHistory Cedar gate', () => {
   });
 
   it('lets a teacher through only via one of their own grade classes', async () => {
-    const teacher = '123e4567-e89b-12d3-a456-426614174040';
+    const teacher = '123e4567-e89b-8101-8000-426614174040';
     const ctx = as(teacher, 'teacher', { classroom_ids: [gradeClass] });
     await expect(read(ctx, { studentId: student, gradeClassId: gradeClass })).resolves.toEqual([]);
     await expect(read(ctx, { studentId: student, gradeClassId: otherClass })).rejects.toMatchObject(

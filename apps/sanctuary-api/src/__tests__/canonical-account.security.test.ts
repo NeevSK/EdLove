@@ -1,6 +1,6 @@
 import './setup';
 import crypto from 'node:crypto';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { app } from '../core/app';
 import { parseORPCContext } from '../core/router';
 import { clearJwkCache, setTestPublicKey } from '../jwt';
@@ -15,8 +15,8 @@ import {
   setMockZenStackDbAvailable,
 } from './setup';
 
-const subject = '123e4567-e89b-12d3-a456-426614174010';
-const accountId = '123e4567-e89b-12d3-a456-426614174020';
+const subject = '123e4567-e89b-8101-8000-426614174010';
+const accountId = '01234567-89ab-8101-8000-010203040506';
 
 describe('canonical API account resolution (identity/database substituted)', () => {
   beforeEach(() => {
@@ -116,6 +116,9 @@ describe('canonical API account resolution (identity/database substituted)', () 
   });
 
   it('accepts a locally signed phone-only JWT through the same account mapping', async () => {
+    const provider = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(Response.json({ id: subject }));
     const keys = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
     const kid = 'canonical-phone-key';
     await setTestPublicKey(kid, keys.publicKey);
@@ -124,6 +127,7 @@ describe('canonical API account resolution (identity/database substituted)', () 
     const payload = Buffer.from(
       JSON.stringify({
         sub: subject,
+        session_id: 'f0360000-0000-4000-8000-000000000001',
         phone: '+94770000001',
         iss: issuer,
         aud: 'authenticated',
@@ -143,9 +147,13 @@ describe('canonical API account resolution (identity/database substituted)', () 
         NODE_ENV: 'production',
         SUPABASE_JWT_ISSUER: issuer,
         SUPABASE_JWT_AUDIENCE: 'authenticated',
+        SUPABASE_URL: 'https://identity.example.test',
+        SUPABASE_ANON_KEY: 'synthetic-provider-key',
       },
     );
     expect(response.status).toBe(200);
     expect(getMockAuthIdentityLookup()?.parameters).toEqual([subject]);
+    expect(provider).toHaveBeenCalledTimes(1);
+    provider.mockRestore();
   });
 });

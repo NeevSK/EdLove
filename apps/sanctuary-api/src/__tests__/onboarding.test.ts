@@ -11,10 +11,10 @@ import {
 } from './setup';
 
 describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
 
   // JWT bypass token: UUID format triggers integration test bypass in verifySupabaseJwt
-  const userToken = '123e4567-e89b-12d3-a456-426614174000';
+  const userToken = '123e4567-e89b-8101-8000-426614174000';
   const authenticatedHeaders = {
     Authorization: `Bearer ${userToken}`,
   };

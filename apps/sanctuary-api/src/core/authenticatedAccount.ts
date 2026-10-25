@@ -1,8 +1,17 @@
 import { SovereignError } from '@repo/core/types/Errors';
+import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
 import { canUseZenStackDb, queryDatabaseRows } from '@repo/database/client';
 import { z } from 'zod';
 
-const accountRows = z.array(z.strictObject({ user_id: z.uuid() })).max(1);
+const accountRows = z
+  .array(
+    z.strictObject({
+      user_id: z
+        .uuid()
+        .refine(isEdloveAccountId, 'Canonical account must be an EdLove account UUIDv8'),
+    }),
+  )
+  .max(1);
 
 /** Provider subjects are credentials, not application account identifiers. */
 export async function resolveAuthenticatedAccount(
@@ -37,7 +46,8 @@ export async function resolveAuthenticatedAccount(
     throw SovereignError.unavailable('IDENTITY_RESOLUTION_UNAVAILABLE');
   }
   const parsedRows = accountRows.safeParse(rows);
-  if (!parsedRows.success) throw SovereignError.unavailable('IDENTITY_RESOLUTION_UNAVAILABLE');
+  if (!parsedRows.success)
+    throw SovereignError.unavailable('CANONICAL_ACCOUNT_ID_INVARIANT_VIOLATION');
   const account = parsedRows.data[0];
   if (!account) throw SovereignError.authenticationRequired();
   return { id: account.user_id };

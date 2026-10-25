@@ -2,12 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { dispatchChannelDelivery } from '../core/channelDeliveryDispatcher';
 import type { ChannelDeliveryProviderRegistry } from '../core/channelDeliveryProviderRegistry';
 
-const intentId = '123e4567-e89b-12d3-a456-426614174000';
+const intentId = '123e4567-e89b-8101-8000-426614174000';
 const row = {
   id: intentId,
   account_id: '123e4567-e89b-12d3-a456-426614174001',
   provider: 'telegram' as const,
-  channel_identity_id: '123e4567-e89b-12d3-a456-426614174002',
+  channel_identity_id: '123e4567-e89b-8101-8000-426614174002',
   endpoint_kind: 'private' as const,
   operation_id: null,
   capability: 'channel.delivery',

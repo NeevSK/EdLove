@@ -12,7 +12,7 @@ import {
 } from './setup';
 
 describe('rewards API', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('rewards API', () => {
     setMockActiveBond({
       id: 'bond-rewards',
       user_id: userId,
-      entity_id: '123e4567-e89b-12d3-a456-426614174002',
+      entity_id: '123e4567-e89b-8101-8000-426614174002',
       entity_type: 'SCHOOL',
       capacity: 'teacher',
       status: 'active',
@@ -41,7 +41,7 @@ describe('rewards API', () => {
 
     it('returns user rewards when they exist', async () => {
       setMockUserRewards({
-        id: '123e4567-e89b-12d3-a456-426614174010',
+        id: '123e4567-e89b-8101-8000-426614174010',
         user_id: userId,
         points: 100,
         badges: ['Sanctuary Seeker'],
@@ -52,7 +52,7 @@ describe('rewards API', () => {
       const response = await createTestORPCClient(headers).rewards.getRewards({ query: {} });
 
       expect(response).toMatchObject({
-        id: '123e4567-e89b-12d3-a456-426614174010',
+        id: '123e4567-e89b-8101-8000-426614174010',
         user_id: userId,
         points: 100,
         badges: ['Sanctuary Seeker'],

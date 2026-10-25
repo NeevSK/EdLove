@@ -8,11 +8,11 @@ import { educationalRouter } from '../core/handlers/educational';
 import type { ORPCContext } from '../core/orpc';
 
 const fixture = vi.hoisted(() => {
-  const accountId = '123e4567-e89b-12d3-a456-426614174000';
+  const accountId = '123e4567-e89b-8101-8000-426614174000';
   const input = {
     assignmentId: '123e4567-e89b-12d3-a456-426614174001',
     content: 'Synthetic work',
-    idempotencyKey: '123e4567-e89b-12d3-a456-426614174002',
+    idempotencyKey: '123e4567-e89b-8101-8000-426614174002',
   };
   const submission = {
     id: '123e4567-e89b-12d3-a456-426614174003',

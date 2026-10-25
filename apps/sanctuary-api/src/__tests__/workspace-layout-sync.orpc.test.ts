@@ -12,7 +12,7 @@ import {
   setMockZenStackDbAvailable,
 } from './setup';
 
-const userId = '123e4567-e89b-12d3-a456-426614174000';
+const userId = '123e4567-e89b-8101-8000-426614174000';
 
 describe('Sanctuary API: authoritative workspace layout mutation', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('Sanctuary API: authoritative workspace layout mutation', () => {
     setMockActiveBond({
       id: '123e4567-e89b-12d3-a456-426614174001',
       user_id: userId,
-      entity_id: '123e4567-e89b-12d3-a456-426614174002',
+      entity_id: '123e4567-e89b-8101-8000-426614174002',
       entity_type: 'SCHOOL',
       capacity: 'teacher',
       status: 'active',
@@ -162,7 +162,7 @@ describe('Sanctuary API: authoritative workspace layout mutation', () => {
           wallpaper: {
             provider: 'cloudinary' as const,
             url: 'https://res.cloudinary.com/example/image/upload/wallpaper.jpg',
-            publicId: 'gurudevi/123e4567-e89b-12d3-a456-426614174000/wallpapers/missing',
+            publicId: 'gurudevi/123e4567-e89b-8101-8000-426614174000/wallpapers/missing',
             width: 1200,
             height: 800,
           },

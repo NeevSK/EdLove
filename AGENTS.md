@@ -77,6 +77,13 @@ Never treat the monorepo as an empty workspace or create ad-hoc "islands" (throw
 
 ### Critical Import Boundaries (NEVER CROSS)
 
+**Canonical account identity (2026-10-25):** `public.users.id` is the immutable
+EdLove Identity/account UUIDv8, created transactionally by the database. Supabase
+subjects remain credential bindings in `auth_identities`; domain SQL uses
+`public.get_my_id()`. Do not restore the retired `users.edlove_id` side-ID or its
+assignment worker. See [the cutover record](docs/current_progress/2026-10-25-canonical-uuidv8-account-cutover.md)
+for migrations, the signed `canonical_account_id` claim, and real-database proof.
+
 | ❌ NEVER | ✅ INSTEAD |
 | :--- | :--- |
 | Import `*.web.tsx` in `gurudevi-web` | Build browser-native in `apps/gurudevi-web` |
@@ -123,7 +130,7 @@ Agents must leverage the monorepo's native tools instead of inventing ad-hoc nod
 | **Fast Lexical Search** | `rg -n "pattern"` / `fd "pattern"` | Hyper-fast keyword and file search in Rust (`ripgrep` & `fd-find`). |
 | **Fast Atomic Edits** | `sd "search_regex" "replacement" <file>` | Rust-powered find-and-replace for clean multi-line substitutions. |
 | **Delta & Code Review** | `sovereign_discovery(action: "delta")` / `pnpm delta` / `delta` | Unified uncommitted git diff review for Step 5 Delta Gate. |
-| **Physical Affordance Firewall** | `sovereign_discovery(action: "affordance", params: { package: "..." })` | Grounded .d.ts exported hooks, components, and live forbidden/deprecated APIs to prevent LLM hallucination. |
+| **Physical Affordance Firewall** | `sovereign_discovery(action: "affordance", params: { package: "..." })` / `node scripts/run-rn-terrain.mjs affordance <pkg> [project]` | Grounded physical `.d.ts` exported hooks, components, procedures, and live deprecations across both Native Mobile (`apps/gurudevi-mobile`) and Server/API Substrates (`apps/sanctuary-api` - Hono v5, oRPC v2, MCP 2.3) to prevent LLM memory hallucinations. |
 | **Architecture Audit** | `sovereign_audit(action: "hygiene" \| "hooks")` | Check circular dependencies, unused exports, and hook state density. |
 | **4-Pillars Health** | `node scripts/audit-4-pillars.mjs` | Instant 0-100 monorepo health score across 450k LOC in 2 seconds. |
 | **Dual-Engine Typecheck** | `pnpm run check-types` / `pnpm run check-types:profile` | High-velocity Go (`tsgo` 7.1.0-beta) & Rust (`tsrs`) typechecker with Go pprof profiling. |

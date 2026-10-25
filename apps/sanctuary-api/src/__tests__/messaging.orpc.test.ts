@@ -4,7 +4,7 @@ import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: direct messaging via native oRPC', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const targetUserId = '223e4567-e89b-12d3-a456-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
@@ -46,7 +46,7 @@ describe('Sanctuary API: direct messaging via native oRPC', () => {
   });
 
   it('denies a non-participant even when the conversation identifier is valid', async () => {
-    const outsiderId = '333e4567-e89b-12d3-a456-426614174000';
+    const outsiderId = '333e4567-e89b-8101-8000-426614174000';
     setMockActiveBond({
       id: 'bond-outsider',
       user_id: outsiderId,

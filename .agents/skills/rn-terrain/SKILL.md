@@ -1,11 +1,12 @@
 ---
 name: rn-terrain
 description: |
-  Master guidance and pre-flight protocol for AI coding agents developing React Native applications.
+  Master guidance and pre-flight protocol for AI coding agents developing React Native applications and Sovereign API stacks.
   Enforces zero-hallucination version grounding, New Architecture Fabric/TurboModules compliance,
-  physical node_modules affordances, Tree-sitter AST diff verification, and sovereign Rust tooling.
-  Activate when: writing or refactoring React Native code, modifying native dependencies,
-  resolving animation/gesture/storage capabilities, or diagnosing native crashes.
+  physical node_modules affordances across native mobile and backend API packages (Hono v5, oRPC v2, MCP 2.3),
+  Tree-sitter AST diff verification, and sovereign Rust tooling.
+  Activate when: writing or refactoring React Native code or API endpoints, modifying dependencies,
+  resolving animation/gesture/storage/RPC capabilities, or diagnosing native/backend crashes.
 ---
 
 # RN-Terrain: Core AI Agent Guidance & Grounding Protocol
@@ -41,8 +42,9 @@ Do not install or select packages blindly. Query the canonical capability regist
 
 ---
 
-## 🚨 Top 4 Danger Zones: Severed vs Canonical Replacements
+## 🚨 Top Danger Zones: Severed vs Canonical Replacements
 
+### Mobile / Native Runtime
 | Library & Version | ❌ Banned Legacy Pattern (LLM Hallucination) | ✅ Mandatory Modern Standard | Why Legacy Fails |
 | :--- | :--- | :--- | :--- |
 | **`react-native-reanimated`** (v4.x / 4.7.1) | `useAnimatedGestureHandler({ ... })` | `<GestureDetector gesture={Gesture.Pan()}>` | Decoupled from RNGH; legacy handler deleted from runtime. |
@@ -50,6 +52,15 @@ Do not install or select packages blindly. Query the canonical capability regist
 | **`react-native-gesture-handler`** (v3.x / 3.3.0) | `<PanGestureHandler onGestureEvent={...}>` | `<GestureDetector gesture={Gesture.Pan().onUpdate(...)}>` | Legacy class wrappers bypass Fabric UI-thread state. |
 | **`react-native-mmkv`** (v4.x / 4.3.2) | Manual JSI binding / Async storage await | Synchronous `storage.getString(k)` + `react-native-nitro-modules` | Rewritten on Nitro Modules for zero-overhead C++ interop. |
 | **React Native Core** (0.88.0-rc.3) | `NativeModules.MyModule` (Bridge) | `TurboModuleRegistry.getEnforcing(...)` | Bridge is severed on New Architecture. |
+
+### Server & API Runtime (`apps/sanctuary-api`)
+| Library & Version | ❌ Banned Legacy Pattern (LLM Hallucination) | ✅ Mandatory Modern Standard | Why Legacy Fails |
+| :--- | :--- | :--- | :--- |
+| **`hono`** (v5.x / 5.0.0-rc.1) | `app.onError((err, c) => ...)` | `app.onError((c, next) => { const err = c.error; })` | Signature inverted in Hono v5; `err` is first on `c.error`. |
+| **`hono`** (v5.x / 5.0.0-rc.1) | `const body = await c.req.json()` as implicit `any` | Typed schema parse or explicit typing | `c.req.json()` returns `unknown` to enforce runtime schema validation. |
+| **`@orpc/server`** (v2.x / 2.0.0-beta.46) | `augmentRouter(router, middleware)` | `os.use(middleware).router(router)` | `augmentRouter` removed; use builder chains. |
+| **`@orpc/server`** (v2.x / 2.0.0-beta.46) | Dedicated adapter package `@orpc/server/adapters/hono` | Native `@orpc/server/fetch` `RPCHandler` | Web Standards fetch handler used directly with Hono. |
+| **`@orpc/mcp`** (v2.x / 2.0.0-beta.46) | Hallucinated `createMcpHandler(router)` | `new McpRegistrar(router).register(server)` | Exposes domain procedures as MCP tools through standard registrar. |
 
 ---
 
@@ -60,21 +71,27 @@ When operating in this repository or modern Expo SDK 58+ projects, align to thes
 ```yaml
 Mobile Runtime:
   react: 19.3.0
-  react-native: 0.88.0-rc.3 (New Architecture / Fabric / TurboModules)
+  react-native: 0.88.0 (New Architecture / Fabric / TurboModules)
   expo: SDK 58
+
+Server / API Runtime:
+  hono: 5.0.0-rc.1 (@hono/bun: ^1.0.0)
+  orpc: 2.0.0-beta.46 (@orpc/server, @orpc/client, @orpc/contract, @orpc/openapi, @orpc/mcp)
+  mcp: 2.3.1 (@modelcontextprotocol/server)
+  runtime: bun 1.4.4
+  authorization: cedar-policy 4.3
 
 Platform Spine:
   react-native-reanimated: 4.7.1
   react-native-worklets: 0.13.0
-  react-native-gesture-handler: 3.3.0
+  react-native-gesture-handler: 3.4.0
   react-native-mmkv: 4.3.2 (Nitro Modules)
   react-native-nitro-modules: 0.37.1
-  @shopify/react-native-skia: 3.0.2 (Graphite/WebGPU fork)
+  @shopify/react-native-skia: 3.7.0 (Graphite/WebGPU fork)
 
 Toolchain:
-  package_manager: pnpm 12.11.2 (with catalogs)
-  typescript: 7.0.2
-  effect: 4.0.2
+  package_manager: pnpm 12.15.0
+  typescript: 7.1.0-beta
 ```
 
 ---

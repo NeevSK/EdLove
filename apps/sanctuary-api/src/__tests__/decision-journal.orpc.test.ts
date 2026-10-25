@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
 
 describe('decision journal API', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
   it('rejects empty decision text before database access', async () => {

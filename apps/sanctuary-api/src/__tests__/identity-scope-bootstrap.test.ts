@@ -7,7 +7,7 @@ import { resolveInitialBondAuthority } from '../core/platformBondProvision';
 
 const now = new Date('2026-09-15T10:00:00.000Z');
 const user: ScopeUser = {
-  id: '00000000-0000-4000-8000-000000000001',
+  id: '01234567-89ab-8101-8000-010203040506',
   email: null,
   full_name: 'Sanctuary Learner',
   display_name: 'Learner',

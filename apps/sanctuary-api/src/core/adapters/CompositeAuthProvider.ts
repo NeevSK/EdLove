@@ -4,8 +4,7 @@ import { NeonAuthAdapter } from './NeonAuthAdapter';
 import { SupabaseAuthAdapter } from './SupabaseAuthAdapter';
 
 /**
- * Composite Auth Provider that multiplexes between Supabase, Neon, and Databricks.
- * Inspects token format or environment configuration to route to the appropriate adapter.
+ * Selects one configured verifier. Rejection must never change the trust authority.
  */
 export class CompositeAuthProvider implements AuthProviderPort {
   readonly providerName = 'composite';
@@ -28,33 +27,11 @@ export class CompositeAuthProvider implements AuthProviderPort {
     token: string,
     env?: Record<string, unknown>,
   ): Promise<AuthVerificationResult | null> {
-    // 1. Detect Databricks PAT
-    if (token.startsWith('dapi')) {
-      const databricks = this.adapters.get('databricks');
-      if (databricks) return databricks.verifyToken(token, env);
+    const provider = env?.AUTH_PROVIDER ?? this.defaultProvider;
+    const adapter = typeof provider === 'string' ? this.adapters.get(provider) : undefined;
+    if (!adapter) {
+      throw new Error('AUTH_PROVIDER_NOT_CONFIGURED');
     }
-
-    // 2. Check explicit provider hint in env if present
-    const explicitProvider = env?.AUTH_PROVIDER as string | undefined;
-    if (explicitProvider && this.adapters.has(explicitProvider)) {
-      return this.adapters.get(explicitProvider)!.verifyToken(token, env);
-    }
-
-    // 3. Try default provider first (Supabase)
-    const primary = this.adapters.get(this.defaultProvider);
-    if (primary) {
-      const result = await primary.verifyToken(token, env);
-      if (result) return result;
-    }
-
-    // 4. Fallback across all other registered adapters
-    for (const [name, adapter] of this.adapters.entries()) {
-      if (name !== this.defaultProvider) {
-        const result = await adapter.verifyToken(token, env);
-        if (result) return result;
-      }
-    }
-
-    return null;
+    return adapter.verifyToken(token, env);
   }
 }

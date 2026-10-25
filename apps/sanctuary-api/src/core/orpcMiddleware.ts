@@ -7,7 +7,7 @@ import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
 import { resolveGradeMarkAuthority } from './gradingAuthority';
 import { getOpenAPIMeta, getPolicyMeta, type ORPCContext, o } from './orpc';
 
-const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
+const protocolCodeByStatus: Readonly<Record<number, string>> = {
   400: 'BAD_REQUEST',
   401: 'UNAUTHORIZED',
   403: 'FORBIDDEN',
@@ -48,7 +48,10 @@ export function toORPCError(error: unknown, requestId?: string): ORPCError<strin
   const code = protocolCodeByStatus[error.details.status] ?? 'INTERNAL_SERVER_ERROR';
   return new ORPCError(code, {
     message: error.details.detail || error.details.title,
-    data: { code: error.details.code, requestId: error.details.instance ?? requestId },
+    data: {
+      code: error.details.code,
+      requestId: error.details.instance ?? requestId,
+    },
   });
 }
 
@@ -112,9 +115,6 @@ function uniformBatchProjection(input: Record<string, unknown>): Record<string, 
 
 /** Shared procedure boundary: Cedar authorization plus sanitized oRPC errors. */
 export const doubleGateMiddleware = o.middleware(async ({ next, procedure, context }, input) => {
-  if ((context as any).__doubleGatePermitted) {
-    return await next({});
-  }
   const startedAt = performance.now();
   const policy = getPolicyMeta(procedure) ?? (procedure['~orpc']?.meta as any)?.policy;
   const procedureName =
@@ -416,7 +416,6 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
       message: 'You do not have permission to perform this operation.',
     });
   }
-  (context as any).__doubleGatePermitted = true;
   if (context.capacity === 'admin') {
     console.info(
       JSON.stringify({

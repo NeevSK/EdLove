@@ -4,7 +4,7 @@ import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: principal notes via native oRPC', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const schoolId = '923e4567-e89b-12d3-a456-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
@@ -62,7 +62,7 @@ describe('Sanctuary API: principal notes via native oRPC', () => {
   });
 
   it('denies updates to a note authored by another principal', async () => {
-    const outsiderId = '333e4567-e89b-12d3-a456-426614174000';
+    const outsiderId = '333e4567-e89b-8101-8000-426614174000';
     setMockActiveBond({
       id: 'bond-outsider',
       user_id: outsiderId,

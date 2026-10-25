@@ -22,7 +22,8 @@ const attackerSchoolId = '55555555-5555-4555-8555-555555555555';
 
 function app() {
   const api = new Hono<{ Variables: { user: { id: string } } }>();
-  api.onError((error, context) => {
+  api.onError((context) => {
+    const error = context.error;
     if (error instanceof SovereignError) {
       return new Response(JSON.stringify(error.details), {
         status: error.details.status,

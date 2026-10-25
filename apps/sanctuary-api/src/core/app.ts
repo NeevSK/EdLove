@@ -1,8 +1,8 @@
 import { GrowthBook } from '@growthbook/growthbook';
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
+import { ORPCError } from '@orpc/server';
 import { type SovereignRoute } from '@repo/core/api/server';
-import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import { satisfiesEntitlementRequirement } from '@repo/core/logic/ports/entitlement.port';
 import {
   type FeatureFlagKey,
@@ -30,29 +30,36 @@ import { PostHog } from 'posthog-node';
 import { z } from 'zod';
 import { aiRouter } from '../ai/routes';
 import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorization/rustEvaluator';
-import { createIdentityBridge } from './middleware/identityBridge';
-import { createPqcMiddleware } from './middleware/pqcMiddleware';
+import { createMcpDoor } from '../doors/mcp';
+import { createOmnichannelDoor } from '../doors/omnichannel';
+import { createWebSocketDoor } from '../doors/ws';
 import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
 import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
-import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
+import { canonicalV1Router } from './canonicalV1Registry';
 import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
+import { createIdentityBridge } from './middleware/identityBridge';
+import { createPqcMiddleware } from './middleware/pqcMiddleware';
 import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext } from './orpc';
-import {
-  requireHttpsMiddleware,
-  resolveAllowedCorsOrigin,
-  type RequestIdEnv,
-} from './transportSecurity';
 import { createConfiguredRateLimitStore, createRateLimitMiddleware } from './rateLimit';
+import {
+  buildORPCContextFromHono,
+  router as orpcRouter,
+  resolveServerDerivedAuthority,
+} from './router';
 import { createAdRewardRoutes } from './routes/adRewards';
+import { createAuthCredentialRoutes } from './routes/authCredentials';
 import { createAuthGatewayRoutes } from './routes/authGateway';
+import { registerCanonicalV1Routes } from './routes/canonicalV1';
 import { createDurableAgentRoutes } from './routes/durableAgents';
+import { eventsStreamRoutes } from './routes/eventsStream';
 import { healthRoutes } from './routes/health';
 import { registerNativeORPCRoutes } from './routes/orpc';
-import { createPayhereWebhookRoutes } from './routes/payhereWebhook';
-import { createVerifiedTelegramIngressRoutes } from './routes/verifiedTelegramIngress';
-import { createVerifiedWhatsappIngressRoutes } from './routes/verifiedWhatsappIngress';
-import { eventsStreamRoutes } from './routes/eventsStream';
+import {
+  type RequestIdEnv,
+  requireHttpsMiddleware,
+  resolveAllowedCorsOrigin,
+} from './transportSecurity';
 
 // Initialize Sentry
 if (process.env.SENTRY_DSN) {
@@ -126,7 +133,8 @@ interface Env extends RequestIdEnv {
 export const app = new OpenAPIHono<Env>();
 const factory = createFactory<Env>();
 
-app.onError((err, c) => {
+app.onError((c, next) => {
+  const err = c.error;
   const requestId = c.get('requestId') || 'unknown';
   const traceId = getCurrentTraceId() || undefined;
   const sovereign = normalizeError(err, requestId);
@@ -181,6 +189,19 @@ function assertProductionTransportConfiguration() {
   if (!getEnv('SUPABASE_URL') && !getEnv('SUPABASE_JWT_PUBLIC_KEY')) {
     throw new Error(
       'Production requires SUPABASE_URL or SUPABASE_JWT_PUBLIC_KEY for JWT signature verification.',
+    );
+  }
+  if (
+    !getEnv('SUPABASE_URL') ||
+    !(
+      getEnv('SUPABASE_PUBLISHABLE_KEY') ||
+      getEnv('EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY') ||
+      getEnv('SUPABASE_ANON_KEY') ||
+      getEnv('EXPO_PUBLIC_SUPABASE_ANON_KEY')
+    )
+  ) {
+    throw new Error(
+      'Production requires SUPABASE_URL and a publishable/anon key for live session verification.',
     );
   }
   if (getEnv('RATE_LIMIT_STORE') !== 'postgres') {
@@ -340,6 +361,7 @@ app.use('/api/library/*', async (c, next) => {
 // Student, classroom, attendance, grading, and relational records contain sensitive PII.
 // Shared proxy caches, Cloudflare edge, and browser disk caches must never store them.
 const SENSITIVE_PRIVATE_API_PATHS = [
+  '/api/workspace/*',
   '/api/self/*',
   '/api/attendance/*',
   '/api/classroom/*',
@@ -496,75 +518,44 @@ async function getRequestSecurityContext(c: any) {
     throw new Error('AuthoritativeScopeUnavailable');
   }
 
-  let school_id = '';
-  let capacity: string | null = null;
-  let activeBondId: string | null = null;
-  let activeEntityId: string | null = null;
-  let activeEntityType: string | null = null;
-  const grade_id: string | undefined = undefined;
-  const section_id: string | undefined = undefined;
-  const classroom_ids: string[] = [];
-  const child_student_ids: string[] = [];
-
-  const isOnboardingBootstrapRoute = isOnboardingBootstrapProcedure(c.req.path);
-  if (!isAnonymousUser && db) {
-    try {
-      const activeBond = await resolvePersistedActiveBond(activeScopeReader(db), user.id);
-      if (activeBond) {
-        const bondScope = resolveBondScope(activeBond);
-        activeBondId = bondScope.activeBondId;
-        activeEntityId = bondScope.activeEntityId;
-        activeEntityType = bondScope.activeEntityType;
-        capacity = activeBond.capacity;
-        school_id = bondScope.schoolId || '';
-      } else if (!isOnboardingBootstrapRoute) {
-        throw new Error('MissingActiveBondSelection');
-      }
-    } catch (err: any) {
-      if (err?.message === 'MissingActiveBondSelection') throw err;
-      console.warn('Server failed to resolve active bond from DB:', err);
+  let authority;
+  try {
+    authority = await resolveServerDerivedAuthority({
+      user,
+      db,
+      requestPath: c.req.path,
+      missingScopeError: () => new Error('MissingActiveBondSelection'),
+      wrapUnexpected: true,
+    });
+  } catch (error) {
+    if (error instanceof ORPCError && error.code === 'SERVICE_UNAVAILABLE') {
+      throw new Error('AuthoritativeScopeUnavailable');
     }
+    throw error;
   }
+  const capacity = isAnonymousUser ? 'wanderer' : authority.capacity;
 
-  if (isAnonymousUser) {
-    capacity = 'wanderer';
-  }
-
-  if (!isAnonymousUser && !capacity && !isOnboardingBootstrapRoute) {
+  if (!isAnonymousUser && !capacity && !isOnboardingBootstrapProcedure(c.req.path)) {
     throw new Error('MissingActiveCapacity');
   }
-
-  // Request headers are user-controlled. Device attestation and network zone
-  // must be injected by a verified gateway before they can affect policy.
-  const deviceTrust = 'standard';
-  const networkZone = 'untrusted';
 
   return {
     user,
     db,
     principal: {
-      id: user.id,
+      ...authority.principal,
       type: capacity ?? 'unknown',
       attributes: {
-        school_id,
-        active_entity_id: activeEntityId ?? '',
-        active_entity_type: activeEntityType ?? '',
+        ...authority.principal?.attributes,
         capacity: capacity ?? '',
-        grade_id,
-        section_id,
-        classroom_ids,
-        child_student_ids,
       },
     },
-    context: {
-      device_trust: deviceTrust,
-      network_zone: networkZone,
-    },
-    school_id,
+    context: authority.securityContext,
+    school_id: authority.schoolId,
     capacity,
-    activeBondId,
-    activeEntityId,
-    activeEntityType,
+    activeBondId: authority.activeBondId,
+    activeEntityId: authority.activeEntityId,
+    activeEntityType: authority.activeEntityType,
   };
 }
 
@@ -949,7 +940,6 @@ import type { Router } from '@orpc/server';
 import { RPCHandler } from '@orpc/server/fetch';
 import { BatchHandlerPlugin, CORSPlugin } from '@orpc/server/plugins';
 import { isReadOnlyOpenApiProcedure } from './openapiReadOnly';
-import { buildORPCContextFromHono, router as orpcRouter } from './router';
 
 const rpcHandler = new RPCHandler(orpcRouter as any, {
   plugins: [
@@ -962,6 +952,7 @@ const rpcHandler = new RPCHandler(orpcRouter as any, {
 const openapiHandler = new OpenAPIHandler(orpcRouter as any, {
   filter: isReadOnlyOpenApiProcedure,
 });
+const canonicalV1Handler = new OpenAPIHandler(canonicalV1Router as any);
 
 app.all('/api/openapi/*', async (c) => {
   const context = await buildORPCContextFromHono(c);
@@ -974,7 +965,14 @@ app.all('/api/openapi/*', async (c) => {
 
 app.route('/api', createAdRewardRoutes(getEnv));
 app.route('/api/auth', createAuthGatewayRoutes());
+app.route('/api/auth', createAuthCredentialRoutes());
 app.route('/api', eventsStreamRoutes);
+app.route('/api/mcp', createMcpDoor());
+app.route('/api/ws', createWebSocketDoor());
+
+// This literal, capability-owned mount must precede the native /api/* oRPC
+// compatibility catch-all. v0 remains independently mounted below.
+registerCanonicalV1Routes(app, canonicalV1Handler);
 
 registerNativeORPCRoutes(app, rpcHandler);
 const aiPolicyRoute: SovereignRoute = {
@@ -988,10 +986,7 @@ app.use('/api/ai/*', featureFlagGateForKey('isAIAssistantEnabled', '/api/ai'));
 app.route('/api/ai', aiRouter);
 
 app.route('/', createDurableAgentRoutes());
-
-app.route('/', createPayhereWebhookRoutes({ md5Hex, sha256Hex }, getEnv));
-app.route('/', createVerifiedWhatsappIngressRoutes({ getEnv }));
-app.route('/', createVerifiedTelegramIngressRoutes({ getEnv }));
+app.route('/', createOmnichannelDoor({ getEnv, cryptoUtils: { md5Hex, sha256Hex } }));
 
 app.doc('/doc', {
   openapi: '3.1.0',

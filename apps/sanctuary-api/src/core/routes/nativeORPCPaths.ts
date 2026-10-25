@@ -4,7 +4,14 @@
  * silently lack a reachable Hono mount.
  */
 export const nativeORPCPaths = [
+  // Canonical Sanctuary Bounded Context Mounts
+  '/api/workspace/*',
   '/api/self/*',
+  '/api/library/*',
+  '/api/community/*',
+  '/api/identity/*',
+
+  // Legacy Procedure Mounts (for complete backward compatibility)
   '/api/learningReflections/*',
   '/api/profile/*',
   '/api/identity/*',

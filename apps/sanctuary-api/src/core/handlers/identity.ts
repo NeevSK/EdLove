@@ -3,6 +3,7 @@ import {
   identityORPCContract,
 } from '@repo/core/api/identity.orpc.contract';
 import { declaredCapabilities } from '@repo/core/logic/registry/capabilityManifest';
+import { profileWriteData } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { SovereignError } from '@repo/core/types/Errors';
 import { check as checkCedar } from '@repo/policies';
 import {
@@ -235,14 +236,12 @@ export const identityRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
 
-      const body = { ...input.body };
-      if ('email' in body && body.email === '') {
-        body.email = null;
-      }
+      if (input.params.id !== context.user.id)
+        throw SovereignError.unauthorized('update', 'another account profile');
 
       const updated = await context.db.user.update({
         where: { id: input.params.id },
-        data: body as any,
+        data: profileWriteData(input.body),
         include: {
           bonds: true,
         },

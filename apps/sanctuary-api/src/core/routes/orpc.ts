@@ -39,7 +39,9 @@ export function registerNativeORPCRoutes(app: RouteRegistrar, rpcHandler: RPCHan
       c.req.path.startsWith('/api/openapi') ||
       c.req.path.startsWith('/api/durable-agents') ||
       c.req.path.startsWith('/api/rewards') ||
-      c.req.path.startsWith('/api/events')
+      c.req.path.startsWith('/api/events') ||
+      c.req.path.startsWith('/api/mcp') ||
+      c.req.path.startsWith('/api/ws')
     ) {
       return await next();
     }

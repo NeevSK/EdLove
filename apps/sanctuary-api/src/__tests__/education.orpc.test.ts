@@ -27,7 +27,7 @@ async function prepareSubmissionReceipt(studentId: string, assignmentId: string,
 
 describe('Sanctuary API: education via native oRPC', () => {
   const headers = {
-    Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+    Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000',
     'x-classroom-ids': '123e4567-e89b-12d3-a456-426614174001',
   };
 
@@ -37,7 +37,7 @@ describe('Sanctuary API: education via native oRPC', () => {
     setMockZenStackDbAvailable(true);
     setMockActiveBond({
       id: 'bond-education',
-      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      user_id: '123e4567-e89b-8101-8000-426614174000',
       entity_id: 'school-123',
       entity_type: 'SCHOOL',
       capacity: 'teacher',
@@ -58,18 +58,18 @@ describe('Sanctuary API: education via native oRPC', () => {
           created_at: new Date('2026-01-01T00:00:00.000Z'),
           updated_at: new Date('2026-01-01T00:00:00.000Z'),
           school_id: 'school-123',
-          teacher_id: '123e4567-e89b-12d3-a456-426614174000',
+          teacher_id: '123e4567-e89b-8101-8000-426614174000',
           is_archived: false,
         })),
       ],
       students: [
         {
-          student_id: '223e4567-e89b-12d3-a456-426614174002',
+          student_id: '223e4567-e89b-8101-8000-426614174002',
           classroom_id: '123e4567-e89b-12d3-a456-426614174001',
           status: 'active',
         },
         {
-          student_id: '323e4567-e89b-12d3-a456-426614174002',
+          student_id: '323e4567-e89b-8101-8000-426614174002',
           classroom_id: '123e4567-e89b-12d3-a456-426614174001',
           status: 'active',
         },
@@ -79,7 +79,7 @@ describe('Sanctuary API: education via native oRPC', () => {
 
   it('executes the native classroom procedure and validates an explicit DTO list', async () => {
     const body = await createTestORPCClient(headers).educational.getByTeacher({
-      query: { teacher_id: '123e4567-e89b-12d3-a456-426614174000' },
+      query: { teacher_id: '123e4567-e89b-8101-8000-426614174000' },
     });
 
     expect(body).toHaveLength(5);
@@ -106,14 +106,14 @@ describe('Sanctuary API: education via native oRPC', () => {
     const classroom = await client.createClassroom({
       body: {
         name: 'New classroom',
-        teacherId: '123e4567-e89b-12d3-a456-426614174000',
+        teacherId: '123e4567-e89b-8101-8000-426614174000',
         schoolId: null,
         subject: 'Science',
       },
     });
     expect(classroom).toMatchObject({
       name: 'New classroom',
-      teacher_id: '123e4567-e89b-12d3-a456-426614174000',
+      teacher_id: '123e4567-e89b-8101-8000-426614174000',
       subject: 'Science',
     });
     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
@@ -134,7 +134,7 @@ describe('Sanctuary API: education via native oRPC', () => {
   it('executes enrollment and shadow-student procedures through native oRPC', async () => {
     const client = createTestORPCClient(headers).educational;
     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
-    const studentId = '123e4567-e89b-12d3-a456-426614174002';
+    const studentId = '123e4567-e89b-8101-8000-426614174002';
     const enrolled = await client.enrollStudent({
       params: { classroomId },
       body: { studentId, rollNumber: 7 },
@@ -152,7 +152,7 @@ describe('Sanctuary API: education via native oRPC', () => {
     expect(shadow.student_id).toBeTruthy();
     expect(shadow.invite_code).toMatch(/^EDL-/);
 
-    const claimingStudentId = '223e4567-e89b-12d3-a456-426614174002';
+    const claimingStudentId = '223e4567-e89b-8101-8000-426614174002';
     const studentClient = createTestORPCClient({
       Authorization: `Bearer ${claimingStudentId}`,
     }).educational;
@@ -269,7 +269,7 @@ describe('Sanctuary API: education via native oRPC', () => {
   });
 
   it('resolves stored material and assignment classrooms before update or deletion', async () => {
-    const userId = '123e4567-e89b-12d3-a456-426614174000';
+    const userId = '123e4567-e89b-8101-8000-426614174000';
     const ownClassroomId = '123e4567-e89b-12d3-a456-426614174001';
     const foreignClassroomId = '423e4567-e89b-12d3-a456-426614174001';
     setMockClassroomRelationships({
@@ -318,14 +318,14 @@ describe('Sanctuary API: education via native oRPC', () => {
     const teacherClient = createTestORPCClient(headers).educational;
     expect(
       await teacherClient.getStudentSubmissions({
-        params: { studentId: '123e4567-e89b-12d3-a456-426614174002' },
+        params: { studentId: '123e4567-e89b-8101-8000-426614174002' },
         query: {
           classroomId,
         },
       }),
     ).toEqual([]);
 
-    const studentId = '223e4567-e89b-12d3-a456-426614174002';
+    const studentId = '223e4567-e89b-8101-8000-426614174002';
     setMockActiveBond({
       id: 'bond-student',
       user_id: studentId,
@@ -350,7 +350,7 @@ describe('Sanctuary API: education via native oRPC', () => {
   });
 
   it('reads upcoming assignments through the native student contract', async () => {
-    const studentId = '323e4567-e89b-12d3-a456-426614174002';
+    const studentId = '323e4567-e89b-8101-8000-426614174002';
     setMockActiveBond({
       id: 'bond-student-upcoming',
       user_id: studentId,
@@ -373,7 +373,7 @@ describe('Sanctuary API: education via native oRPC', () => {
   ] as const)(
     'rejects an unenrolled submission through %s (keyed=%s)',
     async (transport, keyed) => {
-      const studentId = '423e4567-e89b-12d3-a456-426614174002';
+      const studentId = '423e4567-e89b-8101-8000-426614174002';
       const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
       setMockActiveBond({
         user_id: studentId,
@@ -409,7 +409,7 @@ describe('Sanctuary API: education via native oRPC', () => {
   );
 
   it('preserves replay of a submission matching the authenticated intent', async () => {
-    const studentId = '223e4567-e89b-12d3-a456-426614174002';
+    const studentId = '223e4567-e89b-8101-8000-426614174002';
     const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
     const submissionId = '623e4567-e89b-12d3-a456-426614174002';
     await prepareSubmissionReceipt(studentId, assignmentId, 'My work');
@@ -439,11 +439,11 @@ describe('Sanctuary API: education via native oRPC', () => {
   });
 
   it.each([
-    { student_id: '423e4567-e89b-12d3-a456-426614174002' },
+    { student_id: '423e4567-e89b-8101-8000-426614174002' },
     { assignment_id: '523e4567-e89b-12d3-a456-426614174002' },
     { content: 'Different private work' },
   ])('does not return an existing submission with inconsistent intent %j', async (change) => {
-    const studentId = '223e4567-e89b-12d3-a456-426614174002';
+    const studentId = '223e4567-e89b-8101-8000-426614174002';
     const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
     await prepareSubmissionReceipt(studentId, assignmentId, 'My work');
     setMockActiveBond({

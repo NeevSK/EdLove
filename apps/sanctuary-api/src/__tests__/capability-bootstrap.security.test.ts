@@ -17,7 +17,7 @@ vi.mock('@repo/policies', async (importOriginal) => ({
   check: vi.fn(() => ({ permitted: true })),
 }));
 
-const userId = '123e4567-e89b-12d3-a456-426614174000';
+const userId = '123e4567-e89b-8101-8000-426614174000';
 const bondId = '123e4567-e89b-12d3-a456-426614174001';
 const headers = { Authorization: `Bearer ${userId}` };
 const query = { domain: 'self', platform: 'browser' } as const;
@@ -33,7 +33,7 @@ describe('live capability bootstrap security boundary', () => {
     setMockActiveBond({
       id: bondId,
       user_id: userId,
-      entity_id: '123e4567-e89b-12d3-a456-426614174002',
+      entity_id: '123e4567-e89b-8101-8000-426614174002',
       entity_type: 'SCHOOL',
       capacity: 'teacher',
       status: 'active',
@@ -194,7 +194,7 @@ describe('live capability bootstrap security boundary', () => {
           principal: expect.objectContaining({
             attributes: expect.objectContaining({
               capacity: 'teacher',
-              school_id: '123e4567-e89b-12d3-a456-426614174002',
+              school_id: '123e4567-e89b-8101-8000-426614174002',
             }),
           }),
         }),
@@ -204,7 +204,7 @@ describe('live capability bootstrap security boundary', () => {
           principal: expect.objectContaining({
             attributes: expect.objectContaining({
               capacity: 'teacher',
-              school_id: '123e4567-e89b-12d3-a456-426614174002',
+              school_id: '123e4567-e89b-8101-8000-426614174002',
             }),
           }),
         }),

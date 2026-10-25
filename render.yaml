@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: sanctuary-api
+    runtime: docker
+    dockerfilePath: ./apps/sanctuary-api/Dockerfile
+    dockerContext: .
+    plan: standard
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: NODE_ENV
+        value: "production"
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_JWT_ISSUER
+        sync: false
+      - key: SUPABASE_JWT_AUDIENCE
+        sync: false
+      - key: RATE_LIMIT_STORE
+        value: "postgres"
+      - key: RATE_LIMIT_TRUSTED_PROXY_HEADER
+        value: "x-forwarded-for"
+      - key: SANCTUARY_CEDAR_SOCKET_PATH
+        value: "/tmp/cedar.sock"
+      - key: SANCTUARY_RUST_EVALUATOR_URL
+        value: "http://127.0.0.1:8788"
+      - key: ENABLE_WEBSOCKETS
+        value: "false"

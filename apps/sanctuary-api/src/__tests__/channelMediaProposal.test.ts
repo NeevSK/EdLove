@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createChannelAiProposal, queueChannelMediaJob } from '../core/channelMediaProposal';
 
-const accountId = '123e4567-e89b-12d3-a456-426614174000';
+const accountId = '123e4567-e89b-8101-8000-426614174000';
 const identityId = '123e4567-e89b-12d3-a456-426614174001';
-const ingressEventId = '123e4567-e89b-12d3-a456-426614174002';
+const ingressEventId = '123e4567-e89b-8101-8000-426614174002';
 const mediaJobId = '123e4567-e89b-12d3-a456-426614174003';
 const now = new Date('2026-10-15T00:00:00.000Z');
 const expiresAt = '2026-10-16T00:00:00.000Z';

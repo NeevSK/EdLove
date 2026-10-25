@@ -12,13 +12,13 @@ import {
 } from './setup';
 
 describe('Sanctuary API: library via native oRPC', () => {
-  const headers = { Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000' };
+  const headers = { Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000' };
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
     setMockActiveBond({
       id: 'bond-library',
-      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      user_id: '123e4567-e89b-8101-8000-426614174000',
       entity_id: 'school-123',
       entity_type: 'SCHOOL',
       capacity: 'teacher',
@@ -31,7 +31,7 @@ describe('Sanctuary API: library via native oRPC', () => {
         {
           id: 'a23e4567-e89b-12d3-a456-426614174000',
           school_id: 'school-123',
-          teacher_id: '123e4567-e89b-12d3-a456-426614174000',
+          teacher_id: '123e4567-e89b-8101-8000-426614174000',
         },
       ],
     });
@@ -80,7 +80,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
         name: 'Transport Parity Collection',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
         visibility: 'public',
         subjects: ['mathematics'],
         topics: [],
@@ -90,7 +90,7 @@ describe('Sanctuary API: library via native oRPC', () => {
         collection_nodes: [],
       },
     ]);
-    const headers = { Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000' };
+    const headers = { Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000' };
     const nativeBody = await createTestORPCClient(headers).library.getCollections({
       query: { exclude_virtual: true },
     });
@@ -111,7 +111,7 @@ describe('Sanctuary API: library via native oRPC', () => {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
         name: 'Mathematics Collection',
         description: 'Grade five resources',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
         visibility: 'public',
         subjects: ['mathematics'],
         topics: [],
@@ -141,7 +141,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       grades: [5],
       language: [],
       visibility: 'public',
-      creator_id: '123e4567-e89b-12d3-a456-426614174000',
+      creator_id: '123e4567-e89b-8101-8000-426614174000',
       creator_role: 'teacher',
       created_at: new Date('2026-01-01T00:00:00.000Z'),
       updated_at: new Date('2026-01-01T00:00:00.000Z'),
@@ -151,7 +151,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
         name: 'Historical Listing',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
         visibility: 'public',
         subjects: ['mathematics'],
         topics: [],
@@ -214,7 +214,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
         name: 'Strict Collection',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
         visibility: 'public',
         subjects: [],
         topics: [],
@@ -244,7 +244,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       grades: [],
       language: [],
       visibility: 'public',
-      creator_id: '123e4567-e89b-12d3-a456-426614174000',
+      creator_id: '123e4567-e89b-8101-8000-426614174000',
       creator_role: 'teacher',
       created_at: new Date('2026-01-01T00:00:00.000Z'),
       updated_at: new Date('2026-01-01T00:00:00.000Z'),
@@ -254,7 +254,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       collection: {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
         name: 'Historical Collection',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
         visibility: 'public',
         subjects: [],
         topics: [],
@@ -319,7 +319,7 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     expect(body.title).toBe('Native Resource');
-    expect(body.creator_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.creator_id).toBe('123e4567-e89b-8101-8000-426614174000');
     expect(body.creator_role).toBe('teacher');
   });
 
@@ -337,14 +337,14 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     expect(body.name).toBe('Native Collection');
-    expect(body.creator_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.creator_id).toBe('123e4567-e89b-8101-8000-426614174000');
   });
 
   it('makes collection membership writes retry-safe and actor-owned', async () => {
     setMockLibraryTemporalRead({
       collection: {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
       },
       resources: [],
       events: [],
@@ -361,7 +361,7 @@ describe('Sanctuary API: library via native oRPC', () => {
     setMockLibraryTemporalRead({
       collection: {
         id: 'a23e4567-e89b-12d3-a456-426614174000',
-        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-8101-8000-426614174000',
       },
       resources: [],
       events: [],
@@ -430,7 +430,7 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     expect(body.name).toBe('Shared Collection (Fork)');
-    expect(body.creator_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.creator_id).toBe('123e4567-e89b-8101-8000-426614174000');
     expect(body.visibility).toBe('private');
   });
 
@@ -441,7 +441,7 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     expect(body.resource_id).toBe('923e4567-e89b-12d3-a456-426614174000');
-    expect(body.user_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.user_id).toBe('123e4567-e89b-8101-8000-426614174000');
     expect(body.engagement_type).toBe('bookmark');
   });
 
@@ -454,7 +454,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       },
     });
 
-    expect(body.user_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.user_id).toBe('123e4567-e89b-8101-8000-426614174000');
     expect(body.engagement_type).toBe('use');
     expect(body.classroom_id).toBe('a23e4567-e89b-12d3-a456-426614174000');
   });

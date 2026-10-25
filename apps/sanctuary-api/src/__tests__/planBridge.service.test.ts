@@ -552,7 +552,7 @@ describe('plan-and-bridge service', () => {
       const mockLinks = [
         {
           id: '99999999-9999-4999-8999-999999999999',
-          student_id: '123e4567-e89b-12d3-a456-426614174000',
+          student_id: '123e4567-e89b-8101-8000-426614174000',
           student_name: 'Student One',
           guardian_id: '123e4567-e89b-12d3-a456-426614174001',
           guardian_name: 'Guardian One',

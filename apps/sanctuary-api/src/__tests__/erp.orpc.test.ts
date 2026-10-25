@@ -4,7 +4,7 @@ import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: ERP via native oRPC', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('Sanctuary API: ERP via native oRPC', () => {
           description: 'Unbalanced transaction',
           entries: [
             { accountId: '123e4567-e89b-12d3-a456-426614174001', amount: 100, side: 'debit' },
-            { accountId: '123e4567-e89b-12d3-a456-426614174002', amount: 90, side: 'credit' },
+            { accountId: '123e4567-e89b-8101-8000-426614174002', amount: 90, side: 'credit' },
           ],
         },
       }),

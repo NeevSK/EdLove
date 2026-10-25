@@ -4,13 +4,13 @@ import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockDailyContentRows, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: daily content via native oRPC', () => {
-  const headers = { Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000' };
+  const headers = { Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000' };
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
     setMockActiveBond({
       id: 'bond-daily',
-      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      user_id: '123e4567-e89b-8101-8000-426614174000',
       entity_id: 'school-123',
       entity_type: 'SCHOOL',
       capacity: 'teacher',

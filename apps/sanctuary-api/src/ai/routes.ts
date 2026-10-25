@@ -370,7 +370,11 @@ aiRouter.post('/student-potential', rateLimit, async (c) => {
   const db = c.get('db');
   if (!user || user.id === 'anonymous') return c.json({ error: 'Unauthorized' }, 401);
   try {
-    const body = await c.req.json();
+    const body = (await c.req.json()) as {
+      studentName?: string;
+      analysis?: any;
+      aiSdk?: string;
+    };
     if (typeof body.studentName !== 'string' || !body.studentName.trim() || !body.analysis) {
       return c.json({ error: 'Invalid student-potential request' }, 400);
     }

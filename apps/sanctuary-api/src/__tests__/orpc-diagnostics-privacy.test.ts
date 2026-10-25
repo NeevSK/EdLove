@@ -65,8 +65,8 @@ describe('native RPC diagnostic privacy', () => {
     });
     const observed = vi.fn();
     const app = new Hono();
-    app.onError((error, c) => {
-      observed(error);
+    app.onError((c) => {
+      observed(c.error);
       return c.text('Unavailable', 503);
     });
     registerNativeORPCRoutes(app, { handle });

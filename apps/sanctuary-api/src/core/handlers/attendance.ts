@@ -179,7 +179,15 @@ async function loadRoster(db: any, gradeClassId: string, date?: string) {
   });
 }
 
-async function loadDaily(context: ORPCContext, record: RecordInput & { note?: string }, db: any) {
+/**
+ * Shared persistence primitive for already-authorized attendance writes. Transport
+ * adapters supply the transaction client; authority remains at their boundary.
+ */
+export async function recordDailyAttendance(
+  context: ORPCContext,
+  record: RecordInput & { note?: string },
+  db: any,
+) {
   const gradeClass = await requireGradeClass(
     db,
     record.gradeClassId || record.classroomId,
@@ -243,6 +251,10 @@ async function loadDaily(context: ORPCContext, record: RecordInput & { note?: st
     });
   }
   return row;
+}
+
+async function loadDaily(context: ORPCContext, record: RecordInput & { note?: string }, db: any) {
+  return recordDailyAttendance(context, record, db);
 }
 
 export const attendanceRouter = impl.router({

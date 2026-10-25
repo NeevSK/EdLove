@@ -61,8 +61,9 @@ function assertMaxAttempts(maxAttempts: number): void {
 
 /**
  * Assigns an EdLove account identifier without changing the canonical account
- * key. The database statement locks one eligible account, so a concurrent
- * caller observes the winner rather than minting a replacement value.
+ * key. The private database function locks one eligible account, so a
+ * concurrent caller observes the winner rather than minting a replacement
+ * value. It is reachable only through Sanctuary's server-held DATABASE_URL.
  */
 export async function assignEdloveAccountId(
   canonicalAccountId: string,
@@ -92,24 +93,7 @@ export async function assignEdloveAccountId(
 
     try {
       const rows = await queryRows<AccountIdRow>(
-        `with target as materialized (
-           select id, edlove_id
-             from public.users
-            where id = $1
-              and deleted_at is null
-            for update
-         ), assigned as (
-           update public.users as account
-              set edlove_id = $2
-             from target
-            where account.id = target.id
-              and target.edlove_id is null
-            returning account.edlove_id
-         )
-         select edlove_id from assigned
-         union all
-         select edlove_id from target where edlove_id is not null
-         limit 1`,
+        `select private.assign_edlove_account_id($1::uuid, $2::uuid) as edlove_id`,
         [canonicalAccountId, candidate],
       );
 

@@ -2,7 +2,7 @@
 title: "Sanctuary API Documentation Vault Index"
 status: "active"
 created: 2026-06-20
-updated: 2026-10-16
+updated: 2026-10-25
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -18,6 +18,16 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-10-25** | [Sanctuary API v2: Full Architectural & Engineering Assessment](architecture/2026-10-25-sanctuary-api-v2-architecture-assessment.md) | Architecture | `draft` | Master verdict & architectural assessment: Hono v5 RC, oRPC v2 beta, Bun 1.4.4, Render, Cedar, WhatsApp, Telegram, and Agentic AI/MCP. |
+| **2026-10-25** | [Hono v5 RC: Temporal-Grounded Research Report](architecture/2026-10-25-hono-v5-rc-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Hono v5.0.0-rc.1, ESM-only transition, decoupled adapters, onError signature changes, and Standard Schema. |
+| **2026-10-25** | [oRPC v2 Beta: Temporal-Grounded Research Report](architecture/2026-10-25-orpc-v2-beta-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on oRPC 2.0.0-beta.46, contract-first decoupling (oc vs os), wire protocol changes, middleware deduplication removal, and MCP. |
+| **2026-10-25** | [Bun Runtime & Render.com: Temporal-Grounded Research Report](architecture/2026-10-25-bun-runtime-and-render-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Bun 1.4.4 Rust rewrite, CVE-2026-111497 patch, Render compute tiers, zero-downtime blue-green deploys, and keepalives. |
+| **2026-10-25** | [Cedar Policy Authorization: Temporal-Grounded Research Report](architecture/2026-10-25-cedar-policy-authorization-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Cedar v4.14.0, @cedar-policy/cedar-wasm 4.13.0, Wasm linear memory, singleton init, and direct Rust sidecar. |
+| **2026-10-25** | [Omnichannel Messaging & Agentic AI: Temporal-Grounded Research Report](architecture/2026-10-25-omnichannel-messaging-and-agentic-ai-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on WhatsApp Cloud API v21/v22, raw HMAC parsing, grammY FSM, Vercel AI SDK v4+ streaming, and Inngest. |
+| **2026-10-25** | [Modern API Architecture, Efficiency & Agentic Era Playbook](architecture/2026-10-25-modern-api-architecture-and-agentic-era-playbook.md) | Architecture | `active` | 2026 API patterns, post-serverless persistent runtime, deprecation radar, DB/client interaction triangle, and MCP agentic ingress. |
+| **2026-10-25** | [Sanctuary API Host Resource & Capacity Sizing Guide](operations/host-resource-and-capacity-sizing.md) | Operations | `active` | Specification for CPU/RAM sizing, Cedar WASM footprint, 512MB OOM prevention, DB pool budgeting, and ulimit tuning. |
+| **2026-10-25** | [Sanctuary API Bun 1.4.4 Runtime Verification & Stress Benchmarks](current_progress/2026-10-25-bun-runtime-verification-and-stress-benchmarks.md) | Benchmarks | `active` | Bun 1.4.4 runtime verification, 40+ oRPC sub-router map, 765 passing unit tests, and >62k request stress test matrix. |
+| **2026-10-25** | [Sanctuary API Render Deployment Playbook](infra/render-deployment-playbook.md) | Infra | `active` | Grounded monorepo deployment standard, pnpm workspace isolation, anti-buffering SSE stream headers, database pooling and 512MB RAM OOM prevention. |
 | **2026-10-16** | [HTTPS Transport Boundary](architecture/transport-security.md) | Architecture | `active` | Shared fail-closed URL and redirect policy, production TLS ingress, authentication coverage and live deployment acceptance gates. |
 | **2026-10-15** | [Phone Entry and Canonical Account Integration Proposal](architecture/2026-10-15-phone-entry-and-canonical-account-integration-proposal.md) | Architecture | `draft` | Current auth substrate, decoupled-account web entry defect, bounded phone OTP proposal and coordinated channel/client acceptance gates. |
 | **2026-10-15** | [Local Foundation Integration Environment](operations/local-integration-environment.md) | Operations | `active` | Dedicated loopback PostgreSQL runtime, retained resources, verified fresh-install migration failure and remaining real-data acceptance gates. |
@@ -77,6 +87,7 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 ## 📁 Document Categories
 
 ### 📐 Technical Architecture & Specifications Vault
+*   [Modern API Architecture, Efficiency & Agentic Era Playbook](architecture/2026-10-25-modern-api-architecture-and-agentic-era-playbook.md) - 2026 API patterns, post-serverless persistent runtime, deprecation radar, DB/client interaction triangle, and MCP agentic ingress.
 *   [Developer Onboarding Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/developer-onboarding-guide.md) - Service introduction, tech stack overview, workspace mapping, and DX workflows.
 *   [Developer Sandbox Console](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/developer-sandbox-console.md) - Architecture, trigger flows, inline configurations, and tree-shaking security.
 *   [Docs SOP](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/docs-sop.md) - Format, frontmatter, and naming conventions.
@@ -100,6 +111,8 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 *   [Migration Decisions Log](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/migration-decisions-log.md) - 8 ADRs documenting oRPC adoption, dual-gate auth, request-scoped DB, PowerSync, GrowthBook, TanStack Query, OTel, slice migration, WinterCG.
 
 ### ⚙️ Infrastructure & Operations
+*   [Host Resource & Capacity Sizing Guide](operations/host-resource-and-capacity-sizing.md) - Specification for CPU/RAM sizing, Cedar WASM footprint, 512MB OOM prevention, DB pool budgeting, and ulimit tuning.
+*   [Sanctuary API Render Deployment Playbook](infra/render-deployment-playbook.md) - Grounded deployment standard, pnpm workspace isolation, anti-buffering SSE stream headers, database pooling, and OOM prevention.
 *   [Astro v6 to v7 Breaking Changes](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/2026-06-25-astro-v6-to-v7-breaking-changes.md) - Deep dive guide for breaking API changes, compiler updates, and configurations during migration.
 *   [Astro v7 Upgrade Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/astro-v7-upgrade-guide.md) - Migration checklist and breaking changes reference for upgrading to Astro v7.0.
 *   [Production Operations Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/operations/production-operations-guide.md) - Complete production runbook: architecture overview, debugging scenarios, health checks, incident response, capacity planning, security checklist.

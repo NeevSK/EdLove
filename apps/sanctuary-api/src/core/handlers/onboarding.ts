@@ -1,5 +1,6 @@
 import { CapacitySchema } from '@repo/core/api/identity.generated';
 import { onboardingContract } from '@repo/core/api/server';
+import { profileWriteData } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { SovereignError } from '@repo/core/types/Errors';
 import {
   buildIdentityBootstrap,
@@ -18,6 +19,17 @@ import {
 const impl = implement(onboardingContract).$context<ORPCContext>();
 
 export const onboardingRouter = impl.router({
+  completeProfile: impl.completeProfile
+    .use(sovereignErrorMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
+      await context.db.user.update({
+        where: { id: context.user.id },
+        data: { ...profileWriteData(input.body), profile_completed: true },
+      });
+      return { success: true };
+    }),
   // Onboarding endpoints bootstrap the user's workspace/bond, so they bypass doubleGateMiddleware
   createInitialBond: impl.createInitialBond
     .use(sovereignErrorMiddleware)
@@ -61,11 +73,14 @@ export const onboardingRouter = impl.router({
       const normalizedUsername =
         typeof usernameInput === 'string' ? usernameInput.trim().toLowerCase() : '';
       const username = /^[a-z0-9_-]{3,30}$/.test(normalizedUsername) ? normalizedUsername : null;
-      const now = new Date();
+      const validFrom = new Date();
 
       const result = await context.db.$transaction(async (tx) => {
+        // Serialize first-time provisioning before checking whether the workspace exists.
+        await tx.$queryRaw`SELECT id FROM public.users WHERE id = ${userId}::uuid FOR UPDATE`;
+        const now = new Date();
         const profile = await tx.user.findUnique({ where: { id: userId } });
-        if (!profile) throw SovereignError.notFound('User');
+        if (!profile || profile.deleted_at) throw SovereignError.notFound('User');
 
         const isTeacherOrPrincipal = [
           'teacher',
@@ -128,7 +143,9 @@ export const onboardingRouter = impl.router({
 
         const personalBond = await persistPersonalSanctuaryBondCapacity(
           {
-            create: (args) => tx.bond.create(args),
+            // The preference trigger uses transaction time; an ORM-generated later timestamp is not valid yet.
+            create: (args) =>
+              tx.bond.create({ ...args, data: { ...args.data, valid_from: validFrom } }),
             update: (args) => tx.bond.update(args),
           },
           existingBond,
@@ -152,7 +169,7 @@ export const onboardingRouter = impl.router({
               where: { id: platformBond.id },
               data: {
                 status: 'active',
-                valid_from: now,
+                valid_from: validFrom,
                 valid_until: null,
                 metadata: { source: 'server_subject_allowlist' },
               },
@@ -164,6 +181,7 @@ export const onboardingRouter = impl.router({
                 entity_id: 'GLOBAL',
                 entity_type: 'PLATFORM',
                 capacity,
+                valid_from: validFrom,
                 metadata: { source: 'server_subject_allowlist' },
               },
             });

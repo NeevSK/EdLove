@@ -1,4 +1,5 @@
 import { profileORPCContract } from '@repo/core/api/profile.orpc.contract';
+import { profileWriteData } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
@@ -52,10 +53,36 @@ export const profileRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
 
-      // ZenStack will automatically enforce ReBAC permissions for updates
+      if (input.params.id !== context.user.id)
+        throw SovereignError.unauthorized('update', 'another account profile');
       const updated = await context.db.user.update({
         where: { id: input.params.id },
-        data: input.body as any,
+        data: profileWriteData(input.body),
+        select: {
+          id: true,
+          full_name: true,
+          display_name: true,
+          first_name: true,
+          last_name: true,
+          username: true,
+          avatar_url: true,
+          bio: true,
+          phone: true,
+          capacity_label: true,
+          index_number: true,
+          nic_number: true,
+          public_profile: true,
+          profile_completed: true,
+          onboarding_completed: true,
+          is_anonymous: true,
+          citizenship: true,
+          pricing_tier: true,
+          experience_years: true,
+          subjects_taught: true,
+          qualifications: true,
+          created_at: true,
+          updated_at: true,
+        },
       });
 
       return updated;

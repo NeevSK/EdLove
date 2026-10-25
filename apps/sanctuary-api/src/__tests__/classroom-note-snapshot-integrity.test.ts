@@ -16,9 +16,9 @@ vi.mock('../core/orpcMiddleware', () => ({
 describe('classroom note snapshot reconstruction (authority substituted)', () => {
   const classroomId = '123e4567-e89b-12d3-a456-426614174001';
   const context: ORPCContext = {
-    user: { id: '123e4567-e89b-12d3-a456-426614174000' },
+    user: { id: '123e4567-e89b-8101-8000-426614174000' },
     requestId: 'snapshot-integrity-probe',
-    db: createZenStackDb({ id: '123e4567-e89b-12d3-a456-426614174000' }),
+    db: createZenStackDb({ id: '123e4567-e89b-8101-8000-426614174000' }),
   };
   const snapshot = (id: string, content: string) => ({
     id,

@@ -1,4 +1,4 @@
-import { augmentRouter } from '@orpc/server';
+import { os } from '@orpc/server';
 import { doubleGateMiddleware } from './orpcMiddleware';
 
 /**
@@ -10,8 +10,5 @@ import { doubleGateMiddleware } from './orpcMiddleware';
  * each procedure with Cedar doubleGateMiddleware, guaranteeing zero routes fail open.
  */
 export function decorateRouterWithDoubleGate<T>(router: T): T {
-  return augmentRouter(router as any, {
-    meta: {},
-    middlewares: [doubleGateMiddleware],
-  } as any) as T;
+  return (os as any).use(doubleGateMiddleware).router(router as any) as T;
 }

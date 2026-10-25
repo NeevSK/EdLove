@@ -5,7 +5,7 @@ import { PlanBridgeError, type PlanBridgeService } from '../core/planBridge/serv
 import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
 
-const userId = '123e4567-e89b-12d3-a456-426614174000';
+const userId = '123e4567-e89b-8101-8000-426614174000';
 const schoolId = '923e4567-e89b-12d3-a456-426614174000';
 const gradeClassId = '33333333-3333-4333-8333-333333333333';
 const headers = { Authorization: `Bearer ${userId}` };

@@ -14,7 +14,7 @@ vi.mock('@repo/database/client', () => ({
 }));
 
 describe('authenticated account lookup (database substituted)', () => {
-  const id = '123e4567-e89b-12d3-a456-426614174020';
+  const id = '01234567-89ab-8101-8000-010203040506';
   beforeEach(() => {
     fixture.available = true;
     fixture.rows = [{ user_id: id }];
@@ -72,6 +72,18 @@ describe('authenticated account lookup (database substituted)', () => {
       });
     },
   );
+
+  it.each([
+    '123e4567-e89b-42d3-a456-426614174020',
+    '01234567-89ab-8201-8000-010203040506',
+    '01234567-89ab-8102-8000-010203040506',
+    '01234567-89ab-8101-bf00-010203040506',
+  ])('rejects a valid UUID outside the canonical account profile: %s', async (userId) => {
+    fixture.rows = [{ user_id: userId }];
+    await expect(resolveAuthenticatedAccount('subject')).rejects.toMatchObject({
+      details: { status: 503, code: 'CANONICAL_ACCOUNT_ID_INVARIANT_VIOLATION' },
+    });
+  });
 
   it('does not retain provider exception details in the dependency error', async () => {
     fixture.error = new Error('synthetic-private-password');

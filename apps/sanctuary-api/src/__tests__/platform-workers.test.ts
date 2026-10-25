@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { syncMutationQueued } from '../agents/platformEvents';
 import { setMockQueryRowsQueue } from './setup';
 
-const actorId = '123e4567-e89b-12d3-a456-426614174000';
+const actorId = '123e4567-e89b-8101-8000-426614174000';
 const mutationId = '223e4567-e89b-12d3-a456-426614174000';
 const decisionId = '323e4567-e89b-12d3-a456-426614174000';
 

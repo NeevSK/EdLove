@@ -15,7 +15,7 @@ describe('raw database boundary fixture ports', () => {
   });
 
   it('consumes empty and populated FIFO results before the retained fallback', async () => {
-    const db = createZenStackDb({ id: '123e4567-e89b-12d3-a456-426614174000' });
+    const db = createZenStackDb({ id: '123e4567-e89b-8101-8000-426614174000' });
     setMockDailyContentRows([{ id: 'fallback' }]);
     setMockRawQueryRowsQueue([[], [{ id: 'queued' }]]);
     await expect(db.$queryRaw`SELECT 1`).resolves.toEqual([]);
@@ -24,7 +24,7 @@ describe('raw database boundary fixture ports', () => {
   });
 
   it('captures parameterized read and write arguments independently and resets them', async () => {
-    const db = createZenStackDb({ id: '123e4567-e89b-12d3-a456-426614174000' });
+    const db = createZenStackDb({ id: '123e4567-e89b-8101-8000-426614174000' });
     await db.$queryRaw`SELECT id FROM records WHERE owner = ${'owner-id'}`;
     const query = getMockLastQueryRawArgs();
     await expect(db.$executeRaw`UPDATE records SET active = ${false}`).resolves.toBe(1);
@@ -37,7 +37,7 @@ describe('raw database boundary fixture ports', () => {
   });
 
   it('keeps transaction callback reads on the queue without letting writes consume it', async () => {
-    const db = createZenStackDb({ id: '123e4567-e89b-12d3-a456-426614174000' });
+    const db = createZenStackDb({ id: '123e4567-e89b-8101-8000-426614174000' });
     setMockRawQueryRowsQueue([[{ id: 'transaction-fixture' }]]);
     const result = await db.$transaction(async (tx) => {
       await tx.$executeRaw`UPDATE records SET active = ${true}`;

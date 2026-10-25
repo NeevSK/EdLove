@@ -8,12 +8,18 @@ export interface VerifiedJwtPayload {
   [key: string]: any;
 }
 
-const jwkCache = new Map<string, any>();
-let jwksLastFetched = 0;
-const JWKS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+interface JwksState {
+  keys: Map<string, CryptoKey>;
+  expiresAt: number;
+  retryAfter: number;
+  activeFetch: Promise<void> | null;
+}
 
-// Global coalesced promise for concurrent JWKS fetch requests
-let activeJwksFetch: Promise<void> | null = null;
+const jwkAuthorities = new Map<string, JwksState>();
+const testPublicKeys = new Map<string, CryptoKey>();
+let jwksGeneration = 0;
+const JWKS_CACHE_TTL = 10 * 60 * 1000;
+const JWKS_REFRESH_COOLDOWN = 30 * 1000;
 
 // Memory cache for cryptographically verified tokens to prevent signature validation CPU saturation
 const tokenVerificationCache = new Map<
@@ -123,78 +129,110 @@ function pemToDer(pem: string): Uint8Array {
 async function getPublicKeyFromJwks(
   kid: string,
   envOverrides?: Record<string, string>,
-): Promise<any | null> {
-  const cached = jwkCache.get(kid);
-  if (cached) return cached;
-
-  const now = Date.now();
-  if (now - jwksLastFetched > JWKS_CACHE_TTL || jwkCache.size === 0) {
-    if (!activeJwksFetch) {
-      activeJwksFetch = (async () => {
-        try {
-          const supabaseUrl = getEnv('SUPABASE_URL', envOverrides);
-          if (!supabaseUrl) {
-            console.warn(
-              '[JWT] JWKS verification is unavailable because SUPABASE_URL is not configured.',
-            );
-            return;
-          }
-          assertSecureApiUrl(supabaseUrl);
-          const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
-
-          console.info('[JWT] Refreshing verification keys from the configured identity provider.');
-          const response = await fetchWithTrace(jwksUrl, {
-            signal: AbortSignal.timeout(4000),
-            redirect: 'error',
-          });
-          if (!response.ok) {
-            throw new Error(`Failed to fetch JWKS: ${response.statusText}`);
-          }
-
-          const jwks = await response.json();
-          if (jwks && Array.isArray(jwks.keys)) {
-            for (const key of jwks.keys) {
-              if (key.kid && key.kty) {
-                try {
-                  const pubKey = await globalThis.crypto.subtle.importKey(
-                    'jwk',
-                    key,
-                    {
-                      name: key.kty === 'EC' ? 'ECDSA' : 'RSASSA-PKCS1-v1_5',
-                      namedCurve: key.kty === 'EC' ? 'P-256' : undefined,
-                      hash: { name: 'SHA-256' },
-                    },
-                    true,
-                    ['verify'],
-                  );
-                  jwkCache.set(key.kid, pubKey);
-                } catch {
-                  console.warn(
-                    '[JWT] Ignored an unusable verification key from the identity provider.',
-                  );
-                }
-              }
-            }
-            jwksLastFetched = Date.now();
-          }
-        } catch {
-          console.warn('[JWT] Verification-key refresh failed.');
-        } finally {
-          activeJwksFetch = null;
-        }
-      })();
-    }
-    await activeJwksFetch;
+): Promise<{ key: CryptoKey; expiresAt: number } | null> {
+  const testKey = process.env.NODE_ENV === 'test' ? testPublicKeys.get(kid) : undefined;
+  if (testKey) return { key: testKey, expiresAt: Number.POSITIVE_INFINITY };
+  const supabaseUrl = getEnv('SUPABASE_URL', envOverrides);
+  if (!supabaseUrl) return null;
+  assertSecureApiUrl(supabaseUrl);
+  const jwksUrl = new URL('auth/v1/.well-known/jwks.json', `${supabaseUrl.replace(/\/$/, '')}/`)
+    .href;
+  let state = jwkAuthorities.get(jwksUrl);
+  if (!state) {
+    state = { keys: new Map(), expiresAt: 0, retryAfter: 0, activeFetch: null };
+    jwkAuthorities.set(jwksUrl, state);
   }
+  const now = Date.now();
+  const cached = state.keys.get(kid);
+  if (cached && state.expiresAt > now) return { key: cached, expiresAt: state.expiresAt };
 
-
-  return jwkCache.get(kid) ?? null;
+  // Unknown kids can trigger rotation discovery without letting arbitrary tokens flood the issuer.
+  if (!state.activeFetch && now >= state.retryAfter) {
+    state.retryAfter = now + JWKS_REFRESH_COOLDOWN;
+    const authority = state;
+    authority.activeFetch = (async () => {
+      try {
+        const response = await fetchWithTrace(jwksUrl, {
+          signal: AbortSignal.timeout(4000),
+          redirect: 'error',
+        });
+        if (!response.ok) throw new Error('JWKS_FETCH_FAILED');
+        const document: unknown = await response.json();
+        if (
+          !document ||
+          typeof document !== 'object' ||
+          !('keys' in document) ||
+          !Array.isArray(document.keys)
+        ) {
+          throw new Error('JWKS_INVALID_DOCUMENT');
+        }
+        const keys = new Map<string, CryptoKey>();
+        for (const candidate of document.keys) {
+          if (!candidate || typeof candidate !== 'object') continue;
+          const jwk = candidate as JsonWebKey & { kid?: unknown };
+          if (
+            typeof jwk.kid !== 'string' ||
+            !jwk.kid ||
+            (jwk.use && jwk.use !== 'sig') ||
+            (jwk.key_ops && !jwk.key_ops.includes('verify'))
+          )
+            continue;
+          if (
+            !(
+              (jwk.kty === 'RSA' && (!jwk.alg || jwk.alg === 'RS256')) ||
+              (jwk.kty === 'EC' && jwk.crv === 'P-256' && (!jwk.alg || jwk.alg === 'ES256'))
+            )
+          )
+            continue;
+          if (keys.has(jwk.kid)) throw new Error('JWKS_DUPLICATE_KID');
+          try {
+            const key = await globalThis.crypto.subtle.importKey(
+              'jwk',
+              jwk,
+              jwk.kty === 'EC'
+                ? { name: 'ECDSA', namedCurve: 'P-256' }
+                : { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+              false,
+              ['verify'],
+            );
+            keys.set(jwk.kid, key);
+          } catch {
+            console.warn('[JWT] Ignored an unusable verification key from the identity provider.');
+          }
+        }
+        authority.keys = keys;
+        authority.expiresAt = Date.now() + JWKS_CACHE_TTL;
+        jwksGeneration += 1;
+        tokenVerificationCache.clear();
+      } catch {
+        console.warn('[JWT] Verification-key refresh failed.');
+      } finally {
+        authority.activeFetch = null;
+      }
+    })();
+  }
+  await state.activeFetch;
+  const key = state.keys.get(kid);
+  return key && state.expiresAt > Date.now() ? { key, expiresAt: state.expiresAt } : null;
 }
 
 function hasExpectedClaims(
   payload: Record<string, unknown>,
   envOverrides?: Record<string, string>,
 ): boolean {
+  const now = Math.floor(Date.now() / 1000);
+  if (
+    typeof payload.sub !== 'string' ||
+    payload.sub.trim().length === 0 ||
+    typeof payload.exp !== 'number' ||
+    !Number.isFinite(payload.exp) ||
+    payload.exp <= now ||
+    (payload.nbf !== undefined &&
+      (typeof payload.nbf !== 'number' || !Number.isFinite(payload.nbf) || payload.nbf > now)) ||
+    payload.client_id !== undefined
+  ) {
+    return false;
+  }
   const expectedIssuer = getEnv('SUPABASE_JWT_ISSUER', envOverrides);
   const expectedAudience = getEnv('SUPABASE_JWT_AUDIENCE', envOverrides);
   const isProduction = getEnv('NODE_ENV', envOverrides) === 'production';
@@ -232,9 +270,9 @@ export async function verifySupabaseJwt(
   token: string,
   envOverrides?: Record<string, string>,
 ): Promise<VerifiedJwtPayload | null> {
-  // Support local development & integration test bypass in non-production environments
+  // Synthetic identities exist only in the test harness, never a dev server.
   const nodeEnv = getEnv('NODE_ENV', envOverrides);
-  const isTestOrDev = nodeEnv === 'test' || nodeEnv === 'development';
+  const isTestOrDev = nodeEnv === 'test';
   if (
     isTestOrDev &&
     (token === 'admin-user-1' ||
@@ -247,7 +285,16 @@ export async function verifySupabaseJwt(
   }
 
   // 1. Assert memory caching of verified token hashes (mitigates Signature Verification CPU Saturation)
-  const tokenHash = await computeSha256(token);
+  const tokenHash = await computeSha256(
+    JSON.stringify([
+      token,
+      getEnv('SUPABASE_URL', envOverrides),
+      getEnv('SUPABASE_JWT_ISSUER', envOverrides),
+      getEnv('SUPABASE_JWT_AUDIENCE', envOverrides),
+      getEnv('SUPABASE_JWT_PUBLIC_KEY', envOverrides),
+      nodeEnv,
+    ]),
+  );
 
   const cachedResult = tokenVerificationCache.get(tokenHash);
   if (cachedResult && cachedResult.expiresAt > Date.now()) {
@@ -299,7 +346,8 @@ export async function verifySupabaseJwt(
     }
 
     // Resolve cryptographic verification key
-    let publicKey: any = null;
+    let publicKey: CryptoKey | null = null;
+    let keyExpiresAt = Number.POSITIVE_INFINITY;
 
     // A. Check for static public key override in environment (e.g. PEM format or JWK JSON)
     const envKey = getEnv('SUPABASE_JWT_PUBLIC_KEY', envOverrides);
@@ -362,12 +410,15 @@ export async function verifySupabaseJwt(
         }
       } catch {
         console.error('[JWT] Failed to load the configured verification key.');
+        return null;
       }
     }
 
     // B. Resolve key from JWKS if not overridden
-    if (!publicKey && header.kid) {
-      publicKey = await getPublicKeyFromJwks(header.kid, envOverrides);
+    if (!publicKey && typeof header.kid === 'string' && header.kid.length > 0) {
+      const resolved = await getPublicKeyFromJwks(header.kid, envOverrides);
+      publicKey = resolved?.key ?? null;
+      keyExpiresAt = resolved?.expiresAt ?? 0;
     }
 
     if (!publicKey) {
@@ -378,6 +429,7 @@ export async function verifySupabaseJwt(
     // Perform signature validation using Web Crypto APIs
     const dataToVerify = stringToUint8Array(`${headerB64}.${payloadB64}`);
     const signature = base64UrlToUint8Array(signatureB64);
+    const verificationGeneration = jwksGeneration;
 
     const isVerified = await globalThis.crypto.subtle.verify(
       header.alg === 'ES256'
@@ -388,7 +440,7 @@ export async function verifySupabaseJwt(
       dataToVerify as BufferSource,
     );
 
-    if (!isVerified) {
+    if (!isVerified || !hasExpectedClaims(payload, envOverrides)) {
       console.warn('[JWT] Asymmetric signature verification failed.');
       return null;
     }
@@ -403,10 +455,16 @@ export async function verifySupabaseJwt(
 
     // Cache the verified token signature to optimize next executions
     const cacheExpiresAt = Math.min(
+      keyExpiresAt,
       Date.now() + VERIFIED_TOKEN_CACHE_MAX_AGE,
       verifiedPayload.exp ? verifiedPayload.exp * 1000 : Date.now() + VERIFIED_TOKEN_CACHE_MAX_AGE,
     );
-    tokenVerificationCache.set(tokenHash, { payload: verifiedPayload, expiresAt: cacheExpiresAt });
+    if (verificationGeneration === jwksGeneration) {
+      tokenVerificationCache.set(tokenHash, {
+        payload: verifiedPayload,
+        expiresAt: cacheExpiresAt,
+      });
+    }
     cleanExpiredVerificationCache();
 
     return verifiedPayload;
@@ -420,6 +478,7 @@ export async function verifySupabaseJwt(
  * Manually populates the cache for testing.
  */
 export async function setTestPublicKey(kid: string, key: any) {
+  if (process.env.NODE_ENV !== 'test') throw new Error('TEST_KEY_INJECTION_FORBIDDEN');
   let cryptoKey: any = key;
   if (key && typeof key.export === 'function') {
     // If it's a Node.js KeyObject, export it to JWK and import it as a standard Web CryptoKey
@@ -440,16 +499,15 @@ export async function setTestPublicKey(kid: string, key: any) {
       console.error('[JWT] Failed to convert test key from KeyObject to CryptoKey:', err);
     }
   }
-  jwkCache.set(kid, cryptoKey);
+  testPublicKeys.set(kid, cryptoKey);
 }
 
 /**
  * Clears both JWKS and Token Verification caches.
  */
 export function clearJwkCache() {
-  jwkCache.clear();
+  jwksGeneration += 1;
+  jwkAuthorities.clear();
+  testPublicKeys.clear();
   tokenVerificationCache.clear();
-  jwksLastFetched = 0;
-  activeJwksFetch = null;
 }
-

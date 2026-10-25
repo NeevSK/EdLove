@@ -205,7 +205,7 @@ describe('current contract converter boundary characterization', () => {
   it.each(['rpc', 'openapi'] as const)(
     'maps canonical path/query/body inputs through %s',
     async (transport) => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
+      const id = '123e4567-e89b-8101-8000-426614174000';
       const canonical = { params: { id }, query: { take: 2 }, body: { value: 'valid' } };
       const receive = vi.fn((input: unknown) => {
         expect(input).toEqual(canonical);

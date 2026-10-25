@@ -11,7 +11,7 @@ const envelope = {
   verificationRef: 'meta_hmac_sha256_v1',
   payloadFingerprint: 'c'.repeat(64),
   receivedAt: '2026-10-15T00:00:00.000Z',
-  correlationId: '123e4567-e89b-12d3-a456-426614174000',
+  correlationId: '123e4567-e89b-8101-8000-426614174000',
 };
 
 describe('durable channel ingress acceptance', () => {

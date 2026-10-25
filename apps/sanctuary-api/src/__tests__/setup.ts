@@ -6,9 +6,9 @@ import { coreRuntime } from '../../../../packages/core/src/logic/runtimeRegistry
 let mockZenStackDbAvailable = true;
 const mockAuthIdentities = new Map<string, string | null>();
 const legacyAuthFixtureAccounts: Readonly<Record<string, string>> = {
-  'admin-user-1': '123e4567-e89b-12d3-a456-426614174000',
-  'teacher-user-1': '123e4567-e89b-12d3-a456-426614174000',
-  'student-user-1': '123e4567-e89b-12d3-a456-426614174002',
+  'admin-user-1': '123e4567-e89b-8101-8000-426614174000',
+  'teacher-user-1': '123e4567-e89b-8101-8000-426614174000',
+  'student-user-1': '123e4567-e89b-8101-8000-426614174002',
 };
 let mockAuthIdentityError: Error | null = null;
 let mockAuthIdentityLookup: { query: string; parameters: readonly unknown[] } | null = null;
@@ -100,7 +100,7 @@ export function setMockActiveBond(bond: any) {
   mockActiveBond = bond
     ? {
         id: bond.id ?? 'bond-mock-id',
-        user_id: bond.user_id ?? '123e4567-e89b-12d3-a456-426614174000',
+        user_id: bond.user_id ?? '123e4567-e89b-8101-8000-426614174000',
         status: bond.status ?? 'active',
         valid_from: new Date('2020-01-01'),
         valid_until: null,
@@ -378,8 +378,8 @@ function createMockDelegate(name: string): any {
           if (name === 'gradeClass') {
             return async (args: any = {}) => ({
               id: args?.where?.id ?? '123e4567-e89b-12d3-a456-426614174004',
-              school_id: mockActiveBond?.entity_id ?? '123e4567-e89b-12d3-a456-426614174000',
-              academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+              school_id: mockActiveBond?.entity_id ?? '123e4567-e89b-8101-8000-426614174000',
+              academic_cycle_id: '123e4567-e89b-8101-8000-426614174010',
               status: 'active',
             });
           }
@@ -393,7 +393,7 @@ function createMockDelegate(name: string): any {
                     id: args?.where?.id ?? 'mock-note-id',
                     classroom_id: '123e4567-e89b-12d3-a456-426614174001',
                     school_id: 'school-123',
-                    author_id: '123e4567-e89b-12d3-a456-426614174000',
+                    author_id: '123e4567-e89b-8101-8000-426614174000',
                     classroom: { school_id: 'school-123' },
                   };
           if (name === 'assignment')
@@ -411,7 +411,7 @@ function createMockDelegate(name: string): any {
             return async (args: any = {}) => ({
               id: args?.where?.id ?? 'principal-note-mock-id',
               school_id: '923e4567-e89b-12d3-a456-426614174000',
-              author_id: '123e4567-e89b-12d3-a456-426614174000',
+              author_id: '123e4567-e89b-8101-8000-426614174000',
               content: 'Mock note',
               note_type: 'todo',
               is_pinned: false,
@@ -424,15 +424,15 @@ function createMockDelegate(name: string): any {
               args?.where?.id
                 ? {
                     id: args.where.id,
-                    user1_id: '123e4567-e89b-12d3-a456-426614174000',
+                    user1_id: '123e4567-e89b-8101-8000-426614174000',
                     user2_id: '223e4567-e89b-12d3-a456-426614174000',
                   }
                 : null;
           if (name === 'school') {
             return async (args: any = {}) => ({
-              id: args?.where?.id ?? '123e4567-e89b-12d3-a456-426614174000',
+              id: args?.where?.id ?? '123e4567-e89b-8101-8000-426614174000',
               name: 'Mock School',
-              created_by: '123e4567-e89b-12d3-a456-426614174000',
+              created_by: '123e4567-e89b-8101-8000-426614174000',
               _count: { classrooms: 0, bonds: 0 },
             });
           }
@@ -609,7 +609,7 @@ function createMockDelegate(name: string): any {
                 name: 'Test Collection',
                 description: null,
                 thumbnail_url: null,
-                creator_id: '123e4567-e89b-12d3-a456-426614174000',
+                creator_id: '123e4567-e89b-8101-8000-426614174000',
                 visibility: 'public',
                 subjects: [],
                 topics: [],
@@ -686,8 +686,8 @@ function createMockDelegate(name: string): any {
           if (name === 'communityComment' && prop === 'create') {
             return async (args: any = {}) => ({
               id: '423e4567-e89b-12d3-a456-426614174000',
-              post_id: args?.data?.post_id ?? '123e4567-e89b-12d3-a456-426614174000',
-              author_id: args?.data?.author_id ?? '123e4567-e89b-12d3-a456-426614174000',
+              post_id: args?.data?.post_id ?? '123e4567-e89b-8101-8000-426614174000',
+              author_id: args?.data?.author_id ?? '123e4567-e89b-8101-8000-426614174000',
               content: args?.data?.content ?? '',
               is_anonymous: Boolean(args?.data?.is_anonymous),
               is_official_answer: false,
@@ -918,7 +918,7 @@ function createMockDelegate(name: string): any {
             return async (args: any = {}) => ({
               id: 'c23e4567-e89b-12d3-a456-426614174000',
               school_id: args?.data?.school_id ?? '923e4567-e89b-12d3-a456-426614174000',
-              author_id: args?.data?.author_id ?? '123e4567-e89b-12d3-a456-426614174000',
+              author_id: args?.data?.author_id ?? '123e4567-e89b-8101-8000-426614174000',
               content: args?.data?.content ?? 'Principal note',
               note_type: args?.data?.note_type ?? 'note',
               is_pinned: args?.data?.is_pinned ?? false,
@@ -1188,8 +1188,8 @@ function createMockDelegate(name: string): any {
               id: 'gcta-mock-1',
               grade_class_id: args?.where?.grade_class_id ?? '123e4567-e89b-12d3-a456-426614174004',
               academic_cycle_id:
-                args?.where?.academic_cycle_id ?? '123e4567-e89b-12d3-a456-426614174010',
-              teacher_id: args?.where?.teacher_id ?? '123e4567-e89b-12d3-a456-426614174000',
+                args?.where?.academic_cycle_id ?? '123e4567-e89b-8101-8000-426614174010',
+              teacher_id: args?.where?.teacher_id ?? '123e4567-e89b-8101-8000-426614174000',
               status: 'active',
               effective_from: new Date('2020-01-01'),
               effective_to: null,

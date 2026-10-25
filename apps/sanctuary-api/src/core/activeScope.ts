@@ -227,9 +227,9 @@ export function buildIdentityBootstrap(
     email: user.email,
     name,
     display_name: name,
-    first_name: user.first_name,
-    last_name: user.last_name,
-    onboarding_completed: user.onboarding_completed,
+    first_name: user.first_name ?? undefined,
+    last_name: user.last_name ?? undefined,
+    onboarding_completed: user.onboarding_completed ?? false,
     activeBond: selected
       ? {
           id: selected.id,

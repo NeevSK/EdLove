@@ -5,7 +5,7 @@ import {
 } from '../core/channelMediaWorker';
 
 const mediaJobId = '123e4567-e89b-12d3-a456-426614174003';
-const ingressEventId = '123e4567-e89b-12d3-a456-426614174002';
+const ingressEventId = '123e4567-e89b-8101-8000-426614174002';
 const now = new Date('2026-10-15T00:00:00.000Z');
 
 const claimedJob = {

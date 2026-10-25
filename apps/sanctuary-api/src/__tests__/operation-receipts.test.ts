@@ -10,9 +10,9 @@ import {
   setMockZenStackDbAvailable,
 } from './setup';
 
-const accountId = '123e4567-e89b-12d3-a456-426614174000';
+const accountId = '123e4567-e89b-8101-8000-426614174000';
 const operationId = '123e4567-e89b-12d3-a456-426614174001';
-const idempotencyKey = '123e4567-e89b-12d3-a456-426614174002';
+const idempotencyKey = '123e4567-e89b-8101-8000-426614174002';
 const submissionId = '123e4567-e89b-12d3-a456-426614174003';
 const headers = { Authorization: `Bearer ${accountId}` };
 const query = { capability: ASSIGNMENT_SUBMISSION_CAPABILITY, idempotencyKey };

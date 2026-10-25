@@ -447,13 +447,29 @@ except Exception as e:
     if (!pkg) {
       return toText('Missing required argument: "package" (name of package to inspect, e.g. "react-native-reanimated").', true);
     }
-    const targetProject = args.project || 'apps/gurudevi-mobile';
+    let targetProject = args.project;
+    if (!targetProject) {
+      if (
+        pkg.startsWith('@orpc/') ||
+        pkg.startsWith('hono') ||
+        pkg.startsWith('@hono/') ||
+        pkg.startsWith('@modelcontextprotocol/') ||
+        pkg === 'inngest' ||
+        pkg === 'posthog-node'
+      ) {
+        targetProject = 'apps/sanctuary-api';
+      } else if (pkg.startsWith('next') || pkg.startsWith('@next/')) {
+        targetProject = 'apps/gurudevi-web';
+      } else {
+        targetProject = 'apps/gurudevi-mobile';
+      }
+    }
     console.error(`[Platform MCP] Fetching physical affordance for: ${pkg} in ${targetProject}`);
     const resolvedProject = path.resolve(ROOT_DIR, targetProject);
     const output = runCommand(
       'node',
-      ['scripts/run-rn-terrain.mjs', 'affordance', pkg],
-      { cwd: resolvedProject },
+      [path.resolve(ROOT_DIR, 'scripts/run-rn-terrain.mjs'), 'affordance', pkg, targetProject],
+      { cwd: ROOT_DIR },
     );
     return toText(output.combined, !output.ok);
   }

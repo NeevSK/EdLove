@@ -13,7 +13,7 @@ import {
 } from './setup';
 
 describe('history API (identity/database substituted)', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const actorId = '123e4567-e89b-12d3-a456-426614174001';
   const classroomId = '123e4567-e89b-12d3-a456-426614174001';
   const collectionId = '123e4567-e89b-12d3-a456-426614174003';

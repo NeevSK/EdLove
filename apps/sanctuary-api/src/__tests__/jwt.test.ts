@@ -224,6 +224,30 @@ describe('Asymmetric JWT Verification Engine', () => {
     expect(verifiedStudent!.sub).toBe('student-user-1');
   });
 
+  it.each([
+    { sub: 'user-a' },
+    { sub: '', exp: 4_000_000_000 },
+    { sub: 'user-a', exp: '4000000000' },
+    { sub: 'user-a', exp: 4_000_000_000, nbf: 'invalid' },
+    { sub: 'user-a', exp: 4_000_000_000, client_id: 'external-oauth-client' },
+  ])(
+    'rejects invalid claims or an external grant at the first-party boundary: %j',
+    async (payload) => {
+      setTestPublicKey(kidRsa, rsaPublicKey);
+      await expect(
+        verifySupabaseJwt(signToken(payload, rsaPrivateKey, kidRsa)),
+      ).resolves.toBeNull();
+    },
+  );
+
+  it('never accepts synthetic UUID bearer identities on a development server', async () => {
+    await expect(
+      verifySupabaseJwt('123e4567-e89b-42d3-a456-426614174020', {
+        NODE_ENV: 'development',
+      }),
+    ).resolves.toBeNull();
+  });
+
   it('rejects an insecure remote verification-key endpoint before any network request', async () => {
     const fetcher = vi.spyOn(globalThis, 'fetch');
     const token = signToken(

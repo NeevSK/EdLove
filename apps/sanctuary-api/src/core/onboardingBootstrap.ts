@@ -1,11 +1,16 @@
 const onboardingBootstrapProcedurePaths = new Set([
   '/api/onboarding/createInitialBond',
   '/api/onboarding/completeOnboarding',
+  '/api/onboarding/completeProfile',
   '/api/identity/resolveIdentity',
+  '/api/identity/identifyActiveCitizen',
+  '/api/openapi/identity/resolveIdentity',
   '/api/identity/active-scope',
   '/api/capabilities/bootstrap/v1',
   '/api/identity/capabilityBootstrap',
   '/api/openapi/capabilities/bootstrap/v1',
+  '/api/workspaceProvisioning/provisionCommercialBatch',
+  '/api/workspaceProvisioning/requestGuardianLink',
 ]);
 
 /**

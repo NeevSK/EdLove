@@ -10,14 +10,14 @@ import {
 
 describe('Sanctuary API: lifecycle grading via native oRPC', () => {
   const headers = {
-    Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+    Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000',
     'x-classroom-ids': '123e4567-e89b-12d3-a456-426614174003',
     'x-device-trust': 'high',
   };
   const ids = {
-    studentId: '123e4567-e89b-12d3-a456-426614174000',
+    studentId: '123e4567-e89b-8101-8000-426614174000',
     schoolId: '123e4567-e89b-12d3-a456-426614174001',
-    academicCycleId: '123e4567-e89b-12d3-a456-426614174002',
+    academicCycleId: '123e4567-e89b-8101-8000-426614174002',
     gradeClassId: '123e4567-e89b-12d3-a456-426614174003',
     termId: '123e4567-e89b-12d3-a456-426614174004',
     subjectId: '123e4567-e89b-12d3-a456-426614174005',

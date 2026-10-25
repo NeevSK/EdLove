@@ -11,7 +11,7 @@ import {
 } from './setup';
 
 describe('Sanctuary API: self via native oRPC', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
   beforeEach(() => {

@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { ORPCError } from '@orpc/server';
 import {
   OperationReceiptResponseSchema,
@@ -370,7 +369,6 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = await getPolicyDb(context);
       const fullName = input.body.fullName.trim();
-      const shadowUserId = randomUUID();
       const inviteCode = `EDL-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
       // The grade class (model A register) this classroom maps to, only if unambiguous.
@@ -385,9 +383,8 @@ export const educationalRouter = impl.router({
       const row = await db.$transaction(async (tx: any) => {
         // Policy: a teacher/leader may create a shadow learner only in their own school,
         // and the seat insert below rolls everything back if this is not their classroom.
-        await tx.user.create({
+        const shadowUser = await tx.user.create({
           data: {
-            id: shadowUserId,
             full_name: fullName,
             is_anonymous: true,
             identity_state: 'shadow',
@@ -396,6 +393,7 @@ export const educationalRouter = impl.router({
             citizenship: 'THIRD_CLASS',
           },
         });
+        const shadowUserId: string = shadowUser.id;
         if (gradeClass) {
           await tx.studentGradeClassEnrollment.create({
             data: {

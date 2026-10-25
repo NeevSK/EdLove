@@ -16,7 +16,7 @@ function createOptions(overrides: Partial<Parameters<typeof assignEdloveAccountI
 }
 
 describe('EdLove account ID assignment', () => {
-  it('writes only through a canonical account conditional-update seam', async () => {
+  it('writes only through the private server-owned database assignment seam', async () => {
     const queryRows = vi
       .fn()
       .mockResolvedValueOnce([{ edlove_id: null }])
@@ -24,12 +24,12 @@ describe('EdLove account ID assignment', () => {
     const options = createOptions({ queryRows });
 
     await expect(assignEdloveAccountId(canonicalAccountId, options)).resolves.toBe(mintedEdloveId);
-    expect(queryRows).toHaveBeenNthCalledWith(2, expect.stringContaining('for update'), [
-      canonicalAccountId,
-      mintedEdloveId,
-    ]);
-    expect(queryRows.mock.calls[1]?.[0]).toContain('deleted_at is null');
-    expect(queryRows.mock.calls[1]?.[0]).toContain('target.edlove_id is null');
+    expect(queryRows).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('private.assign_edlove_account_id'),
+      [canonicalAccountId, mintedEdloveId],
+    );
+    expect(queryRows.mock.calls[1]?.[0]).not.toContain('update public.users');
   });
 
   it('returns a concurrent winner without replacing its assigned value', async () => {

@@ -14,13 +14,13 @@ async function loadApp(environment: string | undefined) {
   vi.stubEnv('SUPABASE_JWT_ISSUER', 'https://identity.example.test');
   vi.stubEnv('SUPABASE_JWT_AUDIENCE', 'authenticated');
   vi.stubEnv('SUPABASE_URL', 'https://identity.example.test');
+  vi.stubEnv('SUPABASE_ANON_KEY', 'synthetic-provider-key');
   vi.stubEnv('EXPO_PUBLIC_SUPABASE_URL', 'https://identity.example.test');
   vi.stubEnv('RATE_LIMIT_STORE', 'postgres');
   vi.stubEnv('RATE_LIMIT_TRUSTED_PROXY_HEADER', 'x-forwarded-for');
   await import('./setup');
   return (await import('../core/app')).app;
 }
-
 
 describe('development diagnostics ingress', () => {
   afterEach(() => {
@@ -41,7 +41,6 @@ describe('development diagnostics ingress', () => {
       expect(writeFile).not.toHaveBeenCalled();
     },
   );
-
 
   it('preserves development ingestion and scratch-file output', async () => {
     const app = await loadApp('development');

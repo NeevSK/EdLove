@@ -10,7 +10,7 @@ import {
 } from './setup';
 
 describe('Sanctuary API: attendance via native oRPC', () => {
-  const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-8101-8000-426614174000';
   const gradeClassId = '123e4567-e89b-12d3-a456-426614174001';
   const headers = { Authorization: `Bearer ${userId}`, 'x-classroom-ids': gradeClassId };
 
@@ -62,10 +62,10 @@ describe('Sanctuary API: attendance via native oRPC', () => {
 });
 
 describe('Sanctuary API: attendance on grade classes (model A)', () => {
-  const teacherId = '123e4567-e89b-12d3-a456-426614174000';
+  const teacherId = '123e4567-e89b-8101-8000-426614174000';
   const gradeClassId = '123e4567-e89b-12d3-a456-426614174004';
   const otherGradeClassId = '123e4567-e89b-12d3-a456-426614174005';
-  const studentId = '123e4567-e89b-12d3-a456-426614174020';
+  const studentId = '123e4567-e89b-8101-8000-426614174020';
   const headers = { Authorization: `Bearer ${teacherId}` };
 
   beforeEach(() => {
@@ -91,7 +91,7 @@ describe('Sanctuary API: attendance on grade classes (model A)', () => {
           grade_class: {
             id: gradeClassId,
             name: '5A',
-            academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+            academic_cycle_id: '123e4567-e89b-8101-8000-426614174010',
           },
         },
       ],
@@ -113,7 +113,7 @@ describe('Sanctuary API: attendance on grade classes (model A)', () => {
       {
         id: gradeClassId,
         name: '5A',
-        academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+        academic_cycle_id: '123e4567-e89b-8101-8000-426614174010',
         role: 'class_teacher',
       },
     ]);
@@ -198,7 +198,7 @@ describe('Sanctuary API: attendance on grade classes (model A)', () => {
       student_id: studentId,
       grade_class_id: gradeClassId,
       school_id: 'school-123',
-      academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+      academic_cycle_id: '123e4567-e89b-8101-8000-426614174010',
       recorded_by: teacherId,
       status: 'late',
     });
@@ -206,7 +206,7 @@ describe('Sanctuary API: attendance on grade classes (model A)', () => {
 });
 
 describe('Sanctuary API: attendance quickMark and submitExcuse', () => {
-  const teacherId = '123e4567-e89b-12d3-a456-426614174000';
+  const teacherId = '123e4567-e89b-8101-8000-426614174000';
   const gradeClassId = '123e4567-e89b-12d3-a456-426614174004';
   const students = [
     '123e4567-e89b-12d3-a456-426614174021',
@@ -217,7 +217,7 @@ describe('Sanctuary API: attendance quickMark and submitExcuse', () => {
   const requiredColumns = {
     grade_class_id: gradeClassId,
     school_id: 'school-123',
-    academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+    academic_cycle_id: '123e4567-e89b-8101-8000-426614174010',
     recorded_by: teacherId,
   };
 
@@ -243,7 +243,7 @@ describe('Sanctuary API: attendance quickMark and submitExcuse', () => {
           grade_class: {
             id: gradeClassId,
             name: '5A',
-            academic_cycle_id: '123e4567-e89b-12d3-a456-426614174010',
+            academic_cycle_id: '123e4567-e89b-8101-8000-426614174010',
           },
         },
       ],

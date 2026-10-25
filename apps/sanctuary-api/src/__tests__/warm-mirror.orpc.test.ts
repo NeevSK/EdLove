@@ -12,7 +12,7 @@ describe('warm mirror API', () => {
   it('rejects anonymous warm mirror reads', async () => {
     await expect(
       createTestORPCClient().warmMirror.getDataPoints({
-        params: { userId: '123e4567-e89b-12d3-a456-426614174000' },
+        params: { userId: '123e4567-e89b-8101-8000-426614174000' },
       }),
     ).rejects.toMatchObject({ status: 403 });
   });

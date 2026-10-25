@@ -26,7 +26,7 @@ describe('Sanctuary API: guardian published assessment summary', () => {
   it('denies a non-relationship principal before exposing validation or data details', async () => {
     await expect(
       createTestORPCClient({
-        Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
+        Authorization: 'Bearer 123e4567-e89b-8101-8000-426614174000',
       }).guardianAssessment.getPublishedAssessmentSummary({
         params: { studentId },
         query: { limit: 51 },

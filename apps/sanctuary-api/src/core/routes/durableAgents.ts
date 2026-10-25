@@ -8,6 +8,7 @@ import {
   noticeFunctions,
   platformEventFunctions,
   sanctuaryInngest,
+  externalEffectFunctions,
 } from '../../agents';
 
 const getUser = (c: any) => c.get('user') as { id: string } | undefined;
@@ -375,7 +376,12 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
   if (options.includeInngest !== false) {
     const inngestHandler = serve({
       client: sanctuaryInngest,
-      functions: [...durableAgentFunctions, ...platformEventFunctions, ...noticeFunctions] as any,
+      functions: [
+        ...durableAgentFunctions,
+        ...platformEventFunctions,
+        ...noticeFunctions,
+        ...externalEffectFunctions,
+      ] as any,
     });
     routes.all('/api/inngest', (c: any) => inngestHandler(c));
   }
