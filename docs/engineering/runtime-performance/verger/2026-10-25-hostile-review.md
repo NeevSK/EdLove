@@ -178,18 +178,23 @@ adapter inside `VergerSense`), and every Kotlin file but the binding now compile
 
 ## 5. Remaining work, in order of leverage
 
-1. **Phase F on phones** (your laptop): first Gradle build, the A52 and A24, one 2 to 4 GB phone;
-   record sessions with the lab; run `compare`. Everything provisional waits on this.
-2. **Remote config and a sink** (findings 1 and 2, section 1): a remote config patch; `selfBudget`,
-   the unhelpful-lever count and the storage rule into config; the default policy by experiment arm; a
-   telemetry sink of your choosing.
-3. **Freeze levels during gestures and momentum** (finding 3): a scroll-momentum signal from the list
-   primitive, and the freeze applied to lowering lever levels, not only hardware.
-4. **B3.1** the TrafficStats byte counter and allowances config.
-5. **Registry architecture test** (finding 6).
-6. **Sensing gaps** (finding 7), in vision order: JS lag sampler, Hermes heap, frame drift.
-7. **Lifecycle out of Expo** (section 3), then the v2 port after phase F.
-8. Decide finding 5: record the lever-ladder decision in the ADR, or plan the budget allocator.
+Done the same day, in this order (6, 7, 2, 3): the event-loop lag and Hermes GC samplers
+(`e656b33`); frame-drift heat decided against (`301cfa3`); lifecycle from activity callbacks and the
+first compile of the Android code (`1feefed`); the remaining choices as config (`34106cd`);
+thresholds from the lab and remote (`538c458`); telemetry through the analytics port with a field
+budget (`1bcb7ac`); the policy as a launch choice with a split (`ac16273`); the bounded gesture and
+scroll freeze (`f650242`).
+
+1. **Phase F on phones** (your laptop): first Gradle build (it must compile `VergerModule.kt`), the
+   A52 and A24, one 2 to 4 GB phone; record sessions with the lab; run `compare`. Every provisional
+   number waits on this, as does the p5 default.
+2. **Decisions that are yours:** activate GrowthBook in the mobile app (then bind
+   `vergerRemoteFromFlags`); inject PostHog (then verger's telemetry flows); which workloads wait on
+   low storage (`whenStorageLow`); a self-budget (`selfBudgetMaxDutyRatio`), after measuring.
+3. **B3.1** the TrafficStats byte counter and allowances config.
+4. **Registry architecture test** (finding 6).
+5. **The Expo Modules 2.0 port** of `VergerModule.kt`, after phase F (section 3).
+6. Decide finding 5: record the lever-ladder decision in the ADR, or plan the budget allocator.
 
 Sources: installed `expo-modules-core@58.0.21` (`android/src/main/java/expo/modules/v2/`,
 `CHANGELOG.md`, `expo-module-gradle-plugin`), `expo-crypto@58.0.7`, `expo-sqlite@58.0.13`,
