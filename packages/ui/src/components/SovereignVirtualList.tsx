@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, RefreshControl, type StyleProp, type ViewStyle } from 'react-native';
 import { FlashList, type FlashListProps, type ListRenderItem } from '@shopify/flash-list';
+import { useVisualCapabilities } from '../context/VisualCapabilities';
 import { LayoutLoopSentinel } from '../sentinels/LayoutLoopSentinel';
 import { BrandedEmptyState } from './BrandedEmptyState';
 import { SkeletonList } from './Skeleton';
@@ -37,8 +38,11 @@ export function SovereignVirtualList<T>({
   testID,
   ListEmptyComponent,
   refreshControl,
+  drawDistance,
   ...flashListProps
 }: SovereignVirtualListProps<T>) {
+  // verger's `list-window` lever narrows how far ahead rows render; a caller's value wins.
+  const { listDrawDistance } = useVisualCapabilities();
   if (isLoading && (!data || data.length === 0)) {
     return (
       <View style={[styles.container, containerStyle]} testID={testID ? `${testID}-loading` : undefined}>
@@ -70,6 +74,7 @@ export function SovereignVirtualList<T>({
         renderItem={renderItem}
         ListEmptyComponent={resolvedEmpty}
         refreshControl={resolvedRefreshControl}
+        drawDistance={drawDistance ?? listDrawDistance}
         {...flashListProps}
       />
     </LayoutLoopSentinel>

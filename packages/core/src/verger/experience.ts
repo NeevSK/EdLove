@@ -33,6 +33,13 @@ export interface GurudeviExperience {
   readonly imageCachePolicy: 'disk' | 'memory-disk';
   readonly imageDecodeFormat: 'argb' | 'rgb';
   readonly shouldPrefetchAssets: boolean;
+  /** Loading placeholders animate (`loading-shimmer` at 0) or hold still. */
+  readonly allowShimmer: boolean;
+  /**
+   * FlashList's `drawDistance` (dp) from `list-window`: undefined keeps the list's own default
+   * (250 dp natively), then half and a quarter of it. A caller's own value still wins.
+   */
+  readonly listDrawDistance: number | undefined;
   readonly maxCelebrationParticles: number;
   readonly experience: ExperienceProfile;
 }
@@ -55,8 +62,13 @@ export const EXPERIENCE_LEVER_IDS = [
   'prefetch',
   'image-cache',
   'image-decode',
+  'loading-shimmer',
+  'list-window',
 ] as const;
 type ExperienceLever = (typeof EXPERIENCE_LEVER_IDS)[number];
+
+/** FlashList's native default is 250 dp (`PlatformConfig.defaultDrawDistance`, v2.3). */
+const LIST_DRAW_DISTANCE: readonly (number | undefined)[] = [undefined, 125, 60];
 
 /** A three-step lever's level as an experience level: 0 rich, 1 refined, 2 essential. */
 const BY_LEVEL: readonly ExperienceLevel[] = ['rich', 'refined', 'essential'];
@@ -127,6 +139,8 @@ export function experienceOf(
     imageCachePolicy: !safe && level('image-cache') === 0 ? 'memory-disk' : 'disk',
     imageDecodeFormat: safe || level('image-decode') >= 1 ? 'rgb' : 'argb',
     shouldPrefetchAssets: prefetch,
+    allowShimmer: !safe && level('loading-shimmer') === 0,
+    listDrawDistance: LIST_DRAW_DISTANCE[safe ? 2 : Math.min(level('list-window'), 2)],
     maxCelebrationParticles: maxParticles,
     experience: {
       motion,

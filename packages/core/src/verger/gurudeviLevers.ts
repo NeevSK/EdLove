@@ -97,7 +97,8 @@ export const GURUDEVI_APP_LEVERS: readonly LeverSpec[] = [
     target: 'cpu',
     ambient: false,
     motion: false,
-    levels: ['wide render window', 'default', 'narrow'],
+    // FlashList's own draw distance, then half, then a quarter (Gurudevi's view, experienceOf).
+    levels: ['default render window', 'half', 'quarter'],
   },
   {
     id: 'transitions',

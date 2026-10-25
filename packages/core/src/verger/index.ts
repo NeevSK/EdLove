@@ -22,7 +22,7 @@ export {
 } from './wallpaper';
 export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
-export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST, GURUDEVI_WEB_HOST } from './host';
+export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST, GURUDEVI_WEB_HOST, WEB_VIEW_LEVER_IDS } from './host';
 export {
   resolveVergerLaunch,
   type RuntimeMode,
