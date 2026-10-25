@@ -1,5 +1,5 @@
 import { qualityCost } from './quality';
-import type { VergerSnapshot, LeverSpec, MemoryLevel, ThermalLevel } from './types';
+import type { LeverGain, VergerSnapshot, LeverSpec, MemoryLevel, ThermalLevel } from './types';
 
 /**
  * What one session showed about this device, in the terms the record learns from: how long
@@ -23,6 +23,8 @@ export interface SessionReport {
    * given back). A starting point merely held on a still screen is not evidence for itself.
    */
   readonly pressure: Readonly<Record<string, number>>;
+  /** Each lever's measured gain as the session ended (P6), kept across launches (R6). */
+  readonly gains?: Readonly<Record<string, LeverGain>>;
 }
 
 export interface SessionLedger {
@@ -93,6 +95,7 @@ export function createSessionLedger(levers: readonly LeverSpec[]): SessionLedger
         contentionExhausted: exhausted,
         qualityCost: foregroundMs > 0 ? Math.round((costSum / foregroundMs) * 1000) / 1000 : 0,
         pressure,
+        ...(last && Object.keys(last.gains).length > 0 ? { gains: last.gains } : {}),
       };
     },
   };

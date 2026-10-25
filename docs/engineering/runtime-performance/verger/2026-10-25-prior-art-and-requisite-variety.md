@@ -130,6 +130,14 @@ measurably draining, never a limit. The deaf-sensor invariant now covers `batter
 `energyShort` and R1's `thermalProjected`. G1 only: a ten-minute simulator session cannot show a
 school day's drain; phase F measures real drains.
 
+**R6 built (gains across launches).** The session report carries the gains the session ended
+with; the record folds them into the device's profile on every counted session (a gain is a
+measurement of the lever, whatever the outcome), and a lever not measured again keeps its gain
+with half its samples, so old measurements fade back to unconfident. Every running rung launches
+with them, each at most `gainMinSamples` strong; off, shadow and an exercise launch do not. A new
+device build starts over. Persisted gains are parsed strictly; records written before R6 still
+read. Writing the tests found that aging ran only in sessions that reported gains: fixed.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).

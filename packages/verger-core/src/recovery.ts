@@ -1,5 +1,5 @@
 import type { SessionReport } from './session';
-import type { RunMode, MemoryLevel, ThermalLevel } from './types';
+import type { LeverGain, RunMode, MemoryLevel, ThermalLevel } from './types';
 
 /**
  * Recovery, healing and growth across launches.
@@ -149,6 +149,11 @@ export interface VergerRecord {
     readonly grant: number;
     readonly proving: number;
     readonly prior: Readonly<Record<string, number>>;
+    /**
+     * Each lever's measured gain on this device (R6), carried across launches; a lever not
+     * measured in a session keeps its gain with half its samples, so old measurements fade.
+     */
+    readonly gains?: Readonly<Record<string, LeverGain>>;
   };
 }
 
@@ -185,6 +190,8 @@ export interface LaunchPlan {
   readonly prior: Readonly<Record<string, number>>;
   /** Steps of capacity floor relaxed on this device. */
   readonly grant: number;
+  /** Lever gains measured on this device in earlier sessions (R6). */
+  readonly gains: Readonly<Record<string, LeverGain>>;
   readonly reason: string;
 }
 
@@ -284,6 +291,20 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 const COOL: ReadonlySet<ThermalLevel> = new Set(['unknown', 'nominal']);
 const ROOMY: ReadonlySet<MemoryLevel> = new Set(['unknown', 'normal']);
 
+/** A session's gains replace the stored ones; a lever it did not measure keeps half its samples. */
+function mergeGains(
+  stored: Readonly<Record<string, LeverGain>> | undefined,
+  session: Readonly<Record<string, LeverGain>>,
+): Record<string, LeverGain> {
+  const merged: Record<string, LeverGain> = {};
+  for (const [id, gain] of Object.entries(stored ?? {})) {
+    const samples = Math.floor(gain.samples / 2);
+    if (samples > 0) merged[id] = { gain: gain.gain, samples };
+  }
+  for (const [id, gain] of Object.entries(session)) if (gain.samples > 0) merged[id] = gain;
+  return merged;
+}
+
 /**
  * Folds the last session into the record. Order matters and is fixed: a changed policy or
  * release restarts the ladder; a changed device build restarts the profile; then the outcome
@@ -315,6 +336,12 @@ export function foldSession(
 
   if (counts) {
     const report = outcome.marker.report;
+    // Gains are measurements of the levers on this device, whatever the session's outcome; every
+    // reported session ages the ones it did not measure.
+    if (report && (report.gains || profile.gains)) {
+      const gains = mergeGains(profile.gains, report.gains ?? {});
+      profile = { ...profile, gains };
+    }
     if (outcome.kind === 'neutral') {
       // Strain without blame: give back growth, learn nothing, move no rung.
       profile = { ...profile, grant: Math.max(0, profile.grant - 1), proving: 0 };
@@ -454,6 +481,7 @@ export function planLaunch(
       hardware: false,
       prior: {},
       grant: 0,
+      gains: {},
       reason: 'rung-4-off',
     };
   }
@@ -465,6 +493,7 @@ export function planLaunch(
       hardware: false,
       prior: {},
       grant: 0,
+      gains: {},
       reason: 'rung-3-shadow',
     };
   }
@@ -477,6 +506,7 @@ export function planLaunch(
       hardware: false,
       prior: {},
       grant: 0,
+      gains: {},
       reason: 'exercise',
     };
   }
@@ -494,6 +524,9 @@ export function planLaunch(
     hardware: rung < 2,
     prior,
     grant: rung === 0 ? grant : 0,
+    // Measurements, not a starting point: they only steer which lever helps, so every running rung
+    // keeps them.
+    gains: record.profile.gains ?? {},
     reason: `rung-${rung}`,
   };
 }
@@ -508,6 +541,19 @@ const isFiniteNumber = (v: unknown): v is number => typeof v === 'number' && Num
 const isRung = (v: unknown): v is Rung => v === 0 || v === 1 || v === 2 || v === 3 || v === 4;
 const isLevelMap = (v: unknown): v is Record<string, number> =>
   isObject(v) && Object.values(v).every((x) => isFiniteNumber(x) && x >= 0 && x <= 16);
+const isGainMap = (v: unknown): boolean =>
+  isObject(v) &&
+  Object.keys(v).length <= 64 &&
+  Object.values(v).every(
+    (g) =>
+      isObject(g) &&
+      isFiniteNumber(g.gain) &&
+      g.gain >= -1 &&
+      g.gain <= 1 &&
+      isFiniteNumber(g.samples) &&
+      Number.isInteger(g.samples) &&
+      g.samples >= 0,
+  );
 const THERMALS: readonly unknown[] = ['unknown', 'nominal', 'warm', 'hot', 'critical'];
 const MEMORIES: readonly unknown[] = ['unknown', 'normal', 'trimmed', 'low'];
 
@@ -534,7 +580,8 @@ function parseReport(v: unknown): SessionReport | null | undefined {
     MEMORIES.includes(v.worstMemory) &&
     typeof v.contentionExhausted === 'boolean' &&
     isFiniteNumber(v.qualityCost) &&
-    isLevelMap(v.pressure);
+    isLevelMap(v.pressure) &&
+    (v.gains === undefined || isGainMap(v.gains));
   return ok ? (v as unknown as SessionReport) : undefined;
 }
 
@@ -579,7 +626,8 @@ export function parseRecord(text: string | null | undefined): VergerRecord | nul
     profile.grant <= 8 &&
     isFiniteNumber(profile.proving) &&
     profile.proving >= 0 &&
-    isLevelMap(profile.prior);
+    isLevelMap(profile.prior) &&
+    (profile.gains === undefined || isGainMap(profile.gains));
   const foldedOk = v.lastFolded === null || isFiniteNumber(v.lastFolded);
   return ladderOk && profileOk && foldedOk ? (v as unknown as VergerRecord) : null;
 }

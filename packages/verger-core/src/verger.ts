@@ -195,6 +195,7 @@ const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
   hardware: false,
   prior: {},
   grant: 0,
+  gains: {},
   reason,
 });
 
@@ -518,6 +519,7 @@ export function createVerger(options: VergerOptions): Verger {
         // Growth is a direction activation can switch off; the earned grant is kept, unused.
         capacityGrant: activation.grow ? decided.grant : 0,
         initialPressure: decided.prior,
+        initialGains: decided.gains,
       },
     });
     const ledger = createSessionLedger(host.levers);

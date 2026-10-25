@@ -31,8 +31,9 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
   `thermalRecoverMs` (60 s), `thermalPaceMs` (10 min). Phase F measures each phone's time
   constant and how fast its heat readings respond; until then recovery after heat is slow by
   design (7 to 9 minutes in the model).
-- Gains are learned per session and not kept across launches; persisting them (like the learned
-  profile) is open, and needs phones to say whether they are stable.
+- **Resolved 2026-10-25 (R6):** gains are kept across launches in the device's profile and fade
+  when not measured again. Was: gains learned per session only. Whether real gains are stable
+  across sessions is still for phase F to show.
 - In touched use most steps publish batched by the gesture hold and are not measured; whether
   real sessions give enough samples for P7 is unknown until phase F.
 

@@ -53,7 +53,7 @@ export interface RuntimeControllerOptions {
   /** What this launch may do, from the recovery ladder and the learned profile. */
   readonly launch?: Pick<
     CreateVergerStateOptions,
-    'hardware' | 'capacityGrant' | 'initialPressure'
+    'hardware' | 'capacityGrant' | 'initialPressure' | 'initialGains'
   >;
   /** What verger may do at start, already capped by the launch; defaults to the mode's preset. */
   readonly activation?: VergerActivation;

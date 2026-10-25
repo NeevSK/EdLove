@@ -323,6 +323,11 @@ export interface CreateVergerStateOptions {
    * the loop raises it back exactly as it would its own decreases once frames are comfortable.
    */
   readonly initialPressure?: Readonly<Record<string, number>>;
+  /**
+   * Lever gains measured on this device in earlier sessions (R6). Each starts at most
+   * `gainMinSamples` strong, so one session's fresh samples outweigh an old estimate quickly.
+   */
+  readonly initialGains?: Readonly<Record<string, LeverGain>>;
   /** Defaults to the preset that reproduces `mode`. */
   readonly activation?: VergerActivation;
   /** verger-p5's per-lever, evidence-weighted expansion. Default false (verger-p4). */
@@ -387,7 +392,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     framesExhausted: false,
     frameLoad: null,
     gainProbe: null,
-    leverGains: {},
+    leverGains: seededGains(options.initialGains, options.levers, config.gainMinSamples),
     screen: null,
     transitionUntil: Number.NEGATIVE_INFINITY,
     screenMemory: {},
@@ -429,6 +434,21 @@ const IMPACT_ORDER = { low: 0, medium: 1, high: 2 } as const;
  * (they act only on measured contention). The most visible levers go on top of the stack, so
  * they are the first given back.
  */
+/** Earlier sessions' gains for the host's levers, each at most `cap` samples strong (R6). */
+function seededGains(
+  gains: Readonly<Record<string, LeverGain>> | undefined,
+  levers: readonly LeverSpec[],
+  cap: number,
+): Record<string, LeverGain> {
+  const seeded: Record<string, LeverGain> = {};
+  if (!gains) return seeded;
+  for (const lever of levers) {
+    const known = gains[lever.id];
+    if (known && known.samples > 0) seeded[lever.id] = { gain: known.gain, samples: Math.min(known.samples, cap) };
+  }
+  return seeded;
+}
+
 function startingPressure(
   levers: readonly LeverSpec[],
   initial: Readonly<Record<string, number>> | undefined,
