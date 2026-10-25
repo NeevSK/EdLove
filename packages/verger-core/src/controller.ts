@@ -63,6 +63,8 @@ export interface RuntimeControllerOptions {
   readonly measure?: () => number;
   /** Records up to this many events for exact replay (D1); off when absent. Development only. */
   readonly recordEvents?: number;
+  /** Called after every event is handled (the self-budget check); a failure is contained. */
+  readonly afterEvent?: () => void;
 }
 
 export interface RuntimeController {
@@ -175,6 +177,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
       for (const listener of listeners) guard(listener);
     }
     schedule();
+    if (options.afterEvent) guard(options.afterEvent);
   };
 
   return {

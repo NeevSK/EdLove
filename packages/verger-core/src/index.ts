@@ -145,6 +145,13 @@ export {
 } from './recording';
 export { replayVerger } from './replay';
 export { createSelfCostMeter, type SelfCost, type SelfCostMeter } from './selfCost';
+export {
+  createSelfBudgetGuard,
+  SELF_BUDGET_SHED,
+  type SelfBudget,
+  type SelfBudgetGuard,
+  type SelfBudgetStage,
+} from './selfBudget';
 export { INEFFECTIVE_AFTER_MOVES, type IneffectiveFinding, ineffectiveFindings } from './selfRules';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {

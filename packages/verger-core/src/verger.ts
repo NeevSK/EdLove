@@ -19,6 +19,7 @@ import { fnv1a32 } from './experiment';
 import { createFlightRecorder, type FlightRecorder } from './flightRecorder';
 import type { VergerRecording } from './recording';
 import type { SelfCost } from './selfCost';
+import { createSelfBudgetGuard, SELF_BUDGET_SHED, type SelfBudget } from './selfBudget';
 import { ineffectiveFindings } from './selfRules';
 import type { VergerHost } from './host';
 import {
@@ -133,6 +134,8 @@ export interface VergerOptions {
    * and the dev lab; leave unset in a release.
    */
   readonly recordEvents?: number;
+  /** Verger's budget for itself (D4); unset, it never reduces itself for cost. */
+  readonly selfBudget?: SelfBudget;
 }
 
 export interface Verger {
@@ -314,6 +317,10 @@ export function createVerger(options: VergerOptions): Verger {
   const requestedActivation = options.activation ?? activationForMode(options.requested);
   /** Caps the activation to what this launch's plan allows. */
   let capFor: (activation: VergerActivation) => VergerActivation = (a) => a;
+  // The running session's activation layers: the host's `configure` patch, and the self-budget's.
+  let configured: ActivationPatch | null = null;
+  let selfPatch: ActivationPatch | null = null;
+  let checkBudget: () => void = () => {};
   let session: {
     marker: SessionMarker;
     ledger: SessionLedger;
@@ -504,6 +511,7 @@ export function createVerger(options: VergerOptions): Verger {
       activation,
       policy: host.policy,
       recordEvents: options.recordEvents,
+      afterEvent: () => checkBudget(),
       launch: {
         hardware: decided.hardware,
         // Growth is a direction activation can switch off; the earned grant is kept, unused.
@@ -536,6 +544,29 @@ export function createVerger(options: VergerOptions): Verger {
     };
     let visibility = started.getSnapshot().visibility;
     const learned = new Set<string>();
+    configured = null;
+    selfPatch = null;
+    // D4: verger over its own budget sheds its contention sensing, then hands over to the
+    // floors. Acted on after the current dispatch, never inside it.
+    const budget = options.selfBudget ? createSelfBudgetGuard(options.selfBudget, now()) : null;
+    checkBudget = () => {
+      if (!budget) return;
+      const before = budget.stage;
+      const stage = budget.check(started.selfCost(), now());
+      if (stage === before) return;
+      telemetry?.event('verger_self_budget', {
+        stage,
+        duty_ppm: Math.round((budget.lastDutyRatio ?? 0) * 1e6),
+      });
+      void Promise.resolve().then(() => {
+        if (controller !== started) return;
+        if (stage === 'shed') {
+          selfPatch = SELF_BUDGET_SHED;
+          const activation = capFor(resolveActivation(requestedActivation, configured, selfPatch));
+          started.dispatch({ type: 'activation', at: now(), activation });
+        } else if (stage === 'floors') void verger.stop();
+      });
+    };
     // Loop 2 (D4): the ledger's verdicts go back to the policy as events, so the rule is part of
     // the recorded session and replays exactly. Sent after the current dispatch finishes, never
     // from inside it.
@@ -598,6 +629,7 @@ export function createVerger(options: VergerOptions): Verger {
   };
 
   const teardown = (clean: boolean) => {
+    checkBudget = () => {};
     const current = session;
     const running = controller;
     session = null;
@@ -677,7 +709,9 @@ export function createVerger(options: VergerOptions): Verger {
     configure(patch) {
       const running = controller;
       if (!running) return;
-      const activation = capFor(resolveActivation(requestedActivation, patch));
+      configured = patch;
+      // The self-budget's shedding stays on top of whatever is configured.
+      const activation = capFor(resolveActivation(requestedActivation, patch, selfPatch));
       running.dispatch({ type: 'activation', at: now(), activation });
     },
     tune(patch) {
