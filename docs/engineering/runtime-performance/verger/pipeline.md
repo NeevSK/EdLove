@@ -18,6 +18,8 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## Build plan and progress
 
+**Latest review:** [hostile review, 2026-10-25](2026-10-25-hostile-review.md) (configuration doors, findings, Expo Modules 2.0, remaining work in order).
+
 **Continuing this work?** Start with the [playbook](playbook/README.md) (rules, nuances, one
 guide per remaining phase) and run `pnpm verger:check`. Remaining, in order of leverage: F
 (phones), C (envelope), B3 (data budget), D (loops 2 and 3), the rest of B.
