@@ -6,6 +6,7 @@ import {
   labConfigure,
   labSections,
   labTune,
+  VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
   type Verger,
 } from '@repo/core/verger';
@@ -29,6 +30,23 @@ export function applyWebLabPatch(
   try {
     if (text.trim() === '') storage.removeItem(VERGER_LAB_PATCH_KEY);
     else storage.setItem(VERGER_LAB_PATCH_KEY, text);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: `applied, not saved: ${String(error)}` };
+  }
+}
+
+/** The same for thresholds: tuned live through validation, kept only if they applied. */
+export function applyWebLabTune(
+  verger: Verger,
+  text: string,
+  storage: Pick<Storage, 'setItem' | 'removeItem'>,
+): LabResult {
+  const outcome = labTune(verger, GURUDEVI_WEB_HOST.config, text);
+  if (!outcome.ok) return outcome;
+  try {
+    if (text.trim() === '') storage.removeItem(VERGER_LAB_CONFIG_KEY);
+    else storage.setItem(VERGER_LAB_CONFIG_KEY, text);
     return { ok: true };
   } catch (error) {
     return { ok: false, error: `applied, not saved: ${String(error)}` };
@@ -146,10 +164,10 @@ export function VergerLabClient() {
             type="button"
             className="rounded-md bg-action px-3 py-2 text-sm font-semibold text-paper-light"
             onClick={() =>
-              setResult({ what: 'thresholds', outcome: labTune(verger, GURUDEVI_WEB_HOST.config, tuneText) })
+              setResult({ what: 'thresholds', outcome: applyWebLabTune(verger, tuneText, window.localStorage) })
             }
           >
-            Tune
+            Tune and save
           </button>
           <button
             type="button"

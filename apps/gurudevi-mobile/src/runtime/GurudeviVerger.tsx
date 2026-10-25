@@ -5,10 +5,14 @@ import {
   type FidelityPreference,
   type VergerTelemetrySink,
   GURUDEVI_MOBILE_HOST,
+  hostWithConfig,
   labConfigure,
+  labTune,
   type VergerActivation,
   UNKNOWN_CAPACITY,
+  VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
+  type VergerHost,
   VERGER_LAB_RECORD_EVENTS,
   type VergerStore,
 } from '@repo/core/verger';
@@ -21,7 +25,7 @@ import { useFidelityOptional } from '@repo/ui/context';
 import { useVerger, useVergerSnapshot } from '@repo/verger-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import { deviceSignals } from './deviceSignals';
-import { readVergerLaunch, type RuntimeMode } from './runtimeMode';
+import { readVergerConfig, readVergerLaunch, type RuntimeMode } from './runtimeMode';
 
 interface GurudeviVergerProps {
   readonly children: ReactNode;
@@ -67,34 +71,44 @@ function OnlineStatus() {
 }
 
 /**
- * The dev lab's saved patch, in a development build: AsyncStorage cannot be read before the
- * launch is decided, so the patch is applied live, once, as soon as verger runs. Malformed, it
- * is refused whole and the reason logged.
+ * The dev lab's saved activation patch and thresholds, in a development build: AsyncStorage
+ * cannot be read before the launch is decided, so both are applied live, once, as soon as verger
+ * runs. Malformed, each is refused whole and the reason logged.
  */
-function SavedLabPatch() {
+function SavedLab({ host }: { readonly host: VergerHost }) {
   const verger = useVerger();
   useEffect(() => {
     if (!__DEV__ || !verger) return;
     let done = false;
-    let text: string | null = null;
+    let saved: readonly [string | null, string | null] | null = null;
     const apply = () => {
-      if (done || text === null || verger.activation === null) return;
+      if (done || saved === null || verger.activation === null) return;
       done = true;
-      const result = labConfigure(verger, GURUDEVI_MOBILE_HOST.levers, text);
-      if (!result.ok) console.warn('[verger] lab patch ignored:', result.error);
+      const [patch, config] = saved;
+      if (patch !== null) {
+        const result = labConfigure(verger, host.levers, patch);
+        if (!result.ok) console.warn('[verger] lab patch ignored:', result.error);
+      }
+      if (config !== null) {
+        const result = labTune(verger, host.config, config);
+        if (!result.ok) console.warn('[verger] lab thresholds ignored:', result.error);
+      }
     };
     const unsubscribe = verger.subscribe(apply);
-    AsyncStorage.getItem(VERGER_LAB_PATCH_KEY)
-      .then((saved) => {
-        text = saved;
+    Promise.all([
+      AsyncStorage.getItem(VERGER_LAB_PATCH_KEY),
+      AsyncStorage.getItem(VERGER_LAB_CONFIG_KEY),
+    ])
+      .then(([patch, config]) => {
+        saved = [patch, config];
         apply();
       })
-      .catch((error: unknown) => console.warn('[verger] lab patch unreadable', error));
+      .catch((error: unknown) => console.warn('[verger] lab settings unreadable', error));
     return () => {
       done = true;
       unsubscribe();
     };
-  }, [verger]);
+  }, [verger, host]);
   return null;
 }
 
@@ -111,6 +125,12 @@ export function GurudeviVerger({
   fidelity,
 }: GurudeviVergerProps) {
   const setting = useFidelityOptional().fidelityLevel;
+  // Thresholds hold whether verger runs or not (the floors read them): resolved first.
+  const [host] = useState<VergerHost>(() => {
+    const read = readVergerConfig(GURUDEVI_MOBILE_HOST.config);
+    if (read.rejectedConfig) console.warn('[verger] remote thresholds ignored:', read.rejectedConfig);
+    return read.patched ? hostWithConfig(GURUDEVI_MOBILE_HOST, read.config) : GURUDEVI_MOBILE_HOST;
+  });
   // A kill switch wins over everything, whichever carries it (remote override or experiment).
   // Otherwise an explicit mode, then the assignment, then the build and remote activation.
   const [launch] = useState<{ mode: RuntimeMode; activation?: VergerActivation }>(() => {
@@ -125,7 +145,7 @@ export function GurudeviVerger({
   });
   return (
     <VergerRoot
-      host={GURUDEVI_MOBILE_HOST}
+      host={host}
       platform={platform}
       store={VERGER_STORE}
       facts={facts}
@@ -139,7 +159,7 @@ export function GurudeviVerger({
       recordEvents={__DEV__ ? VERGER_LAB_RECORD_EVENTS : undefined}
     >
       <OnlineStatus />
-      <SavedLabPatch />
+      <SavedLab host={host} />
       {children}
     </VergerRoot>
   );

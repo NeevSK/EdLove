@@ -94,3 +94,29 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   contentionReliefCores: 0.05,
   gestureQuietMs: 1_000,
 };
+
+/**
+ * A threshold patch from outside the code (remote config, the lab's saved tuning), untrusted:
+ * an object of known thresholds with numbers, which together with `base` must validate. Refused
+ * whole, with the reason, on the first problem; nothing partial is ever applied.
+ */
+export function parseConfigPatch(
+  input: unknown,
+  base: VergerConfig,
+): { readonly patch: Partial<VergerConfig> } | { readonly error: string } {
+  if (typeof input !== 'object' || input === null || Array.isArray(input))
+    return { error: 'a config patch is an object of thresholds' };
+  const isThreshold = (key: string): key is keyof VergerConfig => key in base;
+  const patch: Partial<Record<keyof VergerConfig, number>> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (!isThreshold(key)) return { error: `unknown threshold "${key}"` };
+    if (typeof value !== 'number') return { error: `"${key}" must be a number` };
+    patch[key] = value;
+  }
+  try {
+    validateConfig({ ...base, ...patch });
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
+  return { patch };
+}

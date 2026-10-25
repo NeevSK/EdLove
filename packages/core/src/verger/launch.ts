@@ -5,13 +5,20 @@ import {
   type LeverSpec,
   modeForActivation,
   parseActivationPatch,
+  parseConfigPatch,
   type RunMode,
   resolveActivation,
   type VergerActivation,
+  type VergerConfig,
+  type VergerHost,
+  defineHost,
 } from '@repo/verger-core';
 
 /** Where the dev lab keeps its saved activation patch (`localPatch`), in each app's own store. */
 export const VERGER_LAB_PATCH_KEY = 'gurudevi:verger:lab-patch';
+
+/** Where the dev lab keeps its saved threshold patch (`localConfig`). */
+export const VERGER_LAB_CONFIG_KEY = 'gurudevi:verger:lab-config';
 
 /** Events a development build records per session for the lab's export (D1). */
 export const VERGER_LAB_RECORD_EVENTS = 4000;
@@ -111,5 +118,102 @@ export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
       .join(' + '),
     rejected,
     rejectedLocal,
+  };
+}
+
+export interface VergerConfigInputs {
+  /** The host's own config: the layer every patch applies over. */
+  readonly base: VergerConfig;
+  /** Remote threshold patch (`__GURUDEVI_VERGER_CONFIG__`), untrusted. */
+  readonly remoteConfig: unknown;
+  /** The dev lab's saved thresholds, untrusted; honoured only in a development build. */
+  readonly localConfig?: unknown;
+  readonly dev: boolean;
+}
+
+export interface VergerConfigLaunch {
+  /** The config in force: the host's, then the lab's, then remote, each validated whole. */
+  readonly config: VergerConfig;
+  /** Whether any patch applied (a changed config gets its own hash in telemetry). */
+  readonly patched: boolean;
+  readonly rejectedConfig: string | null;
+  readonly rejectedLocalConfig: string | null;
+}
+
+/**
+ * The thresholds this launch runs on. Separate from the mode: the floors read thresholds too,
+ * so they hold whether verger runs or not. Same layering as activation (build, lab, remote: remote
+ * overrules the lab), and each patch is refused whole if it names an unknown threshold or leaves
+ * an invalid config.
+ */
+export function resolveVergerConfig(inputs: VergerConfigInputs): VergerConfigLaunch {
+  const layer = (input: unknown, base: VergerConfig) => {
+    if (input === undefined || input === null) return { config: base, applied: false, rejected: null };
+    const parsed = parseConfigPatch(input, base);
+    return 'patch' in parsed
+      ? { config: { ...base, ...parsed.patch }, applied: true, rejected: null }
+      : { config: base, applied: false, rejected: parsed.error };
+  };
+  const local = inputs.dev
+    ? layer(inputs.localConfig, inputs.base)
+    : { config: inputs.base, applied: false, rejected: null };
+  const remote = layer(inputs.remoteConfig, local.config);
+  return {
+    config: remote.config,
+    patched: local.applied || remote.applied,
+    rejectedConfig: remote.rejected,
+    rejectedLocalConfig: local.rejected,
+  };
+}
+
+/** The host on another config (its own hash, so telemetry splits by the thresholds that ran). */
+export function hostWithConfig(host: VergerHost, config: VergerConfig): VergerHost {
+  return defineHost({
+    name: host.name,
+    levers: host.levers,
+    workloads: host.workloads,
+    config,
+    recovery: host.recovery,
+    policy: host.policy,
+  });
+}
+
+/** GrowthBook keys for verger's remote inputs (ADR-012 naming: `gurudevi.<domain>.<feature>`). */
+export const VERGER_REMOTE_FLAG_KEYS = {
+  mode: 'gurudevi.verger.runtime-mode',
+  activation: 'gurudevi.verger.activation',
+  config: 'gurudevi.verger.config',
+} as const;
+
+export interface VergerRemoteInputs {
+  readonly override: unknown;
+  readonly remotePatch: unknown;
+  readonly remoteConfig: unknown;
+}
+
+/**
+ * The app's feature-flag snapshot (`FeatureRolloutSnapshot.flags`: booleans and strings) as
+ * verger's remote inputs. Patches travel as JSON strings; one that does not parse is passed on as
+ * a value the strict parsers refuse, so the reason reaches the logs instead of vanishing. A flag
+ * that is absent is no input. Not bound in the app yet: activating GrowthBook (client key, flag
+ * registration under the manifest) is a separate decision.
+ */
+export function vergerRemoteFromFlags(
+  flags: Readonly<Record<string, boolean | string>>,
+): VergerRemoteInputs {
+  const json = (key: string): unknown => {
+    const value = flags[key];
+    if (typeof value !== 'string' || value.trim() === '') return undefined;
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return `unparseable ${key}: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  };
+  const mode = flags[VERGER_REMOTE_FLAG_KEYS.mode];
+  return {
+    override: typeof mode === 'string' && mode !== '' ? mode : undefined,
+    remotePatch: json(VERGER_REMOTE_FLAG_KEYS.activation),
+    remoteConfig: json(VERGER_REMOTE_FLAG_KEYS.config),
   };
 }

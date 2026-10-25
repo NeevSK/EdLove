@@ -1,5 +1,5 @@
 import { type ActivationPatch, parseActivationPatch, type VergerActivation } from './activation';
-import { validateConfig } from './config';
+import { parseConfigPatch } from './config';
 import { type AccountReading, estimateAccounts, type ResourceAccount } from './demand';
 import { type OutcomeSummary, outcomeAttributes } from './outcomes';
 import { qualityCost } from './quality';
@@ -136,22 +136,10 @@ export function labTune(verger: Verger, base: VergerConfig, text: string): LabRe
   } catch (error) {
     return { ok: false, error: `not JSON: ${error instanceof Error ? error.message : String(error)}` };
   }
-  if (typeof input !== 'object' || input === null || Array.isArray(input))
-    return { ok: false, error: 'a config patch is an object of thresholds' };
-  const isThreshold = (key: string): key is keyof VergerConfig => key in base;
-  const patch: Partial<Record<keyof VergerConfig, number>> = {};
-  for (const [key, value] of Object.entries(input)) {
-    if (!isThreshold(key)) return { ok: false, error: `unknown threshold "${key}"` };
-    if (typeof value !== 'number') return { ok: false, error: `"${key}" must be a number` };
-    patch[key] = value;
-  }
-  try {
-    validateConfig({ ...base, ...patch });
-    verger.tune(patch);
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
-  }
+  const parsed = parseConfigPatch(input, base);
+  if ('error' in parsed) return { ok: false, error: parsed.error };
+  verger.tune(parsed.patch);
+  return { ok: true };
 }
 
 /** One block of the lab's read-out: a heading and its label/value rows, already formatted. */

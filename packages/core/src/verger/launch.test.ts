@@ -1,7 +1,15 @@
 import { ACTIVATION_PRESETS } from '@repo/verger-core';
 import { describe, expect, it } from 'vitest';
 import { GURUDEVI_LEVERS } from './gurudeviLevers';
-import { resolveVergerLaunch, type VergerLaunchInputs } from './launch';
+import { GURUDEVI_MOBILE_HOST } from './host';
+import {
+  hostWithConfig,
+  resolveVergerConfig,
+  resolveVergerLaunch,
+  VERGER_REMOTE_FLAG_KEYS,
+  type VergerLaunchInputs,
+  vergerRemoteFromFlags,
+} from './launch';
 
 const base: VergerLaunchInputs = {
   override: undefined,
@@ -97,5 +105,61 @@ describe('what verger may do this launch', () => {
 
   it('an unknown build preset is not a preset', () => {
     expect(launch({ buildPreset: 'turbo' }).mode).toBe('off');
+  });
+});
+
+describe('this launch\'s thresholds', () => {
+  const base = GURUDEVI_MOBILE_HOST.config;
+  const config = (over: Partial<Parameters<typeof resolveVergerConfig>[0]>) =>
+    resolveVergerConfig({ base, remoteConfig: undefined, dev: false, ...over });
+
+  it('nothing set is the host\'s config, unpatched', () => {
+    expect(config({})).toEqual({ config: base, patched: false, rejectedConfig: null, rejectedLocalConfig: null });
+  });
+
+  it('remote overrules the lab; the lab counts only in a development build', () => {
+    const both = config({ dev: true, localConfig: { upgradeAfterMs: 2000, storageLowBytes: 1 }, remoteConfig: { upgradeAfterMs: 3000 } });
+    expect(both.config.upgradeAfterMs).toBe(3000);
+    expect(both.config.storageLowBytes).toBe(1);
+    expect(both.patched).toBe(true);
+    expect(config({ localConfig: { upgradeAfterMs: 2000 } }).config.upgradeAfterMs).toBe(base.upgradeAfterMs);
+  });
+
+  it('a malformed or invalid patch is refused whole, with its reason, and the rest still applies', () => {
+    const bad = config({ remoteConfig: { upgradeAfterMs: 2000, noSuch: 1 } });
+    expect(bad.config).toEqual(base);
+    expect(bad.rejectedConfig).toMatch(/unknown threshold/);
+    const invalid = config({ dev: true, localConfig: { storageLowBytes: 1 }, remoteConfig: { upgradeAfterMs: 10 ** 9 } });
+    expect(invalid.config.storageLowBytes).toBe(1);
+    expect(invalid.config.upgradeAfterMs).toBe(base.upgradeAfterMs);
+    expect(invalid.rejectedConfig).toMatch(/below/);
+  });
+
+  it('a host on another config keeps its levers and policy and gets its own hash', () => {
+    const patched = hostWithConfig(GURUDEVI_MOBILE_HOST, { ...base, upgradeAfterMs: 2000 });
+    expect(patched.levers).toEqual(GURUDEVI_MOBILE_HOST.levers);
+    expect(patched.policy).toBe(GURUDEVI_MOBILE_HOST.policy);
+    expect(patched.configHash).not.toBe(GURUDEVI_MOBILE_HOST.configHash);
+  });
+});
+
+describe('verger\'s remote inputs from feature flags', () => {
+  it('reads the mode, and the patches as JSON strings; absent flags are no input', () => {
+    expect(
+      vergerRemoteFromFlags({
+        [VERGER_REMOTE_FLAG_KEYS.mode]: 'off',
+        [VERGER_REMOTE_FLAG_KEYS.activation]: '{"grow":false}',
+        [VERGER_REMOTE_FLAG_KEYS.config]: '{"upgradeAfterMs":2000}',
+      }),
+    ).toEqual({ override: 'off', remotePatch: { grow: false }, remoteConfig: { upgradeAfterMs: 2000 } });
+    expect(vergerRemoteFromFlags({})).toEqual({ override: undefined, remotePatch: undefined, remoteConfig: undefined });
+  });
+
+  it('an unparseable patch reaches the strict parser, which refuses it with the reason', () => {
+    const inputs = vergerRemoteFromFlags({ [VERGER_REMOTE_FLAG_KEYS.config]: '{oops' });
+    expect(inputs.remoteConfig).toMatch(/^unparseable/);
+    const read = resolveVergerConfig({ base: GURUDEVI_MOBILE_HOST.config, remoteConfig: inputs.remoteConfig, dev: false });
+    expect(read.patched).toBe(false);
+    expect(read.rejectedConfig).toMatch(/object of thresholds/);
   });
 });

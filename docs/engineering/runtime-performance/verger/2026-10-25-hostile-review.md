@@ -35,6 +35,16 @@ that reaches config reaches them; the `selfBudget` option added earlier that day
 Low storage holds a workload only if the host declares `whenStorageLow: 'wait'` on it; Gurudevi
 declares none yet (your decision).
 
+**Update (2b):** thresholds now have every door. `resolveVergerConfig` layers the host's config,
+the lab's saved thresholds (development only) and a remote patch (`__GURUDEVI_VERGER_CONFIG__`),
+each through `parseConfigPatch` (refused whole, with its reason); the result builds the host
+(`hostWithConfig`, its own config hash in telemetry) and holds for the floors too. The lab saves
+thresholds that applied (web: read at the next launch; mobile: applied live once verger runs).
+`vergerRemoteFromFlags` maps the app's GrowthBook snapshot (`gurudevi.verger.runtime-mode`,
+`.activation`, `.config`) to these inputs, tested and **not bound**: GrowthBook is not live in
+the mobile app (nothing resolves flags), and turning it on (client key, flag registration under the
+manifest) is your decision.
+
 **Verdict:** yes, they need it. The seam is one: a remote **config patch** beside the remote activation
 patch, parsed strictly like it (`parseConfigPatch`, refused whole), layered build < lab < remote, with
 the ladder and the kill switch still above it; plus `selfBudget`, `ineffectiveAfterMoves` and the

@@ -25,7 +25,7 @@ export {
   type VergerActivation,
 } from './activation';
 export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from './builtins';
-export { DEFAULT_VERGER_CONFIG, validateConfig } from './config';
+export { DEFAULT_VERGER_CONFIG, parseConfigPatch, validateConfig } from './config';
 export {
   createRuntimeController,
   isValidEvent,

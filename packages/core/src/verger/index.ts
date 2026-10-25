@@ -24,10 +24,18 @@ export { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 export { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
 export { GURUDEVI_HOST, GURUDEVI_MOBILE_HOST, GURUDEVI_WEB_HOST, WEB_VIEW_LEVER_IDS } from './host';
 export {
+  hostWithConfig,
+  resolveVergerConfig,
   resolveVergerLaunch,
+  VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
+  VERGER_REMOTE_FLAG_KEYS,
+  type VergerRemoteInputs,
+  vergerRemoteFromFlags,
   VERGER_LAB_RECORD_EVENTS,
   type RuntimeMode,
+  type VergerConfigInputs,
+  type VergerConfigLaunch,
   type VergerLaunch,
   type VergerLaunchInputs,
 } from './launch';

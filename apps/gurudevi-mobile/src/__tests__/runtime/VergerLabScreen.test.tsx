@@ -16,9 +16,9 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   default: { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn() },
 }));
 
-const { createVerger, GURUDEVI_MOBILE_HOST, UNKNOWN_CAPACITY, VERGER_LAB_PATCH_KEY } = await import('@repo/core/verger');
+const { createVerger, GURUDEVI_MOBILE_HOST, UNKNOWN_CAPACITY, VERGER_LAB_CONFIG_KEY, VERGER_LAB_PATCH_KEY } = await import('@repo/core/verger');
 const { bindVerger } = await import('@repo/verger-react');
-const { VergerLabScreen, applyLabPatch } = await import('@/runtime/lab/VergerLabScreen');
+const { VergerLabScreen, applyLabPatch, applyLabTune } = await import('@/runtime/lab/VergerLabScreen');
 
 function runningVerger() {
   return createVerger({
@@ -51,6 +51,20 @@ describe('the mobile dev lab (D2)', () => {
     expect(saved.size).toBe(0);
     const failing = { setItem: async () => Promise.reject(new Error('disk')), removeItem: async () => {} };
     expect(await applyLabPatch(verger, '{"grow":false}', failing)).toMatchObject({ ok: false, error: expect.stringMatching(/applied, not saved/) });
+  });
+
+  it('keeps thresholds only when they validate and applied', async () => {
+    const verger = runningVerger();
+    await verger.start();
+    const saved = new Map<string, string>();
+    const store = {
+      setItem: async (key: string, value: string) => void saved.set(key, value),
+      removeItem: async (key: string) => void saved.delete(key),
+    };
+    expect(await applyLabTune(verger, '{"upgradeAfterMs":999999}', store)).toMatchObject({ ok: false });
+    expect(saved.size).toBe(0);
+    expect(await applyLabTune(verger, '{"upgradeAfterMs":2000}', store)).toEqual({ ok: true });
+    expect(saved.get(VERGER_LAB_CONFIG_KEY)).toBe('{"upgradeAfterMs":2000}');
   });
 
   it('shows every layer of a bound verger', async () => {

@@ -6,6 +6,7 @@ import {
   labSections,
   labTune,
   type Verger,
+  VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
 } from '@repo/core/verger';
 import { tokens } from '@repo/ui/tokens';
@@ -21,6 +22,16 @@ export interface LabPatchStore {
   removeItem(key: string): Promise<void>;
 }
 
+async function keep(store: LabPatchStore, key: string, text: string): Promise<LabResult> {
+  try {
+    if (text.trim() === '') await store.removeItem(key);
+    else await store.setItem(key, text);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: `applied, not saved: ${String(error)}` };
+  }
+}
+
 /**
  * Applies a typed activation patch live and, only if it applied, saves it for the next launch
  * (empty text clears it). A refusal, or a save that fails, comes back as its reason.
@@ -31,14 +42,17 @@ export async function applyLabPatch(
   store: LabPatchStore = AsyncStorage,
 ): Promise<LabResult> {
   const outcome = labConfigure(verger, LEVERS, text);
-  if (!outcome.ok) return outcome;
-  try {
-    if (text.trim() === '') await store.removeItem(VERGER_LAB_PATCH_KEY);
-    else await store.setItem(VERGER_LAB_PATCH_KEY, text);
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, error: `applied, not saved: ${String(error)}` };
-  }
+  return outcome.ok ? keep(store, VERGER_LAB_PATCH_KEY, text) : outcome;
+}
+
+/** The same for thresholds: tuned live through validation, kept only if they applied. */
+export async function applyLabTune(
+  verger: Verger,
+  text: string,
+  store: LabPatchStore = AsyncStorage,
+): Promise<LabResult> {
+  const outcome = labTune(verger, GURUDEVI_MOBILE_HOST.config, text);
+  return outcome.ok ? keep(store, VERGER_LAB_CONFIG_KEY, text) : outcome;
 }
 
 /**
@@ -61,8 +75,9 @@ export function VergerLabScreen() {
   const applyPatch = () => {
     void applyLabPatch(verger, patchText).then((outcome) => setResult({ what: 'activation', outcome }));
   };
-  const applyTune = () =>
-    setResult({ what: 'thresholds', outcome: labTune(verger, GURUDEVI_MOBILE_HOST.config, tuneText) });
+  const applyTune = () => {
+    void applyLabTune(verger, tuneText).then((outcome) => setResult({ what: 'thresholds', outcome }));
+  };
   const shareRecording = () => {
     const recording = verger.recording();
     if (!recording) {
@@ -126,7 +141,7 @@ export function VergerLabScreen() {
           autoCorrect={false}
           multiline
         />
-        <Button label="Tune" onPress={applyTune} />
+        <Button label="Tune and save" onPress={applyTune} />
         <Button label="Share session recording" onPress={shareRecording} />
         {result ? (
           <Text style={result.outcome.ok ? styles.ok : styles.error}>
