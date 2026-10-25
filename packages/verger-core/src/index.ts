@@ -131,6 +131,8 @@ export {
   type OutcomeLedgerOptions,
   type OutcomeSummary,
   type Verdict,
+  outcomeAttributes,
+  verdictLine,
 } from './outcomes';
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
 export { comparePolicies, type PolicyReport } from './compare';

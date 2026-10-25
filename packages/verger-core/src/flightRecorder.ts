@@ -8,6 +8,8 @@ import type { VergerSnapshot } from './types';
  */
 export interface FlightRecorder {
   record(snapshot: VergerSnapshot): void;
+  /** A line already in the recorder's code form (a verdict), kept in the same ring. */
+  note(line: string): void;
   /** Oldest first. */
   lines(): readonly string[];
 }
@@ -22,6 +24,10 @@ export function createFlightRecorder(
   return {
     record(snapshot) {
       ring.push(flightLine(snapshot, sessionStartAt));
+      if (ring.length > size) ring.splice(0, ring.length - size);
+    },
+    note(line) {
+      ring.push(line);
       if (ring.length > size) ring.splice(0, ring.length - size);
     },
     lines: () => [...ring],

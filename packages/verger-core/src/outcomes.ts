@@ -6,6 +6,7 @@ import {
   RESOURCE_ACCOUNTS,
   type ResourceAccount,
 } from './demand';
+import { DEFAULT_VERGER_CONFIG } from './config';
 import { qualityCost } from './quality';
 import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
@@ -80,17 +81,22 @@ export interface OutcomeLedger {
 export interface OutcomeLedgerOptions {
   readonly levers: readonly LeverSpec[];
   readonly capacity: CapacityFacts;
-  /** How long a compress has to relieve its account. */
+  /** How long a compress has to relieve its account; config `outcomeJudgeWindowMs` by default. */
   readonly judgeWindowMs?: number;
-  /** How long an expand must last without being pushed back by pressure. */
+  /** How long an expand must last without being pushed back; config `outcomeHoldWindowMs`. */
   readonly holdWindowMs?: number;
   readonly maxRecords?: number;
   /** The host's thresholds, so accounts are read as the policy reads them. */
-  readonly config?: Pick<VergerConfig, 'batteryLowPercent'>;
+  readonly config?: Partial<
+    Pick<VergerConfig, 'batteryLowPercent' | 'outcomeJudgeWindowMs' | 'outcomeHoldWindowMs'>
+  >;
+  /** Called once per move as its verdict is reached (the flight recorder's evidence). */
+  readonly onJudged?: (record: MoveRecord) => void;
 }
 
-export const DEFAULT_JUDGE_WINDOW_MS = 5_000;
-export const DEFAULT_HOLD_WINDOW_MS = 10_000;
+// One source for each window: the config's defaults.
+export const DEFAULT_JUDGE_WINDOW_MS = DEFAULT_VERGER_CONFIG.outcomeJudgeWindowMs;
+export const DEFAULT_HOLD_WINDOW_MS = DEFAULT_VERGER_CONFIG.outcomeHoldWindowMs;
 const DEFAULT_MAX_RECORDS = 64;
 
 const RANK: Record<AccountState, number> = { unknown: -1, ample: 0, tight: 1, overdrawn: 2 };
@@ -112,8 +118,11 @@ type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedger {
   const { levers, capacity } = options;
-  const judgeWindowMs = options.judgeWindowMs ?? DEFAULT_JUDGE_WINDOW_MS;
-  const holdWindowMs = options.holdWindowMs ?? DEFAULT_HOLD_WINDOW_MS;
+  const judgeWindowMs =
+    options.judgeWindowMs ?? options.config?.outcomeJudgeWindowMs ?? DEFAULT_JUDGE_WINDOW_MS;
+  const holdWindowMs =
+    options.holdWindowMs ?? options.config?.outcomeHoldWindowMs ?? DEFAULT_HOLD_WINDOW_MS;
+  const readingConfig = { batteryLowPercent: options.config?.batteryLowPercent ?? DEFAULT_VERGER_CONFIG.batteryLowPercent };
   const maxRecords = options.maxRecords ?? DEFAULT_MAX_RECORDS;
   const relieves = new Map(levers.map((lever) => [lever.id, accountsRelievedBy(lever)]));
 
@@ -160,6 +169,15 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
       case 'pending':
         break;
     }
+    if (verdict !== 'pending' && options.onJudged) {
+      const notify = options.onJudged;
+      const copy = { ...record };
+      try {
+        notify(copy);
+      } catch (error) {
+        console.error('[verger] outcome observer failed', error);
+      }
+    }
   };
 
   /** Closes every window that ended by `at`; the state since the last snapshot held throughout. */
@@ -181,7 +199,7 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
     observe(snapshot) {
       // Windows that closed before this snapshot are judged on the state that held until now.
       settle(snapshot.at);
-      const readings = estimateAccounts(snapshot, capacity, options.config);
+      const readings = estimateAccounts(snapshot, capacity, readingConfig);
       const stateOf = (account: ResourceAccount): AccountState => readings[account].state;
 
       // Relief first, while each strain's onset is still known: a pending compress whose
@@ -275,4 +293,60 @@ export function createOutcomeLedger(options: OutcomeLedgerOptions): OutcomeLedge
       return { levers: levelsOut, pending: records.filter((r) => r.verdict === 'pending').length };
     },
   };
+}
+
+/**
+ * A session's outcomes as telemetry attributes (stage 5 into stage 8): totals across levers and
+ * the lever that most often failed to relieve, so field data shows whether verger's moves help.
+ * Codes and counts only.
+ */
+export function outcomeAttributes(summary: OutcomeSummary): Record<string, string | number> {
+  let relieved = 0;
+  let notRelieved = 0;
+  let unjudged = 0;
+  let held = 0;
+  let withdrawn = 0;
+  let floorMoves = 0;
+  let agilityCount = 0;
+  let agilityTotalMs = 0;
+  let agilityWorstMs = 0;
+  let worstLever = '-';
+  let worstFailures = 0;
+  // In id order, so the worst lever is the first among equals, the same on every phone.
+  const entries = Object.entries(summary.levers).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  for (const [id, t] of entries) {
+    relieved += t.relieved;
+    notRelieved += t.notRelieved;
+    unjudged += t.unjudged;
+    held += t.held;
+    withdrawn += t.withdrawn;
+    floorMoves += t.floorMoves;
+    agilityCount += t.agilityCount;
+    agilityTotalMs += t.agilityTotalMs;
+    agilityWorstMs = Math.max(agilityWorstMs, t.agilityWorstMs);
+    if (t.notRelieved > worstFailures) {
+      worstFailures = t.notRelieved;
+      worstLever = id;
+    }
+  }
+  return {
+    relieved,
+    not_relieved: notRelieved,
+    unjudged,
+    held,
+    withdrawn,
+    floor_moves: floorMoves,
+    pending: summary.pending,
+    agility_mean_ms: agilityCount > 0 ? Math.round(agilityTotalMs / agilityCount) : 0,
+    agility_worst_ms: Math.round(agilityWorstMs),
+    worst_lever: worstLever,
+  };
+}
+
+/** One judged move as a flight-recorder line: `seconds|judged|lever|verdict|accounts`. */
+export function verdictLine(record: MoveRecord, sessionStartAt: number): string {
+  const at = record.judgedAt ?? record.at;
+  const seconds = Math.max(0, Math.round((at - sessionStartAt) / 100) / 10);
+  const accounts = Object.keys(record.accounts).sort().join(',') || '-';
+  return [seconds, 'judged', record.lever, record.verdict, accounts].join('|');
 }

@@ -41,10 +41,13 @@ import {
   type MoveRecord,
   type OutcomeLedger,
   type OutcomeSummary,
+  outcomeAttributes,
+  verdictLine,
 } from './outcomes';
 import { canonicalLadderKey, ladderKey as ladderKeyOf } from './policy';
 import { createSessionLedger, type SessionLedger } from './session';
 import {
+  bucketMs,
   createVergerTelemetry,
   type VergerTelemetry,
   type VergerTelemetrySink,
@@ -318,6 +321,8 @@ export function createVerger(options: VergerOptions): Verger {
     flight: FlightRecorder;
     /** Loop 2's findings already sent to the reducer, as `lever target`. */
     learned: Set<string>;
+    /** Sends this session's outcomes and self-cost to telemetry (on background and at stop). */
+    reportOutcomes: () => void;
     unsubscribe: () => void;
     timer: unknown;
     lastPersistAt: number;
@@ -507,8 +512,29 @@ export function createVerger(options: VergerOptions): Verger {
       },
     });
     const ledger = createSessionLedger(host.levers);
-    const outcomes = createOutcomeLedger({ levers: host.levers, capacity, config: host.config });
-    const flight = createFlightRecorder(now());
+    const flightStart = now();
+    const flight = createFlightRecorder(flightStart);
+    // Every verdict joins the flight recorder: after a failure, it shows whether the last moves
+    // were helping.
+    const outcomes = createOutcomeLedger({
+      levers: host.levers,
+      capacity,
+      config: host.config,
+      onJudged: (record) => flight.note(verdictLine(record, flightStart)),
+    });
+    const reportOutcomes = () => {
+      if (!telemetry) return;
+      outcomes.settle(now());
+      const cost = started.selfCost();
+      telemetry.event('verger_outcomes', {
+        ...outcomeAttributes(outcomes.summary()),
+        events_per_min: Math.round(cost.eventsPerMinute),
+        reduce_p95: bucketMs(cost.reduceP95Ms),
+        wakeups: cost.wakeups,
+        duty_ppm: Math.round(cost.dutyRatio * 1e6),
+      });
+    };
+    let visibility = started.getSnapshot().visibility;
     const learned = new Set<string>();
     // Loop 2 (D4): the ledger's verdicts go back to the policy as events, so the rule is part of
     // the recorded session and replays exactly. Sent after the current dispatch finishes, never
@@ -544,6 +570,7 @@ export function createVerger(options: VergerOptions): Verger {
       outcomes,
       flight,
       learned,
+      reportOutcomes,
       timer: null,
       lastPersistAt: now(),
       unsubscribe: started.subscribe(() => {
@@ -552,6 +579,9 @@ export function createVerger(options: VergerOptions): Verger {
         guard(() => outcomes.observe(snapshot));
         guard(() => flight.record(snapshot));
         guard(learn);
+        // Going to the background is the session's natural checkpoint: a phone may never stop it.
+        if (snapshot.visibility === 'background' && visibility !== 'background') guard(reportOutcomes);
+        visibility = snapshot.visibility;
         persistSoon();
         notify();
       }),
@@ -576,6 +606,7 @@ export function createVerger(options: VergerOptions): Verger {
       if (current.timer !== null) scheduler.clearTimeout(current.timer);
       guard(current.unsubscribe);
     }
+    if (current && clean) guard(current.reportOutcomes);
     if (running) guard(() => running.stop());
     if (current && clean) {
       const report = guardValue(() => current.ledger.report(now()));

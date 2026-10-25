@@ -393,6 +393,10 @@ export interface VergerConfig {
   readonly inputDelayLongMs: number;
   /** Free storage below this is low: levers' `whenStorageLow` apply (B4). Provisional. */
   readonly storageLowBytes: number;
+  /** How long a compression has to relieve its account before it is judged not relieved. */
+  readonly outcomeJudgeWindowMs: number;
+  /** How long an expansion must last, not pushed back by pressure, to be judged held. */
+  readonly outcomeHoldWindowMs: number;
   /** Free memory below threshold × factor is treated as a trim of that severity. */
   readonly memoryLowFactor: number;
   readonly memoryModerateFactor: number;

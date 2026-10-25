@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import { createVergerState, reduceVerger, snapshotOf } from './reducer';
 import { accountsRelievedBy } from './demand';
-import { createOutcomeLedger } from './outcomes';
+import { createOutcomeLedger, type MoveRecord, outcomeAttributes, verdictLine } from './outcomes';
 import type { CapacityFacts, VergerEvent, VergerSnapshot } from './types';
 
 const CAPACITY: CapacityFacts = {
@@ -227,5 +227,64 @@ describe('outcome ledger in a running verger', () => {
     expect(report?.records.every((r) => r.verdict === 'relieved')).toBe(true);
     await verger.stop();
     expect(verger.outcomes()).toBeNull();
+  });
+});
+
+describe('stage 5 into the record: windows, verdict lines, telemetry', () => {
+  it('the judge window comes from config; an explicit option still wins', () => {
+    const fromConfig = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, config: { outcomeJudgeWindowMs: 2_000 } });
+    fromConfig.observe(snap(0));
+    fromConfig.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
+    fromConfig.settle(3_500);
+    expect(fromConfig.records()[0]).toMatchObject({ verdict: 'not-relieved', judgedAt: 3_000 });
+    const explicit = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, judgeWindowMs: 8_000, config: { outcomeJudgeWindowMs: 2_000 } });
+    explicit.observe(snap(0));
+    explicit.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
+    explicit.settle(3_500);
+    expect(explicit.records()[0]?.verdict).toBe('pending');
+  });
+
+  it('reports each verdict once, as it is reached; a failing observer changes nothing', () => {
+    const judged: MoveRecord[] = [];
+    const l = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, onJudged: (r) => judged.push(r) });
+    l.observe(snap(0));
+    l.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
+    expect(judged).toEqual([]);
+    l.observe(snap(4_000, { thermal: 'nominal', ...lowered('frosting', 1) }));
+    l.settle(20_000);
+    expect(judged.map((r) => r.verdict)).toEqual(['relieved']);
+    const [move] = judged;
+    if (!move) throw new Error('no verdict');
+    expect(verdictLine(move, 0)).toBe(`4|judged|frosting|relieved|${Object.keys(move.accounts).sort().join(',')}`);
+    const throwing = createOutcomeLedger({ levers: SAMPLE_LEVERS, capacity: CAPACITY, onJudged: () => { throw new Error('observer'); } });
+    throwing.observe(snap(0));
+    throwing.observe(snap(1_000, { thermal: 'hot', ...lowered('frosting', 1) }));
+    throwing.observe(snap(4_000, { thermal: 'nominal', ...lowered('frosting', 1) }));
+    expect(throwing.records()[0]?.verdict).toBe('relieved');
+  });
+
+  it('telemetry attributes: totals, agility and the lever that failed most, first among equals', () => {
+    const blank = { relieved: 0, notRelieved: 0, unjudged: 0, held: 0, withdrawn: 0, floorMoves: 0, agilityCount: 0, agilityTotalMs: 0, agilityWorstMs: 0 };
+    expect(
+      outcomeAttributes({
+        pending: 1,
+        levers: {
+          sparkle: { ...blank, notRelieved: 2, relieved: 1, agilityCount: 1, agilityTotalMs: 900, agilityWorstMs: 900 },
+          frosting: { ...blank, notRelieved: 2, held: 3, agilityCount: 1, agilityTotalMs: 300, agilityWorstMs: 300 },
+        },
+      }),
+    ).toEqual({
+      relieved: 1,
+      not_relieved: 4,
+      unjudged: 0,
+      held: 3,
+      withdrawn: 0,
+      floor_moves: 0,
+      pending: 1,
+      agility_mean_ms: 600,
+      agility_worst_ms: 900,
+      worst_lever: 'frosting',
+    });
+    expect(outcomeAttributes({ pending: 0, levers: {} }).worst_lever).toBe('-');
   });
 });

@@ -623,3 +623,38 @@ describe('verger: loop 2 feeds its findings back to the policy (D4)', () => {
     expect(new Set(findings).size).toBe(findings.length);
   });
 });
+
+describe('verger: outcomes reach telemetry and the flight recorder (stage 5)', () => {
+  it('sends verger_outcomes on going to the background and at stop; verdicts join the flight', async () => {
+    const d = device();
+    const store = asyncStore();
+    const sent: { name: string; attributes: Readonly<Record<string, TelemetryValue>> }[] = [];
+    const v = createVerger({
+      ...options(d, store),
+      telemetrySink: (name, attributes) => sent.push({ name, attributes }),
+    });
+    await v.start();
+    v.dispatch({ type: 'app-state', at: d.now(), state: 'active' });
+    for (let i = 0; i < 30; i += 1) {
+      d.pass(500);
+      v.dispatch({ type: 'interaction', at: d.now() - 1 });
+      v.dispatch({
+        type: 'frame-window',
+        at: d.now(),
+        window: { startMs: d.now() - 500, endMs: d.now(), frames: 30, averageMs: 40, targetMs: 16.67, worstMs: 80, droppedRatio: 0.5 },
+      });
+    }
+    d.pass(10_000);
+    v.dispatch({ type: 'app-state', at: d.now(), state: 'background' });
+    const outcomes = sent.filter((e) => e.name === 'verger_outcomes');
+    expect(outcomes).toHaveLength(1);
+    expect(outcomes[0]?.attributes).toMatchObject({ not_relieved: expect.any(Number), events_per_min: expect.any(Number) });
+    expect(Number(outcomes[0]?.attributes.not_relieved)).toBeGreaterThan(0);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const flightKey = [...store.data.keys()].find((k) => k.endsWith(':flight'));
+    const flight: string[] = JSON.parse(flightKey ? (store.data.get(flightKey) ?? '[]') : '[]');
+    expect(flight.some((line) => line.includes('|judged|'))).toBe(true);
+    await v.stop();
+    expect(sent.filter((e) => e.name === 'verger_outcomes')).toHaveLength(2);
+  });
+});
