@@ -1,6 +1,7 @@
 import type { SensorId, VergerActivation } from './activation';
 import type { CreateVergerStateOptions } from './reducer';
 import { VERGER_POLICY, type VergerPolicy } from './policy';
+import { createSelfCostMeter, type SelfCost } from './selfCost';
 import type { VergerTelemetry } from './telemetry';
 import type {
   CapacityFacts,
@@ -57,6 +58,8 @@ export interface RuntimeControllerOptions {
   readonly activation?: VergerActivation;
   /** The rules to decide by; `VERGER_POLICY` by default. */
   readonly policy?: VergerPolicy;
+  /** A high-resolution clock for verger's own cost; `now` by default. */
+  readonly measure?: () => number;
 }
 
 export interface RuntimeController {
@@ -66,6 +69,8 @@ export interface RuntimeController {
   dispatch(event: VergerEvent): void;
   getSnapshot(): VergerSnapshot;
   subscribe(listener: () => void): () => void;
+  /** What verger has cost since this controller was created. */
+  selfCost(): SelfCost;
 }
 
 /**
@@ -88,6 +93,8 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     ...options.launch,
   });
   let snapshot = policy.snapshot(state);
+  const measure = options.measure ?? options.now;
+  const cost = createSelfCostMeter(options.now());
   let stopSensing: (() => void) | null = null;
   let timer: unknown = null;
   // Unknown until first applied: a previous JS instance (a reload) may have left the hardware
@@ -121,6 +128,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     timer = scheduler.setTimeout(
       () => {
         timer = null;
+        cost.onWakeup();
         dispatch({ type: 'tick', at: options.now() });
       },
       Math.max(1, Math.ceil(due - options.now()) + 1),
@@ -140,7 +148,9 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
   const dispatch = (event: VergerEvent) => {
     if (!running || !isValidEvent(event)) return;
     const before = policy.outputVersion(state);
+    const reduceStart = measure();
     state = policy.reduce(state, event);
+    cost.onReduce(measure() - reduceStart);
     guard(() => observe(event));
     if (policy.outputVersion(state) !== before) {
       const sensorsBefore = snapshot.activation.sense;
@@ -186,6 +196,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     },
     dispatch,
     getSnapshot: () => snapshot,
+    selfCost: () => cost.read(options.now()),
     subscribe(listener) {
       listeners.add(listener);
       return () => {

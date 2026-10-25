@@ -17,6 +17,7 @@ import {
 import type { ExperimentAssignment } from './experiment';
 import { fnv1a32 } from './experiment';
 import { createFlightRecorder, type FlightRecorder } from './flightRecorder';
+import type { SelfCost } from './selfCost';
 import type { VergerHost } from './host';
 import {
   classifySession,
@@ -157,6 +158,8 @@ export interface Verger {
    * The native sensors keep the thresholds they started with.
    */
   tune(patch: Partial<VergerConfig> | null): void;
+  /** What verger has cost this session (D3); null while verger is not running. */
+  selfCost(): SelfCost | null;
   /**
    * The snapshot in force. While verger is not running (before `start`, after `stop`, or when
    * the launch stayed off) it is the floors: the host's policy under `FLOORS_ACTIVATION`, on
@@ -626,6 +629,7 @@ export function createVerger(options: VergerOptions): Verger {
       current.outcomes.settle(now());
       return { records: current.outcomes.records(), summary: current.outcomes.summary() };
     },
+    selfCost: () => controller?.selfCost() ?? null,
     get activation() {
       return controller?.getSnapshot().activation ?? null;
     },

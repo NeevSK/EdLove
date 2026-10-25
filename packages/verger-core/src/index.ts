@@ -135,6 +135,7 @@ export {
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
 export { comparePolicies, type PolicyReport } from './compare';
 export { replayVerger } from './replay';
+export { createSelfCostMeter, type SelfCost, type SelfCostMeter } from './selfCost';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
   createVerger,
