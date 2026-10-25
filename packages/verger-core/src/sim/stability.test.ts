@@ -44,14 +44,6 @@ const MAX_FLAPS_PER_MIN = 0.5;
  */
 const MAX_SLOW_REVERSALS_PER_MIN = 0.2;
 const PERIODIC = new Set(['classroom', 'burst', 'identify']);
-/**
- * Low phone, burst: P8 stops the frames loop after two unrelieved steps, but on this phone (at its
- * class floors already) the two left are forced reduced motion and rows-ahead, 31 points of
- * quality. Choosing the lever by measured gain per unit of quality is P7; until then this one
- * bound waits on it.
- */
-const P7_PENDING = new Set(['low · burst']);
-
 /** Sessions whose disturbance is heat, so recovery is paced by P5. */
 const HEAT_PACED = new Set(['heatSoak', 'sun']);
 
@@ -99,7 +91,6 @@ describe('closed-loop stability (P3)', () => {
         expect(m.flapsPerMinute, `${where}: flaps`).toBeLessThanOrEqual(MAX_FLAPS_PER_MIN);
         if (!PERIODIC.has(sessionName))
           expect(m.slowReversalsPerMinute, `${where}: slow reversals`).toBeLessThanOrEqual(MAX_SLOW_REVERSALS_PER_MIN);
-        if (P7_PENDING.has(`${phoneName} · ${sessionName}`)) continue;
         // Quality is not given up where it does not prevent jank. Where verger cut jank by a
         // fifth or more, the quality it gave up bought that, and the jank left is not its waste.
         if (m.jankShare < off.jankShare * 0.8) continue;

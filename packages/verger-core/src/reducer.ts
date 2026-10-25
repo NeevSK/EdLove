@@ -229,7 +229,15 @@ export interface VergerState {
    * The frames loop's stress episode (P8): smoothed frame cost when it first lowered, the budget,
    * and how many steps it has taken since. Null outside an episode.
    */
-  readonly frameEpisode: { readonly startCostMs: number; readonly targetMs: number; readonly steps: number } | null;
+  readonly frameEpisode: {
+    readonly startCostMs: number;
+    readonly targetMs: number;
+    readonly steps: number;
+    /** Quality given up by the episode's steps, as `stepQualityCost` (R7). */
+    readonly spent: number;
+    /** It began more than `frameArrivalMs` after an announced screen: work on a screen shown. */
+    readonly midScreen: boolean;
+  } | null;
   /** Frame cost over stressed windows, smoothed (an EWMA of 0.5), to judge relief through noise. */
   readonly frameCostMs: number | null;
   /** The episode's lowerings did not relieve the frames: no more until the stress ends. */
@@ -248,6 +256,8 @@ export interface VergerState {
   readonly leverGains: Readonly<Record<string, LeverGain>>;
   /** The screen the app last announced (R3); null until one is. */
   readonly screen: string | null;
+  /** When it was announced; null until one is. */
+  readonly screenAt: number | null;
   /** Frames before this time are the announced transition's, not evidence (R3). */
   readonly transitionUntil: number;
   /** p5: the frames-caused pressure verger settled on per screen, applied on return (R4). */
@@ -394,6 +404,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     gainProbe: null,
     leverGains: seededGains(options.initialGains, options.levers, config.gainMinSamples),
     screen: null,
+    screenAt: null,
     transitionUntil: Number.NEGATIVE_INFINITY,
     screenMemory: {},
     polledMemory: null,
@@ -1432,6 +1443,7 @@ function onScreen(state: VergerState, event: Extract<VergerEvent, { type: 'scree
   let next: VergerState = {
     ...state,
     screen: event.name,
+    screenAt: at,
     transitionUntil: at + (event.transitionMs ?? 0),
     gainProbe: null,
     frameLoad: null,
@@ -1515,7 +1527,7 @@ function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: '
       // giving up quality to work no lever reaches. Stop, and say so, until the stress ends.
       const unrelieved =
         episode !== null &&
-        episode.steps >= c.frameReliefSteps &&
+        (episode.steps >= c.frameReliefSteps || (episode.midScreen && episode.spent >= c.frameReliefQuality)) &&
         episode.startCostMs - costMs < c.frameReliefGapShare * (episode.startCostMs - episode.targetMs);
       if (state.framesExhausted || unrelieved) {
         next = {
@@ -1526,6 +1538,19 @@ function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: '
       } else {
         const targets = bottleneckTargets(stage, gpuMeasured(event.window));
         const lowered = lowerProportionally(next, targets, event.at, detail, costMs / w.targetMs);
+        const taken = lowered.state.stack.slice(next.stack.length);
+        const spent = taken.reduce((sum, id) => {
+          const lever = next.levers.find((l) => l.id === id);
+          return sum + (lever ? stepQualityCost(lever) : 0);
+        }, 0);
+        // R7, looking ahead: after a step that did not help, a step that would take the episode
+        // past its quality budget is not taken. The first step always is: there is no evidence yet.
+        const unhelped =
+          episode !== null &&
+          episode.startCostMs - costMs < c.frameReliefGapShare * (episode.startCostMs - episode.targetMs);
+        if (unhelped && episode.midScreen && episode.spent + spent > c.frameReliefQuality) {
+          next = { ...next, framesExhausted: true, lastReason: `${detail}: not relieved by levers` };
+        } else {
         next = lowered.state;
         if (lowered.steps > 0)
           next = {
@@ -1534,8 +1559,13 @@ function onFrameWindow(state: VergerState, event: Extract<VergerEvent, { type: '
               startCostMs: episode?.startCostMs ?? costMs,
               targetMs: episode?.targetMs ?? w.targetMs,
               steps: (episode?.steps ?? 0) + lowered.steps,
+              spent: (episode?.spent ?? 0) + spent,
+              midScreen:
+                episode?.midScreen ??
+                (state.screenAt !== null && event.at - state.screenAt > c.frameArrivalMs),
             },
           };
+        }
       }
       next = { ...next, stressMs: 0, stressEndMs: null };
     }

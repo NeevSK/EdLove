@@ -82,6 +82,11 @@ loop, lever choice, the outcome ledger. The why is in
 - **A controller cannot tell its own effect from a change of screen unless told.** Announce
   screens (R3); in the simulator, name segments' screens.
 - **Memory must not freeze guesses.** Replay only what was measured to help.
+- **Evaluate the whole system.** The simulator runs loop 2 (the outcome ledger and its findings)
+  as the launcher does; a policy judged without its own second loop is judged wrongly.
+- **Stress on arriving and stress mid-screen are different disturbances.** The first is the
+  screen's weight (levers help); the second is work the app does (they rarely do). The relief
+  check spends quality only on the second's budget.
 - **Deep runs find what 300 cases do not.** Three pre-existing bugs (shadowed decisions published
   through a sensor switch-off or a decide switch) surfaced only at `VERGER_RUNS=3000`: run it for
   every policy change, and pin what it finds.

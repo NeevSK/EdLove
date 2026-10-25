@@ -1,6 +1,8 @@
 import type { VergerActivation } from '../activation';
 import type { VergerPolicy } from '../policy';
+import { createOutcomeLedger } from '../outcomes';
 import { qualityCost } from '../quality';
+import { ineffectiveFindings } from '../selfRules';
 import type { FrameState, LeverSpec, ThermalLevel, VergerEvent, VergerSnapshot } from '../types';
 import { batteryTemperatureOf, type LeverEffect, type PhoneModel, type PlantState, stepPlant } from './plant';
 
@@ -60,7 +62,7 @@ export const SIM_SESSIONS = {
   burst: {
     name: 'burst: a calm screen with a heavy decode burst every two minutes',
     segments: Array.from({ length: 5 }, () => [
-      { durationMs: 1.5 * min, baseCostMs: 5, touching: true },
+      { durationMs: 1.5 * min, baseCostMs: 5, touching: true, screen: 'calm' },
       { durationMs: 0.5 * min, baseCostMs: 5, extraCostMs: 10, touching: true, disturbance: true },
     ]).flat(),
   },
@@ -112,6 +114,12 @@ export interface ClosedLoopOptions {
   /** Seeds the frame-cost noise; the same seed gives the same run. */
   readonly seed?: number;
   readonly stepMs?: number;
+  /**
+   * Run loop 2 as the launcher does (default true): an outcome ledger watches each published
+   * snapshot, and each new unhelpful-lever finding goes back to the policy as a
+   * `lever-ineffective` event (only verger-p5 acts on it).
+   */
+  readonly loop2?: boolean;
 }
 
 /** mulberry32: a small seeded generator, so a run is reproducible. */
@@ -144,12 +152,29 @@ export function runClosedLoop(options: ClosedLoopOptions): { readonly ticks: Sim
     activation: options.activation,
   });
   let snapshot = policy.snapshot(state);
+  const loop2 = options.loop2 ?? true;
+  const ledger = createOutcomeLedger({ levers, capacity: phone.capacity });
+  const learned = new Set<string>();
+  ledger.observe(snapshot);
   let plant: PlantState = { temperatureC: phone.thermal.ambientC + 2 };
   let visible = true;
   let screen: string | null = null;
   const ticks: SimTick[] = [];
   const reduce = (event: VergerEvent) => {
+    const before = policy.outputVersion(state);
     state = policy.reduce(state, event);
+    if (loop2 && policy.outputVersion(state) !== before) ledger.observe(policy.snapshot(state));
+  };
+  /** Loop 2's findings, sent back as the launcher sends them. */
+  const feedBack = (at: number) => {
+    if (!loop2) return;
+    ledger.settle(at);
+    for (const finding of ineffectiveFindings(ledger.records())) {
+      const key = `${finding.lever} ${finding.target}`;
+      if (learned.has(key)) continue;
+      learned.add(key);
+      reduce({ type: 'lever-ineffective', at, lever: finding.lever, target: finding.target });
+    }
   };
 
   let at = 0;
@@ -224,6 +249,7 @@ export function runClosedLoop(options: ClosedLoopOptions): { readonly ticks: Sim
           temperatureC: batteryTemperatureOf(phone, plant.temperatureC, jitter),
         });
       reduce({ type: 'tick', at: now });
+      feedBack(now);
       snapshot = policy.snapshot(state);
       ticks.push({
         at: now,

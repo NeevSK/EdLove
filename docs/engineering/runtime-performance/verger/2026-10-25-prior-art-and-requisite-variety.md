@@ -138,6 +138,21 @@ with them, each at most `gainMinSamples` strong; off, shadow and an exercise lau
 device build starts over. Persisted gains are parsed strictly; records written before R6 still
 read. Writing the tests found that aging ran only in sessions that reported gains: fixed.
 
+**R7 built (the last exemption removed).** Two changes:
+- *The simulator runs loop 2* as the launcher does: an outcome ledger watches each published
+  snapshot and unhelpful-lever findings go back as `lever-ineffective` (p5 acts on them). It had
+  evaluated p5 without its own second loop. Loop 2 alone helped the low phone's burst (84 → 72%
+  given up while janking) but hurt mid and high (10 → 15%): once the cheap levers were proven
+  useless, the ladder escalated to costly ones that did not help either.
+- *The relief check judges by quality spent, for stress that arises mid-screen*: an episode that
+  began more than `frameArrivalMs` (5 s) after an announced screen is judged once it has given up
+  `frameReliefQuality` (1, in `stepQualityCost` units), and after a step that did not help, a step
+  that would pass that budget is not taken. Stress on arriving is the screen's own weight and keeps
+  the ordinary relief check (a first attempt applied the budget everywhere and raised the low
+  phone's jank on its heavy screen from 18 to 32%: refused).
+Low phone, burst: quality given up while janking 84 → 59% (p4) and 67% (p5), inside the bound;
+mid and high p5 10 → 8%. `P7_PENDING` is gone: the stability suite has no exemptions.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).

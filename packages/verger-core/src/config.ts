@@ -128,6 +128,8 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   contentionReliefCores: 0.05,
   frameReliefSteps: 2,
   frameReliefGapShare: 0.25,
+  frameReliefQuality: 1,
+  frameArrivalMs: 5_000,
   gainAlpha: 0.3,
   gainMinSamples: 3,
   gainUselessBelow: 0.02,

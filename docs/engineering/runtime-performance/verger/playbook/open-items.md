@@ -22,9 +22,10 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
 
 - The simulator's phones are guesses within the range phones show (thermal τ, rise per load,
   throttling onset, status bands, lever effects). Phase F fits them (F6) and reruns the suite.
-- `P7_PENDING` in `sim/stability.test.ts`: on the low phone's burst session, quality given up
-  while janking stays above off + 15 points; its two remaining levers are the costliest and its
-  steps come while touching, where too few are measured for P7 to steer.
+- **Resolved 2026-10-25 (R7):** `P7_PENDING` removed; the stability suite has no exemptions. Was:
+  the low phone's burst gave up too much quality while janking (its remaining levers were the
+  costliest). The relief check now judges mid-screen episodes by quality spent, and the simulator
+  runs loop 2.
 - Mid phone heat chatter of 0.15 per minute at a status boundary: the model's OS status has no
   hysteresis (real HALs do). Measure the real status bands on a phone before acting on it.
 - P5's constants are assumptions: `thermalTimeConstantMs` (120 s), `thermalStepMs` (60 s),

@@ -70,4 +70,24 @@ describe('frames loop relief check (P8)', () => {
     ]);
     expect(depth[depth.length - 1]).toBeGreaterThan(2);
   });
+
+  it('R7: mid-screen, after a cheap step that did not help, a costly one is not taken', () => {
+    const levers = [
+      { id: 'shimmer', maxLevel: 1, visualImpact: 'low' as const, target: 'gpu' as const, ambient: false, motion: true, levels: ['on', 'off'] },
+      { id: 'all-motion', maxLevel: 1, visualImpact: 'high' as const, target: 'gpu' as const, ambient: false, motion: true, levels: ['on', 'off'] },
+    ];
+    const run = (screenAt: number | null) => {
+      let state = VERGER_POLICY.create({ at: 0, levers });
+      if (screenAt !== null) state = VERGER_POLICY.reduce(state, { type: 'screen', at: screenAt, name: 'workspace' });
+      for (const event of frames(10_000, 12, () => 40)) state = VERGER_POLICY.reduce(state, event);
+      return VERGER_POLICY.snapshot(state);
+    };
+    // Mid-screen (stress 10 s after the screen opened): one cheap step (quality cost 1) did not
+    // help and spent the budget of 1, so the high-impact lever (3) never comes.
+    const mid = run(0);
+    expect(mid.levels['all-motion']).toBe(0);
+    expect(mid.lastReason).toMatch(/not relieved by levers/);
+    // On arrival (the screen opened just now), the screen's own weight: the ladder takes its steps.
+    expect(run(9_900).levels['all-motion']).toBe(1);
+  });
 });

@@ -513,6 +513,17 @@ export interface VergerConfig {
    */
   readonly frameReliefSteps: number;
   readonly frameReliefGapShare: number;
+  /**
+   * R7: the relief check also judges once the episode has given up this much quality, counted as
+   * `stepQualityCost` (a step of a low-impact two-level lever is 0.5, of a medium one 1, of a
+   * high-impact single-level lever 3): one costly step that did not help ends the episode as
+   * surely as two cheap ones. Only for stress that arises mid-screen (more than `frameArrivalMs`
+   * after an announced screen, R3): work the app does on a screen it shows (a sync, a decode
+   * burst) is rarely the levers' to fix, while stress on arriving is the screen's own weight.
+   * Provisional.
+   */
+  readonly frameReliefQuality: number;
+  readonly frameArrivalMs: number;
   /** Weight of each new sample in a lever's gain estimate (P6). Provisional. */
   readonly gainAlpha: number;
   /** Samples a gain needs before p5 chooses levers by it (P7). Provisional. */
