@@ -405,6 +405,19 @@ describe('the recovery ladder against its model (stateful, model-based)', {
             { kind: 'record-corrupted', gapMs: HOUR },
           ],
         ],
+        // Climbs through rungs 1, 2 and 3, so their coverage below never rests on random search
+        // (a run on 2026-10-25 reached every rung but 2).
+        [
+          [
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'crash', foregroundMs: 45_000, gapMs: HOUR },
+            { kind: 'session', end: 'stop', foregroundMs: 45_000, gapMs: HOUR },
+          ],
+        ],
       ],
     });
     // Every rung, recovery, and every kind of fault was reached by some run.

@@ -24,6 +24,12 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
   run since passed, including 3000 cases per property. If it recurs: keep the full output (the
   fast-check seed and counterexample), pin it, fix it. Never re-run until green.
 
+- **Resolved 2026-10-25:** the ladder model test's coverage check ("every rung was reached")
+  failed once because random search never reached rung 2 (output kept in the session's
+  scratchpad: `gate-ladder-fail.log`). The invariants held; only coverage missed. A pinned
+  example now climbs through rungs 1, 2 and 3 (verified alone with `numRuns: 2`). Rung 0, 4,
+  recovery and the fault kinds are reached by every run so far; pin them too if one ever misses.
+
 ## Known gaps, by design or deferred
 
 - Recovery ladder review items: a `stopped` marker skips the exit check; relapses never decay;
