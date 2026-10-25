@@ -2,7 +2,7 @@
 title: "Verger playbook: start here (for any agent continuing the work)"
 status: active
 created: 2026-10-24
-updated: 2026-10-24
+updated: 2026-10-25
 owners: [Naveen]
 tags: [verger, playbook, agents, guardrails]
 ---
@@ -34,11 +34,11 @@ next): [pipeline.md](../pipeline.md). Verification doctrine: [verification.md](.
 
 | Order | Phase | Guide | Needs |
 |---|---|---|---|
-| 1 | **F. Phones**: first Gradle build, dev client on real phones, measured thresholds | [F-phones.md](F-phones.md) | Naveen's laptop and phones |
-| 2 | **C. Envelope**: verger-p5 (home, ceiling, expansion) | [C-envelope.md](C-envelope.md) | nothing; pure TypeScript |
-| 3 | **B3. Data budget** for prepaid users | [B3-data-budget.md](B3-data-budget.md) | a small native addition (TrafficStats) |
-| 4 | **D. Loops 2 and 3**: recording, dev lab, self-cost, self-rules, policy comparison | [D-loops.md](D-loops.md) | C first, for anything about expansion |
-| 5 | **B4, B7 and web sensing**: storage, input delay, Compute Pressure | [B-sensing.md](B-sensing.md) | small, independent |
+| 1 | **F. Phones**: first Gradle build, dev client on real phones, measured thresholds, then fit the simulator's phones to recordings (F6) | [F-phones.md](F-phones.md) | Naveen's laptop and phones |
+| 2 | **B3. Data budget** accounting (B3.1, TrafficStats); the limit (B3.2) is built | [B3-data-budget.md](B3-data-budget.md) | a small native addition |
+| 3 | **B. Web sensing**: Compute Pressure | [B-sensing.md](B-sensing.md) | small, independent |
+| — | **P. Control layer** (simulator, stability suite, hysteresis, relief check, gains): built 2026-10-25; read before changing any decision rule | [P-control.md](P-control.md) | nothing; pure TypeScript |
+| — | C. Envelope (verger-p5), D. Loops 2 and 3, B4 and B7: built; their guides stay as reference | [C-envelope.md](C-envelope.md), [D-loops.md](D-loops.md), [B-sensing.md](B-sensing.md) | — |
 | — | Open items and known hazards | [open-items.md](open-items.md) | read before any phase |
 
 Why F first: every result so far is G0 to G3 (types, mocks, jsdom). Nothing has run on a phone,
@@ -80,7 +80,9 @@ provisional. One afternoon on real phones is worth more than any further design.
    before you start, or you are not starting from green (write down what fails and stop).
 2. Write the smallest change that does one thing. Add or extend a test **in the same change**
    (golden mean: tests protect the behaviour you added, not every line).
-3. For a policy change, run the deep property run: `VERGER_RUNS=3000 pnpm verger:check`.
+3. For a policy change, run the deep property run: `VERGER_RUNS=3000 pnpm verger:check`, and
+   the closed-loop matrix before and after (`pnpm --filter @repo/verger-core simulate`; see
+   [P-control.md](P-control.md)). The stability suite runs in the gate; never loosen its bounds.
 4. Update the tracker row in [pipeline.md](../pipeline.md) (state and evidence) in the same commit.
 5. Commit, push, and say what is proven and what is not.
 
@@ -141,6 +143,14 @@ levers `experienceOf` reads (`EXPERIENCE_LEVER_IDS`) plus verger's built-ins. Ad
 mobile: 20 tests in 8 files; web: about 30; type errors: core 20 forms adapters, ui 88, mobile 38,
 web 1). Compare against a stashed baseline before claiming a regression: `git stash push -u`,
 run, `git stash pop`.
+
+**Heat has hysteresis, and lowering does not wait for it.** `snapshot.thermal` is the held level
+(it steps down only after `thermalDwellMs` past an exit band); lowering under heat acts on the
+raw reading. A test that cools the phone and expects raises at once now needs the dwell.
+
+**The frames loop can stop itself.** After two steps that did not bring frames toward the budget
+it says "not relieved by levers" and waits for calm (P8). A test feeding constant stress sees two
+steps, not a walk down the ladder; feed frames that answer the levers to test the order.
 
 **The pilot freeze.** The teacher pilot (2026-10-26) runs a build not from this branch. Nothing
 from `feat/adaptive-runtime` merges before Naveen says so.

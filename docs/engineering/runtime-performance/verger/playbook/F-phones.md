@@ -67,7 +67,7 @@ Phones: the A52 (8 GB), the A24 (4 GB or 6 GB, note which), one 2 to 4 GB phone.
 | Battery temperature unit | compare snapshot `battery.temperatureC` with `adb shell dumpsys battery` (temperature, in tenths of °C there) | `BatterySignals.temperatureC` assumes tenths |
 | Network | airplane mode on and off; Wi-Fi to mobile data; Data Saver on in system settings | `networkLimit` should go `offline`, `unstable` for 60 s, `none`; `data-saver` |
 | Battery saver | system quick setting | `powerSaver` true; ambient levers stilled |
-| Heat | a long session in the sun or a stress app | thermal status, headroom (Android 11+), battery-temperature fallback below Android 10 |
+| Heat | a long session in the sun or a stress app | thermal status, headroom (Android 11+), battery-temperature fallback below Android 10; also the time constant (how fast it heats and cools), where status changes and whether it changes back at the same temperature (the HAL's own hysteresis) |
 | Frames | scroll a long list, open the workspace | frame windows, stages, the closed loop lowering then restoring |
 | Cost of verger | per-thread CPU of verger's sampler thread, wakeups | the self-cost budget (phase D) needs a real number |
 
@@ -89,3 +89,12 @@ steps). Assert on visible UI only; read verger's state from the log line above.
 2. Mark resolved items in [open-items.md](open-items.md).
 3. Propose threshold changes to Naveen with the numbers; change `config.ts` only after he agrees,
    and then add the new values to both golden fixtures by hand.
+
+## F6. Fit the simulator, rerun the stability suite
+
+From recordings of real sessions (`Verger.recording()`), fit `SIM_PHONES` in
+`packages/verger-core/src/sim/plant.ts`: thermal τ and rise per load from heating and cooling
+curves, the status bands and their hysteresis, frame cost per screen, lever effects from
+`snapshot.gains` in real use. Name the phone and the recording beside each number. Then run
+`pnpm --filter @repo/verger-core simulate` and the gate: a bound that fails on a fitted phone is
+a real finding ([P-control.md](P-control.md)), not a reason to change the bound.

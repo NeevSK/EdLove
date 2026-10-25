@@ -18,6 +18,20 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
   4, 6 and 12 GB figures in tests are typical values.
 - Every threshold in `DEFAULT_VERGER_CONFIG` is provisional.
 
+## The control layer (model evidence only, G2)
+
+- The simulator's phones are guesses within the range phones show (thermal τ, rise per load,
+  throttling onset, status bands, lever effects). Phase F fits them (F6) and reruns the suite.
+- `P7_PENDING` in `sim/stability.test.ts`: on the low phone's burst session, quality given up
+  while janking stays above off + 15 points; its two remaining levers are the costliest and its
+  steps come while touching, where too few are measured for P7 to steer.
+- Mid phone heat chatter of 0.15 per minute at a status boundary: the model's OS status has no
+  hysteresis (real HALs do). Measure the real status bands on a phone before acting on it.
+- Gains are learned per session and not kept across launches; persisting them (like the learned
+  profile) is open, and needs phones to say whether they are stable.
+- In touched use most steps publish batched by the gesture hold and are not measured; whether
+  real sessions give enough samples for P7 is unknown until phase F.
+
 ## Unexplained
 
 - **Resolved 2026-10-25:** the ladder's mutation checks relied on random search to find the broken ladders and occasionally missed; each now pins the sequence that exposes it (commit 2802d75). Was: **one failed run of `packages/core/src/verger` on 2026-10-24** (1 failed of 96), not kept. Every
