@@ -140,6 +140,29 @@ Because the app covers the scene, the beauty can get buried. Four cheap ways to 
 
 Dense working screens, such as the register, keep Paper or Frost cards and never settle on their own. Reduced motion keeps the fades and drops the slides.
 
+## A world owns its backdrops
+
+The world is the top of the model, and it covers the whole app. The backdrop is one part of the world, next to its colours, shapes, voice and ornament.
+
+- **Each world ships a backdrop set**, not one picture: several views (scenes, painted or photographic), each lit by the hour, season and weather.
+- **The set rotates on a rhythm** the person picks:
+  - Daily (the default): a fresh view each morning at dawn.
+  - Each phase of the day.
+  - Every N minutes, like a slideshow.
+  - Never.
+  A change is one crossfade, so the rhythm costs nothing extra. The view a room shows comes from the set, so rooms still differ.
+- **Editing makes it yours, not a new world.** The person's changes sit as a thin layer on top of the world they started from, such as "Sanctuary, yours": their own photo, a solid colour, a different rhythm or a pinned view. Reset removes that layer. Only changing the colours or shapes forks a custom world, which keeps a link to its parent so it still gets the parent's updates.
+- **Choosing which worlds to make.** World ideas never end, so choose along a few axes rather than from a list:
+  - Mood: calm to energetic.
+  - Place: nature to crafted to technological.
+  - A Sri Lankan anchor.
+  The six worlds cover the calm, nature and craft side. Gaps worth filling next:
+  - A flower world (araliya, nelum).
+  - An energetic, young world (Perahera: drums, torches, colour).
+  - A technological world (Colombo at night, an observatory).
+  - A high-country scenic world (tea estates, mist on the Knuckles).
+  Worlds are data, so each one is cheap to add. Pilot feedback and usage decide which ones stay.
+
 ## Rooms: one sky, many places
 
 What sets the scene matters less than that it is soulful, scenic and alive. The model keeps three jobs apart, so they never fight:
