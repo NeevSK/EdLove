@@ -17,6 +17,13 @@ export {
   worldStylesheet,
 } from './css';
 export { FACES, fontNamesOf, MOTION } from './faces';
+export {
+  type Bezier,
+  CURVES,
+  type ResolvedMotion,
+  resolveMotion,
+  type WorldSpring,
+} from './motion';
 export { phaseTokens, resolveWorld } from './resolve';
 export type * from './types';
 export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS } from './worlds';

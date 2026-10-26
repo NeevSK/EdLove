@@ -10,6 +10,7 @@
 
 export { Button, type ButtonProps } from './Button';
 export { Chip, type ChipProps, Chips, type ChipsProps } from './Chip';
+export { useWorldMotion, WorldEnter, type WorldEnterProps, type WorldMotionTokens } from './motion';
 export { Row, type RowProps } from './Row';
 export { Section, type SectionProps } from './Section';
 export { Surface, type SurfaceProps } from './Surface';
