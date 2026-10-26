@@ -163,6 +163,74 @@ The world is the top of the model, and it covers the whole app. The backdrop is 
   - A high-country scenic world (tea estates, mist on the Knuckles).
   Worlds are data, so each one is cheap to add. Pilot feedback and usage decide which ones stay.
 
+## Nothing is outside the world
+
+The World Atelier settled eleven worlds in five families, all on one baseline: fixed type, colour, shape and voice roles, and fixed contrast rules (https://claude.ai/artifact/NsvcH2ixJxNGyVQ6JQwa33). Every face ships in the app as a variable font, built by `scripts/fonts/build-world-fonts.py`.
+
+A world dresses every moment, not only the rooms' homes. Screens that have not migrated already take the world's colours through `worldBridge`. The aim is shapes, type, ornament and motion too. What the app has today (count of files that use each):
+
+| Moment | Components in the code | How it follows the world |
+| --- | --- | --- |
+| First open | Splash (`splash-animation.json`), welcome, onboarding (34), sign-in, PIN | The splash stays one brand mark for the stores. From the first screen after it, the default world (Sanctuary at the hour) takes over, so a new person sees a world before they choose one |
+| Waiting | `LotusLoader`, `BreathingLoader`, `Skeleton` (55), `LoadingOverlay`, pull to refresh (49), sync status | Each world has a waiting sign made from its ornament. Skeletons use the world's sunken colour and corners, with a shimmer in its lamp at low strength. Under verger's still motion the sign holds still |
+| Nothing here | `EmptyState`, `BrandedEmptyState` (32) | A small crop of the world's backdrop set, with the shared words |
+| Something went wrong | `ErrorState`, `ErrorBoundary`, `JourneyErrorBoundary` (55), `NetworkStatusBanner` (26), not found | Plain on purpose: the world's surface, shapes and ink, no ornament and no motion. Clarity beats mood here. The offline banner sits in the header band |
+| Talking back | `SanctuaryToast` (100), `Success`, modals (141), sheets (137) | World surface, edge and corners, entering with the world's motion |
+| Celebrating | `CelebrationOverlay`, `AchievementUnlockOverlay`, `FireflyFeedbackScene` | The world's particle (table below), counted by verger's `particles` lever |
+| Tutii | `Mascot`, `FireflyMascot`, `LivingFirefly`, `MascotPod`, the Tutii dance | Tutii stays the same character in every world, because Tutii is the app's identity. Tutii wears the world's light (its glow is the world glow), has a perch in each world, and dances at the world's tempo |
+| Content | Chat bubbles, post cards, tables, charts (23), heatmaps, maps, PDF and video viewers, avatars, badges (43) | World surfaces and lines. Charts take a categorical palette derived from the world that passes contrast in light and dark |
+| Icons | Icons in 331 files | One icon set for every world. Stroke width follows the world's line weight |
+| Outside the app | App icon, notification colour, the web app | One app icon (alternative icons can come later). Android notifications take the world's lamp as their accent. The web app reads the same world data |
+| Senses | `expo-haptics`, `expo-audio` | Haptics follow the world's motion: soft for Quiet and Bloom, crisp for Cultural and Modern. Sound stays off by default |
+
+**The words do not change between worlds.** A world changes how things look and move, not what they say, so translation stays simple. The greeting is the one exception.
+
+| World | Waiting sign | Celebration particle | Tutii's perch |
+| --- | --- | --- | --- |
+| Sanctuary | A lamp flame breathing | Lamp sparks and fireflies | The clay lamp |
+| Wewa | A ripple widening | Ripples, a nelum opening | A lotus pad |
+| Gems and lace | A glint travelling a facet | Glints | A lace window |
+| Forest canopy | A leaf turning | Falling leaves | A branch |
+| Tea country | A tea row filling | Tea leaves on the wind | A silver oak |
+| Temple walls | The vine band drawing itself | Flower petals | A wall niche |
+| Angampora | A brass lamp lighting | Brass sparks | A lamp stand |
+| Perahera | Drum dots on the beat | Pennants in the flag colours | A torch pole |
+| Rose and pichcha | A petal opening | Rose and pichcha petals | A rose stem |
+| Colombo night | Signal dots | Light trails | The spire |
+| Spark | A charging bar | Lime sparks and a bolt | A floodlight |
+
+## Motion follows the world
+
+`packages/ui/src/components/motion.ts` already names motion by purpose: `micro`, `transition`, `shared`, `meaningful`, `breathe`. The purposes stay fixed as part of the baseline. Each world sets four values on top:
+
+- **Tempo:** a multiplier on every duration.
+- **Curve:** which easing family it uses.
+- **Travel:** how far things move as they enter.
+- **Settle:** whether things stop dead, ease in, or overshoot a little.
+
+| World | Tempo | Curve | Travel | Settle | Feel |
+| --- | --- | --- | --- | --- | --- |
+| Sanctuary | 1.0 | decelerate | 8 | none | Things fade up like lamp light |
+| Wewa | 1.25 | long decelerate | 6 | none | Ripples outward, unhurried |
+| Gems and lace | 1.1 | decelerate | 4 | none | Slight scale, with a glint at rest |
+| Forest canopy | 1.0 | soft spring | 10 | small sway | Leaves settling |
+| Tea country | 1.15 | standard | 12, sideways | none | Moves along rows |
+| Temple walls | 1.1 | decelerate | 0 | none | Frames draw themselves in |
+| Angampora | 0.85 | sharp ease out | 12 | firm stop | Exact, no bounce |
+| Perahera | 0.9 | standard, staggered on a beat | 10 | small | Rhythmic entries, 60 ms apart |
+| Rose and pichcha | 1.2 | soft spring | 6 | bloom (0.96 to 1.01 to 1) | Things open like flowers |
+| Colombo night | 0.9 | standard | 16 | none | Crisp slides |
+| Spark | 0.75 | snappy spring | 20 | quick overshoot | Fast, staggered 40 ms |
+
+Rules that hold for every world:
+
+- **Verger decides how much.** When motion is off, every change cuts. When motion is essential (or the phone's reduce motion setting is on), tempo goes back to 1, travel goes to 0 and everything fades. Durations stay between 120 and 600 ms whatever the tempo.
+- **Motion never costs more frames.** A world changes timing and shape, not the amount of work: transform and opacity only, on the UI thread.
+- **No flashing.** Spark and Perahera never flash more than three times a second, and no light pulses at full strength.
+- **Motion never carries meaning alone.** Every change it shows is also in the words or the shape.
+
+**Order of work for the states.** The shared state components appear on every screen, so they multiply. Moving loading, skeleton, empty, error, toast, modal and sheet onto the world reaches more of the app than any one screen does. They go first in step 2 of the order of work, before the screen-by-screen migration.
+
 ## Rooms: one sky, many places
 
 What sets the scene matters less than that it is soulful, scenic and alive. The model keeps three jobs apart, so they never fight:
