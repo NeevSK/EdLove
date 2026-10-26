@@ -6,15 +6,17 @@ vi.mock('@repo/ui/context/VisualCapabilities', () => ({
   useVisualCapabilities: () => mockUseVisualCapabilities(),
 }));
 
-// The rendered tree carries the CSS animation keyframes only when the block animates.
-const animated = () => JSON.stringify(screen.toJSON()).includes('animation');
+// The world's lamp shimmer is drawn only when the block animates.
+const animated = () =>
+  screen.queryByTestId('world-skeleton-shimmer', { includeHiddenElements: true }) !== null;
+const RICH = { motion: 'rich' };
 
 describe("ShimmerBlock and verger's loading-shimmer lever", () => {
   it('animates at rest and holds still when the lever is lowered', async () => {
-    mockUseVisualCapabilities.mockReturnValue({ allowShimmer: true });
+    mockUseVisualCapabilities.mockReturnValue({ allowShimmer: true, experience: RICH });
     await render(<ShimmerBlock height={12} />);
     expect(animated()).toBe(true);
-    mockUseVisualCapabilities.mockReturnValue({ allowShimmer: false });
+    mockUseVisualCapabilities.mockReturnValue({ allowShimmer: false, experience: RICH });
     await render(<ShimmerBlock height={12} />);
     expect(animated()).toBe(false);
   });

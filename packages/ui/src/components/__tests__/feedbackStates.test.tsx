@@ -15,6 +15,8 @@ vi.mock('@repo/ui/context/VisualCapabilities', () => ({
     imageDecodeFormat: 'argb',
     shouldPrefetchAssets: true,
     maxCelebrationParticles: 200,
+    allowShimmer: true,
+    experience: { motion: 'rich', visualEffects: 'rich', haptics: 'rich', celebration: 'rich' },
   }),
 }));
 vi.mock('expo-image', () => {
@@ -30,6 +32,8 @@ vi.mock('react-native-svg', () => {
     Circle: Shape,
     Defs: Shape,
     Ellipse: Shape,
+    G: Shape,
+    Rect: Shape,
     LinearGradient: Shape,
     Path: Shape,
     RadialGradient: Shape,

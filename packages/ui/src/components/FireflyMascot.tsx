@@ -4,12 +4,8 @@ import { tokens } from '@repo/ui/tokens';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import Svg, {
-  Circle,
-  Defs,
-  RadialGradient,
-  Stop,
-} from 'react-native-svg';
+import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
+import { useWorld } from '../world/native/WorldContext';
 import type { MascotArtworkSource } from './Mascot';
 import { MascotPod, type MascotPodVariant } from './MascotPod';
 import {
@@ -62,15 +58,17 @@ export function FireflyMascot({
 
   const resolvedState = state ?? stateFromMascotMode(mode);
   const isInterrupted = resolvedState === 'interrupted';
+  const world = useWorld().tokens;
+  // Tutii wears the world's light; other roles keep their own tint so they stay distinct.
   const roleColor = {
-    guide: tokens.colors.primary,
+    guide: world.glow,
     student: tokens.colors.accentAtmospheric,
     teacher: tokens.colors.accentDepth,
     guardian: tokens.colors.warning,
     host: tokens.colors.accentLiving,
     librarian: tokens.colors.loading,
   }[role];
-  const glowColor = glowColorOverride ?? (isInterrupted ? tokens.colors.warning : roleColor);
+  const glowColor = glowColorOverride ?? (isInterrupted ? world.inkFaint : roleColor);
 
   const isMicroSize = size < 48;
 
@@ -111,7 +109,7 @@ export function FireflyMascot({
               <Stop offset="1" stopColor={glowColor} stopOpacity="0" />
             </RadialGradient>
             <RadialGradient cx="50%" cy="50%" id="fireflyCore" r="50%">
-              <Stop offset="0" stopColor={tokens.colors.surface} stopOpacity="0.95" />
+              <Stop offset="0" stopColor={world.raised} stopOpacity="0.95" />
               <Stop offset="0.4" stopColor={glowColor} stopOpacity="0.8" />
               <Stop offset="1" stopColor={glowColor} stopOpacity="0" />
             </RadialGradient>
@@ -127,7 +125,7 @@ export function FireflyMascot({
           ) : null}
           <Circle cx="120" cy="130" fill="url(#fireflyCore)" r="52" />
           <Circle cx="120" cy="130" fill={glowColor} opacity={isInterrupted ? 0.35 : 0.88} r="18" />
-          <Circle cx="120" cy="130" fill={tokens.colors.surface} opacity={0.9} r="8" />
+          <Circle cx="120" cy="130" fill={world.raised} opacity={0.9} r="8" />
         </Svg>
       </View>
     );

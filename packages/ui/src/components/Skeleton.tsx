@@ -19,18 +19,9 @@
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { tokens } from '@repo/ui/tokens';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
+import { WorldSkeleton } from '../world/native/Waiting';
 import { useResponsiveGrid } from './layout';
-import { duration, nativeEasing } from './motion';
-
-// Conditional imports for Reanimated
-let Animated: any = null;
-try {
-  Animated = require('react-native-reanimated');
-} catch (e) {
-  // Reanimated not available
-}
-
-const AnimatedView = Animated?.createAnimatedComponent(View) || View;
+import { duration } from './motion';
 
 type ShimmerBlockProps = {
   width?: number | `${number}%`;
@@ -76,46 +67,15 @@ export function ShimmerBlock({
     );
   }
 
-  // Native implementation
-  if (!Animated || !allowShimmer) {
-    return (
-      <View
-        className={className}
-        style={[
-          {
-            width,
-            height,
-            borderRadius: radius,
-            backgroundColor: tokens.colors.skeletonBase,
-          },
-          style,
-        ]}
-      />
-    );
-  }
-
+  // Native: the world's sunken colour and lamp shimmer.
   return (
-    <AnimatedView
+    <WorldSkeleton
+      width={width}
+      height={height}
+      radius={radius}
+      still={!allowShimmer}
       className={className}
-      style={[
-        {
-          width,
-          height,
-          borderRadius: radius,
-          backgroundColor: tokens.colors.skeletonBase,
-        },
-        {
-          animationName: {
-            '0%': { opacity: 0.55 },
-            '50%': { opacity: 1 },
-            '100%': { opacity: 0.55 },
-          },
-          animationDuration: duration.breathe * 0.55, // a bit brisker than the ambient breathe
-          animationTimingFunction: nativeEasing.standard,
-          animationIterationCount: 'infinite',
-        } as any,
-        style,
-      ]}
+      style={style}
     />
   );
 }

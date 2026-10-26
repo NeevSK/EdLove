@@ -1,6 +1,7 @@
 import { tokens } from '@repo/ui/tokens';
-import React from 'react';
-import { type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import type React from 'react';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Text } from '../world/native/Text';
 import { FireflyFeedbackScene } from './FireflyFeedbackScene';
 
 export type ErrorStateProps = {
@@ -12,14 +13,24 @@ export type ErrorStateProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** A recoverable interruption with a visible route back to the next action. */
+/**
+ * A recoverable interruption with a visible route back to the next action.
+ * Plain on purpose: the world's type and ink, no ornament and no motion, so
+ * the words are the clearest thing on the screen.
+ */
 export function ErrorState({ title, message, children, className, style }: ErrorStateProps) {
   return (
     <View accessibilityRole="alert" className={className} style={[styles.wrap, style]}>
       <FireflyFeedbackScene state="error" />
       <View style={styles.copy}>
-        <Text style={styles.title}>{title}</Text>
-        {message ? <Text style={styles.message}>{message}</Text> : null}
+        <Text kind="title" align="center">
+          {title}
+        </Text>
+        {message ? (
+          <Text kind="body" tone="soft" align="center">
+            {message}
+          </Text>
+        ) : null}
       </View>
       {children ? <View style={styles.actions}>{children}</View> : null}
     </View>
@@ -37,16 +48,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: tokens.spacing.sm,
     maxWidth: tokens.layout.pageFrame.stateMessageMaxWidth,
-  },
-  title: {
-    ...tokens.typography.roles.sectionTitle,
-    color: tokens.semantic.text.primary,
-    textAlign: 'center',
-  },
-  message: {
-    ...tokens.typography.roles.body,
-    color: tokens.semantic.text.secondary,
-    textAlign: 'center',
   },
   actions: {
     marginTop: tokens.spacing.lg,
