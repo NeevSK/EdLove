@@ -19,6 +19,7 @@ Companion notes: `2026-10-26-living-world-vision.md` (why), `2026-10-26-ui-visio
 | --- | --- | --- | --- | --- |
 | Which world? | **World** (identity) | Sanctuary, Temple walls, Wewa, Forest canopy, Angampora, Gems and lace | Person; default Sanctuary | Mobile and web (`packages/ui/src/world`) |
 | What hour? | **Time** | 6 phases (predawn 4 to 6, dawn 6 to 9, morning 9 to 12, afternoon 12 to 17, dusk 17 to 20, night 20 to 4), plus the sun or moon's position | The clock; person may pin a phase | Phase on both (`context/utils.ts`); sun position nowhere yet |
+| What season and weather? | **Sky condition** (part of Time) | Five Sri Lankan seasons (northeast monsoon, Maha harvest, first inter-monsoon, southwest monsoon, second inter-monsoon) and six skies (clear, cloudy, drizzle, monsoon rain, thunderstorm, after the rain) | The date for season; a coarse forecast or the person for weather | Prototype only (living sky artifact) |
 | Which place? | **Space** | Self, Classroom or Workspace, Community, Library, Profile | Navigation | Docs only (space specs); web floors partly |
 | What backdrop? | **Ground** | Living sky, wallpaper (preset, own photo, slideshow), solid colour, plain | Person; default living sky | Web: wallpaper, slideshow, colour wash. Mobile: `WorkspaceWallpaper` built but not mounted |
 | How rich? | **Budget** | Rich, balanced, essential | The phone (device tier now, verger later) | `core/efficiency` visual budget; verger unmounted |
@@ -112,6 +113,17 @@ Animated scenes with falling leaves or butterflies in React Native (Skia draws, 
 - System live wallpapers (outside the app) are out of scope. They are only practical on Android and they cost battery all day.
 
 Prior art. Each piece has been done before; the combination has not, as far as this note knows. Time-of-day wallpapers: macOS Dynamic Desktop (2018). Weather and hour backgrounds: Apple Weather and Pixel. Real-clock worlds: Animal Crossing, and the day cycles in Alto's Odyssey and Sky. Calm scenes: Calm and Headspace. No school platform is known to combine culturally grounded worlds that follow the real hour with a device budget for low-end phones and a planning timeline that can show another hour's sky. Check this against current sources before stating it publicly.
+
+## Time x season x weather
+
+The sky answers three things at once: the hour moves the light, the season sets the land (paddy green while Maha grows, gold at harvest), and the weather sets the cloud, the dimming and what falls. Prototype: https://claude.ai/artifact/GrMqM4tZEqQqn25sGRJ2Qu (hills, a wewa with lotus pads, paddy terraces, palms; rain with ripples on the tank, thunder, mist after rain, fireflies at dusk, stars, and the moon in its real phase with poya marked).
+
+- **Season comes from the date**, so it needs no network.
+- **Weather is optional and coarse.** One forecast per school district every three hours (for example from Open-Meteo, which needs no key), cached for offline use, skipped on Data Saver, and never from GPS. Without it the sky uses the season's usual weather. A person can also set the weather by hand ("it's raining here").
+- **Words follow the sky.** The greeting line changes with the weather ("Rain on the wewa. The register can wait for the first bell."), in en, si and ta.
+- **Cost stays the same as the living sky.** Land, hills and water are painted once per change, and only rain, ripples, fireflies, stars and clouds move, at the rich tier only.
+
+Reference, studied 2026-10-26: TesseraUI's Ambient Weather (https://tesseraui.in/components/ambient-weather, $29) does butterflies, rain that collects on cards and drips, snow, leaves landing on cards, and breeze. It uses Skia, Reanimated and `react-native-worklets` and needs a development build. It runs one UI-thread frame loop, reuses particles, and stops when paused, in the background or under Reduce Motion. The page gives no low-end device figures. It shows that "weather lands on the cards" works in React Native. Its licence terms were not checked; read them before buying, or build our own on the same pattern with Sri Lankan seasons.
 
 ## One resolver, three painters
 
