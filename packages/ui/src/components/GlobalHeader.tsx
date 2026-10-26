@@ -7,6 +7,7 @@ import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Bell, ChevronDown, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { BAND_WASH_EDGE, BAND_WASH_TEXT, SceneBackdrop, useScene } from '@repo/ui/scene/native';
 import { useWorld, Text as WText } from '@repo/ui/world/native';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
@@ -88,6 +89,7 @@ export default function GlobalHeader({
   const { can } = usePermissions();
   const theme = useTheme();
   const wt = useWorld().tokens;
+  const scene = useScene({ presence: 'band' });
   const user = useStore((state: TotalState) => state.user);
   const insets = useSafeAreaInsets();
   const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
@@ -180,7 +182,7 @@ export default function GlobalHeader({
         paddingBottom: isCompactLandscape ? 6 : 12,
       }}
     >
-      {/* Living Phase Backdrop */}
+      {/* The world's ground, with the room's scene showing through as a band when verger allows. */}
       <Box
         className="absolute inset-0 border-b"
         style={{
@@ -188,6 +190,10 @@ export default function GlobalHeader({
           borderBottomColor: wt.line,
           borderBottomWidth: 0.75,
         }}
+      />
+      <SceneBackdrop
+        scene={scene}
+        wash={{ colour: wt.ground, edge: BAND_WASH_EDGE, text: BAND_WASH_TEXT, textFrom: 0.42 }}
       />
 
       <VStack

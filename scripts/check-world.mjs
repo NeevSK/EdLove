@@ -41,6 +41,8 @@ const DRESSED = [
 /** Where palettes are defined; raw colours are the point here. */
 const PALETTE_FILES = new Set([
   'packages/ui/src/world/worlds.ts',
+  'packages/core/src/scene/sky.ts',
+  'packages/core/src/scene/landscape.ts',
   'packages/ui/src/world/build.ts',
   'packages/ui/src/world/color.ts',
   'packages/ui/src/world/resolve.ts',

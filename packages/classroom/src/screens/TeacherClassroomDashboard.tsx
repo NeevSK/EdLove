@@ -54,8 +54,10 @@ import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { openExternalURL } from '@repo/ui/utils/linking';
+import { SceneBackdrop, useScene } from '@repo/ui/scene/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
+import { useWindowDimensions, View } from 'react-native';
 import {
   AttendanceView,
   ClassroomAccessState,
@@ -168,6 +170,9 @@ const FEATURE_TONES: Record<FeatureId, { label: string; color: string; tint: str
 
 export default function TeacherClassroomDashboard() {
   const router = useRouter();
+  const scene = useScene({ presence: 'full' });
+  const { height: windowHeight } = useWindowDimensions();
+  const heroHeight = Math.round(Math.min(420, Math.max(260, windowHeight * 0.42)));
   const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
     classroomId?: string;
     classroomName?: string;
@@ -594,7 +599,7 @@ export default function TeacherClassroomDashboard() {
         onBack={() => safeBack('/workspace')}
       />
       <ScrollView
-        stickyHeaderIndices={[2]}
+        stickyHeaderIndices={[3]}
         contentContainerClassName="pb-10"
         showsVerticalScrollIndicator={false}
         className="bg-phase-surface"
@@ -610,37 +615,50 @@ export default function TeacherClassroomDashboard() {
             ))}
           </Box>
         )}
-        <Box className="p-6 bg-phase-surface">
-          <VStack className="gap-2">
-            <Text className="text-[12px] text-phase-text-tertiary font-black uppercase tracking-[0.2em] mb-1">
-              Teacher Sanctuary
-            </Text>
-            <HStack className="justify-between items-start gap-4">
-              <Heading className="text-4xl font-black text-templeGold leading-tight flex-1">
-                {classroomName}
-              </Heading>
-              {activeFeature === 'lessons' && (
-                <Pressable
-                  onPress={() => {
-                    hapticLight();
-                    setShowAddMonthModal(true);
-                  }}
-                  className="bg-sanctuarySaffron px-5 py-2.5 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
+        {/* The classroom's home looks out on its room: the living scene, as verger allows it. */}
+        <View style={{ minHeight: scene.paint === 'none' ? undefined : heroHeight }}>
+          <SceneBackdrop scene={scene} />
+          <Box className={scene.paint === 'none' ? 'p-6 bg-phase-surface' : 'p-6'}>
+            <VStack className="gap-2">
+              <HStack className="justify-between items-start gap-4">
+                <Heading
+                  className={
+                    scene.skyInk
+                      ? 'text-4xl font-black leading-tight flex-1'
+                      : 'text-4xl font-black text-templeGold leading-tight flex-1'
+                  }
+                  style={scene.skyInk ? { color: scene.skyInk } : undefined}
                 >
-                  <HStack className="items-center gap-2">
-                    <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
-                    <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-wider">
-                      New Module
-                    </Text>
-                  </HStack>
-                </Pressable>
-              )}
-            </HStack>
-            <Text className="text-base text-phase-text-secondary mt-2 font-medium">
-              Hold the classroom as one living workspace: roster, rhythm, assignments, and deep
-              insight.
-            </Text>
-          </VStack>
+                  {classroomName}
+                </Heading>
+                {activeFeature === 'lessons' && (
+                  <Pressable
+                    onPress={() => {
+                      hapticLight();
+                      setShowAddMonthModal(true);
+                    }}
+                    className="bg-sanctuarySaffron px-5 py-2.5 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
+                  >
+                    <HStack className="items-center gap-2">
+                      <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
+                      <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-wider">
+                        New Module
+                      </Text>
+                    </HStack>
+                  </Pressable>
+                )}
+              </HStack>
+            </VStack>
+          </Box>
+        </View>
+        <Box className="px-6 pt-5 pb-1 bg-phase-surface">
+          <Text className="text-[12px] text-phase-text-tertiary font-black uppercase tracking-[0.2em] mb-1">
+            Teacher Sanctuary
+          </Text>
+          <Text className="text-base text-phase-text-secondary mt-1 font-medium">
+            Hold the classroom as one living workspace: roster, rhythm, assignments, and deep
+            insight.
+          </Text>
         </Box>
 
         <Box className="bg-phase-surface px-6 pb-2 shadow-sm z-10" style={{ minHeight: 180 }}>

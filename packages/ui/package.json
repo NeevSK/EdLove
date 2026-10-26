@@ -69,6 +69,11 @@
       "import": "./src/world/index.ts",
       "default": "./src/world/index.ts"
     },
+    "./scene/native": {
+      "types": "./src/scene/native/index.ts",
+      "import": "./src/scene/native/index.ts",
+      "default": "./src/scene/native/index.ts"
+    },
     "./world/native": {
       "types": "./src/world/native/index.ts",
       "import": "./src/world/native/index.ts",

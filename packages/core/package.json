@@ -323,6 +323,11 @@
       "import": "./src/efficiency/index.ts",
       "default": "./src/efficiency/index.ts"
     },
+    "./scene": {
+      "types": "./src/scene/index.ts",
+      "import": "./src/scene/index.ts",
+      "default": "./src/scene/index.ts"
+    },
     "./verger": {
       "types": "./src/verger/index.ts",
       "import": "./src/verger/index.ts",

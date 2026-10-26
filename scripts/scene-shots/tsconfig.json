@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "baseUrl": "../..",
+    "paths": {
+      "react-native-skia": ["scripts/scene-shots/skia-headless.ts"],
+      "@repo/core/scene": ["packages/core/src/scene/index.ts"],
+      "@repo/core/verger": ["packages/core/src/verger/index.ts"],
+      "@repo/verger-core": ["packages/verger-core/src/index.ts"]
+    }
+  }
+}

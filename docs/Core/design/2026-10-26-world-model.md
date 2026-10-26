@@ -234,6 +234,16 @@ Start in the middle with one room working end to end on a real phone. Then grow 
 4. **Web and explore.** The same resolver. Map the floors and presets onto it, bundle the Unsplash wallpapers, and give explore a showcase mode.
 5. **Richer.** The sun and moon arc, true sunrise times, and a type voice per world.
 
+**Built so far (2026-10-26):**
+- Verger is merged into the worlds line.
+- `@repo/core/scene` has `resolveScene`, the sky (light, season, weather, moon), the school landscape as plain geometry, and tests. Words on the sky stay readable at every minute and in every weather.
+- `@repo/ui/scene/native` has the Skia painter: a still layer that draws once a minute, and a moving layer for rain and fireflies, capped by verger.
+- The Classroom home opens on its scene.
+- Every screen's shared header carries the band, under a veil held to 4.5:1 for all six worlds.
+- `pnpm scene:shots` renders the still layer headless for review.
+
+The other rooms' views still show the school landscape until they are painted.
+
 Three feedback loops run the whole way:
 
 - **Taste.** The living sky prototype comes first, then Naveen reacts, then the doc changes, then the code. Each PR adds a screenshot grid (every world at dawn, noon, dusk and night, and at each presence) so a look can be judged without a phone.

@@ -180,3 +180,6 @@ reports/mobile-performance/device-profiles.sqlite*
 apps/gurudevi-mobile/reports/
 
 .vercel
+
+# Headless scene screenshots (pnpm scene:shots)
+.scene-shots/
