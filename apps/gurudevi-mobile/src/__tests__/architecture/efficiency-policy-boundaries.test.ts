@@ -15,6 +15,11 @@ describe('efficiency policy boundaries', () => {
     expect(retentionScheduler).toMatch(admission);
     expect(backgroundSync).toMatch(/admitBackgroundWork\(['"]sync['"]\)/);
     expect(retentionScheduler).toMatch(/admitBackgroundWork\(['"]storage-eviction['"]\)/);
+    // R12: what the job records about the network is verger's reading, not a field expo-network
+    // does not have (it read `isMetered` through `any`, so metered was always false).
+    expect(retentionScheduler).toMatch(/readBackgroundSnapshot\(\)/);
+    expect(retentionScheduler).not.toMatch(/isMetered\b/);
+    expect(retentionScheduler).not.toMatch(/(import\(|from\s+)['"]expo-network['"]/);
     expect(backgroundSync).toMatch(/getActiveAccountId/);
     expect(backgroundSync).toMatch(/item\.userId\s*===\s*activeUserId/);
     expect(backgroundSync).toMatch(/tryAcquireMutationLease/);

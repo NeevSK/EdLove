@@ -19,6 +19,7 @@ import { useScreenAnnouncement } from '@repo/verger-react';
 import { usePathname } from 'next/navigation';
 import { VergerBrowser } from '@repo/verger-web/react';
 import { type ReactNode, useState } from 'react';
+import { useWebFidelity } from './webFidelity';
 
 declare global {
   // Remote config may set these, as on mobile: `off` is the kill switch; the patch is untrusted.
@@ -104,10 +105,12 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
     if (read.rejectedLocal) console.warn('[verger] lab patch ignored:', read.rejectedLocal);
     return { mode: read.mode, activation: read.activation ?? undefined };
   });
+  const fidelity = useWebFidelity();
   return (
     <VergerBrowser
       host={host}
       mode={launch.mode}
+      fidelity={fidelity}
       activation={launch.activation}
       release={process.env.NEXT_PUBLIC_GURUDEVI_RELEASE ?? 'web'}
       recordEvents={dev ? VERGER_LAB_RECORD_EVENTS : undefined}

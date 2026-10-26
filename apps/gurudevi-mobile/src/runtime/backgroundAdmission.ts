@@ -5,6 +5,7 @@ import {
   GURUDEVI_MOBILE_HOST,
   GURUDEVI_WORKLOADS,
   UNKNOWN_CAPACITY,
+  type VergerSnapshot,
   vergerFloors,
 } from '@repo/core/verger';
 import { totalMemory } from 'expo-device';
@@ -21,11 +22,15 @@ const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: tot
 export async function admitBackgroundWork(workloadId: string): Promise<Admission> {
   const workload = GURUDEVI_WORKLOADS.find((candidate) => candidate.id === workloadId);
   if (!workload) throw new Error(`Unknown workload "${workloadId}"`);
-  const snapshot = vergerFloors({
-    host: GURUDEVI_MOBILE_HOST,
-    facts,
-    events: await readDeviceEvents(0),
-  });
+  const snapshot = await readBackgroundSnapshot();
   if (snapshot === null) return { admit: false, reason: 'verger-unavailable' };
   return admitWork(snapshot, workload, GURUDEVI_MOBILE_HOST.config);
+}
+
+/**
+ * Verger's view of the device for work outside it (admission, and what background jobs record
+ * about the device): its floors over one reading of each source. Null if the floors fail.
+ */
+export async function readBackgroundSnapshot(): Promise<VergerSnapshot | null> {
+  return vergerFloors({ host: GURUDEVI_MOBILE_HOST, facts, events: await readDeviceEvents(0) });
 }

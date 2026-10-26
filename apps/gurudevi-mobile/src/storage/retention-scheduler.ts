@@ -31,7 +31,7 @@
 import { getPowerSyncDB } from '@repo/core/adapters/powersync/database';
 import { storage } from '@repo/core/native/storage';
 import { Platform } from 'react-native';
-import { admitBackgroundWork } from '@/runtime/backgroundAdmission';
+import { admitBackgroundWork, readBackgroundSnapshot } from '@/runtime/backgroundAdmission';
 
 // In-file stubs for graceful degradation & storage metrics
 const storageDegradation = {
@@ -405,12 +405,7 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
     freedBytes: reclaimedBytes,
     rowsDeleted,
     compactionConfig: config,
-    deviceContext: {
-      batteryLevel: (deviceContext as any).batteryLevel,
-      isCharging: (deviceContext as any).isCharging,
-      isMeteredNetwork: (deviceContext as any).isMeteredNetwork,
-      diskFreeBytes: (deviceContext as any).diskFreeBytes ?? 0,
-    },
+    deviceContext,
     durationMs: Date.now() - startTime,
     skipped: false,
   };
@@ -427,20 +422,21 @@ async function collectDeviceContextForMetrics(): Promise<{
 }> {
   try {
     const Battery = await import('expo-battery');
-    const Network = await import('expo-network');
     const FileSystem = await import('expo-file-system');
 
-    const [batteryLevel, batteryState, networkState, diskInfo] = await Promise.all([
+    const [batteryLevel, batteryState, device, diskInfo] = await Promise.all([
       Battery.getBatteryLevelAsync(),
       Battery.getBatteryStateAsync(),
-      Network.getNetworkStateAsync(),
+      readBackgroundSnapshot(),
       FileSystem.getFreeDiskStorageAsync(),
     ]);
 
     return {
       batteryLevel,
       isCharging: batteryState === 2,
-      isMeteredNetwork: (networkState as any)?.isMetered ?? false,
+      // Verger's reading (NetInfo's metered flag). expo-network has no metered field, so this
+      // was always false before; unknown still records as false.
+      isMeteredNetwork: device?.network.metered ?? false,
       diskFreeBytes: typeof diskInfo === 'number' ? diskInfo : ((diskInfo as any)?.freeSpace ?? 0),
     };
   } catch {

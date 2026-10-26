@@ -205,6 +205,19 @@ Kotlin compiled against `android.jar` 36 (the JVM script moved from 35; the app 
 to `contract/native-events.json` on both sides. G1: verger-core 304, verger-android 25. Nothing
 here has run on a phone (G5 is phase F).
 
+**R12 built (the user's say, and an honest record).**
+
+- *Web visual detail*: Settings gains "Visual Detail" (Automatic, Lighter, Richer), kept in
+  this browser's storage and read live by both `VergerBrowser` (verger's `fidelity`) and the
+  page's view (`experienceOf`). On the web host, Lighter steps blur down (the web governs only
+  blur and app-wide motion); Richer lifts the device-class ceilings while verger still lowers
+  under stress. G3 (jsdom, 2 tests); G4 (Next dev server, Chromium at 390 px): the section
+  renders, the choice is stored and survives a reload, no horizontal scroll, no page errors.
+- *Retention metrics* record verger's metered reading (`readBackgroundSnapshot`, shared with
+  background admission). They read `isMetered` from expo-network through `any`; the installed
+  expo-network has no such field, so every record said "not metered". The boundary test now
+  holds the scheduler to verger's reading.
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).
