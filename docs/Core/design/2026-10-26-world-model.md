@@ -20,9 +20,9 @@ Companion notes: `2026-10-26-living-world-vision.md` (why), `2026-10-26-ui-visio
 | Which world? | **World** (identity) | Sanctuary, Temple walls, Wewa, Forest canopy, Angampora, Gems and lace | Person; default Sanctuary | Mobile and web (`packages/ui/src/world`) |
 | What hour? | **Time** | 6 phases (predawn 4 to 6, dawn 6 to 9, morning 9 to 12, afternoon 12 to 17, dusk 17 to 20, night 20 to 4), plus the sun or moon's position | The clock; person may pin a phase | Phase on both (`context/utils.ts`); sun position nowhere yet |
 | What season and weather? | **Sky condition** (part of Time) | Five Sri Lankan seasons (northeast monsoon, Maha harvest, first inter-monsoon, southwest monsoon, second inter-monsoon) and six skies (clear, cloudy, drizzle, monsoon rain, thunderstorm, after the rain) | The date for season; a coarse forecast or the person for weather | Prototype only (living sky artifact) |
-| Which place? | **Space** | Self, Classroom or Workspace, Community, Library, Profile | Navigation | Docs only (space specs); web floors partly |
+| Which place? | **Space** (the room) | Self, Classroom or Workspace, Community, Library, Profile | Navigation | Docs only (space specs); web floors partly. Each room can show its own view under the one shared sky (see Rooms) |
 | What backdrop? | **Ground** | Living sky, wallpaper (preset, own photo, slideshow), solid colour, plain | Person; default living sky | Web: wallpaper, slideshow, colour wash. Mobile: `WorkspaceWallpaper` built but not mounted |
-| How rich? | **Budget** | Rich, balanced, essential | The phone (device tier now, verger later) | `core/efficiency` visual budget; verger unmounted |
+| How rich? | **Budget** | Rich, balanced, essential | Verger, from its levers (`ambient-motion`, `particles`, `blur`, `glass-material`, `transitions`) and its readings (visibility, power saver, heat, data) | `core/efficiency` visual budget now; verger glue (`packages/core/src/verger`) built on `feat/adaptive-runtime`, not yet mounted |
 | What is the person doing? | **Expression** | Quiet utility, living primary, sacred hero | The screen's role | Doctrine only (aesthetic doctrine, section 10) |
 
 The companion (firefly, Tutii) sits outside the stack. It is the only thing allowed to move on its own.
@@ -140,6 +140,54 @@ Because the app covers the scene, the beauty can get buried. Four cheap ways to 
 
 Dense working screens, such as the register, keep Paper or Frost cards and never settle on their own. Reduced motion keeps the fades and drops the slides.
 
+## Rooms: one sky, many places
+
+What sets the scene matters less than that it is soulful, scenic and alive. The model keeps three jobs apart, so they never fight:
+
+- **The world is the skin.** Its colours, corners, edges, buttons, label voice, chips, ornament and lamp dress every screen in every room.
+- **The room is the view.** Each room looks out on its own place, painted once as a still foreground.
+- **The hour, season and weather are the light.** One sky is shared by every room, so moving between rooms feels like walking through one village under one sky.
+
+| Room | The view (first sketch) | Mood |
+| --- | --- | --- |
+| Self | A home veranda at the edge of the paddy, a clay lamp, a window | Close, private, quiet |
+| Classroom or Workspace | The village school: paddy terraces, the jak tree, the wewa (the current prototype) | Steady, working |
+| Community | The ambalama by the road and the village tank, where people pass | Open, shared |
+| Library | The temple library under a bo tree, with ola leaf books and the hills | Still, deep |
+| Profile | The hill above the village, the widest view | Looking back over the year |
+
+Setting: **Scene follows** the room (default), the world (one landscape per world everywhere), or one scene everywhere. Solid colour and plain stay one tap away. The cost is the same as one scene: the foreground is a still image per room, and the sky and particles are shared. Changing room is one crossfade, which verger's `transitions` lever can shorten or skip.
+
+## Every screen is alive: how present the scene is
+
+A screen does not choose its own look. It declares how present the scene may be, and the resolver does the rest.
+
+| Presence | Where | What shows | Why it still feels alive |
+| --- | --- | --- | --- |
+| Full | Each room's home | The whole scene, with the ways to breathe (frost, look up, sky first, settle when idle) | The scene itself |
+| Band | Lists and working screens: timetable, register, library shelves, threads | The same painter clipped to a horizon band behind the header, roughly 100 to 140 dp | The band carries the hour, weather and room view. The ground below takes the hour's tint |
+| Quiet | Forms, exams, focus mode, anything urgent | The world ground only | The hour tint, the greeting line, the clock stamp and the lit tab lamp still change |
+
+So every screen in every room lives with the hour, and none has to be rebuilt to get it. Surfaces never change with the hour, which keeps text contrast fixed.
+
+## Verger decides how much
+
+The scene does not sense the phone itself. It reads verger's snapshot through `GurudeviExperience`, and the person's settings only ever lower it.
+
+| Verger says | The scene does |
+| --- | --- |
+| `ambient-motion` 0 (full motion) | Rich tier: the loop runs, capped at 30 fps |
+| `ambient-motion` 1 (paced at half the refresh rate) | The loop runs at 15 fps. Clouds and rain only |
+| `ambient-motion` 2 (still) | Balanced tier: the scene repaints once a minute and nothing moves |
+| `particles` 0, 1, 2 | Full, half or no rain, fireflies and stars (inside `maxParticles`) |
+| `blur` 2 or `glass-material` 2 | Frost falls back to Paper. Baked frost is cheap, but it still needs one offscreen image |
+| `transitions` lowered | The room crossfade is shortened, then cut |
+| `effectiveFidelity` low, or safe mode | Essential tier: the world ground with the hour tint, no painter |
+| Visibility not active, power saver, or heat | The loop stops (the `whenHidden`, `whenBatteryLow` and `whenWarm` rules already cover the levers) |
+| Data saver or offline | Nothing changes, because the scene is drawn, not downloaded. Photo wallpapers follow `wallpaperAllowed` |
+
+Open chair: should the living sky get its own lever (`living-sky`: moving, still painting, flat colour) so verger can lower it apart from other ambient motion? Adding a lever never changes other levers, only the order they are lowered in.
+
 ## One resolver, three painters
 
 ```
@@ -176,16 +224,21 @@ Dense working screens, such as the register, keep Paper or Frost cards and never
 - Mobile `WorkspaceWallpaper` is built and budgeted but not mounted on any screen.
 - Phase hours are fixed in `packages/ui/src/context/utils.ts`. Nothing computes a sun position.
 
-## Order of work toward the anniversary (2026-11-03)
+## Order of work: middle out, with feedback loops
 
-1. `resolveScene` in core, with tests: contrast over every backdrop and tier, and the tier mapping.
-2. Mobile living sky painter at the balanced tier, on the home header and behind the tabs. Screenshots at dawn, noon, dusk and night in Sanctuary and Wewa.
-3. Mount `WorkspaceWallpaper` on mobile through the ground layer, sharing `WorkspaceAppearance` with the web.
-4. Web: map the presets to world plus phase, bundle the Unsplash wallpapers, and route `FloorAtmosphere` through the tier.
-5. World gallery with "play the day", in Settings and on explore.
-6. Rich tier: sun and moon arc, true-sky mode.
+Start in the middle with one room working end to end on a real phone. Then grow outward to every screen and room, and to web and explore.
 
-Steps 1 to 3 fit in a week. Steps 4 to 6 follow and can each be shown on their own.
+1. **The middle.** `resolveScene` in core reads world, hour, season, weather, room, ground and verger's experience. Tests cover the tier mapping, contrast over every backdrop and tier, and the presence rules. Then the mobile painter for the Classroom home at full presence, mounted under verger.
+2. **Every screen.** The band and quiet presences on all mobile screens, so the hour lives everywhere. Continue the worlds-foundation migration (workspace home, attendance, Self, Library, Community, Profile), then delete `SanctuaryButton` and `SanctuaryCard`.
+3. **Every room.** The Self, Community, Library and Profile views, and the "Scene follows" setting.
+4. **Web and explore.** The same resolver. Map the floors and presets onto it, bundle the Unsplash wallpapers, and give explore a showcase mode.
+5. **Richer.** The sun and moon arc, true sunrise times, and a type voice per world.
+
+Three feedback loops run the whole way:
+
+- **Taste.** The living sky prototype comes first, then Naveen reacts, then the doc changes, then the code. Each PR adds a screenshot grid (every world at dawn, noon, dusk and night, and at each presence) so a look can be judged without a phone.
+- **Runtime.** Verger's flight recorder logs frame times and lever changes on each screen while the scene runs. Phase F on real phones (the A52 fixture is the low anchor) sets the thresholds. A regression shows up as a lever lowering more often.
+- **People.** In the pilot, a one-tap "how does this feel" sits in Settings, next to the world and scene choices.
 
 ## Open questions for Naveen
 
@@ -193,3 +246,5 @@ Steps 1 to 3 fit in a week. Steps 4 to 6 follow and can each be shown on their o
 - Should the true-sky mode (sunrise times) be the default, or the fixed phase hours?
 - Should a wallpaper chosen on one device follow the person to the other? (The data model already allows it.)
 - Should explore show one world per visit, or let visitors switch freely?
+- Should the scene follow the room by default, or the world?
+- Should the living sky get its own verger lever?

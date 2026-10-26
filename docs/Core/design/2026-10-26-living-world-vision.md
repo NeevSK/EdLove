@@ -48,6 +48,8 @@ Make the app feel alive through light, place and time, never through noise, on t
 5. **Materials, not effects.** Vellum, silk, leaf tissue and water, with chromatic shadow. Blur, glow and particles appear only when they mean something.
 6. **The phone decides how much.** On a low-end or hot phone, or with Data Saver on, the world steps down from a painted scene, to a gradient, to a flat tint. It never drops readability. Verger supplies that budget.
 7. **Culture without appropriation.** Borrow materials, colours and patterns. Never use sacred figures. Credit sources. Sinhala, Tamil and English get equal care.
+8. **The world is the whole app.** A world dresses every screen in every room, not one card. The room picks the view, and the hour, season and weather light it (world model, Rooms).
+9. **Never bury the beauty.** The app makes room for the scene: frost baked once, look up, sky first and settle when idle, all cheap enough for a low-end phone (world model, The world is the whole app).
 
 ## Where the code is today
 

@@ -2,6 +2,8 @@
 
 Status: foundation landed on `feat/worlds-foundation` (2026-10-22). Settings, the tab bar and the headers are the first dressed surfaces.
 
+> **Update 2026-10-26.** A world dresses the whole app, not one screen. `2026-10-26-world-model.md` now covers how worlds combine with the hour, season, weather, rooms and verger's budget, and the order of work. This document stays the source for the components and tokens.
+
 ## The idea in one paragraph
 
 Gurudevi is open source, so its components have plain, generic names: `Text`, `Button`, `Surface`, `TextField`, `Chip`, `Row`, `Section`, `Switch`. They know behaviour, states and accessibility, and nothing about looks. A **world** is an adapter that dresses them: semantic colour tokens, a dozen style decisions, and the recipes built from those. A person chooses a world (Sanctuary by default, or Temple walls, Wewa, Forest canopy, Angampora, Gems and lace). The world then resolves against the hour of the day and light or dark mode. The poetic vocabulary (the lamp, paper, ola holes) lives in worlds and docs, not in component APIs.
