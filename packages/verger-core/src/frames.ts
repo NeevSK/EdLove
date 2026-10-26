@@ -3,7 +3,7 @@ import type {
   FrameStages,
   FrameState,
   FrameWindow,
-  GovernorConfig,
+  VergerConfig,
   LeverTarget,
 } from './types';
 
@@ -102,7 +102,7 @@ export function aggregateFrames(
 }
 
 /** Judges one window. Too few frames says nothing about cost, so it is `quiet`. */
-export function classifyFrameWindow(window: FrameWindow, config: GovernorConfig): FrameState {
+export function classifyFrameWindow(window: FrameWindow, config: VergerConfig): FrameState {
   if (window.frames <= 0 || !(window.targetMs > 0)) return 'quiet';
   if (window.frames < config.minSamples) {
     // Few frames can mean idleness or a main thread too stalled to draw. Missed vsyncs tell
@@ -123,7 +123,7 @@ export function classifyFrameWindow(window: FrameWindow, config: GovernorConfig)
 /**
  * Which windows the native sensor forwards to JavaScript. Calm and quiet windows only matter
  * when they end a run of stressed or near-budget ones, so repeats are dropped: an animation
- * running comfortably costs no bridge traffic at all. The governor reaches the same decisions
+ * running comfortably costs no bridge traffic at all. Verger reaches the same decisions
  * from the filtered stream (see the equivalence test).
  */
 export function shouldForwardWindow(

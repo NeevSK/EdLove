@@ -18,7 +18,6 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
-import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { observeDevelopmentInteractions } from '@/boot/startupTelemetry';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
@@ -32,6 +31,7 @@ import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
+import { GurudeviVerger } from '@/runtime/GurudeviVerger';
 import WelcomeConceptPreview from '@/screens/WelcomeConceptPreview';
 
 /**
@@ -77,49 +77,51 @@ export function EntryShell() {
           <QueryClientProvider client={queryClient}>
             <GlobalProvider>
               <EnvironmentProvider>
-                <OptionalStartupServices />
-                <WorldFonts />
-                <CircadianProvider>
-                  <PortalProvider>
-                    <ToastProvider>
-                      <ExternalLinkProvider>
-                        <DeepLinkProvider>
-                          <AuthQueryCacheBoundary />
-                          <FABProvider>
-                            <MascotProvider config={fireflyMascotConfig}>
-                              <LayoutLoopSentinel name="RootShell" style={styles.root}>
-                                <Box className="flex-1 bg-phase-canvas">
-                                  <AppVersionGateOverlay />
-                                  <GuestLeaseBoundary>
-                                    <GuestPersistenceNotice />
-                                    <GuestConversionBoundary />
-                                    <PasswordRecoveryBoundary />
-                                    <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                      <Stack screenOptions={{ headerShown: false }}>
-                                        <Stack.Screen name="index" />
-                                        <Stack.Screen name="welcome" />
-                                        <Stack.Screen name="auth" />
-                                        <Stack.Screen name="account-recovery" />
-                                        <Stack.Screen name="onboarding" />
-                                        <Stack.Screen name="public-form/[slug]" />
-                                        <Stack.Screen name="(tabs)" />
-                                        <Stack.Screen
-                                          name="(modal)"
-                                          options={{ presentation: 'modal' }}
-                                        />
-                                      </Stack>
-                                    </SessionRouteGate>
-                                  </GuestLeaseBoundary>
-                                  <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
-                                </Box>
-                              </LayoutLoopSentinel>
-                            </MascotProvider>
-                          </FABProvider>
-                        </DeepLinkProvider>
-                      </ExternalLinkProvider>
-                    </ToastProvider>
-                  </PortalProvider>
-                </CircadianProvider>
+                {/* Verger: adaptive runtime. Off in a release until configured; floors only when off. */}
+                <GurudeviVerger>
+                  <WorldFonts />
+                  <CircadianProvider>
+                    <PortalProvider>
+                      <ToastProvider>
+                        <ExternalLinkProvider>
+                          <DeepLinkProvider>
+                            <AuthQueryCacheBoundary />
+                            <FABProvider>
+                              <MascotProvider config={fireflyMascotConfig}>
+                                <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                  <Box className="flex-1 bg-phase-canvas">
+                                    <AppVersionGateOverlay />
+                                    <GuestLeaseBoundary>
+                                      <GuestPersistenceNotice />
+                                      <GuestConversionBoundary />
+                                      <PasswordRecoveryBoundary />
+                                      <SessionRouteGate appServices={<AuthenticatedAppServices />}>
+                                        <Stack screenOptions={{ headerShown: false }}>
+                                          <Stack.Screen name="index" />
+                                          <Stack.Screen name="welcome" />
+                                          <Stack.Screen name="auth" />
+                                          <Stack.Screen name="account-recovery" />
+                                          <Stack.Screen name="onboarding" />
+                                          <Stack.Screen name="public-form/[slug]" />
+                                          <Stack.Screen name="(tabs)" />
+                                          <Stack.Screen
+                                            name="(modal)"
+                                            options={{ presentation: 'modal' }}
+                                          />
+                                        </Stack>
+                                      </SessionRouteGate>
+                                    </GuestLeaseBoundary>
+                                    <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
+                                  </Box>
+                                </LayoutLoopSentinel>
+                              </MascotProvider>
+                            </FABProvider>
+                          </DeepLinkProvider>
+                        </ExternalLinkProvider>
+                      </ToastProvider>
+                    </PortalProvider>
+                  </CircadianProvider>
+                </GurudeviVerger>
               </EnvironmentProvider>
             </GlobalProvider>
           </QueryClientProvider>

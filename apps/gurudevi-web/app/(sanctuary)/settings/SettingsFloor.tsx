@@ -1,7 +1,9 @@
 'use client';
 
 import type { WorkspaceAppearanceMotion, WorkspaceAppearancePreset } from '@repo/core/types';
+import type { FidelityPreference } from '@repo/core/verger';
 import React, { useEffect, useState } from 'react';
+import { useWebFidelity, writeWebFidelity } from '../../../lib/runtime/webFidelity';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import styles from './settings.module.css';
 
@@ -19,6 +21,7 @@ export function SettingsFloor({ displayName, capacity, isExplore }: Readonly<Set
   const [telemetryConsent, setTelemetryConsent] = useState(true);
   const [savedNotification, setSavedNotification] = useState<string | null>(null);
   const [navigationLayout, setNavigationLayout] = useState<'horizontal' | 'side'>('horizontal');
+  const fidelity = useWebFidelity();
 
   useEffect(() => {
     try {
@@ -71,6 +74,13 @@ export function SettingsFloor({ displayName, capacity, isExplore }: Readonly<Set
     setMotion(newMotion);
     localStorage.setItem('gurudevi_motion_preset', newMotion);
     triggerSavedNotice('Motion preference updated to ' + newMotion);
+  };
+
+  const handleFidelityChange = (next: FidelityPreference) => {
+    writeWebFidelity(next);
+    triggerSavedNotice(
+      next === 'auto' ? 'Visual detail: automatic' : next === 'low' ? 'Visual detail: lighter' : 'Visual detail: richer',
+    );
   };
 
   const handleLanguageChange = (newLang: 'en' | 'si' | 'ta') => {
@@ -275,6 +285,52 @@ export function SettingsFloor({ displayName, capacity, isExplore }: Readonly<Set
               <span className={styles.optionLabel}>Calm / Off (Reduced Motion)</span>
               <span className={styles.optionSub}>
                 Zero rapid animations, static breath visualizers for vestibular comfort
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {/* Visual detail (verger's fidelity, R12) */}
+        <section className={styles.settingSection}>
+          <h2 className={styles.sectionTitle}>
+            <span>🔋</span>
+            <span>Visual Detail</span>
+          </h2>
+          <p className={styles.sectionDescription}>
+            How much visual richness this browser spends. Automatic adapts to the device and how
+            it is coping right now.
+          </p>
+
+          <div className={styles.optionsGrid}>
+            <button
+              className={styles.optionCard}
+              data-selected={fidelity === 'auto'}
+              onClick={() => handleFidelityChange('auto')}
+              type="button"
+            >
+              <span className={styles.optionLabel}>Automatic</span>
+              <span className={styles.optionSub}>Adapts to this device and its load</span>
+            </button>
+            <button
+              className={styles.optionCard}
+              data-selected={fidelity === 'low'}
+              onClick={() => handleFidelityChange('low')}
+              type="button"
+            >
+              <span className={styles.optionLabel}>Lighter</span>
+              <span className={styles.optionSub}>
+                Still backgrounds and simpler effects: easier on battery and older devices
+              </span>
+            </button>
+            <button
+              className={styles.optionCard}
+              data-selected={fidelity === 'high'}
+              onClick={() => handleFidelityChange('high')}
+              type="button"
+            >
+              <span className={styles.optionLabel}>Richer</span>
+              <span className={styles.optionSub}>
+                Full detail even on modest devices; still eased off if the device struggles
               </span>
             </button>
           </div>

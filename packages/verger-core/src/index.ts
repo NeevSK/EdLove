@@ -6,8 +6,26 @@
  * overrides, telemetry sink and experiment assignment. The platform packages (verger-android,
  * verger-react) supply sensing and the app-wide actuators.
  */
+export {
+  ACTIVATION_PRESETS,
+  type ActivationCap,
+  type ActivationPatch,
+  type ActivationPresetName,
+  activationForMode,
+  modeForActivation,
+  capActivation,
+  type LeverActivation,
+  leverActivation,
+  type ObserveLevel,
+  parseActivationPatch,
+  resolveActivation,
+  SENSORS,
+  type SensorId,
+  sensorOf,
+  type VergerActivation,
+} from './activation';
 export { VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION, VERGER_REFRESH_CAP } from './builtins';
-export { DEFAULT_GOVERNOR_CONFIG } from './config';
+export { DEFAULT_VERGER_CONFIG, parseConfigPatch, validateConfig } from './config';
 export {
   createRuntimeController,
   isValidEvent,
@@ -34,15 +52,34 @@ export {
   shouldForwardWindow,
 } from './frames';
 export {
-  type CreateGovernorOptions,
-  createGovernor,
-  type GovernorState,
+  capacityClassOf,
+  type CreateVergerStateOptions,
+  createVergerState,
+  type VergerState,
+  networkLimitOf,
   nextTimedChangeAt,
-  reduceGovernor,
+  reduceVerger,
   snapshotOf,
   staticFloors,
   UNKNOWN_CAPACITY,
-} from './governor';
+  UNKNOWN_BATTERY,
+  UNKNOWN_NETWORK,
+} from './reducer';
+export {
+  type AccountReading,
+  type AccountState,
+  accountsRelievedBy,
+  type Admission,
+  admitWork,
+  classesOfLever,
+  estimateAccounts,
+  RESOURCE_ACCOUNTS,
+  type ResourceAccount,
+  validateWorkloads,
+  WORKLOAD_CLASSES,
+  type WorkloadClass,
+  type WorkloadSpec,
+} from './demand';
 export { defineHost, type VergerHost } from './host';
 export { chooseLeverToLower, relieves, validateLevers } from './levers';
 export {
@@ -59,6 +96,7 @@ export {
   type ExitRecord,
   foldSession,
   freshRecord,
+  guardedRecord,
   type LaunchPlan,
   parseMarker,
   parseRecord,
@@ -72,10 +110,64 @@ export {
   validateRecoveryConfig,
   type VergerRecord,
 } from './recovery';
-export { replayGovernor } from './replay';
+export {
+  canonicalLadderKey,
+  ladderKey,
+  policyKey,
+  VERGER_POLICY,
+  VERGER_POLICY_P5,
+  type VergerPolicy,
+  validatePolicy,
+} from './policy';
+export {
+  createOutcomeLedger,
+  DEFAULT_HOLD_WINDOW_MS,
+  DEFAULT_JUDGE_WINDOW_MS,
+  type LeverOutcomes,
+  type MoveCause,
+  type MoveDirection,
+  type MoveRecord,
+  type OutcomeLedger,
+  type OutcomeLedgerOptions,
+  type OutcomeSummary,
+  type Verdict,
+  outcomeAttributes,
+  verdictLine,
+} from './outcomes';
+export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';
+export { comparePolicies, type PolicyReport } from './compare';
+export {
+  type LabLever,
+  type LabReport,
+  type LabResult,
+  type LabSection,
+  labConfigure,
+  labReport,
+  labSections,
+  labTune,
+} from './lab';
+export {
+  createSessionRecorder,
+  DEFAULT_RECORDING_EVENTS,
+  replayRecording,
+  type SessionRecorder,
+  type VergerRecording,
+} from './recording';
+export { replayVerger } from './replay';
+export { createSelfCostMeter, type SelfCost, type SelfCostMeter } from './selfCost';
+export {
+  createSelfBudgetGuard,
+  SELF_BUDGET_SHED,
+  type SelfBudget,
+  type SelfBudgetGuard,
+  type SelfBudgetStage,
+} from './selfBudget';
+export { INEFFECTIVE_AFTER_MOVES, type IneffectiveFinding, ineffectiveFindings } from './selfRules';
 export { createSessionLedger, type SessionLedger, type SessionReport } from './session';
 export {
   createVerger,
+  FLOORS_ACTIVATION,
+  vergerFloors,
   type FrameTotals,
   type Verger,
   type VergerOptions,
@@ -86,12 +178,41 @@ export { thermalLevelOf } from './signals';
 export {
   bucketMs,
   configHash,
-  createGovernorTelemetry,
-  GOVERNOR_POLICY_VERSION,
-  type GovernorTelemetry,
-  type GovernorTelemetryOptions,
-  type GovernorTelemetrySink,
+  createVergerTelemetry,
+  VERGER_POLICY_VERSION,
+  type VergerTelemetry,
+  type VergerTelemetryOptions,
+  type VergerTelemetrySink,
   reasonCode,
   type TelemetryValue,
 } from './telemetry';
 export type * from './types';
+export { isBatteryLow } from './signals';
+export {
+  type DataBudgetState,
+  type DataLedger,
+  type DataSample,
+  dataBudgetState,
+  foldDataSample,
+  inDailyWindow,
+  localDay,
+} from './dataBudget';
+export {
+  type ClosedLoopOptions,
+  runClosedLoop,
+  type SessionSegment,
+  SIM_SESSIONS,
+  type SimSession,
+  type SimTick,
+} from './sim/closedLoop';
+export {
+  defaultEffect,
+  type Demand,
+  type LeverEffect,
+  type PhoneModel,
+  type PlantState,
+  type PlantStep,
+  SIM_PHONES,
+  stepPlant,
+} from './sim/plant';
+export { compareClosedLoop, type ControlMetrics, controlMetrics, type SimArm } from './sim/metrics';

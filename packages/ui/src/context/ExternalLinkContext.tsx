@@ -1,3 +1,4 @@
+import { useStore } from '@repo/core/store/useStore';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
@@ -17,7 +18,6 @@ import {
   registerExternalLinkRuntime,
 } from '@repo/ui/utils/linking';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useRealityOptional } from './EnvironmentContext';
 
 interface PendingRequest {
   url: string;
@@ -137,10 +137,7 @@ const MethodItem = React.memo(({ method, isSelected, onSelect }: MethodItemProps
 });
 
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
-  const { reality } = useRealityOptional();
   const { showToast } = useSanctuaryToast();
-  const realityRef = useRef(reality);
-  realityRef.current = reality;
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
 
@@ -157,7 +154,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           setPendingRequest({ ...request, resolve });
         });
       },
-      isOnline: () => realityRef.current.networkQuality !== 'offline',
+      isOnline: () => useStore.getState().isOnline,
       notifyOffline: (message) => showToastRef.current({ message, type: 'error' }),
     });
 

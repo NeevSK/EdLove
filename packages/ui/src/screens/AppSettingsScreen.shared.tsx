@@ -1,4 +1,4 @@
-import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import { accountPin, coreRuntime, cryptoManager, storage, useStore } from '@repo/core/logic';
 import { authAPI } from '@repo/core/api/auth';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
@@ -25,12 +25,23 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import type { NetworkLimit } from '@repo/core/verger';
+import { useVergerSnapshot } from '@repo/verger-react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, ScrollView, View } from 'react-native';
 
 interface SettingsNavigation {
   navigate: (route: string, params?: Record<string, unknown>) => void;
 }
+
+/** Verger's network limit, as the device panel shows it (diagnostic, not translated, as before). */
+const NETWORK_LIMIT_LABEL: Readonly<Record<NetworkLimit, string>> = {
+  none: 'Good',
+  slow: 'Slow',
+  unstable: 'Unstable',
+  'data-saver': 'Data Saver',
+  offline: 'Offline',
+};
 
 const AppSettingsScreen = memo(function AppSettingsScreen({
   navigation,
@@ -52,7 +63,6 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     setLanguage,
     isVeilActive,
     toggleVeil,
-    reality,
     enableLivingTheme,
     setEnableLivingTheme,
     visualCapabilities,
@@ -60,6 +70,17 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     setWorld,
   } = useEnvironment();
   const { preferences: sensoryPreferences, setPreference } = useSensoryPreferences();
+  const networkLimit = useVergerSnapshot()?.networkLimit ?? null;
+  const isOnline = useStore((state) => state.isOnline);
+  const totalMemoryGB = useMemo(() => {
+    try {
+      const bytes = coreRuntime.device.getTotalMemory?.();
+      return typeof bytes === 'number' && bytes > 0 ? bytes / 1024 ** 3 : null;
+    } catch (error) {
+      console.warn('[settings] total memory unavailable', error);
+      return null;
+    }
+  }, []);
   const { emit: emitFeedback } = useFeedbackOptional();
   const _isDemoMode = useStore((state) => state.isDemoMode);
   const _setDemoMode = useStore((state) => state.setDemoMode);
@@ -935,13 +956,25 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
       </Section>
 
       <Section title={t('settings.device.title')}>
-        <Row label={t('settings.device.tier')} detail={capitalise(reality.deviceTier)} />
+        <Row
+          label={t('settings.device.tier')}
+          detail={capitalise(visualCapabilities.deviceTier)}
+        />
         <Row
           label={t('settings.device.memory')}
-          detail={`${reality.totalMemoryGB.toFixed(1)} GB`}
+          detail={totalMemoryGB === null ? '—' : `${totalMemoryGB.toFixed(1)} GB`}
         />
-        <Row label={t('settings.device.network')} detail={capitalise(reality.networkQuality)} />
-        {reality.isDataSaverMode ? (
+        <Row
+          label={t('settings.device.network')}
+          detail={
+            networkLimit === null
+              ? isOnline
+                ? 'Online'
+                : 'Offline'
+              : NETWORK_LIMIT_LABEL[networkLimit]
+          }
+        />
+        {networkLimit === 'data-saver' ? (
           <Row
             label={t('settings.device.data_saver')}
             signal

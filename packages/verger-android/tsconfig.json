@@ -5,6 +5,6 @@
     "types": ["node"],
     "paths": { "@repo/verger-core": ["../verger-core/src/index.ts"] }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["index.ts", "src/**/*.ts"],
   "exclude": ["node_modules"]
 }

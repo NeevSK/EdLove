@@ -5,12 +5,16 @@ import {
   createVerger,
   defineHost,
   type ExitRecord,
-  type GovernorEvent,
+  freshRecord,
+  type VergerEvent,
   parseRecord,
+  policyKey,
   type RuntimePort,
   type TelemetryValue,
   type VergerPlatform,
+  FLOORS_ACTIVATION,
   type VergerStore,
+  vergerFloors,
 } from './index';
 
 const HOST = defineHost({ name: 'sample', levers: SAMPLE_LEVERS });
@@ -30,18 +34,21 @@ const CAPACITY: CapacityFacts = {
 };
 
 /** An asynchronous store, like AsyncStorage: every call resolves on a later microtask. */
-function asyncStore(): VergerStore & { data: Map<string, string> } {
+function asyncStore(): VergerStore & { data: Map<string, string>; dead: boolean } {
   const data = new Map<string, string>();
-  return {
+  const store = {
     data,
-    get: async (key) => data.get(key) ?? null,
-    set: async (key, value) => {
-      data.set(key, value);
+    // A dead process's writes never land.
+    dead: false,
+    get: async (key: string) => data.get(key) ?? null,
+    set: async (key: string, value: string) => {
+      if (!store.dead) data.set(key, value);
     },
-    remove: async (key) => {
-      data.delete(key);
+    remove: async (key: string) => {
+      if (!store.dead) data.delete(key);
     },
   };
+  return store;
 }
 
 /** One device across launches: its exit history survives process deaths. */
@@ -64,7 +71,7 @@ function device() {
     createPort(): RuntimePort {
       calls.push('port');
       return {
-        start(_config, _onEvent: (event: GovernorEvent) => void) {
+        start(_config, _onEvent: (event: VergerEvent) => void) {
           calls.push('start');
           if (failStart) throw new Error('native start blew up');
           return () => calls.push('stop');
@@ -100,6 +107,20 @@ const scheduler = {
   setTimeout: (_cb: () => void, _ms: number) => 0,
   clearTimeout: () => {},
 };
+
+function options(d: ReturnType<typeof device>, store: VergerStore | undefined) {
+  return {
+    host: HOST,
+    platform: d.platform,
+    store,
+    requested: 'active' as const,
+    release: '1.0.0',
+    now: d.now,
+    wallNow: d.wallNow,
+    scheduler,
+    random: () => 0.99,
+  };
+}
 
 function launcher(
   d: ReturnType<typeof device>,
@@ -168,6 +189,7 @@ describe('verger launch', () => {
       },
       store,
       requested: 'active',
+      release: '1.0.0',
       now: d.now,
       wallNow: d.wallNow,
       scheduler,
@@ -213,58 +235,158 @@ describe('verger launch', () => {
     expect(last.rung).toBe(0);
   });
 
-  it('keeps verger off, native code included, after a death during native start', async () => {
+  it('after a death during native start, the next launch calls nothing native at all', async () => {
     const d = device();
     const store = asyncStore();
-    const first = launcher(d, store);
-    // The process dies inside the starting stretch: simulate by never letting it reach `running`.
-    d.failStart(true);
+    // The process dies inside the starting stretch: once native code is touched, no write of
+    // this process reaches the store again.
+    await createVerger({
+      ...options(d, store),
+      platform: () => {
+        store.dead = true;
+        throw new Error('process killed');
+      },
+    })
+      .start()
+      .catch(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    store.set = (() => {
-      const set = store.set;
-      return async (key: string, value: string) => {
-        if (key.endsWith(':session') && JSON.parse(value).phase !== 'starting') return; // lost with the process
-        await set(key, value);
-      };
-    })();
-    await first.start().catch(() => {});
+    store.dead = false;
     d.die('native-crash', true);
-    d.failStart(false);
 
-    const store2: VergerStore = {
-      get: (k) => store.data.get(k) ?? null,
-      set: (k, v) => void store.data.set(k, v),
-      remove: (k) => void store.data.delete(k),
-    };
     d.calls.length = 0;
-    const plan = await launcher(d, store2).start();
+    const plan = await launcher(d, store).start();
     expect(plan).toMatchObject({ runtime: 'off', rung: 4 });
-    expect(d.calls).toEqual(['exits', 'capacity']); // read facts once to judge, started nothing
-    d.calls.length = 0;
+    expect(d.calls).toEqual([]); // judged from the store alone: a native fault cannot loop
     d.die(null, false);
-    const again = await launcher(d, store2).start();
+    const again = await launcher(d, store).start();
     expect(again).toMatchObject({ runtime: 'off', rung: 4 });
-    expect(d.calls).toEqual([]); // on rung 4 nothing native is touched at all
+    expect(d.calls).toEqual([]);
     // A new release gets another chance.
-    expect((await launcher(d, store2, { release: '1.0.1' }).start()).rung).toBe(0);
+    expect((await launcher(d, store, { release: '1.0.1' }).start()).rung).toBe(0);
   });
 
-  it('fails closed when its own launch throws', async () => {
+  it('a boot death under one release does not put the next release on rung 4', async () => {
     const d = device();
+    const store = asyncStore();
+    await createVerger({
+      ...options(d, store),
+      platform: () => {
+        store.dead = true;
+        throw new Error('process killed');
+      },
+    })
+      .start()
+      .catch(() => {});
+    store.dead = false;
+    d.die('native-crash', true);
+    const plan = await launcher(d, store, { release: '1.0.1' }).start();
+    expect(plan).toMatchObject({ runtime: 'active', rung: 0 });
+  });
+
+  it('stays off and writes nothing when the store cannot be read', async () => {
+    const d = device();
+    const store = asyncStore();
+    store.data.set('verger:sample:record', 'held');
+    store.get = async () => {
+      throw new Error('SQLITE_BUSY');
+    };
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const plan = await launcher(d, store).start();
+    expect(plan).toMatchObject({ runtime: 'off', reason: 'store-unreadable' });
+    expect(d.calls).toEqual([]);
+    expect(store.data.get('verger:sample:record')).toBe('held');
+  });
+
+  it('stays off when the starting marker cannot be written', async () => {
+    const d = device();
+    const store = asyncStore();
+    store.set = async () => {
+      throw new Error('disk full');
+    };
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const plan = await launcher(d, store).start();
+    expect(plan).toMatchObject({ runtime: 'off', reason: 'store-unwritable' });
+    expect(d.calls).toEqual([]);
+  });
+
+  it('starts from shadow, not from full, when the record is corrupt', async () => {
+    const d = device();
+    const store = asyncStore();
+    store.data.set('verger:sample:record', '{"v":1,"key":');
+    const plan = await launcher(d, store).start();
+    expect(plan).toMatchObject({ runtime: 'shadow', rung: 3 });
+  });
+
+  it('fails closed when its own launch throws, and charges nothing later to verger', async () => {
+    const d = device();
+    const store = asyncStore();
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const v = createVerger({
-      host: HOST,
+      ...options(d, store),
       platform: () => {
         throw new Error('no module');
       },
-      store: asyncStore(),
-      requested: 'active',
-      now: d.now,
-      wallNow: d.wallNow,
-      scheduler,
     });
     expect((await v.start()).runtime).toBe('off');
-    expect(v.getSnapshot()).toBeNull();
+    // Off, verger publishes only its floors: nothing sensed, nothing on hardware.
+    expect(v.getSnapshot()?.activation).toEqual(FLOORS_ACTIVATION);
+    expect(JSON.parse(store.data.get('verger:sample:session') ?? '{}')).toMatchObject({
+      runtime: 'off',
+      phase: 'running',
+    });
+    d.die('crash', true); // an unrelated crash while verger was off
+    const next = await launcher(d, store).start();
+    expect(next).toMatchObject({ runtime: 'active', rung: 0 });
+    expect(parseRecord(store.data.get('verger:sample:record'))?.ladder.failures).toEqual([]);
+  });
+
+  it('on a rung without hardware, never calls a hardware lever, not even to release', async () => {
+    const d = device();
+    const store = asyncStore();
+    const record = freshRecord(
+      `${policyKey(HOST.policy)}:${HOST.configHash}:1.0.0`,
+      null,
+      HOST.recovery,
+    );
+    store.data.set(
+      'verger:sample:record',
+      JSON.stringify({ ...record, ladder: { ...record.ladder, rung: 2 } }),
+    );
+    const v = launcher(d, store);
+    expect((await v.start()).hardware).toBe(false);
+    await v.stop();
+    expect(d.calls.filter((c) => c.startsWith('refresh') || c.startsWith('boost'))).toEqual([]);
+  });
+
+  it('a record filed under the unnamed key format keeps its rung: migrated, not reset', async () => {
+    const d = device();
+    const store = asyncStore();
+    // Written before policies had names: `p4:<config>:<release>`.
+    const record = freshRecord(`p4:${HOST.configHash}:1.0.0`, null, HOST.recovery);
+    store.data.set(
+      'verger:sample:record',
+      JSON.stringify({ ...record, ladder: { ...record.ladder, rung: 2 } }),
+    );
+    const v = launcher(d, store);
+    const plan = await v.start();
+    expect(plan.rung).toBe(2);
+    expect(plan.hardware).toBe(false);
+    await v.stop();
+    const saved = parseRecord(store.data.get('verger:sample:record'));
+    expect(saved?.key).toBe(`verger-p4:${HOST.configHash}:1.0.0`);
+  });
+
+  it('a second instance starts only after the first has stopped (one native singleton)', async () => {
+    const d = device();
+    const store = asyncStore();
+    const a = launcher(d, store);
+    await a.start();
+    const stopping = a.stop();
+    const b = launcher(d, store);
+    await Promise.all([stopping, b.start()]);
+    const lastStop = d.calls.lastIndexOf('stop');
+    const lastStart = d.calls.lastIndexOf('start');
+    expect(lastStop).toBeLessThan(lastStart);
   });
 
   it('stop then start (as React strict mode does) runs two orderly launches', async () => {
@@ -319,5 +441,220 @@ describe('verger launch', () => {
       prior: {},
       grant: 0,
     });
+  });
+});
+
+describe('verger: the floors hold while verger is not running', () => {
+  const LOW_RAM: CapacityFacts = {
+    ...CAPACITY,
+    totalMemoryBytes: 2 * 1024 ** 3,
+    isLowRamDevice: true,
+  };
+
+  it('before start, settings and JS-only facts set the floors; nothing native or stored is touched', () => {
+    const d = device();
+    const store = asyncStore();
+    const v = createVerger({ ...options(d, store), facts: () => LOW_RAM });
+    const notified: number[] = [];
+    v.subscribe(() => notified.push(1));
+    // A low-memory phone: the ambient lever is floored even before any event.
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+    expect(v.getSnapshot()?.levels['rows-ahead']).toBe(1);
+    v.dispatch({ type: 'preferences', at: 1, reduceMotion: false, fidelity: 'high' });
+    // Fidelity high lifts the low-capacity floor, as the old governor did.
+    expect(v.getSnapshot()?.levels.sparkle).toBe(0);
+    v.dispatch({ type: 'preferences', at: 2, reduceMotion: true, fidelity: 'high' });
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+    v.dispatch({ type: 'power', at: 3, saver: true });
+    expect(v.getSnapshot()?.levels['warm-ahead']).toBe(2);
+    expect(notified.length).toBe(3);
+    expect(d.calls).toEqual([]);
+    expect(store.data.size).toBe(0);
+  });
+
+  it('the snapshot object is stable until an output changes', () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    const first = v.getSnapshot();
+    v.dispatch({ type: 'tick', at: 5 });
+    v.dispatch({ type: 'interaction', at: 6 });
+    expect(v.getSnapshot()).toBe(first);
+  });
+
+  it('senses nothing natively: frames, heat and memory events move no floor', () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    const before = v.getSnapshot()?.levels;
+    v.dispatch({ type: 'thermal', at: 1, status: 'critical', headroom: 1.2 });
+    v.dispatch({ type: 'memory-trim', at: 2, severity: 'critical' });
+    expect(v.getSnapshot()?.levels).toEqual(before);
+  });
+
+  it('under the kill switch the floors still follow settings', async () => {
+    const d = device();
+    const v = createVerger({
+      ...options(d, asyncStore()),
+      facts: () => CAPACITY,
+      assignment: {
+        key: 'k',
+        arm: 'control',
+        bucket: 1,
+        mode: 'shadow',
+        runtime: 'off',
+        reason: 'kill-switch',
+      },
+    });
+    expect((await v.start()).reason).toBe('kill-switch');
+    v.dispatch({ type: 'preferences', at: 1, reduceMotion: false, fidelity: 'low' });
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+    expect(d.calls).toEqual([]);
+  });
+
+  it('after stop, the floors carry the settings heard while verger ran', async () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    await v.start();
+    v.dispatch({ type: 'preferences', at: 1, reduceMotion: true, fidelity: 'auto' });
+    await v.stop();
+    expect(v.getSnapshot()?.activation).toEqual(FLOORS_ACTIVATION);
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+  });
+
+  it('facts that throw leave the device unknown, not verger broken', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const v = createVerger({
+      ...options(device(), asyncStore()),
+      facts: () => {
+        throw new Error('no expo-device');
+      },
+    });
+    // Unknown is not low memory, and an unknown phone is not proof a capability is missing.
+    expect(v.getSnapshot()?.levels.sparkle).toBe(0);
+    expect(v.getSnapshot()?.levels.frosting).toBe(0);
+  });
+});
+
+describe('verger: host signals fill only what the platform does not sense', () => {
+  it('while running, a native sensor wins over the same JS reading; the floors keep the JS one', async () => {
+    const d = device();
+    const v = createVerger({
+      ...options(d, asyncStore()),
+      facts: () => CAPACITY,
+      platform: () => ({ ...d.platform(), senses: ['power'] }),
+    });
+    await v.start();
+    v.signal({ type: 'power', at: 1, saver: true });
+    expect(v.getSnapshot()?.powerSaver).toBe(false);
+    await v.stop();
+    expect(v.getSnapshot()?.powerSaver).toBe(true);
+    expect(v.getSnapshot()?.levels.sparkle).toBe(2);
+  });
+
+  it('while running, a sensor the platform lacks is heard from JS', async () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), facts: () => CAPACITY });
+    await v.start();
+    v.signal({ type: 'power', at: 1, saver: true });
+    expect(v.getSnapshot()?.powerSaver).toBe(true);
+  });
+});
+
+describe('vergerFloors: a reading without an app', () => {
+  it('folds the readings into the floors and touches nothing else', () => {
+    const snapshot = vergerFloors({
+      host: HOST,
+      events: [
+        { type: 'power', at: 1, saver: true },
+        { type: 'preferences', at: 2, reduceMotion: false, fidelity: 'auto' },
+      ],
+    });
+    expect(snapshot?.powerSaver).toBe(true);
+    expect(snapshot?.levels['warm-ahead']).toBe(2);
+  });
+});
+
+describe('the floors hear the network from host signals', () => {
+  it('a JS network reading sets the network limit while verger is off', () => {
+    const v = createVerger({ ...options(device(), asyncStore()), facts: () => CAPACITY });
+    v.signal({
+      type: 'network',
+      at: 1,
+      transport: 'none',
+      validated: false,
+      metered: null,
+      downKbps: null,
+      dataSaver: null,
+    });
+    expect(v.getSnapshot()?.networkLimit).toBe('offline');
+  });
+});
+
+describe('verger: loop 2 feeds its findings back to the policy (D4)', () => {
+  it('a lever that never relieves strain, episode after episode, is reported to the policy once, and recorded', async () => {
+    const d = device();
+    const v = createVerger({ ...options(d, asyncStore()), recordEvents: 4000 });
+    await v.start();
+    v.dispatch({ type: 'app-state', at: d.now(), state: 'active' });
+    const window = (averageMs: number, droppedRatio: number) => ({
+      startMs: d.now() - 500,
+      endMs: d.now(),
+      frames: 30,
+      averageMs,
+      targetMs: 16.67,
+      worstMs: averageMs * 2,
+      droppedRatio,
+    });
+    // Three episodes of strain no lever relieves, each followed by calm that gives levels back:
+    // a lever with two steps fails at most twice per episode, so the rule needs a second one.
+    for (let episode = 0; episode < 3; episode += 1) {
+      for (const [count, averageMs, dropped] of [[40, 40, 0.5], [240, 8, 0]] as const) {
+        for (let i = 0; i < count; i += 1) {
+          d.pass(500);
+          v.dispatch({ type: 'interaction', at: d.now() - 1 });
+          v.dispatch({ type: 'frame-window', at: d.now(), window: window(averageMs, dropped) });
+          await Promise.resolve();
+        }
+      }
+    }
+    const findings = (v.recording()?.events ?? []).flatMap((e) =>
+      e.type === 'lever-ineffective' ? [`${e.lever} ${e.target}`] : [],
+    );
+    expect(findings.length).toBeGreaterThan(0);
+    expect(new Set(findings).size).toBe(findings.length);
+  });
+});
+
+describe('verger: outcomes reach telemetry and the flight recorder (stage 5)', () => {
+  it('sends verger_outcomes on going to the background and at stop; verdicts join the flight', async () => {
+    const d = device();
+    const store = asyncStore();
+    const sent: { name: string; attributes: Readonly<Record<string, TelemetryValue>> }[] = [];
+    const v = createVerger({
+      ...options(d, store),
+      telemetrySink: (name, attributes) => sent.push({ name, attributes }),
+    });
+    await v.start();
+    v.dispatch({ type: 'app-state', at: d.now(), state: 'active' });
+    for (let i = 0; i < 30; i += 1) {
+      d.pass(500);
+      v.dispatch({ type: 'interaction', at: d.now() - 1 });
+      v.dispatch({
+        type: 'frame-window',
+        at: d.now(),
+        window: { startMs: d.now() - 500, endMs: d.now(), frames: 30, averageMs: 40, targetMs: 16.67, worstMs: 80, droppedRatio: 0.5 },
+      });
+    }
+    d.pass(10_000);
+    v.dispatch({ type: 'app-state', at: d.now(), state: 'background' });
+    const outcomes = sent.filter((e) => e.name === 'verger_outcomes');
+    expect(outcomes).toHaveLength(1);
+    expect(outcomes[0]?.attributes).toMatchObject({ not_relieved: expect.any(Number), events_per_min: expect.any(Number) });
+    expect(Number(outcomes[0]?.attributes.not_relieved)).toBeGreaterThan(0);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const flightKey = [...store.data.keys()].find((k) => k.endsWith(':flight'));
+    const flight: string[] = JSON.parse(flightKey ? (store.data.get(flightKey) ?? '[]') : '[]');
+    expect(flight.some((line) => line.includes('|judged|'))).toBe(true);
+    await v.stop();
+    expect(sent.filter((e) => e.name === 'verger_outcomes')).toHaveLength(2);
   });
 });

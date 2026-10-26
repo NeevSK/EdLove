@@ -120,7 +120,7 @@ The user inquired:
                                     │
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│             SOVEREIGN PLATFORM GOVERNOR (@repo/core/governor)          │
+│             SOVEREIGN PLATFORM GOVERNOR (@repo/core/verger)          │
 │ • Enforces admission policy during runtime                             │
 │ • Emits OTLP telemetry to Expo Observe / Owned Collector               │
 └────────────────────────────────────────────────────────────────────────┘

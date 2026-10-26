@@ -128,13 +128,7 @@ export function SessionRouteGate({
 
   const content = (
     <>
-      <OptionalStartupServices
-        phase={
-          presentation.kind === 'content' && presentation.mountProtectedServices
-            ? 'protected-ready'
-            : 'public-ready'
-        }
-      />
+      <OptionalStartupServices />
       {children}
       {presentation.kind === 'content' && presentation.mountProtectedServices ? appServices : null}
     </>

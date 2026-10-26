@@ -1,12 +1,17 @@
 import type {
-  GovernorConfig,
+  BatteryState,
   MemoryLevel,
   ThermalLevel,
   ThermalStatus,
   TrimSeverity,
+  VergerConfig,
 } from './types';
 
-const THERMAL_RANK: Record<ThermalLevel, number> = {
+/** Low only when known to be low and known to be unplugged: unknown is never low. */
+export const isBatteryLow = (battery: BatteryState, lowPercent: number): boolean =>
+  battery.pluggedIn === false && battery.levelPercent !== null && battery.levelPercent <= lowPercent;
+
+export const THERMAL_RANK: Record<ThermalLevel, number> = {
   unknown: 0,
   nominal: 1,
   warm: 2,
@@ -24,7 +29,7 @@ const THERMAL_RANK: Record<ThermalLevel, number> = {
 export function thermalLevelOf(
   status: ThermalStatus | null,
   headroom: number | null,
-  config: GovernorConfig,
+  config: VergerConfig,
 ): ThermalLevel {
   const fromStatus = statusLevel(status);
   if (headroom === null || !Number.isFinite(headroom) || headroom <= 0) return fromStatus;
@@ -67,7 +72,7 @@ export function latchMemory(
   latch: MemoryLatch,
   severity: TrimSeverity,
   at: number,
-  config: GovernorConfig,
+  config: VergerConfig,
 ): MemoryLatch {
   const rank = { moderate: 1, low: 2, critical: 3 } as const;
   const active = latch.severity !== null && at < latch.until;

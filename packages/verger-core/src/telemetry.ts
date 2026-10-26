@@ -1,29 +1,31 @@
-import { DEFAULT_GOVERNOR_CONFIG } from './config';
+import { DEFAULT_VERGER_CONFIG } from './config';
 import type { ExperimentArm } from './experiment';
 import { classifyFrameWindow, frameRate } from './frames';
 import { createQualityMeter, type QualityMeter } from './quality';
-import type { FrameWindow, GovernorConfig, GovernorSnapshot, LeverSpec } from './types';
+import type { FrameWindow, VergerConfig, VergerSnapshot, LeverSpec } from './types';
 
 export type TelemetryValue = string | number | boolean;
 
 /** Port: the app supplies the transport (Expo Observe, PostHog). Never called per frame. */
-export type GovernorTelemetrySink = (
+export type VergerTelemetrySink = (
   name: string,
   attributes: Readonly<Record<string, TelemetryValue>>,
 ) => void;
 
-export interface GovernorTelemetryOptions {
-  readonly sink: GovernorTelemetrySink;
+export interface VergerTelemetryOptions {
+  readonly sink: VergerTelemetrySink;
   readonly arm: ExperimentArm;
   readonly experimentKey: string;
   /** Stable for one app launch; lets sessions be compared without identifying anyone. */
   readonly sessionId?: string;
-  /** Device stratum attached to `governor_started` so arms are compared within strata. */
+  /** Device stratum attached to `verger_started` so arms are compared within strata. */
   readonly device?: Readonly<Record<string, TelemetryValue>>;
   /** Hash of the active config, so data can be split by every threshold that produced it. */
   readonly configHash?: string;
-  /** Classifies windows for the summary with the governor's own rule. */
-  readonly config?: GovernorConfig;
+  /** The policy deciding; verger's own when absent. */
+  readonly policy?: { readonly id: string; readonly version: number };
+  /** Classifies windows for the summary with verger's own rule. */
+  readonly config?: VergerConfig;
   /**
    * Native cumulative frame totals. The window stream is filtered (calm repeats are not
    * forwarded), so summaries count frames from these totals, not from forwarded windows.
@@ -43,9 +45,9 @@ export interface GovernorTelemetryOptions {
   readonly summaryEveryMs?: number;
 }
 
-export interface GovernorTelemetry {
+export interface VergerTelemetry {
   /** Call with each new snapshot; emits only when governed outputs change. */
-  onSnapshot(snapshot: GovernorSnapshot): void;
+  onSnapshot(snapshot: VergerSnapshot): void;
   /** Call with each frame window; aggregated into a periodic summary. */
   /** `at` is the caller's clock; it defaults to the window's end on the sensor timeline. */
   onFrameWindow(window: FrameWindow, interactionIdle: boolean, at?: number): void;
@@ -93,7 +95,7 @@ const emptySummary = (at: number): Summary => ({
  * Bumped whenever a decision rule or default changes, so field data can be split by the policy
  * that produced it (deterministic, versioned policies: telemetry informs the next version).
  */
-export const GOVERNOR_POLICY_VERSION = 4;
+export const VERGER_POLICY_VERSION = 4;
 
 /** Reasons carry measured numbers; telemetry keeps their shape, not their values. */
 export function reasonCode(reason: string): string {
@@ -110,15 +112,15 @@ export function bucketMs(value: number): string {
   return '>=133';
 }
 
-export function createGovernorTelemetry(options: GovernorTelemetryOptions): GovernorTelemetry {
+export function createVergerTelemetry(options: VergerTelemetryOptions): VergerTelemetry {
   const maxEvents = options.maxEvents ?? 64;
   const maxSummaries = options.maxSummaries ?? 120;
   const summaryEveryMs = options.summaryEveryMs ?? 60_000;
-  const config = options.config ?? DEFAULT_GOVERNOR_CONFIG;
+  const config = options.config ?? DEFAULT_VERGER_CONFIG;
   let emitted = 0;
   let summaries = 0;
   let lastTotals = safeTotals(options.readTotals);
-  let previous: GovernorSnapshot | null = null;
+  let previous: VergerSnapshot | null = null;
   let summary: Summary | null = null;
   const quality: QualityMeter | null = options.levers ? createQualityMeter(options.levers) : null;
 
@@ -127,7 +129,8 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
       options.sink(name, {
         experiment: options.experimentKey,
         arm: options.arm,
-        policy: GOVERNOR_POLICY_VERSION,
+        policy: options.policy?.version ?? VERGER_POLICY_VERSION,
+        policy_id: options.policy?.id ?? 'verger',
         ...(options.sessionId ? { session: options.sessionId } : {}),
         ...(options.configHash ? { config: options.configHash } : {}),
         ...attributes,
@@ -159,7 +162,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
         : null;
     lastTotals = totals;
     const cost = quality?.take(at);
-    send('governor_summary', {
+    send('verger_summary', {
       // Quality given up (0 = full quality, 1 = every lever at its cheapest), time-weighted.
       ...(cost ? { quality_cost: round2(cost.applied), proposed_cost: round2(cost.proposed) } : {}),
       ...(delta
@@ -201,7 +204,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
       const prev = previous;
       previous = snapshot;
       if (!prev) {
-        emit('governor_started', {
+        emit('verger_started', {
           mode: snapshot.mode,
           thermal: snapshot.thermal,
           memory: snapshot.memory,
@@ -221,7 +224,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
         prev.cpuBoost !== snapshot.cpuBoost ||
         prev.globalReducedMotion !== snapshot.globalReducedMotion
       ) {
-        emit('governor_state', {
+        emit('verger_state', {
           frame: snapshot.frameState,
           thermal: snapshot.thermal,
           memory: snapshot.memory,
@@ -239,7 +242,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
       for (const [lever, level] of Object.entries(snapshot.proposedLevels)) {
         const before = prev.proposedLevels[lever];
         if (before !== undefined && before !== level) {
-          emit('governor_lever', {
+          emit('verger_lever', {
             lever,
             from: before,
             to: level,
@@ -279,7 +282,7 @@ export function createGovernorTelemetry(options: GovernorTelemetryOptions): Gove
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-function safeTotals(read: GovernorTelemetryOptions['readTotals']) {
+function safeTotals(read: VergerTelemetryOptions['readTotals']) {
   if (!read) return null;
   try {
     const t = read();
@@ -292,7 +295,7 @@ function safeTotals(read: GovernorTelemetryOptions['readTotals']) {
 }
 
 /** A short stable hash of a config object, for splitting field data by thresholds. */
-export function configHash(config: GovernorConfig): string {
+export function configHash(config: VergerConfig): string {
   const text = JSON.stringify(Object.entries(config).sort(([a], [b]) => (a < b ? -1 : 1)));
   let hash = 0x811c9dc5;
   for (let i = 0; i < text.length; i += 1) {

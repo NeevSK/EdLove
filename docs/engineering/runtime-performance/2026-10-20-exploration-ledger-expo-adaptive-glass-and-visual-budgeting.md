@@ -94,7 +94,7 @@ Studying the architecture of `expo-adaptive-glass` reveals 4 foundational princi
 
 ### 4.1 Comparison: Gurudevi Governor vs. `expo-adaptive-glass`
 
-| Dimension | Gurudevi Platform (`@repo/core/governor`) | `expo-adaptive-glass` (`@rbayuokt`) |
+| Dimension | Gurudevi Platform (`@repo/core/verger`) | `expo-adaptive-glass` (`@rbayuokt`) |
 | :--- | :--- | :--- |
 | **Scope** | Whole-app runtime (Tutii mascot, lists, sync, telemetry, UI tokens) | Specialized UI surface rendering (glass, acrylic, lens) |
 | **Native Shaders** | Tier 1 Skia (`react-native-skia`) & Reanimated 4 Worklets | Hand-rolled Swift Metal & Kotlin AGSL shaders |
@@ -106,7 +106,7 @@ Studying the architecture of `expo-adaptive-glass` reveals 4 foundational princi
 1. **Do NOT install `@rbayuokt/expo-adaptive-glass` into `apps/gurudevi-mobile` before Monday:**
    - It introduces custom Swift/Kotlin native modules, which violates our pre-pilot stability freeze (risk of Gradle/NDK collision or ABI drift).
    - Our attendance pilot screens (e.g. `AttendanceScreen.tsx`) do not require liquid glass sheets.
-2. **DO adopt its architectural invariants into `@repo/core/governor`:**
+2. **DO adopt its architectural invariants into `@repo/core/verger`:**
    - **Scroll-Freeze:** Enforce scroll-freeze inside `useDeviceGovernor` when adapting list overscan and Tutii mascot spring physics.
    - **Priority-Shed Contract:** Ensure our tokens allow UI elements to downgrade gracefully (e.g. transparent blur backdrop $\rightarrow$ solid token background `#1E293B`).
 3. **Post-Pilot Roadmap (Wave 2 / Q4 2026):**

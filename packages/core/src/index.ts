@@ -10,7 +10,6 @@ export {
 export { isDemo } from '@repo/core/api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
-export * from '@repo/core/efficiency';
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {

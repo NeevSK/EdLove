@@ -4,11 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { SAMPLE_LEVERS } from './__fixtures__/sampleHost';
 import {
   type CapacityFacts,
-  createGovernor,
-  DEFAULT_GOVERNOR_CONFIG,
+  createVergerState,
+  DEFAULT_VERGER_CONFIG,
   defineHost,
   type LeverSpec,
-  reduceGovernor,
+  reduceVerger,
   snapshotOf,
   VERGER_GLOBAL_MOTION,
   VERGER_REFRESH_CAP,
@@ -60,8 +60,8 @@ describe('verger knows no host', () => {
   });
 
   it('refers to its own built-in levers only by actuator, never by id', () => {
-    const governor = readFileSync(path.join(import.meta.dirname, 'governor.ts'), 'utf8');
-    expect(governor).not.toMatch(/'refresh-rate'|'global-motion'/);
+    const reducer = readFileSync(path.join(import.meta.dirname, 'reducer.ts'), 'utf8');
+    expect(reducer).not.toMatch(/'refresh-rate'|'global-motion'/);
   });
 
   it('applies declared rules whatever the levers are called', () => {
@@ -70,15 +70,15 @@ describe('verger knows no host', () => {
       { ...VERGER_GLOBAL_MOTION, id: 'stillness' },
       ...SAMPLE_LEVERS.filter((l) => l.actuator === undefined),
     ];
-    let state = createGovernor({ at: 0, capacity: PHONE, levers: renamed });
+    let state = createVergerState({ at: 0, capacity: PHONE, levers: renamed });
     // Graphics capabilities missing: the declared floors apply.
     expect(snapshotOf(state).levels.frosting).toBe(2);
     // Hidden: the declared whenHidden floor applies.
-    state = reduceGovernor(state, { type: 'app-state', at: 1, state: 'background' });
+    state = reduceVerger(state, { type: 'app-state', at: 1, state: 'background' });
     expect(snapshotOf(state).levels['warm-ahead']).toBe(2);
     // Idle and visible: the refresh actuator is found by its actuator, under its new name.
-    state = reduceGovernor(state, { type: 'app-state', at: 2, state: 'active' });
-    state = reduceGovernor(state, { type: 'tick', at: 20_000 });
+    state = reduceVerger(state, { type: 'app-state', at: 2, state: 'active' });
+    state = reduceVerger(state, { type: 'tick', at: 20_000 });
     expect(snapshotOf(state).levels['display-pace']).toBe(1);
     expect(snapshotOf(state).refreshCapHz).toBe(60);
   });
@@ -118,6 +118,6 @@ describe('defineHost', () => {
         config: { saturationAfterMs: Number.NaN },
       }),
     ).toThrow(/saturationAfterMs/);
-    expect(DEFAULT_GOVERNOR_CONFIG.refreshCapHz).toBe(60);
+    expect(DEFAULT_VERGER_CONFIG.refreshCapHz).toBe(60);
   });
 });

@@ -7,8 +7,6 @@ import { identity, useAuthStore } from '@repo/core/logic';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FidelityProvider, useFidelity, useFidelityOptional } from './FidelityProvider';
 import { LanguageProvider, useLanguage, useLanguageOptional } from './LanguageProvider';
-// Atomic Providers
-import { RealityProvider, useReality, useRealityOptional } from './RealityProvider';
 import { SensoryProvider } from './SensoryProvider';
 import { ThemeProvider, useThemeContext, useThemeContextOptional } from './ThemeProvider';
 import type { EnvironmentContextValue } from './types';
@@ -21,13 +19,11 @@ import { useVisualCapabilities } from './VisualCapabilities';
 export function EnvironmentProvider({ children }: { children: ReactNode }) {
   return (
     <LanguageProvider>
-      <RealityProvider>
-        <SensoryProvider>
-          <ThemeProvider>
-            <FidelityProvider>{children}</FidelityProvider>
-          </ThemeProvider>
-        </SensoryProvider>
-      </RealityProvider>
+      <SensoryProvider>
+        <ThemeProvider>
+          <FidelityProvider>{children}</FidelityProvider>
+        </ThemeProvider>
+      </SensoryProvider>
     </LanguageProvider>
   );
 }
@@ -35,13 +31,12 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
 /**
  * useEnvironment (Legacy Orchestrator Hook)
  * Aggregates atomic contexts for backward compatibility.
- * ⚠️ DEPRECATION NOTICE: Favor useReality, useTheme, useLanguage, or useFidelity for better performance.
+ * ⚠️ DEPRECATION NOTICE: Favor useTheme, useLanguage, useFidelity or useVisualCapabilities for better performance.
  */
 export function useEnvironment(): EnvironmentContextValue {
   const user = useAuthStore((state: any) => state.user);
   const activeBond = (user as any)?.activeBond ?? null;
 
-  const { reality, refreshReality } = useRealityOptional();
   const { language, setLanguage } = useLanguageOptional();
   const {
     themeMode,
@@ -55,8 +50,9 @@ export function useEnvironment(): EnvironmentContextValue {
     setEnableLivingTheme,
     setWorld,
   } = useThemeContextOptional();
-  const { fidelityLevel, effectiveFidelity, setFidelityLevel } = useFidelityOptional();
+  const { fidelityLevel, setFidelityLevel } = useFidelityOptional();
   const visualCapabilities = useVisualCapabilities();
+  const effectiveFidelity = visualCapabilities.effectiveFidelity;
 
   // ReBAC actions
   const switchPerspective = useCallback(async (entityId: string, capacity: string) => {
@@ -74,7 +70,6 @@ export function useEnvironment(): EnvironmentContextValue {
       fidelityLevel,
       effectiveFidelity,
       language,
-      reality,
       isVeilActive,
       enableLivingTheme,
       worldId,
@@ -85,7 +80,6 @@ export function useEnvironment(): EnvironmentContextValue {
       setFidelityLevel,
       setLanguage,
       toggleVeil,
-      refreshReality,
       setEnableLivingTheme,
       setWorld,
       switchPerspective,
@@ -98,7 +92,6 @@ export function useEnvironment(): EnvironmentContextValue {
       fidelityLevel,
       effectiveFidelity,
       language,
-      reality,
       isVeilActive,
       enableLivingTheme,
       worldId,
@@ -107,7 +100,6 @@ export function useEnvironment(): EnvironmentContextValue {
       setFidelityLevel,
       setLanguage,
       toggleVeil,
-      refreshReality,
       setEnableLivingTheme,
       setWorld,
       switchPerspective,
@@ -125,12 +117,6 @@ export {
   useLanguage,
   useLanguageOptional,
 } from './LanguageProvider';
-// Re-export utility functions and atomic hooks
-export {
-  RealityProvider,
-  useReality,
-  useRealityOptional,
-} from './RealityProvider';
 export {
   ThemeProvider,
   useThemeContext,

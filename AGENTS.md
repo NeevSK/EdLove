@@ -302,6 +302,7 @@ When performing specialized tasks, dynamically view the authoritative skill in `
 | **Branded UI & Motion Tokens** | [`.agents/skills/branded-ui/SKILL.md`](file:///c:/x/.agents/skills/branded-ui/SKILL.md) |
 
 | **Expo & React Native Architecture** | Load [`.agents/skills/expo-overview/SKILL.md`](file:///c:/x/.agents/skills/expo-overview/SKILL.md), then the task-specific skill. Mobile agent setup and cloud/device workflow: [`apps/gurudevi-mobile/docs/architecture/2026-10-16-agent-native-mobile-workflow.md`](apps/gurudevi-mobile/docs/architecture/2026-10-16-agent-native-mobile-workflow.md). |
+| **Verger (adaptive runtime) & its phases** | [`.agents/skills/verger/SKILL.md`](.agents/skills/verger/SKILL.md), then [`docs/engineering/runtime-performance/verger/playbook/README.md`](docs/engineering/runtime-performance/verger/playbook/README.md). Gate: `pnpm verger:check`. |
 | **Nitro Modules & MMKV Guidance** | [`.agents/skills/nitro-guidance/SKILL.md`](file:///c:/x/.agents/skills/nitro-guidance/SKILL.md) & [`.agents/skills/mmkv-guidance/SKILL.md`](file:///c:/x/.agents/skills/mmkv-guidance/SKILL.md) |
 | **Device Automation & UI Inspection** | [`.agents/skills/agent-device-control/SKILL.md`](file:///c:/x/.agents/skills/agent-device-control/SKILL.md) |
 | **Offline Sync & PowerSync** | [`.agents/skills/powersync/SKILL.md`](file:///c:/x/.agents/skills/powersync/SKILL.md) |

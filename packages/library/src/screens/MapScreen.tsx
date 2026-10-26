@@ -18,7 +18,7 @@ import {
   VastuView,
   VatyaView,
 } from '@repo/ui/components/visualization';
-import { useReality, useVisualCapabilities } from '@repo/ui/context';
+import { useVisualCapabilities } from '@repo/ui/context';
 import { useResponsive } from '@repo/ui/hooks';
 import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from '@repo/ui/icons';
 import {
@@ -111,7 +111,8 @@ export default function MapScreen() {
   const router = useRouter();
   const { width, height } = useResponsive();
   const showToast = useStore((state) => state.showToast);
-  const { reality } = useReality();
+  const { deviceTier } = useVisualCapabilities();
+  const isOnline = useStore((state) => state.isOnline);
   const [activePerspective, setActivePerspective] = useState<PerspectiveId>('astro');
   const [isExporting, setIsExporting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -141,10 +142,7 @@ export default function MapScreen() {
   const availablePerspectives = useMemo(() => {
     if (!data) return PERSPECTIVES;
     const engineIds = getEnginePerspectives(data);
-    const isDeviceConstrained =
-      reality.deviceTier === 'low' ||
-      reality.networkQuality === 'poor' ||
-      reality.networkQuality === 'offline';
+    const isDeviceConstrained = deviceTier === 'low' || !isOnline;
     return PERSPECTIVES.map((p) => {
       let isDisabled = !engineIds.includes(p.id);
       // Throttle heavy 'vatya' perspective on constrained devices
@@ -153,7 +151,7 @@ export default function MapScreen() {
       }
       return { ...p, disabled: isDisabled };
     });
-  }, [data, reality.deviceTier, reality.networkQuality]);
+  }, [data, deviceTier, isOnline]);
   const activeData = useMemo(() => {
     if (activePerspective === 'astro' && !data?.nodes?.length) {
       return KnowledgeParser.fromMermaid(`
@@ -246,8 +244,8 @@ export default function MapScreen() {
     if (loadError) {
       return (
         <BrandedErrorState
-          title={reality.networkQuality === 'offline' ? 'You are offline' : 'Map unavailable'}
-          message={reality.networkQuality === 'offline' ? 'Reconnect to explore the knowledge map.' : loadError}
+          title={!isOnline ? 'You are offline' : 'Map unavailable'}
+          message={!isOnline ? 'Reconnect to explore the knowledge map.' : loadError}
         >
           <Pressable accessibilityRole="button" accessibilityLabel="Retry loading knowledge map" onPress={() => void fetchData()}>
             <Text className="font-bold text-phaseText-primary">Retry</Text>

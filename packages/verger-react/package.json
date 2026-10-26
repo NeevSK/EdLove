@@ -2,7 +2,7 @@
   "name": "@repo/verger-react",
   "version": "0.1.0",
   "private": true,
-  "description": "Verger's React Native bindings: provider, hooks, presence, long tasks and the global reduced-motion lever.",
+  "description": "Verger's React bindings, for any React platform: hooks over the process's verger (no provider) and the long-task observer.",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -22,9 +22,7 @@
     "@repo/verger-core": "workspace:*"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "react-native-reanimated": "*"
+    "react": "*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

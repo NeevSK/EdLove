@@ -10,8 +10,18 @@
  */
 
 import type { QueryClient } from '@tanstack/react-query';
-import { classifyMemoryTier } from './runtimeConditions';
-import { observeEfficiencyDecision } from './observability';
+
+/** Below 3 GB a phone is a low-memory phone (the retired governor's threshold, kept for the shield). */
+const LOW_MEMORY_BYTES = 3 * 1024 * 1024 * 1024;
+
+function isLowMemoryPhone(totalMemoryBytes: number | null): boolean {
+  return (
+    totalMemoryBytes !== null &&
+    Number.isFinite(totalMemoryBytes) &&
+    totalMemoryBytes > 0 &&
+    totalMemoryBytes < LOW_MEMORY_BYTES
+  );
+}
 
 export interface HermesHeapStats {
   jsHeapSize: number;
@@ -99,7 +109,6 @@ export function reclaimHermesMemory(options: MemoryReclamationOptions = {}): Mem
   const reclaimedBytes = Math.max(0, beforeHeapBytes - afterHeapBytes);
 
   const reason = options.reason ?? 'periodic-maintenance';
-  observeEfficiencyDecision('storage-maintenance', 'reduce', `${reason}: reclaimed ${reclaimedBytes}B`);
 
   return {
     beforeHeapBytes,
@@ -136,7 +145,7 @@ export function setupHermesMemoryShield(options: {
   totalMemoryBytes?: number | null;
   onReclaim?: (result: MemoryReclamationResult) => void;
 }) {
-  const is2GBDevice = classifyMemoryTier(options.totalMemoryBytes ?? null) === 'low';
+  const is2GBDevice = isLowMemoryPhone(options.totalMemoryBytes ?? null);
   if (is2GBDevice) {
     tuneQueryClientForLowMemory(options.queryClient);
   }

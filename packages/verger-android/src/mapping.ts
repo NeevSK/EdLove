@@ -1,11 +1,14 @@
 import type {
   CapacityFacts,
+  DataSaver,
   ExitReason,
   ExitRecord,
   FrameStages,
   FrameState,
-  GovernorConfig,
-  GovernorEvent,
+  VergerConfig,
+  VergerEvent,
+  NetworkTransport,
+  SensorId,
   ThermalStatus,
   ThreadRoleName,
   TrimSeverity,
@@ -43,11 +46,33 @@ export interface NativeThreadLoad {
   readonly topOtherCores: number;
   readonly rssMb: number | null;
 }
+/** The device's CPU headroom (API 36, R11), 0 to 100; null while the platform has no value. */
+export interface NativeCpuHeadroom {
+  readonly percent: number | null;
+}
+/** This app's bytes since boot (B3.1); -1 where the platform does not count. */
+export interface NativeDataUsage {
+  readonly totalBytes: number;
+}
 export interface NativeMemory {
   readonly availableMb: number;
   readonly thresholdMb: number;
   readonly lowMemory: boolean;
   readonly rssMb: number | null;
+}
+/** The default network as `NetworkSignals.kt` builds it; bandwidth is bucketed natively. */
+export interface NativeNetwork {
+  readonly transport: NetworkTransport;
+  readonly validated: boolean | null;
+  readonly metered: boolean | null;
+  readonly downKbps: number | null;
+  readonly dataSaver: DataSaver | null;
+}
+/** The battery as `BatterySignals.kt` builds it; temperature rounded to half a degree natively. */
+export interface NativeBattery {
+  readonly levelPercent: number | null;
+  readonly pluggedIn: boolean | null;
+  readonly temperatureC: number | null;
 }
 /** What a hardware lever actually did; for diagnostics and telemetry, not for decisions. */
 export interface NativeLever {
@@ -80,6 +105,7 @@ export interface NativeExit {
   readonly reason?: string;
   readonly atWallMs?: number;
   readonly foreground?: boolean;
+  readonly pid?: number;
 }
 
 const EXIT_REASONS: readonly ExitReason[] = [
@@ -98,15 +124,22 @@ const EXIT_REASONS: readonly ExitReason[] = [
  * Native exit records to verger-core's. Malformed entries are dropped; an unknown reason name
  * becomes `other` (a newer platform reason is not evidence of a failure).
  */
-export function toExitRecords(native: readonly NativeExit[] | null | undefined): ExitRecord[] {
-  if (!Array.isArray(native)) return [];
+export function toExitRecords(
+  native: readonly NativeExit[] | null | undefined,
+): ExitRecord[] | null {
+  // Null means the platform keeps no record (below API 30): unknown, not "nothing ended".
+  if (!Array.isArray(native)) return null;
   const out: ExitRecord[] = [];
   for (const entry of native) {
     if (typeof entry?.atWallMs !== 'number' || !Number.isFinite(entry.atWallMs)) continue;
     const reason = EXIT_REASONS.includes(entry.reason as ExitReason)
       ? (entry.reason as ExitReason)
       : 'other';
-    out.push({ reason, atWallMs: entry.atWallMs, foreground: entry.foreground === true });
+    const pid =
+      typeof entry.pid === 'number' && Number.isInteger(entry.pid) && entry.pid > 0
+        ? { pid: entry.pid }
+        : {};
+    out.push({ reason, atWallMs: entry.atWallMs, foreground: entry.foreground === true, ...pid });
   }
   return out;
 }
@@ -119,9 +152,13 @@ export type VergerAndroidEvents = {
   onThreadLoad: (event: NativeThreadLoad) => void;
   onMemory: (event: NativeMemory) => void;
   onLever: (event: NativeLever) => void;
+  onNetwork: (event: NativeNetwork) => void;
+  onBattery: (event: NativeBattery) => void;
+  onCpuHeadroom: (event: NativeCpuHeadroom) => void;
+  onDataUsage: (event: NativeDataUsage) => void;
 };
 
-/** What `start` accepts; every threshold is taken from the governor's own config. */
+/** What `start` accepts; every threshold is taken from verger's own config. */
 export interface NativeSenseConfig {
   readonly windowMs: number;
   readonly minSamples: number;
@@ -132,16 +169,21 @@ export interface NativeSenseConfig {
   readonly jankFrameFactor: number;
   readonly headroomWarm: number;
   readonly saturationCores: number;
+  readonly cpuHeadroomBusyPercent: number;
+  /** Which native sensors run; absent means all (`Sensors.kt`). */
+  readonly sensors?: Readonly<Record<SensorId, boolean>>;
 }
 
 /** The frame window the golden vectors were generated with. */
 export const FRAME_WINDOW_MS = 500;
 
 export function senseConfigFrom(
-  config: GovernorConfig,
+  config: VergerConfig,
   windowMs = FRAME_WINDOW_MS,
+  sensors?: Readonly<Record<SensorId, boolean>>,
 ): NativeSenseConfig {
   return {
+    ...(sensors ? { sensors } : {}),
     windowMs,
     minSamples: config.minSamples,
     stressRatio: config.stressRatio,
@@ -151,6 +193,7 @@ export function senseConfigFrom(
     jankFrameFactor: config.jankFrameFactor,
     headroomWarm: config.headroomWarm,
     saturationCores: config.saturationCores,
+    cpuHeadroomBusyPercent: config.cpuHeadroomBusyPercent,
   };
 }
 
@@ -180,19 +223,23 @@ export function toCapacityFacts(native: NativeCapacity | null | undefined): Capa
   };
 }
 
-type NativeEvent =
+export type NativeEvent =
   | { readonly name: 'onFrameWindow'; readonly payload: NativeFrameWindow }
   | { readonly name: 'onThermal'; readonly payload: NativeThermal }
   | { readonly name: 'onMemoryTrim'; readonly payload: NativeMemoryTrim }
   | { readonly name: 'onPowerSaver'; readonly payload: NativePowerSaver }
   | { readonly name: 'onThreadLoad'; readonly payload: NativeThreadLoad }
-  | { readonly name: 'onMemory'; readonly payload: NativeMemory };
+  | { readonly name: 'onMemory'; readonly payload: NativeMemory }
+  | { readonly name: 'onNetwork'; readonly payload: NativeNetwork }
+  | { readonly name: 'onBattery'; readonly payload: NativeBattery }
+  | { readonly name: 'onCpuHeadroom'; readonly payload: NativeCpuHeadroom }
+  | { readonly name: 'onDataUsage'; readonly payload: NativeDataUsage };
 
 /**
- * Native payload to governor event. `at` is the JavaScript clock at receipt: the governor's
+ * Native payload to verger event. `at` is the JavaScript clock at receipt: verger's
  * timing runs on one clock, and the window's own start and end stay on the sensor's timeline.
  */
-export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
+export function toVergerEvent(event: NativeEvent, at: number): VergerEvent {
   switch (event.name) {
     case 'onFrameWindow': {
       const { state: _state, stages, ...window } = event.payload;
@@ -226,5 +273,28 @@ export function toGovernorEvent(event: NativeEvent, at: number): GovernorEvent {
         thresholdMb: event.payload.thresholdMb,
         lowMemory: event.payload.lowMemory,
       };
+    case 'onNetwork':
+      return {
+        type: 'network',
+        at,
+        transport: event.payload.transport,
+        validated: event.payload.validated,
+        metered: event.payload.metered,
+        downKbps: finite(event.payload.downKbps),
+        dataSaver: event.payload.dataSaver,
+      };
+    case 'onBattery':
+      return {
+        type: 'battery',
+        at,
+        levelPercent: finite(event.payload.levelPercent),
+        pluggedIn: event.payload.pluggedIn,
+        temperatureC: finite(event.payload.temperatureC),
+      };
+    case 'onCpuHeadroom':
+      return { type: 'cpu-headroom', at, percent: finite(event.payload.percent) };
+    case 'onDataUsage':
+      // A count that is not a finite number is an uncounted platform, as -1 is.
+      return { type: 'data-usage', at, totalBytes: finite(event.payload.totalBytes) ?? -1 };
   }
 }

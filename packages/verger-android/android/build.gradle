@@ -17,6 +17,9 @@ android {
       // The golden vectors live with the TypeScript reference in packages/verger-core.
       systemProperty 'verger.fixtures',
         file('../../verger-core/src/__fixtures__').absolutePath
+      // The native event contract, shared with the TypeScript mapping tests.
+      systemProperty 'verger.contract',
+        file('../contract/native-events.json').absolutePath
     }
   }
   lintOptions {

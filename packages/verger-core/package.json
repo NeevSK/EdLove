@@ -16,7 +16,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "golden": "UPDATE_GOLDEN=1 vitest run src/goldenVectors.test.ts",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "compare": "tsx scripts/compare-recordings.ts",
+    "simulate": "tsx scripts/simulate.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

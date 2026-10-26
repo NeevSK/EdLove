@@ -16,6 +16,7 @@
  *
  * Platform note: Uses platform-specific animation implementations.
  */
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { tokens } from '@repo/ui/tokens';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useResponsiveGrid } from './layout';
@@ -46,6 +47,8 @@ export function ShimmerBlock({
   style,
   className,
 }: ShimmerBlockProps) {
+  // verger's `loading-shimmer` lever: at rest, the placeholder holds still (no animation cost).
+  const { allowShimmer } = useVisualCapabilities();
   // Web implementation using CSS animations
   if (Platform.OS === 'web') {
     const webStyle: any = {
@@ -56,6 +59,7 @@ export function ShimmerBlock({
       ...(style || {}),
     };
 
+    if (!allowShimmer) return <div className={className} style={webStyle} />;
     return (
       <div className={className} style={webStyle}>
         <style>{`
@@ -73,7 +77,7 @@ export function ShimmerBlock({
   }
 
   // Native implementation
-  if (!Animated) {
+  if (!Animated || !allowShimmer) {
     return (
       <View
         className={className}
