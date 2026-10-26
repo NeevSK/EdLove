@@ -53,7 +53,7 @@ Make the app feel alive through light, place and time, never through noise, on t
 
 | Promise | Today | Gap |
 | --- | --- | --- |
-| The app changes with the time of day | `world/resolve.ts` tints the ground with each hour's light at 0 to 7% in light mode and 0 to 12% in dark | The change is hard to see, so the day does not read as alive |
+| The app changes with the time of day | `world/resolve.ts` tints the ground with each hour's light at 0 to 7% in light mode and 0 to 12% in dark | The change is hard to see. Mobile had a visible crossfading backdrop (`SanctuaryBackground`, Feb 24) but lost it when navigation moved to Expo Router (Jun 9); see `2026-10-26-ui-vision-timeline.md` |
 | Five clearings with their own light | Space signatures are written up in docs; worlds dress Settings, the tab bar and the headers only | No screen beyond those has a clearing identity yet |
 | Living primary and sacred hero levels | The world contract has `section` recipes and ornament bands as data only | Nothing draws scenes or ornament on native yet (baked-art pipeline pending) |
 | Quiet surfaces | `pnpm check:world` ratchet, hex baseline 4,139 | About 70 screens still read legacy tokens through `worldBridge` |
