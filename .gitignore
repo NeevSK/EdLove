@@ -183,3 +183,6 @@ apps/gurudevi-mobile/reports/
 
 # Headless scene screenshots (pnpm scene:shots)
 .scene-shots/
+
+# World fonts built by scripts/fonts/build-world-fonts.py that do not ship yet
+.world-fonts/
