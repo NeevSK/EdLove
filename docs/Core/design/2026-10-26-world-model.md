@@ -125,6 +125,21 @@ The sky answers three things at once: the hour moves the light, the season sets 
 
 Reference, studied 2026-10-26: TesseraUI's Ambient Weather (https://tesseraui.in/components/ambient-weather, $29) does butterflies, rain that collects on cards and drips, snow, leaves landing on cards, and breeze. It uses Skia, Reanimated and `react-native-worklets` and needs a development build. It runs one UI-thread frame loop, reuses particles, and stops when paused, in the background or under Reduce Motion. The page gives no low-end device figures. It shows that "weather lands on the cards" works in React Native. Its licence terms were not checked; read them before buying, or build our own on the same pattern with Sri Lankan seasons.
 
+## The world is the whole app, and the scene must breathe
+
+A world is not a card on one screen. It dresses everything: the ground, cards, text, lines and lamp colour, corners, card edges, the main button, the label voice, chips, the ornament band and the lit tab. The only thing every world still shares is the two fonts, so a type voice per world is the next gap.
+
+Because the app covers the scene, the beauty can get buried. Four cheap ways to let it show. None needs a live blur, so all of them work on low-end phones:
+
+| Way | What the teacher sees | Cost |
+| --- | --- | --- |
+| Frost, baked once | Cards look like frosted glass over the scene | Each time the still scene repaints (at most once a minute), make one tiny blurred copy (two downscales, about 4 ms). Each card shows its slice of that copy. No live backdrop blur. In React Native this is one Skia image blurred once and clipped to each card. |
+| Look up | One tap on the greeting or the Look up button moves the app aside, and the scene fills the screen. Another tap brings it back. | A transform and a fade. |
+| Home opens on the sky | Home shows the greeting and the scene with one "Next" strip at the bottom. Tapping the strip opens the cards. | Layout only. |
+| Settle when idle | After a quiet spell on Home, the app drifts out of the way like a resting screen. | A timer, a transform and a fade. |
+
+Dense working screens, such as the register, keep Paper or Frost cards and never settle on their own. Reduced motion keeps the fades and drops the slides.
+
 ## One resolver, three painters
 
 ```
