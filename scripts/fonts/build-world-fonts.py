@@ -13,8 +13,9 @@ copied untouched, because the OFL does not let a modified font keep that name.
     python3 scripts/fonts/build-world-fonts.py /tmp/gf [--tier app|core|bundled|world|all] [--out DIR]
 
 Core and bundled faces go to apps/gurudevi-mobile/src/assets/fonts/world/ and
-ship in the app; the rest go to .world-fonts/, to be hosted and downloaded once
-when a person picks that world.
+ship in the app; every current world is bundled, so any world works offline.
+The 'world' tier (built into .world-fonts/) is kept for future worlds whose
+faces would download when picked.
 """
 
 import argparse

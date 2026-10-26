@@ -116,7 +116,7 @@
         "AbhayaLibre-Regular.ttf",
         "AbhayaLibre-SemiBold.ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "kandyan"
       ]
@@ -138,7 +138,7 @@
       "files": [
         "Alegreya[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "kele"
       ]
@@ -150,7 +150,7 @@
         "AlegreyaSans-Regular.ttf",
         "AlegreyaSans-Bold.ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "kele"
       ]
@@ -162,7 +162,7 @@
         "MuktaMalar-Regular.ttf",
         "MuktaMalar-SemiBold.ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "kele"
       ]
@@ -173,7 +173,7 @@
       "files": [
         "GemunuLibre[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "angampora"
       ]
@@ -184,7 +184,7 @@
       "files": [
         "Catamaran[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "angampora",
         "perahera"
@@ -197,7 +197,7 @@
         "CormorantGaramond[wght].ttf",
         "CormorantGaramond-Italic[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "ratna"
       ]
@@ -208,7 +208,7 @@
       "files": [
         "Jost[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "ratna"
       ]
@@ -255,7 +255,7 @@
       "files": [
         "Yaldevi[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "perahera"
       ]
@@ -266,7 +266,7 @@
       "files": [
         "SpaceGrotesk[wght].ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "colombo"
       ]
@@ -279,7 +279,7 @@
       ],
       "subset": false,
       "why": "Reserved Font Name \"Plex\"",
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "colombo"
       ]
@@ -313,7 +313,7 @@
         "Spectral-Regular.ttf",
         "Spectral-Italic.ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "tea"
       ]
@@ -325,15 +325,15 @@
         "HindMadurai-Regular.ttf",
         "HindMadurai-Medium.ttf"
       ],
-      "tier": "world",
+      "tier": "bundled",
       "worlds": [
         "tea"
       ]
     }
   ],
   "tiers": {
-    "core": "ships in the app; every world falls back on it",
-    "bundled": "ships in the app for the most used worlds (Spark, Rose and pichcha, Wewa)",
-    "world": "downloaded once when a person picks that world, then cached"
+    "core": "every world falls back on it",
+    "bundled": "the faces of every other world; all of them ship in the app so any world works offline from the first open",
+    "world": "reserved for future worlds whose faces download when picked"
   }
 }
