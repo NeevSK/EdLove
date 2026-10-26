@@ -10,33 +10,47 @@ import {
   usePerspectiveSwitch,
   useStore,
 } from '@repo/core/logic';
+import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { BreathGuide } from '@repo/self/wellbeing';
+import { ActiveSubTabStrip, DomainSubHeader } from '@repo/ui';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { ActiveSubTabStrip, DomainSubHeader } from '@repo/ui';
-import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
-import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { LinkWardModal } from '@repo/ui/components/LinkWardModal';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
-import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons/native';
+import {
+  Bell,
+  FileText,
+  Heart,
+  Library,
+  School,
+  Settings,
+  User,
+  Users,
+  X,
+} from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { useWorld, Text as WText } from '@repo/ui/world/native';
 import { router, Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NativeShellTabs } from '@/components/navigation/NativeShellTabs';
+import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
+import { useShellVariant } from '@/lib/navigation/shellVariant';
+import { useShellProbe } from '@/lib/navigation/useShellProbe';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 const EMPTY_DOMAIN_TABS: readonly string[] = [];
 
 export const unstable_settings = {
-  initialRouteName: 'self',
+  // SDK 58 reads `anchor`; `initialRouteName` still works but is deprecated.
+  anchor: 'self',
 };
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -84,7 +98,9 @@ function TabsLayoutContent() {
     hydratePerspectivesFromDatabase,
   } = usePerspectiveSwitch();
   const [isPerspectiveSwitcherOpen, setPerspectiveSwitcherOpen] = useState(false);
-  const [catalogSheetTab, setCatalogSheetTab] = useState<'workspace' | 'self' | 'library' | 'community' | 'profile' | null>(null);
+  const [catalogSheetTab, setCatalogSheetTab] = useState<
+    'workspace' | 'self' | 'library' | 'community' | 'profile' | null
+  >(null);
   const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
   const [isCommercialModalOpen, setCommercialModalOpen] = useState(false);
   const [isLinkWardModalOpen, setLinkWardModalOpen] = useState(false);
@@ -147,6 +163,10 @@ function TabsLayoutContent() {
   const perspectiveKind = activePerspective.kind;
 
   const title = getNavigationTitle(pathname);
+
+  // A/B: the custom tab bar or the system one (NativeTabs), measured on this phone either way.
+  const shellChoice = useShellVariant();
+  const markTabPress = useShellProbe(shellChoice, pathname);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -316,7 +336,10 @@ function TabsLayoutContent() {
   const autoHideChromeOnScroll = useActiveSubTabsStore((s) => s.preferences.autoHideChromeOnScroll);
   const isChromeVisible = useActiveSubTabsStore((s) => s.isChromeVisible);
   const returnToDomainOverview = useCallback(() => {
-    const overviewRoute: Record<typeof currentDomain, '/workspace' | '/self' | '/library' | '/community' | '/profile'> = {
+    const overviewRoute: Record<
+      typeof currentDomain,
+      '/workspace' | '/self' | '/library' | '/community' | '/profile'
+    > = {
       workspace: '/workspace',
       self: '/self',
       library: '/library',
@@ -416,249 +439,263 @@ function TabsLayoutContent() {
     </Box>
   );
 
+  const renderHeader = () => {
+    if (headerStyle === 'minimal_tabs_only') {
+      return (
+        <Box>
+          {showActiveSubTabs && (
+            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+          )}
+        </Box>
+      );
+    }
+
+    if (headerStyle === 'compact_domain') {
+      return (
+        <Box>
+          <DomainSubHeader
+            title={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
+            subtitle={isWorkspace ? undefined : displayName}
+            domain={currentDomain}
+            perspectivePill={
+              isWorkspace
+                ? {
+                    label: perspectiveLabel,
+                    onPress: () => setPerspectiveSwitcherOpen(true),
+                  }
+                : undefined
+            }
+            unreadCount={unreadCount}
+            onBackPress={
+              !isDomainRoot
+                ? () => {
+                    if (currentDomain === 'self') router.push('/self' as any);
+                    else if (currentDomain === 'workspace') router.push('/workspace' as any);
+                    else router.back();
+                  }
+                : undefined
+            }
+            onNotificationsPress={() => router.push('/notifications')}
+            onSettingsPress={() => router.push('/settings')}
+            onCatalogPress={() => setCatalogSheetTab(currentDomain)}
+          />
+          {showActiveSubTabs && (
+            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+          )}
+        </Box>
+      );
+    }
+
+    if (headerStyle === 'classic_global') {
+      return (
+        <Box>
+          <GlobalHeader
+            title={isWorkspace ? undefined : title}
+            subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
+            perspectivePill={
+              isWorkspace
+                ? {
+                    label: perspectiveLabel,
+                    kind: perspectiveKind,
+                    onPress: () => setPerspectiveSwitcherOpen(true),
+                  }
+                : undefined
+            }
+            rightAction={globalHeaderRightAction}
+          />
+          {showActiveSubTabs && (
+            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+          )}
+        </Box>
+      );
+    }
+
+    // 'adaptive' (SMART DEFAULT)
+    if (!isDomainRoot) {
+      return (
+        <Box>
+          <DomainSubHeader
+            title={title}
+            subtitle={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
+            domain={currentDomain}
+            perspectivePill={
+              isWorkspace
+                ? {
+                    label: perspectiveLabel,
+                    onPress: () => setPerspectiveSwitcherOpen(true),
+                  }
+                : undefined
+            }
+            unreadCount={unreadCount}
+            onBackPress={() => {
+              if (currentDomain === 'self') {
+                router.push('/self' as any);
+              } else if (currentDomain === 'workspace') {
+                router.push('/workspace' as any);
+              } else {
+                router.back();
+              }
+            }}
+            onNotificationsPress={() => router.push('/notifications')}
+            onSettingsPress={() => router.push('/settings')}
+            onCatalogPress={() => setCatalogSheetTab(currentDomain)}
+          />
+          {showActiveSubTabs && (
+            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+          )}
+        </Box>
+      );
+    }
+
+    // Default Overview Screen under GlobalHeader (no redundant subheader!)
+    return (
+      <Box>
+        <GlobalHeader
+          title={isWorkspace ? undefined : title}
+          subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
+          perspectivePill={
+            isWorkspace
+              ? {
+                  label: perspectiveLabel,
+                  kind: perspectiveKind,
+                  onPress: () => setPerspectiveSwitcherOpen(true),
+                }
+              : undefined
+          }
+          rightAction={globalHeaderRightAction}
+        />
+        {showActiveSubTabs && domainTabs.length > 0 && (
+          <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+        )}
+      </Box>
+    );
+  };
+
+  const nativeTabs = (
+    <NativeShellTabs
+      header={!autoHideChromeOnScroll || isChromeVisible ? renderHeader() : null}
+      onTabPress={markTabPress}
+      showLabels={shell.visibleChrome.tabLabels}
+    />
+  );
+
   return (
     <>
-      <Tabs
-        screenOptions={{
-          headerShown: !autoHideChromeOnScroll || isChromeVisible,
-          tabBarHideOnKeyboard: true,
-          tabBarActiveTintColor: wt.ink,
-          tabBarInactiveTintColor: wt.inkSoft,
-          tabBarShowLabel: shell.visibleChrome.tabLabels,
-          tabBarStyle: {
-            minHeight: shell.tabBar.minHeight,
-            paddingTop: shell.tabBar.paddingTop,
-            paddingBottom: shell.tabBar.paddingBottom,
-            backgroundColor: wt.ground,
-            borderTopColor: wt.line,
-            borderTopWidth: 0.75,
-            elevation: 0,
-            shadowOpacity: 0,
-            display: !autoHideChromeOnScroll || isChromeVisible ? 'flex' : 'none',
-          },
-          tabBarLabelStyle: {
-            fontSize: tokens.typography.sizes.xs,
-            fontWeight: '600',
-          },
-          header: () => {
-            if (headerStyle === 'minimal_tabs_only') {
-              return (
-                <Box>
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
-
-            if (headerStyle === 'compact_domain') {
-              return (
-                <Box>
-                  <DomainSubHeader
-                    title={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
-                    subtitle={isWorkspace ? undefined : displayName}
-                    domain={currentDomain}
-                    perspectivePill={
-                      isWorkspace
-                        ? {
-                            label: perspectiveLabel,
-                            onPress: () => setPerspectiveSwitcherOpen(true),
-                          }
-                        : undefined
-                    }
-                    unreadCount={unreadCount}
-                    onBackPress={
-                      !isDomainRoot
-                        ? () => {
-                            if (currentDomain === 'self') router.push('/self' as any);
-                            else if (currentDomain === 'workspace') router.push('/workspace' as any);
-                            else router.back();
-                          }
-                        : undefined
-                    }
-                    onNotificationsPress={() => router.push('/notifications')}
-                    onSettingsPress={() => router.push('/settings')}
-                    onCatalogPress={() => setCatalogSheetTab(currentDomain)}
+      {shellChoice.variant === 'native' ? (
+        nativeTabs
+      ) : (
+        <Tabs
+          screenOptions={{
+            headerShown: !autoHideChromeOnScroll || isChromeVisible,
+            tabBarHideOnKeyboard: true,
+            tabBarActiveTintColor: wt.ink,
+            tabBarInactiveTintColor: wt.inkSoft,
+            tabBarShowLabel: shell.visibleChrome.tabLabels,
+            tabBarStyle: {
+              minHeight: shell.tabBar.minHeight,
+              paddingTop: shell.tabBar.paddingTop,
+              paddingBottom: shell.tabBar.paddingBottom,
+              backgroundColor: wt.ground,
+              borderTopColor: wt.line,
+              borderTopWidth: 0.75,
+              elevation: 0,
+              shadowOpacity: 0,
+              display: !autoHideChromeOnScroll || isChromeVisible ? 'flex' : 'none',
+            },
+            tabBarLabelStyle: {
+              fontSize: tokens.typography.sizes.xs,
+              fontWeight: '600',
+            },
+            header: renderHeader,
+          }}
+        >
+          <Tabs.Screen
+            name="library"
+            listeners={{
+              tabPress: () => markTabPress('library'),
+              tabLongPress: () => setCatalogSheetTab('library'),
+            }}
+            options={{
+              title: 'Library',
+              tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
+            }}
+          />
+          <Tabs.Screen
+            name="workspace"
+            listeners={{
+              tabPress: () => markTabPress('workspace'),
+              tabLongPress: () => setCatalogSheetTab('workspace'),
+            }}
+            options={{
+              title: 'Workspace',
+              tabBarIcon: ({ color, size }) => <School color={color} size={size} />,
+            }}
+          />
+          <Tabs.Screen
+            name="self"
+            listeners={{
+              tabPress: () => markTabPress('self'),
+              tabLongPress: () => setCatalogSheetTab('self'),
+            }}
+            options={{
+              title: 'Self',
+              tabBarIcon: ({ color, size, focused }) => (
+                <Box
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: size + 16,
+                    height: size + 16,
+                    borderRadius: tokens.radii.full,
+                    backgroundColor: focused ? wt.sunken : 'transparent',
+                  }}
+                >
+                  <Heart
+                    color={focused ? wt.lampDeep : color}
+                    size={size + 2}
+                    strokeWidth={focused ? 2.4 : 2}
+                    fill={focused ? wt.lamp : 'transparent'}
                   />
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
                 </Box>
-              );
-            }
-
-            if (headerStyle === 'classic_global') {
-              return (
-                <Box>
-                  <GlobalHeader
-                    title={isWorkspace ? undefined : title}
-                    subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-                    perspectivePill={
-                      isWorkspace
-                        ? {
-                            label: perspectiveLabel,
-                            kind: perspectiveKind,
-                            onPress: () => setPerspectiveSwitcherOpen(true),
-                          }
-                        : undefined
-                    }
-                    rightAction={globalHeaderRightAction}
-                  />
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
-
-            // 'adaptive' (SMART DEFAULT)
-            if (!isDomainRoot) {
-              return (
-                <Box>
-                  <DomainSubHeader
-                    title={title}
-                    subtitle={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
-                    domain={currentDomain}
-                    perspectivePill={
-                      isWorkspace
-                        ? {
-                            label: perspectiveLabel,
-                            onPress: () => setPerspectiveSwitcherOpen(true),
-                          }
-                        : undefined
-                    }
-                    unreadCount={unreadCount}
-                    onBackPress={() => {
-                      if (currentDomain === 'self') {
-                        router.push('/self' as any);
-                      } else if (currentDomain === 'workspace') {
-                        router.push('/workspace' as any);
-                      } else {
-                        router.back();
-                      }
-                    }}
-                    onNotificationsPress={() => router.push('/notifications')}
-                    onSettingsPress={() => router.push('/settings')}
-                    onCatalogPress={() => setCatalogSheetTab(currentDomain)}
-                  />
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
-
-            // Default Overview Screen under GlobalHeader (no redundant subheader!)
-            return (
-              <Box>
-                <GlobalHeader
-                  title={isWorkspace ? undefined : title}
-                  subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-                  perspectivePill={
-                    isWorkspace
-                      ? {
-                          label: perspectiveLabel,
-                          kind: perspectiveKind,
-                          onPress: () => setPerspectiveSwitcherOpen(true),
-                        }
-                      : undefined
-                  }
-                  rightAction={globalHeaderRightAction}
-                />
-                {showActiveSubTabs && domainTabs.length > 0 && (
-                  <ActiveSubTabStrip
-                    domain={currentDomain}
-                    onReturnToOverview={returnToDomainOverview}
-                  />
-                )}
-              </Box>
-            );
-          },
-        }}
-      >
-        <Tabs.Screen
-          name="library"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("library") }}
-          options={{
-            title: 'Library',
-            tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="workspace"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("workspace") }}
-          options={{
-            title: 'Workspace',
-            tabBarIcon: ({ color, size }) => <School color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="self"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("self") }}
-          options={{
-            title: 'Self',
-            tabBarIcon: ({ color, size, focused }) => (
-              <Box
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: size + 16,
-                  height: size + 16,
-                  borderRadius: tokens.radii.full,
-                  backgroundColor: focused ? wt.sunken : 'transparent',
-                }}
-              >
-                <Heart
-                  color={focused ? wt.lampDeep : color}
-                  size={size + 2}
-                  strokeWidth={focused ? 2.4 : 2}
-                  fill={focused ? wt.lamp : 'transparent'}
-                />
-              </Box>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="community"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("community") }}
-          options={{
-            title: 'Community',
-            tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("profile") }}
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="notifications"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            href: null,
-          }}
-        />
-      </Tabs>
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="community"
+            listeners={{
+              tabPress: () => markTabPress('community'),
+              tabLongPress: () => setCatalogSheetTab('community'),
+            }}
+            options={{
+              title: 'Community',
+              tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
+            }}
+          />
+          <Tabs.Screen
+            name="profile"
+            listeners={{
+              tabPress: () => markTabPress('profile'),
+              tabLongPress: () => setCatalogSheetTab('profile'),
+            }}
+            options={{
+              title: 'Profile',
+              tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+            }}
+          />
+          <Tabs.Screen
+            name="notifications"
+            options={{
+              href: null,
+            }}
+          />
+          <Tabs.Screen
+            name="settings"
+            options={{
+              href: null,
+            }}
+          />
+        </Tabs>
+      )}
 
       <AchievementUnlockOverlay
         title={currentAchievement}
@@ -666,7 +703,7 @@ function TabsLayoutContent() {
         onHide={() => setShowCelebration(false)}
       />
 
-            <TabFeatureCatalogSheet
+      <TabFeatureCatalogSheet
         isOpen={Boolean(catalogSheetTab)}
         onClose={() => setCatalogSheetTab(null)}
         activeTabKey={catalogSheetTab || 'workspace'}

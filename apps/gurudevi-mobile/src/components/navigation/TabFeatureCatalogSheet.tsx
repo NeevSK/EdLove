@@ -1,8 +1,3 @@
-import {
-  getDomainFeatureRegistry,
-  type MobileDomainRegistry,
-  type MobileFeatureItem,
-} from '@/navigation/registries';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import { ChevronRight, Plus, Search, Sparkles, X } from '@repo/ui/icons';
@@ -21,6 +16,11 @@ import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
+import {
+  getDomainFeatureRegistry,
+  type MobileDomainRegistry,
+  type MobileFeatureItem,
+} from '@/navigation/registries';
 
 export interface TabFeatureCatalogSheetProps {
   isOpen: boolean;
@@ -66,8 +66,7 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
     const query = searchQuery.toLowerCase();
     return registry.items.filter(
       (item) =>
-        item.title.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query),
+        item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query),
     );
   }, [registry.items, searchQuery]);
 

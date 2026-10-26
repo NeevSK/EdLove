@@ -10,7 +10,6 @@ import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@r
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
-import type { TabType } from '@repo/ui/types/fab';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
@@ -29,6 +28,7 @@ import { GuestLeaseBoundary } from '@/entry/GuestLeaseBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
+import { getCurrentFabTab } from '@/lib/navigation/fabTab';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { GurudeviVerger } from '@/runtime/GurudeviVerger';
@@ -129,16 +129,6 @@ export function EntryShell() {
       </ErrorBoundary>
     </GestureHandlerRootView>
   );
-}
-
-function getCurrentFabTab(pathname: string): TabType | null {
-  if (pathname.startsWith('/(tabs)/self') || pathname === '/self') return 'self';
-  if (pathname.startsWith('/(tabs)/library') || pathname === '/library') return 'library';
-  if (pathname.startsWith('/(tabs)/workspace') || pathname.startsWith('/classroom'))
-    return 'classroom';
-  if (pathname.startsWith('/(tabs)/community') || pathname === '/community') return 'community';
-  if (pathname.startsWith('/(tabs)/profile') || pathname === '/profile') return 'profile';
-  return null;
 }
 
 function AuthenticatedAppServices() {

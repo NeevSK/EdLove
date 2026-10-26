@@ -12,6 +12,7 @@ vi.mock('react-native', () => ({
   TextInput: 'TextInput',
   Share: { share: vi.fn(async () => ({})) },
 }));
+vi.mock('expo-router', () => ({ router: { push: vi.fn(), replace: vi.fn() } }));
 vi.mock('@react-native-async-storage/async-storage', () => ({
   default: { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn() },
 }));

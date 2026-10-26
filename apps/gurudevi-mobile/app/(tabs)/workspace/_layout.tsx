@@ -8,6 +8,8 @@ export default function WorkspaceLayout() {
     <ErrorBoundary name="WorkspaceLayout">
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="atlas" />
+        <Stack.Screen name="commercial/[batchId]" />
         <Stack.Screen name="editorial" options={{ title: 'Editorial' }} />
         <Stack.Screen name="events" />
         <Stack.Screen name="plan" options={{ title: 'Plan & notices' }} />

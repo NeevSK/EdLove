@@ -16,7 +16,7 @@ export { Row, type RowProps } from './Row';
 export { Section, type SectionProps } from './Section';
 export { Surface, type SurfaceProps } from './Surface';
 export { Switch, type SwitchProps } from './Switch';
-export { isFontAvailable, registerAvailableFonts } from './style';
+export { isFontAvailable, registerAvailableFonts, typeStyle } from './style';
 export { Text, type TextProps, toneColor } from './Text';
 export { TextField, type TextFieldProps } from './TextField';
 export {

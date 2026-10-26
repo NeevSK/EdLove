@@ -5,12 +5,13 @@ import {
   labConfigure,
   labSections,
   labTune,
-  type Verger,
   VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
+  type Verger,
 } from '@repo/core/verger';
 import { tokens } from '@repo/ui/tokens';
 import { useVergerLab } from '@repo/verger-react';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -66,17 +67,22 @@ export function VergerLabScreen() {
   const { verger, report } = useVergerLab(LEVERS);
   const [patchText, setPatchText] = useState('');
   const [tuneText, setTuneText] = useState('');
-  const [result, setResult] = useState<{ readonly what: string; readonly outcome: LabResult } | null>(
-    null,
-  );
+  const [result, setResult] = useState<{
+    readonly what: string;
+    readonly outcome: LabResult;
+  } | null>(null);
 
   if (!verger || !report) return <Text style={styles.empty}>No verger is bound.</Text>;
 
   const applyPatch = () => {
-    void applyLabPatch(verger, patchText).then((outcome) => setResult({ what: 'activation', outcome }));
+    void applyLabPatch(verger, patchText).then((outcome) =>
+      setResult({ what: 'activation', outcome }),
+    );
   };
   const applyTune = () => {
-    void applyLabTune(verger, tuneText).then((outcome) => setResult({ what: 'thresholds', outcome }));
+    void applyLabTune(verger, tuneText).then((outcome) =>
+      setResult({ what: 'thresholds', outcome }),
+    );
   };
   const shareRecording = () => {
     const recording = verger.recording();
@@ -92,6 +98,7 @@ export function VergerLabScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Verger lab</Text>
+      <Button label="Tab shell lab (A/B)" onPress={() => router.push('/shell-lab')} />
       {labSections(report).map((section) => (
         <View key={section.title} style={styles.section}>
           <Text style={styles.heading}>{section.title}</Text>
@@ -105,7 +112,9 @@ export function VergerLabScreen() {
       ))}
 
       <View style={styles.section}>
-        <Text style={styles.heading}>Levers (level / proposed · limit ≤ ceiling ≤ home ≤ floor)</Text>
+        <Text style={styles.heading}>
+          Levers (level / proposed · limit ≤ ceiling ≤ home ≤ floor)
+        </Text>
         {report.levers.map((lever) => (
           <View key={lever.id} style={styles.row}>
             <Text style={styles.label}>{lever.id}</Text>
@@ -114,7 +123,9 @@ export function VergerLabScreen() {
               {lever.floor}
               {lever.pressure > 0 ? ` · pressure ${lever.pressure}` : ''}
               {lever.ineffective.length > 0 ? ` · not for ${lever.ineffective.join(', ')}` : ''}
-              {lever.gain ? ` · gain ${Math.round(lever.gain.gain * 100)}% (${lever.gain.samples})` : ''}
+              {lever.gain
+                ? ` · gain ${Math.round(lever.gain.gain * 100)}% (${lever.gain.samples})`
+                : ''}
             </Text>
           </View>
         ))}
