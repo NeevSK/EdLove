@@ -78,6 +78,41 @@ The taste behind the default, as gathered from the docs: washi and vellum paper,
 - **explore.gurudevi.app** is the showroom. It runs the same resolver in showcase mode: rich tier where the device allows, one world per visit, and a "make it yours" panel that shows the same freedoms. It uses browser-local fixtures only, as the dual-surface contract already requires.
 - **Hero moments** (arrival, completion, empty states) get the full scene. Ordinary screens stay quiet, so the hero moments stand out.
 
+## The time plug: two clocks
+
+Explore's date row (`TemporalHorizon`, with `current`, `review` and `plan` intents from `@repo/core/logic/workbench`) already lets a teacher travel to the past to review and to the future to plan. The model adds a time part and separates two clocks:
+
+- **Now** is the real time. It drives the sky and never jumps when someone browses dates, so the world stays where the person actually is.
+- **Focus** is the date and time being looked at. It drives the data: register, timetable, journal.
+
+The time plug is one core cursor, `{ date, minute | null, intent }`, with three optional parts. Each space plugs in the parts it needs.
+
+| Part | What it shows | Options | Used by |
+| --- | --- | --- | --- |
+| Date strip | Days, with past and future labels (exists) | Week starts Monday or Sunday; markers for poya days, school terms, exams and holidays | Workspace, Self, timetable |
+| Time strip | The school day as periods, scrubbable | Periods from the timetable or plain hours; 12 or 24 hour | Workspace, timetable, attendance |
+| Clock face | The current time | None, digital, sky arc (the living sky is the clock) or a world-styled dial; redrawn once a minute | Home header, Self |
+
+How it stays alive without jumping:
+
+- When Focus is not Now, the time strip shows a small sky chip for that hour, drawn with `WorldScope`. Planning tomorrow at 08:00 shows a dawn chip, while the real sky stays as it is.
+- Review gets the canon's "memory" colour role (a slightly cooler and paler wash), and plan gets "invitation" (a little more lamp). The difference is small and readable, and it is never the only cue, because the label says "3 days ago" or "In a week".
+- Poya days line up with the moon phase drawn in the rich sky, so the calendar and the sky agree.
+- Returning to Now is one tap ("Today", which already exists) and settles with one short motion.
+
+Fix when this is built: `TemporalHorizon` formats dates with `en-US` and writes "Yesterday" and "In a week" in English only, so Sinhala and Tamil are missing.
+
+## Living atmosphere: particles, seasons and prior art
+
+Animated scenes with falling leaves or butterflies in React Native (Skia draws, Reanimated runs per-frame physics on the UI thread) are practical on mid and high-end phones. The author reported that low-end Android had not been tested. In this model they are an **atmosphere** option at the rich tier only:
+
+- Cap particle count (12 to 20), run at 30 fps, pause when the screen is not focused or the app is in the background, and stop on battery saver or heat. Verger can supply these signals once it is mounted.
+- Settle after arrival. Particles drift for a few seconds on the home screen or in a hero moment, then rest, so the surface stays quiet.
+- Use Sri Lankan seasons, not autumn: monsoon rain (Yala, Maha), fireflies at dusk (which ties to the companion), and drifting petals in April. Religious festivals such as Vesak need the same cultural care as the worlds, and their decoration should not be used as ornament.
+- System live wallpapers (outside the app) are out of scope. They are only practical on Android and they cost battery all day.
+
+Prior art. Each piece has been done before; the combination has not, as far as this note knows. Time-of-day wallpapers: macOS Dynamic Desktop (2018). Weather and hour backgrounds: Apple Weather and Pixel. Real-clock worlds: Animal Crossing, and the day cycles in Alto's Odyssey and Sky. Calm scenes: Calm and Headspace. No school platform is known to combine culturally grounded worlds that follow the real hour with a device budget for low-end phones and a planning timeline that can show another hour's sky. Check this against current sources before stating it publicly.
+
 ## One resolver, three painters
 
 ```
