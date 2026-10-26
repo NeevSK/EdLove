@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest';
 import {
   FRAME_WINDOW_MS,
   type NativeBattery,
+  type NativeDataUsage,
   type NativeNetwork,
   senseConfigFrom,
   toCapacityFacts,
@@ -36,6 +37,7 @@ describe('verger-android mapping', () => {
       jankFrameFactor: DEFAULT_VERGER_CONFIG.jankFrameFactor,
       headroomWarm: DEFAULT_VERGER_CONFIG.headroomWarm,
       saturationCores: DEFAULT_VERGER_CONFIG.saturationCores,
+      cpuHeadroomBusyPercent: DEFAULT_VERGER_CONFIG.cpuHeadroomBusyPercent,
     });
   });
 
@@ -228,11 +230,35 @@ describe('the native event contract (shared with NetworkContractTest.kt)', () =>
   ) as {
     network: { case: string; payload: NativeNetwork; event: VergerEvent }[];
     battery: { case: string; payload: NativeBattery; event: VergerEvent }[];
+    dataUsage: { case: string; payload: NativeDataUsage; event: VergerEvent }[];
   };
 
   it('holds network and battery cases', () => {
     expect(contract.network.length).toBeGreaterThan(0);
     expect(contract.battery.length).toBeGreaterThan(0);
+    expect(contract.dataUsage.length).toBeGreaterThan(0);
+  });
+
+  it.each(contract.dataUsage.map((c) => [c.case, c] as const))(
+    'maps the data usage payload Kotlin builds into exactly its event: %s',
+    (_name, c) => {
+      const event = toVergerEvent({ name: 'onDataUsage', payload: c.payload }, 0);
+      expect(event).toEqual(c.event);
+      expect(isValidEvent(event)).toBe(true);
+    },
+  );
+
+  it('maps CPU headroom; a value the platform did not give is no reading', () => {
+    expect(toVergerEvent({ name: 'onCpuHeadroom', payload: { percent: 42 } }, 3)).toEqual({
+      type: 'cpu-headroom',
+      at: 3,
+      percent: 42,
+    });
+    expect(toVergerEvent({ name: 'onCpuHeadroom', payload: { percent: null } }, 3)).toEqual({
+      type: 'cpu-headroom',
+      at: 3,
+      percent: null,
+    });
   });
 
   it.each(contract.battery.map((c) => [c.case, c] as const))(

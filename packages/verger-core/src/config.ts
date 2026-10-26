@@ -25,6 +25,8 @@ export function validateConfig(config: VergerConfig): void {
   order('lowCapacityBelowBytes', 'midCapacityBelowBytes');
   if (config.energyDrainMinDropPercent > 100)
     throw new Error('Config "energyDrainMinDropPercent" must be at most 100');
+  if (config.cpuHeadroomBusyPercent > 100)
+    throw new Error('Config "cpuHeadroomBusyPercent" must be at most 100');
   if (config.batteryLowPercent > 100)
     throw new Error('Config "batteryLowPercent" must be at most 100');
   if (config.gcPauseShareStall > 1)
@@ -137,6 +139,7 @@ export const DEFAULT_VERGER_CONFIG: VergerConfig = {
   energyReserveHours: 3,
   energyDrainWindowMs: 1_800_000,
   energyDrainMinDropPercent: 2,
+  cpuHeadroomBusyPercent: 10,
   gestureQuietMs: 1_000,
   gestureFreezeMaxMs: 2_000,
   scrollQuietMs: 3_000,

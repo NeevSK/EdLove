@@ -215,6 +215,8 @@ export interface VergerState {
   readonly mainCores: number;
   /** The browser's CPU pressure (R10); null until reported or while the threads sensor is deaf. */
   readonly computePressure: 'nominal' | 'fair' | 'serious' | 'critical' | null;
+  /** The device's CPU headroom (R11), percent; null until reported or while threads are deaf. */
+  readonly cpuHeadroomPercent: number | null;
   /** Recent long-task end times, newest last, pruned to the long-task window. */
   readonly longTasks: readonly number[];
   readonly lastContentionActionAt: number;
@@ -397,6 +399,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     jsCores: 0,
     mainCores: 0,
     computePressure: null,
+    cpuHeadroomPercent: null,
     longTasks: [],
     lastContentionActionAt: Number.NEGATIVE_INFINITY,
     contentionBaseline: null,
@@ -729,6 +732,7 @@ function forgetReadings(state: VergerState, sensor: SensorId): VergerState {
         jsCores: 0,
         mainCores: 0,
         computePressure: null,
+        cpuHeadroomPercent: null,
       };
     case 'memory':
       return { ...state, memoryLatch: NO_MEMORY_LATCH, polledMemory: null, memorySensing: false };
@@ -1279,10 +1283,15 @@ function contentionOf(state: VergerState, at: number): Contention {
   if (state.jsSaturatedSince !== null && at - state.jsSaturatedSince >= after) return 'js';
   const longTasks = recentLongTasks(state, at);
   if (longTasks >= state.config.longTasksForContention) return 'js';
-  // The system's CPU pressure (R10) is a cause, not a symptom, and the browser reports only its
-  // changes: a held `critical` with no later record would hold the levers forever. So it only
-  // lowers the bar for the page's own stall evidence to one long task, which ages out.
-  if ((state.computePressure === 'serious' || state.computePressure === 'critical') && longTasks >= 1) return 'js';
+  // A busy system (the browser's CPU pressure, R10, or Android's CPU headroom, R11) is a cause,
+  // not a symptom, and the browser reports only changes: a held `critical` with no later record
+  // would hold the levers forever. So it only lowers the bar for the app's own stall evidence to
+  // one long task, which ages out.
+  const systemBusy =
+    state.computePressure === 'serious' ||
+    state.computePressure === 'critical' ||
+    (state.cpuHeadroomPercent !== null && state.cpuHeadroomPercent < state.config.cpuHeadroomBusyPercent);
+  if (systemBusy && longTasks >= 1) return 'js';
   if (state.mainSaturatedSince !== null && at - state.mainSaturatedSince >= after) return 'main';
   return 'none';
 }
@@ -1649,6 +1658,12 @@ function step(state: VergerState, event: VergerEvent): VergerState {
       break;
     case 'compute-pressure':
       next = { ...next, computePressure: input.state };
+      break;
+    case 'cpu-headroom':
+      next = { ...next, cpuHeadroomPercent: input.percent };
+      break;
+    case 'data-usage':
+      // The host's ledger turns bytes into the day's budget (`data-budget`); nothing to hold here.
       break;
     case 'power':
       next = { ...next, powerSaver: input.saver };

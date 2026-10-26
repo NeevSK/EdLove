@@ -81,3 +81,21 @@ export function inDailyWindow(
     ? minute >= startMinute && minute < endMinute
     : minute >= startMinute || minute < endMinute;
 }
+
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/** A stored ledger, checked strictly: anything malformed is no ledger (unknown, never spent). */
+export function parseDataLedger(text: string | null): DataLedger | null {
+  if (text === null) return null;
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (typeof value !== 'object' || value === null) return null;
+  const { day, usedBytes, lastTotal } = value as Record<string, unknown>;
+  const count = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n >= 0;
+  if (typeof day !== 'string' || !DAY.test(day) || !count(usedBytes) || !count(lastTotal)) return null;
+  return { day, usedBytes, lastTotal };
+}

@@ -146,3 +146,38 @@ describe('compute pressure as evidence of contention (R10)', () => {
     expect(isValidEvent(bogus as VergerEvent)).toBe(false);
   });
 });
+
+describe('CPU headroom as evidence of a busy device (R11)', () => {
+  const headroom = (percent: number | null, at = 1000): VergerEvent => ({ type: 'cpu-headroom', at, percent });
+  const stall: VergerEvent = { type: 'long-task', at: 1500, durationMs: 120 };
+
+  it('under the busy line one long task is JS contention; above it, or alone, it is not', () => {
+    const active = ACTIVATION_PRESETS.active;
+    for (const policy of [VERGER_POLICY, VERGER_POLICY_P5]) {
+      expect(after([headroom(5), stall], active, policy).contention).toBe('js');
+      expect(after([headroom(40), stall], active, policy).contention).toBe('none');
+      expect(after([headroom(5)], active, policy).contention).toBe('none');
+      // No value (NaN on the platform) is no reading: busy does not outlive its evidence.
+      expect(after([headroom(5), headroom(null, 1200), stall], active, policy).contention).toBe('none');
+    }
+  });
+
+  it('is heard with the threads sensor, and deafening forgets it', () => {
+    const deaf = resolveActivation(ACTIVATION_PRESETS.active, { sense: { threads: false } });
+    expect(after([headroom(5), stall], deaf).contention).toBe('none');
+    expect(
+      after([headroom(5), { type: 'activation', at: 1200, activation: deaf }, stall], ACTIVATION_PRESETS.active)
+        .contention,
+    ).toBe('none');
+  });
+
+  it('rejects a reading outside 0 to 100; the busy line is a percentage', async () => {
+    expect(isValidEvent(headroom(0))).toBe(true);
+    expect(isValidEvent(headroom(null))).toBe(true);
+    expect(isValidEvent(headroom(101))).toBe(false);
+    expect(isValidEvent(headroom(Number.NaN))).toBe(false);
+    expect(isValidEvent({ type: 'data-usage', at: 1, totalBytes: Number.POSITIVE_INFINITY })).toBe(false);
+    const { DEFAULT_VERGER_CONFIG, parseConfigPatch } = await import('./config');
+    expect(parseConfigPatch({ cpuHeadroomBusyPercent: 101 }, DEFAULT_VERGER_CONFIG)).toHaveProperty('error');
+  });
+});

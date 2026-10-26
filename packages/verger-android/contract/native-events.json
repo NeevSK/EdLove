@@ -232,5 +232,52 @@
         "temperatureC": null
       }
     }
+  ],
+  "dataUsage": [
+    {
+      "case": "counted: received plus sent",
+      "inputs": {
+        "rx": 3145728,
+        "tx": 524288
+      },
+      "payload": {
+        "totalBytes": 3670016
+      },
+      "event": {
+        "type": "data-usage",
+        "at": 0,
+        "totalBytes": 3670016
+      }
+    },
+    {
+      "case": "nothing moved since boot",
+      "inputs": {
+        "rx": 0,
+        "tx": 0
+      },
+      "payload": {
+        "totalBytes": 0
+      },
+      "event": {
+        "type": "data-usage",
+        "at": 0,
+        "totalBytes": 0
+      }
+    },
+    {
+      "case": "the platform does not count",
+      "inputs": {
+        "rx": -1,
+        "tx": -1
+      },
+      "payload": {
+        "totalBytes": -1
+      },
+      "event": {
+        "type": "data-usage",
+        "at": 0,
+        "totalBytes": -1
+      }
+    }
   ]
 }

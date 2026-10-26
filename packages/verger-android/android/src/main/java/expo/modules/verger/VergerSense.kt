@@ -12,6 +12,7 @@ import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.TrafficStats
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
 import android.os.Process
+import android.os.health.SystemHealthManager
 import android.system.Os
 import android.system.OsConstants
 import android.view.FrameMetrics
@@ -38,6 +40,8 @@ data class SenseConfig(
   val headroomWarm: Double,
   /** Thread load verger calls saturated; crossing it is always reported. */
   val saturationCores: Double,
+  /** CPU headroom verger calls a busy system (R11); crossing it is always reported. */
+  val cpuHeadroomBusyPercent: Double,
   /** Which sensors run; [setSensors] changes it while running. */
   val sensors: Sensors = Sensors.ALL,
 )
@@ -54,7 +58,9 @@ data class SenseConfig(
  *   background levels to apps, so on current devices this mostly reports pressure while hidden.
  * - power: the battery-saver broadcast.
  * - threads: CPU time per role (main, JS, render, GC, ...) from procfs at 1 Hz, so stress is
- *   attributed to the thread that causes it, whatever code runs there.
+ *   attributed to the thread that causes it, whatever code runs there. With them, on API 36,
+ *   the system's CPU headroom ([CpuHeadroomPoller]) every 5 s at most: how busy the whole
+ *   device is, which the app's own threads cannot show.
  * - memory: free system memory and the low-memory flag every 10 s, and this process's
  *   resident size, because trims alone are withheld from foreground apps on API 34+.
  *
@@ -317,8 +323,10 @@ class VergerSense(
     lastThreadCores.fill(Double.NaN)
     handler.removeCallbacks(sampleThreads)
     if (sensors.threads) handler.postDelayed(sampleThreads, THREAD_SAMPLE_MS)
+    handler.removeCallbacks(pollCpuHeadroom)
+    if (sensors.threads && cpuHeadroom() != null) handler.post(pollCpuHeadroom)
     handler.removeCallbacks(pollMemory)
-    if (sensors.memory) handler.post(pollMemory)
+    if (sensors.memory || sensors.network) handler.post(pollMemory)
     levers.reapply()
     if (cpuBoostWanted && sensors.frames) levers.setCpuBoost(true, estimator?.defaultTargetMs ?: 16.667)
   }
@@ -328,6 +336,7 @@ class VergerSense(
     estimator?.close()
     detachThermal()
     handler.removeCallbacks(sampleThreads)
+    handler.removeCallbacks(pollCpuHeadroom)
     handler.removeCallbacks(pollMemory)
     levers.closeSession()
   }
@@ -508,6 +517,36 @@ class VergerSense(
     }
   }
 
+  /** Built on first use, on API 36 only; null where the platform has no headroom support. */
+  private var headroomPoller: CpuHeadroomPoller? = null
+  private var headroomProbedOnce = false
+
+  private fun cpuHeadroom(): CpuHeadroomPoller? {
+    if (headroomProbedOnce) return headroomPoller?.takeIf { it.supported }
+    val busy = config?.cpuHeadroomBusyPercent ?: return null
+    headroomProbedOnce = true
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return null
+    val health = app.getSystemService(SystemHealthManager::class.java) ?: return null
+    // Throws UnsupportedOperationException where the device has no CPU headroom support.
+    val minInterval = runCatching { health.cpuHeadroomMinIntervalMillis }.getOrNull() ?: return null
+    headroomPoller = CpuHeadroomPoller(busy, minInterval)
+    return headroomPoller
+  }
+
+  private val pollCpuHeadroom = object : Runnable {
+    override fun run() {
+      if (config == null || !foreground) return
+      val poller = cpuHeadroom() ?: return
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return
+      val health = app.getSystemService(SystemHealthManager::class.java) ?: return
+      // Default params: the platform's own window and calculation over the whole device.
+      if (poller.read { health.getCpuHeadroom(null) }) {
+        emit(EVENT_CPU_HEADROOM, mapOf("percent" to poller.percent))
+      }
+      if (poller.supported) handler.postDelayed(this, poller.intervalMs)
+    }
+  }
+
   private fun emitThreadLoadIfChanged() {
     val load = threads.load
     var changed = false
@@ -537,30 +576,45 @@ class VergerSense(
     )
   }
 
+  /**
+   * The slow poll: memory, and with the network sensor this app's bytes (B3.1), so the byte
+   * counter adds no timer of its own. Bytes moved while hidden are counted at the next sample.
+   */
   private val pollMemory = object : Runnable {
     override fun run() {
-      if (config == null || !foreground) return
-      val info = ActivityManager.MemoryInfo()
-      if (runCatching { activityManager.getMemoryInfo(info) }.isFailure) {
-        handler.postDelayed(this, MEMORY_POLL_MS)
-        return
-      }
-      val availMb = info.availMem / MB
-      val moved = lastAvailMb.isNaN() || kotlin.math.abs(availMb - lastAvailMb) >= lastAvailMb * 0.05
-      if (moved || info.lowMemory != lastLowMemory) {
-        lastAvailMb = availMb
-        lastLowMemory = info.lowMemory
-        emit(
-          EVENT_MEMORY,
-          mapOf(
-            "availableMb" to availMb,
-            "thresholdMb" to info.threshold / MB,
-            "lowMemory" to info.lowMemory,
-            "rssMb" to residentMb(),
-          ),
-        )
-      }
+      val sensors = config?.sensors ?: return
+      if (!foreground) return
+      if (sensors.network) sampleDataUsage()
+      if (sensors.memory) sampleMemory()
       handler.postDelayed(this, MEMORY_POLL_MS)
+    }
+  }
+
+  private val dataUsage = DataUsageReporter(DataUsageReporter.BUCKET_BYTES, DataUsageReporter.HEARTBEAT_MS)
+  private val uid = Process.myUid()
+
+  private fun sampleDataUsage() {
+    val total = DataUsageSignals.totalBytes(TrafficStats.getUidRxBytes(uid), TrafficStats.getUidTxBytes(uid))
+    if (dataUsage.shouldSend(total, nowMs())) emit(EVENT_DATA_USAGE, DataUsageSignals.payload(total))
+  }
+
+  private fun sampleMemory() {
+    val info = ActivityManager.MemoryInfo()
+    if (runCatching { activityManager.getMemoryInfo(info) }.isFailure) return
+    val availMb = info.availMem / MB
+    val moved = lastAvailMb.isNaN() || kotlin.math.abs(availMb - lastAvailMb) >= lastAvailMb * 0.05
+    if (moved || info.lowMemory != lastLowMemory) {
+      lastAvailMb = availMb
+      lastLowMemory = info.lowMemory
+      emit(
+        EVENT_MEMORY,
+        mapOf(
+          "availableMb" to availMb,
+          "thresholdMb" to info.threshold / MB,
+          "lowMemory" to info.lowMemory,
+          "rssMb" to residentMb(),
+        ),
+      )
     }
   }
 
@@ -699,9 +753,12 @@ class VergerSense(
     const val EVENT_LEVER = "onLever"
     const val EVENT_NETWORK = "onNetwork"
     const val EVENT_BATTERY = "onBattery"
+    const val EVENT_CPU_HEADROOM = "onCpuHeadroom"
+    const val EVENT_DATA_USAGE = "onDataUsage"
     val EVENTS = arrayOf(
       EVENT_FRAME_WINDOW, EVENT_THERMAL, EVENT_MEMORY_TRIM, EVENT_POWER_SAVER,
       EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER, EVENT_NETWORK, EVENT_BATTERY,
+      EVENT_CPU_HEADROOM, EVENT_DATA_USAGE,
     )
 
     private const val THREAD_SAMPLE_MS = 1_000L

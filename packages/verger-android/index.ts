@@ -129,6 +129,12 @@ export function createVergerAndroidPort(
         native.addListener('onBattery', (payload) =>
           onEvent(toVergerEvent({ name: 'onBattery', payload }, now())),
         ),
+        native.addListener('onCpuHeadroom', (payload) =>
+          onEvent(toVergerEvent({ name: 'onCpuHeadroom', payload }, now())),
+        ),
+        native.addListener('onDataUsage', (payload) =>
+          onEvent(toVergerEvent({ name: 'onDataUsage', payload }, now())),
+        ),
         native.addListener('onLever', (payload) => onLever?.(payload)),
       ];
       native.start(senseConfigFrom(config, FRAME_WINDOW_MS, sensors));

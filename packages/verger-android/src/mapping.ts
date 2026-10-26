@@ -46,6 +46,14 @@ export interface NativeThreadLoad {
   readonly topOtherCores: number;
   readonly rssMb: number | null;
 }
+/** The device's CPU headroom (API 36, R11), 0 to 100; null while the platform has no value. */
+export interface NativeCpuHeadroom {
+  readonly percent: number | null;
+}
+/** This app's bytes since boot (B3.1); -1 where the platform does not count. */
+export interface NativeDataUsage {
+  readonly totalBytes: number;
+}
 export interface NativeMemory {
   readonly availableMb: number;
   readonly thresholdMb: number;
@@ -146,6 +154,8 @@ export type VergerAndroidEvents = {
   onLever: (event: NativeLever) => void;
   onNetwork: (event: NativeNetwork) => void;
   onBattery: (event: NativeBattery) => void;
+  onCpuHeadroom: (event: NativeCpuHeadroom) => void;
+  onDataUsage: (event: NativeDataUsage) => void;
 };
 
 /** What `start` accepts; every threshold is taken from verger's own config. */
@@ -159,6 +169,7 @@ export interface NativeSenseConfig {
   readonly jankFrameFactor: number;
   readonly headroomWarm: number;
   readonly saturationCores: number;
+  readonly cpuHeadroomBusyPercent: number;
   /** Which native sensors run; absent means all (`Sensors.kt`). */
   readonly sensors?: Readonly<Record<SensorId, boolean>>;
 }
@@ -182,6 +193,7 @@ export function senseConfigFrom(
     jankFrameFactor: config.jankFrameFactor,
     headroomWarm: config.headroomWarm,
     saturationCores: config.saturationCores,
+    cpuHeadroomBusyPercent: config.cpuHeadroomBusyPercent,
   };
 }
 
@@ -219,7 +231,9 @@ export type NativeEvent =
   | { readonly name: 'onThreadLoad'; readonly payload: NativeThreadLoad }
   | { readonly name: 'onMemory'; readonly payload: NativeMemory }
   | { readonly name: 'onNetwork'; readonly payload: NativeNetwork }
-  | { readonly name: 'onBattery'; readonly payload: NativeBattery };
+  | { readonly name: 'onBattery'; readonly payload: NativeBattery }
+  | { readonly name: 'onCpuHeadroom'; readonly payload: NativeCpuHeadroom }
+  | { readonly name: 'onDataUsage'; readonly payload: NativeDataUsage };
 
 /**
  * Native payload to verger event. `at` is the JavaScript clock at receipt: verger's
@@ -277,5 +291,10 @@ export function toVergerEvent(event: NativeEvent, at: number): VergerEvent {
         pluggedIn: event.payload.pluggedIn,
         temperatureC: finite(event.payload.temperatureC),
       };
+    case 'onCpuHeadroom':
+      return { type: 'cpu-headroom', at, percent: finite(event.payload.percent) };
+    case 'onDataUsage':
+      // A count that is not a finite number is an uncounted platform, as -1 is.
+      return { type: 'data-usage', at, totalBytes: finite(event.payload.totalBytes) ?? -1 };
   }
 }

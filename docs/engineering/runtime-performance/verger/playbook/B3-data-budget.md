@@ -20,7 +20,9 @@ attendance save and its upload) is never gated.
 
 ## Steps
 
-**B3.1 Count this app's bytes (Android).** `android.net.TrafficStats.getUidRxBytes(uid)` and
+**B3.1 Count this app's bytes (Android).** *Built 2026-10-26 (R11):* `DataUsage.kt`, the
+`dataUsage` contract cases, `onDataUsage` mapped to `data-usage`, and the ledger folded and
+stored by `createVerger` (`dataAllowanceBytes` turns it into the budget). Original brief: `android.net.TrafficStats.getUidRxBytes(uid)` and
 `getUidTxBytes(uid)`: bytes since boot, or `TrafficStats.UNSUPPORTED` (-1). Verify the API level
 and semantics in the installed SDK's docs before use. Sample on the existing slow poll (do not
 add a new timer), emit only when the day's total crosses a bucket (for example every 512 KiB).

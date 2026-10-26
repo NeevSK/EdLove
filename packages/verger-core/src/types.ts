@@ -249,6 +249,19 @@ export type VergerEvent =
       readonly at: number;
       readonly state: 'nominal' | 'fair' | 'serious' | 'critical';
     }
+  /**
+   * The device's CPU headroom (Android API 36 `SystemHealthManager.getCpuHeadroom`; R11),
+   * 0 to 100, or null while the platform has no value. Under config `cpuHeadroomBusyPercent` the
+   * system is busy, which counts as R10's compute pressure does: one long task is contention.
+   * Heard with the threads sensor.
+   */
+  | { readonly type: 'cpu-headroom'; readonly at: number; readonly percent: number | null }
+  /**
+   * This app's bytes since boot (Android `TrafficStats` per UID; B3.1); negative where the
+   * platform does not count. The host folds it into the day's ledger (`foldDataSample`) and
+   * reports the budget as `data-budget`; the reducer itself only hears it. Heard with network.
+   */
+  | { readonly type: 'data-usage'; readonly at: number; readonly totalBytes: number }
   | { readonly type: 'tick'; readonly at: number };
 
 /** Unity-style indexer action, extended with verger's reasons. */
@@ -557,6 +570,11 @@ export interface VergerConfig {
   readonly energyReserveHours: number;
   readonly energyDrainWindowMs: number;
   readonly energyDrainMinDropPercent: number;
+  /**
+   * CPU headroom (R11, percent) under which the whole device counts as busy: one long task is
+   * then contention, as under compute pressure. Provisional: no phone has reported one yet.
+   */
+  readonly cpuHeadroomBusyPercent: number;
   /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
   /**

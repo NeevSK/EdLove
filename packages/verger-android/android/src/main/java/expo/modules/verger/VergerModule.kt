@@ -81,6 +81,7 @@ class VergerModule : Module() {
       ),
       headroomWarm = number("headroomWarm"),
       saturationCores = number("saturationCores"),
+      cpuHeadroomBusyPercent = number("cpuHeadroomBusyPercent"),
       sensors = Sensors.parse(options["sensors"] as? Map<*, *>),
     )
   }

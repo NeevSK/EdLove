@@ -185,7 +185,23 @@ const eventArb: fc.Arbitrary<Untimed> = fc.oneof(
       type: fc.constant('input-delay' as const),
       durationMs: fc.double({ min: 0, max: 600, noNaN: true }),
     }),
-  },  // R10: the browser's CPU pressure, heard with the threads sensor.
+  },  // R11: the device's CPU headroom (null is no value), heard with threads; B3.1: this app's
+  // bytes, heard with network (negative is an uncounted platform).
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('cpu-headroom' as const),
+      percent: fc.option(fc.double({ min: 0, max: 100, noNaN: true }), { nil: null }),
+    }),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.record({
+      type: fc.constant('data-usage' as const),
+      totalBytes: fc.integer({ min: -1, max: 2 ** 40 }),
+    }),
+  },
+  // R10: the browser's CPU pressure, heard with the threads sensor.
   {
     weight: 1,
     arbitrary: fc.record({

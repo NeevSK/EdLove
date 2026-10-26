@@ -55,6 +55,7 @@ import {
   type TelemetryValue,
 } from './telemetry';
 import { validateConfig } from './config';
+import { type DataLedger, dataBudgetState, foldDataSample, parseDataLedger } from './dataBudget';
 import { UNKNOWN_CAPACITY } from './reducer';
 import type { CapacityFacts, VergerConfig, VergerEvent, RunMode, VergerSnapshot } from './types';
 
@@ -124,6 +125,14 @@ export interface VergerOptions {
    * the only way off rung 4 besides a new policy version, so it is required.
    */
   readonly release: string;
+  /**
+   * Today's allowance for this app's bytes (B3): with it, the platform's byte counter becomes the
+   * `data-budget` the levers and admission read. A chair (Naveen's): absent, the budget stays
+   * `unknown`, which is never a limit; the day's ledger is kept either way.
+   */
+  readonly dataAllowanceBytes?: number;
+  /** Minutes east of UTC, for the data budget's local day; defaults to the device's zone. */
+  readonly utcOffsetMinutes?: () => number;
   readonly now?: () => number;
   readonly wallNow?: () => number;
   readonly scheduler?: RuntimeScheduler;
@@ -305,6 +314,42 @@ export function createVerger(options: VergerOptions): Verger {
     record: `verger:${host.name}:record`,
     marker: `verger:${host.name}:session`,
     flight: `verger:${host.name}:flight`,
+    data: `verger:${host.name}:data`,
+  };
+  const utcOffset = options.utcOffsetMinutes ?? (() => -new Date(wallNow()).getTimezoneOffset());
+  /** The day's byte ledger (B3.1), read at launch and written on every sample folded in. */
+  let dataLedger: DataLedger | null = null;
+  /**
+   * The port, with this app's byte samples folded into the day's ledger on the way in, and the
+   * budget they mean sent after them when an allowance is set (only on a change).
+   */
+  const budgeted = (port: RuntimePort): RuntimePort => {
+    let reported: string | null = null;
+    return {
+      start: (config, onEvent, sensors) =>
+        port.start(
+          config,
+          (event) => {
+            onEvent(event);
+            if (event.type !== 'data-usage') return;
+            const wall = wallNow();
+            const folded = foldDataSample(dataLedger, { atWallMs: wall, totalBytes: event.totalBytes }, utcOffset());
+            if (folded !== dataLedger && folded !== null) {
+              dataLedger = folded;
+              void write(keys.data, JSON.stringify(folded));
+            }
+            if (options.dataAllowanceBytes === undefined) return;
+            const state = dataBudgetState(dataLedger, options.dataAllowanceBytes, wall, utcOffset());
+            if (state === reported) return;
+            reported = state;
+            onEvent({ type: 'data-budget', at: event.at, state });
+          },
+          sensors,
+        ),
+      ...(port.setSensors ? { setSensors: (sensors) => port.setSensors?.(sensors) } : {}),
+      setRefreshCap: (hz) => port.setRefreshCap(hz),
+      setCpuBoost: (enabled) => port.setCpuBoost(enabled),
+    };
   };
   const ladderKey = ladderKeyOf(host.policy, host.configHash, options.release);
 
@@ -403,9 +448,10 @@ export function createVerger(options: VergerOptions): Verger {
     if (options.assignment?.runtime === 'off') return offPlan('kill-switch');
 
     // 1. What the last session left.
-    const texts = await readAll([keys.marker, keys.record, keys.flight]);
+    const texts = await readAll([keys.marker, keys.record, keys.flight, keys.data]);
     if (!texts) return offPlan('store-unreadable');
-    const [markerText = null, recordText = null, flightText = null] = texts;
+    const [markerText = null, recordText = null, flightText = null, dataText = null] = texts;
+    dataLedger ??= parseDataLedger(dataText);
     let previous = migrateMarker(parseMarker(markerText));
     const parsed = lastRecord ?? migrateRecord(parseRecord(recordText));
     const corrupt = recordText !== null && parsed === null;
@@ -501,7 +547,7 @@ export function createVerger(options: VergerOptions): Verger {
       });
     const activation = capFor(requestedActivation);
     const started = createRuntimeController({
-      port: platform.createPort(now),
+      port: budgeted(platform.createPort(now)),
       capacity,
       levers: host.levers,
       mode: decided.runtime,

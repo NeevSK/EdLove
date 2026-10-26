@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Compiles verger's Android sensing code against the real android.jar (API 35) and runs its JUnit
+# Compiles verger's Android sensing code against the real android.jar (API 36) and runs its JUnit
 # suite on the desktop JVM: no Android SDK, emulator or Gradle project needed. Everything but the
 # Expo binding (VergerModule.kt, which needs expo-modules-core) is compiled. Evidence level: G0
 # for the Android calls (they type-check against the platform), G2 for the pure logic (tests).
 #
 # Downloads, once, into VERGER_JVM_CACHE (default ~/.cache/verger-android-jvm): Kotlin 2.1.20,
-# the API 35 platform, JUnit 4.13.2, Hamcrest 1.3, org.json 20240303.
+# the API 36 platform, JUnit 4.13.2, Hamcrest 1.3, org.json 20240303.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -27,15 +27,15 @@ fetch() { # url dest: retried, since Maven Central rate-limits (429)
 }
 
 fetch https://github.com/JetBrains/kotlin/releases/download/v2.1.20/kotlin-compiler-2.1.20.zip "$CACHE/kotlin.zip"
-fetch https://dl.google.com/android/repository/platform-35_r02.zip "$CACHE/platform-35.zip"
+fetch https://dl.google.com/android/repository/platform-36_r02.zip "$CACHE/platform-36.zip"
 fetch https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar "$CACHE/junit.jar"
 fetch https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar "$CACHE/hamcrest.jar"
 fetch https://repo1.maven.org/maven2/org/json/json/20240303/json-20240303.jar "$CACHE/json.jar"
 [ -x "$CACHE/kotlinc/bin/kotlinc" ] || unzip -q -o "$CACHE/kotlin.zip" -d "$CACHE"
-[ -s "$CACHE/android-35/android.jar" ] || unzip -q -o "$CACHE/platform-35.zip" "*/android.jar" -d "$CACHE"
+[ -s "$CACHE/android-36/android.jar" ] || unzip -q -o "$CACHE/platform-36.zip" "*/android.jar" -d "$CACHE"
 
 KOTLINC="$CACHE/kotlinc/bin/kotlinc"
-ANDROID_JAR="$CACHE/android-35/android.jar"
+ANDROID_JAR="$CACHE/android-36/android.jar"
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 
@@ -43,7 +43,7 @@ sources=()
 for f in "$SRC"/*.kt; do
   [ "$(basename "$f")" = "VergerModule.kt" ] || sources+=("$f")
 done
-echo "compile ${#sources[@]} files against android.jar 35"
+echo "compile ${#sources[@]} files against android.jar 36"
 "$KOTLINC" "${sources[@]}" -cp "$ANDROID_JAR" -d "$OUT/main" -jvm-target 17 -nowarn
 
 # org.json first: android.jar carries a stub org.json without the methods the tests use.

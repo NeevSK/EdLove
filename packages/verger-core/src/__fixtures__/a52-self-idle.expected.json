@@ -76,6 +76,7 @@
     "energyReserveHours": 3,
     "energyDrainWindowMs": 1800000,
     "energyDrainMinDropPercent": 2,
+    "cpuHeadroomBusyPercent": 10,
     "gestureQuietMs": 1000,
     "gestureFreezeMaxMs": 2000,
     "scrollQuietMs": 3000

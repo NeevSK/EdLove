@@ -263,6 +263,9 @@ export function isValidEvent(event: VergerEvent): boolean {
   if (event.type === 'js-heap')
     return finite(event.gcPauseShare) && (event.allocatedBytes === null || finite(event.allocatedBytes));
   if (event.type === 'storage') return event.freeBytes === null || finite(event.freeBytes);
+  if (event.type === 'cpu-headroom')
+    return event.percent === null || (finite(event.percent) && event.percent >= 0 && event.percent <= 100);
+  if (event.type === 'data-usage') return finite(event.totalBytes);
   if (event.type === 'compute-pressure')
     return ['nominal', 'fair', 'serious', 'critical'].includes(event.state);
   if (event.type === 'screen')

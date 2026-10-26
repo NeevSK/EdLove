@@ -181,6 +181,30 @@ page; requiring both is the fusion the Compute Pressure explainer itself asks fo
 threads sensor rather than a new sensor id: it is CPU contention evidence, and deafening threads
 forgets it. G1 (Vitest, a fake observer): verger-web 17 tests, verger-core 296.
 
+**R11 built (Android sensing).** Two readings the app's own threads cannot show:
+
+- *CPU headroom* (API 36 `SystemHealthManager.getCpuHeadroom`, semantics read from the
+  android16-release source: 0 to 100, NaN while unavailable, `UnsupportedOperationException`
+  where unsupported, a binder call of a millisecond or more, cached below its minimum interval).
+  `CpuHeadroomPoller` reads it on the sense thread every 5 s at most, reports moves of 5 points
+  and every crossing of config `cpuHeadroomBusyPercent` (10, provisional), and reports NaN or an
+  error as no reading, never the last value. In the reducer it joins R10's rule: a busy device
+  lowers the long-task bar to one, never counts alone. *GPU headroom is left out on purpose*:
+  every device with the API already reports measured GPU time per frame, which attributes GPU
+  stress to the frame more precisely; an unread field would be dead code.
+- *This app's bytes* (B3.1, `TrafficStats.getUidRxBytes` and `getUidTxBytes` for the own UID:
+  every interface, monotonic since boot, -1 where uncounted). Sampled on the existing 10 s slow
+  poll, sent on each 512 KiB bucket and a 5-minute heartbeat (so a new local day is noticed
+  without new traffic). `createVerger` folds samples into the day's ledger (`foldDataSample`),
+  keeps it in the store across launches and reboots, and, given `dataAllowanceBytes`, reports
+  the `data-budget` the levers and admission already read. The allowance is Naveen's chair: no
+  app sets it yet, so the budget stays `unknown`, which is never a limit.
+
+Kotlin compiled against `android.jar` 36 (the JVM script moved from 35; the app compiles against
+37), 42 JUnit tests pass (G0 for the platform calls, G2 for the logic); the byte payload is held
+to `contract/native-events.json` on both sides. G1: verger-core 304, verger-android 25. Nothing
+here has run on a phone (G5 is phase F).
+
 **Cannot be done here:** iOS native sensing (needs Xcode and a Mac), anything on a real phone
 (phase F), the Expo Modules 2.0 port of the binding (needs the Expo Android build), and the
 chairs that are Naveen's (release preset, budgets, GrowthBook and PostHog wiring).
