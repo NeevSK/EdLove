@@ -6,33 +6,334 @@
   },
   "unicodes": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+20B9,U+2122,U+2190-2193,U+2212,U+25CC,U+0964-0965,U+0D80-0DFF,U+111E1-111F4,U+0B80-0BFF,U+11FC0-11FFF",
   "families": [
-    { "family": "Newsreader", "dir": "ofl/newsreader", "files": ["Newsreader[opsz,wght].ttf", "Newsreader-Italic[opsz,wght].ttf"], "tier": "core", "worlds": ["sanctuary"] },
-    { "family": "Inter", "dir": "ofl/inter", "files": ["Inter[opsz,wght].ttf"], "tier": "core", "worlds": ["sanctuary", "wewa", "spark"] },
-    { "family": "Noto Sans Sinhala", "dir": "ofl/notosanssinhala", "files": ["NotoSansSinhala[wdth,wght].ttf"], "pin": { "wdth": 100 }, "tier": "core", "worlds": ["*"] },
-    { "family": "Noto Serif Sinhala", "dir": "ofl/notoserifsinhala", "files": ["NotoSerifSinhala[wdth,wght].ttf"], "pin": { "wdth": 100 }, "tier": "core", "worlds": ["*"] },
-    { "family": "Noto Sans Tamil", "dir": "ofl/notosanstamil", "files": ["NotoSansTamil[wdth,wght].ttf"], "pin": { "wdth": 100 }, "tier": "core", "worlds": ["*"] },
-    { "family": "Noto Serif Tamil", "dir": "ofl/notoseriftamil", "files": ["NotoSerifTamil[wdth,wght].ttf"], "pin": { "wdth": 100 }, "tier": "core", "worlds": ["*"] },
-
-    { "family": "Noto Sans Sinhala Width", "dir": "ofl/notosanssinhala", "files": ["NotoSansSinhala[wdth,wght].ttf"], "tier": "world", "worlds": ["spark"] },
-    { "family": "Noto Sans Tamil Width", "dir": "ofl/notosanstamil", "files": ["NotoSansTamil[wdth,wght].ttf"], "tier": "world", "worlds": ["spark"] },
-    { "family": "Abhaya Libre", "dir": "ofl/abhayalibre", "files": ["AbhayaLibre-Regular.ttf", "AbhayaLibre-SemiBold.ttf"], "tier": "world", "worlds": ["kandyan"] },
-    { "family": "Fraunces", "dir": "ofl/fraunces", "files": ["Fraunces[SOFT,WONK,opsz,wght].ttf"], "tier": "world", "worlds": ["wewa"] },
-    { "family": "Alegreya", "dir": "ofl/alegreya", "files": ["Alegreya[wght].ttf"], "tier": "world", "worlds": ["kele"] },
-    { "family": "Alegreya Sans", "dir": "ofl/alegreyasans", "files": ["AlegreyaSans-Regular.ttf", "AlegreyaSans-Bold.ttf"], "tier": "world", "worlds": ["kele"] },
-    { "family": "Mukta Malar", "dir": "ofl/muktamalar", "files": ["MuktaMalar-Regular.ttf", "MuktaMalar-SemiBold.ttf"], "tier": "world", "worlds": ["kele"] },
-    { "family": "Gemunu Libre", "dir": "ofl/gemunulibre", "files": ["GemunuLibre[wght].ttf"], "tier": "world", "worlds": ["angampora"] },
-    { "family": "Catamaran", "dir": "ofl/catamaran", "files": ["Catamaran[wght].ttf"], "tier": "world", "worlds": ["angampora", "perahera"] },
-    { "family": "Cormorant Garamond", "dir": "ofl/cormorantgaramond", "files": ["CormorantGaramond[wght].ttf", "CormorantGaramond-Italic[wght].ttf"], "tier": "world", "worlds": ["ratna"] },
-    { "family": "Jost", "dir": "ofl/jost", "files": ["Jost[wght].ttf"], "tier": "world", "worlds": ["ratna"] },
-    { "family": "Lora", "dir": "ofl/lora", "files": ["Lora[wght].ttf", "Lora-Italic[wght].ttf"], "subset": false, "why": "Reserved Font Name: a subset is a modified font and may not keep the name", "tier": "world", "worlds": ["rosa"] },
-    { "family": "Nunito", "dir": "ofl/nunito", "files": ["Nunito[wght].ttf"], "tier": "world", "worlds": ["rosa"] },
-    { "family": "Arima", "dir": "ofl/arima", "files": ["Arima[wght].ttf"], "tier": "world", "worlds": ["rosa"] },
-    { "family": "Yaldevi", "dir": "ofl/yaldevi", "files": ["Yaldevi[wght].ttf"], "tier": "world", "worlds": ["perahera"] },
-    { "family": "Space Grotesk", "dir": "ofl/spacegrotesk", "files": ["SpaceGrotesk[wght].ttf"], "tier": "world", "worlds": ["colombo"] },
-    { "family": "IBM Plex Sans", "dir": "ofl/ibmplexsans", "files": ["IBMPlexSans[wdth,wght].ttf"], "subset": false, "why": "Reserved Font Name \"Plex\"", "tier": "world", "worlds": ["colombo"] },
-    { "family": "Anybody", "dir": "ofl/anybody", "files": ["Anybody-Italic[wdth,wght].ttf"], "tier": "world", "worlds": ["spark"] },
-    { "family": "Space Mono", "dir": "ofl/spacemono", "files": ["SpaceMono-Bold.ttf"], "tier": "world", "worlds": ["spark"] },
-    { "family": "Spectral", "dir": "ofl/spectral", "files": ["Spectral-Regular.ttf", "Spectral-Italic.ttf"], "tier": "world", "worlds": ["tea"] },
-    { "family": "Hind Madurai", "dir": "ofl/hindmadurai", "files": ["HindMadurai-Regular.ttf", "HindMadurai-Medium.ttf"], "tier": "world", "worlds": ["tea"] }
-  ]
+    {
+      "family": "Newsreader",
+      "dir": "ofl/newsreader",
+      "files": [
+        "Newsreader[opsz,wght].ttf",
+        "Newsreader-Italic[opsz,wght].ttf"
+      ],
+      "tier": "core",
+      "worlds": [
+        "sanctuary"
+      ]
+    },
+    {
+      "family": "Inter",
+      "dir": "ofl/inter",
+      "files": [
+        "Inter[opsz,wght].ttf"
+      ],
+      "tier": "core",
+      "worlds": [
+        "sanctuary",
+        "wewa",
+        "spark"
+      ]
+    },
+    {
+      "family": "Noto Sans Sinhala",
+      "dir": "ofl/notosanssinhala",
+      "files": [
+        "NotoSansSinhala[wdth,wght].ttf"
+      ],
+      "pin": {
+        "wdth": 100
+      },
+      "tier": "core",
+      "worlds": [
+        "*"
+      ]
+    },
+    {
+      "family": "Noto Serif Sinhala",
+      "dir": "ofl/notoserifsinhala",
+      "files": [
+        "NotoSerifSinhala[wdth,wght].ttf"
+      ],
+      "pin": {
+        "wdth": 100
+      },
+      "tier": "core",
+      "worlds": [
+        "*"
+      ]
+    },
+    {
+      "family": "Noto Sans Tamil",
+      "dir": "ofl/notosanstamil",
+      "files": [
+        "NotoSansTamil[wdth,wght].ttf"
+      ],
+      "pin": {
+        "wdth": 100
+      },
+      "tier": "core",
+      "worlds": [
+        "*"
+      ]
+    },
+    {
+      "family": "Noto Serif Tamil",
+      "dir": "ofl/notoseriftamil",
+      "files": [
+        "NotoSerifTamil[wdth,wght].ttf"
+      ],
+      "pin": {
+        "wdth": 100
+      },
+      "tier": "core",
+      "worlds": [
+        "*"
+      ]
+    },
+    {
+      "family": "Noto Sans Sinhala Width",
+      "dir": "ofl/notosanssinhala",
+      "files": [
+        "NotoSansSinhala[wdth,wght].ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "spark"
+      ]
+    },
+    {
+      "family": "Noto Sans Tamil Width",
+      "dir": "ofl/notosanstamil",
+      "files": [
+        "NotoSansTamil[wdth,wght].ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "spark"
+      ]
+    },
+    {
+      "family": "Abhaya Libre",
+      "dir": "ofl/abhayalibre",
+      "files": [
+        "AbhayaLibre-Regular.ttf",
+        "AbhayaLibre-SemiBold.ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "kandyan"
+      ]
+    },
+    {
+      "family": "Fraunces",
+      "dir": "ofl/fraunces",
+      "files": [
+        "Fraunces[SOFT,WONK,opsz,wght].ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "wewa"
+      ]
+    },
+    {
+      "family": "Alegreya",
+      "dir": "ofl/alegreya",
+      "files": [
+        "Alegreya[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "kele"
+      ]
+    },
+    {
+      "family": "Alegreya Sans",
+      "dir": "ofl/alegreyasans",
+      "files": [
+        "AlegreyaSans-Regular.ttf",
+        "AlegreyaSans-Bold.ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "kele"
+      ]
+    },
+    {
+      "family": "Mukta Malar",
+      "dir": "ofl/muktamalar",
+      "files": [
+        "MuktaMalar-Regular.ttf",
+        "MuktaMalar-SemiBold.ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "kele"
+      ]
+    },
+    {
+      "family": "Gemunu Libre",
+      "dir": "ofl/gemunulibre",
+      "files": [
+        "GemunuLibre[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "angampora"
+      ]
+    },
+    {
+      "family": "Catamaran",
+      "dir": "ofl/catamaran",
+      "files": [
+        "Catamaran[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "angampora",
+        "perahera"
+      ]
+    },
+    {
+      "family": "Cormorant Garamond",
+      "dir": "ofl/cormorantgaramond",
+      "files": [
+        "CormorantGaramond[wght].ttf",
+        "CormorantGaramond-Italic[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "ratna"
+      ]
+    },
+    {
+      "family": "Jost",
+      "dir": "ofl/jost",
+      "files": [
+        "Jost[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "ratna"
+      ]
+    },
+    {
+      "family": "Lora",
+      "dir": "ofl/lora",
+      "files": [
+        "Lora[wght].ttf",
+        "Lora-Italic[wght].ttf"
+      ],
+      "subset": false,
+      "why": "Reserved Font Name: a subset is a modified font and may not keep the name",
+      "tier": "bundled",
+      "worlds": [
+        "rosa"
+      ]
+    },
+    {
+      "family": "Nunito",
+      "dir": "ofl/nunito",
+      "files": [
+        "Nunito[wght].ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "rosa"
+      ]
+    },
+    {
+      "family": "Arima",
+      "dir": "ofl/arima",
+      "files": [
+        "Arima[wght].ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "rosa"
+      ]
+    },
+    {
+      "family": "Yaldevi",
+      "dir": "ofl/yaldevi",
+      "files": [
+        "Yaldevi[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "perahera"
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "dir": "ofl/spacegrotesk",
+      "files": [
+        "SpaceGrotesk[wght].ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "colombo"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans",
+      "dir": "ofl/ibmplexsans",
+      "files": [
+        "IBMPlexSans[wdth,wght].ttf"
+      ],
+      "subset": false,
+      "why": "Reserved Font Name \"Plex\"",
+      "tier": "world",
+      "worlds": [
+        "colombo"
+      ]
+    },
+    {
+      "family": "Anybody",
+      "dir": "ofl/anybody",
+      "files": [
+        "Anybody-Italic[wdth,wght].ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "spark"
+      ]
+    },
+    {
+      "family": "Space Mono",
+      "dir": "ofl/spacemono",
+      "files": [
+        "SpaceMono-Bold.ttf"
+      ],
+      "tier": "bundled",
+      "worlds": [
+        "spark"
+      ]
+    },
+    {
+      "family": "Spectral",
+      "dir": "ofl/spectral",
+      "files": [
+        "Spectral-Regular.ttf",
+        "Spectral-Italic.ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "tea"
+      ]
+    },
+    {
+      "family": "Hind Madurai",
+      "dir": "ofl/hindmadurai",
+      "files": [
+        "HindMadurai-Regular.ttf",
+        "HindMadurai-Medium.ttf"
+      ],
+      "tier": "world",
+      "worlds": [
+        "tea"
+      ]
+    }
+  ],
+  "tiers": {
+    "core": "ships in the app; every world falls back on it",
+    "bundled": "ships in the app for the most used worlds (Spark, Rose and pichcha, Wewa)",
+    "world": "downloaded once when a person picks that world, then cached"
+  }
 }

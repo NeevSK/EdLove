@@ -10,11 +10,11 @@ copied untouched, because the OFL does not let a modified font keep that name.
     git -C /tmp/gf checkout <commit from world-fonts.json>
     git -C /tmp/gf sparse-checkout set <the dirs in world-fonts.json>
     pip install fonttools
-    python3 scripts/fonts/build-world-fonts.py /tmp/gf [--tier core|world|all] [--out DIR]
+    python3 scripts/fonts/build-world-fonts.py /tmp/gf [--tier app|core|bundled|world|all] [--out DIR]
 
-Core faces go to apps/gurudevi-mobile/src/assets/fonts/world/ by default; the
-rest go to .world-fonts/ until we decide whether they ship in the app or are
-fetched when a world is chosen.
+Core and bundled faces go to apps/gurudevi-mobile/src/assets/fonts/world/ and
+ship in the app; the rest go to .world-fonts/, to be hosted and downloaded once
+when a person picks that world.
 """
 
 import argparse
@@ -42,7 +42,7 @@ def build(gf: pathlib.Path, tiers: set[str], out: pathlib.Path | None) -> int:
     for fam in MANIFEST['families']:
         if fam['tier'] not in tiers:
             continue
-        dest = out or (CORE_OUT if fam['tier'] == 'core' else WORLD_OUT)
+        dest = out or (WORLD_OUT if fam['tier'] == 'world' else CORE_OUT)
         dest.mkdir(parents=True, exist_ok=True)
         src_dir = gf / fam['dir']
         shutil.copy(src_dir / 'OFL.txt', dest / f"OFL-{fam['family'].replace(' ', '')}.txt")
@@ -70,7 +70,7 @@ def build(gf: pathlib.Path, tiers: set[str], out: pathlib.Path | None) -> int:
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('google_fonts', type=pathlib.Path)
-    p.add_argument('--tier', choices=['core', 'world', 'all'], default='core')
+    p.add_argument('--tier', choices=['core', 'bundled', 'world', 'app', 'all'], default='app')
     p.add_argument('--out', type=pathlib.Path)
     a = p.parse_args()
-    sys.exit(build(a.google_fonts, {'core', 'world'} if a.tier == 'all' else {a.tier}, a.out))
+    sys.exit(build(a.google_fonts, {'all': {'core', 'bundled', 'world'}, 'app': {'core', 'bundled'}}.get(a.tier, {a.tier}), a.out))
