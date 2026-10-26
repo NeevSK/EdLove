@@ -125,18 +125,23 @@
       "family": "Fraunces",
       "dir": "ofl/fraunces",
       "files": [
-        "Fraunces[SOFT,WONK,opsz,wght].ttf"
+        "Fraunces[SOFT,WONK,opsz,wght].ttf",
+        "Fraunces-Italic[SOFT,WONK,opsz,wght].ttf"
       ],
       "tier": "bundled",
       "worlds": [
         "wewa"
-      ]
+      ],
+      "pin": {
+        "WONK": 0
+      }
     },
     {
       "family": "Alegreya",
       "dir": "ofl/alegreya",
       "files": [
-        "Alegreya[wght].ttf"
+        "Alegreya[wght].ttf",
+        "Alegreya-Italic[wght].ttf"
       ],
       "tier": "bundled",
       "worlds": [
@@ -289,17 +294,6 @@
       "dir": "ofl/anybody",
       "files": [
         "Anybody-Italic[wdth,wght].ttf"
-      ],
-      "tier": "bundled",
-      "worlds": [
-        "spark"
-      ]
-    },
-    {
-      "family": "Space Mono",
-      "dir": "ofl/spacemono",
-      "files": [
-        "SpaceMono-Bold.ttf"
       ],
       "tier": "bundled",
       "worlds": [

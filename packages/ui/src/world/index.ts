@@ -6,8 +6,8 @@
  * `@repo/ui/world/dom`. Both render from what this module resolves.
  */
 
-export * from './color';
 export { buildRecipes } from './build';
+export * from './color';
 export {
   boxShadowCss,
   paintCss,
@@ -16,6 +16,7 @@ export {
   worldScopeStyle,
   worldStylesheet,
 } from './css';
+export { FACES, fontNamesOf, MOTION } from './faces';
 export { phaseTokens, resolveWorld } from './resolve';
 export type * from './types';
 export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS } from './worlds';

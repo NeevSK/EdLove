@@ -5,8 +5,8 @@ import {
   Pressable,
   type PressableProps,
   Text as RNText,
-  StyleSheet,
   type StyleProp,
+  StyleSheet,
   View,
   type ViewStyle,
 } from 'react-native';
@@ -71,7 +71,7 @@ export function Button({
         alignSelf: fullWidth ? 'stretch' : 'flex-start',
       };
 
-  const labelStyle = typeStyle(recipe.label, language, dims.fontSize);
+  const labelStyle = typeStyle(recipe.label, language, world, dims.fontSize);
 
   return (
     <Pressable

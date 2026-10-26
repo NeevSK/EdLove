@@ -55,15 +55,36 @@ function visibleLamp(t: WorldTokens): string {
   return contrastRatio(t.lamp, t.ground) >= 3 ? t.lamp : t.lampDeep;
 }
 
+function buildLabel(t: WorldTokens, s: WorldStyle): TypeStyle {
+  switch (s.label) {
+    case 'smallcaps':
+      return type('sans', 11, 15, t.inkSoft, {
+        weight: '500',
+        letterSpacing: 0.9,
+        uppercase: true,
+      });
+    case 'boldcaps':
+      return type('sans', 11, 15, t.lampDeep, {
+        weight: '700',
+        letterSpacing: 1.3,
+        uppercase: true,
+      });
+    case 'italic':
+      return type('serif', 15, 20, t.inkSoft, { italic: true });
+  }
+}
+
 function buildText(t: WorldTokens, s: WorldStyle): Record<TextRole, TypeStyle> {
   return {
-    display: type('serif', 28, 33, t.ink, { letterSpacing: -0.3 }),
+    display: type('serif', 28, 33, t.ink, {
+      letterSpacing: s.display?.letterSpacing ?? -0.3,
+      weight: s.display?.weight ?? '400',
+      italic: s.display?.italic ?? false,
+      uppercase: s.display?.uppercase ?? false,
+    }),
     title: type('serif', 20, 26, t.ink),
     body: type('sans', 15, 22, t.ink),
-    label:
-      s.label === 'smallcaps'
-        ? type('sans', 11, 15, t.inkSoft, { weight: '500', letterSpacing: 0.9, uppercase: true })
-        : type('serif', 15, 20, t.inkSoft, { italic: true }),
+    label: buildLabel(t, s),
     caption: type('serif', 14, 19, t.inkSoft, { italic: true }),
     value: type('serif', 15, 20, t.inkSoft, { italic: true }),
   };

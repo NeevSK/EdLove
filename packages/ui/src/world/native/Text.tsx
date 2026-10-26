@@ -39,7 +39,7 @@ export function Text({ kind = 'body', tone, align, style, ref, ...rest }: TextPr
       accessibilityRole={kind === 'display' ? 'header' : undefined}
       {...rest}
       style={[
-        typeStyle(recipe, language),
+        typeStyle(recipe, language, world),
         tone ? { color: toneColor(world.tokens, tone) } : null,
         align ? { textAlign: align } : null,
         style,

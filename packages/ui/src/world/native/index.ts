@@ -12,12 +12,11 @@ export { Button, type ButtonProps } from './Button';
 export { Chip, type ChipProps, Chips, type ChipsProps } from './Chip';
 export { Row, type RowProps } from './Row';
 export { Section, type SectionProps } from './Section';
-export { registerWorldFonts } from './style';
 export { Surface, type SurfaceProps } from './Surface';
 export { Switch, type SwitchProps } from './Switch';
+export { isFontAvailable, registerAvailableFonts } from './style';
 export { Text, type TextProps, toneColor } from './Text';
 export { TextField, type TextFieldProps } from './TextField';
-export { WorldPicker, type WorldPickerProps } from './WorldPicker';
 export {
   useWorld,
   useWorldContext,
@@ -26,3 +25,4 @@ export {
   WorldScope,
   type WorldScopeProps,
 } from './WorldContext';
+export { WorldPicker, type WorldPickerProps } from './WorldPicker';

@@ -51,7 +51,7 @@ export function Row({
           gap: r.gap,
         }}
       >
-        <RNText style={[typeStyle(r.label, language), { flexShrink: 1 }]}>{label}</RNText>
+        <RNText style={[typeStyle(r.label, language, world), { flexShrink: 1 }]}>{label}</RNText>
         {accessory ??
           (detail || showChevron ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 }}>
@@ -74,7 +74,7 @@ export function Row({
                 <RNText
                   numberOfLines={2}
                   style={[
-                    typeStyle(r.detail, language),
+                    typeStyle(r.detail, language, world),
                     { textAlign: 'right', flexShrink: 1 },
                     signal ? { color: world.tokens.lampDeep } : null,
                   ]}
@@ -94,7 +94,7 @@ export function Row({
             </View>
           ) : null)}
       </View>
-      {note ? <RNText style={typeStyle(r.note, language)}>{note}</RNText> : null}
+      {note ? <RNText style={typeStyle(r.note, language, world)}>{note}</RNText> : null}
     </>
   );
 

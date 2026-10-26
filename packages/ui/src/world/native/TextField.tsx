@@ -52,7 +52,7 @@ export function TextField({
 
   return (
     <View style={{ gap: 6 }}>
-      <RNText nativeID={`${nativeId}-label`} style={typeStyle(r.label, language)}>
+      <RNText nativeID={`${nativeId}-label`} style={typeStyle(r.label, language, world)}>
         {label}
       </RNText>
       <TextInput
@@ -75,7 +75,7 @@ export function TextField({
         }}
         {...rest}
         style={[
-          typeStyle(r.value, language),
+          typeStyle(r.value, language, world),
           empty && r.placeholder.italic && language === 'en' ? { fontStyle: 'italic' } : null,
           {
             minHeight: r.minHeight,
@@ -93,12 +93,12 @@ export function TextField({
         <RNText
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
-          style={typeStyle(r.error, language)}
+          style={typeStyle(r.error, language, world)}
         >
           {error}
         </RNText>
       ) : hint ? (
-        <RNText style={typeStyle(r.hint, language)}>{hint}</RNText>
+        <RNText style={typeStyle(r.hint, language, world)}>{hint}</RNText>
       ) : null}
     </View>
   );
