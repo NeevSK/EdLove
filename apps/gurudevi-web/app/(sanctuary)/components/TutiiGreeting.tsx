@@ -13,7 +13,7 @@ type TutiiGreetingProps = Readonly<{
 export function TutiiGreeting({ context, actionLabel, onContinue, autoFocus = false }: TutiiGreetingProps) {
   const introduction =
     context === 'explore'
-      ? 'I’m your guide around Explore, a sample of the learning and community spaces in Gurudevi.'
+      ? 'Welcome to the Gurudevi Guest House. Look around, explore classes, and try features freely. No account required.'
       : 'I’ll help you find your way around. First, let’s make this place feel like yours.';
 
   return (

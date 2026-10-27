@@ -114,10 +114,7 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
           <span className={styles.statusDot} />
           <span className={styles.formBadgeText}>Sign In</span>
         </div>
-        <h2 className={styles.formTitle}>Welcome</h2>
-        <p className={styles.formSub}>
-          Continue with Google, Apple, or your email address.
-        </p>
+        <h2 className={styles.formTitle}>Welcome to Sanctuary</h2>
       </div>
 
       <div className={styles.oauthRow}>
@@ -181,7 +178,7 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
         </button>
 
         <p style={{ fontSize: '12px', color: '#7a6e5f', margin: 0, lineHeight: 1.5 }}>
-          If this address is new, we will create your account after you confirm the email link.
+          New here? Confirming email creates your account.
         </p>
       </form>
 
@@ -203,7 +200,7 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
 
       <div className={styles.guestOptionRow}>
         <span>Prefer to explore first?</span>
-        <Link className={styles.guestLink} href="/self">
+        <Link className={styles.guestLink} href="/welcome?mode=explore">
           Enter Guest House freely →
         </Link>
       </div>

@@ -841,49 +841,198 @@
   }
 }
 
-/* Explore Guest House Live Conversation Flow */
-.exploreConversationStream {
+/* Explore Guest House Editorial Motion Flow */
+.exploreEditorialPane {
+  flex: 1 1 55%;
+  max-width: 580px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin: 18px 0 28px;
-  max-width: 540px;
+  align-items: flex-start;
+  animation: editorialArrive 400ms ease-out both;
 }
 
-.exploreDialogueBubble {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1.5px solid rgba(82, 115, 91, 0.22);
-  border-radius: 18px;
-  padding: 16px 20px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-  animation: bubbleArrive 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+@keyframes editorialArrive {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.exploreDialogueBubble p {
-  margin: 0;
-  font-size: 16.5px;
-  line-height: 1.6;
+.editorialTitle {
+  font-family: var(--font-fraunces, Georgia, serif);
+  font-size: clamp(36px, 4.6vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin: 0 0 16px 0;
   color: var(--color-charcoal-truth, #131e27);
 }
 
-.exploreSpeakerTag {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-sanctuary-saffron, #a85022);
-  margin-bottom: 6px;
+.greetingLine {
+  display: block;
+  opacity: 0;
+  animation: voiceArrive 400ms 200ms ease-out both;
 }
 
-.exploreActionButtonGroup {
+.greetingLine + .greetingLine {
+  animation-delay: 550ms;
+}
+
+.greetingLineThird {
+  display: block;
+  font-size: clamp(24px, 3.2vw, 36px);
+  color: var(--color-sanctuary-saffron, #a85022);
+  margin-top: 10px;
+  opacity: 0;
+  animation: voiceArrive 400ms 900ms ease-out both;
+}
+
+.editorialSubline {
+  font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.65;
+  color: var(--color-mud-brown, #453c35);
+  margin: 12px 0 28px 0;
+  max-width: 48ch;
+  opacity: 0;
+  animation: voiceArrive 400ms 1250ms ease-out both;
+}
+
+.editorialActionRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: voiceArrive 400ms 1600ms ease-out both;
+}
+
+.editorialBackBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-mud-brown, #453c35);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: color 150ms ease;
+}
+
+.editorialBackBtn:hover {
+  color: var(--color-charcoal-truth, #131e27);
+  text-decoration: underline;
+}
+
+.editorialSanctuaryLink {
+  font-size: 14px;
+  color: var(--color-sanctuary-saffron, #a85022);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: opacity 150ms ease;
+}
+
+.editorialSanctuaryLink:hover {
+  text-decoration: underline;
+}
+
+.activePointsList {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  margin: 18px 0 32px;
+  max-width: 500px;
+}
+
+.activePointItem {
+  display: flex;
   align-items: flex-start;
-  animation: bubbleArrive 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  gap: 14px;
+}
+
+.activePointIcon {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.activePointTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-charcoal-truth, #131e27);
+  margin: 0 0 4px 0;
+}
+
+.activePointText {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--color-mud-brown, #453c35);
+  margin: 0;
+}
+
+.roleChoiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  width: 100%;
+  max-width: 540px;
+  margin: 16px 0 28px;
+}
+
+@media (max-width: 600px) {
+  .roleChoiceGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roleChoiceBtn {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(42, 35, 24, 0.14);
+  background: rgba(255, 255, 255, 0.8);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.roleChoiceBtn:hover {
+  border-color: #52735b;
+  background: #ffffff;
+}
+
+.roleChoiceBtnActive {
+  border-color: #365d49;
+  background: rgba(54, 93, 73, 0.08);
+  box-shadow: 0 2px 8px rgba(54, 93, 73, 0.15);
+}
+
+.roleChoiceIcon {
+  font-size: 22px;
+}
+
+.roleChoiceInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.roleChoiceLabel {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-charcoal-truth, #131e27);
+}
+
+.roleChoiceVerb {
+  font-size: 12px;
+  color: #6a746a;
+}
+
+.roleChoiceCheck {
+  margin-left: auto;
+  font-weight: 800;
+  color: #365d49;
 }
 
 .exploreFloatingMascotFrame {
@@ -895,7 +1044,7 @@
 }
 
 .exploreFloatingMascotImg {
-  max-width: 320px;
+  max-width: 330px;
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -904,27 +1053,52 @@
 
 @keyframes tutiiLevitate {
   0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-12px) rotate(1.2deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-@keyframes bubbleArrive {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+@keyframes voiceArrive {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-:global([data-appearance='night']) .exploreDialogueBubble {
-  background: rgba(36, 40, 36, 0.94);
-  border-color: rgba(146, 183, 156, 0.25);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+:global([data-appearance='night']) .editorialTitle {
+  color: #fffdf8;
 }
 
-:global([data-appearance='night']) .exploreDialogueBubble p {
+:global([data-appearance='night']) .editorialSubline,
+:global([data-appearance='night']) .activePointText {
+  color: #c8bfb0;
+}
+
+:global([data-appearance='night']) .activePointTitle,
+:global([data-appearance='night']) .roleChoiceLabel {
   color: #f0ede2;
+}
+
+:global([data-appearance='night']) .roleChoiceBtn {
+  background: rgba(45, 40, 34, 0.7);
+  border-color: rgba(245, 237, 214, 0.16);
+}
+
+:global([data-appearance='night']) .roleChoiceBtn:hover {
+  background: rgba(55, 50, 42, 0.9);
+  border-color: #82aa8e;
+}
+
+:global([data-appearance='night']) .roleChoiceBtnActive {
+  background: rgba(60, 95, 75, 0.3);
+  border-color: #82aa8e;
+}
+
+:global([data-appearance='night']) .roleChoiceVerb {
+  color: #a4b0a4;
+}
+
+:global([data-appearance='night']) .editorialBackBtn {
+  color: #c8bfb0;
+}
+
+:global([data-appearance='night']) .editorialBackBtn:hover {
+  color: #fffdf8;
 }

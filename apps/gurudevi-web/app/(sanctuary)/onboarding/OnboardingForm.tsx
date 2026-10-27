@@ -15,13 +15,13 @@ const capacities = [
   {
     value: 'teacher',
     label: 'Teacher',
-    symbol: '🍎',
+    symbol: '🧑‍🏫',
     detail: 'I teach, guide, or care for a classroom.',
   },
   {
     value: 'student',
     label: 'Student',
-    symbol: '📚',
+    symbol: '🎒',
     detail: 'I’m here to learn, explore, and grow.',
   },
   {
@@ -33,7 +33,7 @@ const capacities = [
   {
     value: 'parent',
     label: 'Parent',
-    symbol: '🌱',
+    symbol: '👨‍👩‍👧',
     detail: 'I support a learner and stay connected with school.',
   },
   {

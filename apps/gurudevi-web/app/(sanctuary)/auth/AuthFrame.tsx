@@ -44,7 +44,7 @@ export function AuthFrame({
             <div>
               <div className={styles.heroBadge}>
                 <span className={styles.statusDot} />
-                <span className={styles.heroBadgeText}>Gurudevi Sanctuary</span>
+                <span className={styles.heroBadgeText}>Sanctuary</span>
               </div>
 
               <h1 className={styles.heroTitle} id="auth-hero-title">
@@ -63,16 +63,13 @@ export function AuthFrame({
                   className={styles.tutiiImg}
                 />
               </div>
-              <p className={styles.tutiiQuote}>
-                “A quiet place to teach, learn, and reflect. Everything is held safely on your device.”
-              </p>
             </div>
 
             {showOnboardingLink ? (
               <div className={styles.onboardingBanner}>
-                <span>Setting up a school or choosing your role?</span>
+                <span>Setting up a school?</span>
                 <Link className={styles.onboardingLink} href="/onboarding">
-                  Go to Onboarding →
+                  Open Onboarding →
                 </Link>
               </div>
             ) : null}

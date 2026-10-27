@@ -12,8 +12,8 @@ export default async function SignInPage({
 
   return (
     <AuthFrame
-      title="Gurudevi: Sanctuary for Education"
-      description="A calm, sovereign space to teach, learn, and grow. Everything is held safely on your device."
+      title="Teach. Learn. Reflect."
+      description="Calm, private, and held safely on your device."
     >
       {reason === 'sign-out-incomplete' ? (
         <p role="alert">

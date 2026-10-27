@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
+import { type ExploreCapacity, setExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import styles from './welcome.module.css';
 import { DiurnalThemeToggle } from '../components/DiurnalThemeToggle';
 
@@ -21,27 +23,26 @@ const LANGUAGES = [
   { code: 'ta', label: 'தமிழ்' },
 ] as const;
 
+const EXPLORE_ROLES = [
+  { id: 'teacher' as const, label: 'Teacher', emoji: '🧑‍🏫', verb: 'Teach & guide classes' },
+  { id: 'principal' as const, label: 'School Leader', emoji: '🏫', verb: 'Guide the school' },
+  { id: 'student' as const, label: 'Student', emoji: '🎒', verb: 'Learn & practice' },
+  { id: 'guardian' as const, label: 'Family & Guardian', emoji: '👨‍👩‍👧', verb: 'Follow student growth' },
+  { id: 'founder' as const, label: 'Founder', emoji: '🏛️', verb: 'Shape sanctuary' },
+  { id: 'researcher' as const, label: 'Researcher', emoji: '🔬', verb: 'Observe learning data' },
+] as const;
+
 type WelcomeStageProps = Readonly<{
   mode?: WelcomeMode;
   authenticatedUser?: string | null;
 }>;
 
 export function WelcomeStage({ mode = 'sanctuary', authenticatedUser }: WelcomeStageProps) {
+  const router = useRouter();
   const greeting = useMemo(() => getLocalGreeting(), []);
   const [selectedLang, setSelectedLang] = useState<string>('en');
-  const [conversationStep, setConversationStep] = useState<number>(mode === 'explore' ? 1 : 4);
-
-  useEffect(() => {
-    if (mode !== 'explore') return;
-    const t1 = setTimeout(() => setConversationStep((s) => Math.max(s, 2)), 800);
-    const t2 = setTimeout(() => setConversationStep((s) => Math.max(s, 3)), 1700);
-    const t3 = setTimeout(() => setConversationStep((s) => Math.max(s, 4)), 2600);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [mode]);
+  const [exploreStep, setExploreStep] = useState<'welcome' | 'orientation' | 'role'>('welcome');
+  const [selectedRole, setSelectedRole] = useState<ExploreCapacity>('teacher');
 
   const exploreSelfUrl =
     typeof window !== 'undefined' &&
@@ -51,6 +52,16 @@ export function WelcomeStage({ mode = 'sanctuary', authenticatedUser }: WelcomeS
       ? '/self?surface=explore'
       : `${GURUDEVI_EXPLORE_URL}/self`;
 
+  function handleCompleteExploreIntro() {
+    setExploreCapacity(selectedRole);
+    try {
+      window.sessionStorage.setItem('gurudevi_museum_modal_dismissed', 'true');
+    } catch {
+      // Storage unavailable in private modes
+    }
+    const targetUrl = exploreSelfUrl + (exploreSelfUrl.includes('?') ? '&intro=complete' : '?intro=complete');
+    router.push(targetUrl);
+  }
   return (
     <div className={styles.viewport}>
       <div className={styles.datumMatrix} aria-hidden="true" />
@@ -88,58 +99,6 @@ export function WelcomeStage({ mode = 'sanctuary', authenticatedUser }: WelcomeS
         <div className={styles.stageContent}>
           {mode === 'explore' ? (
             <>
-              <div
-                className={styles.heroTextPane}
-                onClick={() => setConversationStep(4)}
-                role="region"
-                aria-label="Tutii Live Conversation"
-              >
-                <div className={styles.greetingTag}>
-                  <span className={styles.statusDot} />
-                  <span className={styles.greetingText}>
-                    Gurudevi Guest House · Open Exploration
-                  </span>
-                </div>
-
-                <div className={styles.exploreConversationStream}>
-                  <div className={styles.exploreDialogueBubble}>
-                    <div className={styles.exploreSpeakerTag}>
-                      <span>🪷 Tutii</span>
-                    </div>
-                    <p>Welcome to the Gurudevi Guest House!</p>
-                  </div>
-
-                  {conversationStep >= 2 ? (
-                    <div className={styles.exploreDialogueBubble}>
-                      <div className={styles.exploreSpeakerTag}>
-                        <span>✨ Guide</span>
-                      </div>
-                      <p>I’m Tutii, your guide through this open space.</p>
-                    </div>
-                  ) : null}
-
-                  {conversationStep >= 3 ? (
-                    <div className={styles.exploreDialogueBubble}>
-                      <p>
-                        You can explore school life, wander through the classrooms, and try everything freely without an account.
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-
-                {conversationStep >= 4 ? (
-                  <div className={styles.exploreActionButtonGroup}>
-                    <Link className={styles.primaryBtn} href="/self">
-                      <span>Let’s explore!</span>
-                      <span aria-hidden="true">→</span>
-                    </Link>
-                    <Link className={styles.secondaryBtn} href="/sign-in">
-                      <span>Sign in to Sanctuary</span>
-                    </Link>
-                  </div>
-                ) : null}
-              </div>
-
               <div className={styles.heroVisualPane}>
                 <div className={styles.exploreFloatingMascotFrame}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -150,6 +109,147 @@ export function WelcomeStage({ mode = 'sanctuary', authenticatedUser }: WelcomeS
                     loading="eager"
                   />
                 </div>
+              </div>
+
+              <div className={styles.exploreEditorialPane}>
+                {exploreStep === 'welcome' ? (
+                  <>
+                    <div className={styles.greetingTag}>
+                      <span className={styles.statusDot} />
+                      <span className={styles.greetingText}>
+                        Gurudevi Guest House · Open Space
+                      </span>
+                    </div>
+
+                    <h1 className={styles.editorialTitle}>
+                      <span className={styles.greetingLine}>Hello.</span>
+                      <span className={styles.greetingLine}>I’m Tutii.</span>
+                      <span className={styles.greetingLineThird}>Welcome to Gurudevi Guest House.</span>
+                    </h1>
+
+                    <p className={styles.editorialSubline}>
+                      Look around, explore classes, and try features freely. No account required.
+                    </p>
+
+                    <div className={styles.editorialActionRow}>
+                      <button
+                        type="button"
+                        className={styles.primaryBtn}
+                        onClick={() => setExploreStep('orientation')}
+                        autoFocus
+                      >
+                        <span>One more thing</span>
+                        <span aria-hidden="true">→</span>
+                      </button>
+                      <Link className={styles.editorialSanctuaryLink} href="/sign-in">
+                        Sign in to Sanctuary
+                      </Link>
+                    </div>
+                  </>
+                ) : exploreStep === 'orientation' ? (
+                  <>
+                    <div className={styles.greetingTag}>
+                      <span className={styles.statusDot} />
+                      <span className={styles.greetingText}>Inside The Guest House</span>
+                    </div>
+
+                    <h1 className={styles.editorialTitle}>Wander freely.</h1>
+
+                    <div className={styles.activePointsList}>
+                      <div className={styles.activePointItem}>
+                        <span className={styles.activePointIcon} aria-hidden="true">🏫</span>
+                        <div>
+                          <h2 className={styles.activePointTitle}>Real classroom tools</h2>
+                          <p className={styles.activePointText}>
+                            Try daily attendance, classroom rosters, and student reflection journals.
+                          </p>
+                        </div>
+                      </div>
+                      <div className={styles.activePointItem}>
+                        <span className={styles.activePointIcon} aria-hidden="true">🛡️</span>
+                        <div>
+                          <h2 className={styles.activePointTitle}>Zero risk & private</h2>
+                          <p className={styles.activePointText}>
+                            Nothing changes a real school. Stored privately right on your device.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={styles.editorialActionRow}>
+                      <button
+                        type="button"
+                        className={styles.primaryBtn}
+                        onClick={() => setExploreStep('role')}
+                        autoFocus
+                      >
+                        <span>Choose your perspective</span>
+                        <span aria-hidden="true">→</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.editorialBackBtn}
+                        onClick={() => setExploreStep('welcome')}
+                      >
+                        ← Back
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.greetingTag}>
+                      <span className={styles.statusDot} />
+                      <span className={styles.greetingText}>Choose Your Perspective</span>
+                    </div>
+
+                    <h1 className={styles.editorialTitle}>What brings you here?</h1>
+
+                    <p className={styles.editorialSubline} style={{ margin: '0 0 16px 0' }}>
+                      I’ll shape this sample around your role.
+                    </p>
+
+                    <div className={styles.roleChoiceGrid} role="radiogroup" aria-label="Choose your role">
+                      {EXPLORE_ROLES.map((role) => (
+                        <button
+                          key={role.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={selectedRole === role.id}
+                          className={`${styles.roleChoiceBtn} ${selectedRole === role.id ? styles.roleChoiceBtnActive : ''}`}
+                          onClick={() => setSelectedRole(role.id)}
+                        >
+                          <span className={styles.roleChoiceIcon} aria-hidden="true">{role.emoji}</span>
+                          <div className={styles.roleChoiceInfo}>
+                            <span className={styles.roleChoiceLabel}>{role.label}</span>
+                            <span className={styles.roleChoiceVerb}>{role.verb}</span>
+                          </div>
+                          {selectedRole === role.id ? (
+                            <span className={styles.roleChoiceCheck} aria-hidden="true">✓</span>
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className={styles.editorialActionRow}>
+                      <button
+                        type="button"
+                        className={styles.primaryBtn}
+                        onClick={handleCompleteExploreIntro}
+                        autoFocus
+                      >
+                        <span>Enter Guest House</span>
+                        <span aria-hidden="true">→</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.editorialBackBtn}
+                        onClick={() => setExploreStep('orientation')}
+                      >
+                        ← Back
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           ) : (

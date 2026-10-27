@@ -172,15 +172,14 @@ export function ExploreMuseumModal({
                     />
                   </div>
                   <div className={styles.copy}>
-                    <p className={styles.eyebrow}>Your sample Guest House</p>
-                    <h1 className={styles.title} id="museum-modal-title">You’re in Explore.</h1>
+                    <p className={styles.eyebrow}>Inside the Guest House</p>
+                    <h1 className={styles.title} id="museum-modal-title">Wander freely.</h1>
                     <p className={styles.description}>
-                      Wander through sample spaces and see how Gurudevi supports school and community
-                      life. Nothing you do here changes a real school or personal account.
+                      Try attendance, rosters, and quiet reflections. Nothing you do here changes a real school. Stored privately on your device.
                     </p>
                     <div className={styles.actions}>
                       <button className={styles.primaryAction} type="button" onClick={() => setStep('role')} autoFocus>
-                        Choose my perspective <span aria-hidden="true">→</span>
+                        Choose your perspective <span aria-hidden="true">→</span>
                       </button>
                       <Link className={styles.sanctuaryLink} href="/sign-in" onClick={handleDismiss}>
                         Sign in to Sanctuary
@@ -203,10 +202,10 @@ export function ExploreMuseumModal({
                     />
                   </div>
                   <div className={styles.copy}>
-                    <p className={styles.eyebrow}>Tutii asks</p>
+                    <p className={styles.eyebrow}>Choose a role</p>
                     <h1 className={styles.title} id="explore-role-title">What brings you here?</h1>
                     <p className={styles.description}>
-                      I’ll shape this sample around your role. You can explore other roles inside Workspace.
+                      I’ll shape this sample space around your role.
                     </p>
                     <div className={styles.roleChoices} role="radiogroup" aria-label="Choose your primary role">
                       {EXPLORE_CAPACITIES.map((role) => (
@@ -219,7 +218,7 @@ export function ExploreMuseumModal({
                           type="button"
                         >
                           <span aria-hidden="true" className={styles.roleEmoji}>
-                            {({ teacher: '🧑‍🏫', principal: '🏫', student: '📚', guardian: '👪', founder: '🏛️', researcher: '🔬' } as Record<string, string>)[role.id] ?? '✨'}
+                            {({ teacher: '🧑‍🏫', principal: '🏫', student: '🎒', guardian: '👨‍👩‍👧', founder: '🏛️', researcher: '🔬' } as Record<string, string>)[role.id] ?? '✨'}
                           </span>
                           <span>{role.label}</span>
                           {selectedRole === role.id ? <span aria-hidden="true">✓</span> : null}
@@ -236,7 +235,7 @@ export function ExploreMuseumModal({
                           handleDismiss();
                         }}
                       >
-                        Let’s look around <span aria-hidden="true">→</span>
+                        Enter Guest House <span aria-hidden="true">→</span>
                       </button>
                       <Link className={styles.sanctuaryLink} href="/sign-in" onClick={handleDismiss}>
                         Sign in to Sanctuary
