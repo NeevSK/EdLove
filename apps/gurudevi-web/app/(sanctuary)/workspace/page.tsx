@@ -1,10 +1,10 @@
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
-import { signInPath } from '../auth/routeSafety';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { WorkspaceFloor } from './WorkspaceFloor';
 
@@ -53,20 +53,9 @@ export default async function WorkspacePage() {
         <WorkspaceFloor capacity="TEACHER" displayName="Guest Explorer" mode="explore" />
       </SanctuaryShell>
     );
-  if (entry.kind === 'onboarding-required')
-    return (
-      <WorkspaceState
-        action={
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/onboarding">Continue Enrollment</Link>
-            <Link href="/welcome">Welcome Gate</Link>
-          </div>
-        }
-        displayName="Explorer"
-        title="Choose your first sanctuary capacity"
-        detail="Complete enrollment and select the scope you want to enter."
-      />
-    );
+  if (entry.kind === 'onboarding-required') {
+    redirect('/onboarding');
+  }
   if (entry.kind === 'inactive' || entry.kind === 'unavailable')
     return (
       <WorkspaceState

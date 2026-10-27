@@ -92,26 +92,18 @@ export function WelcomeStage({ mode = 'sanctuary', authenticatedUser }: WelcomeS
                 </>
               ) : (
                 <>
-                  <Link
-                    className={styles.primaryBtn}
-                    href={mode === 'explore' ? '/self' : `${GURUDEVI_EXPLORE_URL}/self`}
-                  >
-                    <span>Explore</span>
+                  <Link className={styles.primaryBtn} href="/sign-in">
+                    <span>Sign in / Sign up</span>
                     <span aria-hidden="true">→</span>
                   </Link>
-                  <Link className={styles.secondaryBtn} href="/sign-in">
-                    <span>Sign in / Sign up</span>
+                  <Link
+                    className={styles.secondaryBtn}
+                    href={mode === 'explore' ? '/self' : `${GURUDEVI_EXPLORE_URL}/self`}
+                  >
+                    <span>Explore without account</span>
                   </Link>
                 </>
               )}
-            </div>
-
-            <div className={styles.subtextMeta}>
-              <span>Offline-First</span>
-              <span className={styles.metaDivider}>•</span>
-              <span>Encrypted</span>
-              <span className={styles.metaDivider}>•</span>
-              <span>Designed for everyone</span>
             </div>
           </div>
 

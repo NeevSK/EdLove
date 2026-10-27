@@ -9,7 +9,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { browserAuthRuntime } from '../auth/browserAuth';
-import { TutiiGreeting } from '../components/TutiiGreeting';
 import styles from './onboarding.module.css';
 
 const capacities = [
@@ -52,7 +51,7 @@ const capacities = [
 ] as const;
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
-type JourneyStep = 'hello' | 'name' | 'capacity';
+type JourneyStep = 'name' | 'capacity' | 'nudge';
 type IdentityStatus = 'checking' | 'authenticated' | 'signed-out' | 'unavailable';
 const onboardingDraftKey = 'gurudevi_onboarding_draft_v1';
 
@@ -67,6 +66,20 @@ function readOnboardingDraft(): { displayName: string; capacity: string } | null
     return { displayName, capacity };
   } catch {
     return null;
+  }
+}
+
+function saveOnboardingDraft(displayName: string, capacity: string) {
+  try {
+    sessionStorage.setItem(
+      onboardingDraftKey,
+      JSON.stringify({
+        displayName: displayName.trim(),
+        capacity,
+      }),
+    );
+  } catch {
+    // Session storage may be unavailable in strict private modes
   }
 }
 
@@ -85,33 +98,31 @@ function errorStatus(error: unknown): number | null {
 }
 
 export function OnboardingForm() {
-  const [step, setStep] = useState<JourneyStep>('hello');
+  const [step, setStep] = useState<JourneyStep>('name');
   const [completionKey] = useState(createOnboardingCompletionKey);
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [selectedCapacity, setSelectedCapacity] = useState<string>('teacher');
-  const [identityStatus, setIdentityStatus] = useState<IdentityStatus>('checking');
+  const [identityStatus, setIdentityStatus] = useState<IdentityStatus>(() => {
+    if (typeof window === 'undefined') return 'checking';
+    return browserAuthRuntime() ? 'checking' : 'unavailable';
+  });
   const capacityHeading = useRef<HTMLHeadingElement>(null);
-  const firstName = displayName.trim().split(/\s+/)[0];
+  const firstName = displayName.trim().split(/\s+/)[0] || 'there';
+  const roleLabel =
+    capacities.find((item) => item.value === selectedCapacity)?.label ?? 'member';
 
   useEffect(() => {
     let isCurrent = true;
     const runtime = browserAuthRuntime();
-    if (!runtime) {
-      setIdentityStatus('unavailable');
-      return () => {
-        isCurrent = false;
-      };
-    }
+    if (!runtime) return;
 
-    void runtime.bootstrapIdentity().then((identity) => {
+    runtime.bootstrapIdentity().then((identity) => {
       if (!isCurrent) return;
-      setIdentityStatus(
-        identity.status === 'authenticated' && identity.session.user.is_anonymous
-          ? 'signed-out'
-          : identity.status,
-      );
+      const isAuth =
+        identity.status === 'authenticated' && !identity.session.user.is_anonymous;
+      setIdentityStatus(isAuth ? 'authenticated' : 'signed-out');
       const draft = readOnboardingDraft();
       if (draft) {
         setDisplayName(draft.displayName);
@@ -135,17 +146,24 @@ export function OnboardingForm() {
   function continueToCapacity() {
     if (!displayName.trim()) return;
     setMessage('');
+    saveOnboardingDraft(displayName, selectedCapacity);
     setStep('capacity');
   }
 
-  async function complete(event: FormEvent<HTMLFormElement>) {
+  async function handleCapacitySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (step === 'hello') {
-      setStep('name');
+
+    if (!displayName.trim() || !capacities.some((item) => item.value === selectedCapacity)) {
+      setState('error');
+      setMessage('Please enter your name and select a role.');
       return;
     }
-    if (step === 'name') {
-      continueToCapacity();
+
+    saveOnboardingDraft(displayName, selectedCapacity);
+
+    // If user does not have an authenticated account, nudge them unavoidably to create one
+    if (identityStatus !== 'authenticated') {
+      setStep('nudge');
       return;
     }
 
@@ -157,42 +175,12 @@ export function OnboardingForm() {
     }
 
     const identity = await runtime.bootstrapIdentity();
-    const requiresAccount =
-      identity.status === 'signed-out' ||
-      (identity.status === 'authenticated' && identity.session.user.is_anonymous);
-    setIdentityStatus(requiresAccount ? 'signed-out' : identity.status);
-    if (requiresAccount) {
-      try {
-        sessionStorage.setItem(
-          onboardingDraftKey,
-          JSON.stringify({
-            displayName: displayName.trim(),
-            capacity: selectedCapacity,
-          }),
-        );
-      } catch {
-        setMessage(
-          'Your details could not be saved in this browser. You can still create an account and enter them again.',
-        );
-      }
-      window.location.assign('/sign-up?returnTo=%2Fonboarding');
-      return;
-    }
-    if (identity.status === 'unavailable') {
-      setState('unavailable');
-      setMessage('We could not check your account just now. Please try again in a moment.');
-      return;
-    }
-    if (identity.status !== 'authenticated') {
-      setState('error');
-      setMessage('Please sign in before entering your Sanctuary.');
-      return;
-    }
+    const hasRealAccount =
+      identity.status === 'authenticated' && !identity.session.user.is_anonymous;
 
-    const orientation = selectedCapacity;
-    if (!displayName.trim() || !capacities.some((item) => item.value === orientation)) {
-      setState('error');
-      setMessage('Add your name and choose the role that fits you best.');
+    if (!hasRealAccount) {
+      setIdentityStatus('signed-out');
+      setStep('nudge');
       return;
     }
 
@@ -205,7 +193,7 @@ export function OnboardingForm() {
       };
       await createInitialBond(
         {
-          orientation,
+          orientation: selectedCapacity,
           confirmCapacityChange: false,
           context: { displayName: displayName.trim() },
         },
@@ -215,7 +203,7 @@ export function OnboardingForm() {
       try {
         sessionStorage.removeItem(onboardingDraftKey);
       } catch {
-        // Enrollment can finish even when session storage is unavailable.
+        // Ignored
       }
       window.location.replace('/self');
     } catch (error) {
@@ -225,34 +213,35 @@ export function OnboardingForm() {
   }
 
   return (
-    <form className={styles.conversation} onSubmit={(event) => void complete(event)}>
+    <form
+      className={styles.conversation}
+      onSubmit={(event) => {
+        handleCapacitySubmit(event);
+      }}
+    >
       <div
         className={styles.progress}
         role="group"
-        aria-label={`Step ${step === 'hello' ? 1 : step === 'name' ? 2 : 3} of 3`}
+        aria-label={`Step ${step === 'name' ? 1 : step === 'capacity' ? 2 : 3} of ${identityStatus === 'authenticated' ? 2 : 3}`}
       >
-        {(['hello', 'name', 'capacity'] as const).map((item, index) => (
+        <span
+          aria-hidden="true"
+          className={styles.progressSegment}
+          data-active={true}
+        />
+        <span
+          aria-hidden="true"
+          className={styles.progressSegment}
+          data-active={step === 'capacity' || step === 'nudge'}
+        />
+        {identityStatus !== 'authenticated' ? (
           <span
             aria-hidden="true"
             className={styles.progressSegment}
-            data-active={
-              step === item || (step === 'capacity' && index < 2) || (step === 'name' && index < 1)
-            }
-            key={item}
+            data-active={step === 'nudge'}
           />
-        ))}
-        <span className={styles.progressLabel}>A few gentle steps</span>
+        ) : null}
       </div>
-
-      {step === 'hello' ? (
-        <div className={styles.step}>
-          <TutiiGreeting
-            actionLabel="Let’s begin"
-            context="sanctuary"
-            onContinue={() => setStep('name')}
-          />
-        </div>
-      ) : null}
 
       {step === 'name' ? (
         <section className={styles.step} aria-labelledby="onboarding-name-title">
@@ -266,11 +255,9 @@ export function OnboardingForm() {
               priority
             />
             <div className={styles.voice}>
-              <p className={styles.eyebrow}>A little introduction</p>
               <h2 className={styles.title} id="onboarding-name-title">
-                What’s your lovely name?
+                What’s your name?
               </h2>
-              <p className={styles.prompt}>The name you’d like people here to call you.</p>
               <label className={styles.fieldLabel} htmlFor="onboarding-name">
                 Your name
               </label>
@@ -288,9 +275,9 @@ export function OnboardingForm() {
             </div>
           </div>
           <div className={styles.actionRow}>
-            <button className={styles.backAction} onClick={() => setStep('hello')} type="button">
-              Back
-            </button>
+            <Link className={styles.backAction} href="/welcome">
+              Welcome
+            </Link>
             <button
               className={styles.primaryAction}
               disabled={!displayName.trim()}
@@ -309,24 +296,20 @@ export function OnboardingForm() {
             <Image
               className={styles.tutiiImage}
               src="/mascot/firefly-guide-onboarding-light-cutout-v2.webp"
-              alt="Tutii listens while you choose how you take part."
+              alt="Tutii listens while you choose your role."
               width={260}
               height={260}
               priority
             />
             <div className={styles.voice}>
-              <p className={styles.eyebrow}>Your place in this community</p>
               <h2
                 className={styles.title}
                 id="onboarding-capacity-title"
                 ref={capacityHeading}
                 tabIndex={-1}
               >
-                And what brings you here, {firstName}?
+                Choose your role, {firstName}
               </h2>
-              <p className={styles.prompt}>
-                Choose what fits best for now. You can take part in other ways, too.
-              </p>
             </div>
           </div>
           <fieldset className={styles.roles}>
@@ -350,11 +333,6 @@ export function OnboardingForm() {
               </label>
             ))}
           </fieldset>
-          {identityStatus === 'signed-out' ? (
-            <p className={styles.accountNote}>
-              Next, you’ll create your account. We’ll bring you back here to finish setting up.
-            </p>
-          ) : null}
           <div className={styles.actionRow}>
             <button className={styles.backAction} onClick={() => setStep('name')} type="button">
               Back
@@ -368,10 +346,53 @@ export function OnboardingForm() {
                 ? 'Preparing your space…'
                 : identityStatus === 'authenticated'
                   ? 'Enter my Sanctuary'
-                  : identityStatus === 'unavailable'
-                    ? 'Try account check again'
-                    : 'Create my account'}
+                  : 'Continue'}
               {state !== 'submitting' ? <span aria-hidden="true">→</span> : null}
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      {step === 'nudge' ? (
+        <section className={styles.step} aria-labelledby="onboarding-nudge-title">
+          <div className={styles.conversationRow}>
+            <Image
+              className={styles.tutiiImage}
+              src="/mascot/firefly-guide-welcome-light-cutout-v2.webp"
+              alt="Tutii invites you to create your account."
+              width={260}
+              height={260}
+              priority
+            />
+            <div className={styles.voice}>
+              <h2 className={styles.title} id="onboarding-nudge-title">
+                Create your account with Tutii
+              </h2>
+              <p className={styles.prompt}>
+                Welcome, {firstName}! To enter as a {roleLabel} and keep your personal Sanctuary secure, let’s create your account.
+              </p>
+            </div>
+          </div>
+          <div className={styles.nudgeActions}>
+            <Link
+              className={styles.primaryAction}
+              href="/sign-up?returnTo=%2Fonboarding"
+              onClick={() => saveOnboardingDraft(displayName, selectedCapacity)}
+            >
+              <span>Create account with Tutii</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+            <Link
+              className={styles.secondaryActionLink}
+              href="/sign-in?returnTo=%2Fonboarding"
+              onClick={() => saveOnboardingDraft(displayName, selectedCapacity)}
+            >
+              Already have an account? Sign in
+            </Link>
+          </div>
+          <div className={styles.actionRow} style={{ marginTop: '20px' }}>
+            <button className={styles.backAction} onClick={() => setStep('capacity')} type="button">
+              Back to roles
             </button>
           </div>
         </section>

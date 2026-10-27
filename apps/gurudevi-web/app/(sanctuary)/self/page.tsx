@@ -1,10 +1,9 @@
 import { headers } from 'next/headers';
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
-import { signInPath } from '../auth/routeSafety';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { SelfFloor } from './SelfFloor';
 
@@ -50,14 +49,9 @@ export default async function SelfPage() {
       </SanctuaryShell>
     );
   }
-  if (entry.kind === 'onboarding-required')
-    return (
-      <SelfState
-        action={<Link href="/onboarding">Continue enrollment</Link>}
-        detail="Complete your Gurudevi enrollment before opening Self."
-        title="Complete your enrollment first"
-      />
-    );
+  if (entry.kind === 'onboarding-required') {
+    redirect('/onboarding');
+  }
   if (entry.kind === 'inactive' || entry.kind === 'unavailable')
     return <SelfState detail={entry.message} title="Self is unavailable" />;
 

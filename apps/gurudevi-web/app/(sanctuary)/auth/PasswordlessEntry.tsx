@@ -114,7 +114,7 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
           <span className={styles.statusDot} />
           <span className={styles.formBadgeText}>Sign In</span>
         </div>
-        <h2 className={styles.formTitle}>Welcome back</h2>
+        <h2 className={styles.formTitle}>Welcome</h2>
         <p className={styles.formSub}>
           Continue with Google, Apple, or your email address.
         </p>

@@ -341,6 +341,36 @@
   line-height: 1.55;
 }
 
+.nudgeActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.secondaryActionLink {
+  border: 0;
+  background: transparent;
+  color: #365d49;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  padding: 6px 0;
+  display: inline-block;
+}
+
+.secondaryActionLink:hover {
+  color: #294a38;
+}
+
+:global([data-appearance='night']) .secondaryActionLink {
+  color: #8bb899;
+}
+
 .error {
   padding: 2px 0 2px 14px;
   border-left: 2px solid #ad5244;

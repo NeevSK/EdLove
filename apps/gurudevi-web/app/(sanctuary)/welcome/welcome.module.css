@@ -153,8 +153,8 @@
 
 @media (max-width: 900px) {
   .stageContent {
-    flex-direction: column-reverse;
-    gap: 32px;
+    flex-direction: column;
+    gap: 28px;
     text-align: center;
   }
 }
@@ -239,6 +239,36 @@
   .actionButtonGroup {
     flex-direction: column;
     width: 100%;
+    gap: 12px;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+    min-width: unset;
+    box-sizing: border-box;
+  }
+
+  .gatewayHeader {
+    padding: 14px 16px;
+  }
+
+  .stageContainer {
+    padding: 16px 16px 36px 16px;
+  }
+
+  .artworkFrame {
+    max-width: 340px;
+    border-radius: 20px;
+  }
+
+  .heroTitle {
+    font-size: clamp(26px, 7vw, 36px);
+  }
+
+  .heroLede {
+    font-size: 15px;
+    margin-bottom: 20px;
   }
 }
 
