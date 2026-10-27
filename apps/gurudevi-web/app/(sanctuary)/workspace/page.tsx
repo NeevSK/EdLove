@@ -10,10 +10,18 @@ import { WorkspaceFloor } from './WorkspaceFloor';
 
 export const metadata = { title: 'Workspace | Gurudevi Sanctuary' };
 
-export default async function WorkspacePage() {
+export default async function WorkspacePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ mode?: string; surface?: string }>;
+}) {
+  const params = await searchParams;
   const requestHeaders = await headers();
   const host = requestHeaders.get('host') ?? '';
-  const isExplore = classifyGurudeviHost(host) === 'explore';
+  const isExplore =
+    classifyGurudeviHost(host) === 'explore' ||
+    params?.mode === 'explore' ||
+    params?.surface === 'explore';
 
   if (isExplore) {
     return (

@@ -1,5 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { classifyGurudeviHost, isSanctuaryPath, resolveHostRouting } from './lib/host-routing';
+import {
+  classifyGurudeviHost,
+  isLocalPreviewHost,
+  isSanctuaryPath,
+  resolveHostRouting,
+} from './lib/host-routing';
 import { refreshSupabaseSession } from './lib/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
@@ -8,6 +13,14 @@ export async function proxy(request: NextRequest) {
 
   if (hostRouting.kind === 'not-found') return new NextResponse(null, { status: 404 });
   if (hostRouting.kind === 'redirect') {
+    if (classifyGurudeviHost(hostname) === 'other' || isLocalPreviewHost(hostname)) {
+      if (hostRouting.pathname) {
+        const localDest = request.nextUrl.clone();
+        localDest.pathname = hostRouting.pathname;
+        return NextResponse.redirect(localDest, 307);
+      }
+      return NextResponse.next();
+    }
     const destination = request.nextUrl.clone();
     destination.protocol = 'https:';
     destination.hostname = hostRouting.host;

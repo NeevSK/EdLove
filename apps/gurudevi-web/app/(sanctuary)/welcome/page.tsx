@@ -10,12 +10,21 @@ export const metadata = {
   description: 'A sanctuary for learning, reflection, and community.',
 };
 
-export default async function WelcomePage() {
+export default async function WelcomePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ mode?: string; surface?: string }>;
+}) {
+  const params = await searchParams;
   const requestHeaders = await headers();
   const host = requestHeaders.get('host') ?? '';
   const hostKind = classifyGurudeviHost(host);
+  const isExplore =
+    hostKind === 'explore' ||
+    params?.mode === 'explore' ||
+    params?.surface === 'explore';
 
-  if (hostKind === 'explore') {
+  if (isExplore) {
     return <WelcomeStage mode="explore" />;
   }
 

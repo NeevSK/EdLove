@@ -66,7 +66,13 @@ function normalizeHostname(hostname: string): string {
 
 export function isLocalPreviewHost(hostname: string): boolean {
   const normalized = normalizeHostname(hostname);
-  return normalized === 'localhost' || normalized === '127.0.0.1' || normalized === '[::1]' || normalized === '::1';
+  return (
+    normalized === 'localhost' ||
+    normalized === '127.0.0.1' ||
+    normalized === '[::1]' ||
+    normalized === '::1' ||
+    normalized.endsWith('.localhost')
+  );
 }
 
 export function extractSchoolSubdomain(hostname: string): string | null {
@@ -82,7 +88,7 @@ export function classifyGurudeviHost(hostname: string): GurudeviHost {
   const normalizedHostname = normalizeHostname(hostname);
   if (normalizedHostname === PUBLIC_GURUDEVI_HOST) return 'public';
   if (normalizedHostname === SANCTUARY_GURUDEVI_HOST) return 'sanctuary';
-  if (normalizedHostname === EXPLORE_GURUDEVI_HOST) return 'explore';
+  if (normalizedHostname === EXPLORE_GURUDEVI_HOST || normalizedHostname === 'explore.localhost') return 'explore';
   if (extractSchoolSubdomain(normalizedHostname) !== null) return 'school';
   return 'other';
 }
@@ -122,6 +128,7 @@ export function resolveHostRouting(
   if (incomingHost === 'explore') {
     if (method !== 'GET' && method !== 'HEAD') return { kind: 'not-found' };
     if (pathname === '/sign-in' || pathname === '/sign-up' || pathname.startsWith('/auth')) {
+      if (isLocalPreviewHost(hostname)) return { kind: 'allow' };
       return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname };
     }
     if (hasRoutePrefix(pathname, exploreDeniedPrefixes)) return { kind: 'not-found' };

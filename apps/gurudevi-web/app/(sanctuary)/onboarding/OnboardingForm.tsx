@@ -83,6 +83,15 @@ function saveOnboardingDraft(displayName: string, capacity: string) {
   }
 }
 
+function getTargetSelfUrl(): string {
+  if (typeof window === 'undefined') return '/self';
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost')) {
+    return '/self?surface=explore';
+  }
+  return 'https://explore.gurudevi.app/self';
+}
+
 function unavailableMessage(status: number | null): string {
   if (status === 401)
     return 'Your secure session has expired. Sign in again, then continue enrollment.';
@@ -205,7 +214,7 @@ export function OnboardingForm() {
       } catch {
         // Ignored
       }
-      window.location.replace('/self');
+      window.location.replace(getTargetSelfUrl());
     } catch (error) {
       setState('error');
       setMessage(unavailableMessage(errorStatus(error)));
@@ -389,6 +398,13 @@ export function OnboardingForm() {
             >
               Already have an account? Sign in
             </Link>
+            <a
+              className={styles.secondaryActionLink}
+              href={getTargetSelfUrl()}
+              onClick={() => saveOnboardingDraft(displayName, selectedCapacity)}
+            >
+              Or enter Guest House directly →
+            </a>
           </div>
           <div className={styles.actionRow} style={{ marginTop: '20px' }}>
             <button className={styles.backAction} onClick={() => setStep('capacity')} type="button">

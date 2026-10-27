@@ -9,10 +9,18 @@ import { SelfFloor } from './SelfFloor';
 
 export const metadata = { title: 'Self | Gurudevi Sanctuary' };
 
-export default async function SelfPage() {
+export default async function SelfPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ mode?: string; surface?: string }>;
+}) {
+  const params = await searchParams;
   const requestHeaders = await headers();
   const host = requestHeaders.get('host') ?? '';
-  const isExplore = classifyGurudeviHost(host) === 'explore';
+  const isExplore =
+    classifyGurudeviHost(host) === 'explore' ||
+    params?.mode === 'explore' ||
+    params?.surface === 'explore';
 
   if (isExplore) {
     return (
