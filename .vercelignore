@@ -27,7 +27,6 @@ packages/library
 packages/payments
 packages/platform-mcp
 packages/scripts
-packages/workforce
 .git
 .agents
 .aislop
