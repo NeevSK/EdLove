@@ -7,6 +7,7 @@ export default defineConfig({
     include: ['**/*.test.{ts,tsx}'],
     alias: {
       '@': path.resolve(import.meta.dirname, '.'),
+      '@cedar-policy/cedar-wasm/web': path.resolve(import.meta.dirname, 'tests/shims/cedar-wasm-mock.ts'),
     },
     setupFiles: ['./tests/setup.ts'],
   },

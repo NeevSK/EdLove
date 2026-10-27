@@ -1,5 +1,21 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { SOVEREIGN_ORPC_URL } from '@repo/core/api/base';
+import {
+  assertActiveRequestAccount,
+  authenticatedSovereignFetch,
+} from '@repo/core/api/clientRuntime';
+import {
+  CredentialUnlinkFailureSchema,
+  CredentialUnlinkReceiptSchema,
+  CredentialUnlinkRequestSchema,
+} from '@repo/core/api/credentialUnlink';
+import {
+  PasswordChangeFailureSchema,
+  PasswordChangeReceiptSchema,
+  PasswordChangeRequestSchema,
+} from '@repo/core/api/passwordChange';
 import { requestPhoneOtp, verifyPhoneOtp } from '@repo/core/api/phoneAuth';
+import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import type {
   AuthChangeEvent,
   AuthMfaFactor,
@@ -183,6 +199,86 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data;
   }
 
+  async unlinkIdentity(params: { identityId: string; expectedSubject?: string }) {
+    const owner = getActiveAccountId() ?? undefined;
+    const session = await this.getSession();
+    if (!session || session.user.is_anonymous !== false) {
+      throw new APIError('Sign in before unlinking a credential.', 'AUTH_REQUIRED');
+    }
+    if (params.expectedSubject !== undefined && params.expectedSubject !== session.user.id) {
+      throw new APIError('The account changed before credential unlink.', 'AUTH_SESSION_CHANGED');
+    }
+    if (!SOVEREIGN_ORPC_URL)
+      throw new APIError('Credential service is not configured.', 'CREDENTIAL_UNLINK_UNAVAILABLE');
+    const request = CredentialUnlinkRequestSchema.parse({ identityId: params.identityId });
+    const response = await authenticatedSovereignFetch(
+      `${SOVEREIGN_ORPC_URL}/auth/credentials/identities/unlink`,
+      {
+        method: 'POST',
+        cache: 'no-store',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      },
+      owner,
+    );
+    if (!response.ok) {
+      const failure = CredentialUnlinkFailureSchema.safeParse(
+        await response.json().catch(() => null),
+      );
+      const messages = {
+        RECENT_MFA_REQUIRED: 'Verify your authenticator before unlinking this credential.',
+        RECOVERY_CREDENTIAL_REQUIRED:
+          'Keep a confirmed email sign-in method before unlinking this credential.',
+        CREDENTIAL_UNLINK_NOT_ADMITTED: 'This credential cannot be unlinked through this method.',
+        CREDENTIAL_NOT_FOUND: 'This credential is no longer linked to the account.',
+      };
+      throw new APIError(
+        failure.success
+          ? messages[failure.data.error]
+          : 'Credential unlink could not be confirmed.',
+        failure.success ? failure.data.error : 'CREDENTIAL_UNLINK_NOT_CONFIRMED',
+      );
+    }
+    const receipt = CredentialUnlinkReceiptSchema.parse(await response.json());
+    assertActiveRequestAccount(owner);
+    const current = await this.getSession();
+    if (
+      current?.user.id !== session.user.id ||
+      receipt.user.id !== session.user.id ||
+      receipt.identityId !== request.identityId ||
+      (owner && receipt.accountId !== owner)
+    ) {
+      throw new APIError('The account changed during credential unlink.', 'AUTH_SESSION_CHANGED');
+    }
+    return { user: receipt.user };
+  }
+
+  async requestPasswordReauthentication(): Promise<void> {
+    const owner = getActiveAccountId() ?? undefined;
+    const session = await this.getSession();
+    if (!session || session.user.is_anonymous !== false) {
+      throw new APIError('Sign in before requesting password confirmation.', 'AUTH_REQUIRED');
+    }
+    const { error } = await this.client.auth.reauthenticate();
+    if (error) {
+      throw new APIError(
+        'Could not request password confirmation. Try again.',
+        'AUTH_REAUTHENTICATION_UNAVAILABLE',
+      );
+    }
+    assertActiveRequestAccount(owner);
+    const current = await this.getSession();
+    if (current?.user.id !== session.user.id) {
+      throw new APIError(
+        'The account changed during password confirmation.',
+        'AUTH_SESSION_CHANGED',
+      );
+    }
+  }
+
   async listMfaFactors() {
     const mfaApi = (this.client.auth as any).mfa;
     if (!mfaApi?.listFactors) {
@@ -300,10 +396,123 @@ export class SupabaseAuthAdapter implements IAuthPort {
   async updateUser(params: {
     email?: string;
     password?: string;
+    currentPassword?: string;
+    nonce?: string;
+    expectedSubject?: string;
     data?: Record<string, any>;
     options?: { emailRedirectTo?: string };
   }) {
-    const { options, ...attributes } = params;
+    if (
+      (params.currentPassword !== undefined ||
+        params.nonce !== undefined ||
+        params.expectedSubject !== undefined) &&
+      params.password === undefined
+    ) {
+      throw new APIError(
+        'Password confirmation requires a new password.',
+        'INVALID_PASSWORD_CHANGE',
+      );
+    }
+    if (params.password !== undefined) {
+      const session = await this.getSession();
+      if (!session) throw new APIError('Sign in before changing a password.', 'AUTH_REQUIRED');
+      if (params.expectedSubject !== undefined && params.expectedSubject !== session.user.id) {
+        throw new APIError(
+          'The account changed before the password operation.',
+          'AUTH_SESSION_CHANGED',
+        );
+      }
+      const guestConversion = session.user.is_anonymous === true && params.email !== undefined;
+      if (guestConversion && (params.currentPassword !== undefined || params.nonce !== undefined)) {
+        throw new APIError(
+          'Guest conversion does not accept password confirmation.',
+          'INVALID_PASSWORD_CHANGE',
+        );
+      }
+      if (!guestConversion) {
+        if (!SOVEREIGN_ORPC_URL) {
+          throw new APIError(
+            'Password change service is not configured.',
+            'AUTH_PASSWORD_CHANGE_UNAVAILABLE',
+          );
+        }
+        if (
+          params.email !== undefined ||
+          params.data !== undefined ||
+          params.options !== undefined
+        ) {
+          throw new APIError(
+            'Change credentials separately from profile details.',
+            'AUTH_MIXED_CREDENTIAL_CHANGE',
+          );
+        }
+        const owner = getActiveAccountId() ?? undefined;
+        const response = await authenticatedSovereignFetch(
+          `${SOVEREIGN_ORPC_URL}/auth/credentials/password`,
+          {
+            method: 'POST',
+            cache: 'no-store',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify(
+              PasswordChangeRequestSchema.parse({
+                password: params.password,
+                ...(params.currentPassword === undefined
+                  ? {}
+                  : { currentPassword: params.currentPassword }),
+                ...(params.nonce === undefined ? {} : { nonce: params.nonce }),
+              }),
+            ),
+          },
+          owner,
+        );
+        if (!response.ok) {
+          const failure = PasswordChangeFailureSchema.safeParse(
+            await response.json().catch(() => null),
+          );
+          const messages = {
+            RECENT_MFA_REQUIRED: 'Verify your authenticator again before changing the password.',
+            PASSWORD_REAUTHENTICATION_REQUIRED:
+              'Request a password confirmation code before trying again.',
+            PASSWORD_REAUTHENTICATION_INVALID:
+              'The password confirmation was not accepted. Check your current password or request a new code.',
+            PASSWORD_UNCHANGED: 'Choose a password different from your current password.',
+            PASSWORD_TOO_WEAK:
+              'Choose a stronger password that meets the account password requirements.',
+            PASSWORD_CHANGE_NOT_CONFIRMED: 'Password change could not be confirmed.',
+          };
+          throw new APIError(
+            failure.success
+              ? messages[failure.data.error]
+              : response.status === 403
+                ? messages.RECENT_MFA_REQUIRED
+                : messages.PASSWORD_CHANGE_NOT_CONFIRMED,
+            failure.success
+              ? failure.data.error
+              : response.status === 403
+                ? 'RECENT_MFA_REQUIRED'
+                : 'AUTH_PASSWORD_CHANGE_UNCONFIRMED',
+          );
+        }
+        const receipt = PasswordChangeReceiptSchema.parse(await response.json());
+        assertActiveRequestAccount(owner);
+        const current = await this.getSession();
+        if (
+          current?.user.id !== session.user.id ||
+          receipt.user.id !== session.user.id ||
+          (owner && receipt.accountId !== owner)
+        ) {
+          throw new APIError(
+            'The account changed during the password operation.',
+            'AUTH_SESSION_CHANGED',
+          );
+        }
+        return { user: receipt.user };
+      }
+    }
+    const { options, expectedSubject: _expectedSubject, ...attributes } = params;
     const { data, error } = await this.client.auth.updateUser(attributes, options);
     if (error) throw new APIError('Failed to update user', error.code, error);
     return data as any;

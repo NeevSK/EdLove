@@ -6,7 +6,17 @@
  */
 
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
-import type { Edge, Glow, Radius, Shadow, TypeStyle, WorldLanguage } from '../types';
+import type {
+  Edge,
+  FaceSpec,
+  FontWeight,
+  Glow,
+  Radius,
+  ResolvedWorld,
+  Shadow,
+  TypeStyle,
+  WorldLanguage,
+} from '../types';
 
 export function radiusStyle(r: Radius): ViewStyle {
   if (typeof r === 'number') return { borderRadius: r };
@@ -58,36 +68,35 @@ export function shadowStyle(shadow: Shadow | null): ViewStyle {
 
 /* ---------- Type ---------- */
 
-interface FontRegistry {
-  serif: { regular?: string; italic?: string; medium?: string };
-  sans: { regular?: string; medium?: string; semibold?: string; bold?: string };
-  /** Script fonts used when the person reads in Sinhala or Tamil. */
-  si: { serif?: string; sans?: string };
-  ta: { serif?: string; sans?: string };
-}
+/*
+ * Every world's faces are embedded at build time (the expo-font plugin in
+ * apps/gurudevi-mobile/app.json), so they are there at first paint. On the
+ * web, or on a dev client built before a face was added, a face may be
+ * missing: until it is known to be available, text uses the platform serif
+ * and the system sans, so nothing waits on fonts or draws in a wrong face.
+ */
 
 const SYSTEM_SERIF = Platform.select({ ios: 'Georgia', android: 'serif', default: undefined });
+const WEIGHT_ORDER: readonly FontWeight[] = ['400', '500', '600', '700'];
 
-let fonts: FontRegistry = { serif: {}, sans: {}, si: {}, ta: {} };
+let available = new Set<string>();
 
-/**
- * Register loaded font family names (e.g. from @expo-google-fonts). Until
- * registered, components use the platform's serif and the system sans, so
- * nothing breaks while fonts load or on devices where loading failed.
- */
-export function registerWorldFonts(partial: Partial<FontRegistry>): void {
-  fonts = {
-    serif: { ...fonts.serif, ...partial.serif },
-    sans: { ...fonts.sans, ...partial.sans },
-    si: { ...fonts.si, ...partial.si },
-    ta: { ...fonts.ta, ...partial.ta },
-  };
+/** Mark embedded or loaded font names as ready to draw with. */
+export function registerAvailableFonts(names: Iterable<string>): void {
+  const next = new Set(available);
+  for (const name of names) next.add(name);
+  if (next.size === available.size) return;
+  available = next;
   fontEpoch += 1;
   for (const listener of fontListeners) listener();
 }
 
-/* Fonts usually arrive after the first paint. Components read the registry
-   through `useWorld`, which subscribes here so text re-renders once. */
+export function isFontAvailable(name: string): boolean {
+  return available.has(name);
+}
+
+/* Fonts can become available after the first paint (web). Components read
+   the registry through `useWorld`, which subscribes here so text re-renders once. */
 let fontEpoch = 0;
 const fontListeners = new Set<() => void>();
 
@@ -102,58 +111,78 @@ export function getWorldFontEpoch(): number {
   return fontEpoch;
 }
 
-function familyFor(
-  t: Pick<TypeStyle, 'family' | 'weight' | 'italic'>,
-  lang: WorldLanguage,
-): {
-  fontFamily?: string;
-  registered: boolean;
-} {
-  if (lang === 'si' || lang === 'ta') {
-    const f = fonts[lang][t.family];
-    return { fontFamily: f, registered: !!f };
-  }
-  if (t.family === 'serif') {
-    const f = t.italic
-      ? fonts.serif.italic
-      : t.weight === '400'
-        ? fonts.serif.regular
-        : fonts.serif.medium;
-    return f
-      ? { fontFamily: f, registered: true }
-      : { fontFamily: SYSTEM_SERIF, registered: false };
-  }
-  const byWeight = {
-    '400': fonts.sans.regular,
-    '500': fonts.sans.medium,
-    '600': fonts.sans.semibold,
-    '700': fonts.sans.bold,
-  } as const;
-  const f = byWeight[t.weight];
-  return { fontFamily: f, registered: !!f };
+function faceOf(world: ResolvedWorld, family: TypeStyle['family'], lang: WorldLanguage): FaceSpec {
+  const faces = world.definition.faces;
+  return lang === 'si' || lang === 'ta' ? faces[lang][family] : faces[family];
 }
 
-/** Sinhala and Tamil need more line height and never take italics or capitals. */
+/** The face's choice for a weight, or the nearest lighter one it has. */
+function weightOf(face: FaceSpec, weight: FontWeight): number | string | undefined {
+  for (let i = WEIGHT_ORDER.indexOf(weight); i >= 0; i--) {
+    const w = face.weights[WEIGHT_ORDER[i] as FontWeight];
+    if (w !== undefined) return w;
+  }
+  return undefined;
+}
+
+interface Drawn {
+  fontFamily: string;
+  axes: Record<string, number>;
+  italic: boolean;
+}
+
+function draw(
+  face: FaceSpec,
+  t: Pick<TypeStyle, 'weight' | 'italic'>,
+  size: number,
+  dark: boolean,
+): Drawn {
+  const w = weightOf(face, t.weight);
+  const italic = t.italic && !!face.italic;
+  // A static weight file has no italic of its own beyond the regular italic.
+  const fontFamily = italic ? (face.italic as string) : typeof w === 'string' ? w : face.upright;
+  const axes: Record<string, number> = { ...face.axes, ...(dark ? face.nightAxes : null) };
+  if (typeof w === 'number') axes.wght = w;
+  if (face.optical) axes.opsz = Math.min(face.optical[1], Math.max(face.optical[0], size));
+  return { fontFamily, axes, italic };
+}
+
+/** Sinhala and Tamil need more line height and never take capitals or tracking. */
 const SCRIPT_LINE_HEIGHT = 1.25;
 
+/**
+ * A text recipe drawn in the world's faces. Weight comes from the `wght`
+ * axis on variable faces (never `fontWeight`, which can make Android fake a
+ * bold), optical size follows the font size, and a world's night axes apply
+ * after dark.
+ */
 export function typeStyle(
   t: Omit<TypeStyle, 'color'> & { color?: string },
   lang: WorldLanguage,
+  world: ResolvedWorld,
   sizeOverride?: number,
 ): TextStyle {
   const script = lang === 'si' || lang === 'ta';
-  const size = sizeOverride ?? t.size;
-  const lineHeight = Math.round((t.lineHeight * size) / t.size) * (script ? SCRIPT_LINE_HEIGHT : 1);
-  const { fontFamily, registered } = familyFor(t, lang);
+  const face = faceOf(world, t.family, lang);
+  const scale = face.scale ?? 1;
+  const size = (sizeOverride ?? t.size) * scale;
+  const lineHeight = ((t.lineHeight * size) / t.size) * (script ? SCRIPT_LINE_HEIGHT : 1);
+  const drawn = draw(face, t, size, world.mode === 'dark');
+  const ready = available.has(drawn.fontFamily);
+  const fallback = t.family === 'serif' && !script ? SYSTEM_SERIF : undefined;
   return {
-    fontSize: size,
+    fontSize: Math.round(size * 10) / 10,
     lineHeight: Math.round(lineHeight),
     letterSpacing: script ? 0 : t.letterSpacing,
-    fontStyle: !script && t.italic && !registered ? 'italic' : 'normal',
+    // Without an italic face, italic roles stay upright: a slanted roman reads as a mistake.
+    fontStyle: !script && t.italic && !ready ? 'italic' : 'normal',
     textTransform: !script && t.uppercase ? 'uppercase' : 'none',
-    ...(fontFamily ? { fontFamily } : null),
-    // A registered font file already carries its weight; adding fontWeight can make Android fall back.
-    ...(registered ? null : { fontWeight: t.weight }),
+    ...(ready
+      ? {
+          fontFamily: drawn.fontFamily,
+          ...(Object.keys(drawn.axes).length > 0 ? { fontVariationSettings: drawn.axes } : null),
+        }
+      : { ...(fallback ? { fontFamily: fallback } : null), fontWeight: t.weight }),
     ...(t.color ? { color: t.color } : null),
   };
 }

@@ -1,20 +1,54 @@
 'use client';
 
-import Link from 'next/link';
+import {
+  completeOnboarding,
+  createInitialBond,
+  createOnboardingCompletionKey,
+} from '@repo/core/api/onboardingClient';
 import Image from 'next/image';
-import { completeOnboarding, createInitialBond } from '@repo/core/api/onboardingClient';
+import Link from 'next/link';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { browserAuthRuntime } from '../auth/browserAuth';
 import { TutiiGreeting } from '../components/TutiiGreeting';
 import styles from './onboarding.module.css';
 
 const capacities = [
-  { value: 'teacher', label: 'Teacher', symbol: '🍎', detail: 'I teach, guide, or care for a classroom.' },
-  { value: 'student', label: 'Student', symbol: '📚', detail: 'I’m here to learn, explore, and grow.' },
-  { value: 'principal', label: 'School leader', symbol: '🏫', detail: 'I help a school community work well together.' },
-  { value: 'parent', label: 'Parent', symbol: '🌱', detail: 'I support a learner and stay connected with school.' },
-  { value: 'guardian', label: 'Guardian', symbol: '🤝', detail: 'I care for and encourage a learner.' },
-  { value: 'librarian', label: 'Librarian', symbol: '📖', detail: 'I help people find books, media, and ideas.' },
+  {
+    value: 'teacher',
+    label: 'Teacher',
+    symbol: '🍎',
+    detail: 'I teach, guide, or care for a classroom.',
+  },
+  {
+    value: 'student',
+    label: 'Student',
+    symbol: '📚',
+    detail: 'I’m here to learn, explore, and grow.',
+  },
+  {
+    value: 'principal',
+    label: 'School leader',
+    symbol: '🏫',
+    detail: 'I help a school community work well together.',
+  },
+  {
+    value: 'parent',
+    label: 'Parent',
+    symbol: '🌱',
+    detail: 'I support a learner and stay connected with school.',
+  },
+  {
+    value: 'guardian',
+    label: 'Guardian',
+    symbol: '🤝',
+    detail: 'I care for and encourage a learner.',
+  },
+  {
+    value: 'librarian',
+    label: 'Librarian',
+    symbol: '📖',
+    detail: 'I help people find books, media, and ideas.',
+  },
 ] as const;
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
@@ -28,10 +62,8 @@ function readOnboardingDraft(): { displayName: string; capacity: string } | null
     if (typeof value !== 'object' || value === null) return null;
     const displayName = Reflect.get(value, 'displayName');
     const capacity = Reflect.get(value, 'capacity');
-    if (
-      typeof displayName !== 'string' ||
-      !capacities.some((item) => item.value === capacity)
-    ) return null;
+    if (typeof displayName !== 'string' || !capacities.some((item) => item.value === capacity))
+      return null;
     return { displayName, capacity };
   } catch {
     return null;
@@ -54,6 +86,7 @@ function errorStatus(error: unknown): number | null {
 
 export function OnboardingForm() {
   const [step, setStep] = useState<JourneyStep>('hello');
+  const [completionKey] = useState(createOnboardingCompletionKey);
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -67,7 +100,9 @@ export function OnboardingForm() {
     const runtime = browserAuthRuntime();
     if (!runtime) {
       setIdentityStatus('unavailable');
-      return () => { isCurrent = false; };
+      return () => {
+        isCurrent = false;
+      };
     }
 
     void runtime.bootstrapIdentity().then((identity) => {
@@ -85,7 +120,9 @@ export function OnboardingForm() {
       }
     });
 
-    return () => { isCurrent = false; };
+    return () => {
+      isCurrent = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -126,12 +163,17 @@ export function OnboardingForm() {
     setIdentityStatus(requiresAccount ? 'signed-out' : identity.status);
     if (requiresAccount) {
       try {
-        sessionStorage.setItem(onboardingDraftKey, JSON.stringify({
-          displayName: displayName.trim(),
-          capacity: selectedCapacity,
-        }));
+        sessionStorage.setItem(
+          onboardingDraftKey,
+          JSON.stringify({
+            displayName: displayName.trim(),
+            capacity: selectedCapacity,
+          }),
+        );
       } catch {
-        setMessage('Your details could not be saved in this browser. You can still create an account and enter them again.');
+        setMessage(
+          'Your details could not be saved in this browser. You can still create an account and enter them again.',
+        );
       }
       window.location.assign('/sign-up?returnTo=%2Fonboarding');
       return;
@@ -157,12 +199,19 @@ export function OnboardingForm() {
     setState('submitting');
     setMessage('');
     try {
-      await createInitialBond({
-        orientation,
-        confirmCapacityChange: false,
-        context: { displayName: displayName.trim() },
-      });
-      await completeOnboarding();
+      const expectedSession = {
+        accessToken: identity.session.access_token,
+        subject: identity.session.user.id,
+      };
+      await createInitialBond(
+        {
+          orientation,
+          confirmCapacityChange: false,
+          context: { displayName: displayName.trim() },
+        },
+        expectedSession,
+      );
+      await completeOnboarding({ idempotencyKey: completionKey }, expectedSession);
       try {
         sessionStorage.removeItem(onboardingDraftKey);
       } catch {
@@ -187,9 +236,7 @@ export function OnboardingForm() {
             aria-hidden="true"
             className={styles.progressSegment}
             data-active={
-              step === item ||
-              (step === 'capacity' && index < 2) ||
-              (step === 'name' && index < 1)
+              step === item || (step === 'capacity' && index < 2) || (step === 'name' && index < 1)
             }
             key={item}
           />
@@ -277,7 +324,9 @@ export function OnboardingForm() {
               >
                 And what brings you here, {firstName}?
               </h2>
-              <p className={styles.prompt}>Choose what fits best for now. You can take part in other ways, too.</p>
+              <p className={styles.prompt}>
+                Choose what fits best for now. You can take part in other ways, too.
+              </p>
             </div>
           </div>
           <fieldset className={styles.roles}>
@@ -291,7 +340,9 @@ export function OnboardingForm() {
                   type="radio"
                   value={item.value}
                 />
-                <span aria-hidden="true" className={styles.roleSymbol}>{item.symbol}</span>
+                <span aria-hidden="true" className={styles.roleSymbol}>
+                  {item.symbol}
+                </span>
                 <span className={styles.roleCopy}>
                   <span className={styles.roleName}>{item.label}</span>
                   <span className={styles.roleDetail}>{item.detail}</span>

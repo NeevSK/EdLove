@@ -23,7 +23,6 @@ export {
   usePowerSyncStatus,
   useStudentsInClassroom,
 } from '@repo/core/adapters/powersync/hooks';
-export { PowerSyncGate } from '@repo/core/adapters/powersync/PowerSyncGate';
 export { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
 export type {
   Attendance,

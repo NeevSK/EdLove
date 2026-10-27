@@ -9,7 +9,7 @@ import { communityAPI } from '@repo/community/api/community';
 import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
 import type { DirectConversation } from '@repo/community/types';
 import { usePermissions } from '@repo/core/logic';
-import { useTemporalStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
@@ -42,7 +42,7 @@ export default function DirectMessagesListScreen({
   const [refreshing, setRefreshing] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const { can } = usePermissions();
-  const isOffline = useTemporalStore((state) => state.isOffline);
+  const { isOffline } = useOfflineStatus();
 
   const isControlled = controlledConversations !== undefined;
   const conversations = controlledConversations ?? localConversations;
@@ -54,7 +54,7 @@ export default function DirectMessagesListScreen({
     setLocalError(null);
     try {
       const data = await communityAPI.getDirectConversations();
-      setLocalConversations(data as DirectConversation[]);
+      setLocalConversations(data as unknown as DirectConversation[]);
     } catch (err) {
       console.error('[DirectMessagesListScreen] load error', err);
       setLocalError(err instanceof Error ? err.message : 'Direct messages could not be loaded.');

@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 
-export type ExploreCapacity = 'teacher' | 'principal' | 'student' | 'guardian';
+export type ExploreCapacity = 'teacher' | 'principal' | 'student' | 'guardian' | 'founder' | 'researcher';
 
 export const DEFAULT_EXPLORE_CAPACITY: ExploreCapacity = 'teacher';
 export const EXPLORE_CAPACITY_STORAGE_KEY = 'gurudevi_explore_capacity';
@@ -72,6 +72,32 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
       self: 'Family Wellbeing & Shared Reflections',
       community: 'Parent-Teacher Council & Community Dialogues',
       library: 'Family Guides & Pedagogical Principles',
+    },
+  },
+  {
+    id: 'founder',
+    label: 'Platform Founder',
+    roleTitle: 'Platform Founder & Steward',
+    description:
+      'Sovereign Architecture: regenerative school systems, network-wide sync governance, and foundational charters.',
+    domainOverview: {
+      workspace: 'Sovereign Core · Multi-school topologies & network ledgers',
+      self: 'Foundational Vision · Stewardship Reflections & Solitude Journal',
+      community: 'Global Sanctuary Council & Steward Roundtables',
+      library: 'Foundational Charters & Architectural Specifications',
+    },
+  },
+  {
+    id: 'researcher',
+    label: 'Cognitive Scientist',
+    roleTitle: 'Cognitive Scientist & Researcher',
+    description:
+      'Research Atlas: attentional dynamics, contemplative bio-acoustics, and evidence-grounded pedagogy.',
+    domainOverview: {
+      workspace: 'Research Atlas · Attention analytics & observational data',
+      self: 'Empirical Inquiry · Research Notebook & Hypotheses',
+      community: 'Cognitive Science Colloquium & Peer Review Circles',
+      library: 'Scientific Preprints, Field Monographs & Datasets',
     },
   },
 ] as const;

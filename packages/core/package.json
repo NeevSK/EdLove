@@ -109,6 +109,11 @@
       "import": "./src/logic/registry/*.ts",
       "default": "./src/logic/registry/*.ts"
     },
+    "./logic/schemas": {
+      "types": "./src/logic/schemas/index.ts",
+      "import": "./src/logic/schemas/index.ts",
+      "default": "./src/logic/schemas/index.ts"
+    },
     "./logic/schemas/*": {
       "types": "./src/logic/schemas/*.ts",
       "import": "./src/logic/schemas/*.ts",
@@ -169,9 +174,9 @@
       "default": "./src/hooks/index.ts"
     },
     "./hooks/*": {
-      "types": "./src/hooks/*",
-      "import": "./src/hooks/*",
-      "default": "./src/hooks/*"
+      "types": "./src/hooks/*.ts",
+      "import": "./src/hooks/*.ts",
+      "default": "./src/hooks/*.ts"
     },
     "./providers": {
       "types": "./src/providers/index.ts",
@@ -222,6 +227,16 @@
       "types": "./src/effect/*.ts",
       "import": "./src/effect/*.ts",
       "default": "./src/effect/*.ts"
+    },
+    "./flows": {
+      "types": "./src/flows/index.ts",
+      "import": "./src/flows/index.ts",
+      "default": "./src/flows/index.ts"
+    },
+    "./flows/*": {
+      "types": "./src/flows/*.ts",
+      "import": "./src/flows/*.ts",
+      "default": "./src/flows/*.ts"
     },
     "./types": {
       "types": "./src/types/index.ts",
@@ -323,10 +338,15 @@
       "import": "./src/efficiency/index.ts",
       "default": "./src/efficiency/index.ts"
     },
-    "./governor": {
-      "types": "./src/governor/index.ts",
-      "import": "./src/governor/index.ts",
-      "default": "./src/governor/index.ts"
+    "./scene": {
+      "types": "./src/scene/index.ts",
+      "import": "./src/scene/index.ts",
+      "default": "./src/scene/index.ts"
+    },
+    "./verger": {
+      "types": "./src/verger/index.ts",
+      "import": "./src/verger/index.ts",
+      "default": "./src/verger/index.ts"
     },
     "./storage-wrapper": {
       "types": "./src/lib/storageWrapper.ts",
@@ -469,10 +489,10 @@
     "@growthbook/growthbook": "^1.8.0",
     "@hono/zod-openapi": "^1.6.3",
     "@intuitui-labs/form-builder-engine": "^0.2.1",
-    "@orpc/client": "2.0.0-beta.44",
-    "@orpc/contract": "2.0.0-beta.44",
-    "@orpc/server": "2.0.0-beta.44",
-    "@orpc/tanstack-query": "2.0.0-beta.44",
+    "@orpc/client": "2.0.0-beta.46",
+    "@orpc/contract": "2.0.0-beta.46",
+    "@orpc/server": "2.0.0-beta.46",
+    "@orpc/tanstack-query": "2.0.0-beta.46",
     "@paralleldrive/cuid2": "^2.3.1",
     "@powersync/common": "2.3.1",
     "@powersync/drizzle-driver": "0.8.0",
@@ -491,6 +511,7 @@
     "date-fns": "^4.4.0",
     "drizzle-orm": "0.45.4",
     "effect": "^4.0.5",
+    "@xstate/effect": "1.0.0-alpha.9",
     "fast-json-patch": "^3.1.1",
     "hono": "^4.13.13",
     "i18next": "^26.5.4",
@@ -499,6 +520,7 @@
     "pino": "^10.4.0",
     "react-i18next": "^17.1.0",
     "uuid": "^14.0.3",
+    "xstate": "6.0.0-alpha.70",
     "zod": "4.6.7"
   },
   "_originalScripts": {

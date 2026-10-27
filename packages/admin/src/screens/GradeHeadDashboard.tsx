@@ -1,5 +1,5 @@
 import { useAIAgent } from '@repo/ai';
-import { useStore } from '@repo/core/logic';
+
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -16,7 +16,6 @@ export default function GradeHeadDashboard({
 }) {
   const { activeGaps, refreshStatus } = useAIAgent();
   const { showToast } = useSanctuaryToast();
-  const _userRole = useStore((state: any) => state.userRole);
 
   // Register FAB globally
   useRegisterFAB({

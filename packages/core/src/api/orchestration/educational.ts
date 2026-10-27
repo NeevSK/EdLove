@@ -10,6 +10,7 @@ import { classroomsAPI as rawClassroomsAPI } from '@repo/core/api/classrooms';
 import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
 import { educationalContract } from '@repo/core/api/educational.contract';
 import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '@repo/core/api/lessonMaterials';
+import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 const _classroomsCoverage = assertContractCoverage(
@@ -29,7 +30,7 @@ const _classroomsCoverage = assertContractCoverage(
   }),
 );
 
-export const classroomsAPI = createTemporalProxy('classrooms', rawClassroomsAPI);
+export const classroomsAPI = createTemporalProxy('classrooms', createResonantProxy('classrooms', rawClassroomsAPI));
 
 const _lessonsCoverage = assertContractCoverage(
   rawLessonsAPI,
@@ -44,7 +45,7 @@ const _lessonsCoverage = assertContractCoverage(
   }),
 );
 
-export const lessonsAPI = createTemporalProxy('lessons', rawLessonsAPI);
+export const lessonsAPI = createTemporalProxy('lessons', createResonantProxy('lessons', rawLessonsAPI));
 
 const _studentsCoverage = assertContractCoverage(
   rawStudentsAPI,
@@ -79,7 +80,7 @@ const _studentsCoverage = assertContractCoverage(
   }),
 );
 
-export const studentsAPI = createTemporalProxy('students', rawStudentsAPI);
+export const studentsAPI = createTemporalProxy('students', createResonantProxy('students', rawStudentsAPI));
 
 const _assignmentsCoverage = assertContractCoverage(
   rawAssignmentsAPI,
@@ -109,7 +110,7 @@ const _assignmentsCoverage = assertContractCoverage(
   }),
 );
 
-export const assignmentsAPI = createTemporalProxy('assignments', rawAssignmentsAPI);
+export const assignmentsAPI = createTemporalProxy('assignments', createResonantProxy('assignments', rawAssignmentsAPI));
 
 const _classroomGroupsCoverage = assertContractCoverage(
   rawClassroomGroupsAPI,
@@ -152,7 +153,7 @@ const _classroomStudentsCoverage = assertContractCoverage(
 
 export const classroomStudentsAPI = createTemporalProxy(
   'classroomStudents',
-  rawClassroomStudentsAPI,
+  createResonantProxy('classroomStudents', rawClassroomStudentsAPI),
 );
 
 const _lessonMaterialsCoverage = assertContractCoverage(
@@ -171,7 +172,7 @@ const _lessonMaterialsCoverage = assertContractCoverage(
   }),
 );
 
-export const lessonMaterialsAPI = createTemporalProxy('lessonMaterials', rawLessonMaterialsAPI);
+export const lessonMaterialsAPI = createTemporalProxy('lessonMaterials', createResonantProxy('lessonMaterials', rawLessonMaterialsAPI));
 
 const _classroomNotesCoverage = assertContractCoverage(
   rawClassroomNotesAPI,
@@ -189,4 +190,4 @@ const _classroomNotesCoverage = assertContractCoverage(
   }),
 );
 
-export const classroomNotesAPI = createTemporalProxy('classroomNotes', rawClassroomNotesAPI);
+export const classroomNotesAPI = createTemporalProxy('classroomNotes', createResonantProxy('classroomNotes', rawClassroomNotesAPI));

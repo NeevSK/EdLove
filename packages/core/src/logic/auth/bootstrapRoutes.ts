@@ -24,6 +24,7 @@ export type AuthRouteInput = {
   hasActiveCapacity?: boolean;
   hasActiveAccessToken?: boolean;
   hasSession?: boolean;
+  hasLocalGuestSession?: boolean;
   guestOnboardingIntent?: boolean;
   appEntryPath?: AppEntryPath;
 };
@@ -43,8 +44,7 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     pathname === '/auth/callback' ||
     pathname === '/onboarding' ||
     pathname.startsWith('/public-form');
-  const isAppEntryPath =
-    pathname === '/' || pathname === '/auth' || pathname === '/auth/callback';
+  const isAppEntryPath = pathname === '/' || pathname === '/auth' || pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';
   const isAccountRecoveryPath = pathname === '/account-recovery';
   const appEntryPath = params.appEntryPath ?? '/self';
@@ -64,7 +64,7 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
   }
 
   if (params.guestOnboardingIntent && isOnboardingPath) {
-    if (params.sessionMode !== 'anonymous') {
+    if (params.sessionMode !== 'anonymous' && !params.hasLocalGuestSession) {
       return {
         decision: 'public',
         redirectTo: '/welcome',

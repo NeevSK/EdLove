@@ -26,6 +26,11 @@ const componentMap: Record<
       default: m.PulseDashboard as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
+  BreathGuide: React.lazy(() =>
+    import('@repo/self/components/BreathGuide').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
   MoodLotus: React.lazy(() =>
     import('@repo/self/components/MoodLotus').then((m) => ({
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
@@ -123,6 +128,16 @@ const componentMap: Record<
   ),
   DailyContentDidYouKnow: React.lazy(() =>
     import('@repo/self/components/DailyContentCard').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
+  EnergyForecast: React.lazy(() =>
+    import('@repo/self/components/EnergyForecast').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
+  WindDownRitual: React.lazy(() =>
+    import('@repo/self/components/WindDownRitual').then((m) => ({
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),

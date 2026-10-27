@@ -10,7 +10,7 @@ import {
   resolveFeatureFlagValue,
 } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { useMemo } from 'react';
 
@@ -24,8 +24,16 @@ export function useSanctuaryFeature(
   const principalId = context.userId;
   const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
   const getDecision = useCedarDecisionStore((s) => s.getDecision);
-  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
-    useEntitlementStore();
+  const entitlement = useEntitlementQuery(
+    principalId,
+    {
+      activeBondId: context.activeBond?.id ?? null,
+      activeEntityId: context.activeEntityId,
+      activeEntityType: context.activeEntityType,
+    },
+    Boolean(principalId && !context.isLocalOnly),
+  );
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } = entitlement;
   const flags = useFeatureStore((s) => s.flags);
 
   return useMemo(() => {

@@ -1,4 +1,5 @@
-import { useStore } from '@repo/core/store/useStore';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 
 /**
  * Configuration for demo behavior
@@ -11,7 +12,7 @@ const DEMO_CONFIG = {
 /**
  * Utility to check if demo mode is active
  */
-export const isDemo = () => useStore.getState().isDemoMode;
+export const isDemo = () => useExperienceState.getState().isDemoMode;
 
 /**
  * Intercepts a READ API call and returns mock data if demo mode is active.

@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
-export default function AdminTenantDetail() {
+export default function AdminTenantDetail({ onBack }: { onBack?: () => void } = {}) {
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const router = useRouter();
   if (!data) return null;
@@ -16,7 +16,7 @@ export default function AdminTenantDetail() {
       title="Tenant directory drill-in"
       description="Inspect a single tenant in context, with enough detail to support maintenance, customer care, and controlled fixes."
       caution="Cross-tenant admin access should be used to maintain the platform, not to impersonate tenant operators."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
       stats={[
         {
           label: 'Known tenants',

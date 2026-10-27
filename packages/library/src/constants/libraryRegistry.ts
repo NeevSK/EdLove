@@ -25,6 +25,34 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     capabilityRequirement: { action: 'read', subject: 'LibraryArchive' },
     tabDomain: 'library',
     analyticsKey: 'library.archive',
+    journey: {
+      featureId: 'archive',
+      targetPersonas: ['student', 'teacher', 'guardian', 'principal', 'founder'],
+      stage: 'daily_circadian',
+      entryRoute: '/library',
+      sequence: [
+        {
+          step: 0,
+          screenId: 'library_catalog',
+          route: '/library',
+          title: 'The Living Archive',
+          purpose: 'on_ramp',
+        },
+        {
+          step: 1,
+          screenId: 'resource_reader',
+          route: '/library/resource/[id]',
+          title: 'Read & Study',
+          purpose: 'primary_action',
+        },
+      ],
+      feedback: {
+        tutiiMode: 'guiding',
+        tutiiRole: 'guide',
+        haptic: 'selection',
+        soundChime: 'subtle_tap',
+      },
+    },
   },
   hub: {
     id: 'hub',

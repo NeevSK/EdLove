@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
-export default function AdminJobControl() {
+export default function AdminJobControl({ onBack }: { onBack?: () => void } = {}) {
   const router = useRouter();
   const { snapshot: data } = useAdminWorkspaceSnapshot();
 
@@ -18,7 +18,7 @@ export default function AdminJobControl() {
       title="Guarded operator actions"
       description="Approve, retry, resync, or schedule remediation tasks with explicit operator intent and a clear audit trail."
       caution="Do not mutate tenant state casually here. Prefer preview, confirm, and then execute only when the scope is understood."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
       stats={[
         {
           label: 'Approvals',

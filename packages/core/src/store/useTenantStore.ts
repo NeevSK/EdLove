@@ -15,12 +15,8 @@ export const useTenantStore = create<TenantSlice>()(
       name: 'gurudevi-tenant-storage',
       storage: createJSONStorage(() => SafeZustandStorage),
       partialize: (state) => ({
-        schoolId: state.schoolId,
-        schoolName: state.schoolName,
         schoolType: state.schoolType,
         realClassCount: state.realClassCount,
-        activePerspective: state.activePerspective,
-        availablePerspectives: state.availablePerspectives,
       }),
     },
   ),

@@ -21,6 +21,47 @@ export interface ClimateSubmission {
   submittedAt: string;
 }
 
+export interface ClimateDimensionRating {
+  id: string;
+  name: string;
+  description: string;
+  score: number;
+}
+
+export const CANONICAL_CLIMATE_DIMENSIONS: readonly ClimateDimensionRating[] = [
+  {
+    id: 'safety',
+    name: 'Psychological & Emotional Safety',
+    description: 'Students feel accepted, safe from bullying, and unjudged when making errors.',
+    score: 4,
+  },
+  {
+    id: 'belonging',
+    name: 'Peer Belonging & Collaboration',
+    description: 'Classmates support each other naturally during group learning and quiet study.',
+    score: 5,
+  },
+  {
+    id: 'connection',
+    name: 'Teacher Warmth & Attunement',
+    description: 'Educators notice student distress, listen empathetically, and guide kindly.',
+    score: 4,
+  },
+  {
+    id: 'balance',
+    name: 'Workload & Sensory Pace',
+    description: 'Homework and syllabus speed allow adequate rest, sleep, and family time.',
+    score: 3,
+  },
+  {
+    id: 'vitality',
+    name: 'Classroom Vitality & Hope',
+    description:
+      'Joy, wonder, and curiosity are alive in classroom discussions and hands-on experiments.',
+    score: 4,
+  },
+];
+
 const DEFAULT_METRICS: ClimateMetrics = {
   psychologicalSafety: 4.2,
   academicPacing: 3.5,

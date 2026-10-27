@@ -85,3 +85,16 @@ export const founderAPI = {
     return founderServices.getSentinelGovernance();
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_FOUNDER_SCHOOLS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'founder',
+  ghostMethods: ['getSchools', 'getAllSchools'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_FOUNDER_SCHOOLS,
+});
+
+export type { MockFounderSchool } from '@repo/core/api/mockData';
+

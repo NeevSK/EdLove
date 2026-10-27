@@ -1,4 +1,6 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createJoyMoment, fetchJoyMoments } from '@repo/self/api/selfFeatureRepository';
 import type { JoyMoment } from '@repo/self/types';
@@ -13,7 +15,7 @@ const JOY_CACHE_KEY = 'gurudevi-joy-cache';
  * - Syncs with Supabase in background.
  */
 export function useJoyJar(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [joyMoments, setJoyMoments] = useState<JoyMoment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

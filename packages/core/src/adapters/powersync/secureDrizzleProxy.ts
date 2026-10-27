@@ -1,5 +1,6 @@
 import type { CapabilityToken } from '@repo/core/logic/ports/authz.port';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
 
 let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
@@ -123,12 +124,13 @@ export function createSecureDrizzleProxy(db: any): any {
                     return originalBuilderValue.apply(builderTarget, args);
                   }
 
-                  const state = useStore.getState();
+                  const state = useAuthStore.getState();
+                  const activeBond = useScopeSessionStore.getState().snapshot?.activeBond ?? null;
                   const userContext = {
                     userId: state.user?.id || null,
                     email: state.user?.email || null,
                     schoolId: state.user?.school_id || null,
-                    activeBond: state.activeBond as any,
+                    activeBond,
                     isAnonymous: !state.user || !!state.user?.is_anonymous,
                   };
 

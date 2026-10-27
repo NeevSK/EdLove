@@ -30,6 +30,7 @@ import { profileORPCContract } from './profile.orpc.contract';
 import { rewardsORPCContract } from './rewards.orpc.contract';
 import { socialORPCContract } from './social.orpc.contract';
 import { syncORPCContract } from './sync.orpc.contract';
+import { workspaceProvisioningORPCContract } from './workspace-provisioning.orpc.contract';
 
 export const appContract: Record<string, Record<string, any>> = {
   admin: adminORPCContract,
@@ -55,23 +56,24 @@ export const appContract: Record<string, Record<string, any>> = {
   rewards: rewardsORPCContract,
   social: socialORPCContract,
   sync: syncORPCContract,
+  workspaceProvisioning: workspaceProvisioningORPCContract,
 } as const;
 
 export type AppContract = typeof appContract;
 
 export type InferRouteInput<TRoute> = TRoute extends { request: infer TReq }
-  ? (TReq extends { body: z.ZodTypeAny } ? { body: z.infer<TReq['body']> } : {}) &
-      (TReq extends { query: z.ZodTypeAny } ? { query: z.infer<TReq['query']> } : {}) &
-      (TReq extends { params: z.ZodTypeAny } ? { params: z.infer<TReq['params']> } : {})
+  ? (TReq extends { body: z.ZodType } ? { body: z.infer<TReq['body']> } : {}) &
+      (TReq extends { query: z.ZodType } ? { query: z.infer<TReq['query']> } : {}) &
+      (TReq extends { params: z.ZodType } ? { params: z.infer<TReq['params']> } : {})
   : unknown;
 
 export type InferRouteOutput<TRoute> = TRoute extends { responses: infer TRes }
   ? TRes extends { 200: { schema: infer S } }
-    ? S extends z.ZodTypeAny
+    ? S extends z.ZodType
       ? z.infer<S>
       : unknown
     : TRes extends { 201: { schema: infer S } }
-      ? S extends z.ZodTypeAny
+      ? S extends z.ZodType
         ? z.infer<S>
         : unknown
       : unknown
@@ -110,6 +112,7 @@ export type AppContractClient = {
   rewards: InferDomainClient<typeof rewardsORPCContract>;
   social: InferDomainClient<typeof socialORPCContract>;
   sync: InferDomainClient<typeof syncORPCContract>;
+  workspaceProvisioning: InferDomainClient<typeof workspaceProvisioningORPCContract>;
 } & Record<string, any>;
 
 export type SafeRouteClient<TRouteClient> = TRouteClient extends (
@@ -156,6 +159,9 @@ export type SafeAppContractClient = {
   rewards: SafeDomainClient<InferDomainClient<typeof rewardsORPCContract>>;
   social: SafeDomainClient<InferDomainClient<typeof socialORPCContract>>;
   sync: SafeDomainClient<InferDomainClient<typeof syncORPCContract>>;
+  workspaceProvisioning: SafeDomainClient<
+    InferDomainClient<typeof workspaceProvisioningORPCContract>
+  >;
 } & Record<string, any>;
 
 /**
@@ -167,5 +173,3 @@ export type SafeAppContractClient = {
 export function getMinifiedAppContract() {
   return minifyRouterContract(appContract as any);
 }
-
-

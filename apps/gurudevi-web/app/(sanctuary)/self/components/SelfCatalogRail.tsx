@@ -1,7 +1,7 @@
 'use client';
 
-import type { WorkbenchTaskDescriptor } from '@repo/core/types';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
+import type { WorkbenchTaskDescriptor } from '@repo/core/types';
 import type { SelfFeatureManifestItem } from '@repo/self/features/catalog';
 import { SELF_FEATURE_MANIFEST, type useSelfCanvas } from '../../../../lib/canvas/useSelfCanvas';
 import { QuickAccessRail } from '../../components/workbench/QuickAccessRail';

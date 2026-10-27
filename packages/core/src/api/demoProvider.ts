@@ -1,7 +1,18 @@
+/**
+ * @deprecated [DEPRECATED LEGACY ADAPTER - USE resonantProxy AND sandboxDataset]
+ *
+ * This file is retained solely as a backward-compatibility layer for legacy unit tests.
+ * All production API interception is performed canonically by `createResonantProxy` in
+ * `packages/core/src/api/resonantProxy.ts` using domain self-registrations via
+ * `registerSandboxDomain` in `packages/core/src/api/sandboxDataset.ts`.
+ *
+ * Do NOT import this file in application code, hooks, or web/mobile floors.
+ */
+
 import { isDemo } from '@repo/core/api/demo';
 import * as MOCK from '@repo/core/api/mockData';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { useStore } from '@repo/core/store/useStore';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useUIStore } from '@repo/core/store/useUIStore';
 
 /**
  * Registry of mock data getters.
@@ -25,7 +36,8 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
     return filtered.length > 0 ? filtered : MOCK.MOCK_STUDENTS;
   },
   'attendance.getClassroomAttendanceSnapshot': (classroomId?: string) => {
-    const key = classroomId && MOCK.MOCK_ATTENDANCE_SNAPSHOTS[classroomId] ? classroomId : 'sample-c1';
+    const key =
+      classroomId && MOCK.MOCK_ATTENDANCE_SNAPSHOTS[classroomId] ? classroomId : 'sample-c1';
     return MOCK.MOCK_ATTENDANCE_SNAPSHOTS[key] || { records: [] };
   },
 
@@ -50,6 +62,27 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
   'staffManagement.getStudentAttendancePulse': () => MOCK.MOCK_STUDENT_PULSE,
   'staffManagement.getPendingLeaves': () => MOCK.MOCK_PENDING_LEAVES,
 
+  // Institutional & Workspace specialized mocks
+  'classroomDetail.getStudents': () => MOCK.MOCK_CLASSROOM_DETAIL_STUDENTS,
+  'classroomDetail.getLessons': () => MOCK.MOCK_CLASSROOM_DETAIL_LESSONS,
+  'classroomDetail.getAssignments': () => MOCK.MOCK_CLASSROOM_DETAIL_ASSIGNMENTS,
+  'classroomDetail.getObservations': () => MOCK.MOCK_CLASSROOM_DETAIL_OBSERVATIONS,
+  'principal.getCurriculumProgress': () => MOCK.MOCK_PRINCIPAL_CURRICULUM_PROGRESS,
+  'principal.getPendingLeaves': () => MOCK.MOCK_PRINCIPAL_PENDING_LEAVES,
+  'guardian.getChildren': () => MOCK.MOCK_GUARDIAN_CHILDREN,
+  'guardian.getAttendanceTimeline': () => MOCK.MOCK_GUARDIAN_ATTENDANCE_TIMELINE,
+  'guardian.getNotices': () => MOCK.MOCK_GUARDIAN_NOTICES,
+  'gradebook.getRoster': () => MOCK.MOCK_GRADEBOOK_ROSTER,
+  'founder.getSchools': () => MOCK.MOCK_FOUNDER_SCHOOLS,
+  'documents.getOfficialCirculars': () => MOCK.MOCK_OFFICIAL_CIRCULARS,
+  'climate.getDimensions': () => MOCK.MOCK_CLIMATE_DIMENSIONS,
+  'attendance.getDoorwayStudents': () => MOCK.MOCK_DOORWAY_BADGE_STUDENTS,
+  'timetable.getSchedule': () => MOCK.MOCK_TIMETABLE_SCHEDULE,
+  'timetable.getPrepItems': () => MOCK.MOCK_TIMETABLE_PREP_ITEMS,
+  'tools.getSampleCsv': () => MOCK.MOCK_TOOLS_SAMPLE_CSV,
+  'tools.getSampleOcr': () => MOCK.MOCK_TOOLS_SAMPLE_OCR,
+  'tools.getBundleItems': () => MOCK.MOCK_TOOLS_BUNDLE_ITEMS,
+
   // Library
   'library.getResources': () => MOCK.MOCK_LIBRARY_RESOURCES,
   'library.getCollections': () => MOCK.MOCK_LIBRARY_COLLECTIONS,
@@ -69,6 +102,11 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
       resource.title.toLowerCase().includes(query),
     );
   },
+  'library.getMapTopology': () => MOCK.MOCK_KNOWLEDGE_TOPOLOGY,
+  'library.fetchMapTopology': () => MOCK.MOCK_KNOWLEDGE_TOPOLOGY,
+  'library.getLearningCenters': () => MOCK.MOCK_LEARNING_CENTERS,
+  'library.getDocumentOutlines': () => MOCK.MOCK_DOCUMENT_OUTLINES,
+  'library.getVideoChapters': () => MOCK.MOCK_VIDEO_CHAPTERS,
 
   // Community
   'community.getGroups': () => MOCK.MOCK_COMMUNITY_GROUPS,
@@ -88,8 +126,7 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
   'community.getUnreadNotificationCount': () =>
     MOCK.MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
   'notification.getNotifications': () => MOCK.MOCK_NOTIFICATIONS,
-  'notification.getUnreadCount': () =>
-    MOCK.MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
+  'notification.getUnreadCount': () => MOCK.MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
 
   // Student Echoes (Resonance Signals)
   'echo.getTeacherEchoes': () => MOCK.MOCK_ECHOES,
@@ -123,6 +160,10 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
   'assignments.getUpcomingForStudent': () => MOCK.MOCK_ASSIGNMENTS,
   'assignments.getRecentGradesOverviewForStudent': () => MOCK.MOCK_STUDENT_GRADES,
   'student.getGoals': () => MOCK.MOCK_STUDENT_GOALS,
+
+  // User Profile
+  'user.getProfile': (role?: string) =>
+    MOCK.MOCK_USER_PROFILES[role ?? 'teacher'] ?? MOCK.MOCK_USER_PROFILES.teacher,
   'student.getGrades': () => MOCK.MOCK_STUDENT_GRADES,
 
   // Self & Temporal Dashboard
@@ -136,7 +177,7 @@ const MOCK_DATA_REGISTRY: Record<string, (...args: any[]) => any> = {
  */
 export function interceptApiCall(moduleName: string, methodName: string, originalArgs: any[] = []) {
   const registryKey = `${moduleName}.${methodName}`;
-  const state = useStore.getState();
+  const state = useExperienceState.getState();
 
   // If we are currently bridging demo data to reality, DO NOT intercept.
   if (state.isBridging) {
@@ -151,9 +192,7 @@ export function interceptApiCall(moduleName: string, methodName: string, origina
 
   if (isTargetingSampleEntity) {
     const isDemoAllowed =
-      process.env.NODE_ENV !== 'production' ||
-      process.env.EDLOVE_DEMO === '1' ||
-      isDemo();
+      process.env.NODE_ENV !== 'production' || process.env.EDLOVE_DEMO === '1' || isDemo();
 
     if (isDemoAllowed) {
       const mockGetter = MOCK_DATA_REGISTRY[registryKey];
@@ -209,13 +248,10 @@ export function interceptApiCall(moduleName: string, methodName: string, origina
  * This is called after a real API result to inject samples if user is exploring and database is empty.
  */
 export function processGhostData(moduleName: string, methodName: string, realData: any) {
-  const state = useStore.getState();
-  const authState = useAuthStore.getState();
-  const shouldProvideSample = authState.isExplorerMode || state.isExplorerMode || state.isDemoMode;
-  const dismissedIds =
-    authState.dismissedSampleIds && authState.dismissedSampleIds.length > 0
-      ? authState.dismissedSampleIds
-      : state.dismissedSampleIds || [];
+  const uiState = useUIStore.getState();
+  const state = useExperienceState.getState();
+  const shouldProvideSample = state.isExplorerMode || state.isDemoMode;
+  const dismissedIds = uiState.dismissedSampleIds;
 
   if (!shouldProvideSample) return realData;
 
@@ -227,7 +263,8 @@ export function processGhostData(moduleName: string, methodName: string, realDat
     realData.length === 0
   ) {
     const registryKey = `${moduleName}.${methodName}`;
-    const mockGetter = MOCK_DATA_REGISTRY[registryKey] || MOCK_DATA_REGISTRY['classrooms.getByTeacher'];
+    const mockGetter =
+      MOCK_DATA_REGISTRY[registryKey] || MOCK_DATA_REGISTRY['classrooms.getByTeacher'];
 
     if (mockGetter) {
       const rawMocks = mockGetter();
@@ -352,11 +389,7 @@ export function processGhostData(moduleName: string, methodName: string, realDat
   }
 
   // 11. GHOST COMMUNITY (groups, posts, announcements, comments)
-  if (
-    moduleName === 'community' &&
-    Array.isArray(realData) &&
-    realData.length === 0
-  ) {
+  if (moduleName === 'community' && Array.isArray(realData) && realData.length === 0) {
     const registryKey = `community.${methodName}`;
     const mockGetter = MOCK_DATA_REGISTRY[registryKey];
     if (mockGetter) {
@@ -369,12 +402,8 @@ export function processGhostData(moduleName: string, methodName: string, realDat
     }
   }
 
-  // 12. GHOST LIBRARY (resources, collections)
-  if (
-    moduleName === 'library' &&
-    Array.isArray(realData) &&
-    realData.length === 0
-  ) {
+  // 12. GHOST LIBRARY (resources, collections, map topology)
+  if (moduleName === 'library' && Array.isArray(realData) && realData.length === 0) {
     const registryKey = `library.${methodName}`;
     const mockGetter = MOCK_DATA_REGISTRY[registryKey];
     if (mockGetter) {
@@ -385,6 +414,14 @@ export function processGhostData(moduleName: string, methodName: string, realDat
           .map((m: any) => ({ ...m, is_sample: true }));
       }
     }
+  }
+
+  if (
+    moduleName === 'library' &&
+    (methodName === 'getMapTopology' || methodName === 'fetchMapTopology') &&
+    (!realData || !Array.isArray(realData.nodes) || realData.nodes.length === 0)
+  ) {
+    return MOCK.MOCK_KNOWLEDGE_TOPOLOGY;
   }
 
   // 13. GHOST TEACHER STATS
@@ -427,45 +464,263 @@ export function processGhostData(moduleName: string, methodName: string, realDat
 
 /**
  * Public canonical helpers for UI components
+ * Note: These are legacy manual getters. Prefer querying the canonical proxied APIs
+ * (e.g. api.classrooms, api.school, api.assignments) which handle ghost/demo injection
+ * automatically under createResonantProxy.
+ */
+
+/**
+ * @deprecated Use `api.classrooms.getTeacherClassrooms()` or `classroomsAPI.getByTeacher()`.
+ * The resonantProxy now automatically injects ghost/demo sample classrooms when appropriate.
  */
 export function getDemoClassrooms() {
-  const state = useStore.getState();
-  const authState = useAuthStore.getState();
-  const dismissed =
-    authState.dismissedSampleIds && authState.dismissedSampleIds.length > 0
-      ? authState.dismissedSampleIds
-      : state.dismissedSampleIds || [];
+  const uiState = useUIStore.getState();
+  const dismissed = uiState.dismissedSampleIds;
   return MOCK.MOCK_CLASSROOMS.filter((c: any) => !dismissed.includes(c.id)).map((c: any) => ({
     ...c,
     is_sample: true,
   }));
 }
 
+/**
+ * @deprecated Use `api.school.getSchoolStats(schoolId)`.
+ */
 export function getDemoSchoolStats() {
   return { ...MOCK.MOCK_SCHOOL_STATS, is_sample: true };
 }
 
+/**
+ * @deprecated Use `api.classrooms.getStudentStats(studentId)`.
+ */
 export function getDemoStudentStats() {
   return { ...MOCK.MOCK_STUDENT_STATS, is_sample: true };
 }
 
+/**
+ * @deprecated Use `api.assignments.getAll(classroomId)`.
+ */
 export function getDemoAssignments() {
-  const state = useStore.getState();
-  const authState = useAuthStore.getState();
-  const dismissed =
-    authState.dismissedSampleIds && authState.dismissedSampleIds.length > 0
-      ? authState.dismissedSampleIds
-      : state.dismissedSampleIds || [];
+  const uiState = useUIStore.getState();
+  const dismissed = uiState.dismissedSampleIds;
   return MOCK.MOCK_ASSIGNMENTS.filter((a: any) => !dismissed.includes(a.id)).map((a: any) => ({
     ...a,
     is_sample: true,
   }));
 }
 
+/**
+ * @deprecated Use `api.assignments.getRecentGradesOverviewForStudent()`.
+ */
 export function getDemoGrades() {
   return MOCK.MOCK_STUDENT_GRADES.map((g: any) => ({ ...g, is_sample: true }));
 }
 
+/**
+ * @deprecated Use `api.studentPotential` or student goals API.
+ */
 export function getDemoGoals() {
   return MOCK.MOCK_STUDENT_GOALS.map((g: any) => ({ ...g, is_sample: true }));
 }
+
+/**
+ * @deprecated Use `api.community.getGroups()`.
+ */
+export function getDemoCommunityGroups(): MOCK.MockGroup[] {
+  return MOCK.MOCK_COMMUNITY_GROUPS.map((g) => ({ ...g, is_sample: true }));
+}
+
+/**
+ * @deprecated Use `api.community.getPosts()`.
+ */
+export function getDemoCommunityPosts(groupId?: string): MOCK.MockCommunityPost[] {
+  const posts = groupId
+    ? MOCK.MOCK_COMMUNITY_POSTS.filter(
+        (p) => p.group_id === groupId || p.group_id === 'all-sanctuary',
+      )
+    : MOCK.MOCK_COMMUNITY_POSTS;
+  return posts.map((p) => ({ ...p, is_sample: true }));
+}
+
+/**
+ * @deprecated Use `api.community.getAnnouncements()`.
+ */
+export function getDemoAnnouncements(): MOCK.MockAnnouncement[] {
+  return MOCK.MOCK_ANNOUNCEMENTS.map((a) => ({ ...a, is_sample: true }));
+}
+
+/**
+ * @deprecated Use `api.community.getComments()`.
+ */
+export function getDemoCommunityComments(postId?: string): MOCK.MockComment[] {
+  const comments = postId
+    ? MOCK.MOCK_COMMUNITY_COMMENTS.filter((c) => c.post_id === postId)
+    : MOCK.MOCK_COMMUNITY_COMMENTS;
+  return comments.map((c) => ({ ...c, is_sample: true }));
+}
+
+/**
+ * @deprecated Use `api.profile.getUserProfile()`.
+ */
+export function getDemoUserProfile(roleOrCapacity?: string): MOCK.MockUserProfile {
+  const key = roleOrCapacity?.trim().toLowerCase();
+  const aliasMap: Record<string, string> = {
+    educator: 'teacher',
+    leader: 'principal',
+    administrator: 'principal',
+    parent: 'guardian',
+    learner: 'student',
+  };
+  const resolvedKey = key ? (aliasMap[key] ?? key) : 'teacher';
+  const profile = MOCK.MOCK_USER_PROFILES[resolvedKey] ?? MOCK.DEFAULT_MOCK_USER_PROFILE;
+  return { ...profile, is_sample: true };
+}
+
+// ---------------------------------------------------------------------------
+// CANONICAL WORKSPACE & INSTITUTIONAL DEMO PROVIDERS
+// ---------------------------------------------------------------------------
+
+export function getDemoClassroomDetailStudents(): readonly MOCK.MockClassroomDetailStudent[] {
+  return MOCK.MOCK_CLASSROOM_DETAIL_STUDENTS;
+}
+
+export function getDemoClassroomDetailLessons(): readonly MOCK.MockClassroomDetailLesson[] {
+  return MOCK.MOCK_CLASSROOM_DETAIL_LESSONS;
+}
+
+export function getDemoClassroomDetailAssignments(): readonly MOCK.MockClassroomDetailAssignment[] {
+  return MOCK.MOCK_CLASSROOM_DETAIL_ASSIGNMENTS;
+}
+
+export function getDemoClassroomDetailObservations(): readonly MOCK.MockClassroomDetailObservation[] {
+  return MOCK.MOCK_CLASSROOM_DETAIL_OBSERVATIONS;
+}
+
+export function getDemoPrincipalCurriculumProgress(): readonly MOCK.MockCurriculumProgress[] {
+  return MOCK.MOCK_PRINCIPAL_CURRICULUM_PROGRESS;
+}
+
+export function getDemoPrincipalPendingLeaves(): readonly MOCK.MockPendingStaffLeave[] {
+  return MOCK.MOCK_PRINCIPAL_PENDING_LEAVES;
+}
+
+export function getDemoGuardianChildren(): readonly MOCK.MockGuardianChild[] {
+  return MOCK.MOCK_GUARDIAN_CHILDREN;
+}
+
+export function getDemoGuardianAttendanceTimeline(): readonly MOCK.MockGuardianAttendanceEvent[] {
+  return MOCK.MOCK_GUARDIAN_ATTENDANCE_TIMELINE;
+}
+
+export function getDemoGuardianNotices(): readonly MOCK.MockGuardianNotice[] {
+  return MOCK.MOCK_GUARDIAN_NOTICES;
+}
+
+export function getDemoGradebookRoster(): readonly MOCK.MockGradebookStudent[] {
+  return MOCK.MOCK_GRADEBOOK_ROSTER;
+}
+
+export function getDemoFounderSchools(): readonly MOCK.MockFounderSchool[] {
+  return MOCK.MOCK_FOUNDER_SCHOOLS;
+}
+
+export function getDemoOfficialCirculars(): readonly MOCK.MockOfficialCircularDoc[] {
+  return MOCK.MOCK_OFFICIAL_CIRCULARS;
+}
+
+export function getDemoLibraryResources(): readonly MOCK.MockLibraryResource[] {
+  return MOCK.MOCK_LIBRARY_RESOURCES;
+}
+
+export function getDemoLibraryCollections(): readonly MOCK.MockLibraryCollection[] {
+  return MOCK.MOCK_LIBRARY_COLLECTIONS;
+}
+
+export function getDemoCuratorStagedItems(): readonly MOCK.MockCuratorStagedItem[] {
+  return MOCK.MOCK_CURATOR_STAGED_ITEMS;
+}
+
+export function getDemoCuratorBrokenItems(): readonly MOCK.MockCuratorBrokenItem[] {
+  return MOCK.MOCK_CURATOR_BROKEN_ITEMS;
+}
+
+export function getDemoTeacherHistory(): readonly MOCK.MockTeacherHistoryItem[] {
+  return MOCK.MOCK_TEACHER_PROFESSIONAL_HISTORY;
+}
+
+export function getDemoLearningCenters(): readonly MOCK.MockLearningCenter[] {
+  return MOCK.MOCK_LEARNING_CENTERS;
+}
+
+export function getDemoKnowledgeTopology(): MOCK.MockKnowledgeTopology {
+  return MOCK.MOCK_KNOWLEDGE_TOPOLOGY;
+}
+
+export function getDemoDocumentOutlines(): readonly MOCK.MockDocumentOutlineItem[] {
+  return MOCK.MOCK_DOCUMENT_OUTLINES;
+}
+
+export function getDemoVideoChapters(): readonly MOCK.MockVideoChapter[] {
+  return MOCK.MOCK_VIDEO_CHAPTERS;
+}
+
+export function getDemoClimateDimensions(): readonly MOCK.MockClimateDimension[] {
+  return MOCK.MOCK_CLIMATE_DIMENSIONS;
+}
+
+export function getDemoDoorwayBadgeStudents(): readonly MOCK.MockDoorwayBadgeStudent[] {
+  return MOCK.MOCK_DOORWAY_BADGE_STUDENTS;
+}
+
+export function getDemoTimetablePrepItems(): readonly MOCK.MockTimetablePrepItem[] {
+  return MOCK.MOCK_TIMETABLE_PREP_ITEMS;
+}
+
+export function getDemoTimetableSchedule(): Record<
+  'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday',
+  readonly MOCK.MockTimetablePeriod[]
+> {
+  return MOCK.MOCK_TIMETABLE_SCHEDULE;
+}
+
+export function getDemoToolsSampleCsv(): string {
+  return MOCK.MOCK_TOOLS_SAMPLE_CSV;
+}
+
+export function getDemoToolsSampleOcr(): string {
+  return MOCK.MOCK_TOOLS_SAMPLE_OCR;
+}
+
+export function getDemoToolsBundleItems(): readonly MOCK.MockToolsBundleItem[] {
+  return MOCK.MOCK_TOOLS_BUNDLE_ITEMS;
+}
+
+export type {
+  MockClassroomDetailAssignment,
+  MockClassroomDetailLesson,
+  MockClassroomDetailObservation,
+  MockClassroomDetailStudent,
+  MockClimateDimension,
+  MockCuratorBrokenItem,
+  MockCuratorStagedItem,
+  MockCurriculumProgress,
+  MockDocumentOutlineItem,
+  MockDoorwayBadgeStudent,
+  MockFounderSchool,
+  MockGradebookStudent,
+  MockGuardianAttendanceEvent,
+  MockGuardianChild,
+  MockGuardianNotice,
+  MockKnowledgeTopology,
+  MockLearningCenter,
+  MockLibraryCollection,
+  MockLibraryResource,
+  MockOfficialCircularDoc,
+  MockPendingStaffLeave,
+  MockTeacherHistoryItem,
+  MockTimetablePeriod,
+  MockTimetablePrepItem,
+  MockToolsBundleItem,
+  MockTopologyLink,
+  MockTopologyNode,
+  MockVideoChapter,
+} from './mockData';

@@ -2,7 +2,7 @@
 title: "EdLove Identity Convergence Program"
 status: "active"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-25
 author: "Naveen"
 scribe: "Codex"
 tags: [architecture, edlove, identity, authentication, migration, program]
@@ -11,6 +11,12 @@ tags: [architecture, edlove, identity, authentication, migration, program]
 # EdLove Identity Convergence Program
 
 ## Purpose
+
+> **2026-10-25 execution decision:** the user authorized a breaking
+> pre-production cutover. `public.users.id` is the canonical EdLove account
+> UUIDv8; the nullable side-ID and asynchronous assignment programme below is
+> historical where it conflicts. See the
+> [cutover record](../current_progress/2026-10-25-canonical-uuidv8-account-cutover.md).
 
 Converge Gurudevi's current provider-coupled authentication paths into an
 EdLove-owned identity fabric without interrupting users, deleting legacy
@@ -24,8 +30,9 @@ identity-bearing actors for AI, channels, and devices.
 
 - `public.users.id` is the durable account/citizen; provider subjects remain
   opaque credential vectors in server-owned bindings.
-- The EdLove UUIDv8 profile governs new durable cross-product identity entities;
-  existing primary keys remain in place until an approved additive migration.
+- The EdLove UUIDv8 profile governs admitted durable cross-product identity
+  entities. The approved account migration makes it the `public.users.id`
+  primary key; other families require their own admission and migration.
 - Supabase remains the sole enabled human credential issuer during convergence.
 - A valid session never grants lifecycle completion, a selected scope, or
   authorization.
@@ -41,7 +48,7 @@ identity-bearing actors for AI, channels, and devices.
 | Phase | Outcome | Primary boundary | Exit gate |
 |---|---|---|---|
 | 0. Governance and inventory | An accepted issuer matrix, account/lifecycle vocabulary, identifier registry owner, and migration ledger. | Architecture and operations | No active document claims a contradictory UUID/auth authority. |
-| 1. EdLove UUIDv8 foundation | A conformant, tested identifier profile and authoritative minting design. | Core types, database boundary | Shared SQL/TypeScript vectors; no existing ID or production path changed. |
+| 1. EdLove UUIDv8 foundation and account cutover | A conformant profile and database-owned UUIDv8 account primary key. | Core types, database, account references | Shared SQL/TypeScript vectors, rekey/ownership integrity, immutable account IDs, and target-environment migration proof. Local evidence is recorded; hosted acceptance remains open. |
 | 2. Identity Authority | A server authority maps verified provider subjects to EdLove accounts and lifecycle projections. | `sanctuary-api` and `auth_identities` | Forged/cross-account subjects, missing bindings, lifecycle denial, and provider mismatch all have negative tests. |
 | 3. Credential and account stewardship | Explicit link/unlink, recovery, session/device management, and audit receipts. | Provider adapter + server lifecycle API | A user can safely add/remove factors without account takeover or loss of recovery. |
 | 4. Web and mobile convergence | Both clients use the shared session/lifecycle coordinator. | `@repo/core`, Next.js, Expo | Browser refresh/cross-tab and native wake/deep-link/account-switch journeys are proven. |
@@ -56,8 +63,8 @@ Phase 0 ──> Phase 1 ──> Phase 2 ──> Phase 3
                               └──> Phase 4 ─┴──> Phase 5 ──> Phase 6
 ```
 
-Phase 1 does not migrate accounts. Phase 2 must preserve existing Supabase
-bindings. Phase 4 cannot remove client fallbacks until Phase 2 has an available,
+The approved Phase 1 account cutover rekeys domain accounts while preserving
+provider subjects and their bindings. Phase 4 cannot remove client fallbacks until Phase 2 has an available,
 observed replacement. Passkeys belong in Phase 3/4 only after their provider,
 origin, recovery, and device evidence gates are met.
 
@@ -76,8 +83,11 @@ origin, recovery, and device evidence gates are met.
 
 - [Authentication and Sovereign Identity Authority](authentication-and-sovereign-identity.md)
 - [EdLove Sovereign UUIDv8 Specification](edlove-sovereign-uuidv8-specification.md)
-- [Step 1 UUIDv8 foundation plan](../current_progress/2026-10-23-edlove-uuidv8-foundation-implementation-plan.md)
-- [Next-phase account UUIDv8 persistence plan](../current_progress/2026-10-23-edlove-account-id-persistence-phase-plan.md)
+- [Canonical account cutover and evidence](../current_progress/2026-10-25-canonical-uuidv8-account-cutover.md)
+- [Plan reconciliation and remaining work](../current_progress/2026-10-25-identity-auth-and-decoupling-plan-reconciliation.md)
+
+The Step 1, nullable persistence, Phase 2 assignment, and Phase 1B operation
+plans remain historical records. They do not govern new account creation.
 
 The program sets order and gates. Each phase needs its own bounded implementation
 plan before code begins.

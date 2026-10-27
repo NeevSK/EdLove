@@ -1,0 +1,573 @@
+.livingCanvas {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: transparent;
+  color: var(--w-ink);
+  transition: color 0.5s ease;
+}
+
+/* -------------------------------------------------------------
+   LIVING ATMOSPHERIC ARTWORK & SKY HORIZON
+-------------------------------------------------------------- */
+.skyDome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  transition: all 1s ease;
+}
+
+.skyGradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(140% 120% at 50% -10%, var(--sky-top) 0%, var(--sky-horizon) 65%, transparent 100%);
+  opacity: 0.95;
+  transition: background 1s ease;
+}
+
+/* Living celestial body (Sun / Moon) */
+.celestialBody {
+  position: absolute;
+  top: var(--orb-y, 20%);
+  left: var(--orb-x, 50%);
+  transform: translate(-50%, -50%);
+  width: var(--orb-size, 80px);
+  height: var(--orb-size, 80px);
+  border-radius: 50%;
+  background: var(--orb-bg);
+  box-shadow: 0 0 50px 15px var(--orb-glow), 0 0 120px 40px var(--orb-corona);
+  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(0.5px);
+}
+
+/* Realistic Moon Craters */
+.moonCrater1 {
+  position: absolute;
+  top: 25%;
+  left: 30%;
+  width: 24%;
+  height: 24%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.12);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.25);
+}
+
+.moonCrater2 {
+  position: absolute;
+  bottom: 25%;
+  right: 25%;
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Atmospheric Layer Canvas (Mist / Stars / Particles) */
+.atmosphereCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Ground Mist Horizon */
+.atmosphericMist {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(to top, var(--w-ground) 15%, transparent 100%);
+  z-index: 3;
+}
+
+/* -------------------------------------------------------------
+   CULTURAL ORNAMENT SVG BANDS (Liyawela, Ripple, Branch, Stance, Lace)
+-------------------------------------------------------------- */
+.ornamentBanner {
+  position: relative;
+  z-index: 10;
+  height: 28px;
+  width: 100%;
+  overflow: hidden;
+  background: var(--w-sunken);
+  border-bottom: 1px solid var(--w-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ornamentSvg {
+  width: 100%;
+  height: 100%;
+  fill: var(--w-ornament);
+  opacity: 0.85;
+}
+
+/* -------------------------------------------------------------
+   LIVING HUD & CONTROLS
+-------------------------------------------------------------- */
+.livingHud {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: color-mix(in srgb, var(--w-ground) 82%, transparent);
+  border-bottom: 1px solid var(--w-line);
+  padding: 0.75rem clamp(1rem, 3vw, 2.5rem);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--w-ink) 5%, transparent);
+}
+
+.hudInner {
+  max-width: 84rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hudPrimaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.brandRealm {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.realmIconBadge {
+  position: relative;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  box-shadow: 0 0 20px var(--w-glow);
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.lampGlowHalo {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--w-lamp);
+  opacity: 0.5;
+  animation: pulseHalo 4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseHalo {
+  0% { transform: scale(0.95); opacity: 0.3; }
+  100% { transform: scale(1.08); opacity: 0.8; }
+}
+
+.realmTitles h1 {
+  margin: 0;
+  font-family: var(--w-font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--w-ink);
+}
+
+.realmMeta {
+  font-size: 0.76rem;
+  color: var(--w-ink-soft);
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+/* Layer 1: Cultural World Selector */
+.worldPills {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.2rem 0;
+  scrollbar-width: none;
+}
+.worldPills::-webkit-scrollbar { display: none; }
+
+.worldPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--w-line);
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
+  font-size: 0.84rem;
+  font-family: var(--w-font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.worldPill:hover {
+  background: var(--w-ground);
+  color: var(--w-ink);
+  border-color: var(--w-lamp);
+  transform: translateY(-1px);
+}
+
+.worldPillActive {
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
+  border-color: var(--w-lamp);
+  box-shadow: 0 0 18px var(--w-glow);
+  font-weight: 600;
+}
+
+/* Layer 2: Theme Light / Dark & Sound Controls */
+.modeControls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.modeToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  color: var(--w-ink);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modeToggleBtn:hover {
+  border-color: var(--w-lamp);
+}
+
+/* Layer 3: Interactive Circadian Hour Scrubber */
+.circadianScrubber {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.45rem 0.95rem;
+  background: var(--w-sunken);
+  border-radius: 14px;
+  border: 1px solid var(--w-line);
+}
+
+.phaseLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--w-lamp-deep);
+  min-width: 190px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sliderTrack {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.timeSlider {
+  width: 100%;
+  accent-color: var(--w-lamp);
+  cursor: pointer;
+  height: 6px;
+}
+
+.timeClock {
+  font-family: monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--w-ink);
+  padding: 0.2rem 0.6rem;
+  background: var(--w-raised);
+  border-radius: 8px;
+  border: 1px solid var(--w-line);
+}
+
+/* -------------------------------------------------------------
+   SANCTUARY REAL DOMAIN CANVAS & DIORAMA
+-------------------------------------------------------------- */
+.sanctuaryStage {
+  position: relative;
+  z-index: 10;
+  max-width: 84rem;
+  margin: 1.5rem auto 5rem;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+}
+
+/* Domain Navigation Bar */
+.domainNavStrip {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--w-line);
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.domainTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.35rem;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--w-ink-soft);
+  font-family: var(--w-font-serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.domainTab:hover {
+  background: var(--w-raised);
+  color: var(--w-ink);
+}
+
+.domainTabActive {
+  background: var(--w-raised);
+  border-color: var(--w-line);
+  color: var(--w-ink);
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--w-ink) 6%, transparent);
+  font-weight: 600;
+}
+
+.domainBadge {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--w-sunken);
+  color: var(--w-ink-faint);
+  font-family: var(--w-font-sans);
+}
+
+/* Domain Layout Grid */
+.domainLayout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2rem;
+}
+
+@media (max-width: 980px) {
+  .domainLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainStagePane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.ambientSidePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Living Interactive Cards */
+.livingCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--w-surface-raised-radius, 18px);
+  background: color-mix(in srgb, var(--w-raised) 76%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--w-line) 80%, transparent);
+  padding: 1.6rem;
+  box-shadow: 0 16px 44px color-mix(in srgb, var(--w-ink) 12%, transparent);
+  transition: all 0.3s ease;
+}
+
+/* Cultural Texture Overlays on Cards */
+.livingCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+  background: radial-gradient(circle at 100% 0%, var(--card-watermark, transparent) 0%, transparent 70%);
+  opacity: 0.45;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  gap: 1rem;
+}
+
+.cardTitle {
+  font-family: var(--w-font-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.cardVoice {
+  font-size: 0.88rem;
+  color: var(--w-ink-soft);
+  margin: 0.25rem 0 0;
+  line-height: 1.45;
+}
+
+/* -------------------------------------------------------------
+   GAME-LIKE LIVING WORKFLOWS: FIRE PIT & OIL LAMPS
+-------------------------------------------------------------- */
+.flameRitualPit {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.flameHearthContainer {
+  position: relative;
+  min-height: 150px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--w-lamp) 25%, var(--w-sunken)) 0%, var(--w-sunken) 80%);
+  border: 1px solid var(--w-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.terracottaLampBase {
+  position: absolute;
+  bottom: 22px;
+  width: 90px;
+  height: 24px;
+  border-radius: 0 0 45px 45px;
+  background: #A0522D;
+  border: 2px solid #6E3214;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.flameCore {
+  position: absolute;
+  bottom: 42px;
+  width: 32px;
+  height: 48px;
+  border-radius: 50% 50% 20% 50%;
+  transform: rotate(-45deg);
+  background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #FBBF24 45%, #EA580C 75%, #7C2D12 100%);
+  box-shadow: 0 0 35px var(--w-glow), 0 0 70px var(--w-lamp);
+  animation: dynamicFlame 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes dynamicFlame {
+  0% { transform: rotate(-42deg) scale(0.95); filter: blur(0.2px); }
+  50% { transform: rotate(-47deg) scale(1.05); filter: blur(0px); }
+  100% { transform: rotate(-43deg) scale(0.98); filter: blur(0.4px); }
+}
+
+.flameSparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Diurnal Mindful Breathing Lotus Pacer */
+.lotusPondScene {
+  position: relative;
+  margin: 1.25rem auto;
+  width: 170px;
+  height: 170px;
+  display: grid;
+  place-items: center;
+}
+
+.breathingWaterRipples {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px dashed var(--w-lamp);
+  animation: rippleExpand 5.5s ease-in-out infinite;
+  box-shadow: 0 0 40px var(--w-glow);
+}
+
+@keyframes rippleExpand {
+  0%, 100% { transform: scale(0.8); opacity: 0.4; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+
+.lotusFlowerArtwork {
+  font-size: 3rem;
+  z-index: 2;
+  filter: drop-shadow(0 0 14px var(--w-glow));
+}
+
+/* Interactive Student Roll Call Beads */
+.studentRosterBeads {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.studentBead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: var(--w-sunken);
+  border: 1px solid var(--w-line);
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.studentBead:hover {
+  transform: translateY(-2px);
+  border-color: var(--w-lamp);
+}
+
+.studentBeadPresent {
+  background: color-mix(in srgb, var(--w-success) 18%, var(--w-raised));
+  border-color: var(--w-success);
+  font-weight: 600;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--w-success) 25%, transparent);
+}
+
+.presentDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--w-success);
+  box-shadow: 0 0 10px var(--w-success);
+}

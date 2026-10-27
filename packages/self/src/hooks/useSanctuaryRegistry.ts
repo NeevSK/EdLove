@@ -1,4 +1,5 @@
-import { useFeatureStore, usePermissions } from '@repo/core/logic';
+import { useFeatureStore } from '@repo/core/store';
+import { usePermissions } from '@repo/core/logic';
 import { getDomainsByTab } from '@repo/core/logic/registry/appCatalog';
 import type { SelfDomain } from '@repo/self/constants/selfRegistry';
 import { useMemo } from 'react';

@@ -1,6 +1,6 @@
 'use client';
 
-import { Lightbulb, Sparkles } from '@repo/ui/icons';
+import { Lightbulb, Sparkles } from 'lucide-react';
 
 interface DailyContentCardProps {
   userId?: string;
@@ -22,12 +22,28 @@ export function DailyContentCard({ onClose }: DailyContentCardProps) {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f59e0b' }}>
         <Lightbulb size={18} />
-        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        <span
+          style={{
+            fontSize: '0.75rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}
+        >
           Daily Contemplation
         </span>
       </div>
-      <blockquote style={{ margin: 0, fontStyle: 'italic', fontSize: '1rem', color: '#1e293b', lineHeight: 1.6 }}>
-        “Quiet minds find direction not by racing forward, but by steadying the ground beneath them.”
+      <blockquote
+        style={{
+          margin: 0,
+          fontStyle: 'italic',
+          fontSize: '1rem',
+          color: '#1e293b',
+          lineHeight: 1.6,
+        }}
+      >
+        “Quiet minds find direction not by racing forward, but by steadying the ground beneath
+        them.”
       </blockquote>
       <div style={{ fontSize: '0.8125rem', color: '#64748b' }}>
         Curated for your reflective practice today.

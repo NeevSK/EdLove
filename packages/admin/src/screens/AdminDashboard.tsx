@@ -1,15 +1,23 @@
+import AdminAuditLog from '@repo/admin/screens/AdminAuditLog';
+import AdminAuthorityRepair from '@repo/admin/screens/AdminAuthorityRepair';
+import AdminIncidentQueue from '@repo/admin/screens/AdminIncidentQueue';
+import AdminJobControl from '@repo/admin/screens/AdminJobControl';
+import AdminReleaseControl from '@repo/admin/screens/AdminReleaseControl';
+import AdminTenantDetail from '@repo/admin/screens/AdminTenantDetail';
+import { useAuthStore } from '@repo/core/store';
 import { useDomainRollout } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text, VStack } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
   useAdminWorkspaceLayout,
 } from '@repo/admin/admin/useAdminWorkspaceCanvas';
 import { useAdminWorkspaceData } from '@repo/admin/admin/useAdminWorkspaceData';
-import { resolveAdminWorkspaceView } from '@repo/admin/admin/workspace';
+import { resolveAdminWorkspaceView, type AdminWorkspaceView } from '@repo/admin/admin/workspace';
 
 interface AdminDashboardProps {
   userId?: string | null;
@@ -19,21 +27,25 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
   const router = useRouter();
   const { context, flags } = usePermissions();
   const isStaffManagementEnabled = useDomainRollout('staff-management');
-  const currentUserId = useStore((state) => state.user?.id ?? null);
+  const currentUserId = useAuthStore(state => state.user?.id ?? null);
   const resolvedUserId = userId ?? currentUserId;
   const data = useAdminWorkspaceData();
+
+  const [activeRoom, setActiveRoom] = useState<
+    'incident_queue' | 'tenant_detail' | 'authority_repair' | 'job_control' | 'audit_log' | 'release_control' | null
+  >(null);
 
   const surfaces = useAdminWorkspaceCanvasSurfaces({
     data,
     featureFlags: {
       isUnderMaintenance: flags.isUnderMaintenance,
     },
-    onOpenIncidentQueue: () => router.push('/workspace'),
-    onOpenTenantDetail: () => router.push('/workspace'),
-    onOpenAuthorityRepair: () => router.push('/workspace'),
-    onOpenJobControl: () => router.push('/workspace'),
-    onOpenAuditLog: () => router.push('/workspace'),
-    onOpenReleaseControl: () => router.push('/workspace'),
+    onOpenIncidentQueue: () => setActiveRoom('incident_queue'),
+    onOpenTenantDetail: () => setActiveRoom('tenant_detail'),
+    onOpenAuthorityRepair: () => setActiveRoom('authority_repair'),
+    onOpenJobControl: () => setActiveRoom('job_control'),
+    onOpenAuditLog: () => setActiveRoom('audit_log'),
+    onOpenReleaseControl: () => setActiveRoom('release_control'),
   });
 
   const workspace = useAdminWorkspaceLayout(resolvedUserId, surfaces);
@@ -53,6 +65,25 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
         </VStack>
       </ScreenWrapper>
     );
+  }
+
+  if (activeRoom === 'incident_queue') {
+    return <AdminIncidentQueue onBack={() => setActiveRoom(null)} />;
+  }
+  if (activeRoom === 'tenant_detail') {
+    return <AdminTenantDetail onBack={() => setActiveRoom(null)} />;
+  }
+  if (activeRoom === 'authority_repair') {
+    return <AdminAuthorityRepair onBack={() => setActiveRoom(null)} />;
+  }
+  if (activeRoom === 'job_control') {
+    return <AdminJobControl onBack={() => setActiveRoom(null)} />;
+  }
+  if (activeRoom === 'audit_log') {
+    return <AdminAuditLog onBack={() => setActiveRoom(null)} />;
+  }
+  if (activeRoom === 'release_control') {
+    return <AdminReleaseControl onBack={() => setActiveRoom(null)} />;
   }
 
   return (
@@ -80,12 +111,17 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
           onMoveToNextZone={workspace.setSurfaceZone}
           onOpenSurface={(surface) => {
             const view = resolveAdminWorkspaceView(surface.capabilityKey);
-            if (view === 'admin_registry') {
-              router.push('/workspace');
+            if (
+              view === 'incident_queue' ||
+              view === 'tenant_detail' ||
+              view === 'authority_repair' ||
+              view === 'job_control' ||
+              view === 'audit_log' ||
+              view === 'release_control'
+            ) {
+              setActiveRoom(view);
               return;
             }
-
-            router.push('/workspace');
           }}
         />
       </Box>

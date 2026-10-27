@@ -34,6 +34,14 @@ export function useAcademicDomain() {
     staleTime: 30_000,
   });
 
+  // TanStack Query: Gradebook roster
+  const { data: roster = [] } = useQuery({
+    queryKey: ['academic', 'roster'],
+    queryFn: () => academicHexagonalService.getGradebookRoster(),
+    initialData: [],
+    staleTime: 60_000,
+  });
+
   const filteredSubmissions = useMemo(() => {
     if (!debouncedSearch.trim()) return submissions;
     const lower = debouncedSearch.toLowerCase();
@@ -96,6 +104,7 @@ export function useAcademicDomain() {
   return {
     assignments,
     submissions,
+    roster,
     filteredSubmissions,
     searchQuery,
     setSearchQuery,

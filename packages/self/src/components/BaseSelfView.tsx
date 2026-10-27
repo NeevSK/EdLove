@@ -1,4 +1,6 @@
-import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { usePermissions, useTemporalStore } from '@repo/core/logic';
 import type { BaseSelfViewProps, SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
 import {
@@ -48,7 +50,7 @@ export function BaseSelfView({
   const isHistoryMode = viewMode === 'timeline';
   const { context } = usePermissions();
   const isAnonymous = context.isAnonymous;
-  const isOnline = useStore((state) => state.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const isTablet = isLandscape ? height >= 600 : width >= 768;
@@ -293,7 +295,7 @@ export function BaseSelfView({
         {voiceJournal && <Box className="px-lg pt-sm">{voiceJournal}</Box>}
         {morningRitual && <Box className="px-lg pt-sm">{morningRitual}</Box>}
 
-        {!isOnline && (
+        {networkStatus === 'offline' && (
           <Box
             className="mx-md mt-sm rounded-xl border px-md py-sm"
             style={{

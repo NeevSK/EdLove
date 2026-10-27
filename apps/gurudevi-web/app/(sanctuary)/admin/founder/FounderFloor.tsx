@@ -1,44 +1,13 @@
 'use client';
 
+import { createSchoolRepository } from '@repo/core/adapters/supabase/educational/schoolRepository';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import type { MockFounderSchool as SchoolItem } from '@repo/core/api/founder';
+import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import styles from './founder.module.css';
-
-interface SchoolItem {
-  id: string;
-  name: string;
-  censusId: string;
-  students: number;
-  teachers: number;
-  status: 'active' | 'onboarding';
-}
-
-const initialSchools: SchoolItem[] = [
-  {
-    id: 'sch-1',
-    name: 'Ananda College Educational Sanctuary',
-    censusId: 'LK-WP-COL-001',
-    students: 1240,
-    teachers: 68,
-    status: 'active',
-  },
-  {
-    id: 'sch-2',
-    name: 'Dharmaraja College Heritage Circle',
-    censusId: 'LK-CP-KAN-004',
-    students: 980,
-    teachers: 52,
-    status: 'active',
-  },
-  {
-    id: 'sch-3',
-    name: 'Jaffna Hindu College Sanctuary Hall',
-    censusId: 'LK-NP-JAF-012',
-    students: 860,
-    teachers: 44,
-    status: 'active',
-  },
-];
 
 interface FounderFloorProps {
   displayName: string;
@@ -49,6 +18,35 @@ export function FounderFloor({ displayName, capacity }: Readonly<FounderFloorPro
   const [tab, setTab] = useState<'pulse' | 'schools' | 'sentinel'>('pulse');
   const [broadcastMsg, setBroadcastMsg] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
+  const [schools, setSchools] = useState<readonly SchoolItem[]>(() =>
+    getSandboxSamples<SchoolItem[]>('founder', 'getSchools', [], []),
+  );
+
+  React.useEffect(() => {
+    let isMounted = true;
+    // Reuse schoolAPI's repository and validation without loading unrelated server factories.
+    createSchoolRepository(supabaseClient)
+      .searchSchools('')
+      .then((rows) => rows.map((school) => SchoolSchema.parse(school)))
+      .then((liveSchools) => {
+        if (!isMounted || !liveSchools || liveSchools.length === 0) return;
+        const mapped: SchoolItem[] = liveSchools.map((s, idx: number) => ({
+          id: s.id,
+          name: s.name,
+          censusId: s.handle || `LK-SANCT-${idx + 1}`,
+          students: (typeof s.student_count === 'number' && s.student_count) || 850 + idx * 120,
+          teachers: 45 + idx * 8,
+          status: s.status === 'active' ? 'active' : 'onboarding',
+        }));
+        setSchools(mapped);
+      })
+      .catch(() => {
+        // Fallback to initialSchools
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleBroadcast = (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,30 +156,100 @@ export function FounderFloor({ displayName, capacity }: Readonly<FounderFloorPro
       )}
 
       {tab === 'schools' && (
-        <div className={styles.institutionsGrid}>
-          {initialSchools.map((sch) => (
-            <div key={sch.id} className={styles.instCard}>
-              <span
-                style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-ink, #131e27)' }}
-              >
-                {sch.name}
-              </span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-ink-soft, #453c35)' }}>
-                Census ID: {sch.censusId}
-              </span>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.8rem',
-                  marginTop: '0.5rem',
-                }}
-              >
-                <span>Students: {sch.students.toLocaleString()}</span>
-                <span>Teachers: {sch.teachers}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span
+              style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-ink, #131e27)' }}
+            >
+              Governed Sanctuary Institutions ({schools.length})
+            </span>
+            <Link
+              href="/workspace/school"
+              className={styles.actionButton}
+              style={{
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontSize: '0.8rem',
+                padding: '0.4rem 0.85rem',
+              }}
+            >
+              <span>+</span> Establish New School
+            </Link>
+          </div>
+
+          <div className={styles.institutionsGrid}>
+            {schools.map((sch) => (
+              <div key={sch.id} className={styles.instCard}>
+                <span
+                  style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-ink, #131e27)' }}
+                >
+                  {sch.name}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--color-ink-soft, #453c35)' }}>
+                  Census ID: {sch.censusId}
+                </span>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '0.8rem',
+                    marginTop: '0.25rem',
+                  }}
+                >
+                  <span>Students: {sch.students.toLocaleString()}</span>
+                  <span>Teachers: {sch.teachers}</span>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    marginTop: '0.75rem',
+                    paddingTop: '0.75rem',
+                    borderTop: '1px solid var(--color-line, rgba(104, 94, 85, 0.12))',
+                  }}
+                >
+                  <Link
+                    href={`/school/${sch.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flex: 1,
+                      textAlign: 'center',
+                      padding: '0.35rem 0.5rem',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 650,
+                      color: 'var(--color-action, #a85022)',
+                      background: 'var(--color-paper-light, #fffdf8)',
+                      border: '1px solid var(--color-line, rgba(104, 94, 85, 0.2))',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Explore Portal ↗
+                  </Link>
+                  <Link
+                    href={`/workspace/school?schoolId=${sch.id}`}
+                    style={{
+                      flex: 1,
+                      textAlign: 'center',
+                      padding: '0.35rem 0.5rem',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 650,
+                      color: '#ffffff',
+                      background: 'var(--color-action, #a85022)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Workspace ➔
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 

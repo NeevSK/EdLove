@@ -1,7 +1,13 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
+import {
+  auth,
+  community,
+  educational,
+  notification,
+  profile,
+} from '@repo/core/logic/managers/factory';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { CompleteProfileSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { trackProductEvent } from '@repo/core/monitoring';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
@@ -29,8 +35,8 @@ export const onboardingAPI = {
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
     trackProductEvent('onboarding_started');
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const guestUser = sessionData.session?.user;
+    const session = await auth.getSession();
+    const guestUser = session?.user;
     if (guestUser?.is_anonymous) {
       setGuestScope(guestUser.id);
       const bondId = globalThis.crypto?.randomUUID?.() ?? `guest-bond-${guestUser.id}`;
@@ -62,8 +68,8 @@ export const onboardingAPI = {
   },
 
   async completeOnboarding(userId: string, idempotencyKey?: string): Promise<void> {
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === userId) {
+    const session = await auth.getSession();
+    if (session?.user?.is_anonymous && session.user.id === userId) {
       setGuestScope(userId);
       const local = await getLocalGuestIdentity(userId);
       if (!local.activeBond || !local.activeBond.capacity) {
@@ -242,17 +248,25 @@ export const onboardingAPI = {
     lastName?: string,
     username?: string,
   ): Promise<void> {
-    // identity.completeProfile was a helper that set multiple fields
-    await profile.updateProfile(userId, {
-      display_name: displayName,
-      first_name: firstName ?? null,
-      last_name: lastName ?? null,
-      username: username ?? null,
-      capacity_label: capacityLabel,
-      bio,
-      index_number: indexNumber,
-      nic_number: nicNumber,
-      profile_completed: true,
-    });
+    const { identity } = await import('../logic/managers/factory');
+    const activeIdentity = await identity.identifyActiveCitizen();
+    if (!activeIdentity || activeIdentity.id !== userId) {
+      throw new APIError('The authenticated account changed.', 'AUTH_ACCOUNT_MISMATCH');
+    }
+    await orpcClient.onboarding.completeProfile(
+      {
+        body: CompleteProfileSchema.parse({
+          display_name: displayName,
+          first_name: firstName ?? null,
+          last_name: lastName ?? null,
+          username: username ?? null,
+          capacity_label: capacityLabel,
+          bio,
+          index_number: indexNumber,
+          nic_number: nicNumber,
+        }),
+      },
+      { context: { expectedAccountId: userId, retry: 0 } },
+    );
   },
 };

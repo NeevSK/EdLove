@@ -77,6 +77,10 @@ export default defineConfig({
         find: 'expo-modules-core',
         replacement: path.resolve(import.meta.dirname, 'test-shims/expo-modules-core.ts'),
       },
+      {
+        find: 'expo-asset',
+        replacement: path.resolve(import.meta.dirname, 'test-shims/expo-asset.ts'),
+      },
     ],
   },
     test: {
@@ -84,6 +88,7 @@ export default defineConfig({
     sharedViteServer: true,
     globals: true,
     environment: 'jsdom',
+    setupFiles: [path.resolve(import.meta.dirname, 'test-shims/setup.ts')],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     passWithNoTests: true,
   },

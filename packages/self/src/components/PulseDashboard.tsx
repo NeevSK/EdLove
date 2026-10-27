@@ -1,3 +1,4 @@
+import { useAuthStore } from '@repo/core/store';
 /**
  * PulseDashboard - The "Entrance" to the Daily Sanctuary
  * Provides high-level briefings, context, and daily motivation.
@@ -6,7 +7,7 @@
  */
 
 import { usePendingActions } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
+
 import { dailyContentAPI } from '@repo/self/api/dailyContent';
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
@@ -30,8 +31,8 @@ import { useTranslation } from 'react-i18next';
 
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void }) {
   const { t } = useTranslation();
-  const user = useStore((state) => state.user);
-  const userName = useStore((state) => state.userName);
+  const user = useAuthStore((state) => state.user);
+  const userName = useAuthStore((state) => state.user?.display_name || 'Gurudevi');
   const router = useRouter();
 
   const [refreshing, setRefreshing] = useState(false);

@@ -1,65 +1,72 @@
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import type { UISlice } from '@repo/core/store/slices/ui.slice';
-import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
+import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
-import { useUIStore } from '@repo/core/store/useUIStore';
+import { migrateLegacyDismissalsForCurrentOwner, useUIStore } from '@repo/core/store/useUIStore';
 
 const authScopedDefaults = {
-  userName: 'Gurudevi',
   user: null,
-  authSession: null,
-  authSessionResolved: false,
-  onboardingCompleted: false,
-  justFinishedOnboarding: false,
-  experienceMode: 'live' as const,
-  isDemoMode: false,
-  isSandboxMode: false,
-  isExplorerMode: true,
-  isBridging: false,
-  dismissedSampleIds: [],
-  demoLogs: [],
-  isOnline: true,
-  toast: null,
 };
 
 const tenantScopedDefaults = {
-  schoolId: null,
-  schoolName: null,
   tenantResolved: false,
   schoolType: 'generic',
   realClassCount: 0,
 };
 
-const uiScopedDefaults: Partial<UISlice> = {
+const uiScopedDefaults = {
+  justFinishedOnboarding: false,
   isSidebarCollapsed: false,
-  theme: 'system' as UISlice['theme'],
-  themeMode: 'system' as NonNullable<UISlice['themeMode']>,
   dismissedSampleIds: [],
   deskItems: [],
   isBreathingOpen: false,
+  scaffoldCompletions: {},
 };
 
-const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
+const activeSubTabsScopedDefaults = {
+  tabsByDomain: {},
+  activeTabByDomain: {},
+  pinnedFeatureIdsByDomain: {
+    self: ['daily_rhythm', 'mood_lotus', 'decision_journal'],
+    workspace: ['attendance', 'gradebook', 'curriculum'],
+  },
+  preferences: {
+    headerStyle: 'adaptive' as const,
+    catalogDefaultAction: 'open_in_subtab' as const,
+    showActiveSubTabs: true,
+    autoHideChromeOnScroll: true,
+    maxTabsPerDomain: 5,
+  },
+  isChromeVisible: true,
+};
 
 export const resetScopedStores = () => {
-  useAuthStore.setState(authScopedDefaults);
-  useTenantStore.setState(tenantScopedDefaults);
-  usePerspectiveStore.getState().resetToPersonalPerspective();
-  useUIStore.setState(uiScopedDefaults);
-  useGrowthStore.getState().resetGrowthState();
-  useFeatureStore.setState((state) => ({
-    ...state,
-    flags: featureScopedDefaults,
-    snapshot: null,
-  }));
-  // Commands are partitioned by their original principal. Account lifecycle
-  // owns an explicit preserve/quarantine/discard transition; a UI-store reset
-  // must never silently destroy work that still needs reconciliation.
-  useMutationQueue.setState({ isSyncing: false });
+  sovereignBus.emit('feedback:clear', {});
+  withScopedStateWritesPaused(() => {
+    useScopeSessionStore.getState().clear();
+    useCedarDecisionStore.getState().clearDecisions();
+    useAuthStore.setState(authScopedDefaults);
+    useExperienceState.setState({
+      isDemoMode: false,
+      isExplorerMode: true,
+      isBridging: false,
+      demoLogs: [],
+    });
+    useTenantStore.setState(tenantScopedDefaults);
+    useUIStore.setState(uiScopedDefaults);
+    useActiveSubTabsStore.setState(activeSubTabsScopedDefaults);
+    useFeatureStore.getState().clear();
+    // Commands are partitioned by their original principal. Account lifecycle
+    // owns an explicit preserve/quarantine/discard transition; a UI-store reset
+    // must never silently destroy work that still needs reconciliation.
+    useMutationQueue.setState({ isSyncing: false });
+  });
 };
 
 export const rehydrateScopedStores = async () => {
@@ -67,8 +74,9 @@ export const rehydrateScopedStores = async () => {
     useAuthStore.persist?.rehydrate?.(),
     useTenantStore.persist?.rehydrate?.(),
     useUIStore.persist?.rehydrate?.(),
-    useGrowthStore.persist?.rehydrate?.(),
-    useFeatureStore.persist?.rehydrate?.(),
+    useActiveSubTabsStore.persist?.rehydrate?.(),
     useMutationQueue.persist?.rehydrate?.(),
   ]);
+  await migrateLegacyDismissalsForCurrentOwner();
+  await useExperienceState.persist.rehydrate();
 };

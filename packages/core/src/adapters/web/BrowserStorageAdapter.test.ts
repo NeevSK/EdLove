@@ -54,4 +54,20 @@ describe('BrowserStorageAdapter', () => {
     storage.set('session', 'in-memory-session');
     expect(storage.getString('session')).toBe('in-memory-session');
   });
+
+  it('reports durable write failure without accepting an in-memory-only value', async () => {
+    vi.stubGlobal('window', {
+      localStorage: {
+        getItem: () => null,
+        setItem: () => {
+          throw new Error('quota exceeded');
+        },
+        removeItem: () => undefined,
+      },
+    });
+    const storage = new BrowserStorageAdapter();
+
+    await expect(storage.setAsync('saved', 'value')).rejects.toThrow('quota exceeded');
+    expect(storage.getString('saved')).toBeUndefined();
+  });
 });

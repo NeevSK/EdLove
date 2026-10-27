@@ -1,502 +1,155 @@
+import { useChatMessages } from '@repo/community/hooks/useChatMessages';
+import { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
+import { useChatRealtime } from '@repo/community/hooks/useChatRealtime';
 import type { ChatMessage } from '@repo/community/types';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { useSafeMutation } from '@repo/core/hooks';
-import { storage } from '@repo/core/native';
-import { useStore, useTemporalStore } from '@repo/core/store';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { ChatComposer } from '@repo/ui/components/ChatComposer';
+import {
+  type ChatChannel,
+  ChatSendCommandSchema,
+} from '@repo/core/logic/schemas/chat-command.schema';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useAuthStore, useTemporalStore } from '@repo/core/store';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChatProvider } from '@repo/ui/context/ChatContext';
-import { MessageSquare } from '@repo/ui/icons';
-import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import type React from 'react';
-import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { FadeInDown } from 'react-native-reanimated';
-
-import { deliverQueuedMessages } from './chatQueueDelivery';
-
-let optimisticId = 0;
-
-const styles = StyleSheet.create({
-  listCentered: { paddingVertical: 20, flexGrow: 1, justifyContent: 'center' },
-  listStart: { paddingVertical: 20, flexGrow: 1, justifyContent: 'flex-start' },
-});
+import { Box, Text } from '@repo/ui/primitives';
+import type { ReactNode } from 'react';
+import {
+  type ChatComposerAccess,
+  ChatDeliveryNotice,
+  ChatHistory,
+  ChatInput,
+} from './chatPresentation';
 
 export interface SubscriptionConfig {
-  /** Supabase table name to listen on (e.g. 'group_messages') */
   table: string;
-  /** Row filter string (e.g. 'group_id=eq.<uuid>') */
   filter: string;
-  /** Query to fetch the full message row with author join after INSERT */
-  fetchById: (id: string) => Promise<ChatMessage | null>;
 }
-
 export interface BaseChatScreenProps {
-  /** Unique key for the Supabase realtime channel */
   channelKey: string;
   title: string;
   subtitle?: string;
-  fetchMessages: () => Promise<ChatMessage[]>;
-  sendMessage: (content: string) => Promise<ChatMessage>;
+  fetchMessages: (viewCutoff: string) => Promise<ChatMessage[]>;
+  channel: ChatChannel;
   subscription: SubscriptionConfig;
   onPressAuthor?: (userId: string, userName: string) => void;
-  headerRight?: React.ReactNode;
+  headerRight?: ReactNode;
   isBlocked?: boolean;
   blockedMessage?: string;
   isReadOnly?: boolean;
 }
 
-export default function BaseChatScreen({
-  channelKey,
-  title,
-  subtitle,
-  fetchMessages,
-  sendMessage: performSendMessage,
-  subscription,
-  onPressAuthor,
-  headerRight,
-  isBlocked,
-  blockedMessage,
-  isReadOnly,
-}: BaseChatScreenProps) {
-  const user = useStore((state) => state.user);
-  const isOffline = useTemporalStore((state) => state.isOffline);
-  const { t } = useTranslation();
-
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [failedMessage, setFailedMessage] = useState<string | null>(null);
-  const [queuedMessageCount, setQueuedMessageCount] = useState(0);
-  const [isFlushingQueue, setIsFlushingQueue] = useState(false);
-  const [queueError, setQueueError] = useState<string | null>(null);
-  const [retryNonce, setRetryNonce] = useState(0);
-  const [draft, setDraft] = useState('');
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
-  const [isPending, startTransition] = useTransition();
-  const isFlushingQueueRef = useRef(false);
-
-  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
-    messages,
-    (state: ChatMessage[], newMessage: ChatMessage) => [...state, newMessage],
-  );
-
-  const { mutate: sendMessage } = useSafeMutation<ChatMessage, string>(
-    (content: string) => performSendMessage(content),
-    {
-      mutationKey: 'sendMessage',
-      scope: 'chat',
-      mutationType: 'CREATE',
-      onError: (_error: unknown, content: string) => setFailedMessage(content),
-      onSuccess: (data: ChatMessage | null) => {
-        if (data) {
-          setMessages((prev) => [...prev, data]);
-        }
-      },
-    },
-  );
-
-  // Initial load — a local async function declared inside the effect is the
-  // sanctioned fetch-then-setState pattern for this repo's set-state-in-effect rule.
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const data = await fetchMessages();
-        setMessages(data);
-        setLoadError(null);
-      } catch (err) {
-        console.error('[BaseChatScreen] fetch error', err);
-        setLoadError(err instanceof Error ? err.message : 'Messages could not be loaded.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    void load();
-  }, [fetchMessages, retryNonce]);
-
-  // Real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel(channelKey)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: subscription.table,
-          filter: subscription.filter,
-        },
-        (payload) => {
-          void subscription
-            .fetchById(payload.new.id)
-            .then((msg) => {
-              if (!msg) return;
-              setMessages((prev) => {
-                if (prev.some((m) => m.id === msg.id)) return prev;
-                return [...prev, msg];
-              });
-            })
-            .catch((err: unknown) => {
-              console.error('[BaseChatScreen] realtime fetch error', err);
-            });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [channelKey, subscription]);
-
-  // Typing indicator via Supabase broadcast
-  useEffect(() => {
-    const typingChannel = supabase
-      .channel(`typing:${channelKey}`)
-      .on('broadcast', { event: 'typing' }, ({ payload }) => {
-        const name = (payload as { userId?: string; userName?: string })?.userName;
-        const uid = (payload as { userId?: string })?.userId;
-        if (!name || uid === user?.id) return;
-        setTypingUsers((prev) => (prev.includes(name) ? prev : [...prev, name]));
-        setTimeout(() => setTypingUsers((prev) => prev.filter((n) => n !== name)), 3000);
-      })
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(typingChannel);
-    };
-  }, [channelKey, user?.id]);
-
-  const handleTyping = (text: string) => {
-    setDraft(text);
-    if (text.length > 0 && text.length % 5 === 0) {
-      void supabase.channel(`typing:${channelKey}`).send({
-        type: 'broadcast',
-        event: 'typing',
-        payload: { userId: user?.id, userName: user?.full_name || 'Someone' },
-      });
-    }
-  };
-
-  const queueMessage = useCallback(
-    (content: string) => {
-      try {
-        const key = `chat_queue:${channelKey}`;
-        const raw = storage.getString(key);
-        const queued: string[] = raw ? JSON.parse(raw) : [];
-        queued.push(content);
-        storage.set(key, JSON.stringify(queued));
-        setQueuedMessageCount(queued.length);
-        setQueueError(null);
-        return true;
-      } catch (error) {
-        console.error('[BaseChatScreen] could not persist queued message', error);
-        setQueueError(
-          'This message could not be saved for retry. Restore the draft and try again.',
-        );
-        return false;
-      }
-    },
-    [channelKey],
-  );
-
-  useEffect(() => {
-    try {
-      const raw = storage.getString(`chat_queue:${channelKey}`);
-      const queued: string[] = raw ? JSON.parse(raw) : [];
-      setQueuedMessageCount(queued.length);
-    } catch (error) {
-      console.error('[BaseChatScreen] could not inspect queued messages', error);
-      setQueueError(
-        'Queued messages are temporarily unavailable. Your current draft is still safe.',
-      );
-    }
-  }, [channelKey]);
-
-  const flushQueuedMessages = useCallback(async () => {
-    if (isOffline || isFlushingQueueRef.current) return;
-
-    isFlushingQueueRef.current = true;
-    let startedVisualFeedback = false;
-    try {
-      const key = `chat_queue:${channelKey}`;
-      const raw = storage.getString(key);
-      if (!raw) return;
-      const queued: string[] = JSON.parse(raw);
-      if (queued.length === 0) return;
-      startedVisualFeedback = true;
-      setIsFlushingQueue(true);
-      setQueuedMessageCount(queued.length);
-
-      const result = await deliverQueuedMessages(queued, sendMessage);
-      if (result.status === 'delivered') {
-        storage.delete(key);
-        setQueuedMessageCount(0);
-        setQueueError(null);
-        return;
-      }
-
-      storage.set(key, JSON.stringify(result.remainingMessages));
-      setQueuedMessageCount(result.remainingMessages.length);
-      console.error('[BaseChatScreen] queued send error', result.error);
-      setQueueError(
-        'Some queued messages could not send yet. They are still saved and ready to retry.',
-      );
-    } catch (error) {
-      console.error('[BaseChatScreen] could not read queued messages', error);
-      setQueueError(
-        'Queued messages are temporarily unavailable. Your current draft is still safe.',
-      );
-    } finally {
-      isFlushingQueueRef.current = false;
-      if (startedVisualFeedback) setIsFlushingQueue(false);
-    }
-  }, [channelKey, isOffline, sendMessage]);
-
-  // Reconnection is an explicit delivery opportunity. The queue is drained in
-  // order and persisted after a failure so a later message cannot overtake it.
-  useEffect(() => {
-    if (!isOffline) void flushQueuedMessages();
-  }, [flushQueuedMessages, isOffline]);
-
-  // Send — offline queue via MMKV + backgroundSync
-  const handleSend = async () => {
-    const content = draft.trim();
-    if (!content || !user) return;
-    setDraft('');
-
-    startTransition(async () => {
-      const optimistic: ChatMessage = {
-        id: `opt-${++optimisticId}`,
-        author_id: user.id,
-        content,
-        created_at: new Date(),
-        author: {
-          full_name: user.full_name || 'You',
-          avatar_url: user.avatar_url ?? undefined,
-        },
-      };
-
-      addOptimisticMessage(optimistic);
-
-      // If offline, queue immediately and keep optimistic
-      if (isOffline) {
-        const wasQueued = queueMessage(content);
-        if (!wasQueued) {
-          setDraft(content);
-          setFailedMessage(content);
-        }
-        return;
-      }
-
-      try {
-        await sendMessage(content);
-      } catch (err) {
-        console.error('[BaseChatScreen] send error', err);
-        const wasQueued = queueMessage(content);
-        if (wasQueued) {
-          setFailedMessage(null);
-        } else {
-          setDraft(content);
-          setFailedMessage(content);
-        }
-      }
-    });
-  };
-
-  // Message renderer
-  const renderMessage = ({ item }: { item: ChatMessage }) => {
-    const isOwn = item.author_id === user?.id;
-    const authorName = item.author?.full_name || 'Unknown';
-    const time = new Date(item.created_at).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    return (
-      <HStack className={`justify-${isOwn ? 'end' : 'start'} mb-4 px-5`}>
-        {!isOwn && (
-          <Box className="mr-3">
-            <Pressable
-              onPress={() => onPressAuthor?.(item.author_id, authorName)}
-              className="bg-phase-surface rounded-full shadow-sm"
-              accessibilityRole="button"
-              accessibilityLabel={`View profile of ${authorName}`}
-              accessibilityHint="Opens this member's profile"
-            >
-              <UserAvatar avatarUrl={item.author?.avatar_url} fullName={authorName} size={32} />
-            </Pressable>
-          </Box>
-        )}
-
-        <VStack className={`max-w-[75%] gap-1 ${isOwn ? 'items-end' : 'items-start'}`}>
-          {!isOwn && (
-            <Text className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">
-              {authorName}
-            </Text>
-          )}
-          <Box
-            className={`px-4 py-3 rounded-2xl border ${
-              isOwn
-                ? 'bg-phase-interactive border-phase-interactive rounded-tr-sm'
-                : 'bg-phase-surface border-border rounded-tl-sm'
-            }`}
-          >
-            <Text
-              className={`text-sm leading-relaxed font-medium ${isOwn ? 'text-white' : 'text-ink'}`}
-            >
-              {item.content}
-            </Text>
-          </Box>
-          <Text className="text-[9px] font-bold text-ink/20 px-1">{time}</Text>
-        </VStack>
-      </HStack>
-    );
-  };
-
+export default function BaseChatScreen(props: BaseChatScreenProps) {
+  const principalId = useAuthStore((state) => state.user?.id);
+  if (!principalId) return <BrandedErrorState title="Sign in to open this conversation" />;
   return (
-    <ScreenWrapper scroll={false} noTopInset={true} className="bg-phase-canvas">
-      <GlobalHeader title={title} subtitle={subtitle} showBack rightAction={headerRight} />
+    <AccountChat
+      key={`${principalId}:${props.channel.kind}:${props.channel.id}`}
+      {...props}
+      principalId={principalId}
+    />
+  );
+}
 
+function composerAccess(props: BaseChatScreenProps): ChatComposerAccess {
+  if (props.isReadOnly) return { kind: 'history' };
+  if (props.isBlocked)
+    return {
+      kind: 'blocked',
+      message: props.blockedMessage ?? 'You cannot send messages to this sanctuary.',
+    };
+  return { kind: 'editable' };
+}
+
+function pendingMessages(
+  outbox: ReturnType<typeof useChatOutbox>,
+  principalId: string,
+  userName: string,
+): ChatMessage[] {
+  return outbox.pending.map((item) => {
+    const command = ChatSendCommandSchema.parse(item.variables);
+    return {
+      id: command.operationId,
+      author_id: principalId,
+      content: command.content,
+      created_at: new Date(item.timestamp),
+      author: { full_name: userName },
+    };
+  });
+}
+
+function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
+  const { principalId, channel, channelKey, fetchMessages, subscription } = props;
+  const userName = useAuthStore((state) => state.user?.full_name ?? 'You');
+  const { isOffline, isOnline } = useOfflineStatus();
+  const viewDate = useTemporalStore((state) => state.viewDate);
+  const outbox = useChatOutbox(principalId, channel);
+  const deferDelivery = isOffline || outbox.readPolicy === 'cached-only';
+  const history = useChatMessages({
+    principalId,
+    channel,
+    viewDate,
+    fetchMessages,
+    remoteEnabled: isOnline && outbox.readPolicy === 'live',
+  });
+  const realtime = useChatRealtime({
+    principalId,
+    channelKey,
+    userName,
+    canBroadcast: isOnline && !deferDelivery,
+    table: subscription.table,
+    filter: subscription.filter,
+    queryKey: history.queryKey,
+  });
+  const messages = history.data ?? [];
+  const pending = props.isReadOnly ? [] : pendingMessages(outbox, principalId, userName);
+  const visibleMessages = [
+    ...messages,
+    ...pending.filter((item) => !messages.some((saved) => saved.id === item.id)),
+  ];
+  const retry = async () => {
+    if (!deferDelivery) {
+      outbox.retryPending();
+      await history.refresh();
+    }
+  };
+  return (
+    <ScreenWrapper scroll={false} noTopInset className="bg-phase-canvas">
+      <GlobalHeader
+        title={props.title}
+        subtitle={props.subtitle}
+        showBack
+        rightAction={props.headerRight}
+      />
       <ChatProvider>
         <Box className="flex-1">
-          {loading ? (
-            <Box className="flex-1 items-center justify-center">
-              <BrandPulse size={32} accessibilityLabel="Loading messages" />
-              <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
-                Tuning Frequencies...
-              </Text>
-            </Box>
-          ) : loadError ? (
-            <BrandedErrorState
-              title="Messages could not settle"
-              message={isOffline ? 'Reconnect to try again.' : loadError}
-            >
-              <Pressable
-                onPress={() => setRetryNonce((value) => value + 1)}
-                accessibilityRole="button"
-                accessibilityLabel="Try loading messages again"
-              >
-                <Text className="text-phase-interactive font-bold">Try again</Text>
-              </Pressable>
-            </BrandedErrorState>
-          ) : (
-            <SanctuaryLegendList
-              keyboardLiftBehavior="always"
-              initialScrollAtEnd
-              maintainScrollAtEnd
-              data={optimisticMessages}
-              keyExtractor={(item) => item.id}
-              renderItem={renderMessage}
-              contentContainerStyle={messages.length === 0 ? styles.listCentered : styles.listStart}
-              showsVerticalScrollIndicator={false}
-              ListEmptyComponent={
-                <AnimatedView entering={FadeInDown.duration(800).springify()}>
-                  <Box className="items-center px-10">
-                    <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
-                      <Icon as={MessageSquare} size="lg" className="text-ink/20" />
-                    </Box>
-                    <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
-                      {t('chat.empty')}
-                    </Text>
-                  </Box>
-                </AnimatedView>
-              }
-            />
-          )}
-
-          {/* Compose bar */}
+          <ChatHistory
+            messages={visibleMessages}
+            loading={history.isLoading}
+            error={history.error}
+            unavailable={history.data === undefined}
+            retry={history.refresh}
+            principalId={principalId}
+            onPressAuthor={props.onPressAuthor}
+          />
           <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
-            {isOffline && !isReadOnly ? (
-              <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2">
-                <Text className="text-phase-warning text-[11px] font-semibold text-center">
-                  Offline — sending may be delayed until you reconnect.
-                </Text>
-              </Box>
-            ) : null}
-            {queuedMessageCount > 0 ? (
-              <Box
-                className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2"
-                accessibilityLiveRegion="polite"
-              >
-                <Text className="text-phase-warning text-[11px] font-semibold">
-                  {isFlushingQueue
-                    ? `Sending ${queuedMessageCount} queued ${queuedMessageCount === 1 ? 'message' : 'messages'}…`
-                    : `${queuedMessageCount} ${queuedMessageCount === 1 ? 'message is' : 'messages are'} queued securely. ${isOffline ? 'They will send when the connection returns.' : 'They are ready to retry.'}`}
-                </Text>
-              </Box>
-            ) : null}
-            {queueError ? (
-              <Box
-                className="mb-3 rounded-xl border border-phase-danger/30 bg-phase-danger/10 px-3 py-2"
-                accessibilityRole="alert"
-              >
-                <Text className="text-phase-danger text-[11px] font-semibold">{queueError}</Text>
-                {!isOffline ? (
-                  <Pressable
-                    onPress={() => void flushQueuedMessages()}
-                    accessibilityRole="button"
-                    accessibilityLabel="Retry queued messages"
-                    className="mt-2 self-start"
-                  >
-                    <Text className="text-phase-interactive text-[11px] font-bold">
-                      Retry queued messages
-                    </Text>
-                  </Pressable>
-                ) : null}
-              </Box>
-            ) : null}
-            {failedMessage ? (
-              <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2 flex-row items-center justify-between">
-                <Text className="text-phase-warning text-[11px] font-semibold">
-                  Message could not be sent or queued.
-                </Text>
-                <Pressable
-                  onPress={() => {
-                    setDraft(failedMessage);
-                    setFailedMessage(null);
-                  }}
-                >
-                  <Text className="text-phase-interactive text-[11px] font-bold">
-                    Restore draft
-                  </Text>
-                </Pressable>
-              </Box>
-            ) : null}
-            {isReadOnly ? (
-              <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
-                <Text className="text-ink/40 text-[11px] font-medium italic">
-                  {t('chat.historicalView')}
-                </Text>
-              </Box>
-            ) : isBlocked ? (
-              <Box className="py-2 items-center bg-phase-danger/5 rounded-xl border border-dashed border-phase-danger/20">
-                <Text className="text-phase-danger text-[11px] font-medium italic">
-                  {blockedMessage || 'You cannot send messages to this sanctuary.'}
-                </Text>
-              </Box>
-            ) : (
-              <>
-                <ChatComposer
-                  value={draft}
-                  onChangeText={handleTyping}
-                  onSend={() => void handleSend()}
-                  isSending={isPending}
-                  placeholder={t('chat.placeholder')}
-                />
-                {typingUsers.length > 0 ? (
-                  <Text className="text-[11px] text-ink/40 italic mt-2 px-1">
-                    {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing…
-                  </Text>
-                ) : null}
-              </>
+            {isOffline && !props.isReadOnly && (
+              <Text className="text-phase-warning text-[11px] font-semibold text-center">
+                Offline — sending may be delayed until you reconnect.
+              </Text>
             )}
+            <ChatDeliveryNotice
+              outbox={outbox}
+              deferred={deferDelivery}
+              hasLegacyQueue={outbox.hasLegacyQueue}
+              retry={retry}
+            />
+            <ChatInput
+              outbox={outbox}
+              access={composerAccess(props)}
+              onTyping={realtime.sendTyping}
+              typingUsers={realtime.typingUsers}
+            />
           </Box>
         </Box>
       </ChatProvider>

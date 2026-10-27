@@ -1,0 +1,32 @@
+
+📂  PHYSICAL NODE_MODULES AFFORDANCE: @orpc/server@2.0.0-beta.46
+Path: C:\x\node_modules\.pnpm\@orpc+server@2.0.0-beta.46_crossws@0.3.5_fastify@5.11.3\node_modules\@orpc\server
+Types: C:\x\node_modules\.pnpm\@orpc+server@2.0.0-beta.46_crossws@0.3.5_fastify@5.11.3\node_modules\@orpc\server\dist\index.d.mts
+Symbols Detected in .d.ts: 144
+
+🧩 GROUNDED COMPONENTS:
+  AnyMetaPlugin, AnySchema, ErrorMap, ErrorMapItem, InferSchemaInput, InferSchemaOutput, InitialInputSchema, InitialOutputSchema, MergedErrorMap, MergedSchema, Meta, MetaPlugin, MetaPluginDefinition, ORPCErrorConstructorMap, ORPCErrorConstructorMapItem, ORPCErrorConstructorMapItemOptions, ORPCErrorFactory, ORPCErrorFactoryOptions, ORPCErrorFromErrorMap, ProcedureContract, ProcedureContractDefinition, RouterContract, Schema, ValidationError, AsyncCleanupFn, AsyncIteratorClass, AsyncIteratorClassNextFn, DistributiveOmit, IntersectPick, MaybeOptionalOptions, PromiseWithError, Public, Registry, ThrowableError, LazyDefinition, MiddlewareDefinition, MiddlewareDone, MiddlewareDoneOptions, MiddlewareNext, MiddlewareNextOptions, MiddlewareOptions, MiddlewareResult, ProcedureClientInterceptor, ProcedureClientInterceptorOptions, ProcedureDefinition, ProcedureHandlerOptions, InferRouterCurrentContexts, InferRouterError, InferRouterErrors, InferRouterFinalContexts, InferRouterInitialContexts, InferRouterInputs, InferRouterOutputs, AnyORPCError, AnyORPCErrorJSON, COMMON_ERROR_STATUS_MAP, Client, ClientContext, ClientOptions, ClientRest, FriendlyClientOptions, ORPCError, ORPCErrorCode, ORPCErrorJSON, ORPCErrorOptions, RPCJsonSerialization, RPCJsonSerializationMeta, RPCJsonSerializer, RPCJsonSerializerHandler, RPCJsonSerializerOptions, RPCSerializer, RPCSerializerOptions, RPCSerializerSerializeOptions, SafeResult, ErrorEvent, EventMeta, StandardBody, StandardBodyHint, StandardHeaders, StandardLazyRequest, StandardLazyResponse, StandardMethod, StandardRequest, StandardResponse, StandardUrl, AnyMiddleware, AnyProcedure, AnyRouter, Builder, Context, ContractedRouter, DEFAULT_ERROR_STATUS, DEFAULT_SUCCESS_STATUS, DecoratedProcedure, ImplementedProcedure, InferRouterInitialContext, Lazy, Lazyable, MergedContext, MergedInitialContext, Middleware, OrderedMiddleware, Procedure, ProcedureClient, ProcedureClientOptions, ProcedureConfig, ProcedureHandler, ProcedureImplementer, Router, SharedRouterImplementer
+
+⚡ GROUNDED FUNCTIONS:
+  asyncIteratorObject, defineMeta, error, eventIterator, type, asyncIteratorToStream, asyncIteratorToUnproxiedDataStream, eventIteratorToStream, eventIteratorToUnproxiedDataStream, onAsyncIteratorObjectError, onError, onFinish, onReadableStreamError, onStart, onSuccess
+
+📖 EXTRACTED CODE SNIPPET (FROM README/EXAMPLE):
+import { os } from '@orpc/server'
+import * as z from 'zod'
+
+export const router = {
+  planet: {
+    find: os
+      .input(z.object({ id: z.number() }))
+      .handler(({ input }) => ({ id: input.id, name: 'Earth' })),
+  },
+}
+
+📋 PRE-FLIGHT AGENT PROMPT:
+[PHYSICAL NODE_MODULES AFFORDANCE: @orpc/server@2.0.0-beta.46]
+Located at: C:\x\node_modules\.pnpm\@orpc+server@2.0.0-beta.46_crossws@0.3.5_fastify@5.11.3\node_modules\@orpc\server
+Grounded in real .d.ts declarations (144 symbols detected):
+  • Valid Components: AnyMetaPlugin, AnySchema, ErrorMap, ErrorMapItem, InferSchemaInput, InferSchemaOutput, InitialInputSchema, InitialOutputSchema
+  • Valid Functions: asyncIteratorObject, defineMeta, error, eventIterator, type, asyncIteratorToStream, asyncIteratorToUnproxiedDataStream, eventIteratorToStream
+CRITICAL: Any API not declared in the real .d.ts will fail at compile time. DO NOT hallucinate older Major-N APIs.
+

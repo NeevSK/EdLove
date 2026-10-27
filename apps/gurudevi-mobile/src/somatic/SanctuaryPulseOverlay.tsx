@@ -1,11 +1,14 @@
+import { useActorSnapshot } from '@repo/core/hooks';
+import { sanctuaryPulseMachine } from '@repo/self/machines/sanctuaryPulseMachine';
 import { Mascot } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { sensoryFeedback } from '@repo/ui/sensory';
 import * as Haptics from 'expo-haptics';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   AccessibilityInfo,
   Modal,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   View,
@@ -18,56 +21,67 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { createActor } from 'xstate';
 
 export interface SanctuaryPulseOverlayProps {
   visible: boolean;
   onDismiss: () => void;
   isPlayfulMode?: boolean;
+  onSessionComplete?: (durationSeconds: number) => void;
 }
 
-type BreathPhase = 'inhale' | 'hold' | 'exhale';
-
-const INHALE_MS = 4000;
-const HOLD_MS = 4000;
-const EXHALE_MS = 4000;
-const TOTAL_CYCLE_MS = INHALE_MS + HOLD_MS + EXHALE_MS; // 12,000ms
+const PHASE_DURATION_MS = 4000;
 
 /**
  * SanctuaryPulseOverlay
  *
  * Somatic decompression space. Awakens when the device is shaken or triggered manually.
  * Combines Reanimated radial luminance, progressive haptics, and the Firefly companion
- * to guide the nervous system into steady regulation.
+ * to guide the nervous system into steady regulation via deterministic XState v6 statechart.
  */
 export function SanctuaryPulseOverlay({
   visible,
   onDismiss,
   isPlayfulMode = false,
+  onSessionComplete,
 }: SanctuaryPulseOverlayProps) {
-  const [phase, setPhase] = useState<BreathPhase>('inhale');
-  const [cycleCount, setCycleCount] = useState<number>(1);
+  // Deterministic XState v6 box breathing machine
+  const actor = useMemo(() => {
+    const act = createActor(sanctuaryPulseMachine);
+    act.start();
+    return act;
+  }, []);
+
+  const snapshot = useActorSnapshot(actor);
+  const phase = snapshot.context.phase;
+  const cycleCount = snapshot.context.cycleCount;
 
   // Animation values for the breathing pulse
   const scale = useSharedValue(1);
   const glowOpacity = useSharedValue(0.3);
 
-  const notifyPhaseChange = (nextPhase: BreathPhase) => {
-    setPhase(nextPhase);
-    void Haptics.selectionAsync().catch(() => {});
-  };
-
-  const advanceCycle = () => {
-    setCycleCount((prev) => prev + 1);
-  };
+  // Sync sensory feedback to machine phase transitions
+  useEffect(() => {
+    if (!visible) return;
+    if (phase === 'inhale') {
+      sensoryFeedback.emit('breath-start');
+    } else if (phase === 'exhale') {
+      sensoryFeedback.emit('breath-end');
+    } else if (phase === 'holdIn' || phase === 'holdOut') {
+      sensoryFeedback.emit('selection');
+    }
+  }, [phase, visible]);
 
   useEffect(() => {
     if (!visible) {
+      actor.send({ type: 'INTERRUPT' });
       scale.value = 1;
       glowOpacity.value = 0.3;
-      setPhase('inhale');
-      setCycleCount(1);
       return;
     }
+
+    // Start or restart session in statechart
+    actor.send({ type: 'START', isPlayfulMode });
 
     // Announce to screen readers
     AccessibilityInfo.announceForAccessibility(
@@ -79,36 +93,19 @@ export function SanctuaryPulseOverlay({
     // Initial shock-absorption haptic
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 
-    // Phase timer loops
-    let cycleTimer: NodeJS.Timeout | null = null;
-    let holdTimer: NodeJS.Timeout | null = null;
-    let exhaleTimer: NodeJS.Timeout | null = null;
-
-    const startCycle = () => {
-      notifyPhaseChange('inhale');
-
-      holdTimer = setTimeout(() => {
-        notifyPhaseChange('hold');
-      }, INHALE_MS);
-
-      exhaleTimer = setTimeout(() => {
-        notifyPhaseChange('exhale');
-      }, INHALE_MS + HOLD_MS);
-
-      cycleTimer = setTimeout(() => {
-        advanceCycle();
-        startCycle();
-      }, TOTAL_CYCLE_MS);
-    };
-
-    startCycle();
+    // Phase ticker interval - exactly 4000ms per phase of Box Breathing
+    const phaseTimer = setInterval(() => {
+      actor.send({ type: 'TICK_PHASE' });
+    }, PHASE_DURATION_MS);
 
     // Reanimated 4 smooth breathing curve (ease-in-out)
+    // 4 phases: Inhale (4s) -> HoldIn (4s) -> Exhale (4s) -> HoldOut (4s)
     scale.value = withRepeat(
       withSequence(
-        withTiming(1.4, { duration: INHALE_MS, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1.4, { duration: HOLD_MS }), // hold at apex
-        withTiming(1.0, { duration: EXHALE_MS, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1.4, { duration: PHASE_DURATION_MS, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1.4, { duration: PHASE_DURATION_MS }), // hold apex
+        withTiming(1.0, { duration: PHASE_DURATION_MS, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1.0, { duration: PHASE_DURATION_MS }), // rest base
       ),
       -1,
       false,
@@ -116,22 +113,22 @@ export function SanctuaryPulseOverlay({
 
     glowOpacity.value = withRepeat(
       withSequence(
-        withTiming(0.75, { duration: INHALE_MS, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.75, { duration: HOLD_MS }),
-        withTiming(0.25, { duration: EXHALE_MS, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.75, { duration: PHASE_DURATION_MS, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.75, { duration: PHASE_DURATION_MS }),
+        withTiming(0.25, { duration: PHASE_DURATION_MS, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.25, { duration: PHASE_DURATION_MS }),
       ),
       -1,
       false,
     );
 
     return () => {
-      if (cycleTimer) clearTimeout(cycleTimer);
-      if (holdTimer) clearTimeout(holdTimer);
-      if (exhaleTimer) clearTimeout(exhaleTimer);
+      clearInterval(phaseTimer);
+      actor.send({ type: 'INTERRUPT' });
       scale.value = 1;
       glowOpacity.value = 0.3;
     };
-  }, [visible, isPlayfulMode]);
+  }, [visible, isPlayfulMode, actor]);
 
   const animatedRingStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -139,6 +136,12 @@ export function SanctuaryPulseOverlay({
   }));
 
   const handleDismiss = () => {
+    const elapsedSeconds = snapshot.context.totalDurationSeconds;
+    if (elapsedSeconds >= 12 && onSessionComplete) {
+      onSessionComplete(elapsedSeconds);
+    }
+
+    actor.send({ type: 'INTERRUPT' });
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     onDismiss();
   };
@@ -147,10 +150,15 @@ export function SanctuaryPulseOverlay({
     switch (phase) {
       case 'inhale':
         return 'Breathe in with the gentle light…';
-      case 'hold':
+      case 'holdIn':
         return 'Hold peacefully. You are safe here.';
       case 'exhale':
         return 'Let it go softly…';
+      case 'holdOut':
+        return 'Rest in stillness. Center yourself.';
+      case 'idle':
+      default:
+        return 'Take a gentle breath…';
     }
   };
 
@@ -205,7 +213,7 @@ export function SanctuaryPulseOverlay({
           <View style={styles.promptContainer}>
             <Text style={styles.phasePrompt}>{getPhasePrompt()}</Text>
             <Text style={styles.cycleIndicator}>
-              Breath {cycleCount} • Inhale 4s • Hold 4s • Exhale 4s
+              Breath {cycleCount || 1} • Inhale 4s • Hold 4s • Exhale 4s • Rest 4s
             </Text>
           </View>
 

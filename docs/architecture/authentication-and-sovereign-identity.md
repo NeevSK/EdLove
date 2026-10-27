@@ -2,7 +2,7 @@
 title: "Gurudevi Authentication and Sovereign Identity Authority"
 status: "active"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-25
 author: "Naveen"
 scribe: "Codex"
 tags: [architecture, authentication, identity, authorization, supabase, mobile, web, ai, passkeys]
@@ -24,6 +24,11 @@ evidence; they must defer to this document where they conflict.
 1. `public.users.id` is the durable Gurudevi citizen/account identifier. It is
    never an auth-provider subject, email address, phone number, device ID, or
    AI-agent ID.
+   It is now the canonical EdLove Identity/account UUIDv8, issued by the
+   database in the account-creation transaction. The separately assigned
+   `users.edlove_id` architecture is retired by the pre-production cutover
+   authorized on 2026-10-25. Supabase `auth.users.id` and JWT `sub` remain
+   unchanged credential subjects in `auth_identities`.
 2. Supabase Auth is the live human credential issuer for the first production
    convergence. It owns password, OAuth, email OTP/magic link, phone OTP,
    token refresh, and supported MFA/passkey ceremonies.
@@ -161,12 +166,69 @@ additively into three concerns rather than a provider-shaped grab bag:
    account-bound queries on change, clears derived state, and routes to the
    lifecycle-appropriate surface.
 
-The API's composite verifier must become configuration-gated: its fallback
-between issuers is unsuitable for ordinary human requests. A request is
+The API's composite verifier is configuration-gated as of 2026-10-25: rejection
+does not fall through to another issuer, and unimplemented Neon/Databricks
+verifiers fail loudly. A request is
 verified by the issuer selected for its entrypoint and environment; accepted
 issuer, audience, algorithm, and key source are explicit policy.
 
+Sanctuary's Supabase adapter now requires a non-nil UUID session claim and
+checks `/auth/v1/user` after local cryptographic verification on every bearer
+request. The direct oRPC context builder uses the same check and rejects an
+invalid presented credential rather than treating it as a visitor. The
+provider response must identify the same credential subject. No live-session
+success is cached; a provider rejection denies access and a network, timeout,
+malformed-response or availability failure surfaces a 503 without a
+signature-only fallback. The HTTP request uses HTTPS policy, no-store,
+redirect rejection and a five-second abort signal. Production configuration
+requires the provider URL and a publishable/anon key even with a static
+signature-verification key.
+
+This keeps live provider verification in the credential adapter, independent
+of the domain database host. It does not require an `auth.sessions` join from
+a Neon-hosted domain database. Account mapping and lifecycle checks still run
+against the canonical domain store after provider verification. Only the
+existing admitted bare test identities bypass the provider in test runtime.
+
+The deployed provider's revocation/ban behavior still requires a real hosted
+acceptance ceremony. This API contract does not establish revocation latency
+for direct PostgREST, browser SDK operations or an existing PowerSync stream,
+and it does not implement recent-auth/MFA assurance for sensitive commands.
+Supabase documents the distinction between signature validity and live
+session existence in its [session guide](https://supabase.com/docs/guides/auth/sessions)
+and [server-side guide](https://supabase.com/docs/guides/auth/server-side/advanced-guide).
+
 ## 7. Linking, recovery, and audit
+
+The auth gateway rejects missing provider configuration in every environment;
+it never fabricates a session, OTP dispatch or refresh success. It uses a
+publishable/anon key and bounded secure transport. Provider availability and
+rate-limit failures remain distinct from invalid credentials, and successful
+token responses must satisfy the provider session shape. Gateway sign-out
+confirms success only after an acknowledged global provider logout.
+
+Browser password entry does not silently resubmit credentials directly to
+the provider after a configured gateway failure. Magic-link entry uses the
+configured provider SDK to maintain its PKCE verifier/challenge state. This
+is credential-provider adaptation; domain account mutations remain owned by
+Sanctuary.
+
+Browser sign-out continues cookie, local SDK and transient storage cleanup
+when remote revocation fails. It verifies local session removal instead of
+inferring it from the SDK error alone. Incomplete cleanup or unconfirmed
+required revocation produces a structured `SignOutIncompleteError`; it does
+not silently report a complete global logout. SSR cookie-clearing headers
+survive a provider error response. The inactivity path presents an explicit
+incomplete-sign-out notice. Auth state never retains a session after a
+reported teardown error, and distinguishes confirmed local cleanup from an
+unavailable cleanup result.
+
+The SDK may clear its local session before returning a remote error. This
+behavior was checked in installed auth-js 2.117.2 `_signOut`; see the official
+[sign-out contract](https://supabase.com/docs/reference/javascript/auth-signout).
+Multi-step cleanup is not an atomic transaction. A local success does not
+prove other-device revocation, cache/queue isolation, or audit persistence;
+those remain separately evidenced contracts.
 
 Every link, unlink, recovery, credential enrollment/revocation, session-wide
 sign-out, and lifecycle transition creates an immutable security audit event
@@ -195,13 +257,25 @@ The internal account identifier must be independent of Supabase, Better Auth,
 or any other issuer. EdLove owns the durable identifier profile; Gurudevi is a
 participating EdLove domain, not an identifier universe of its own.
 
-New durable cross-product account/identity entities adopt the EdLove UUIDv8
-profile in
+Accounts use the EdLove UUIDv8 profile in
 [`edlove-sovereign-uuidv8-specification.md`](edlove-sovereign-uuidv8-specification.md)
-after a dedicated implementation and migration proposal. UUIDv7 remains the
-default for high-volume operational or event rows that do not need durable
-cross-product segmentation. Existing primary keys are not rewritten merely to
-standardize them.
+through `public.new_edlove_account_id()` and a database constraint on
+`public.users.id`. The approved pre-production migration rekeys existing
+accounts and their domain references atomically, promotes an already assigned
+handle where present, and rejects legacy-format account writes. UUIDv7 remains
+the default for high-volume operational or event rows outside this account
+cutover.
+
+`canonical_account_id` is a server-owned access-token claim for sync and client
+admission. It never replaces `sub`; server authorization still resolves the
+verified subject through the binding ledger and persisted relationships.
+Business RLS and functions use `public.get_my_id()`, while the credential
+ledger uses `auth.uid()`. New tokens require the configured
+`canonical_account_access_token_hook`; stale clients/tokens fail rather than
+falling back to subject-as-account identity.
+
+The implementation and exact evidence limits are recorded in the
+[canonical cutover record](../current_progress/2026-10-25-canonical-uuidv8-account-cutover.md).
 
 The UUIDv8 profile has a versioned bit layout, CSPRNG-only entropy, retry and
 clock rules, database/TypeScript conformance vectors, and a controlled

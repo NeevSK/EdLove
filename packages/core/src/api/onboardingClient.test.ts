@@ -18,7 +18,7 @@ import { completeOnboarding, createInitialBond } from './onboardingClient';
 
 const scopeBootstrap = {
   version: 1 as const,
-  userId: '123e4567-e89b-12d3-a456-426614174000',
+  userId: '123e4567-e89b-8101-8000-426614174000',
   name: 'Nila Sen',
   primaryCapacity: 'teacher',
   selection: 'selected' as const,
@@ -81,6 +81,31 @@ describe('canonical onboarding compatibility client', () => {
       operation: 'createInitialBond.request',
       cause: failure,
     });
+  });
+
+  it('retains captured-session context and completion intent through both Effect commands', async () => {
+    const expectedSession = {
+      accessToken: 'fixture-access',
+      subject: 'f0560000-0000-4000-8000-000000000001',
+    };
+    const idempotencyKey = '123e4567-e89b-12d3-a456-426614174002';
+    mocks.createInitialBond.mockResolvedValue({ success: true, scopeBootstrap });
+    mocks.completeOnboarding.mockResolvedValue({ success: true, receiptId: null, replayed: false });
+    const input = {
+      orientation: 'teacher' as const,
+      confirmCapacityChange: false,
+      context: { displayName: 'Nila Sen' },
+    };
+    await createInitialBond(input, expectedSession);
+    await completeOnboarding({ idempotencyKey }, expectedSession);
+    expect(mocks.createInitialBond).toHaveBeenCalledWith(
+      { body: input },
+      { context: { expectedSession, retry: 0 } },
+    );
+    expect(mocks.completeOnboarding).toHaveBeenCalledWith(
+      { body: { idempotencyKey } },
+      { context: { expectedSession, retry: 0 } },
+    );
   });
 
   it('rejects malformed server responses rather than guessing scope state', async () => {

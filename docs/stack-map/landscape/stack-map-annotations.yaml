@@ -2,7 +2,7 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-10-13
+  updated: 2026-10-27
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
 
 package_entries:
@@ -108,6 +108,26 @@ package_entries:
   @repo/ui:
     layer: ui
     summary: "Shared design system & shell primitives for the whole product family."
+    floating: undecided
+  @repo/verger-android:
+    layer: domain
+    summary: "Verger's Android half: sensing and the app-wide hardware levers, as an Expo module. It measures and actuates; every decision is made by `@repo/verger-core` in JavaScript. It knows no host app."
+    floating: undecided
+  @repo/verger-core:
+    layer: domain
+    summary: "Verger is an app-level resource supervisor, subordinate to the operating system: it senses pressure, sheds work in a declared order, recovers when the pressure passes, and reports every decision. This package is the host-neutral decision layer: a pure reducer, the runtime loop, telemetry, replay and experiment assignment. It imports nothing and names no app."
+    floating: undecided
+  @repo/verger-react:
+    layer: domain
+    summary: "Verger's React bindings, for any React platform: hooks over the process's verger (no provider) and the long-task observer."
+    floating: undecided
+  @repo/verger-react-native:
+    layer: domain
+    summary: "Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and long tasks, and applies the global reduced-motion lever."
+    floating: undecided
+  @repo/verger-web:
+    layer: domain
+    summary: "Verger in the browser: the browser platform (device facts from the navigator), its device signals (network, battery), a localStorage store, and the VergerBrowser shell for React web apps."
     floating: undecided
   @repo/workforce:
     layer: domain

@@ -1,13 +1,25 @@
+import {
+  assertSupabaseSessionContinuity,
+  readSupabaseSession,
+} from '@repo/core/adapters/supabase/sessionContinuity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import type { SessionContinuity } from '@repo/core/api/clientRuntime';
 import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { type Identity, IdentitySchema } from '@repo/core/api/identity.generated';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
+import {
+  CompleteProfileSchema,
+  type ProfileCompletionDetails,
+  UserProfilePatchSchema,
+} from '@repo/core/logic/schemas/profileUpdate.schema';
 import { APIError } from '@repo/core/types/API';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
-import { strictRetryPolicy, tryPromise } from '@repo/core/utils/effect';
+import { strictRetryPolicy } from '@repo/core/utils/effect';
 import { Data, Duration, Effect, pipe } from 'effect';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
@@ -23,9 +35,12 @@ registerTokenResolver(async () => {
 
 registerActiveBondIdResolver(async () => {
   try {
-    const { data } = await supabaseClient.auth.getUser();
-    if (!data?.user?.id) return null;
-    const persisted = await storage.getStringAsync(`active_perspective_${data.user.id}`);
+    const session = await readSupabaseSession();
+    if (!session) return null;
+    const accountId = getActiveAccountId();
+    if (!accountId) return null;
+    const persisted = await storage.getStringAsync(`active_perspective_${accountId}`);
+    if (getActiveAccountId() !== accountId) return null;
     if (!persisted) return null;
     const parsed = JSON.parse(persisted) as { activeBond?: { id?: string } };
     return parsed.activeBond?.id ?? null;
@@ -76,18 +91,12 @@ function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Prom
 export class SupabaseIdentityAdapter implements IIdentityPort {
   async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
     if (provider !== 'supabase') return null;
-    const { data, error } = await supabaseClient.auth.getUser();
-    if (error) throw error;
-    if (data.user?.id !== providerUserId) return null;
-    const identity = await this.identifyActiveCitizen();
-    const current = await supabaseClient.auth.getUser();
-    if (current.error) throw current.error;
-    if (current.data.user?.id !== providerUserId) {
-      throw new APIError(
-        'The authenticated session changed during identity resolution.',
-        'AUTH_SESSION_CHANGED',
-      );
-    }
+    const session = await readSupabaseSession();
+    if (session?.user.id !== providerUserId) return null;
+    const identity = await this.resolveSessionIdentity({
+      accessToken: session.access_token,
+      subject: providerUserId,
+    });
     return identity?.id ?? null;
   }
 
@@ -102,19 +111,23 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async identifyActiveCitizen(): Promise<Identity | null> {
-    const { data, error } = await supabaseClient.auth.getUser();
-    if (error) throw error;
-    const user = data?.user;
-    if (!user) return null;
-    const identity = IdentitySchema.parse(await orpcClient.identity.identifyActiveCitizen({}));
-    const current = await supabaseClient.auth.getUser();
-    if (current.error) throw current.error;
-    if (current.data.user?.id !== user.id) {
-      throw new APIError(
-        'The authenticated session changed during identity resolution.',
-        'AUTH_SESSION_CHANGED',
-      );
-    }
+    const session = await readSupabaseSession();
+    if (!session) return null;
+    return this.resolveSessionIdentity({
+      accessToken: session.access_token,
+      subject: session.user.id,
+    });
+  }
+
+  private async resolveSessionIdentity(expectedSession: SessionContinuity): Promise<Identity> {
+    const identity = IdentitySchema.parse(
+      await orpcClient.identity.identifyActiveCitizen(
+        {},
+        { context: { expectedSession, retry: 0 } },
+      ),
+    );
+    CanonicalAccountIdSchema.parse(identity.id);
+    await assertSupabaseSessionContinuity(expectedSession);
     return identity;
   }
 
@@ -212,161 +225,39 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     );
   }
 
-  async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
-    const identity = context.userId
-      ? ({ id: context.userId } as { id: string })
-      : await this.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
-    const userId = identity.id;
-
-    const profile = await runEffect(
-      supabaseCall(() =>
-        supabaseClient.from('users').select('is_anonymous').eq('id', userId).single(),
-      ).pipe(Effect.map((r: any) => r as { is_anonymous: boolean | null })),
-    );
-
-    const isSupabaseAnonymous = profile?.is_anonymous === true;
-    const citizenship: 'THIRD_CLASS' | 'SECOND_CLASS' = isSupabaseAnonymous
-      ? 'THIRD_CLASS'
-      : 'SECOND_CLASS';
-
-    let username =
-      typeof context.username === 'string' ? context.username.trim().toLowerCase() : null;
-    if (username && !/^[a-z0-9_-]{3,30}$/.test(username)) {
-      username = null;
-    }
-
-    let full_name = typeof context.fullName === 'string' ? context.fullName.trim() : '';
-    if (!full_name) {
-      const first = typeof context.firstName === 'string' ? context.firstName.trim() : '';
-      const last = typeof context.lastName === 'string' ? context.lastName.trim() : '';
-      full_name = [first, last].filter(Boolean).join(' ');
-    }
-    if (!full_name) {
-      full_name =
-        typeof context.displayName === 'string' ? context.displayName.trim() : 'Sanctuary User';
-    }
-    if (!full_name || full_name.length === 0) {
-      full_name = 'Sanctuary User';
-    }
-
-    const display_name =
-      typeof context.displayName === 'string' && context.displayName.trim()
-        ? context.displayName.trim()
-        : full_name || 'Gurudevi User';
-
-    let finalPersonalClassroomId: string | null = null;
-    {
-      const isTeacherOrPrincipal = [
-        'teacher',
-        'principal',
-        'section_head',
-        'grade_head',
-        'founder',
-        'assistant_principal',
-        'developer',
-      ].includes(orientation);
-
-      let classroomType = 'unrelated_classroom';
-      let classroomName = `${display_name}'s Personal Workspace`;
-
-      if (isTeacherOrPrincipal) {
-        classroomType = 'teacher_classroom';
-        classroomName = `${display_name}'s Classroom`;
-      } else if (orientation === 'student') {
-        classroomType = 'student_classroom';
-        classroomName = `${display_name}'s Student Workspace`;
-      }
-
-      const pcResult = await Effect.runPromise(
-        supabaseCall(() =>
-          supabaseClient
-            .from('personal_classrooms')
-            .insert({
-              name: classroomName,
-              type: classroomType,
-              user_id: userId,
-            })
-            .select('id')
-            .single(),
-        ).pipe(
-          Effect.catch((e: SupabaseQueryError) => {
-            console.error(
-              '[createInitialBond] Failed to initialize personal classroom record:',
-              e.message,
-            );
-            return Effect.succeed(null);
-          }),
-        ),
+  async createInitialBond(orientation: Capacity, context: Record<string, unknown>): Promise<void> {
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    if (context.userId !== undefined && context.userId !== identity.id) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
       );
-
-      if (pcResult) {
-        finalPersonalClassroomId = (pcResult as any).id;
-      }
     }
-
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update({
-            display_name,
-            full_name,
-            first_name: context.firstName ?? null,
-            last_name: context.lastName ?? null,
-            username,
-            identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying',
-            school_id: null,
-            citizenship,
-            capacity: orientation,
-          })
-          .eq('id', userId),
-      ),
-    );
-
-    const entity_type = 'PERSONAL_CLASSROOM';
-    const entity_id = finalPersonalClassroomId || 'PERSONAL_WORKSPACE';
-
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient.from('bonds').upsert(
-          {
-            user_id: userId,
-            entity_id,
-            entity_type,
-            capacity: orientation,
-            metadata: context.metadata || {},
-          },
-          { onConflict: 'user_id,entity_id,capacity' },
-        ),
-      ),
+    await orpcClient.onboarding.createInitialBond(
+      {
+        body: {
+          orientation,
+          confirmCapacityChange: context.confirmCapacityChange === true,
+          context,
+        },
+      },
+      { context: { expectedAccountId: identity.id, retry: 0 } },
     );
   }
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
-    const normalizedUpdates: Record<string, unknown> = { ...updates };
-    if ('email' in normalizedUpdates && normalizedUpdates.email === '') {
-      normalizedUpdates.email = null;
+    const identity = await this.identifyActiveCitizen();
+    if (!identity || identity.id !== userId) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
     }
-
-    if (
-      'first_name' in normalizedUpdates ||
-      'last_name' in normalizedUpdates ||
-      'display_name' in normalizedUpdates
-    ) {
-      const firstName =
-        typeof normalizedUpdates.first_name === 'string' ? normalizedUpdates.first_name : null;
-      const lastName =
-        typeof normalizedUpdates.last_name === 'string' ? normalizedUpdates.last_name : null;
-      const displayName =
-        typeof normalizedUpdates.display_name === 'string' ? normalizedUpdates.display_name : '';
-      const resolvedName =
-        displayName || [firstName, lastName].filter(Boolean).join(' ') || 'Gurudevi User';
-      normalizedUpdates.display_name = resolvedName;
-    }
-
-    await runEffect(
-      supabaseCall(() => supabaseClient.from('users').update(normalizedUpdates).eq('id', userId)),
+    const body = UserProfilePatchSchema.parse(updates);
+    await orpcClient.identity.modifyUserProfile(
+      { params: { id: userId }, body },
+      { context: { expectedAccountId: userId, retry: 0 } },
     );
   }
 
@@ -392,111 +283,44 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     );
   }
 
-  async completeProfile(userId: string, data: any): Promise<void> {
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update({
-            display_name:
-              data.displayName ||
-              [data.firstName, data.lastName].filter(Boolean).join(' ') ||
-              'Gurudevi User',
-            first_name: data.firstName ?? null,
-            last_name: data.lastName ?? null,
-            username: data.username ?? null,
-            identity_state: 'onboarded',
-            capacity_label: data.capacityLabel,
-            bio: data.bio,
-            index_number: data.indexNumber,
-            nic_number: data.nicNumber,
-            profile_completed: true,
-          })
-          .eq('id', userId),
-      ),
+  async completeProfile(userId: string, data: ProfileCompletionDetails): Promise<void> {
+    const identity = await this.identifyActiveCitizen();
+    if (!identity || identity.id !== userId) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
+    }
+    const body = CompleteProfileSchema.parse({
+      display_name:
+        data.displayName ||
+        [data.firstName, data.lastName].filter(Boolean).join(' ') ||
+        'Gurudevi User',
+      first_name: data.firstName ?? null,
+      last_name: data.lastName ?? null,
+      username: data.username ?? null,
+      capacity_label: data.capacityLabel,
+      bio: data.bio,
+      index_number: data.indexNumber,
+      nic_number: data.nicNumber,
+    });
+    await orpcClient.onboarding.completeProfile(
+      { body },
+      { context: { expectedAccountId: userId, retry: 0 } },
     );
   }
 
   async completeOnboarding(userId: string): Promise<void> {
-    const self = this;
-
-    await Effect.runPromise(
-      Effect.gen(function* () {
-        const bonds = yield* tryPromise(() => self.getBonds(userId)).pipe(
-          Effect.catch(() => Effect.succeed<Bond[]>([])),
-        );
-
-        if (bonds.length === 0) {
-          const profile = yield* tryPromise(() => self.getProfile(userId)).pipe(
-            Effect.catch(() => Effect.succeed(null)),
-          );
-
-          if (profile) {
-            const capacity = (profile as any).capacity || 'teacher';
-
-            const pc = yield* supabaseCall(() =>
-              supabaseClient
-                .from('personal_classrooms')
-                .insert({
-                  name: `${(profile as any).display_name || 'Sanctuary'}'s Workspace`,
-                  type: capacity === 'student' ? 'student_classroom' : 'teacher_classroom',
-                  user_id: userId,
-                })
-                .select('id')
-                .single(),
-            ).pipe(
-              Effect.catch((e: SupabaseQueryError) => {
-                console.error(
-                  '[completeOnboarding] Failed to create default personal classroom:',
-                  e.message,
-                );
-                return Effect.succeed(null);
-              }),
-            );
-
-            if (pc) {
-              yield* supabaseCall(() =>
-                supabaseClient.from('bonds').upsert(
-                  {
-                    user_id: userId,
-                    entity_id: (pc as any).id,
-                    entity_type: 'PERSONAL_CLASSROOM',
-                    capacity: capacity,
-                    metadata: {},
-                  },
-                  { onConflict: 'user_id,entity_id,capacity' },
-                ),
-              ).pipe(
-                Effect.catch((e: SupabaseQueryError) => {
-                  console.error(
-                    '[completeOnboarding] Failed to create default PERSONAL_CLASSROOM bond:',
-                    e.message,
-                  );
-                  return Effect.void;
-                }),
-              );
-            }
-          }
-        }
-      }).pipe(
-        Effect.catch((e: unknown) => {
-          console.warn('[completeOnboarding] Failed to check/create default sanctuary:', e);
-          return Effect.void;
-        }),
-      ),
-    );
-
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update({
-            onboarding_completed: true,
-            onboarding_completed_at: new Date().toISOString(),
-            identity_state: 'onboarded',
-          })
-          .eq('id', userId),
-      ),
+    const identity = await this.identifyActiveCitizen();
+    if (!identity || identity.id !== userId) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
+    }
+    await orpcClient.onboarding.completeOnboarding(
+      { body: {} },
+      { context: { expectedAccountId: userId, retry: 0 } },
     );
   }
 }

@@ -197,7 +197,13 @@ export type {
 } from './Workbench';
 export type {
   DomainFeature,
+  FeatureJourneySpec,
+  FeatureLifecycleStage,
+  FloorWallpaperConfig,
   ResolvedWorkspaceSurface,
+  ScreenSequenceStep,
+  SensoryFeedbackProfile,
+  WallpaperPlaybackMode,
   WorkspaceAppearance,
   WorkspaceAppearanceMotion,
   WorkspaceAppearancePreset,
@@ -206,13 +212,12 @@ export type {
   WorkspaceRendererConfig,
   WorkspaceRendererMode,
   WorkspaceRendererPlatform,
+  WorkspaceRolePersona,
   WorkspaceRuntimePlatform,
   WorkspaceSurfaceDefinition,
   WorkspaceSwitcherDestination,
   WorkspaceSwitcherTarget,
   WorkspaceSwitcherTargetId,
-  FloorWallpaperConfig,
-  WallpaperPlaybackMode,
   WorkspaceWallpaper,
   WorkspaceZoneId,
 } from './Workspace';
@@ -226,3 +231,4 @@ export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
 export * from './Perspective';
 export * from './EducationalEconomics';
+export * from './FlowDAG';

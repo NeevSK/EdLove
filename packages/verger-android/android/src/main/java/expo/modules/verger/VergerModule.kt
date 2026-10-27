@@ -34,11 +34,16 @@ class VergerModule : Module() {
 
     Function("readExits") { sinceWallMs: Double -> DeviceFacts.exits(context(), sinceWallMs) }
 
+    // Lets the next launch match the exit record to this process, not merely to a time.
+    Function("readProcessId") { android.os.Process.myPid() }
+
     Function("start") { options: Map<String, Any?> ->
       sense().start(parseConfig(options), appContext.currentActivity)
     }
 
     Function("stop") { sense?.stop() }
+
+    Function("setSensors") { sensors: Map<String, Any?> -> sense?.setSensors(Sensors.parse(sensors)) }
 
     Function("setRefreshCap") { hz: Double? -> sense().setRefreshCap(hz) }
 
@@ -46,10 +51,8 @@ class VergerModule : Module() {
 
     Function("readTotals") { sense?.totals() ?: emptyMap<String, Any?>() }
 
-    OnActivityEntersForeground { sense?.onForeground(appContext.currentActivity) }
-
-    OnActivityEntersBackground { sense?.onBackground() }
-
+    // Foreground and background are followed by VergerSense itself, from the platform's
+    // activity callbacks: this binding keeps only what any module API offers.
     OnDestroy {
       sense?.destroy()
       sense = null
@@ -78,6 +81,8 @@ class VergerModule : Module() {
       ),
       headroomWarm = number("headroomWarm"),
       saturationCores = number("saturationCores"),
+      cpuHeadroomBusyPercent = number("cpuHeadroomBusyPercent"),
+      sensors = Sensors.parse(options["sensors"] as? Map<*, *>),
     )
   }
 }

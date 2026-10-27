@@ -1,7 +1,9 @@
+import { useAuthStore } from '@repo/core/store';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/core/api/client';
-import { cryptoManager, runAttendanceAudit, usePermissions, useStore } from '@repo/core';
+import { cryptoManager, runAttendanceAudit, usePermissions } from '@repo/core';
 import type { MultimodalContent } from '@tanstack/ai-client';
 import { useChat, xhrHttpStream } from '@tanstack/ai-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -118,8 +120,8 @@ async function detectCoordinationGaps(
  */
 export function useAIAgent() {
   const { can } = usePermissions();
-  const userRole = useStore((state) => state.activeBond?.capacity ?? null);
-  const user = useStore((state) => state.user);
+  const userRole = useScopeSessionStore((state) => state.snapshot?.activeBond?.capacity ?? null);
+  const user = useAuthStore(state => state.user);
 
   // Billing configuration states
   const [billingMode, setBillingModeState] = useState<'baseline' | 'byok' | 'purchased'>(

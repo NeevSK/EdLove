@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-const STORAGE_KEY = 'gurudevi_pdpa_consent';
+import {
+  getClientConsentStatus,
+  PDPA_CONSENT_EVENT,
+  setClientConsentStatus,
+} from '../../lib/privacy/consent';
 
 export function PDPAConsentBanner() {
   const [mounted, setMounted] = useState(false);
@@ -11,10 +14,21 @@ export function PDPAConsentBanner() {
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
+    const status = getClientConsentStatus();
+    // Only show if consent has not been set, and GPC/webdriver signals are not actively defaulting it
+    if (status === 'unset') {
       setVisible(true);
     }
+
+    const handleConsentChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{ status: string }>;
+      if (customEvent.detail?.status !== 'unset') {
+        setVisible(false);
+      }
+    };
+
+    window.addEventListener(PDPA_CONSENT_EVENT, handleConsentChange);
+    return () => window.removeEventListener(PDPA_CONSENT_EVENT, handleConsentChange);
   }, []);
 
   if (!mounted || !visible) {
@@ -22,14 +36,7 @@ export function PDPAConsentBanner() {
   }
 
   function handleDecision(granted: boolean) {
-    const value = granted ? 'granted' : 'declined';
-    try {
-      localStorage.setItem(STORAGE_KEY, value);
-      // Set 1-year cookie for SSR awareness
-      document.cookie = `${STORAGE_KEY}=${value}; path=/; max-age=31536000; SameSite=Lax`;
-    } catch {
-      // Ignore storage errors in private browsing
-    }
+    setClientConsentStatus(granted);
     setVisible(false);
   }
 

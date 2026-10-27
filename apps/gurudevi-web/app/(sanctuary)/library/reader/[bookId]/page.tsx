@@ -1,5 +1,7 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../../../lib/supabase/server';
 import { signInPath } from '../../../auth/routeSafety';
@@ -14,26 +16,48 @@ interface ReaderPageProps {
 
 export default async function ReaderPage({ params }: ReaderPageProps) {
   const { bookId } = await params;
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore = classifyGurudeviHost(host) === 'explore';
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <PDFReaderFloor bookId={bookId} displayName="Guest Explorer" />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <ReaderState
-        displayName="Explorer"
-        title="Document reader is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <PDFReaderFloor bookId={bookId} displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <ReaderState
-        action={<Link href={signInPath(`/library/reader/${bookId}`)}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to view library documents and textbooks."
-        title="Document reader is private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <PDFReaderFloor bookId={bookId} displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 

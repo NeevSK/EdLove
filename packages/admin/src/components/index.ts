@@ -23,4 +23,5 @@ export { default as StaffDirectory } from '@repo/admin/components/principal/Staf
 export { default as StaffPresencePulse } from '@repo/admin/components/principal/StaffPulse';
 export { default as StudentEnrollmentPulse } from '@repo/admin/components/principal/StudentEnrollmentPulse';
 export { default as TeacherCarousel } from '@repo/admin/components/principal/TeacherCarousel';
+export { PrincipalSetupWizard } from '@repo/admin/components/principal/PrincipalSetupWizard';
 export { default as CreateSchoolModal } from '@repo/admin/components/school/CreateSchoolModal';

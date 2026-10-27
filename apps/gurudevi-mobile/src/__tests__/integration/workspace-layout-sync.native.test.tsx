@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi, waitFor } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   getLayout: vi.fn(),
@@ -32,6 +32,9 @@ vi.mock('@repo/core/api/orpcClient', () => ({
 vi.mock('@repo/core/lib/storageWrapper', () => ({
   SafeZustandStorage: { getItem: mocks.getItem, setItem: mocks.setItem, removeItem: vi.fn() },
   setStorageItemDurably: mocks.setStorageItemDurably,
+}));
+vi.mock('@repo/core/lib/storage', () => ({
+  storage: { setAsync: mocks.setStorageItemDurably },
 }));
 
 vi.mock('@repo/core/lib/sync/useMutationQueue', () => ({
@@ -89,11 +92,9 @@ describe('native workspace layout sync lifecycle', () => {
     mocks.setStorageItemDurably.mockResolvedValue(undefined);
     mocks.getLayout.mockResolvedValue(null);
     mocks.upsertWorkspaceLayout.mockResolvedValue(remoteLayout());
-    mocks.patchWorkspaceLayout.mockResolvedValue({
-      status: 'completed',
-      operationId: '11111111-1111-7111-8111-111111111112',
-      serverRevision: 5,
-    });
+    mocks.patchWorkspaceLayout.mockImplementation(({ body }: { body: { operationId: string } }) =>
+      Promise.resolve({ status: 'completed', operationId: body.operationId, serverRevision: 5 }),
+    );
     mocks.addToQueue.mockResolvedValue(undefined);
   });
 
@@ -101,6 +102,146 @@ describe('native workspace layout sync lifecycle', () => {
     queryClient.clear();
     vi.clearAllMocks();
     vi.restoreAllMocks();
+  });
+
+  it('adopts initial pins into one local durable owner and toggles from the current session value', async () => {
+    const pinSurfaces = ['journal', 'mood'].map((surfaceId, defaultOrder) => ({
+      surfaceId,
+      workspaceId: 'self',
+      capabilityKey: surfaceId,
+      ownerPackage: 'core' as const,
+      defaultZone: 'work' as const,
+      defaultOrder,
+    }));
+    const wrapper = ({ children }: { children: React.ReactNode }) =>
+      createElement(QueryClientProvider, { client: queryClient }, children);
+    const view = renderHook(
+      () =>
+        useWorkspaceLayoutSync({
+          workspaceId: 'self',
+          userId,
+          surfaces: pinSurfaces,
+          initialPinnedSurfaceIds: pinSurfaces.map((surface) => surface.surfaceId),
+          enableRemoteSync: false,
+        }),
+      { wrapper },
+    );
+    await waitFor(() => expect(view.result.current.isHydrated).toBe(true));
+    act(() => view.result.current.toggleSurfacePinned('journal'));
+    expect(view.result.current.layout?.pinned).toEqual(['mood']);
+    expect(view.result.current.layout?.isDefault).toBe(false);
+    await waitFor(() => expect(mocks.setItem).toHaveBeenCalled());
+    expect(JSON.parse(mocks.setItem.mock.calls.at(-1)![1]).pinned).toEqual(['mood']);
+    const toggle = view.result.current.toggleSurfacePinned;
+    act(() => {
+      toggle('mood');
+      toggle('mood');
+    });
+    expect(view.result.current.layout?.pinned).toEqual(['mood']);
+    expect(mocks.patchWorkspaceLayout).not.toHaveBeenCalled();
+  });
+
+  it('does not seed legacy pins over a saved remote empty layout with a historical default flag', async () => {
+    mocks.getLayout.mockResolvedValue({ ...remoteLayout(), is_default: true });
+    const pinSurfaces = ['journal', 'mood'].map((surfaceId, defaultOrder) => ({
+      surfaceId,
+      workspaceId: 'self',
+      capabilityKey: surfaceId,
+      ownerPackage: 'core' as const,
+      defaultZone: 'work' as const,
+      defaultOrder,
+    }));
+    const wrapper = ({ children }: { children: React.ReactNode }) =>
+      createElement(QueryClientProvider, { client: queryClient }, children);
+    const view = renderHook(
+      () =>
+        useWorkspaceLayoutSync({
+          workspaceId: 'self',
+          userId,
+          surfaces: pinSurfaces,
+          initialPinnedSurfaceIds: pinSurfaces.map((surface) => surface.surfaceId),
+        }),
+      { wrapper },
+    );
+    await waitFor(() => expect(view.result.current.isInitialLayout).toBe(false));
+    expect(view.result.current.layout?.pinned).toEqual([]);
+    act(() => view.result.current.toggleSurfacePinned('mood'));
+    expect(view.result.current.layout?.pinned).toEqual(['mood']);
+  });
+
+  it('retains every other legacy pin when removing one from an initial set above the new cap', async () => {
+    const pinSurfaces = ['journal', 'mood', 'sleep'].map((surfaceId, defaultOrder) => ({
+      surfaceId,
+      workspaceId: 'self',
+      capabilityKey: surfaceId,
+      ownerPackage: 'core' as const,
+      defaultZone: 'work' as const,
+      defaultOrder,
+    }));
+    const wrapper = ({ children }: { children: React.ReactNode }) =>
+      createElement(QueryClientProvider, { client: queryClient }, children);
+    const view = renderHook(
+      () =>
+        useWorkspaceLayoutSync({
+          workspaceId: 'self',
+          userId,
+          surfaces: pinSurfaces,
+          initialPinnedSurfaceIds: pinSurfaces.map((surface) => surface.surfaceId),
+          enableRemoteSync: false,
+        }),
+      { wrapper },
+    );
+    await waitFor(() => expect(view.result.current.isHydrated).toBe(true));
+    act(() => view.result.current.toggleSurfacePinned('journal'));
+    expect(view.result.current.layout?.pinned).toEqual(['mood', 'sleep']);
+  });
+
+  it('does not resurrect initial pins after the final customized pin is removed and restored', async () => {
+    const pinSurfaces = (['journal', 'mood'] as const).map((surfaceId, defaultOrder) => ({
+      surfaceId,
+      workspaceId: 'self',
+      capabilityKey: surfaceId,
+      ownerPackage: 'core' as const,
+      defaultZone: 'work' as const,
+      defaultOrder,
+    }));
+    const wrapper = ({ children }: { children: React.ReactNode }) =>
+      createElement(QueryClientProvider, { client: queryClient }, children);
+    const view = renderHook(
+      () =>
+        useWorkspaceLayoutSync<'journal' | 'mood'>({
+          workspaceId: 'self',
+          userId,
+          surfaces: pinSurfaces,
+          initialPinnedSurfaceIds: ['journal'],
+          enableRemoteSync: false,
+        }),
+      { wrapper },
+    );
+    await waitFor(() => expect(view.result.current.isHydrated).toBe(true));
+    act(() => view.result.current.toggleSurfacePinned('journal'));
+    expect(view.result.current.layout?.pinned).toEqual([]);
+    await waitFor(() => expect(mocks.setItem).toHaveBeenCalled());
+    const saved = mocks.setItem.mock.calls.at(-1)![1] as string;
+    view.unmount();
+    mocks.getItem.mockImplementation(async (key: string) =>
+      key.startsWith('workspace-layout-intent:') ? null : saved,
+    );
+    const restored = renderHook(
+      () =>
+        useWorkspaceLayoutSync<'journal' | 'mood'>({
+          workspaceId: 'self',
+          userId,
+          surfaces: pinSurfaces,
+          initialPinnedSurfaceIds: ['journal'],
+          enableRemoteSync: false,
+        }),
+      { wrapper },
+    );
+    await waitFor(() => expect(restored.result.current.isHydrated).toBe(true));
+    expect(restored.result.current.layout?.pinned).toEqual([]);
+    act(() => restored.result.current.toggleSurfacePinned('mood'));
+    expect(restored.result.current.layout?.pinned).toEqual(['mood']);
   });
 
   it('retains a local appearance edit made while the target read is pending', async () => {
@@ -157,24 +298,26 @@ describe('native workspace layout sync lifecycle', () => {
   });
 
   it('reapplies a newer local cache only for groups that differ from the remote layout', async () => {
-    mocks.getItem.mockResolvedValue(
-      JSON.stringify({
-        workspaceId: 'self',
-        userId,
-        order: ['journal'],
-        hidden: [],
-        pinned: [],
-        zoneBySurface: { journal: 'today' },
-        groupOrder: ['wellbeing'],
-        isDefault: false,
-        surfaceMetadata: {
-          __workspaceAppearance: { preset: 'night', motion: 'off' },
-          __workspaceGroupOrder: ['wellbeing'],
-        },
-        appearance: { preset: 'night', motion: 'off' },
-        revision: 4,
-        updatedAt: '2026-10-11T00:00:00.000Z',
-      }),
+    mocks.getItem.mockImplementation(async (key: string) =>
+      key.startsWith('workspace-layout:')
+        ? JSON.stringify({
+            workspaceId: 'self',
+            userId,
+            order: ['journal'],
+            hidden: [],
+            pinned: [],
+            zoneBySurface: { journal: 'today' },
+            groupOrder: ['wellbeing'],
+            isDefault: false,
+            surfaceMetadata: {
+              __workspaceAppearance: { preset: 'night', motion: 'off' },
+              __workspaceGroupOrder: ['wellbeing'],
+            },
+            appearance: { preset: 'night', motion: 'off' },
+            revision: 4,
+            updatedAt: '2026-10-11T00:00:00.000Z',
+          })
+        : null,
     );
     mocks.getLayout.mockResolvedValue(remoteLayout());
 

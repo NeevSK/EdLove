@@ -1,4 +1,9 @@
 import { z } from 'zod';
+import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
+
+export const CanonicalAccountIdSchema = z
+  .uuid()
+  .refine(isEdloveAccountId, 'Canonical account must be an EdLove Identity/account UUIDv8');
 
 export const CapacitySchema = z.enum([
   'admin',

@@ -10,6 +10,16 @@ export function requiresHttps(nodeEnv = process.env.NODE_ENV): boolean {
   return nodeEnv !== 'development' && nodeEnv !== 'test';
 }
 
+export function resolveTlsTerminationMode(
+  environment: Readonly<Record<string, string | undefined>> = process.env,
+): 'direct' | 'render' {
+  const mode = environment.SANCTUARY_TLS_TERMINATION ?? 'direct';
+  if (mode === 'direct') return mode;
+  if (mode === 'render' && environment.RENDER === 'true' && environment.RENDER_SERVICE_ID?.trim())
+    return mode;
+  throw new Error('Invalid Sanctuary TLS termination configuration.');
+}
+
 const RESERVED_DISALLOWED_SUBDOMAINS = new Set([
   'explore',
   'api',
@@ -67,9 +77,17 @@ export function resolveAllowedCorsOrigin(
   return null;
 }
 
-export function requireHttpsMiddleware(nodeEnv = process.env.NODE_ENV) {
+export function requireHttpsMiddleware(
+  nodeEnv = process.env.NODE_ENV,
+  tlsTermination = resolveTlsTerminationMode(),
+) {
   return createMiddleware<RequestIdEnv>(async (c, next) => {
-    if (!requiresHttps(nodeEnv) || new URL(c.req.url).protocol === 'https:') {
+    const requestUrl = new URL(c.req.url);
+    const admittedRenderRequest =
+      tlsTermination === 'render' &&
+      (c.req.header('x-forwarded-proto') === 'https' ||
+        (c.req.method === 'GET' && requestUrl.pathname === '/health/live'));
+    if (!requiresHttps(nodeEnv) || requestUrl.protocol === 'https:' || admittedRenderRequest) {
       await next();
       return;
     }

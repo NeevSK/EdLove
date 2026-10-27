@@ -16,7 +16,7 @@ import type { RouterClient } from '@orpc/server';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import type { AppContractClient, SafeAppContractClient } from './appContract';
 import { SOVEREIGN_ORPC_URL } from './base';
-import { authenticatedSovereignFetch } from './clientRuntime';
+import { authenticatedSovereignFetch, type SessionContinuity } from './clientRuntime';
 
 // Bridge ORPCError.prototype.status to COMMON_ERROR_STATUS_MAP for full backwards compatibility
 if (!Object.getOwnPropertyDescriptor(ORPCError.prototype, 'status')) {
@@ -79,9 +79,9 @@ if (codecProto && !codecProto._resilientDecodePatched) {
   codecProto._resilientDecodePatched = true;
 }
 
-
 export interface ClientContext extends ClientRetryPluginContext {
   expectedAccountId?: string;
+  expectedSession?: SessionContinuity;
   cache?: RequestCache;
 }
 
@@ -129,11 +129,14 @@ const link = new RPCLink<ClientContext>({
         },
         { condition: () => true, context: {} },
       ],
-      filter: ({ request }) => request.method === 'GET',
+      filter: ({ request, context }) =>
+        request.method === 'GET' &&
+        context?.expectedSession === undefined &&
+        context?.expectedAccountId === undefined,
     }),
     new BatchLinkPlugin({
       filter: ({ context }) =>
-        context?.expectedAccountId === undefined,
+        context?.expectedAccountId === undefined && context?.expectedSession === undefined,
       groups: [
         {
           condition: ({ context }) => context?.cache === 'force-cache',
@@ -148,9 +151,10 @@ const link = new RPCLink<ClientContext>({
       url,
       {
         ...init,
-        cache: context?.cache,
+        cache: context?.expectedSession ? 'no-store' : context?.cache,
       },
       context?.expectedAccountId,
+      context?.expectedSession,
     );
   },
 });

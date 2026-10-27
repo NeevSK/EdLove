@@ -68,7 +68,7 @@ export const userPreferences = sqliteTable(
  *
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const bonds = sqliteTable(
   'bonds',
@@ -266,6 +266,26 @@ export const learningReflections = sqliteTable(
   ],
 );
 
+export const jurisdictionNodes = sqliteTable(
+  'jurisdiction_nodes',
+  {
+    id: text('id').primaryKey(),
+    level: text('level').notNull(),
+    code: text('code').notNull(),
+    nameEn: text('name_en').notNull(),
+    nameSi: text('name_si'),
+    nameTa: text('name_ta'),
+    parentId: text('parent_id'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('jurisdiction_nodes_level_idx').on(table.level),
+    index('jurisdiction_nodes_parent_idx').on(table.parentId),
+    index('jurisdiction_nodes_code_idx').on(table.code),
+  ],
+);
+
 export const schools = sqliteTable('schools', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -399,6 +419,104 @@ export const guardianBonds = sqliteTable(
   ],
 );
 
+
+export const joyMoments = sqliteTable(
+  'joy_moments',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    studentName: text('student_name'),
+    momentDescription: text('moment_description').notNull(),
+    category: text('category').notNull().default('breakthrough'),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('joy_moments_user_idx').on(table.userId),
+    index('joy_moments_created_idx').on(table.createdAt),
+  ],
+);
+
+export const gratitudeGlimmers = sqliteTable(
+  'gratitude_glimmers',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    content: text('content').notNull(),
+    category: text('category').notNull().default('personal-win'),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('gratitude_glimmers_user_idx').on(table.userId),
+    index('gratitude_glimmers_created_idx').on(table.createdAt),
+  ],
+);
+
+export const sleepLogs = sqliteTable(
+  'sleep_logs',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    quality: integer('quality').notNull(),
+    hoursSlept: real('hours_slept'),
+    note: text('note'),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('sleep_logs_user_idx').on(table.userId),
+    index('sleep_logs_created_idx').on(table.createdAt),
+  ],
+);
+
+export const timetablePeriods = sqliteTable(
+  'timetable_periods',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    dayOfWeek: integer('day_of_week').notNull(),
+    periodNumber: integer('period_number').notNull(),
+    subject: text('subject').notNull(),
+    className: text('class_name').notNull(),
+    type: text('type').notNull().default('subject'),
+    startTime: text('start_time').notNull(),
+    endTime: text('end_time').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('timetable_periods_user_day_idx').on(table.userId, table.dayOfWeek),
+  ],
+);
+
+export const dailyPrepItems = sqliteTable(
+  'daily_prep_items',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    itemText: text('item_text').notNull(),
+    prepDate: text('prep_date').notNull(),
+    isCompleted: integer('is_completed', { mode: 'boolean' }).notNull().default(false),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('daily_prep_items_user_date_idx').on(table.userId, table.prepDate),
+  ],
+);
+
+export const personalReminders = sqliteTable(
+  'personal_reminders',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    title: text('title').notNull(),
+    scheduledTime: text('scheduled_time').notNull(),
+    isRecurring: integer('is_recurring', { mode: 'boolean' }).notNull().default(false),
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('personal_reminders_user_time_idx').on(table.userId, table.scheduledTime),
+  ],
+);
+
 export const AppSchema = {
   bonds,
   classroomStudents,
@@ -410,6 +528,7 @@ export const AppSchema = {
   thoughtRecords,
   learningReflections,
   schools,
+  jurisdictionNodes,
   cedarPolicies,
   permissionSnapshots,
   policyVersion,
@@ -421,6 +540,12 @@ export const AppSchema = {
   tuitionInstitutes,
   tuitionBatches,
   guardianBonds,
+  joyMoments,
+  gratitudeGlimmers,
+  sleepLogs,
+  timetablePeriods,
+  dailyPrepItems,
+  personalReminders,
 };
 
 // Tables that are NOT in the PowerSync publication scope (20260812000000_powersync_publication.sql).
@@ -511,3 +636,25 @@ export type InsertTuitionBatch = typeof tuitionBatches.$inferInsert;
 
 export type GuardianBond = typeof guardianBonds.$inferSelect;
 export type InsertGuardianBond = typeof guardianBonds.$inferInsert;
+
+
+export type JoyMoment = typeof joyMoments.$inferSelect;
+export type InsertJoyMoment = typeof joyMoments.$inferInsert;
+
+export type GratitudeGlimmer = typeof gratitudeGlimmers.$inferSelect;
+export type InsertGratitudeGlimmer = typeof gratitudeGlimmers.$inferInsert;
+
+export type SleepLog = typeof sleepLogs.$inferSelect;
+export type InsertSleepLog = typeof sleepLogs.$inferInsert;
+
+export type TimetablePeriod = typeof timetablePeriods.$inferSelect;
+export type InsertTimetablePeriod = typeof timetablePeriods.$inferInsert;
+
+export type DailyPrepItem = typeof dailyPrepItems.$inferSelect;
+export type InsertDailyPrepItem = typeof dailyPrepItems.$inferInsert;
+
+export type PersonalReminder = typeof personalReminders.$inferSelect;
+export type InsertPersonalReminder = typeof personalReminders.$inferInsert;
+
+export type JurisdictionNode = typeof jurisdictionNodes.$inferSelect;
+export type InsertJurisdictionNode = typeof jurisdictionNodes.$inferInsert;

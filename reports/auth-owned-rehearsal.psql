@@ -1,0 +1,629 @@
+\set ON_ERROR_STOP on
+SET search_path=public,extensions;
+DO $$ BEGIN IF current_setting('edlove.rehearsal_tag',true) IS DISTINCT FROM '20261025' THEN RAISE EXCEPTION 'Unexpected rehearsal database'; END IF; END $$;
+\echo APPLY 20260211170000_master_baseline.sql
+\i /tmp/auth-rehearsal-migrations/20260211170000_master_baseline.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260211170000');
+\echo APPLY 20260211173500_fix_rls_recursion.sql
+\i /tmp/auth-rehearsal-migrations/20260211173500_fix_rls_recursion.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260211173500');
+\echo APPLY 20260211193000_fix_rls_recursion_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260211193000_fix_rls_recursion_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260211193000');
+\echo APPLY 20260211194000_force_fix_users_rls.sql
+\i /tmp/auth-rehearsal-migrations/20260211194000_force_fix_users_rls.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260211194000');
+\echo APPLY 20260211195000_robust_users_repair.sql
+\i /tmp/auth-rehearsal-migrations/20260211195000_robust_users_repair.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260211195000');
+\echo APPLY 20260211200000_expand_user_roles.sql
+\i /tmp/auth-rehearsal-migrations/20260211200000_expand_user_roles.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260211200000');
+\echo APPLY 20260215102312_create_manifestos.sql
+\i /tmp/auth-rehearsal-migrations/20260215102312_create_manifestos.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260215102312');
+\echo APPLY 20260215122427_fix_schools_schema_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260215122427_fix_schools_schema_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260215122427');
+\echo APPLY 20260216000000_consolidated_fixes.sql
+\i /tmp/auth-rehearsal-migrations/20260216000000_consolidated_fixes.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260216000000');
+\echo APPLY 20260216000001_fix_runtime_errors.sql
+\i /tmp/auth-rehearsal-migrations/20260216000001_fix_runtime_errors.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260216000001');
+\echo APPLY 20260216000002_fix_users_sync.sql
+\i /tmp/auth-rehearsal-migrations/20260216000002_fix_users_sync.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260216000002');
+\echo APPLY 20260217000000_add_anonymous_users.sql
+\i /tmp/auth-rehearsal-migrations/20260217000000_add_anonymous_users.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260217000000');
+\echo APPLY 20260217120000_make_user_email_nullable.sql
+\i /tmp/auth-rehearsal-migrations/20260217120000_make_user_email_nullable.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260217120000');
+\echo APPLY 20260217180925_add_journal_entries_and_students.sql
+\i /tmp/auth-rehearsal-migrations/20260217180925_add_journal_entries_and_students.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260217180925');
+\echo APPLY 20260217192416_fix_rls_privilege_escalation.sql
+\i /tmp/auth-rehearsal-migrations/20260217192416_fix_rls_privilege_escalation.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260217192416');
+\echo APPLY 20260217193045_fix_rls_insert_vulnerabilities.sql
+\i /tmp/auth-rehearsal-migrations/20260217193045_fix_rls_insert_vulnerabilities.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260217193045');
+\echo APPLY 20260228105048_add_thuthimal_gifts_table.sql
+\i /tmp/auth-rehearsal-migrations/20260228105048_add_thuthimal_gifts_table.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260228105048');
+\echo APPLY 20260228105055_academic_year_dimensions.sql
+\i /tmp/auth-rehearsal-migrations/20260228105055_academic_year_dimensions.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260228105055');
+\echo APPLY 20260228105056_classroom_and_social_features.sql
+\i /tmp/auth-rehearsal-migrations/20260228105056_classroom_and_social_features.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260228105056');
+\echo APPLY 20260228105057_group_messages.sql
+\i /tmp/auth-rehearsal-migrations/20260228105057_group_messages.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260228105057');
+\echo APPLY 20260228105058_principal_notes.sql
+\i /tmp/auth-rehearsal-migrations/20260228105058_principal_notes.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260228105058');
+\echo APPLY 20260228110000_notifications_table.sql
+\i /tmp/auth-rehearsal-migrations/20260228110000_notifications_table.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260228110000');
+\echo APPLY 20260302093414_community_group_enhancements.sql
+\i /tmp/auth-rehearsal-migrations/20260302093414_community_group_enhancements.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302093414');
+\echo APPLY 20260302093429_submissions_graded_at.sql
+\i /tmp/auth-rehearsal-migrations/20260302093429_submissions_graded_at.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302093429');
+\echo APPLY 20260302093440_notification_triggers.sql
+\i /tmp/auth-rehearsal-migrations/20260302093440_notification_triggers.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302093440');
+\echo APPLY 20260302093454_orientation_seeds.sql
+\i /tmp/auth-rehearsal-migrations/20260302093454_orientation_seeds.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302093454');
+\echo APPLY 20260302093635_submissions_rls_fixed.sql
+\i /tmp/auth-rehearsal-migrations/20260302093635_submissions_rls_fixed.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302093635');
+\echo APPLY 20260302094048_library_alignment_v3.sql
+\i /tmp/auth-rehearsal-migrations/20260302094048_library_alignment_v3.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302094048');
+\echo APPLY 20260302094049_versatile_search.sql
+\i /tmp/auth-rehearsal-migrations/20260302094049_versatile_search.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302094049');
+\echo APPLY 20260302094129_staff_management_alignment.sql
+\i /tmp/auth-rehearsal-migrations/20260302094129_staff_management_alignment.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302094129');
+\echo APPLY 20260302110000_increment_growth_dimension_local_v1.sql
+\i /tmp/auth-rehearsal-migrations/20260302110000_increment_growth_dimension_local_v1.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260302110000');
+\echo APPLY 20260303000000_auth_final_fix.sql
+\i /tmp/auth-rehearsal-migrations/20260303000000_auth_final_fix.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260303000000');
+\echo APPLY 20260303000001_direct_messaging.sql
+\i /tmp/auth-rehearsal-migrations/20260303000001_direct_messaging.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260303000001');
+\echo APPLY 20260303000002_founder_dashboard.sql
+\i /tmp/auth-rehearsal-migrations/20260303000002_founder_dashboard.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260303000002');
+\echo APPLY 20260303000003_ownership_pillars.sql
+\i /tmp/auth-rehearsal-migrations/20260303000003_ownership_pillars.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260303000003');
+\echo APPLY 20260306000000_privacy_ledger.sql
+\i /tmp/auth-rehearsal-migrations/20260306000000_privacy_ledger.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260306000000');
+\echo APPLY 20260306000001_social_shields_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260306000001_social_shields_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260306000001');
+\echo APPLY 20260306120000_student_insights.sql
+\i /tmp/auth-rehearsal-migrations/20260306120000_student_insights.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260306120000');
+\echo APPLY 20260308000000_identity_architecture.sql
+\i /tmp/auth-rehearsal-migrations/20260308000000_identity_architecture.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260308000000');
+\echo APPLY 20260308000001_ecosystem_stats_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260308000001_ecosystem_stats_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260308000001');
+\echo APPLY 20260308000002_thuthimal_ripple_notification_triggers.sql
+\i /tmp/auth-rehearsal-migrations/20260308000002_thuthimal_ripple_notification_triggers.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260308000002');
+\echo APPLY 20260309000000_identity_rls_fix.sql
+\i /tmp/auth-rehearsal-migrations/20260309000000_identity_rls_fix.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260309000000');
+\echo APPLY 20260309000001_identity_function_fix.sql
+\i /tmp/auth-rehearsal-migrations/20260309000001_identity_function_fix.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260309000001');
+\echo APPLY 20260309000002_fix_auth_fk_and_trigger.sql
+\i /tmp/auth-rehearsal-migrations/20260309000002_fix_auth_fk_and_trigger.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260309000002');
+\echo APPLY 20260309000003_fix_anonymous_role_constraint.sql
+\i /tmp/auth-rehearsal-migrations/20260309000003_fix_anonymous_role_constraint.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260309000003');
+\echo APPLY 20260310000000_school_echo_feedback.sql
+\i /tmp/auth-rehearsal-migrations/20260310000000_school_echo_feedback.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260310000000');
+\echo APPLY 20260311000000_fix_identity_rls_deadlock.sql
+\i /tmp/auth-rehearsal-migrations/20260311000000_fix_identity_rls_deadlock.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260311000000');
+\echo APPLY 20260311150000_fix_delete_account.sql
+\i /tmp/auth-rehearsal-migrations/20260311150000_fix_delete_account.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260311150000');
+\echo APPLY 20260313000000_library_knowledge_universe.sql
+\i /tmp/auth-rehearsal-migrations/20260313000000_library_knowledge_universe.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000000');
+\echo APPLY 20260313000001_library_seed_content.sql
+\i /tmp/auth-rehearsal-migrations/20260313000001_library_seed_content.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000001');
+\echo APPLY 20260313000002_library_expanded_cinema_books.sql
+\i /tmp/auth-rehearsal-migrations/20260313000002_library_expanded_cinema_books.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000002');
+\echo APPLY 20260313000003_library_holistic_seed.sql
+\i /tmp/auth-rehearsal-migrations/20260313000003_library_holistic_seed.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000003');
+\echo APPLY 20260313000004_library_seed_batch_a.sql
+\i /tmp/auth-rehearsal-migrations/20260313000004_library_seed_batch_a.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000004');
+\echo APPLY 20260313000005_library_seed_batch_b.sql
+\i /tmp/auth-rehearsal-migrations/20260313000005_library_seed_batch_b.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000005');
+\echo APPLY 20260313000006_library_seed_batch_c.sql
+\i /tmp/auth-rehearsal-migrations/20260313000006_library_seed_batch_c.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000006');
+\echo APPLY 20260313000007_library_seed_batch_d.sql
+\i /tmp/auth-rehearsal-migrations/20260313000007_library_seed_batch_d.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260313000007');
+\echo APPLY 20260314141500_add_handles.sql
+\i /tmp/auth-rehearsal-migrations/20260314141500_add_handles.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260314141500');
+\echo APPLY 20260314142000_add_handles.sql
+\i /tmp/auth-rehearsal-migrations/20260314142000_add_handles.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260314142000');
+\echo APPLY 20260315000000_global_aggregation_v3.sql
+\i /tmp/auth-rehearsal-migrations/20260315000000_global_aggregation_v3.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260315000000');
+\echo APPLY 20260315000001_student_potential_analysis.sql
+\i /tmp/auth-rehearsal-migrations/20260315000001_student_potential_analysis.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260315000001');
+\echo APPLY 20260315130000_polls_and_student_echo.sql
+\i /tmp/auth-rehearsal-migrations/20260315130000_polls_and_student_echo.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260315130000');
+\echo APPLY 20260316000000_audit_infrastructure.sql
+\i /tmp/auth-rehearsal-migrations/20260316000000_audit_infrastructure.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260316000000');
+\echo APPLY 20260316000001_enable_classroom_notes_audit.sql
+\i /tmp/auth-rehearsal-migrations/20260316000001_enable_classroom_notes_audit.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260316000001');
+\echo APPLY 20260316000002_expose_audit_logs.sql
+\i /tmp/auth-rehearsal-migrations/20260316000002_expose_audit_logs.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260316000002');
+\echo APPLY 20260318000001_poll_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260318000001_poll_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260318000001');
+\echo APPLY 20260318000002_community_full_stack.sql
+\i /tmp/auth-rehearsal-migrations/20260318000002_community_full_stack.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260318000002');
+\echo APPLY 20260318100000_fix_username_constraint_for_auth_signups.sql
+\i /tmp/auth-rehearsal-migrations/20260318100000_fix_username_constraint_for_auth_signups.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260318100000');
+\echo APPLY 20260318103000_sync_auth_user_updates_to_public_users.sql
+\i /tmp/auth-rehearsal-migrations/20260318103000_sync_auth_user_updates_to_public_users.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260318103000');
+\echo APPLY 20260319154500_fix_community_rls_recursion.sql
+\i /tmp/auth-rehearsal-migrations/20260319154500_fix_community_rls_recursion.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260319154500');
+\echo APPLY 20260319235000_add_map_layers_columns.sql
+\i /tmp/auth-rehearsal-migrations/20260319235000_add_map_layers_columns.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260319235000');
+\echo APPLY 20260320120000_authority_tenancy_foundations.sql
+\i /tmp/auth-rehearsal-migrations/20260320120000_authority_tenancy_foundations.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260320120000');
+\echo APPLY 20260320140000_public_site_stats.sql
+\i /tmp/auth-rehearsal-migrations/20260320140000_public_site_stats.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260320140000');
+\echo APPLY 20260323000000_school_registry.sql
+\i /tmp/auth-rehearsal-migrations/20260323000000_school_registry.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260323000000');
+\echo APPLY 20260325041500_decoupled_geo_replacement.sql
+\i /tmp/auth-rehearsal-migrations/20260325041500_decoupled_geo_replacement.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260325041500');
+\echo APPLY 20260327120000_temporal_library_community_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260327120000_temporal_library_community_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260327120000');
+\echo APPLY 20260327153000_profile_history_bedrock.sql
+\i /tmp/auth-rehearsal-migrations/20260327153000_profile_history_bedrock.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260327153000');
+\echo APPLY 20260328090000_profile_growth_history_bedrock.sql
+\i /tmp/auth-rehearsal-migrations/20260328090000_profile_growth_history_bedrock.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328090000');
+\echo APPLY 20260328113000_user_workspace_layouts.sql
+\i /tmp/auth-rehearsal-migrations/20260328113000_user_workspace_layouts.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328113000');
+\echo APPLY 20260328114500_workspace_layout_targets.sql
+\i /tmp/auth-rehearsal-migrations/20260328114500_workspace_layout_targets.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328114500');
+\echo APPLY 20260328170000_student_longitudinal_bedrock.sql
+\i /tmp/auth-rehearsal-migrations/20260328170000_student_longitudinal_bedrock.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328170000');
+\echo APPLY 20260328183000_student_longitudinal_learning_flow.sql
+\i /tmp/auth-rehearsal-migrations/20260328183000_student_longitudinal_learning_flow.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328183000');
+\echo APPLY 20260328193000_teacher_insight_lifecycle.sql
+\i /tmp/auth-rehearsal-migrations/20260328193000_teacher_insight_lifecycle.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328193000');
+\echo APPLY 20260328200000_principal_governance_events.sql
+\i /tmp/auth-rehearsal-migrations/20260328200000_principal_governance_events.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328200000');
+\echo APPLY 20260328203000_classroom_note_events.sql
+\i /tmp/auth-rehearsal-migrations/20260328203000_classroom_note_events.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328203000');
+\echo APPLY 20260328213000_principal_governance_event_breadth.sql
+\i /tmp/auth-rehearsal-migrations/20260328213000_principal_governance_event_breadth.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260328213000');
+\echo APPLY 20260406220000_student_record_access_control.sql
+\i /tmp/auth-rehearsal-migrations/20260406220000_student_record_access_control.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260406220000');
+\echo APPLY 20260409100000_fix_increment_growth_rpc.sql
+\i /tmp/auth-rehearsal-migrations/20260409100000_fix_increment_growth_rpc.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260409100000');
+\echo APPLY 20260409113000_add_principal_note_target_dates.sql
+\i /tmp/auth-rehearsal-migrations/20260409113000_add_principal_note_target_dates.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260409113000');
+\echo APPLY 20260415173000_zero_trust_identity_infrastructure.sql
+\i /tmp/auth-rehearsal-migrations/20260415173000_zero_trust_identity_infrastructure.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260415173000');
+\echo APPLY 20260416071735_faceted_identity_normalization.sql
+\i /tmp/auth-rehearsal-migrations/20260416071735_faceted_identity_normalization.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416071735');
+\echo APPLY 20260416080000_surgical_identity_decoupling.sql
+\i /tmp/auth-rehearsal-migrations/20260416080000_surgical_identity_decoupling.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416080000');
+\echo APPLY 20260416100000_resilience_and_soft_deletion.sql
+\i /tmp/auth-rehearsal-migrations/20260416100000_resilience_and_soft_deletion.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416100000');
+\echo APPLY 20260416120000_robust_soft_deletion_infrastructure.sql
+\i /tmp/auth-rehearsal-migrations/20260416120000_robust_soft_deletion_infrastructure.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416120000');
+\echo APPLY 20260416130000_faceted_identity_and_tenure_hardening.sql
+\i /tmp/auth-rehearsal-migrations/20260416130000_faceted_identity_and_tenure_hardening.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416130000');
+\echo APPLY 20260416150000_school_climate_sensing_layer.sql
+\i /tmp/auth-rehearsal-migrations/20260416150000_school_climate_sensing_layer.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416150000');
+\echo APPLY 20260416160000_school_climate_sensing_layer_v2.sql
+\i /tmp/auth-rehearsal-migrations/20260416160000_school_climate_sensing_layer_v2.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416160000');
+\echo APPLY 20260416170000_architectural_hardening_and_zero_trust_enforcement.sql
+\i /tmp/auth-rehearsal-migrations/20260416170000_architectural_hardening_and_zero_trust_enforcement.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416170000');
+\echo APPLY 20260416183000_fix_anon_auth_trigger_circularity.sql
+\i /tmp/auth-rehearsal-migrations/20260416183000_fix_anon_auth_trigger_circularity.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416183000');
+\echo APPLY 20260416200000_phase1_device_trust_api.sql
+\i /tmp/auth-rehearsal-migrations/20260416200000_phase1_device_trust_api.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260416200000');
+\echo APPLY 20260423120000_infrastructure_hardening_uuidv7.sql
+\i /tmp/auth-rehearsal-migrations/20260423120000_infrastructure_hardening_uuidv7.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260423120000');
+\echo APPLY 20260501110000_device_security_read_models.sql
+\i /tmp/auth-rehearsal-migrations/20260501110000_device_security_read_models.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260501110000');
+\echo APPLY 20260501123000_device_security_sessions_and_revocation.sql
+\i /tmp/auth-rehearsal-migrations/20260501123000_device_security_sessions_and_revocation.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260501123000');
+\echo APPLY 20260501143000_device_security_offline_hardening.sql
+\i /tmp/auth-rehearsal-migrations/20260501143000_device_security_offline_hardening.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260501143000');
+\echo APPLY 20260503152400_add_missing_onboarding_fields.sql
+\i /tmp/auth-rehearsal-migrations/20260503152400_add_missing_onboarding_fields.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260503152400');
+\echo APPLY 20260503174000_resonance_temporal_mirrors.sql
+\i /tmp/auth-rehearsal-migrations/20260503174000_resonance_temporal_mirrors.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260503174000');
+\echo APPLY 20260503174100_relief_and_inventory.sql
+\i /tmp/auth-rehearsal-migrations/20260503174100_relief_and_inventory.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260503174100');
+\echo APPLY 20260503235959_create_bonds_table.sql
+\i /tmp/auth-rehearsal-migrations/20260503235959_create_bonds_table.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260503235959');
+\echo APPLY 20260504000000_rebac_purge_legacy.sql
+\i /tmp/auth-rehearsal-migrations/20260504000000_rebac_purge_legacy.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260504000000');
+\echo APPLY 20260511000000_split_display_name_profile_identity.sql
+\i /tmp/auth-rehearsal-migrations/20260511000000_split_display_name_profile_identity.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260511000000');
+\echo APPLY 20260521000000_auth_events_read_model.sql
+\i /tmp/auth-rehearsal-migrations/20260521000000_auth_events_read_model.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260521000000');
+\echo APPLY 20260522000000_community_posts_with_counts.sql
+\i /tmp/auth-rehearsal-migrations/20260522000000_community_posts_with_counts.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260522000000');
+\echo APPLY 20260522120000_add_user_phone_and_metadata.sql
+\i /tmp/auth-rehearsal-migrations/20260522120000_add_user_phone_and_metadata.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260522120000');
+\echo APPLY 20260522130000_readd_user_role.sql
+\i /tmp/auth-rehearsal-migrations/20260522130000_readd_user_role.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260522130000');
+\echo APPLY 20260522140000_refine_user_role_defaults.sql
+\i /tmp/auth-rehearsal-migrations/20260522140000_refine_user_role_defaults.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260522140000');
+\echo APPLY 20260522150000_migrate_role_to_capacity.sql
+\i /tmp/auth-rehearsal-migrations/20260522150000_migrate_role_to_capacity.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260522150000');
+\echo APPLY 20260523000000_personal_classrooms.sql
+\i /tmp/auth-rehearsal-migrations/20260523000000_personal_classrooms.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260523000000');
+\echo APPLY 20260523010000_fix_user_profile_sync_after.sql
+\i /tmp/auth-rehearsal-migrations/20260523010000_fix_user_profile_sync_after.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260523010000');
+\echo APPLY 20260523020000_add_bonds_unique_constraint.sql
+\i /tmp/auth-rehearsal-migrations/20260523020000_add_bonds_unique_constraint.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260523020000');
+\echo APPLY 20260627224000_harden_nullability.sql
+\i /tmp/auth-rehearsal-migrations/20260627224000_harden_nullability.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260627224000');
+\echo APPLY 20260714000000_fix_is_onboarded_and_nodes_insert_policy.sql
+\i /tmp/auth-rehearsal-migrations/20260714000000_fix_is_onboarded_and_nodes_insert_policy.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260714000000');
+\echo APPLY 20260723141855_create_pricing_manifest.sql
+\i /tmp/auth-rehearsal-migrations/20260723141855_create_pricing_manifest.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260723141855');
+\echo APPLY 20260725090000_add_collection_thumbnail_url.sql
+\i /tmp/auth-rehearsal-migrations/20260725090000_add_collection_thumbnail_url.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260725090000');
+\echo APPLY 20260726000000_feature_access_snapshot_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260726000000_feature_access_snapshot_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260726000000');
+\echo APPLY 20260726000001_entity_scoped_permission_snapshots.sql
+\i /tmp/auth-rehearsal-migrations/20260726000001_entity_scoped_permission_snapshots.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260726000001');
+\echo APPLY 20260726000002_canonicalize_citizenship_default.sql
+\i /tmp/auth-rehearsal-migrations/20260726000002_canonicalize_citizenship_default.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260726000002');
+\echo APPLY 20260726000003_scoped_entitlement_grants.sql
+\i /tmp/auth-rehearsal-migrations/20260726000003_scoped_entitlement_grants.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260726000003');
+\echo APPLY 20260726000004_official_school_invite_claim.sql
+\i /tmp/auth-rehearsal-migrations/20260726000004_official_school_invite_claim.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260726000004');
+\echo APPLY 20260806000000_ai_messages.sql
+\i /tmp/auth-rehearsal-migrations/20260806000000_ai_messages.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260806000000');
+\echo APPLY 20260809140000_reconcile_schema_drift.sql
+\i /tmp/auth-rehearsal-migrations/20260809140000_reconcile_schema_drift.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260809140000');
+\echo APPLY 20260809150000_student_grades_publication.sql
+\i /tmp/auth-rehearsal-migrations/20260809150000_student_grades_publication.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260809150000');
+\echo APPLY 20260810100000_storage_query_indexes.sql
+\i /tmp/auth-rehearsal-migrations/20260810100000_storage_query_indexes.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810100000');
+\echo APPLY 20260810110000_reconcile_new_table_rls.sql
+\i /tmp/auth-rehearsal-migrations/20260810110000_reconcile_new_table_rls.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810110000');
+\echo APPLY 20260810120000_model_active_submission_fields.sql
+\i /tmp/auth-rehearsal-migrations/20260810120000_model_active_submission_fields.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810120000');
+\echo APPLY 20260810130000_reconcile_classroom_claim_fields.sql
+\i /tmp/auth-rehearsal-migrations/20260810130000_reconcile_classroom_claim_fields.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810130000');
+\echo APPLY 20260810140000_reconcile_inventory_items_rls.sql
+\i /tmp/auth-rehearsal-migrations/20260810140000_reconcile_inventory_items_rls.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810140000');
+\echo APPLY 20260810150000_remove_legacy_pricing_tables.sql
+\i /tmp/auth-rehearsal-migrations/20260810150000_remove_legacy_pricing_tables.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810150000');
+\echo APPLY 20260810160000_harden_core_schema_nullability.sql
+\i /tmp/auth-rehearsal-migrations/20260810160000_harden_core_schema_nullability.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810160000');
+\echo APPLY 20260810170000_remove_legacy_user_preference_columns.sql
+\i /tmp/auth-rehearsal-migrations/20260810170000_remove_legacy_user_preference_columns.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810170000');
+\echo APPLY 20260810180000_harden_growth_state_nullability.sql
+\i /tmp/auth-rehearsal-migrations/20260810180000_harden_growth_state_nullability.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810180000');
+\echo APPLY 20260810190000_harden_library_engagement_nullability.sql
+\i /tmp/auth-rehearsal-migrations/20260810190000_harden_library_engagement_nullability.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810190000');
+\echo APPLY 20260810200000_harden_identity_membership_timestamps.sql
+\i /tmp/auth-rehearsal-migrations/20260810200000_harden_identity_membership_timestamps.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810200000');
+\echo APPLY 20260810210000_harden_community_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260810210000_harden_community_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810210000');
+\echo APPLY 20260810220000_harden_feature_flags_growth_events.sql
+\i /tmp/auth-rehearsal-migrations/20260810220000_harden_feature_flags_growth_events.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810220000');
+\echo APPLY 20260810230000_harden_education_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260810230000_harden_education_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260810230000');
+\echo APPLY 20260811000000_harden_institutional_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260811000000_harden_institutional_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811000000');
+\echo APPLY 20260811010000_harden_notification_delivery_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260811010000_harden_notification_delivery_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811010000');
+\echo APPLY 20260811020000_school_registry_claim_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260811020000_school_registry_claim_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811020000');
+\echo APPLY 20260811030000_approve_school_registry_claim.sql
+\i /tmp/auth-rehearsal-migrations/20260811030000_approve_school_registry_claim.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811030000');
+\echo APPLY 20260811040000_school_membership_authority.sql
+\i /tmp/auth-rehearsal-migrations/20260811040000_school_membership_authority.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811040000');
+\echo APPLY 20260811050000_school_crud_authorization.sql
+\i /tmp/auth-rehearsal-migrations/20260811050000_school_crud_authorization.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811050000');
+\echo APPLY 20260811060000_authoritative_school_invite_creation.sql
+\i /tmp/auth-rehearsal-migrations/20260811060000_authoritative_school_invite_creation.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811060000');
+\echo APPLY 20260811070000_powersync_idempotency_ledger.sql
+\i /tmp/auth-rehearsal-migrations/20260811070000_powersync_idempotency_ledger.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260811070000');
+\echo APPLY 20260812000000_powersync_publication.sql
+\i /tmp/auth-rehearsal-migrations/20260812000000_powersync_publication.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260812000000');
+\echo APPLY 20260813000003_api_rate_limit_buckets.sql
+\i /tmp/auth-rehearsal-migrations/20260813000003_api_rate_limit_buckets.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260813000003');
+\echo APPLY 20260813000004_payment_webhook_events.sql
+\i /tmp/auth-rehearsal-migrations/20260813000004_payment_webhook_events.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260813000004');
+\echo APPLY 20260813010000_academic_lifecycle_foundation.sql
+\i /tmp/auth-rehearsal-migrations/20260813010000_academic_lifecycle_foundation.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260813010000');
+\echo APPLY 20260813020000_guardian_grade_mark_read_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260813020000_guardian_grade_mark_read_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260813020000');
+\echo APPLY 20260814000000_payment_intent_idempotency.sql
+\i /tmp/auth-rehearsal-migrations/20260814000000_payment_intent_idempotency.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814000000');
+\echo APPLY 20260814010000_mapping_topology_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260814010000_mapping_topology_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814010000');
+\echo APPLY 20260814020000_gratitude_gift_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260814020000_gratitude_gift_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814020000');
+\echo APPLY 20260814030000_forms_contract.sql
+\i /tmp/auth-rehearsal-migrations/20260814030000_forms_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814030000');
+\echo APPLY 20260814040000_durable_agent_runs.sql
+\i /tmp/auth-rehearsal-migrations/20260814040000_durable_agent_runs.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814040000');
+\echo APPLY 20260814050000_platform_worker_events.sql
+\i /tmp/auth-rehearsal-migrations/20260814050000_platform_worker_events.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814050000');
+\echo APPLY 20260814060000_self_reflection_and_teacher_notes.sql
+\i /tmp/auth-rehearsal-migrations/20260814060000_self_reflection_and_teacher_notes.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260814060000');
+\echo APPLY 20260823225500_fix_handle_user_row_defaults_tier_id.sql
+\i /tmp/auth-rehearsal-migrations/20260823225500_fix_handle_user_row_defaults_tier_id.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260823225500');
+\echo APPLY 20260825000000_partition_audit_logs.sql
+\i /tmp/auth-rehearsal-migrations/20260825000000_partition_audit_logs.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260825000000');
+\echo APPLY 20260825010000_partition_growth_events_ai_messages.sql
+\i /tmp/auth-rehearsal-migrations/20260825010000_partition_growth_events_ai_messages.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260825010000');
+\echo APPLY 20260825020000_nightly_counter_recompute.sql
+\i /tmp/auth-rehearsal-migrations/20260825020000_nightly_counter_recompute.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260825020000');
+\echo APPLY 20260825120000_canvas_unified_layouts.sql
+\i /tmp/auth-rehearsal-migrations/20260825120000_canvas_unified_layouts.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260825120000');
+\echo APPLY 20260831090000_editorial_control_plane.sql
+\i /tmp/auth-rehearsal-migrations/20260831090000_editorial_control_plane.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260831090000');
+\echo APPLY 20260901100000_account_deletion_request_policy.sql
+\i /tmp/auth-rehearsal-migrations/20260901100000_account_deletion_request_policy.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260901100000');
+\echo APPLY 20260901110000_account_lifecycle_status.sql
+\i /tmp/auth-rehearsal-migrations/20260901110000_account_lifecycle_status.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260901110000');
+\echo APPLY 20260901120000_account_deletion_identity_resolution.sql
+\i /tmp/auth-rehearsal-migrations/20260901120000_account_deletion_identity_resolution.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260901120000');
+\echo APPLY 20260907180000_cancel_account_deletion_request.sql
+\i /tmp/auth-rehearsal-migrations/20260907180000_cancel_account_deletion_request.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260907180000');
+\echo APPLY 20260907220000_institutional_scale_indexes_and_rollups.sql
+\i /tmp/auth-rehearsal-migrations/20260907220000_institutional_scale_indexes_and_rollups.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260907220000');
+\echo APPLY 20260908000000_web_evidence_cache.sql
+\i /tmp/auth-rehearsal-migrations/20260908000000_web_evidence_cache.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260908000000');
+\echo APPLY 20260908010000_multi_perspective_tables.sql
+\i /tmp/auth-rehearsal-migrations/20260908010000_multi_perspective_tables.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260908010000');
+\echo APPLY 20260915090000_persist_active_bond_scope.sql
+\i /tmp/auth-rehearsal-migrations/20260915090000_persist_active_bond_scope.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20260915090000');
+\echo APPLY 20261010180000_institutional_erp_and_educational_economics.sql
+\i /tmp/auth-rehearsal-migrations/20261010180000_institutional_erp_and_educational_economics.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261010180000');
+\echo APPLY 20261010190000_workspace_receipts_and_revisions.sql
+\i /tmp/auth-rehearsal-migrations/20261010190000_workspace_receipts_and_revisions.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261010190000');
+\echo APPLY 20261010193000_user_wallpaper_assets.sql
+\i /tmp/auth-rehearsal-migrations/20261010193000_user_wallpaper_assets.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261010193000');
+\echo APPLY 20261011174500_wallpaper_asset_authority.sql
+\i /tmp/auth-rehearsal-migrations/20261011174500_wallpaper_asset_authority.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261011174500');
+\echo APPLY 20261011193000_workspace_wallpaper_deletion_state.sql
+\i /tmp/auth-rehearsal-migrations/20261011193000_workspace_wallpaper_deletion_state.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261011193000');
+\echo APPLY 20261014120000_operation_receipts.sql
+\i /tmp/auth-rehearsal-migrations/20261014120000_operation_receipts.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261014120000');
+\echo APPLY 20261015130000_account_scoped_submission_idempotency.sql
+\i /tmp/auth-rehearsal-migrations/20261015130000_account_scoped_submission_idempotency.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261015130000');
+\echo APPLY 20261015150000_server_owned_auth_identity.sql
+\i /tmp/auth-rehearsal-migrations/20261015150000_server_owned_auth_identity.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261015150000');
+\echo APPLY 20261015160000_omnichannel_authority_foundation.sql
+\i /tmp/auth-rehearsal-migrations/20261015160000_omnichannel_authority_foundation.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261015160000');
+\echo APPLY 20261017085000_assignments_rls_policies.sql
+\i /tmp/auth-rehearsal-migrations/20261017085000_assignments_rls_policies.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261017085000');
+\echo APPLY 20261017190000_users_school_admin_read_non_recursive.sql
+\i /tmp/auth-rehearsal-migrations/20261017190000_users_school_admin_read_non_recursive.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261017190000');
+\echo APPLY 20261017210000_plan_bridge_calm_notices.sql
+\i /tmp/auth-rehearsal-migrations/20261017210000_plan_bridge_calm_notices.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261017210000');
+\echo APPLY 20261022090000_student_history_access.sql
+\i /tmp/auth-rehearsal-migrations/20261022090000_student_history_access.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261022090000');
+\echo APPLY 20261022100000_classroom_teaching_groups.sql
+\i /tmp/auth-rehearsal-migrations/20261022100000_classroom_teaching_groups.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261022100000');
+\echo APPLY 20261022120000_october_30_data_api_grants.sql
+\i /tmp/auth-rehearsal-migrations/20261022120000_october_30_data_api_grants.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261022120000');
+\echo APPLY 20261023100000_edlove_account_uuid_v8_validator.sql
+\i /tmp/auth-rehearsal-migrations/20261023100000_edlove_account_uuid_v8_validator.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261023100000');
+\echo APPLY 20261023101000_edlove_account_id_dark_schema.sql
+\i /tmp/auth-rehearsal-migrations/20261023101000_edlove_account_id_dark_schema.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261023101000');
+\echo APPLY 20261023102000_edlove_account_id_server_writer.sql
+\i /tmp/auth-rehearsal-migrations/20261023102000_edlove_account_id_server_writer.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261023102000');
+\echo APPLY 20261023103000_edlove_account_id_writer_role_hardening.sql
+\i /tmp/auth-rehearsal-migrations/20261023103000_edlove_account_id_writer_role_hardening.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261023103000');
+\echo APPLY 20261024010000_edlove_durable_account_assignment_handoff.sql
+\i /tmp/auth-rehearsal-migrations/20261024010000_edlove_durable_account_assignment_handoff.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024010000');
+\echo APPLY 20261024183000_external_effect_intents.sql
+\i /tmp/auth-rehearsal-migrations/20261024183000_external_effect_intents.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024183000');
+\echo APPLY 20261024200000_edlove_historical_assignment_operations.sql
+\i /tmp/auth-rehearsal-migrations/20261024200000_edlove_historical_assignment_operations.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024200000');
+\echo APPLY 20261024201000_edlove_historical_assignment_operation_summary.sql
+\i /tmp/auth-rehearsal-migrations/20261024201000_edlove_historical_assignment_operation_summary.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024201000');
+\echo APPLY 20261024202000_edlove_historical_assignment_checkpoint_guard.sql
+\i /tmp/auth-rehearsal-migrations/20261024202000_edlove_historical_assignment_checkpoint_guard.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024202000');
+\echo APPLY 20261024203000_edlove_historical_assignment_failure_threshold_order.sql
+\i /tmp/auth-rehearsal-migrations/20261024203000_edlove_historical_assignment_failure_threshold_order.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024203000');
+\echo APPLY 20261025010000_canonical_uuidv8_accounts.sql
+\set cutover_migration /tmp/auth-rehearsal-migrations/20261025010000_canonical_uuidv8_accounts.sql
+\i /tmp/canonical-account-test.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025010000');
+\echo APPLY 20261025011000_user_profile_contract_convergence.sql
+\i /tmp/auth-rehearsal-migrations/20261025011000_user_profile_contract_convergence.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025011000');
+\echo APPLY 20261025012000_profile_and_onboarding_contract_convergence.sql
+\i /tmp/auth-rehearsal-migrations/20261025012000_profile_and_onboarding_contract_convergence.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025012000');
+\echo APPLY 20261025013000_account_lifecycle_write_authority.sql
+\i /tmp/auth-rehearsal-migrations/20261025013000_account_lifecycle_write_authority.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025013000');
+\echo APPLY 20261025014000_account_issuer_operating_contract.sql
+\i /tmp/auth-rehearsal-migrations/20261025014000_account_issuer_operating_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025014000');
+

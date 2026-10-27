@@ -1,4 +1,21 @@
-import { defaultShouldDehydrateQuery, isServer, QueryClient } from '@tanstack/react-query';
+import { subscribeToNetwork } from '@repo/core/adapters/subscribeToNetwork';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import {
+  defaultShouldDehydrateQuery,
+  isServer,
+  onlineManager,
+  QueryClient,
+} from '@tanstack/react-query';
+
+if (!isServer) {
+  onlineManager.setEventListener((setOnline) => {
+    // This schedules reads; unknown must not strand startup or authorize a write.
+    const update = () => setOnline(networkManager.getSnapshot().status !== 'offline');
+    const unsubscribe = subscribeToNetwork(update);
+    update();
+    return unsubscribe;
+  });
+}
 
 /**
  * Creates a configured QueryClient with robust defaults:

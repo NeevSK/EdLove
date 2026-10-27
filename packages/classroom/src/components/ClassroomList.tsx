@@ -1,17 +1,20 @@
 import CreateClassroomModal from '@repo/classroom/components/CreateClassroomModal';
-import { api, identityAPI, MOCK_CLASSROOMS, getDemoClassrooms } from '@repo/core/api/client';
+import { api, identityAPI } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen, ChevronRight, ClipboardCheck, Plus, Users, Zap } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ClaimInviteModal } from './ClaimInviteModal';
 
 interface ClassroomListProps {
   onClassroomPress?: (classroom: WorkspaceClassroom) => void;
@@ -54,6 +57,7 @@ export default function ClassroomList({
   const [error, setError] = useState<string | null>(null);
   const [_internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [pendingInitialData, setPendingInitialData] = useState<any>(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -61,9 +65,9 @@ export default function ClassroomList({
   const [fetchMoreError, setFetchMoreError] = useState(false);
   const PAGE_SIZE = 10;
   const toast = useToast();
-  const dismissedSampleIds = useStore((state) => state.dismissedSampleIds);
-  const isDemoMode = useStore((state) => state.isDemoMode);
-  const isExplorerMode = useStore((state) => state.isExplorerMode);
+  const dismissedSampleIds = useUIStore((state) => state.dismissedSampleIds);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
+  const isExplorerMode = useExperienceState((state) => state.isExplorerMode);
 
   useEffect(() => {
     let isMounted = true;
@@ -75,52 +79,37 @@ export default function ClassroomList({
         }
 
         let data: WorkspaceClassroom[] = [];
+        let rawClassrooms: WorkspaceClassroom[] = [];
+        const isGuestOrDemo = isGuest || isDemoMode;
+        const rawUserId = isGuestOrDemo ? 'demo-user' : await identityAPI.getMyInternalId();
 
-        if (isGuest || isDemoMode) {
-          const sampleClassrooms = getDemoClassrooms().filter(
-            (c: any) => !dismissedSampleIds.includes(c.id),
-          );
-          data = can('manage', 'PrincipalDashboard')
-            ? sampleClassrooms.filter((c: any) => c.is_school || c.id === 'sample-school-1')
-            : sampleClassrooms.filter((c: any) => !c.is_school);
-          setHasMore(false);
-        } else {
-          const userId = await identityAPI.getMyInternalId();
-          if (!userId) {
-            throw new Error('No internal identity found');
-          }
-
-          const pagination = { limit: PAGE_SIZE, offset: 0 };
-          let realData: WorkspaceClassroom[] = [];
-
-          if (can('manage', 'TeacherDashboard')) {
-            realData = await api.classrooms.getByTeacher(userId, pagination);
-          } else if (can('manage', 'StudentDashboard')) {
-            realData = await api.classrooms.getByStudent(userId, pagination);
-          } else if (can('manage', 'PrincipalDashboard')) {
-            realData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
-          }
-
-          if (realData.length > 0) {
-            // Authenticated users with real classrooms always see their real records.
-            data = realData;
-            setHasMore(realData.length === PAGE_SIZE);
-          } else if (isExplorerMode) {
-            // When real database is empty and explorer mode is active, provide rich sample classrooms.
-            const sampleClassrooms = getDemoClassrooms().filter(
-              (c: any) => !dismissedSampleIds.includes(c.id),
-            );
-            data = can('manage', 'PrincipalDashboard')
-              ? sampleClassrooms.filter((c: any) => c.is_school || c.id === 'sample-school-1')
-              : sampleClassrooms.filter((c: any) => !c.is_school);
-            setHasMore(false);
-          } else {
-            data = [];
-            setHasMore(false);
-          }
-
-          setPage(1);
+        if (!rawUserId) {
+          throw new Error('No internal identity found');
         }
+        const userId: string = rawUserId;
+
+        const pagination = { limit: PAGE_SIZE, offset: 0 };
+
+        if (can('manage', 'TeacherDashboard')) {
+          rawClassrooms = await api.classrooms.getByTeacher(userId, pagination);
+        } else if (can('manage', 'StudentDashboard')) {
+          rawClassrooms = await api.classrooms.getByStudent(userId, pagination);
+        } else if (can('manage', 'PrincipalDashboard')) {
+          rawClassrooms = isGuestOrDemo
+            ? await api.classrooms.getByTeacher(userId, pagination)
+            : await getSchoolScopedClassroomsForPrincipal(userId, pagination);
+        }
+
+        const filtered = (rawClassrooms ?? []).filter(
+          (c: any) => !(dismissedSampleIds ?? []).includes(c.id),
+        );
+
+        data = can('manage', 'PrincipalDashboard')
+          ? filtered.filter((c: any) => c.is_school || c.id === 'sample-school-1' || isGuestOrDemo)
+          : filtered.filter((c: any) => !c.is_school);
+
+        setHasMore(rawClassrooms.length === PAGE_SIZE && !isGuestOrDemo);
+        setPage(1);
 
         if (isMounted) {
           setClassrooms(data);
@@ -258,11 +247,20 @@ export default function ClassroomList({
           ? emptyContent || (
               <PositiveInvitation
                 context="classroom"
+                title={canCreateClassroom ? undefined : 'Join Your Classroom Sanctuary'}
+                description={
+                  canCreateClassroom
+                    ? undefined
+                    : 'Enter your 6-digit classroom invitation code or desk pass from your teacher to enter your learning space.'
+                }
+                actionLabel={canCreateClassroom ? undefined : 'Enter Invitation Code'}
                 onAction={() => {
                   hapticLight();
                   if (canCreateClassroom) {
                     setPendingInitialData(null);
                     setIsCreateModalOpen(true);
+                  } else {
+                    setIsClaimModalOpen(true);
                   }
                 }}
               />
@@ -292,6 +290,15 @@ export default function ClassroomList({
             setInternalRefreshTrigger((prev) => prev + 1);
           }}
         />
+
+        <ClaimInviteModal
+          isOpen={isClaimModalOpen}
+          onClose={() => setIsClaimModalOpen(false)}
+          onSuccess={() => {
+            hapticSuccess();
+            setInternalRefreshTrigger((prev) => prev + 1);
+          }}
+        />
       </VStack>
     );
   }
@@ -302,11 +309,20 @@ export default function ClassroomList({
         <Box className="flex-1 p-4">
           <PositiveInvitation
             context="classroom"
+            title={canCreateClassroom ? undefined : 'Join Your Classroom Sanctuary'}
+            description={
+              canCreateClassroom
+                ? undefined
+                : 'Enter your 6-digit classroom invitation code or desk pass from your teacher to enter your learning space.'
+            }
+            actionLabel={canCreateClassroom ? undefined : 'Enter Invitation Code'}
             onAction={() => {
               hapticLight();
               if (canCreateClassroom) {
                 setPendingInitialData(null);
                 setIsCreateModalOpen(true);
+              } else {
+                setIsClaimModalOpen(true);
               }
             }}
           />
@@ -315,7 +331,7 @@ export default function ClassroomList({
               <Pressable
                 onPress={() => {
                   hapticLight();
-                  useStore.getState().setExplorerMode(true);
+                  useExperienceState.getState().setExplorerMode(true);
                 }}
                 className="px-5 py-2.5 bg-templeGold/10 rounded-2xl border border-templeGold/20 active:opacity-80"
               >
@@ -349,7 +365,7 @@ export default function ClassroomList({
                   <Pressable
                     onPress={() => {
                       hapticLight();
-                      useStore.getState().setExplorerMode(false);
+                      useExperienceState.getState().setExplorerMode(false);
                     }}
                     className="px-3 py-1 bg-phase-surface rounded-xl border border-phase-canvas/30 active:opacity-80"
                   >
@@ -404,6 +420,15 @@ export default function ClassroomList({
           setIsCreateModalOpen(false);
           setPendingInitialData(null);
         }}
+        onSuccess={() => {
+          hapticSuccess();
+          setInternalRefreshTrigger((prev) => prev + 1);
+        }}
+      />
+
+      <ClaimInviteModal
+        isOpen={isClaimModalOpen}
+        onClose={() => setIsClaimModalOpen(false)}
         onSuccess={() => {
           hapticSuccess();
           setInternalRefreshTrigger((prev) => prev + 1);

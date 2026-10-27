@@ -1,3 +1,5 @@
+import { showToast } from '@repo/core/lib/feedback';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 /**
  * ONBOARDING SCREEN - Web Edition
  */
@@ -7,7 +9,7 @@ import { createOnboardingCompletionKey } from '@repo/core/api/onboardingClient';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';
 import { isAnonymousIdentity } from '@repo/core/logic';
-import { useStore } from '@repo/core/store';
+
 import type { Capacity } from '@repo/core/types';
 import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
@@ -510,8 +512,8 @@ export default memo(function OnboardingScreenWeb({
   const [state, dispatch] = useReducer(onboardingJourneyReducer, initialOnboardingJourneyState);
 
   const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
-  const isOnline = useStore((s) => s.isOnline);
-  const showToast = useStore((s) => s.showToast);
+  const { status: networkStatus, isOnline } = useOfflineStatus();
+
   const resolvedInternalIdRef = useRef<string | null>(null);
   const resolvedCitizenRef = useRef<Awaited<
     ReturnType<typeof identityAPI.identifyActiveCitizen>
@@ -807,11 +809,14 @@ export default memo(function OnboardingScreenWeb({
     hapticLight();
 
     // 🛡️ OFFLINE CHECK
-    if (!isOnline) {
+    if (networkStatus !== 'online') {
       hapticError();
       dispatch({
         type: 'SET_ERROR',
-        error: 'No internet connection detected. Please try again when you are online.',
+        error:
+          networkStatus === 'offline'
+            ? 'No internet connection detected. Please try again when you are online.'
+            : 'The network connection is not confirmed yet. Please try again shortly.',
       });
       return;
     }
@@ -907,6 +912,7 @@ export default memo(function OnboardingScreenWeb({
     selectedCapacity,
     isProcessing,
     isOnline,
+    networkStatus,
     handleCompleteOnboarding,
     showToast,
     state.schoolId,

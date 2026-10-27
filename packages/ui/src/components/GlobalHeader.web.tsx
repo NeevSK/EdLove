@@ -1,4 +1,6 @@
-import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useScopedNotifications } from '@repo/core/hooks';
+import { usePermissions } from '@repo/core/logic';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
@@ -73,7 +75,7 @@ export default function GlobalHeader({
 }: GlobalHeaderProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
-  const user = useStore((state: TotalState) => state.user);
+  const user = useAuthStore((state) => state.user);
   const insets = useSafeAreaInsets();
 
   const [state, dispatch] = useReducer(headerReducer, {
@@ -90,7 +92,7 @@ export default function GlobalHeader({
     error,
     markAsRead,
     markAllRead,
-  } = useNotifications(user?.id);
+  } = useScopedNotifications(user?.id);
 
   const searchQuery = searchProps?.value ?? state.internalSearchQuery;
 

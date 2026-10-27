@@ -1,4 +1,6 @@
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useTemporalStore } from '@repo/core/logic';
 import { isGuestUserId } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
@@ -19,7 +21,7 @@ const JOURNAL_CACHE_KEY = 'gurudevi-journal-cache';
  * - Syncs with Supabase in background for authenticated citizens.
  */
 export function useFireJournal(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const viewDate = useTemporalStore((state) => state.viewDate);
   const isPastView = useTemporalStore((state) => state.isPastView);
   const [journalHistory, setJournalHistory] = useState<FireJournalEntry[]>([]);

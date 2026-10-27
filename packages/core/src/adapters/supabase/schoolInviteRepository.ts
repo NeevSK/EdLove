@@ -1,16 +1,34 @@
-import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { type Capacity, CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface VerifiedSchoolInvite {
+  bondId: string;
   schoolId: string;
-  schoolName: string;
   capacity: Capacity;
-  roles: Capacity[];
+  alreadyClaimed: boolean;
 }
 
 export interface SchoolInviteRepository {
   verifyAndRedeemInviteCode(code: string, userId: string): Promise<VerifiedSchoolInvite>;
+}
+
+export interface SchoolInviteScopeSelector {
+  switchPerspective(entityId: string, capacity: Capacity): Promise<void>;
+}
+
+/** Claims a school membership before selecting it; a failed selection never mutates local scope. */
+export async function claimAndSelectSchoolInvite(input: {
+  readonly repository: SchoolInviteRepository;
+  readonly identity: SchoolInviteScopeSelector;
+  readonly refreshIdentity: () => Promise<void>;
+  readonly code: string;
+  readonly userId: string;
+}): Promise<VerifiedSchoolInvite> {
+  const claimed = await input.repository.verifyAndRedeemInviteCode(input.code, input.userId);
+  await input.identity.switchPerspective(claimed.schoolId, claimed.capacity);
+  await input.refreshIdentity();
+  return claimed;
 }
 
 export const createSupabaseSchoolInviteRepository = (
@@ -18,63 +36,36 @@ export const createSupabaseSchoolInviteRepository = (
 ): SchoolInviteRepository => ({
   async verifyAndRedeemInviteCode(code: string, userId: string): Promise<VerifiedSchoolInvite> {
     const formattedCode = code.toUpperCase().trim();
+    const { data, error } = await supabase.rpc('claim_invite_code', {
+      p_invite_code: formattedCode,
+      p_user_id: userId,
+    });
+    if (error) throw new APIError('Failed to redeem school invite', error.code, error);
 
-    // 1. Fetch active invite code with joined school metadata
-    const { data: invite, error: inviteError } = await supabase
-      .from('school_invite_codes')
-      .select('*, schools(id, name, type)')
-      .eq('code', formattedCode)
-      .eq('is_active', true)
-      .maybeSingle();
-
-    if (inviteError) {
-      throw new APIError('Failed to verify invite code', inviteError.code, inviteError);
-    }
-    if (!invite) {
-      throw new APIError('Invalid or expired invite code', 'NOT_FOUND');
-    }
-
-    if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
-      throw new APIError('This invite code has expired', 'EXPIRED');
-    }
-
-    if (invite.max_uses && invite.used_count >= invite.max_uses) {
+    const result = data as Record<string, unknown> | null;
+    if (!result?.success) {
       throw new APIError(
-        'This invite code has reached its maximum redemptions',
-        'MAX_USES_REACHED',
+        typeof result?.message === 'string' ? result.message : 'Failed to redeem school invite',
+        'INVITE_CLAIM_FAILED',
+      );
+    }
+    const capacity = CapacitySchema.safeParse(result.capacity);
+    if (
+      typeof result.bond_id !== 'string' ||
+      typeof result.school_id !== 'string' ||
+      !capacity.success
+    ) {
+      throw new APIError(
+        'Invite claim returned an invalid authority result',
+        'INVALID_INVITE_CLAIM',
       );
     }
 
-    const school = invite.schools;
-    if (!school) {
-      throw new APIError('Associated school not found', 'SCHOOL_NOT_FOUND');
-    }
-
-    // 2. Increment usage counter
-    await supabase
-      .from('school_invite_codes')
-      .update({
-        used_count: invite.used_count + 1,
-      })
-      .eq('id', invite.id);
-
-    // 3. Upsert bond in DB
-    const bondPayload = {
-      user_id: userId,
-      entity_id: school.id,
-      entity_type: 'school',
-      capacity: invite.capacity,
-      metadata: JSON.stringify({ roles: invite.roles }),
-      updated_at: new Date().toISOString(),
-    };
-
-    await supabase.from('bonds').upsert(bondPayload);
-
     return {
-      schoolId: school.id,
-      schoolName: school.name,
-      capacity: invite.capacity,
-      roles: Array.isArray(invite.roles) ? invite.roles : [invite.capacity],
+      bondId: result.bond_id,
+      schoolId: result.school_id,
+      capacity: capacity.data,
+      alreadyClaimed: result.already_claimed === true,
     };
   },
 });

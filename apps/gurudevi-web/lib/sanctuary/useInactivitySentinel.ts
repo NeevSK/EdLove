@@ -44,8 +44,12 @@ export function useInactivitySentinel(
       const idleTime = Date.now() - lastActivityRef.current;
       if (idleTime >= timeoutMs && !isSigningOutRef.current) {
         isSigningOutRef.current = true;
-        console.warn('[INACTIVITY SENTINEL] 15 minutes of idle time elapsed. Executing memory purge.');
-        void executeSovereignSignOut('/sign-in?reason=session-expired');
+        console.warn(
+          '[INACTIVITY SENTINEL] 15 minutes of idle time elapsed. Executing memory purge.',
+        );
+        void executeSovereignSignOut('/sign-in?reason=session-expired').catch(() => {
+          window.location.replace('/sign-in?reason=sign-out-incomplete');
+        });
       }
     }, ACTIVITY_CHECK_INTERVAL_MS);
 

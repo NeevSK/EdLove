@@ -1,9 +1,7 @@
+import { useExperienceState } from '@repo/core/lib/experienceState';
 
-
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { libraryAPI } from '@repo/library/api/library';
 import { knowledgeSync } from '@repo/library/api/sync';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type {
   CollectionFilters,
   CreateCollectionInput,
@@ -20,14 +18,12 @@ export const LIBRARY_KEYS = {
   all: ['library'] as const,
   resourcesAll: () => [...LIBRARY_KEYS.all, 'resources'] as const,
   collectionsAll: () => [...LIBRARY_KEYS.all, 'collections'] as const,
-  resources: (filters: ResourceFilters = {}) =>
-    [...LIBRARY_KEYS.resourcesAll(), filters] as const,
+  resources: (filters: ResourceFilters = {}) => [...LIBRARY_KEYS.resourcesAll(), filters] as const,
   collections: (filters: CollectionFilters = {}) =>
     [...LIBRARY_KEYS.collectionsAll(), filters] as const,
   collection: (id: string) => [...LIBRARY_KEYS.all, 'collection', id] as const,
   resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
-  bookmarked: (userId: string) =>
-    [...LIBRARY_KEYS.all, 'bookmarked', userId] as const,
+  bookmarked: (userId: string) => [...LIBRARY_KEYS.all, 'bookmarked', userId] as const,
   sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
 };
 
@@ -37,74 +33,84 @@ export const LIBRARY_KEYS = {
  */
 export const useLibraryRealtime = () => {
   const queryClient = useQueryClient();
-  const isDemoMode = useAuthStore((state) => state.isDemoMode);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
 
   useEffect(() => {
-    if (isDemoMode || !supabase || typeof supabase.channel !== 'function') return;
+    if (isDemoMode) return;
 
-    try {
-      const collectionsChannel = supabase
-        .channel('library-collections-realtime-changes')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'collections' },
+    let unsubCollections: (() => Promise<void>) | null = null;
+    let unsubCollectionNodes: (() => Promise<void>) | null = null;
+    let unsubNodes: (() => Promise<void>) | null = null;
+    let isCancelled = false;
+
+    void import('@repo/core/logic/managers/misc.factory')
+      .then(({ realtime }) => {
+        if (isCancelled || !realtime || typeof realtime.subscribe !== 'function') return;
+
+        const sub1 = realtime.subscribe(
+          'library-collections-realtime-changes',
+          { event: '*', table: 'collections' },
           (payload: any) => {
             void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
-            void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+            void queryClient.invalidateQueries({
+              queryKey: [...LIBRARY_KEYS.all, 'collections-count'],
+            });
 
             const id = payload.new?.id || payload.old?.id;
             if (id) {
               void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(id) });
             }
-          }
-        )
-        .subscribe();
+          },
+        );
+        unsubCollections = sub1.unsubscribe;
 
-      const collectionNodesChannel = supabase
-        .channel('library-collection-nodes-realtime-changes')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'collection_nodes' },
+        const sub2 = realtime.subscribe(
+          'library-collection-nodes-realtime-changes',
+          { event: '*', table: 'collection_nodes' },
           (payload: any) => {
             void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
 
             const collectionId = payload.new?.collection_id || payload.old?.collection_id;
             if (collectionId) {
-              void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collectionId) });
+              void queryClient.invalidateQueries({
+                queryKey: LIBRARY_KEYS.collection(collectionId),
+              });
             }
-          }
-        )
-        .subscribe();
+          },
+        );
+        unsubCollectionNodes = sub2.unsubscribe;
 
-      const nodesChannel = supabase
-        .channel('library-nodes-realtime-changes')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'nodes' },
+        const sub3 = realtime.subscribe(
+          'library-nodes-realtime-changes',
+          { event: '*', table: 'nodes' },
           (payload: any) => {
             void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
-            void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'resources-count'] });
+            void queryClient.invalidateQueries({
+              queryKey: [...LIBRARY_KEYS.all, 'resources-count'],
+            });
 
             const id = payload.new?.id || payload.old?.id;
             if (id) {
               void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(id) });
             }
-          }
-        )
-        .subscribe();
+          },
+        );
+        unsubNodes = sub3.unsubscribe;
+      })
+      .catch((err) => {
+        console.warn('[useLibraryRealtime] Realtime subscription skipped:', err);
+      });
 
-      return () => {
-        try {
-          void supabase.removeChannel(collectionsChannel);
-          void supabase.removeChannel(collectionNodesChannel);
-          void supabase.removeChannel(nodesChannel);
-        } catch (e) {
-          console.warn('[useLibraryRealtime] cleanup error:', e);
-        }
-      };
-    } catch (err) {
-      console.warn('[useLibraryRealtime] Realtime subscription skipped:', err);
-    }
+    return () => {
+      isCancelled = true;
+      try {
+        if (unsubCollections) void unsubCollections();
+        if (unsubCollectionNodes) void unsubCollectionNodes();
+        if (unsubNodes) void unsubNodes();
+      } catch (e) {
+        console.warn('[useLibraryRealtime] cleanup error:', e);
+      }
+    };
   }, [isDemoMode, queryClient]);
 };
 
@@ -115,14 +121,8 @@ export const useLibrary = (
   const queryClient = useQueryClient();
   useLibraryRealtime();
 
-  const temporalResourceFilters = useMemo(
-    () => ({ ...resourceFilters }),
-    [resourceFilters],
-  );
-  const temporalCollectionFilters = useMemo(
-    () => ({ ...collectionFilters }),
-    [collectionFilters],
-  );
+  const temporalResourceFilters = useMemo(() => ({ ...resourceFilters }), [resourceFilters]);
+  const temporalCollectionFilters = useMemo(() => ({ ...collectionFilters }), [collectionFilters]);
 
   const { data: totalResourcesCount } = useQuery({
     queryKey: [...LIBRARY_KEYS.all, 'resources-count'],
@@ -289,13 +289,7 @@ export const useLibrary = (
 
   // Update Collection Mutation
   const updateCollectionMutation = useMutation({
-    mutationFn: async ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<LibraryCollection>;
-    }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<LibraryCollection> }) => {
       return libraryAPI.updateCollection(id, updates);
     },
     onSuccess: (_, variables) => {
@@ -390,9 +384,11 @@ export const useLibrary = (
       resourcesInfiniteQuery.error ||
       categoriesInfiniteQuery.error ||
       collectionsInfiniteQuery.error
-        ? ((resourcesInfiniteQuery.error ||
-            categoriesInfiniteQuery.error ||
-            collectionsInfiniteQuery.error) as Error).message
+        ? (
+            (resourcesInfiniteQuery.error ||
+              categoriesInfiniteQuery.error ||
+              collectionsInfiniteQuery.error) as Error
+          ).message
         : null,
   };
 };
@@ -415,10 +411,7 @@ export const useCollection = (id: string, userId?: string) => {
 export const useBookmarkedResources = (userId?: string) => {
   const { data, isLoading, error, refetch } = useInfiniteQuery({
     queryKey: LIBRARY_KEYS.bookmarked(userId || ''),
-    queryFn: () =>
-      userId
-        ? libraryAPI.getBookmarkedResources(userId)
-        : Promise.resolve([]),
+    queryFn: () => (userId ? libraryAPI.getBookmarkedResources(userId) : Promise.resolve([])),
     enabled: !!userId,
     initialPageParam: 0,
     getNextPageParam: () => undefined,

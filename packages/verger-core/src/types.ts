@@ -1,7 +1,10 @@
+import type { DataBudgetState } from './dataBudget';
+import type { VergerActivation } from './activation';
+
 /**
- * Adaptive runtime governor: shared types.
+ * Verger: shared types.
  *
- * The governor is a pure, deterministic reducer. Native sensing (the
+ * Verger's policy is a pure, deterministic reducer. Native sensing (the
  * `@repo/verger-android` Expo module) and web sensing feed it events; consumers read
  * lever levels and work budgets from its snapshot. Time is always injected
  * (`at`, in milliseconds on a monotonic clock) so the same event stream always
@@ -72,6 +75,8 @@ export interface FrameStages {
 export type FrameState = 'quiet' | 'calm' | 'neutral' | 'stressed';
 export type ThermalLevel = 'unknown' | 'nominal' | 'warm' | 'hot' | 'critical';
 export type MemoryLevel = 'unknown' | 'normal' | 'trimmed' | 'low';
+/** Free storage against config `storageLowBytes`; `unknown` until reported, or while deaf. */
+export type StorageLevel = 'unknown' | 'ample' | 'low';
 export type AppVisibility = 'active' | 'inactive' | 'background';
 
 /** Android `PowerManager.THERMAL_STATUS_*`, by name. */
@@ -84,12 +89,40 @@ export type ThermalStatus =
   | 'emergency'
   | 'shutdown';
 
-/** Android `ComponentCallbacks2` trim levels the governor distinguishes. */
+/** Android `ComponentCallbacks2` trim levels verger distinguishes. */
 export type TrimSeverity = 'moderate' | 'low' | 'critical';
 
 export type FidelityPreference = 'auto' | 'low' | 'high';
 
-export type GovernorEvent =
+/** How the device reaches the network. */
+export type NetworkTransport = 'wifi' | 'cellular' | 'ethernet' | 'other' | 'none';
+
+/**
+ * Android Data Saver as it applies to this app (`ConnectivityManager.getRestrictBackgroundStatus`):
+ * `enabled` restricts background data, `allowlisted` means the user exempted this app.
+ */
+export type DataSaver = 'disabled' | 'allowlisted' | 'enabled';
+
+/**
+ * One lever's envelope, as levels (0 is full quality, `maxLevel` the cheapest). In quality
+ * terms: `limit` is the best quality allowed (never crossed), `ceiling` the best this device
+ * has earned (the class), `home` where the lever starts and settles (the ceiling or the learned
+ * starting point), `floor` the worst quality allowed. As levels: limit <= ceiling <= home <= floor.
+ */
+export interface LeverEnvelope {
+  readonly limit: number;
+  readonly ceiling: number;
+  readonly home: number;
+  readonly floor: number;
+}
+
+/** The network's limit on optional data, strongest first. */
+export type NetworkLimit = 'offline' | 'data-saver' | 'unstable' | 'slow' | 'none';
+
+/** A phone's capacity class, from its memory. */
+export type CapacityClass = 'low' | 'mid' | 'high' | 'unknown';
+
+export type VergerEvent =
   | { readonly type: 'frame-window'; readonly at: number; readonly window: FrameWindow }
   | {
       readonly type: 'thermal';
@@ -100,6 +133,14 @@ export type GovernorEvent =
     }
   | { readonly type: 'memory-trim'; readonly at: number; readonly severity: TrimSeverity }
   | { readonly type: 'power'; readonly at: number; readonly saver: boolean }
+  | {
+      /** Battery state; heard through the power sensor. `null` fields are unknown. */
+      readonly type: 'battery';
+      readonly at: number;
+      readonly levelPercent: number | null;
+      readonly pluggedIn: boolean | null;
+      readonly temperatureC: number | null;
+    }
   | { readonly type: 'interaction'; readonly at: number }
   | { readonly type: 'app-state'; readonly at: number; readonly state: AppVisibility }
   | {
@@ -123,11 +164,107 @@ export type GovernorEvent =
       readonly thresholdMb: number;
       readonly lowMemory: boolean;
     }
+  | {
+      /** The network as the platform reports it; `null` fields are unknown, not false. */
+      readonly type: 'network';
+      readonly at: number;
+      readonly transport: NetworkTransport | null;
+      /** The platform has validated that the network reaches the internet. */
+      readonly validated: boolean | null;
+      readonly metered: boolean | null;
+      /** The platform's downstream bandwidth estimate. */
+      readonly downKbps: number | null;
+      readonly dataSaver: DataSaver | null;
+    }
+  /** Thresholds from now on (a validated, complete config): live tuning in the lab. */
+  | { readonly type: 'config'; readonly at: number; readonly config: VergerConfig }
+  /** What verger may do from now on; already resolved and capped by the launch. */
+  | { readonly type: 'activation'; readonly at: number; readonly activation: VergerActivation }
   /** A JS task that ran without yielding for 50 ms or more (RN PerformanceObserver `longtask`). */
   | { readonly type: 'long-task'; readonly at: number; readonly durationMs: number }
+  /**
+   * Today's data budget, from the host's byte ledger (`dataBudgetState`, B3): `spent` is a limit
+   * on optional data; `unknown` is never one. Heard through the network sensor.
+   */
+  | { readonly type: 'data-budget'; readonly at: number; readonly state: DataBudgetState }
+  /**
+   * Free bytes where the app keeps its data (Android `StatFs(filesDir).availableBytes`, or
+   * expo-file-system's free disk storage as a host signal); `null` when the platform cannot say.
+   */
+  | { readonly type: 'storage'; readonly at: number; readonly freeBytes: number | null }
+  /**
+   * How long an input waited before its handler ran (Event Timing on the web, React Native's
+   * `event` entries): a busy main or JS thread, as the user feels it. Heard with long tasks.
+   */
+  | { readonly type: 'input-delay'; readonly at: number; readonly durationMs: number }
+  /**
+   * The JS event loop's lag: how late a timer fired, the worst over the sampler's window. Catches
+   * stalls the scheduler's long tasks miss (timers, synchronous native calls). Heard with long tasks.
+   */
+  | { readonly type: 'event-loop-lag'; readonly at: number; readonly lagMs: number }
+  /**
+   * Hermes' garbage collector over the sampler's window (`HermesInternal.getInstrumentedStats`):
+   * the share of wall time the JS thread spent paused for collections, and the live heap. A GC
+   * pause is a JS stall, so it is heard with long tasks.
+   */
+  | {
+      readonly type: 'js-heap';
+      readonly at: number;
+      readonly gcPauseShare: number;
+      readonly allocatedBytes: number | null;
+    }
+  /**
+   * Loop 2's finding (D4): this lever's compressions did not relieve `target`, judged by the
+   * outcome ledger. verger-p5 stops lowering it for that target for the rest of the session;
+   * p4 ignores it. Sent by the launcher, so it is recorded and replays like any event.
+   */
+  | {
+      readonly type: 'lever-ineffective';
+      readonly at: number;
+      readonly lever: string;
+      readonly target: LeverTarget;
+    }
+  /**
+   * A list or scroll view began (`active`) or finished (momentum ended) scrolling. Presence, and
+   * a gesture: quality-lowering changes wait while it lasts (the vision's invariant 7).
+   */
+  | { readonly type: 'scroll'; readonly at: number; readonly active: boolean }
+  /**
+   * The app moved to another screen (R3, an annotation as Android Performance Tuner attaches to
+   * frames). The new screen is a new regime: verger's frame smoothing, stress episode and gain
+   * probe start over, so a change of demand is never read as a lever's effect. `transitionMs`: work
+   * the app expects (a navigation animation, a loading state); frames within it are neither stress
+   * nor comfort. verger-p5 also remembers per screen the pressure it settled on, and applies it on
+   * the next visit (R4, feedforward from memory).
+   */
+  | { readonly type: 'screen'; readonly at: number; readonly name: string; readonly transitionMs?: number }
+  /**
+   * The system's CPU pressure as the browser reports it (Compute Pressure, `PressureObserver`
+   * on source `cpu`; R10). Under `serious` or `critical`, one recent long task counts as JS
+   * contention (the page's one thread shares an overloaded machine); alone it is never contention,
+   * since the browser sends no reading while the state holds. Heard with the threads sensor.
+   */
+  | {
+      readonly type: 'compute-pressure';
+      readonly at: number;
+      readonly state: 'nominal' | 'fair' | 'serious' | 'critical';
+    }
+  /**
+   * The device's CPU headroom (Android API 36 `SystemHealthManager.getCpuHeadroom`; R11),
+   * 0 to 100, or null while the platform has no value. Under config `cpuHeadroomBusyPercent` the
+   * system is busy, which counts as R10's compute pressure does: one long task is contention.
+   * Heard with the threads sensor.
+   */
+  | { readonly type: 'cpu-headroom'; readonly at: number; readonly percent: number | null }
+  /**
+   * This app's bytes since boot (Android `TrafficStats` per UID; B3.1); negative where the
+   * platform does not count. The host folds it into the day's ledger (`foldDataSample`) and
+   * reports the budget as `data-budget`; the reducer itself only hears it. Heard with network.
+   */
+  | { readonly type: 'data-usage'; readonly at: number; readonly totalBytes: number }
   | { readonly type: 'tick'; readonly at: number };
 
-/** Unity-style indexer action, extended with the governor's reasons. */
+/** Unity-style indexer action, extended with verger's reasons. */
 export type IndexerAction = 'fast-decrease' | 'decrease' | 'stale' | 'increase';
 
 /** Device capabilities a lever may require. `refreshCap`: the display offers a rate at or below the cap and one above it. */
@@ -137,12 +274,32 @@ export type Capability = 'renderEffect' | 'runtimeShader' | 'refreshCap';
 export type Actuator = 'refresh-cap' | 'global-reduced-motion';
 
 /** What a lever primarily relieves. Used to match levers to the current bottleneck. */
-export type LeverTarget = 'gpu' | 'cpu' | 'memory' | 'energy';
+export type LeverTarget = 'gpu' | 'cpu' | 'memory' | 'energy' | 'network';
+
+/** The battery as verger last heard it; every field null until the power sensor reports. */
+export interface BatteryState {
+  readonly levelPercent: number | null;
+  /** On external power (plugged in), whether or not it is charging: a full phone on its charger counts. */
+  readonly pluggedIn: boolean | null;
+  readonly temperatureC: number | null;
+}
+
+/** Where the heat reading came from: the platform's thermal service, or the battery as a fallback. */
+export type ThermalSource = 'platform' | 'battery' | 'none';
+
+/** The network as verger last heard it; every field null until the network sensor reports. */
+export interface NetworkState {
+  readonly transport: NetworkTransport | null;
+  readonly validated: boolean | null;
+  readonly metered: boolean | null;
+  readonly downKbps: number | null;
+  readonly dataSaver: DataSaver | null;
+}
 export type VisualImpact = 'low' | 'medium' | 'high';
 
 /**
  * A quality lever owned by a consumer. Level 0 is full quality; `maxLevel` is the
- * cheapest setting. Consumers interpret levels; the governor only orders them.
+ * cheapest setting. Consumers interpret levels; verger only orders them.
  */
 export interface LeverSpec {
   readonly id: string;
@@ -165,6 +322,33 @@ export interface LeverSpec {
   readonly whenIdle?: number;
   /** Floor while the device is warm or hotter (closed loop). */
   readonly whenWarm?: number;
+  /** Floor on a metered network. A limit: it applies in static mode too. */
+  readonly whenMetered?: number;
+  /** Floor while Android Data Saver restricts this app (the user's choice). A limit. */
+  readonly whenDataSaver?: number;
+  /** Floor while there is no validated network. A limit. */
+  readonly whenOffline?: number;
+  /**
+   * Floor while today's data budget is spent (B3): optional data waits for tomorrow, or for
+   * the user. A limit; an unknown budget never applies it.
+   */
+  readonly whenDataBudgetSpent?: number;
+  /** Floor while free storage is low (config `storageLowBytes`): optional writes wait. A limit. */
+  readonly whenStorageLow?: number;
+  /** Floor while the battery is low and the phone is not plugged in (config `batteryLowPercent`). */
+  readonly whenBatteryLow?: number;
+  /**
+   * Floor while the network is slow (below config `slowNetworkKbps`) or unstable (back from
+   * offline less than config `networkSettleMs` ago). A limit for optional data: intermittent
+   * links are normal, so work that can wait does not spend a weak one.
+   */
+  readonly whenSlowNetwork?: number;
+  /**
+   * Floor on a mid-capacity phone (config `lowCapacityBelowBytes` to `midCapacityBelowBytes`):
+   * what this lever gives up by default on hardware that cannot carry everything at once. Lifted
+   * when the user asks for high fidelity, or once the phone has earned it back by measurement.
+   */
+  readonly whenMidCapacity?: number;
   /**
    * The app-wide effect verger itself applies for this lever, if any. A host lever without an
    * actuator is applied by the host's own consumers reading its level.
@@ -186,9 +370,9 @@ export interface LeverSpec {
   readonly closedLoopOnly?: boolean;
 }
 
-export type GovernorMode = 'active' | 'shadow';
+export type RunMode = 'active' | 'shadow';
 
-export interface GovernorConfig {
+export interface VergerConfig {
   /** Frames counted in a window before it is judged. Fewer means the window says nothing. */
   readonly minSamples: number;
   /** average / target above this is stress. */
@@ -204,6 +388,13 @@ export interface GovernorConfig {
   readonly maxUpgradeAfterMs: number;
   /** A downgrade within this long after an upgrade marks the upgrade as failed. */
   readonly failedUpgradeWindowMs: number;
+  /**
+   * p5's flapping rule (D4): a lever lowered again after its own expansion `flapCycles` times
+   * within `flapWindowMs` waits `maxUpgradeAfterMs` (over its evidence's confidence, as every
+   * p5 wait) before it returns, without decay, until it goes a whole window without a flap.
+   */
+  readonly flapWindowMs: number;
+  readonly flapCycles: number;
   /** Back-off resets after this long without any level change. */
   readonly resetBackoffAfterMs: number;
   /** Minimum spacing between thermal-driven decreases. */
@@ -219,6 +410,75 @@ export interface GovernorConfig {
   readonly fastDecreaseSteps: number;
   /** Optional background work allowed when nothing constrains it. */
   readonly maxOptionalConcurrency: number;
+  /**
+   * Optional work allowed on a metered network. Where most users are always metered (Sri Lanka's
+   * teachers, on prepaid mobile data), metered is the normal state, not strain: the default is no
+   * reduction, and Data Saver and a data budget protect the user instead. A host's choice.
+   */
+  readonly meteredOptionalConcurrency: number;
+  /** At or below this level, and not plugged in, the battery is low (the original runtime spec's 20%). */
+  readonly batteryLowPercent: number;
+  /**
+   * Total memory, as the OS reports it, below which a phone is low capacity. The OS reports less
+   * than the marketed size (it keeps some for itself), so the default (5 GiB) puts 4 GB phones
+   * here. Provisional until phones confirm what they report.
+   */
+  readonly lowCapacityBelowBytes: number;
+  /** Below this, a phone is mid capacity (default 9 GiB: 6 and 8 GB phones); at or above, high. */
+  readonly midCapacityBelowBytes: number;
+  /** A downstream estimate below this is a slow network (kbps). */
+  readonly slowNetworkKbps: number;
+  /** A network back from offline counts as unstable for this long. */
+  readonly networkSettleMs: number;
+  /**
+   * Least confidence an account reading must carry to count as evidence for expansion (0 to 1).
+   * Below it the reading is ignored, as unknown is. Evidence must last `upgradeAfterMs` divided
+   * by the confidence: a weak witness has to stay calm longer.
+   */
+  readonly expandMinConfidence: number;
+  /**
+   * Heat from battery temperature, used only where the platform gives no thermal status or
+   * headroom (Android 9). Provisional until device captures calibrate them.
+   */
+  readonly batteryWarmC: number;
+  readonly batteryHotC: number;
+  readonly batteryCriticalC: number;
+  /**
+   * Thermal hysteresis (P4, control review): heat steps down a level only once the reading is
+   * below that level's threshold by a band (headroom, and battery temperature in °C) and has
+   * stayed so for `thermalDwellMs`. Rising heat applies at once. The OS's status is discrete, so
+   * only the dwell applies to it. Bands sit above the sensors' jitter (ADPF headroom ±0.03,
+   * battery ±0.4 °C on the simulator's phones). Provisional.
+   */
+  readonly thermalExitBandHeadroom: number;
+  readonly thermalExitBandC: number;
+  readonly thermalDwellMs: number;
+  /**
+   * Heat trend (R1, prior-art review): the slope of headroom and battery temperature over
+   * `thermalTrendWindowMs`, from at least `thermalTrendMinSamples` readings, projects the level
+   * `thermalTrendHorizonMs` ahead. A projected rise tightens early (Unity's temperature trend;
+   * ADPF's forecast where the platform has one); it never relaxes anything. Provisional.
+   */
+  readonly thermalTrendWindowMs: number;
+  readonly thermalTrendHorizonMs: number;
+  readonly thermalTrendMinSamples: number;
+  /**
+   * Time-scale separation for heat (P5): heat moves in minutes, so after heat (warm or worse)
+   * warm floors stay and raises wait `thermalRecoverMs` of calm. Then, until `thermalPaceMs`
+   * after the heat, published quality climbs at most one lever step per `thermalStepMs`, and
+   * only while heat readings since the last step are not rising: quality settles at a level the
+   * phone can sustain instead of cycling (ADPF: "find a sustainable quality level").
+   */
+  readonly thermalRecoverMs: number;
+  readonly thermalPaceMs: number;
+  /** While paced, the least time between two one-step raises of published quality (P5). */
+  readonly thermalStepMs: number;
+  /**
+   * The phone's thermal time constant, assumed (P5): a first-order phone heading somewhere at a
+   * slope settles near `value + slope × τ`, so a paced step waits unless that steady state stays an
+   * exit band clear of warm. Phones show 1 to 3 minutes; phase F measures it. Provisional.
+   */
+  readonly thermalTimeConstantMs: number;
   /** A thread role using at least this many cores is saturated. */
   readonly saturationCores: number;
   /** Saturation must last this long before it counts as contention. */
@@ -226,6 +486,38 @@ export interface GovernorConfig {
   /** Long tasks within this window that also count as JS contention. */
   readonly longTaskWindowMs: number;
   readonly longTasksForContention: number;
+  /** An input delayed this long counts as a long task for contention (B7). Provisional. */
+  readonly inputDelayLongMs: number;
+  /** Event-loop lag at or above this counts as a long task for contention. Provisional. */
+  readonly eventLoopLagLongMs: number;
+  /** A GC pause share of wall time at or above this counts as a long task. Provisional. */
+  readonly gcPauseShareStall: number;
+  /** Free storage below this is low: levers' `whenStorageLow` apply (B4). Provisional. */
+  readonly storageLowBytes: number;
+  /** Low storage ends only once free storage is this far above `storageLowBytes` (P4). */
+  readonly storageExitBandBytes: number;
+  /**
+   * Loop 2's unhelpful-lever rule (D4): judged not-relieved this many times for a target, never
+   * relieved, and p5 stops lowering that lever for it. Provisional.
+   */
+  readonly ineffectiveAfterMoves: number;
+  /**
+   * Verger's budget for itself (D4): the share of each `selfBudgetWindowMs` it may spend deciding.
+   * 1 (the default) is no budget: a share can never exceed it. Set below 1 only from a measurement.
+   */
+  readonly selfBudgetMaxDutyRatio: number;
+  readonly selfBudgetWindowMs: number;
+  /**
+   * Telemetry volume per launch (one-off events, periodic summaries, and their cadence): a data
+   * cost on users' plans, so a host chair, remotely tunable. Integers.
+   */
+  readonly telemetryMaxEvents: number;
+  readonly telemetryMaxSummaries: number;
+  readonly telemetrySummaryEveryMs: number;
+  /** How long a compression has to relieve its account before it is judged not relieved. */
+  readonly outcomeJudgeWindowMs: number;
+  /** How long an expansion must last, not pushed back by pressure, to be judged held. */
+  readonly outcomeHoldWindowMs: number;
   /** Free memory below threshold × factor is treated as a trim of that severity. */
   readonly memoryLowFactor: number;
   readonly memoryModerateFactor: number;
@@ -237,22 +529,124 @@ export interface GovernorConfig {
   readonly maxUnrelievedContentionSteps: number;
   /** Drops in cores, or in long tasks, that count as relief after a contention step. */
   readonly contentionReliefCores: number;
-  /** Quality-lowering hardware changes wait this long after the last touch (gesture freeze). */
+  /**
+   * The frames loop's relief check (P8, control review): after this many lowerings in one stress
+   * episode, if smoothed frame cost has closed less than `frameReliefGapShare` of the gap to the
+   * frame budget, the levers are not what costs the frames (a sync, a decode burst), and the loop
+   * stops lowering until the stress ends. Provisional.
+   */
+  readonly frameReliefSteps: number;
+  readonly frameReliefGapShare: number;
+  /**
+   * R7: the relief check also judges once the episode has given up this much quality, counted as
+   * `stepQualityCost` (a step of a low-impact two-level lever is 0.5, of a medium one 1, of a
+   * high-impact single-level lever 3): one costly step that did not help ends the episode as
+   * surely as two cheap ones. Only for stress that arises mid-screen (more than `frameArrivalMs`
+   * after an announced screen, R3): work the app does on a screen it shows (a sync, a decode
+   * burst) is rarely the levers' to fix, while stress on arriving is the screen's own weight.
+   * Provisional.
+   */
+  readonly frameReliefQuality: number;
+  readonly frameArrivalMs: number;
+  /** Weight of each new sample in a lever's gain estimate (P6). Provisional. */
+  readonly gainAlpha: number;
+  /** Samples a gain needs before p5 chooses levers by it (P7). Provisional. */
+  readonly gainMinSamples: number;
+  /** A confidently measured gain below this is no help: p5 passes the lever over (P7). */
+  readonly gainUselessBelow: number;
+  /**
+   * Proportional lowering (R2, p5): the most frames-loop steps one action may take when the
+   * measured gains of the levers it would lower say one step leaves frames over budget (Unreal's
+   * dynamic resolution sizes its change to the overshoot). 1 is the plain ladder. Provisional.
+   */
+  readonly maxStepsPerAction: number;
+  /**
+   * The energy setpoint (R5): while unplugged, battery drain is estimated over
+   * `energyDrainWindowMs` (a slope needing a third of the window and a drop of
+   * `energyDrainMinDropPercent`); if the hours left at that drain fall below `energyReserveHours`,
+   * energy is short and levers' `whenBatteryLow` apply before the battery is low. Plugged in, or
+   * not measurably draining, it is never a limit. Provisional: a school day is the setpoint's sense.
+   */
+  readonly energyReserveHours: number;
+  readonly energyDrainWindowMs: number;
+  readonly energyDrainMinDropPercent: number;
+  /**
+   * CPU headroom (R11, percent) under which the whole device counts as busy: one long task is
+   * then contention, as under compute pressure. Provisional: no phone has reported one yet.
+   */
+  readonly cpuHeadroomBusyPercent: number;
+  /** Quality-lowering changes wait this long after the last touch (gesture freeze). */
   readonly gestureQuietMs: number;
+  /**
+   * The longest a pending lowering waits for a gesture or scroll to end, then it applies anyway:
+   * under sustained jank with a finger always down, quality must still be able to drop. Provisional.
+   */
+  readonly gestureFreezeMaxMs: number;
+  /** A scroll whose end is never reported counts as over this long after it was last seen. */
+  readonly scrollQuietMs: number;
 }
 
-export interface GovernorSnapshot {
+/**
+ * A lever's estimated gain (P6): an EWMA (config `gainAlpha`) of `1 - load after / load before`
+ * over single-step lowerings, and how many it has seen. Confidence grows with `samples`.
+ */
+export interface LeverGain {
+  readonly gain: number;
+  readonly samples: number;
+}
+
+export interface VergerSnapshot {
   readonly version: number;
   readonly at: number;
-  readonly mode: GovernorMode;
+  readonly mode: RunMode;
   /** Levels consumers should apply. In shadow mode these are the baseline, not the proposal. */
   readonly levels: Readonly<Record<string, number>>;
   /** What the closed loop would apply. Equal to `levels` in active mode. */
   readonly proposedLevels: Readonly<Record<string, number>>;
+  /**
+   * The static baseline (floors from capacity, settings, power, visibility) before any measured
+   * pressure: what a shadow lever publishes, and what every decision starts from.
+   */
+  readonly baselineLevels: Readonly<Record<string, number>>;
   readonly frameState: FrameState;
   readonly thermal: ThermalLevel;
   readonly memory: MemoryLevel;
   readonly powerSaver: boolean;
+  readonly battery: BatteryState;
+  readonly thermalSource: ThermalSource;
+  /**
+   * Heat as the trend projects it `thermalTrendHorizonMs` ahead (R1), never below the reading.
+   * Lowering, raises, warm floors and admission act on the worse of this and `thermal`.
+   */
+  readonly thermalProjected: ThermalLevel;
+  /** Hours of battery left at the measured drain (R5); null when plugged in or not measurable. */
+  readonly batteryHoursLeft: number | null;
+  /** The hours left are under config `energyReserveHours` (R5): levers' `whenBatteryLow` apply. */
+  readonly energyShort: boolean;
+  readonly network: NetworkState;
+  /** What the network limits now, strongest first; `none` when unknown or fine. */
+  readonly networkLimit: NetworkLimit;
+  /** Today's data budget as the host last reported it; `unknown` until then, or while deaf. */
+  readonly dataBudget: DataBudgetState;
+  readonly storage: StorageLevel;
+  /** The phone's class from its memory (config thresholds); `unknown` when memory is unknown. */
+  readonly capacityClass: CapacityClass;
+  /**
+   * Each governed lever's envelope, as levels (a higher level is less quality): see
+   * `LeverEnvelope`. Published by every policy; only an expanding policy (verger-p5) moves a
+   * lever between its home and its ceiling on evidence.
+   */
+  readonly envelope: Readonly<Record<string, LeverEnvelope>>;
+  /**
+   * Loop 2's self-rule (p5): the targets each lever proved not to relieve this session, which
+   * pressure no longer lowers it for. Empty under p4.
+   */
+  readonly ineffective: Readonly<Record<string, readonly LeverTarget[]>>;
+  /**
+   * Measured effect of one step down per lever (P6, system identification): how much lighter
+   * frames got, as a share of the frame load (cost over budget). Only levers measured appear.
+   */
+  readonly gains: Readonly<Record<string, LeverGain>>;
   readonly visibility: AppVisibility;
   readonly interactionIdle: boolean;
   readonly optionalConcurrency: number;
@@ -267,11 +661,15 @@ export interface GovernorSnapshot {
   /** Force reduced motion for every Reanimated animation, including unregistered ones. */
   readonly globalReducedMotion: boolean;
   /**
-   * Levels the closed loop itself has lowered levers to, before any floor. What the profile
-   * learns from: floors are re-derived every launch, pressure is what this device needed.
+   * Steps the closed loop itself has lowered each lever by this session, before any floor and
+   * apart from the learned starting point. What the profile learns from.
    */
   readonly pressure: Readonly<Record<string, number>>;
+  /** What remains of the learned starting point, per lever; the loop gives it back last. */
+  readonly priorHeld: Readonly<Record<string, number>>;
   /** The last indexer action and why. */
   readonly lastAction: IndexerAction;
   readonly lastReason: string;
+  /** What verger was allowed to do when this snapshot was taken. */
+  readonly activation: VergerActivation;
 }

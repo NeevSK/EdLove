@@ -56,9 +56,9 @@ CREATE POLICY "Founders can manage all users"
     ON public.users FOR ALL
     USING (
         EXISTS (
-            SELECT 1 FROM public.users AS current_user
-            WHERE current_user.id = auth.uid()
-            AND current_user.role IN ('founder', 'admin', 'developer')
+            SELECT 1 FROM public.users AS requesting_user
+            WHERE requesting_user.id = auth.uid()
+            AND requesting_user.role IN ('founder', 'admin', 'developer')
         )
     );
 
@@ -76,17 +76,25 @@ CREATE POLICY "Founders can manage all classrooms"
     );
 
 -- Communities: Global CRUD visibility
-ALTER TABLE public.communities ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Founders can manage all communities" ON public.communities;
-CREATE POLICY "Founders can manage all communities"
-    ON public.communities FOR ALL
-    USING (
+-- Some historical baselines did not include this abandoned table. Preserve
+-- the policy when it exists rather than making a fresh replay depend on it.
+DO $$
+BEGIN
+  IF to_regclass('public.communities') IS NOT NULL THEN
+    ALTER TABLE public.communities ENABLE ROW LEVEL SECURITY;
+    DROP POLICY IF EXISTS "Founders can manage all communities" ON public.communities;
+    CREATE POLICY "Founders can manage all communities"
+      ON public.communities FOR ALL
+      USING (
         EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()
+          SELECT 1 FROM public.users
+          WHERE id = auth.uid()
             AND role IN ('founder', 'admin', 'developer')
         )
-    );
+      );
+  END IF;
+END;
+$$;
 
 -- 3. Grant founder role to specific users (If requested, but here we just ensure the RBAC check works)
 -- Note: Roles are managed in public.users via the UI or direct DB edits.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T11:05:15.544Z",
+  "generatedAt": "2026-10-27T02:38:09.447Z",
   "entryCount": 27,
   "counts": {
     "evidence": 18,
@@ -32,14 +32,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -64,14 +64,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -96,14 +96,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -128,14 +128,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": false,
       "webSupport": true,
@@ -161,14 +161,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -200,14 +200,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -231,14 +231,14 @@
       "consumerEvidence": [],
       "route": "tab-only",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -263,14 +263,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -296,14 +296,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -335,14 +335,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -374,14 +374,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -417,13 +417,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/announcements.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/_layout.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -441,6 +442,8 @@
       "flagMapping": "valid",
       "implementation": "evidence",
       "implementationEvidence": [
+        "packages/community/src/navigation/communityRoutes.test.ts",
+        "packages/community/src/navigation/communityRoutes.ts",
         "packages/community/src/screens/CommunityScreen.tsx",
         "packages/community/src/screens/CommunityScreen.web.tsx",
         "packages/community/src/screens/communityWorkspace.shared.ts",
@@ -452,13 +455,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/announcements.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/_layout.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -478,12 +482,12 @@
       "implementationEvidence": [
         "packages/community/src/api/community.ts",
         "packages/community/src/chat.ts",
+        "packages/community/src/hooks/useChatMessages.ts",
         "packages/community/src/index.ts",
         "packages/community/src/navigation/communityRoutes.test.ts",
         "packages/community/src/navigation/communityRoutes.ts",
         "packages/community/src/screens/baseChatDeliveryRecovery.test.ts",
-        "packages/community/src/screens/BaseChatScreen.tsx",
-        "packages/community/src/screens/chatQueueDelivery.test.ts"
+        "packages/community/src/screens/BaseChatScreen.tsx"
       ],
       "consumerEvidence": [
         "packages/community/src/screens/CommunityScreen.tsx",
@@ -493,13 +497,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/announcements.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/_layout.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -523,14 +528,14 @@
       "consumerEvidence": [],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/announcements.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups.tsx",
         "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/community/_layout.tsx",
-        "apps/gurudevi-mobile/app/icon-lab.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
       ],
       "mobileSupport": false,
       "webSupport": true,
@@ -562,14 +567,14 @@
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": false,
       "webSupport": true,
@@ -597,13 +602,13 @@
       "route": "evidence",
       "routeEvidence": [
         "apps/gurudevi-mobile/app/(tabs)/library/collections/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/contribute.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/document/[resourceId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/document-scanner.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/map.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/resource/[resourceId].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/library/tools/cloud-export.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -621,6 +626,7 @@
       "flagMapping": "valid",
       "implementation": "evidence",
       "implementationEvidence": [
+        "packages/library/src/components/furniture/LibraryInvitationsFurniture.tsx",
         "packages/library/src/entrypoints/browse.ts",
         "packages/library/src/entrypoints/tools.ts",
         "packages/library/src/screens/index.ts",
@@ -632,13 +638,13 @@
       "route": "evidence",
       "routeEvidence": [
         "apps/gurudevi-mobile/app/(tabs)/library/collections/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/contribute.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/document/[resourceId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/document-scanner.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/map.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/resource/[resourceId].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/library/tools/cloud-export.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -668,13 +674,13 @@
       "route": "evidence",
       "routeEvidence": [
         "apps/gurudevi-mobile/app/(tabs)/library/collections/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/contribute.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/document/[resourceId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/document-scanner.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/map.tsx",
         "apps/gurudevi-mobile/app/(tabs)/library/resource/[resourceId].tsx",
-        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/library/tools/cloud-export.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx"
       ],
       "mobileSupport": false,
       "webSupport": true,
@@ -741,10 +747,10 @@
         "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
         "apps/gurudevi-mobile/app/(tabs)/self/_layout.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/editorial.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/principal.tsx",
-        "apps/gurudevi-mobile/app/auth/callback.tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/grade-head.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,
@@ -900,7 +906,8 @@
         "packages/self/src/components/SchoolLegacyTimeline.tsx",
         "packages/self/src/features/featureCatalog.ts",
         "packages/self/src/screens/self/PrincipalSelfView.tsx",
-        "packages/self/src/screens/self/PrincipalSelfView.web.tsx"
+        "packages/self/src/screens/self/PrincipalSelfView.web.tsx",
+        "packages/self/src/screens/SelfScreen.unified.tsx"
       ],
       "consumerEvidence": [],
       "route": "tab-only",
@@ -927,21 +934,24 @@
       "implementation": "evidence",
       "implementationEvidence": [
         "packages/workforce/src/index.ts",
-        "packages/workforce/src/WorkforceShell.tsx"
+        "packages/workforce/src/types.ts",
+        "packages/workforce/src/workforceService.ts",
+        "packages/workforce/src/WorkforceShell.tsx",
+        "packages/workforce/src/__tests__/workforceService.test.ts"
       ],
       "consumerEvidence": [
         "packages/workforce/src/WorkforceShell.tsx"
       ],
       "route": "evidence",
       "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/admin.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
         "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
-        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx"
       ],
       "mobileSupport": true,
       "webSupport": true,

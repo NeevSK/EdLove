@@ -21,6 +21,7 @@ function snapshot(overrides: Partial<BootstrapRouteState> = {}): BootstrapRouteS
     hasActiveAccessToken: true,
     hasLiveCapacity: true,
     hasProfileName: true,
+    principalId: 'account-a',
     isGuestRouteStateLoading: false,
     isLocalGuestReady: false,
     isProfileForSession: true,

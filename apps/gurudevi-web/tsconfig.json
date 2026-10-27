@@ -6,6 +6,7 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./*"],
+      "@repo/verger-core": ["../../packages/verger-core/src/index.ts"],
       "@playwright/test": [
         "../../node_modules/.pnpm/@playwright+test@1.62.1/node_modules/playwright/test.d.ts"
       ]

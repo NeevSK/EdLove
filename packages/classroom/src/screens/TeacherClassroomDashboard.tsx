@@ -1,14 +1,32 @@
+import {
+  AttendanceView,
+  ClassroomAccessState,
+  ClassroomEchoSection,
+  ClassroomHolisticInsights,
+  InventoryView,
+  ResourcesView,
+  StudentList,
+} from '@repo/classroom/components';
+import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
+import TeacherAnalysisWorkspace from '@repo/classroom/components/teacher/TeacherAnalysisWorkspace';
+import TeacherAssignmentsWorkspace from '@repo/classroom/components/teacher/TeacherAssignmentsWorkspace';
+import TeacherGroupsModal from '@repo/classroom/components/teacher/TeacherGroupsModal';
+import TeacherObservationsWorkspace from '@repo/classroom/components/teacher/TeacherObservationsWorkspace';
+import AttendanceReportScreen from '@repo/classroom/screens/AttendanceReportScreen';
+import LessonFeed from '@repo/classroom/screens/LessonFeed';
+import { useTeacherClassroomWorkspaceData } from '@repo/classroom/workspace/useTeacherClassroomWorkspaceData';
 import { api } from '@repo/core/api/client';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
 import type {
   Classroom,
   ClassroomStackParamList,
+  LessonMaterial,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
-  LessonMaterial,
 } from '@repo/core/types';
 import { StudentAnalysisModal } from '@repo/library';
 import ClassroomLegacyTimeline from '@repo/self/components/ClassroomLegacyTimeline';
@@ -21,7 +39,6 @@ import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ResponsiveWorkspaceCanvas } from '@repo/ui/components/workspace/ResponsiveWorkspaceCanvas';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useThemedColors } from '@repo/ui/hooks';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import {
   BookOpen,
   ClipboardCheck,
@@ -50,29 +67,15 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { safeBack } from '@repo/ui/utils/navigation';
 import { openExternalURL } from '@repo/ui/utils/linking';
+import { SceneBackdrop, useScene } from '@repo/ui/scene/native';
+import { useWindowDimensions, View } from 'react-native';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import {
-  AttendanceView,
-  ClassroomAccessState,
-  ClassroomEchoSection,
-  ClassroomHolisticInsights,
-  InventoryView,
-  ResourcesView,
-  StudentList,
-} from '@repo/classroom/components';
-import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
-import TeacherAnalysisWorkspace from '@repo/classroom/components/teacher/TeacherAnalysisWorkspace';
-import TeacherAssignmentsWorkspace from '@repo/classroom/components/teacher/TeacherAssignmentsWorkspace';
-import TeacherGroupsModal from '@repo/classroom/components/teacher/TeacherGroupsModal';
-import TeacherObservationsWorkspace from '@repo/classroom/components/teacher/TeacherObservationsWorkspace';
-import { useTeacherClassroomWorkspaceData } from '@repo/classroom/workspace/useTeacherClassroomWorkspaceData';
-import AttendanceReportScreen from '@repo/classroom/screens/AttendanceReportScreen';
-import LessonFeed from '@repo/classroom/screens/LessonFeed';
 
 type FeatureId =
   | 'insights'
@@ -168,6 +171,9 @@ const FEATURE_TONES: Record<FeatureId, { label: string; color: string; tint: str
 
 export default function TeacherClassroomDashboard() {
   const router = useRouter();
+  const scene = useScene({ presence: 'full' });
+  const { height: windowHeight } = useWindowDimensions();
+  const heroHeight = Math.round(Math.min(420, Math.max(260, windowHeight * 0.42)));
   const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
     classroomId?: string;
     classroomName?: string;
@@ -211,7 +217,7 @@ export default function TeacherClassroomDashboard() {
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [analysisStudent, setAnalysisStudent] = useState<any | null>(null);
   const workspace = useTeacherClassroomWorkspaceData(classroomId);
-  const currentUserId = useStore((state) => state.user?.id ?? '');
+  const currentUserId = useAuthStore((state) => state.user?.id ?? '');
   const classroom = workspace.classroom as Classroom | null;
   const students = workspace.students as any[];
 
@@ -316,7 +322,10 @@ export default function TeacherClassroomDashboard() {
       await workspace.refreshWorkspace();
     } catch (error) {
       console.error('Failed to add month:', error);
-      showToast({ message: 'The learning month could not be added. Please try again.', type: 'error' });
+      showToast({
+        message: 'The learning month could not be added. Please try again.',
+        type: 'error',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -365,7 +374,10 @@ export default function TeacherClassroomDashboard() {
       await workspace.refreshWorkspace();
     } catch (error) {
       console.error('Failed to add content:', error);
-      showToast({ message: 'The learning content could not be added. Please try again.', type: 'error' });
+      showToast({
+        message: 'The learning content could not be added. Please try again.',
+        type: 'error',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -530,7 +542,11 @@ export default function TeacherClassroomDashboard() {
       <ClassroomAccessState
         kind="unavailable"
         onBack={() => safeBack('/workspace')}
-        onRetry={workspace.error || workspace.workspaceError ? () => void workspace.refreshWorkspace() : undefined}
+        onRetry={
+          workspace.error || workspace.workspaceError
+            ? () => void workspace.refreshWorkspace()
+            : undefined
+        }
       />
     );
   }
@@ -564,13 +580,13 @@ export default function TeacherClassroomDashboard() {
 
   const canvasLayout: WorkspaceLayout<string> = workspace.layout
     ? {
-        workspaceId: workspace.layout.workspace_id,
-        userId: workspace.layout.user_id,
+        workspaceId: workspace.layout.workspaceId,
+        userId: workspace.layout.userId,
         order: workspace.layout.order,
         hidden: workspace.layout.hidden,
         pinned: workspace.layout.pinned,
-        zoneBySurface: workspace.layout.zone_by_surface as Partial<Record<string, WorkspaceZoneId>>,
-        updatedAt: workspace.layout.updated_at,
+        zoneBySurface: workspace.layout.zoneBySurface,
+        updatedAt: workspace.layout.updatedAt,
       }
     : {
         workspaceId: classroomId,
@@ -594,7 +610,7 @@ export default function TeacherClassroomDashboard() {
         onBack={() => safeBack('/workspace')}
       />
       <ScrollView
-        stickyHeaderIndices={[2]}
+        stickyHeaderIndices={[3]}
         contentContainerClassName="pb-10"
         showsVerticalScrollIndicator={false}
         className="bg-phase-surface"
@@ -610,37 +626,50 @@ export default function TeacherClassroomDashboard() {
             ))}
           </Box>
         )}
-        <Box className="p-6 bg-phase-surface">
-          <VStack className="gap-2">
-            <Text className="text-[12px] text-phase-text-tertiary font-black uppercase tracking-[0.2em] mb-1">
-              Teacher Sanctuary
-            </Text>
-            <HStack className="justify-between items-start gap-4">
-              <Heading className="text-4xl font-black text-templeGold leading-tight flex-1">
-                {classroomName}
-              </Heading>
-              {activeFeature === 'lessons' && (
-                <Pressable
-                  onPress={() => {
-                    hapticLight();
-                    setShowAddMonthModal(true);
-                  }}
-                  className="bg-sanctuarySaffron px-5 py-2.5 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
+        {/* The classroom's home looks out on its room: the living scene, as verger allows it. */}
+        <View style={{ minHeight: scene.paint === 'none' ? undefined : heroHeight }}>
+          <SceneBackdrop scene={scene} />
+          <Box className={scene.paint === 'none' ? 'p-6 bg-phase-surface' : 'p-6'}>
+            <VStack className="gap-2">
+              <HStack className="justify-between items-start gap-4">
+                <Heading
+                  className={
+                    scene.skyInk
+                      ? 'text-4xl font-black leading-tight flex-1'
+                      : 'text-4xl font-black text-templeGold leading-tight flex-1'
+                  }
+                  style={scene.skyInk ? { color: scene.skyInk } : undefined}
                 >
-                  <HStack className="items-center gap-2">
-                    <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
-                    <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-wider">
-                      New Module
-                    </Text>
-                  </HStack>
-                </Pressable>
-              )}
-            </HStack>
-            <Text className="text-base text-phase-text-secondary mt-2 font-medium">
-              Hold the classroom as one living workspace: roster, rhythm, assignments, and deep
-              insight.
-            </Text>
-          </VStack>
+                  {classroomName}
+                </Heading>
+                {activeFeature === 'lessons' && (
+                  <Pressable
+                    onPress={() => {
+                      hapticLight();
+                      setShowAddMonthModal(true);
+                    }}
+                    className="bg-sanctuarySaffron px-5 py-2.5 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
+                  >
+                    <HStack className="items-center gap-2">
+                      <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
+                      <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-wider">
+                        New Module
+                      </Text>
+                    </HStack>
+                  </Pressable>
+                )}
+              </HStack>
+            </VStack>
+          </Box>
+        </View>
+        <Box className="px-6 pt-5 pb-1 bg-phase-surface">
+          <Text className="text-[12px] text-phase-text-tertiary font-black uppercase tracking-[0.2em] mb-1">
+            Teacher Sanctuary
+          </Text>
+          <Text className="text-base text-phase-text-secondary mt-1 font-medium">
+            Hold the classroom as one living workspace: roster, rhythm, assignments, and deep
+            insight.
+          </Text>
         </Box>
 
         <Box className="bg-phase-surface px-6 pb-2 shadow-sm z-10" style={{ minHeight: 180 }}>

@@ -1,6 +1,6 @@
 import { forceLayout, geoLayout, pathLayout, treeLayout } from '@repo/graphics/layouts';
 import type { KnowledgeTopology, LayoutResult, PerspectiveId } from '@repo/graphics/types';
-import { useReality } from '@repo/ui/context';
+import { useVisualCapabilities } from '@repo/ui/context';
 import { useMemo } from 'react';
 
 interface LayoutOptions {
@@ -19,11 +19,11 @@ export function usePerspectiveLayout(
   options: LayoutOptions,
 ): LayoutResult | null {
   const { width, height, perspective } = options;
-  const { reality } = useReality();
+  const { deviceTier } = useVisualCapabilities();
   return useMemo(() => {
     if (!topology) return null;
     // Dynamic complexity adjustment based on device tier
-    const isLowTier = reality.deviceTier === 'low';
+    const isLowTier = deviceTier === 'low';
     const forceTicks = isLowTier ? 80 : 300;
     switch (perspective) {
       case 'astro':
@@ -46,5 +46,5 @@ export function usePerspectiveLayout(
           ticks: isLowTier ? 50 : 100,
         });
     }
-  }, [topology, perspective, width, height, reality.deviceTier]);
+  }, [topology, perspective, width, height, deviceTier]);
 }

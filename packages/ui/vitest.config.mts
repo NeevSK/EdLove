@@ -14,6 +14,10 @@ export default defineConfig({
     tsconfigPaths: true,
     alias: [
       {
+        find: '@repo/verger-core',
+        replacement: new URL('../verger-core/src/index.ts', import.meta.url).pathname,
+      },
+      {
         find: /^react-native-css(?:-interop)?(?:\/.*)?$/,
         replacement: new URL('./vitest-nativewind-mock.ts', import.meta.url).pathname,
       },

@@ -1,13 +1,21 @@
 ---
 title: "Database Decoupling — Current State and Gap Analysis"
-status: "active"
+status: "superseded"
 created: 2026-10-23
+updated: 2026-10-25
+superseded_by: "../current_progress/2026-10-25-identity-auth-and-decoupling-plan-reconciliation.md"
 author: "Naveen"
 scribe: "Antigravity"
 tags: [database, architecture, supabase, zenstack, powersync, decoupling]
 ---
 
 # Database Decoupling — Current State & Gap Analysis
+
+> Historical October 23 assessment. Its portability percentages and
+> zero-code-switch claims are not verified completion evidence. The
+> [October 25 source reconciliation](../current_progress/2026-10-25-identity-auth-and-decoupling-plan-reconciliation.md)
+> distinguishes SQL transport, Supabase-dependent schema/auth, client writes
+> and actual provider migration requirements.
 
 ## Executive Summary
 

@@ -77,3 +77,7 @@ public/@powersync/
 .agents/skills/expo-sqlite
 .agents/skills/react-native-nitro-google-signin
 # @generated expo skills end
+
+# RN-Terrain local telemetry
+.terrain/
+.agents/state/receipt.json

@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { authAPI } from '@repo/core/api/client';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   completeThoughtRecordFollowUp,
@@ -20,7 +22,7 @@ const THOUGHT_RECORD_CACHE_KEY = 'gurudevi-thought-record-cache';
  * - Syncs via the repository's outbox queue.
  */
 export const useThoughtRecords = (userId?: string) => {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const { viewDate, phase } = useTemporalStore();
   const [records, setRecords] = useState<ThoughtRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);

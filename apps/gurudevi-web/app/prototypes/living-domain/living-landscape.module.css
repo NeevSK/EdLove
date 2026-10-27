@@ -1,0 +1,170 @@
+.landscapeStage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  transition: all 1s ease;
+}
+
+/* Atmospheric Sky Canvas with Rich Soft Chroma */
+.skyAtmosphere {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(135% 115% at 50% -10%, var(--sky-top) 0%, var(--sky-horizon) 68%, transparent 100%);
+  opacity: 0.96;
+  transition: background 1.2s ease;
+}
+
+/* Handcrafted Celestial Body (Sun with Corona or Moon with Detailed Craters) */
+.celestialOrb {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: var(--orb-size, 76px);
+  height: var(--orb-size, 76px);
+  border-radius: 50%;
+  background: var(--orb-bg);
+  box-shadow: 0 0 55px 18px var(--orb-glow), 0 0 130px 45px var(--orb-corona);
+  transition: left 0.8s ease-out, top 0.8s ease-out, background 1s ease, box-shadow 1s ease;
+  z-index: 2;
+  filter: blur(0.4px);
+}
+
+.lunarCraters {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.craterA {
+  position: absolute;
+  top: 25%;
+  left: 28%;
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.12);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.25);
+}
+
+.craterB {
+  position: absolute;
+  bottom: 22%;
+  right: 22%;
+  width: 36%;
+  height: 36%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.craterC {
+  position: absolute;
+  top: 45%;
+  right: 25%;
+  width: 16%;
+  height: 16%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Hand-Drawn Distant Mountain Silhouettes (Knuckles / Sri Pada Range) */
+.distantMountainsSvg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 200px;
+  z-index: 3;
+}
+
+.farMountainPath {
+  fill: var(--w-ground);
+  opacity: 0.38;
+  transition: fill 0.8s ease, opacity 0.8s ease;
+}
+
+.nearMountainPath {
+  fill: var(--w-ground);
+  opacity: 0.68;
+  transition: fill 0.8s ease, opacity 0.8s ease;
+}
+
+/* Hand-Drawn Biome Flora & Heritage Architecture Layer */
+.biomeFloraLayer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 190px;
+  z-index: 4;
+}
+
+.biomeSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.wewaWaterLine {
+  fill: var(--w-sunken);
+  opacity: 0.85;
+  transition: fill 0.8s ease;
+}
+
+.handDrawnTrunk {
+  fill: var(--w-ground);
+  color: var(--w-ground);
+  opacity: 0.92;
+  transition: fill 0.8s ease, color 0.8s ease;
+}
+
+.handDrawnFoliage {
+  fill: var(--w-ground);
+  opacity: 0.82;
+  transition: fill 0.8s ease;
+}
+
+.handDrawnLilyPad {
+  fill: color-mix(in srgb, var(--w-lamp-deep) 45%, var(--w-ground));
+  opacity: 0.75;
+  transition: fill 0.8s ease;
+}
+
+.templeRoofSilhouettes {
+  fill: var(--w-ground);
+  opacity: 0.88;
+  transition: fill 0.8s ease;
+}
+
+.walakuluBamma {
+  fill: var(--w-raised);
+  opacity: 0.92;
+  transition: fill 0.8s ease;
+}
+
+/* Canvas Particles & Caustics */
+.landscapeCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Soft Horizon Ground Fog (Subtle bottom atmospheric ambient) */
+.seamlessGroundMist {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.25) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 6;
+}

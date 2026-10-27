@@ -22,11 +22,13 @@ export const ALLOWED_NATIVE_HOSTS = new Set([
   'notifications',
   'settings',
   'onboarding',
+  'pulse',
 ]);
 export const ALLOWED_WEB_PATH_PREFIXES = [
   '/auth/callback',
   '/auth/complete',
   '/qr',
+  '/pulse',
   '/invite',
   '/c',
   '/self',

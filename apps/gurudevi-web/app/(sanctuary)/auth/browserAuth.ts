@@ -1,4 +1,4 @@
-import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+import { assertSecureApiUrl, secureApiFetch } from '@repo/core/api/transportSecurity';
 import {
   type BrowserSupabaseClient,
   createBrowserSupabaseClient,
@@ -35,12 +35,8 @@ const SESSION_DURATION_DEFAULT = 7 * 24 * 60 * 60;
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (!value) return null;
-  try {
-    assertSecureApiUrl(value);
-    return value.replace(/\/+$/, '');
-  } catch {
-    return null;
-  }
+  assertSecureApiUrl(value);
+  return value.replace(/\/+$/, '');
 }
 
 export function browserAuthRuntime(): BrowserAuthRuntime | null {
@@ -68,11 +64,12 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
       const origin = apiOrigin();
       if (origin) {
         try {
-          const res = await fetch(`${origin}/api/auth/sign-in`, {
+          const res = await secureApiFetch(`${origin}/api/auth/sign-in`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
             cache: 'no-store',
+            signal: AbortSignal.timeout(5000),
           });
 
           if (res.ok) {
@@ -85,7 +82,15 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
               if (!error && data.session) {
                 return { data: { session: data.session, user: data.user }, error: null };
               }
+              return {
+                data: { session: null, user: null },
+                error: new Error(error?.message || 'Unable to establish the browser session.'),
+              };
             }
+            return {
+              data: { session: null, user: null },
+              error: new Error('Authentication returned an invalid session.'),
+            };
           } else {
             const errorBody = await res.json().catch(() => ({}));
             return {
@@ -93,8 +98,12 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
               error: new Error(errorBody.error || 'Invalid email or password'),
             };
           }
-        } catch {
-          // Fall back gracefully to direct client auth if gateway is unreachable
+        } catch (cause) {
+          return {
+            data: { session: null, user: null },
+            error:
+              cause instanceof Error ? cause : new Error('Authentication service is unavailable.'),
+          };
         }
       }
 
@@ -105,26 +114,7 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
       };
     },
     async signInWithOtp({ email, emailRedirectTo }) {
-      const origin = apiOrigin();
-      if (origin) {
-        try {
-          const res = await fetch(`${origin}/api/auth/otp`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, emailRedirectTo }),
-            cache: 'no-store',
-          });
-
-          if (res.ok) {
-            return { data: { ok: true }, error: null };
-          }
-          const errorBody = await res.json().catch(() => ({}));
-          return { data: null, error: new Error(errorBody.error || 'Could not send magic link') };
-        } catch {
-          // Fall back gracefully to direct client auth
-        }
-      }
-
+      // The configured SDK owns the PKCE verifier and challenge used by the callback.
       const result = await client.auth.signInWithOtp({
         email,
         options: { emailRedirectTo, shouldCreateUser: true },

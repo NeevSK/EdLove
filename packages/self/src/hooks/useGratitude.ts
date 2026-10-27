@@ -1,4 +1,6 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createGratitudeEntry, fetchGratitudeEntries } from '@repo/self/api/selfFeatureRepository';
 import type { GratitudeEntry } from '@repo/self/types';
@@ -13,7 +15,7 @@ const GRATITUDE_CACHE_KEY = 'gurudevi-gratitude-cache';
  * - Syncs with Supabase in background.
  */
 export function useGratitude(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [entries, setEntries] = useState<GratitudeEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

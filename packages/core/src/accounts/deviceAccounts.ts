@@ -5,6 +5,7 @@ import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
 import { accountPin } from '@repo/core/lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
+import { useExperienceState } from '@repo/core/lib/experienceState';
 import { storage } from '@repo/core/lib/storage';
 import {
   clearLegacySupabaseSession,
@@ -12,6 +13,7 @@ import {
   removeStoredSessionForAccount,
   setStoredSessionForAccount,
 } from '@repo/core/lib/supabaseAuthStorage';
+import { openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import {
   type AccountLifecycleAvailableCapability,
   type AccountLifecycleCommand,
@@ -20,6 +22,7 @@ import {
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
+import { APIError } from '@repo/core/types/API';
 import { Effect, Queue } from 'effect';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
@@ -65,14 +68,18 @@ async function writeRegistry(accounts: DeviceAccountRecord[]) {
 }
 
 async function setActiveAccount(accountId: string | null) {
-  setActiveAccountId(accountId);
-
   if (accountId) {
     storage.set(ACTIVE_ACCOUNT_KEY, accountId);
-    return;
+  } else {
+    storage.delete(ACTIVE_ACCOUNT_KEY);
   }
+  setActiveAccountId(accountId);
+}
 
-  storage.delete(ACTIVE_ACCOUNT_KEY);
+async function assertCurrentCaptureSession(expected: AuthSession): Promise<void> {
+  const current = await authAPI.getAuthSession();
+  if (current?.access_token !== expected.access_token || current?.user.id !== expected.user.id)
+    throw new APIError('The device account capture session changed.', 'AUTH_SESSION_CHANGED');
 }
 
 class DeviceAccountError {
@@ -141,10 +148,11 @@ function queueAccountSignOutAudit(accountId: string): void {
   );
 }
 
-export const deviceAccounts = {
+const deviceAccountOperations = {
   async initialize() {
     const storedActive = storage.getString(ACTIVE_ACCOUNT_KEY);
     setActiveAccountId(storedActive || null);
+    await useExperienceState.persist.rehydrate();
     return storedActive;
   },
 
@@ -155,6 +163,22 @@ export const deviceAccounts = {
 
   async getActiveAccountId() {
     return getActiveAccountId();
+  },
+
+  async retainRefreshedSession(session: AuthSession | null): Promise<string | null> {
+    if (!session || getSessionIdentityMode(session) !== 'authenticated') return null;
+    await assertCurrentCaptureSession(session);
+    const accountId = getActiveAccountId();
+    const accounts = await readRegistry();
+    const account = accounts.find(
+      (entry) =>
+        entry.accountId === accountId && entry.authUserId === session.user.id && !entry.isAnonymous,
+    );
+    if (!account) return null;
+    await assertCurrentCaptureSession(session);
+    await setStoredSessionForAccount(account.accountId, toSessionTokens(session));
+    await assertCurrentCaptureSession(session);
+    return account.accountId;
   },
 
   async captureCurrentAccount(session: AuthSession | null, profile?: DeviceAccountProfile | null) {
@@ -168,16 +192,23 @@ export const deviceAccounts = {
     }
 
     assertHighway('identity_bootstrap', 'direct-api');
-    const identity = profile?.id ? null : await identityAPI.identifyActiveCitizen();
-    const accountId = profile?.id ?? identity?.id;
-
-    if (!accountId) return null;
+    await assertCurrentCaptureSession(session);
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity || (profile && profile.id !== identity.id))
+      throw new APIError(
+        'The device account does not match its canonical identity.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
+    await assertCurrentCaptureSession(session);
+    const accountId = identity.id;
 
     await setStoredSessionForAccount(accountId, toSessionTokens(session));
+    await assertCurrentCaptureSession(session);
     await clearLegacySupabaseSession();
 
     const now = new Date().toISOString();
     const accounts = await readRegistry();
+    await assertCurrentCaptureSession(session);
     const existing = accounts.find((entry) => entry.accountId === accountId);
 
     const nextRecord: DeviceAccountRecord = {
@@ -202,6 +233,7 @@ export const deviceAccounts = {
       .concat(nextRecord);
 
     await writeRegistry(nextAccounts);
+    await assertCurrentCaptureSession(session);
     await setActiveAccount(accountId);
 
     void Promise.resolve(deviceTrustAPI.syncCurrentAccountDevice(accountId)).then((trust) => {
@@ -239,15 +271,23 @@ export const deviceAccounts = {
       outgoingPrincipalId: previousAccountId,
       incomingPrincipalId: accountId,
       disposition: 'preserve-and-quarantine',
-      clearReplicatedData: true,
+      clearReplicatedData: false,
     });
 
-    await setActiveAccount(accountId);
-    resetScopedStores();
-    await rehydrateScopedStores();
-
     try {
+      await setActiveAccount(accountId);
+      resetScopedStores();
+      await rehydrateScopedStores();
       await authAPI.setSession(storedSession.access_token, storedSession.refresh_token);
+      const [accounts, session] = await Promise.all([readRegistry(), authAPI.getAuthSession()]);
+      const target = accounts.find((entry) => entry.accountId === accountId);
+      if (
+        getActiveAccountId() === accountId &&
+        target?.authUserId &&
+        session?.user.id === target.authUserId
+      ) {
+        openReplayAdmission(accountId);
+      }
     } catch (error) {
       // Treat account switching as a transaction. If the cached session is no
       // longer usable offline, restore the previous active account and leave
@@ -255,6 +295,17 @@ export const deviceAccounts = {
       await setActiveAccount(previousAccountId);
       resetScopedStores();
       await rehydrateScopedStores();
+      if (previousAccountId) {
+        const [accounts, session] = await Promise.all([readRegistry(), authAPI.getAuthSession()]);
+        const previous = accounts.find((entry) => entry.accountId === previousAccountId);
+        if (
+          getActiveAccountId() === previousAccountId &&
+          previous?.authUserId &&
+          session?.user.id === previous.authUserId
+        ) {
+          openReplayAdmission(previousAccountId);
+        }
+      }
       throw error;
     }
 
@@ -415,3 +466,56 @@ export const deviceAccounts = {
     ]);
   },
 };
+
+let deviceAccountMutation: Promise<void> = Promise.resolve();
+
+function mutateDeviceAccounts<T>(operation: () => Promise<T>): Promise<T> {
+  const result = deviceAccountMutation.then(operation, operation);
+  deviceAccountMutation = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+}
+
+export const deviceAccounts = {
+  initialize: () => mutateDeviceAccounts(() => deviceAccountOperations.initialize()),
+  list: () => mutateDeviceAccounts(() => deviceAccountOperations.list()),
+  getActiveAccountId: () =>
+    mutateDeviceAccounts(() => deviceAccountOperations.getActiveAccountId()),
+  retainRefreshedSession: (session: AuthSession | null) =>
+    mutateDeviceAccounts(() => deviceAccountOperations.retainRefreshedSession(session)),
+  captureCurrentAccount: (session: AuthSession | null, profile?: DeviceAccountProfile | null) =>
+    mutateDeviceAccounts(() => deviceAccountOperations.captureCurrentAccount(session, profile)),
+  switchTo: (accountId: string) =>
+    mutateDeviceAccounts(() => deviceAccountOperations.switchTo(accountId)),
+  removeAccount: (accountId: string) =>
+    mutateDeviceAccounts(() => deviceAccountOperations.removeAccount(accountId)),
+  signOutCurrentAccount: () =>
+    mutateDeviceAccounts(() => deviceAccountOperations.signOutCurrentAccount()),
+  signOutAllAccounts: () =>
+    mutateDeviceAccounts(() => deviceAccountOperations.signOutAllAccounts()),
+};
+
+/** Synchronous binding lookup avoids waiting behind an in-progress account transition. */
+export function getRememberedAccountAuthSubject(accountId: string): string | null {
+  const raw = storage.getString(ACCOUNTS_REGISTRY_KEY);
+  if (!raw) return null;
+
+  try {
+    const accounts: unknown = JSON.parse(raw);
+    if (!Array.isArray(accounts)) return null;
+    const account = accounts.find(
+      (entry): entry is DeviceAccountRecord =>
+        typeof entry === 'object' &&
+        entry !== null &&
+        'accountId' in entry &&
+        entry.accountId === accountId &&
+        'authUserId' in entry &&
+        typeof entry.authUserId === 'string',
+    );
+    return account?.authUserId ?? null;
+  } catch {
+    return null;
+  }
+}

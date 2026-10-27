@@ -6,6 +6,7 @@
 import { Activity, Pause, Play, RotateCcw, ShieldCheck, Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useRef, useState } from 'react';
+import { logReminderFeedback } from '../api/selfFeatureRepository';
 
 interface BreathGuideProps {
   onComplete?: () => void;
@@ -62,6 +63,13 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
       phaseIdx: 0,
       done: true,
     });
+    void logReminderFeedback('web_user', {
+      reminder_id: `breath-guide-${Date.now()}`,
+      user_id: 'web_user',
+      action: 'done',
+      category: 'breathe',
+      note: 'Completed 4-cycle somatic breath guide',
+    }).catch(() => {});
     onComplete?.();
   };
 

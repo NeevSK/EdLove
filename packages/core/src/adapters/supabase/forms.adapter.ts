@@ -6,6 +6,7 @@ import type {
   FormResponse,
   FormSchema,
 } from '@intuitui-labs/form-builder-engine/schema';
+import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
 import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -17,6 +18,20 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  */
 export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
   constructor(private supabase: SupabaseClient) {}
+
+  private async currentAccountId(): Promise<string | null> {
+    try {
+      const { data, error } = await this.supabase.rpc('get_my_id');
+      const account = CanonicalAccountIdSchema.nullable().safeParse(data);
+      if (error || !account.success) throw new Error('Unresolved account');
+      return account.data;
+    } catch {
+      throw new APIError(
+        'Form account resolution is unavailable.',
+        'IDENTITY_RESOLUTION_UNAVAILABLE',
+      );
+    }
+  }
 
   // ─── FormStorage Port Implementation ───────────────────────────────────────
 
@@ -73,6 +88,11 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
    * Save or update a form schema in the Supabase database.
    */
   async save(form: FormSchema): Promise<void> {
+    const ownerId = await this.currentAccountId();
+    if (!ownerId) throw new APIError('Sign in before saving a form.', 'AUTH_REQUIRED');
+    if (form.tenantId && form.tenantId !== ownerId) {
+      throw new APIError('The form owner does not match the signed-in account.', 'FORBIDDEN');
+    }
     const configPayload = {
       pages: form.pages,
       settings: form.settings,
@@ -81,7 +101,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
 
     const templateData = {
       id: form.id,
-      owner_id: form.tenantId ?? (await this.supabase.auth.getUser()).data.user?.id ?? '00000000-0000-0000-0000-000000000000',
+      owner_id: ownerId,
       title: form.title,
       description: form.description || null,
       config: configPayload,
@@ -182,10 +202,14 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
    * Submit and record a user's form response in the Supabase database.
    */
   async record(formId: string, response: FormResponse): Promise<void> {
+    const responderId = await this.currentAccountId();
+    if (response.responderId && response.responderId !== responderId) {
+      throw new APIError('The responder does not match the signed-in account.', 'FORBIDDEN');
+    }
     const responseData = {
       id: response.id,
       template_id: formId,
-      responder_id: response.responderId || null,
+      responder_id: responderId,
       data: response.data,
       submitted_at: response.submittedAt,
     };

@@ -1,0 +1,180 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  font-family: inherit;
+}
+
+.perspectiveStage {
+  perspective: 1200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardFlip {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardFlipped {
+  transform: rotateY(180deg);
+}
+
+.cardFront,
+.cardBack {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+}
+
+.cardFront {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.cardBack {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.auraGlow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 32px;
+  background: radial-gradient(circle at 50% 50%, rgba(239, 132, 31, 0.18), transparent 70%);
+  filter: blur(12px);
+  pointer-events: none;
+  animation: auraBreathe 4s ease-in-out infinite alternate;
+}
+
+@keyframes auraBreathe {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.qrSurface {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -10px rgba(19, 30, 39, 0.15), 0 0 0 1px rgba(239, 132, 31, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mandalaSurface {
+  background: radial-gradient(circle at 50% 50%, rgba(245, 237, 214, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border: 1px solid rgba(239, 132, 31, 0.3);
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 12px 36px -8px rgba(239, 132, 31, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mandalaSurface:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 44px -8px rgba(239, 132, 31, 0.3);
+}
+
+.mandalaPrompt {
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ef841f;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 132, 31, 0.4);
+  background: rgba(255, 255, 255, 0.9);
+  color: #131e27;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.actionButton:hover {
+  background: #ef841f;
+  color: #ffffff;
+  border-color: #ef841f;
+  transform: translateY(-1px);
+}
+
+.actionButtonActive {
+  background: #ef841f;
+  color: #ffffff;
+  border-color: #ef841f;
+}
+
+.scanLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ef841f, transparent);
+  box-shadow: 0 0 8px #ef841f;
+  animation: scanSweep 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes scanSweep {
+  0% {
+    top: 5%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 95%;
+    opacity: 0;
+  }
+}

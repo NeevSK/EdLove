@@ -4,7 +4,7 @@
  * These tests capture the CURRENT behavior BEFORE token-based refactoring.
  * They prove:
  *   - _permissionValidator is called on EVERY execute() (per-write, no caching)
- *   - User context is assembled from useStore on every call
+ *   - User context is assembled from useAuthStore on every call
  *   - Resource ID extraction behavior
  *   - Transaction wrapping
  *
@@ -22,8 +22,8 @@ import {
   setActiveCapabilityToken,
 } from '../powersync/database';
 
-vi.mock('../../store/useStore', () => ({
-  useStore: {
+vi.mock('../../store/useAuthStore', () => ({
+  useAuthStore: {
     getState: vi.fn(() => ({
       user: {
         id: 'user-123',
@@ -90,7 +90,7 @@ describe('secureDrizzleProxy — current per-write behavior (characterization)',
     expect(mockValidator).toHaveBeenCalledTimes(2);
   });
 
-  it('does not cache user context — reads useStore on every execute', async () => {
+  it('does not cache user context — reads useAuthStore on every execute', async () => {
     const mockValidator = vi.fn().mockResolvedValue(true);
     registerPermissionValidator(mockValidator);
     const tableObj = { _: { name: 'students' } };
@@ -157,8 +157,8 @@ describe('secureDrizzleProxy — current per-write behavior (characterization)',
     const mockValidator = vi.fn().mockResolvedValue(true);
     registerPermissionValidator(mockValidator);
 
-    const useStoreModule = await import('../../store/useStore');
-    vi.mocked(useStoreModule.useStore.getState).mockReturnValue({
+    const useStoreModule = await import('../../store/useAuthStore');
+    vi.mocked(useStoreModule.useAuthStore.getState).mockReturnValue({
       user: null,
       activeBond: null,
     } as any);

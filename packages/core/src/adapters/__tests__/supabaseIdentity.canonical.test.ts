@@ -1,28 +1,43 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { setActiveAccountId } from '../../lib/accountScope';
 import { SupabaseIdentityAdapter } from '../supabaseIdentity.adapter';
 
 const mock = vi.hoisted(() => ({
   getUser: vi.fn(),
+  getSession: vi.fn(),
+  bondResolver: undefined as (() => Promise<string | null>) | undefined,
   from: vi.fn(),
   bootstrap: vi.fn(),
   select: vi.fn(),
+  update: vi.fn(),
+  createBond: vi.fn(),
+  completeProfile: vi.fn(),
+  completeOnboarding: vi.fn(),
   storage: { getStringAsync: vi.fn(), set: vi.fn() },
 }));
 vi.mock('@repo/core/adapters/supabaseClient', () => ({
   supabaseClient: {
-    auth: { getUser: mock.getUser, getSession: vi.fn() },
+    auth: { getUser: mock.getUser, getSession: mock.getSession },
     from: mock.from,
   },
 }));
 vi.mock('@repo/core/api/clientRuntime', () => ({
   registerTokenResolver: vi.fn(),
-  registerActiveBondIdResolver: vi.fn(),
+  registerActiveBondIdResolver: (resolver: () => Promise<string | null>) => {
+    mock.bondResolver = resolver;
+  },
 }));
 vi.mock('@repo/core/api/orpcClient', () => ({
   orpcClient: {
     identity: {
       identifyActiveCitizen: mock.bootstrap,
       selectActiveScope: mock.select,
+      modifyUserProfile: mock.update,
+    },
+    onboarding: {
+      createInitialBond: mock.createBond,
+      completeProfile: mock.completeProfile,
+      completeOnboarding: mock.completeOnboarding,
     },
   },
 }));
@@ -33,7 +48,7 @@ vi.mock('@repo/core/utils/effect', async () => ({
 }));
 
 const subject = '123e4567-e89b-12d3-a456-426614174010';
-const account = '123e4567-e89b-12d3-a456-426614174020';
+const account = '123e4567-e89b-8101-8000-426614174020';
 const bond = {
   id: '123e4567-e89b-12d3-a456-426614174030',
   user_id: account,
@@ -53,18 +68,28 @@ const identity = {
 describe('legacy identity adapter canonical bootstrap (network/storage substituted)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mock.getUser.mockResolvedValue({ data: { user: { id: subject } } });
+    mock.getSession.mockReset().mockResolvedValue({
+      data: { session: { access_token: 'session-a', user: { id: subject } } },
+      error: null,
+    });
     mock.bootstrap.mockResolvedValue(identity);
     mock.select.mockResolvedValue(identity);
     mock.from.mockImplementation(() => {
       throw new Error('Direct identity table access is forbidden');
     });
   });
+  afterEach(() => {
+    expect(mock.getUser).not.toHaveBeenCalled();
+    setActiveAccountId(null);
+  });
 
   it('resolves a different canonical ID without reading or healing identity tables', async () => {
     const adapter = new SupabaseIdentityAdapter();
     await expect(adapter.identifyActiveCitizen()).resolves.toMatchObject({ id: account });
-    expect(mock.bootstrap).toHaveBeenCalledWith({});
+    expect(mock.bootstrap).toHaveBeenCalledWith(
+      {},
+      { context: { expectedSession: { accessToken: 'session-a', subject }, retry: 0 } },
+    );
     expect(mock.from).not.toHaveBeenCalled();
   });
 
@@ -77,7 +102,7 @@ describe('legacy identity adapter canonical bootstrap (network/storage substitut
   });
 
   it('does not contact the API after sign-out', async () => {
-    mock.getUser.mockResolvedValue({ data: { user: null } });
+    mock.getSession.mockResolvedValue({ data: { session: null }, error: null });
     await expect(new SupabaseIdentityAdapter().identifyActiveCitizen()).resolves.toBeNull();
     expect(mock.bootstrap).not.toHaveBeenCalled();
     expect(mock.from).not.toHaveBeenCalled();
@@ -107,11 +132,58 @@ describe('legacy identity adapter canonical bootstrap (network/storage substitut
   });
 
   it('does not return a bootstrap received across an account switch', async () => {
-    mock.getUser
-      .mockResolvedValueOnce({ data: { user: { id: subject } } })
-      .mockResolvedValueOnce({ data: { user: { id: 'different-subject' } } });
+    mock.getSession
+      .mockResolvedValueOnce({
+        data: { session: { access_token: 'session-a', user: { id: subject } } },
+        error: null,
+      })
+      .mockResolvedValueOnce({
+        data: { session: { access_token: 'session-b', user: { id: 'different-subject' } } },
+        error: null,
+      });
     await expect(new SupabaseIdentityAdapter().identifyActiveCitizen()).rejects.toThrow();
     expect(mock.from).not.toHaveBeenCalled();
+  });
+
+  it('rejects a changed token even when the subject is unchanged', async () => {
+    mock.getSession
+      .mockResolvedValueOnce({
+        data: { session: { access_token: 'session-a', user: { id: subject } } },
+      })
+      .mockResolvedValueOnce({
+        data: { session: { access_token: 'session-new', user: { id: subject } } },
+      });
+    await expect(new SupabaseIdentityAdapter().identifyActiveCitizen()).rejects.toMatchObject({
+      code: 'AUTH_SESSION_CHANGED',
+    });
+  });
+
+  it('does not accept a provider UUID as a canonical account', async () => {
+    mock.bootstrap.mockResolvedValueOnce({ ...identity, id: subject });
+    await expect(new SupabaseIdentityAdapter().identifyActiveCitizen()).rejects.toThrow();
+  });
+
+  it('fails loudly on session read failure without leaking provider details or dispatching', async () => {
+    mock.getSession.mockResolvedValueOnce({
+      data: { session: null },
+      error: { message: 'private fixture detail' },
+    });
+    await expect(new SupabaseIdentityAdapter().identifyActiveCitizen()).rejects.toMatchObject({
+      code: 'AUTH_SESSION_UNAVAILABLE',
+      message: 'Unable to read the authentication session.',
+    });
+    expect(mock.bootstrap).not.toHaveBeenCalled();
+  });
+
+  it('discards a persisted scope hint if the account changes while storage is pending', async () => {
+    setActiveAccountId(account);
+    const pending = Promise.withResolvers<string>();
+    mock.storage.getStringAsync.mockReturnValueOnce(pending.promise);
+    const hint = mock.bondResolver!();
+    await vi.waitFor(() => expect(mock.storage.getStringAsync).toHaveBeenCalled());
+    setActiveAccountId('other-account');
+    pending.resolve(JSON.stringify({ activeBond: { id: bond.id } }));
+    await expect(hint).resolves.toBeNull();
   });
 
   it('uses the server-selected perspective rather than a locally remembered first bond', async () => {
@@ -153,5 +225,76 @@ describe('legacy identity adapter canonical bootstrap (network/storage substitut
       new SupabaseIdentityAdapter().switchPerspective('school-fixture', 'teacher'),
     ).rejects.toThrow();
     expect(mock.storage.set).not.toHaveBeenCalled();
+  });
+
+  it('routes profile updates to the authenticated API without writing tables', async () => {
+    await new SupabaseIdentityAdapter().updateProfile(account, { display_name: 'New Name' });
+    expect(mock.update).toHaveBeenCalledWith(
+      { params: { id: account }, body: { display_name: 'New Name' } },
+      { context: { expectedAccountId: account, retry: 0 } },
+    );
+    expect(mock.from).not.toHaveBeenCalled();
+  });
+
+  it('rejects cross-account profile writes and caller-selected initial accounts', async () => {
+    const adapter = new SupabaseIdentityAdapter();
+    await expect(adapter.updateProfile(subject, { display_name: 'Name' })).rejects.toMatchObject({
+      code: 'AUTH_ACCOUNT_MISMATCH',
+    });
+    await expect(adapter.createInitialBond('teacher', { userId: subject })).rejects.toMatchObject({
+      code: 'AUTH_ACCOUNT_MISMATCH',
+    });
+    expect(mock.update).not.toHaveBeenCalled();
+    expect(mock.createBond).not.toHaveBeenCalled();
+  });
+
+  it('rejects lifecycle and pricing changes rather than silently stripping them', async () => {
+    await expect(
+      new SupabaseIdentityAdapter().updateProfile(account, {
+        pricing_tier: 'PRO',
+        onboarding_completed: true,
+      }),
+    ).rejects.toThrow();
+    expect(mock.update).not.toHaveBeenCalled();
+    expect(mock.from).not.toHaveBeenCalled();
+  });
+
+  it('uses the server commands for initial scope, profile completion and onboarding', async () => {
+    const adapter = new SupabaseIdentityAdapter();
+    await adapter.createInitialBond('teacher', { displayName: 'Name' });
+    await adapter.completeProfile(account, {
+      displayName: 'Name',
+      capacityLabel: 'Physics teacher',
+    });
+    await adapter.completeOnboarding(account);
+    expect(mock.createBond).toHaveBeenCalledWith(
+      {
+        body: {
+          orientation: 'teacher',
+          confirmCapacityChange: false,
+          context: { displayName: 'Name' },
+        },
+      },
+      { context: { expectedAccountId: account, retry: 0 } },
+    );
+    expect(mock.completeProfile).toHaveBeenCalledWith(
+      {
+        body: expect.objectContaining({ display_name: 'Name', capacity_label: 'Physics teacher' }),
+      },
+      { context: { expectedAccountId: account, retry: 0 } },
+    );
+    expect(mock.completeOnboarding).toHaveBeenCalledWith(
+      { body: {} },
+      { context: { expectedAccountId: account, retry: 0 } },
+    );
+    expect(mock.from).not.toHaveBeenCalled();
+  });
+
+  it('propagates an unavailable server instead of falling back to direct writes', async () => {
+    mock.completeOnboarding.mockRejectedValueOnce(new Error('Synthetic 503'));
+    await expect(new SupabaseIdentityAdapter().completeOnboarding(account)).rejects.toThrow(
+      'Synthetic 503',
+    );
+    expect(mock.from).not.toHaveBeenCalled();
   });
 });

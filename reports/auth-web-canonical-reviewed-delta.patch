@@ -1,0 +1,287 @@
+diff --git a/apps/gurudevi-web/app/(sanctuary)/auth/SignInFlow.tsx b/apps/gurudevi-web/app/(sanctuary)/auth/SignInFlow.tsx
+index 490cff162..ccfa8bc05 100644
+--- a/apps/gurudevi-web/app/(sanctuary)/auth/SignInFlow.tsx
++++ b/apps/gurudevi-web/app/(sanctuary)/auth/SignInFlow.tsx
+@@ -1,14 +1,13 @@
+ 'use client';
+ 
+ import { useEffect, useState } from 'react';
+-import styles from './auth.module.css';
++import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
++import { type DeviceAccountRecord, getDeviceAccounts } from '@/lib/sanctuary/deviceAccountRegistry';
+ import { AccountSwitcher } from './AccountSwitcher';
++import styles from './auth.module.css';
++import { browserAuthRuntime, safeReturnPath } from './browserAuth';
+ import { PasswordlessEntry } from './PasswordlessEntry';
+ import { SignInForm } from './SignInForm';
+-import {
+-  type DeviceAccountRecord,
+-  getDeviceAccounts,
+-} from '@/lib/sanctuary/deviceAccountRegistry';
+ 
+ interface SignInFlowProps {
+   returnTo: string;
+@@ -17,6 +16,7 @@ interface SignInFlowProps {
+ export function SignInFlow({ returnTo }: Readonly<SignInFlowProps>) {
+   const [hasAccounts, setHasAccounts] = useState(false);
+   const [showManualEntry, setShowManualEntry] = useState(false);
++  const [accountMessage, setAccountMessage] = useState<string | null>(null);
+ 
+   useEffect(() => {
+     const list = getDeviceAccounts();
+@@ -25,10 +25,23 @@ export function SignInFlow({ returnTo }: Readonly<SignInFlowProps>) {
+     }
+   }, []);
+ 
+-  const handleAccountSelected = (account: DeviceAccountRecord) => {
+-    // If the account was unlocked via PIN, navigate to sanctuary destination
+-    // The account session boundary will bind to the active account
+-    window.location.href = returnTo;
++  const handleAccountSelected = async (account: DeviceAccountRecord) => {
++    try {
++      const runtime = browserAuthRuntime();
++      if (!runtime) throw new Error('Browser authentication is unavailable.');
++      const current = await runtime.bootstrapIdentity();
++      if (current.status !== 'authenticated') throw new Error('A signed-in session is required.');
++      const verified = await resolveCanonicalDeviceAccount(runtime.client, {
++        accessToken: current.session.access_token,
++        subject: current.session.user.id,
++      });
++      if (verified.accountId !== account.accountId || verified.authUserId !== account.authUserId)
++        throw new Error('The selected profile does not match the current session.');
++      window.location.href = safeReturnPath(returnTo);
++    } catch {
++      setAccountMessage('Please sign in to open your account.');
++      setShowManualEntry(true);
++    }
+   };
+ 
+   if (hasAccounts && !showManualEntry) {
+@@ -42,6 +55,7 @@ export function SignInFlow({ returnTo }: Readonly<SignInFlowProps>) {
+ 
+   return (
+     <>
++      {accountMessage ? <p role="status">{accountMessage}</p> : null}
+       {hasAccounts ? (
+         <button
+           type="button"
+@@ -65,9 +79,7 @@ export function SignInFlow({ returnTo }: Readonly<SignInFlowProps>) {
+       <PasswordlessEntry returnTo={returnTo} />
+ 
+       <details className={styles.disclosureDetails}>
+-        <summary className={styles.disclosureSummary}>
+-          Use a password instead
+-        </summary>
++        <summary className={styles.disclosureSummary}>Use a password instead</summary>
+         <div style={{ marginTop: '16px' }}>
+           <SignInForm returnTo={returnTo} />
+         </div>
+diff --git a/apps/gurudevi-web/app/(sanctuary)/auth/SignInForm.tsx b/apps/gurudevi-web/app/(sanctuary)/auth/SignInForm.tsx
+index 2fb3c59f8..1abf880f2 100644
+--- a/apps/gurudevi-web/app/(sanctuary)/auth/SignInForm.tsx
++++ b/apps/gurudevi-web/app/(sanctuary)/auth/SignInForm.tsx
+@@ -2,9 +2,10 @@
+ 
+ import Link from 'next/link';
+ import { type FormEvent, useState } from 'react';
++import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
++import { getDeviceAccounts, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
+ import styles from './auth.module.css';
+ import { browserAuthRuntime, safeReturnPath } from './browserAuth';
+-import { maskEmail, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
+ 
+ type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
+ 
+@@ -27,34 +28,32 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
+     }
+ 
+     setState('submitting');
+-    const result = typeof runtime.signInWithPassword === 'function'
+-      ? await runtime.signInWithPassword({ email, password })
+-      : await runtime.client.auth.signInWithPassword({ email, password });
++    const result = await runtime.signInWithPassword({ email, password });
+     const { data, error } = result;
+     if (error) {
+       setState('error');
+-      setMessage(error.message || 'We could not sign in with those details. Check them and try again.');
++      setMessage(
++        error.message || 'We could not sign in with those details. Check them and try again.',
++      );
+       return;
+     }
+ 
+-    // Set session duration preference (non-blocking)
+-    runtime.setSessionDuration(remember).catch(() => {});
+-
+-    // Register device account record on shared device (no password/token stored)
+-    if (data.user) {
+-      const userMeta = (data.user as { user_metadata?: Record<string, unknown> }).user_metadata || {};
+-      saveDeviceAccount({
+-        accountId: data.user.id,
+-        authUserId: data.user.id,
+-        displayName: String(userMeta.display_name || email.split('@')[0] || 'Scholar'),
+-        avatarUrl: typeof userMeta.avatar_url === 'string' ? userMeta.avatar_url : null,
+-        maskedEmail: maskEmail(email),
+-        schoolId: typeof userMeta.school_id === 'string' ? userMeta.school_id : null,
+-        capacity: (userMeta.capacity as 'student' | 'teacher' | 'scholar') || 'student',
+-        hasPin: false,
++    try {
++      if (!data.session) throw new Error('A browser session is required.');
++      const account = await resolveCanonicalDeviceAccount(runtime.client, {
++        accessToken: data.session.access_token,
++        subject: data.session.user.id,
+       });
++      const existing = getDeviceAccounts().find((entry) => entry.accountId === account.accountId);
++      saveDeviceAccount({ ...account, hasPin: existing?.hasPin ?? false });
++    } catch {
++      setState('error');
++      setMessage('Signed in, but your account could not be verified. Please retry.');
++      return;
+     }
+ 
++    runtime.setSessionDuration(remember).catch(() => {});
++
+     // Give Supabase client time to persist session to cookies before navigation
+     if (data.session) {
+       await new Promise((resolve) => setTimeout(resolve, 100));
+@@ -66,7 +65,10 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
+   }
+ 
+   return (
+-    <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(event) => void signIn(event)}>
++    <form
++      style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
++      onSubmit={(event) => void signIn(event)}
++    >
+       <div className={styles.inputGroup}>
+         <label className={styles.inputLabel} htmlFor="email">
+           Email address
+@@ -105,7 +107,16 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
+         />
+       </div>
+ 
+-      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#453c35', cursor: 'pointer' }}>
++      <label
++        style={{
++          display: 'flex',
++          alignItems: 'center',
++          gap: '8px',
++          fontSize: '13px',
++          color: '#453c35',
++          cursor: 'pointer',
++        }}
++      >
+         <input
+           id="remember"
+           name="remember"
+@@ -122,11 +133,7 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
+         </div>
+       ) : null}
+ 
+-      <button
+-        className={styles.submitBtn}
+-        disabled={state === 'submitting'}
+-        type="submit"
+-      >
++      <button className={styles.submitBtn} disabled={state === 'submitting'} type="submit">
+         {state === 'submitting' ? 'Signing in…' : 'Sign in with password'}
+       </button>
+     </form>
+diff --git a/apps/gurudevi-web/lib/supabase/browser.ts b/apps/gurudevi-web/lib/supabase/browser.ts
+index 55ab0c67d..4ef24f10d 100644
+--- a/apps/gurudevi-web/lib/supabase/browser.ts
++++ b/apps/gurudevi-web/lib/supabase/browser.ts
+@@ -1,7 +1,8 @@
+ 'use client';
+ 
+-import { createBrowserClient } from '@supabase/ssr';
++import { registerTokenResolver } from '@repo/core/api/clientRuntime';
+ import { secureApiFetch } from '@repo/core/api/transportSecurity';
++import { createBrowserClient } from '@supabase/ssr';
+ import { supabaseConfig } from './config';
+ 
+ export type BrowserSupabaseClient = ReturnType<typeof createBrowserClient>;
+@@ -10,7 +11,13 @@ export function createBrowserSupabaseClient(): BrowserSupabaseClient | null {
+   const config = supabaseConfig();
+   if (!config) return null;
+ 
+-  return createBrowserClient(config.url, config.publishableKey, {
++  const client = createBrowserClient(config.url, config.publishableKey, {
+     global: { fetch: secureApiFetch },
+   });
++  registerTokenResolver(async () => {
++    const { data, error } = await client.auth.getSession();
++    if (error) throw new Error('The browser authentication session is unavailable.');
++    return data.session?.access_token ?? null;
++  });
++  return client;
+ }
+diff --git a/packages/core/src/api/onboardingClient.ts b/packages/core/src/api/onboardingClient.ts
+index 444dccd9f..e32c4071d 100644
+--- a/packages/core/src/api/onboardingClient.ts
++++ b/packages/core/src/api/onboardingClient.ts
+@@ -1,3 +1,4 @@
++import type { SessionContinuity } from '@repo/core/api/clientRuntime';
+ import { ScopeBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
+ import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract';
+ import { orpcClient } from '@repo/core/api/orpcClient';
+@@ -64,13 +65,19 @@ function requestWithEffect<T>(
+ /** Effect v4 program for creating the authenticated user's initial bond. */
+ export function createInitialBondEffect(
+   input: InitialBondInput,
++  expectedSession?: SessionContinuity,
+ ): Effect.Effect<InitialBondResult, OnboardingCommandError> {
+   return Effect.gen(function* () {
+     const body = yield* parseWithEffect('createInitialBond.input', () =>
+       onboardingORPCContract.createInitialBond.request.body.parse(input),
+     );
+     const result = yield* requestWithEffect('createInitialBond.request', () =>
+-      orpcClient.onboarding.createInitialBond({ body }),
++      expectedSession
++        ? orpcClient.onboarding.createInitialBond(
++            { body },
++            { context: { expectedSession, retry: 0 } },
++          )
++        : orpcClient.onboarding.createInitialBond({ body }),
+     );
+     return yield* parseWithEffect('createInitialBond.response', () =>
+       initialBondResponseSchema.parse(result),
+@@ -89,10 +96,16 @@ export function createOnboardingCompletionKey(): string {
+ 
+ export function completeOnboardingEffect(
+   input: CompleteOnboardingInput = {},
++  expectedSession?: SessionContinuity,
+ ): Effect.Effect<CompleteOnboardingResult, OnboardingCommandError> {
+   return Effect.gen(function* () {
+     const result = yield* requestWithEffect('completeOnboarding.request', () =>
+-      orpcClient.onboarding.completeOnboarding({ body: input }),
++      expectedSession
++        ? orpcClient.onboarding.completeOnboarding(
++            { body: input },
++            { context: { expectedSession, retry: 0 } },
++          )
++        : orpcClient.onboarding.completeOnboarding({ body: input }),
+     );
+     return yield* parseWithEffect('completeOnboarding.response', () =>
+       completeOnboardingResponseSchema.parse(result),
+@@ -101,13 +114,17 @@ export function completeOnboardingEffect(
+ }
+ 
+ /** Canonical onboarding commands with legacy callers left untouched. */
+-export async function createInitialBond(input: InitialBondInput): Promise<InitialBondResult> {
+-  return Effect.runPromise(createInitialBondEffect(input));
++export async function createInitialBond(
++  input: InitialBondInput,
++  expectedSession?: SessionContinuity,
++): Promise<InitialBondResult> {
++  return Effect.runPromise(createInitialBondEffect(input, expectedSession));
+ }
+ 
+ /** Completion derives the account from the authenticated request context. */
+ export async function completeOnboarding(
+   input: CompleteOnboardingInput = {},
++  expectedSession?: SessionContinuity,
+ ): Promise<CompleteOnboardingResult> {
+-  return Effect.runPromise(completeOnboardingEffect(input));
++  return Effect.runPromise(completeOnboardingEffect(input, expectedSession));
+ }

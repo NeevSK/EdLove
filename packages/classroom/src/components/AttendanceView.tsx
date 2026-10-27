@@ -1,72 +1,44 @@
 import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 import { api } from '@repo/core/api/client';
-import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
+import type { StudentAttendance } from '@repo/core/logic';
+import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import {
+  createAttendanceSessionActor,
+  executeFetchAttendanceRosterEffect,
+} from '@repo/classroom/machines/attendanceSessionMachine';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Box, Button, ButtonText, Text } from '@repo/ui/primitives';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 interface AttendanceViewProps {
   classroomId: string;
 }
 
-type RosterStudent = {
-  id: string;
-  student_id?: string | null;
-  full_name?: string | null;
-  roll_number?: string | null;
-};
-
 export default function AttendanceView({ classroomId }: AttendanceViewProps) {
-  const [students, setStudents] = useState<StudentAttendance[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const today = useMemo(() => new Date().toISOString().split('T')[0] ?? '', []);
+  const actor = useMemo(
+    () => createAttendanceSessionActor({ classroomId, date: today }),
+    [classroomId, today],
+  );
+  const snapshot = useActorSnapshot(actor);
+  const { students, error: loadError } = snapshot.context;
+  const isLoading = snapshot.value === 'loading';
 
   const fetchStudents = useCallback(async () => {
-    setIsLoading(true);
-    setLoadError(null);
-    try {
-      const today = new Date().toISOString().split('T')[0];
-
-      // Load student roster and any already-saved attendance for today in parallel
-      const [roster, snapshot] = await Promise.all([
-        api.classroomStudents.getAll(classroomId),
-        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
-      ]);
-
-      // Build a lookup map: student_id → saved status
-      const savedStatus = new Map<string, AttendanceStatus>(
-        (snapshot.records as { student_id: string; status: AttendanceStatus }[]).map((r) => [
-          r.student_id,
-          r.status,
-        ]),
-      );
-
-      const typedRoster = roster as RosterStudent[];
-
-      const attendanceData: StudentAttendance[] = typedRoster.map((student) => ({
-        id: student.id,
-        student_id: student.student_id || student.id,
-        full_name: student.full_name || 'Unknown Student',
-        roll_number: student.roll_number || null,
-        // Restore saved status; default to 'present' for unmarked students
-        status: savedStatus.get(student.student_id || student.id) ?? 'present',
-      }));
-
-      setStudents(attendanceData);
-    } catch (_error) {
-      console.error('Failed to load student list');
-      setLoadError('The class list could not be loaded. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [classroomId]);
+    await executeFetchAttendanceRosterEffect(actor, {
+      classroomId,
+      date: today,
+      fetchRoster: (cId) => api.classroomStudents.getAll(cId),
+      fetchSnapshot: (cId, d) => api.attendance.getClassroomAttendanceSnapshot(cId, d),
+    });
+  }, [actor, classroomId, today]);
 
   useEffect(() => {
     void fetchStudents();
   }, [fetchStudents]);
 
   const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {
-    setStudents(updatedAttendance);
+    actor.send({ type: 'FETCH_SUCCESS', students: updatedAttendance });
   };
 
   if (isLoading) {

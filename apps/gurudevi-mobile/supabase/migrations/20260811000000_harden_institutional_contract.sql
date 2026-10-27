@@ -6,14 +6,24 @@
 ALTER TABLE public.schools
   ALTER COLUMN created_at SET NOT NULL;
 
-ALTER TABLE public.grade_levels
-  ALTER COLUMN section_id SET NOT NULL,
-  ALTER COLUMN school_id SET NOT NULL,
-  ALTER COLUMN grade_number SET NOT NULL;
+DO $$
+BEGIN
+  IF to_regclass('public.grade_levels') IS NOT NULL THEN
+    ALTER TABLE public.grade_levels
+      ALTER COLUMN section_id SET NOT NULL,
+      ALTER COLUMN school_id SET NOT NULL,
+      ALTER COLUMN grade_number SET NOT NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.staff_leaves
-  ALTER COLUMN status SET NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL;
+DO $$
+BEGIN
+  IF to_regclass('public.staff_leaves') IS NOT NULL THEN
+    ALTER TABLE public.staff_leaves
+      ALTER COLUMN status SET NOT NULL,
+      ALTER COLUMN created_at SET NOT NULL;
+  END IF;
+END $$;
 
 -- Do not ALTER `public.school_registry`: it is a read-only compatibility VIEW,
 -- not a base table. Its legacy source is managed separately from this batch.

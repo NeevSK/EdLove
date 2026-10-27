@@ -1,10 +1,11 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { authAPI, identityAPI, profileAPI } from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
-import { handleAPIError, useMutationQueue, useStore, useTemporalStore } from '@repo/core/logic';
+import { handleAPIError, useMutationQueue, useTemporalStore } from '@repo/core/logic';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 
 import type { ProfileFieldUpdateResult } from '@repo/profile/hooks/profileFieldUpdateResult';
 import { ProfileValidator } from '@repo/profile/lib/validator';
@@ -63,7 +64,7 @@ export function useProfile(userId?: string) {
 
   const authUser = useAuthStore((s) => s.user);
   const isAnonymous = !authUser || authUser.is_anonymous;
-  const isOnline = useStore((s) => s.isOnline);
+  const { isOnline } = useOfflineStatus();
 
   const { rewards, isLoading: isRewardsLoading } = useRewards({ userId });
   const addToQueue = useMutationQueue((s) => s.addToQueue);

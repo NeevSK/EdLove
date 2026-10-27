@@ -1,3 +1,4 @@
+export { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
 export {
   type AccountLifecycleExecutor,
@@ -10,6 +11,12 @@ export { useBanyanGrowth } from '@repo/core/hooks/useBanyanGrowth';
 export { useClassroomCreation } from '@repo/core/hooks/useClassroomCreation';
 export { useDeviceAccounts } from '@repo/core/hooks/useDeviceAccounts';
 export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
+export {
+  deviceSecurityQueryKeys,
+  invalidateDeviceSecuritySummary,
+  resolveDeviceSecurityQueryScope,
+  useScopedDeviceSecurity,
+} from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useDomainRollout } from '@repo/core/hooks/useDomainRollout';
 export {
   useClassroomNotes,
@@ -31,13 +38,23 @@ export {
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMediaDownloader';
 export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
-export { useNotifications } from '@repo/core/hooks/useNotifications';
 export { usePendingActions } from '@repo/core/hooks/usePendingActions';
 export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
 export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export { useRewards } from '@repo/core/hooks/useRewards';
 export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
+export {
+  type UseScaffoldDismissalResult,
+  getScaffoldDismissal,
+  useScaffoldDismissal,
+} from '@repo/core/hooks/useScaffoldDismissal';
 export { useSchoolCreation } from '@repo/core/hooks/useSchoolCreation';
+export { useStorageString } from '@repo/core/hooks/useStorageString';
+export {
+  notificationQueryKeys,
+  resolveNotificationQueryScope,
+  useScopedNotifications,
+} from '@repo/core/hooks/useScopedNotifications';
 export { useStudentGoals } from '@repo/core/hooks/useStudentGoals';
 export { useTaskActions } from '@repo/core/hooks/useTaskActions';
 export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';

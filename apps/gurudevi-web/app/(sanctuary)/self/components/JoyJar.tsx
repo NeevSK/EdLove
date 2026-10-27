@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useJoyJar } from '@repo/self/hooks/useJoyJar';
+import { useJoyJar } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './joy-jar.module.css';
 
 interface JoyJarProps {
@@ -61,7 +61,8 @@ export function JoyJar({ userId = 'guest-explorer' }: Readonly<JoyJarProps>) {
           <div>
             <h2 className={styles.title}>Joy Jar</h2>
             <p className={styles.subtitle}>
-              Capture subtle breakthroughs, genuine student questions, and sacred moments of connection.
+              Capture subtle breakthroughs, genuine student questions, and sacred moments of
+              connection.
             </p>
           </div>
         </div>
@@ -144,7 +145,9 @@ export function JoyJar({ userId = 'guest-explorer' }: Readonly<JoyJarProps>) {
       ) : joyMoments.length === 0 ? (
         <div className={styles.emptyState}>
           <span style={{ fontSize: '2rem' }}>✨</span>
-          <p>The jar is quiet. Deposit your first teaching highlight or classroom breakthrough above.</p>
+          <p>
+            The jar is quiet. Deposit your first teaching highlight or classroom breakthrough above.
+          </p>
         </div>
       ) : (
         <div className={styles.momentList}>
@@ -162,10 +165,12 @@ export function JoyJar({ userId = 'guest-explorer' }: Readonly<JoyJarProps>) {
                 </div>
                 <p className={styles.momentDesc}>{moment.moment_description}</p>
                 <time className={styles.momentTime}>
-                  {moment.created_at ? new Date(moment.created_at).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                  }) : ''}
+                  {moment.created_at
+                    ? new Date(moment.created_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                    : ''}
                 </time>
               </article>
             );

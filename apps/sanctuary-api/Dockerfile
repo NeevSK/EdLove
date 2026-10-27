@@ -1,42 +1,26 @@
-# ==============================================================================
-# Sovereign Dockerfile: Sanctuary API (Bun 1.4.4 + Hono v5 RC + oRPC v2 Beta)
-# ==============================================================================
-
-FROM oven/bun:1.4.4 AS base
+# Sanctuary API: frozen pnpm installation with the existing Bun runtime.
+FROM docker.io/oven/bun:1.4.4 AS base
 WORKDIR /app
 
-# Stage 1: Dependency resolution
-FROM base AS dependencies
+FROM docker.io/library/node:24.22.1-bookworm-slim AS dependencies
 WORKDIR /app
-COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
-COPY apps/sanctuary-api/package.json ./apps/sanctuary-api/
-COPY packages/core/package.json ./packages/core/
-COPY packages/database/package.json ./packages/database/
-COPY packages/policies/package.json ./packages/policies/
+ENV CI=true
+ENV HUSKY=0
+RUN corepack enable
+COPY . .
+RUN node -e "const fs = require('node:fs'); if (process.versions.node !== fs.readFileSync('.nvmrc', 'utf8').trim()) throw new Error('Container Node version differs from .nvmrc')"
+RUN pnpm --filter @repo/sanctuary-api... install --frozen-lockfile
 
-RUN bun install --frozen-lockfile || bun install
-
-# Stage 2: Production runner
 FROM base AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
 ENV PORT=3000
-
-# Copy workspace dependencies and package manifests
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=dependencies /app/apps/sanctuary-api/node_modules ./apps/sanctuary-api/node_modules
-COPY apps/sanctuary-api ./apps/sanctuary-api
-COPY packages ./packages
-
-# Non-root user for principle of least privilege
+COPY --from=dependencies /app/apps/sanctuary-api ./apps/sanctuary-api
+COPY --from=dependencies /app/packages ./packages
 USER bun
-
 EXPOSE 3000
-
-# Native health probe for Render blue-green zero-downtime deployment
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:${PORT}/health || exit 1
-
+  CMD curl -f http://localhost:${PORT}/health/live || exit 1
 WORKDIR /app/apps/sanctuary-api
 CMD ["bun", "src/index.ts"]

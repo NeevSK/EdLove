@@ -32,6 +32,51 @@ describe('account-bound dispatch (network substituted)', () => {
     expect(headers.get('Authorization')).toBe('Bearer synthetic-token');
   });
 
+  it.each(['other-token', null])(
+    'rejects captured-session requests when current token is %s',
+    async (token) => {
+      registerTokenResolver(async () => token);
+      await expect(
+        authenticatedSovereignFetch('https://example.test/api', {}, undefined, {
+          accessToken: 'synthetic-token',
+          subject: 'subject-a',
+        }),
+      ).rejects.toMatchObject({ status: 401 });
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it('sends the captured subject as an assertion with the matching bearer', async () => {
+    await authenticatedSovereignFetch('https://example.test/api', {}, undefined, {
+      accessToken: 'synthetic-token',
+      subject: 'subject-a',
+    });
+    const headers = new Headers(fetch.mock.calls[0]?.[1]?.headers);
+    expect(headers.get('Authorization')).toBe('Bearer synthetic-token');
+    expect(headers.get('X-Expected-Auth-Subject')).toBe('subject-a');
+    expect(String(fetch.mock.calls[0]?.[0])).not.toContain('synthetic-token');
+  });
+
+  it.each([undefined, 'force-cache'] as const)(
+    'retains captured session through actual RPC plugins with cache %s',
+    async (cache) => {
+      registerTokenResolver(async () => 'changed-token');
+      await expect(
+        orpcClient.identity.identifyActiveCitizen(
+          {},
+          {
+            context: {
+              expectedSession: { accessToken: 'synthetic-token', subject: 'subject-a' },
+              ...(cache ? { cache } : {}),
+              retry: 0,
+            },
+          },
+        ),
+      ).rejects.toMatchObject({ status: 401 });
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
   it('rejects an insecure endpoint before session resolution or network dispatch', async () => {
     const resolver = vi.fn(async () => 'sensitive-token');
     registerTokenResolver(resolver);
@@ -102,6 +147,20 @@ describe('account-bound dispatch (network substituted)', () => {
           },
         },
         { context: { expectedAccountId: owner, retry: 0 } },
+      ),
+    ).rejects.toMatchObject({ status: 401 });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('retains owner binding through the GET dedupe plugin before batching', async () => {
+    registerTokenResolver(async () => {
+      setActiveAccountId('other-account');
+      return 'other-token';
+    });
+    await expect(
+      orpcClient.identity.identifyActiveCitizen(
+        {},
+        { context: { expectedAccountId: owner, cache: 'force-cache', retry: 0 } },
       ),
     ).rejects.toMatchObject({ status: 401 });
     expect(fetch).not.toHaveBeenCalled();

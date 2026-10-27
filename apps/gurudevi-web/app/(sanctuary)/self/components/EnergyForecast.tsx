@@ -1,14 +1,16 @@
 'use client';
 
-import { useTemporalStore } from '@repo/core/logic';
-import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
-import type { EnergyForecast as EnergyForecastType } from '@repo/self/types';
-import { Battery, Check } from '@repo/ui/icons';
+import { Battery, Check } from 'lucide-react';
 import { useState } from 'react';
+import {
+  type EnergyForecast as EnergyForecastType,
+  useEnergyForecast,
+} from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './energy-forecast.module.css';
 
 interface EnergyForecastProps {
   userId?: string;
+  selectedDate: string;
   onClose?: () => void;
 }
 
@@ -20,16 +22,15 @@ const ENERGY_LEVELS = [
   { level: 5, label: 'Radiant', emoji: '⚡', desc: 'Peak vitality', color: '#ef4444' },
 ] as const;
 
-export function EnergyForecast({ userId }: EnergyForecastProps) {
+export function EnergyForecast({ userId, selectedDate }: EnergyForecastProps) {
   const { forecasts, saveForecast, isLoading } = useEnergyForecast(userId);
-  const { viewDate } = useTemporalStore();
   const [selectedLevel, setSelectedLevel] = useState<number>(3);
   const [notes, setNotes] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const handleSave = async () => {
     await saveForecast({
-      forecastDate: viewDate,
+      forecastDate: selectedDate,
       energyLevel: selectedLevel as EnergyForecastType['energy_level'],
       notes: notes.trim() || undefined,
     });
@@ -42,7 +43,9 @@ export function EnergyForecast({ userId }: EnergyForecastProps) {
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <h2 className={styles.title}>Energy Forecast & Vitality Meter</h2>
-          <p className={styles.subtitle}>Attune to your internal battery and calibrate your commitments</p>
+          <p className={styles.subtitle}>
+            Attune to your internal battery and calibrate your commitments
+          </p>
         </div>
       </div>
 
@@ -71,11 +74,7 @@ export function EnergyForecast({ userId }: EnergyForecastProps) {
         />
       </div>
 
-      <button
-        type="button"
-        onClick={handleSave}
-        className={styles.saveBtn}
-      >
+      <button type="button" onClick={handleSave} className={styles.saveBtn}>
         {savedSuccess ? <Check size={16} /> : <Battery size={16} />}
         <span>{savedSuccess ? 'Vitality Logged' : 'Log Energy Level'}</span>
       </button>
@@ -84,25 +83,28 @@ export function EnergyForecast({ userId }: EnergyForecastProps) {
         <div className={styles.historySection}>
           <h3 className={styles.historyTitle}>Recent Vitality Trends</h3>
           <div className={styles.historyBars}>
-            {forecasts.slice(0, 7).reverse().map((f) => {
-              const matched = ENERGY_LEVELS.find((l) => l.level === f.energy_level);
-              const heightPercent = ((f.energy_level || 3) / 5) * 100;
-              return (
-                <div key={f.id || f.forecast_date} className={styles.barCol}>
-                  <div
-                    className={styles.barFill}
-                    style={{
-                      height: `${heightPercent}%`,
-                      backgroundColor: matched?.color ?? '#38bdf8',
-                    }}
-                    title={`${f.forecast_date}: Level ${f.energy_level}`}
-                  />
-                  <span className={styles.barDate}>
-                    {f.forecast_date ? f.forecast_date.slice(5) : ''}
-                  </span>
-                </div>
-              );
-            })}
+            {forecasts
+              .slice(0, 7)
+              .reverse()
+              .map((f) => {
+                const matched = ENERGY_LEVELS.find((l) => l.level === f.energy_level);
+                const heightPercent = ((f.energy_level || 3) / 5) * 100;
+                return (
+                  <div key={f.id || f.forecast_date} className={styles.barCol}>
+                    <div
+                      className={styles.barFill}
+                      style={{
+                        height: `${heightPercent}%`,
+                        backgroundColor: matched?.color ?? '#38bdf8',
+                      }}
+                      title={`${f.forecast_date}: Level ${f.energy_level}`}
+                    />
+                    <span className={styles.barDate}>
+                      {f.forecast_date ? f.forecast_date.slice(5) : ''}
+                    </span>
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}

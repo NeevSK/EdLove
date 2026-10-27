@@ -12,11 +12,17 @@ import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
+import { Volume2, VolumeX } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import type { SelfCategory } from '../../../lib/canvas/useSelfCanvas';
 import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
 import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
+import {
+  isSanctuaryAudioMuted,
+  subscribeSanctuaryAudio,
+  toggleSanctuaryAudio,
+} from '../../../lib/sanctuary/audioSanctuary';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
 import { burnJournal, loadBurnedJournalHistory } from '../../../lib/sanctuary/selfJournal';
 import { useDomainWorkbench } from '../../../lib/workbench';
@@ -57,6 +63,8 @@ import { ReframeWizard } from './components/ReframeWizard';
 import { PulseDashboard } from './components/PulseDashboard';
 import { ShadowAgentDrawer } from './components/ShadowAgentDrawer';
 import { SelfOverview } from './components/SelfOverview';
+import { DynamicCareIsland } from './components/DynamicCareIsland';
+import { DailySadhanaModal } from './components/DailySadhanaModal';
 import { UnavailableTask } from './components/UnavailableTask';
 import styles from './self-floor.module.css';
 
@@ -137,6 +145,44 @@ export function SelfFloor({
   );
   const workbench = useDomainWorkbench('self', { usageScope: quickAccessScope });
   const [showOverview, setShowOverview] = useState(true);
+  const [showSadhanaModal, setShowSadhanaModal] = useState(false);
+  const [audioMuted, setAudioMuted] = useState(false);
+
+  useEffect(() => {
+    setAudioMuted(isSanctuaryAudioMuted());
+    return subscribeSanctuaryAudio(setAudioMuted);
+  }, []);
+
+  const handleToggleAudio = useCallback(() => {
+    const next = toggleSanctuaryAudio();
+    setAudioMuted(next);
+  }, []);
+
+  const [todaySadhana, setTodaySadhana] = useState<{ intention: string; energyLevel: number } | null>(null);
+  const loadTodaySadhana = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem('sanctuary_today_sadhana');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (parsed.date === todayStr) {
+          setTodaySadhana(parsed);
+          return;
+        }
+      }
+      setTodaySadhana(null);
+    } catch {
+      setTodaySadhana(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTodaySadhana();
+    const handler = () => loadTodaySadhana();
+    window.addEventListener('sanctuary_sadhana_saved', handler);
+    return () => window.removeEventListener('sanctuary_sadhana_saved', handler);
+  }, [loadTodaySadhana]);
   const returnToHome = useCallback(() => setShowOverview(true), []);
   const exploreCapacity = useExploreCapacity();
   const primaryRole =
@@ -184,6 +230,7 @@ export function SelfFloor({
   const canvas = useSelfCanvas({
     accountId: accountId ?? 'anonymous',
     activeFeatureId: focusedTask ? focusedTask.featureId : null,
+    role: primaryRole,
   });
 
   const [atmosphere, setAtmosphere] = useState<FloorAtmosphereKind>(() => {
@@ -433,7 +480,7 @@ export function SelfFloor({
   ) : focusedTask?.featureId === 'governance_history' ? (
     <ProgressTree userId={accountId ?? 'guest-explorer'} />
   ) : focusedTask?.featureId === 'energy_forecast' ? (
-    <EnergyForecast userId={accountId ?? 'guest-explorer'} />
+    <EnergyForecast userId={accountId ?? 'guest-explorer'} selectedDate={coordinates.date} />
   ) : focusedTask?.featureId === 'voice_journal' ? (
     <VoiceJournaling userId={accountId ?? 'guest-explorer'} />
   ) : focusedTask?.featureId === 'reminders' ? (
@@ -452,7 +499,7 @@ export function SelfFloor({
     <ReframeWizard userId={accountId ?? 'guest-explorer'} />
   ) : focusedTask?.featureId === 'decisions' ? (
     <DecisionJournalSection userId={accountId ?? 'guest-explorer'} />
-  ) : focusedTask?.featureId === 'professional_history' ? (
+  ) : focusedTask?.featureId === 'professional_history' || focusedTask?.featureId === 'journey_timeline' ? (
     <TeachingHistoryTimeline userId={accountId ?? 'guest-explorer'} />
   ) : focusedTask?.featureId === 'daily_pulse' ? (
     <PulseDashboard userId={accountId ?? 'guest-explorer'} />
@@ -463,6 +510,13 @@ export function SelfFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      className={
+        canvas.phase === 'morning'
+          ? styles.diurnalDawn
+          : canvas.phase === 'night'
+            ? styles.diurnalDusk
+            : styles.diurnalSolar
+      }
       domain="self"
       furnitureItems={SELF_FURNITURE_ITEMS}
       groupOrder={[
@@ -500,7 +554,47 @@ export function SelfFloor({
           greeting={timeGreeting(displayName)}
           intent={coordinates.intent}
           selectedDate={coordinates.date}
-          renderExtra={() => <ShadowAgentDrawer userId={accountId} />}
+          renderExtra={() => (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className={styles.centerNowBtn}
+                onClick={() => setShowSadhanaModal(true)}
+              >
+                <span>🌿 Center Now</span>
+              </button>
+              {todaySadhana?.intention ? (
+                <span
+                  className={styles.livingAnchorBadge}
+                  title={`Today's Energy: ${todaySadhana.energyLevel}/5`}
+                >
+                  ✦ {todaySadhana.intention}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                className={styles.audioToggleBtn}
+                onClick={handleToggleAudio}
+                aria-label={
+                  audioMuted
+                    ? 'Sanctuary chimes muted. Click to enable sound.'
+                    : 'Sanctuary chimes active. Click to mute.'
+                }
+                title={
+                  audioMuted
+                    ? 'Sanctuary chimes muted (Click to unmute)'
+                    : 'Sanctuary chimes active (Click to mute)'
+                }
+              >
+                {audioMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              </button>
+              <DynamicCareIsland
+                userId={accountId}
+                onOpenReminders={() => openFeature(requiredFeature('reminders'))}
+              />
+              <ShadowAgentDrawer userId={accountId} />
+            </div>
+          )}
         />
       )}
     >
@@ -541,7 +635,7 @@ export function SelfFloor({
           <SelfOverview
             displayName={displayName}
             groupOrder={canvas.groupOrder}
-            manifestAll={SELF_FEATURE_MANIFEST.all}
+            manifestAll={canvas.sortedManifestAll}
             onOpenFeature={openFeature}
             onOpenFireJournal={openFireJournal}
             pinnedFeatures={canvas.pinnedFeatures}
@@ -549,6 +643,7 @@ export function SelfFloor({
             temporalIntent={coordinates.intent}
             selectedDate={coordinates.date}
             primaryRole={primaryRole}
+            userId={accountId}
           />
         </div>
       ) : (
@@ -556,6 +651,12 @@ export function SelfFloor({
           <div className={styles.activePracticeStage}>{practiceContent}</div>
         </div>
       )}
+
+      <DailySadhanaModal
+        isOpen={showSadhanaModal}
+        onClose={() => setShowSadhanaModal(false)}
+        userId={accountId}
+      />
     </SanctuaryFloorCanvas>
   );
 }

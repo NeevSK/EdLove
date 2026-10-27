@@ -11,6 +11,7 @@ type WorkbenchContextHeaderProps = Readonly<{
   dateControl: ReactNode;
   selectedDate: string;
   homeActive?: boolean;
+  renderExtra?: () => ReactNode;
 }>;
 
 const selfPrompts: Record<TemporalIntent, readonly string[]> = {
@@ -82,6 +83,7 @@ export function WorkbenchContextHeader({
   dateControl,
   selectedDate,
   homeActive = true,
+  renderExtra,
 }: WorkbenchContextHeaderProps) {
   return (
     <div className={styles.contextHeader} data-intent={intent}>
@@ -93,9 +95,15 @@ export function WorkbenchContextHeader({
               <p>{contextDescription(domain, intent, selectedDate)}</p>
             </div>
             <div className={styles.contextDate}>{dateControl}</div>
+            {renderExtra?.()}
           </div>
         </div>
-      ) : <div className={styles.taskTemporalControl}>{dateControl}</div>}
+      ) : (
+        <div className={styles.taskTemporalControl}>
+          {dateControl}
+          {renderExtra?.()}
+        </div>
+      )}
     </div>
   );
 }

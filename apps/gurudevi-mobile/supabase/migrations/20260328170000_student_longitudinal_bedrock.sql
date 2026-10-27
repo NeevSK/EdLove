@@ -317,7 +317,7 @@ where cs.student_id is not null
       select 1
       from public.student_longitudinal_events sle
       where sle.entity_type = 'enrollment'
-        and sle.entity_id = cs.id
+        and sle.entity_id = cs.id::text
   );
 
 -- 5. Backfill Grade Level Context

@@ -1,4 +1,5 @@
 import { api } from '@repo/core/api/client';
+import { useActorSnapshot } from '@repo/core/hooks';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CircleCheck, QrCode } from '@repo/ui/icons';
@@ -17,10 +18,13 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-
-import { useState } from 'react';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { useMemo } from 'react';
+import {
+  createStudentClaimActor,
+  executeStudentClaimEffect,
+} from '../machines/studentClaimMachine';
 
 interface ClaimInviteModalProps {
   isOpen: boolean;
@@ -30,39 +34,38 @@ interface ClaimInviteModalProps {
 
 export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModalProps) {
   const { showToast } = useSanctuaryToast();
-  const [inviteCode, setInviteCode] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [successData, setSuccessData] = useState<any>(null);
+  const actor = useMemo(() => createStudentClaimActor(), []);
+  const snapshot = useActorSnapshot(actor);
+
+  const loading = snapshot.value === 'verifying';
+  const successData = snapshot.context.successData;
+  const inviteCode = snapshot.context.code;
+  const error = snapshot.context.error;
 
   const handleClaim = async () => {
     if (!inviteCode.trim()) return;
-    try {
-      setLoading(true);
-      const result = await api.classroomStudents.claimStudent(inviteCode.trim().toUpperCase());
+    const result = await executeStudentClaimEffect(actor, inviteCode, (c) =>
+      api.classroomStudents.claimStudent(c),
+    );
 
-      setSuccessData(result);
+    if (result.success) {
       hapticSuccess();
-    } catch (error: any) {
-      console.error('Failed to claim record:', error);
+    } else if (result.error) {
       showToast({
-        message: error.message || 'Invalid invite code or record already claimed.',
+        message: result.error,
         type: 'error',
       });
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleDone = () => {
     onSuccess();
-    setInviteCode('');
-    setSuccessData(null);
+    actor.send({ type: 'RESET' });
   };
 
   const handleClose = () => {
     if (!loading) {
-      setInviteCode('');
-      setSuccessData(null);
+      actor.send({ type: 'RESET' });
     }
     onClose();
   };
@@ -120,11 +123,21 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                 placeholder="e.g. a1b2c3d4"
                 className="text-phaseText-primary text-3xl text-center font-black tracking-[8px]"
                 value={inviteCode}
-                onChangeText={(value) => setInviteCode(value.replace(/\s/g, '').slice(0, 8))}
+                onChangeText={(value) =>
+                  actor.send({
+                    type: 'SET_CODE',
+                    code: value.replace(/\s/g, '').slice(0, 8),
+                  })
+                }
                 autoCapitalize="none"
                 maxLength={8}
               />
             </Input>
+            {error ? (
+              <Text className="text-phase-reward-destructive text-sm text-center font-medium mt-1">
+                {error}
+              </Text>
+            ) : null}
           </FormControl>
 
           <Button

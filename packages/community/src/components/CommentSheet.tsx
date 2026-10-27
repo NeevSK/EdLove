@@ -37,17 +37,17 @@ export function CommentSheet({
   const isPostAuthor = !!currentUserId && currentUserId === postAuthorId;
 
   // Map Community Comment to UI CommentItem
-  const uiComments = comments.map((c: Comment) => ({
+  const uiComments = comments.map((c: any) => ({
     id: c.id,
     content: c.content,
-    createdAt: typeof c.created_at === 'string' ? c.created_at : c.created_at.toISOString(),
+    createdAt: typeof c.created_at === 'string' ? c.created_at : c.created_at?.toISOString?.() ?? '',
     isAnonymous: c.is_anonymous,
     isOfficial: c.is_official_answer,
-    upvotes: c.upvotes,
-    hasUpvoted: c.has_upvoted,
+    upvotes: c.upvote_count ?? c.upvotes ?? 0,
+    hasUpvoted: c.has_upvoted ?? false,
     author: {
-      id: c.author_id,
-      name: c.author_name,
+      id: c.author_id ?? '',
+      name: c.author_name ?? 'Anonymous',
       avatar: c.author_avatar ?? undefined,
     },
   }));

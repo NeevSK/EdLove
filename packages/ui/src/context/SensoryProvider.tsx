@@ -9,7 +9,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { SensoryPreferences } from './experiencePolicy';
+
+/** The user's sensory choices. Verger's view reads them; no lever owns them. */
+export interface SensoryPreferences {
+  hapticsEnabled?: boolean;
+  soundEnabled?: boolean;
+  quietMode?: boolean;
+}
 
 export type SensoryPreferenceKey = keyof Required<SensoryPreferences>;
 
@@ -51,12 +57,19 @@ function readPreferences(value: string | null): Required<SensoryPreferences> {
   }
 }
 
+import { sensoryFeedback } from '../sensory/SensoryFeedbackService';
+
 export function SensoryProvider({ children }: { children: ReactNode }) {
   const [preferences, setPreferences] = useState<Required<SensoryPreferences>>(DEFAULT_PREFERENCES);
 
   useEffect(() => {
     setHapticsEnabled(preferences.hapticsEnabled);
-  }, [preferences.hapticsEnabled]);
+    sensoryFeedback.configure({
+      hapticsEnabled: preferences.hapticsEnabled,
+      soundEnabled: preferences.soundEnabled,
+      quietMode: preferences.quietMode,
+    });
+  }, [preferences.hapticsEnabled, preferences.soundEnabled, preferences.quietMode]);
 
   useEffect(() => {
     void storage

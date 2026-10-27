@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
@@ -17,6 +18,7 @@ import {
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { LivingCard } from '../components/LivingCard';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { CirclePostStream } from './components/CirclePostStream';
 import styles from './community.module.css';
 
 const COMMUNITY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
@@ -178,6 +180,36 @@ export function CommunityFeedFloor({
             : 'Browse circles available to your selected sanctuary scope. The server filters every result against that scope.'}
         </p>
       </header>
+      <div style={{ display: 'flex', gap: '0.75rem', margin: '0.75rem 0 1.25rem', flexWrap: 'wrap' }}>
+        <span
+          style={{
+            padding: '0.35rem 0.85rem',
+            borderRadius: '999px',
+            background: 'var(--paper-light)',
+            border: '1px solid var(--color-action, #9a5b2d)',
+            color: 'var(--color-action, #9a5b2d)',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+          }}
+        >
+          👥 Circles &amp; Discussions
+        </span>
+        <Link
+          href="/community/announcements"
+          style={{
+            padding: '0.35rem 0.85rem',
+            borderRadius: '999px',
+            background: 'var(--paper-light)',
+            border: '1px solid var(--line)',
+            color: 'var(--ink-soft)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}
+        >
+          📢 Broadcaster Updates →
+        </Link>
+      </div>
       {mode === 'explore' ? (
         <aside className={styles.exploreNotice} role="note">
           Sample data · local exploration only · nothing is sent to other people.
@@ -301,24 +333,11 @@ export function CommunityFeedFloor({
                         ← Back to Circles
                       </button>
                     </div>
-                    <article className={styles.focusedCircleBody}>
-                      <div className={styles.focusedCircleHeader}>
-                        <h2>{selectedGroup.name}</h2>
-                        <p className={styles.focusedCircleMeta}>
-                          {selectedGroup.memberCount} members · Shared circle
-                        </p>
-                        <p>
-                          {selectedGroup.description ||
-                            'A shared sanctuary space for conversation and mutual care.'}
-                        </p>
-                      </div>
-                      <div className={styles.focusedCircleFeedMock}>
-                        <p>
-                          Welcome to <strong>{selectedGroup.name}</strong>. Here seekers and
-                          educators share reflections, notices, and collaborative questions.
-                        </p>
-                      </div>
-                    </article>
+                    <CirclePostStream
+                      selectedGroup={selectedGroup}
+                      authorRole={roleLabel}
+                      mode={mode}
+                    />
                   </div>
                 </div>
               ) : (

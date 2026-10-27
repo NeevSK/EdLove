@@ -17,11 +17,11 @@ import {
 } from '@repo/community/screens/communityWorkspace.shared';
 import type { CommunityPost, DirectConversation } from '@repo/community/types';
 import { communityAPI } from '@repo/core/api/client';
-import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
-import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
+import { useManifestoHooks } from '@repo/core/api/hooks';
+import { useDomainRollout, usePendingGateAction, useScopedNotifications } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useAuthStore, useFeatureStore } from '@repo/core/store';
-import { useTemporalStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
@@ -126,8 +126,8 @@ export default function CommunityScreenWeb() {
   const isMessagingRolloutEnabled = useDomainRollout('messages');
   const { isSocialShieldEnabled } = flags;
   const pending = usePendingGateAction();
-  const { unreadCount } = useNotificationHooks();
-  const isOffline = useTemporalStore((state) => state.isOffline);
+  const { unreadCount } = useScopedNotifications(user?.id);
+  const { isOffline } = useOfflineStatus();
 
   const userId = user?.id ?? 'guest';
   const schoolId = user?.school_id ?? undefined;

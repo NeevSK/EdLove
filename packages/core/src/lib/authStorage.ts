@@ -11,7 +11,7 @@ export const supabaseAuthStorage = {
       const asyncVal = await storage.getStringAsync(storageKey);
       return asyncVal ?? null;
     } catch {
-      return null;
+      throw new Error('Auth credential storage read failed');
     }
   },
 
@@ -20,7 +20,7 @@ export const supabaseAuthStorage = {
     try {
       storage.set(storageKey, value);
     } catch {
-      // ignore
+      throw new Error('Auth credential storage write failed');
     }
   },
 
@@ -29,7 +29,7 @@ export const supabaseAuthStorage = {
     try {
       storage.delete(storageKey);
     } catch {
-      // ignore
+      throw new Error('Auth credential storage removal failed');
     }
   },
 };

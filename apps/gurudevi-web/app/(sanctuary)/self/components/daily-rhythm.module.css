@@ -77,7 +77,9 @@
   border-radius: 0.75rem;
   background: var(--color-surface-subtle, #f8fafc);
   border: 1px solid var(--color-line, #e2e8f0);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .periodCard:hover {
@@ -131,7 +133,9 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 0.375rem;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .deleteBtn:hover {
@@ -155,7 +159,8 @@
   gap: 0.75rem;
 }
 
-.formInput, .formSelect {
+.formInput,
+.formSelect {
   padding: 0.625rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-line, #cbd5e1);
@@ -164,7 +169,8 @@
   color: var(--color-text-primary, #0f172a);
 }
 
-.formInput:focus, .formSelect:focus {
+.formInput:focus,
+.formSelect:focus {
   outline: none;
   border-color: var(--color-action, #0284c7);
   box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);

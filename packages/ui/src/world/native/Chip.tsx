@@ -74,7 +74,9 @@ export function Chip({
       ]}
       {...rest}
     >
-      <RNText style={[typeStyle(r.label, lang ?? language), { color: s.ink }]}>{label}</RNText>
+      <RNText style={[typeStyle(r.label, lang ?? language, world), { color: s.ink }]}>
+        {label}
+      </RNText>
     </Pressable>
   );
 }

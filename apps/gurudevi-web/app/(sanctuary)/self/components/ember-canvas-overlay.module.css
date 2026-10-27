@@ -1,0 +1,38 @@
+.overlayContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.heatHaze {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 80%,
+    rgba(234, 88, 12, 0.22) 0%,
+    rgba(249, 115, 22, 0.1) 45%,
+    transparent 80%
+  );
+  animation: heatPulse 1.2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes heatPulse {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}

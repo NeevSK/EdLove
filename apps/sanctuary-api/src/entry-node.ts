@@ -4,13 +4,10 @@ import { createServer as createHttpsServer } from 'node:https';
 import { serve } from '@hono/node-server';
 import { startRetentionMaintenance } from './ai/maintenance/retention';
 import { app } from './core/app';
-import { loadProductionTlsOptions } from './core/nodeTransport';
-import { requiresHttps } from './core/transportSecurity';
+import { loadServerTlsOptions } from './core/nodeTransport';
 
 const port = Number(process.env.PORT) || 3001;
-const productionTls = requiresHttps(process.env.NODE_ENV)
-  ? loadProductionTlsOptions(process.env.SANCTUARY_TLS_KEY, process.env.SANCTUARY_TLS_CERT)
-  : undefined;
+const productionTls = loadServerTlsOptions();
 console.info(`Sanctuary API standing guard on port ${port} (Node.js Adapter)`);
 
 const retentionTimer = startRetentionMaintenance();

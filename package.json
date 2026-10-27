@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "verger:check": "node scripts/verger-check.mjs",
+    "verger:android-jvm": "bash scripts/verger-android-jvm.sh",
     "audit:db-trust": "node scripts/check-db-trust.mjs",
     "audit:query-plans": "node scripts/check-query-plans.mjs",
     "audit:db-behavior": "node scripts/check-db-behavior.mjs",
@@ -155,6 +157,7 @@
     "ota-safety:init": "node scripts/ota-safety-check.mjs --init",
     "preflight:build": "node scripts/preflight-build.mjs",
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\"",
+    "scene:shots": "tsx --tsconfig scripts/scene-shots/tsconfig.json scripts/scene-shots/index.tsx",
     "check:world": "node scripts/check-world.mjs"
   },
   "devDependencies": {

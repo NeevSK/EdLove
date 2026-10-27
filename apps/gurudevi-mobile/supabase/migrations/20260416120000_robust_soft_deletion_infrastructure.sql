@@ -47,7 +47,7 @@ END $$;
 -- 02. Redefine Soft-Delete Propagation Logic
 -- This ensures that when a parent is deleted, all professional and institutional facets follow.
 
-OR REPLACE FUNCTION public.propagate_school_soft_delete()
+CREATE OR REPLACE FUNCTION public.propagate_school_soft_delete()
 RETURNS TRIGGER AS $$
 BEGIN
     IF (NEW.deleted_at IS NOT NULL AND OLD.deleted_at IS NULL) THEN
@@ -80,7 +80,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-OR REPLACE FUNCTION public.propagate_user_soft_delete()
+CREATE OR REPLACE FUNCTION public.propagate_user_soft_delete()
 RETURNS TRIGGER AS $$
 BEGIN
     IF (NEW.deleted_at IS NOT NULL AND OLD.deleted_at IS NULL) THEN
@@ -123,7 +123,8 @@ CREATE TRIGGER tr_school_soft_delete
 -- 04. Unified View Refresh
 -- Closing the "lying" gap by ensuring the view is clean and accounts for all facets.
 
-OR REPLACE VIEW public.unified_user_profiles AS
+DROP VIEW IF EXISTS public.unified_user_profiles;
+CREATE OR REPLACE VIEW public.unified_user_profiles AS
  SELECT u.id,
     u.full_name,
     u.email,
@@ -148,15 +149,16 @@ OR REPLACE VIEW public.unified_user_profiles AS
         WHEN ugs.onboarding_completed = true THEN 'traveler'
         ELSE 'wanderer'
     END AS citizenship_status
-   FROM ((((((((public.users u
-     LEFT JOIN public.school_memberships m ON (((u.id = m.user_id) AND (m.status = 'active'::text) AND (m.is_primary = true) AND (m.deleted_at IS NULL)))))
-     LEFT JOIN public.schools s ON ((m.school_id = s.id AND s.deleted_at IS NULL)))
-     LEFT JOIN public.edu_schools es ON ((s.census_id = es.id)))
-     LEFT JOIN public.teacher_profiles tp ON ((u.id = tp.user_id AND tp.deleted_at IS NULL)))
-     LEFT JOIN public.principal_profiles pp ON ((u.id = pp.user_id AND pp.deleted_at IS NULL)))
-     LEFT JOIN public.student_profiles sp ON ((u.id = sp.user_id AND sp.deleted_at IS NULL)))
-     LEFT JOIN public.user_preferences up ON ((u.id = up.user_id)))
-     LEFT JOIN public.user_growth_state ugs ON ((u.id = ugs.user_id)))
+   FROM public.users u
+     LEFT JOIN public.school_memberships m
+       ON u.id = m.user_id AND m.status = 'active' AND m.is_primary AND m.deleted_at IS NULL
+     LEFT JOIN public.schools s ON m.school_id = s.id AND s.deleted_at IS NULL
+     LEFT JOIN public.edu_schools es ON s.census_id = es.id
+     LEFT JOIN public.teacher_profiles tp ON u.id = tp.user_id AND tp.deleted_at IS NULL
+     LEFT JOIN public.principal_profiles pp ON u.id = pp.user_id AND pp.deleted_at IS NULL
+     LEFT JOIN public.student_profiles sp ON u.id = sp.user_id AND sp.deleted_at IS NULL
+     LEFT JOIN public.user_preferences up ON u.id = up.user_id
+     LEFT JOIN public.user_growth_state ugs ON u.id = ugs.user_id
   WHERE (u.deleted_at IS NULL);
 
 COMMENT ON VIEW public.unified_user_profiles IS 'The authoritative source for user identity, facets, and citizenship status.';

@@ -1,0 +1,503 @@
+diff --git a/packages/core/src/accounts/deviceAccounts.ts b/packages/core/src/accounts/deviceAccounts.ts
+index 346226900..cad81c215 100644
+--- a/packages/core/src/accounts/deviceAccounts.ts
++++ b/packages/core/src/accounts/deviceAccounts.ts
+@@ -20,6 +20,7 @@ import {
+ import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+ import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+ import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
++import { APIError } from '@repo/core/types/API';
+ import { Effect, Queue } from 'effect';
+ 
+ const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
+@@ -65,14 +66,18 @@ async function writeRegistry(accounts: DeviceAccountRecord[]) {
+ }
+ 
+ async function setActiveAccount(accountId: string | null) {
+-  setActiveAccountId(accountId);
+-
+   if (accountId) {
+     storage.set(ACTIVE_ACCOUNT_KEY, accountId);
+-    return;
++  } else {
++    storage.delete(ACTIVE_ACCOUNT_KEY);
+   }
++  setActiveAccountId(accountId);
++}
+ 
+-  storage.delete(ACTIVE_ACCOUNT_KEY);
++async function assertCurrentCaptureSession(expected: AuthSession): Promise<void> {
++  const current = await authAPI.getAuthSession();
++  if (current?.access_token !== expected.access_token || current?.user.id !== expected.user.id)
++    throw new APIError('The device account capture session changed.', 'AUTH_SESSION_CHANGED');
+ }
+ 
+ class DeviceAccountError {
+@@ -141,7 +146,7 @@ function queueAccountSignOutAudit(accountId: string): void {
+   );
+ }
+ 
+-export const deviceAccounts = {
++const deviceAccountOperations = {
+   async initialize() {
+     const storedActive = storage.getString(ACTIVE_ACCOUNT_KEY);
+     setActiveAccountId(storedActive || null);
+@@ -157,6 +162,22 @@ export const deviceAccounts = {
+     return getActiveAccountId();
+   },
+ 
++  async retainRefreshedSession(session: AuthSession | null): Promise<string | null> {
++    if (!session || getSessionIdentityMode(session) !== 'authenticated') return null;
++    await assertCurrentCaptureSession(session);
++    const accountId = getActiveAccountId();
++    const accounts = await readRegistry();
++    const account = accounts.find(
++      (entry) =>
++        entry.accountId === accountId && entry.authUserId === session.user.id && !entry.isAnonymous,
++    );
++    if (!account) return null;
++    await assertCurrentCaptureSession(session);
++    await setStoredSessionForAccount(account.accountId, toSessionTokens(session));
++    await assertCurrentCaptureSession(session);
++    return account.accountId;
++  },
++
+   async captureCurrentAccount(session: AuthSession | null, profile?: DeviceAccountProfile | null) {
+     if (!session?.user) return null;
+ 
+@@ -168,16 +189,23 @@ export const deviceAccounts = {
+     }
+ 
+     assertHighway('identity_bootstrap', 'direct-api');
+-    const identity = profile?.id ? null : await identityAPI.identifyActiveCitizen();
+-    const accountId = profile?.id ?? identity?.id;
+-
+-    if (!accountId) return null;
++    await assertCurrentCaptureSession(session);
++    const identity = await identityAPI.identifyActiveCitizen();
++    if (!identity || (profile && profile.id !== identity.id))
++      throw new APIError(
++        'The device account does not match its canonical identity.',
++        'AUTH_ACCOUNT_MISMATCH',
++      );
++    await assertCurrentCaptureSession(session);
++    const accountId = identity.id;
+ 
+     await setStoredSessionForAccount(accountId, toSessionTokens(session));
++    await assertCurrentCaptureSession(session);
+     await clearLegacySupabaseSession();
+ 
+     const now = new Date().toISOString();
+     const accounts = await readRegistry();
++    await assertCurrentCaptureSession(session);
+     const existing = accounts.find((entry) => entry.accountId === accountId);
+ 
+     const nextRecord: DeviceAccountRecord = {
+@@ -202,6 +230,7 @@ export const deviceAccounts = {
+       .concat(nextRecord);
+ 
+     await writeRegistry(nextAccounts);
++    await assertCurrentCaptureSession(session);
+     await setActiveAccount(accountId);
+ 
+     void Promise.resolve(deviceTrustAPI.syncCurrentAccountDevice(accountId)).then((trust) => {
+@@ -239,14 +268,13 @@ export const deviceAccounts = {
+       outgoingPrincipalId: previousAccountId,
+       incomingPrincipalId: accountId,
+       disposition: 'preserve-and-quarantine',
+-      clearReplicatedData: true,
++      clearReplicatedData: false,
+     });
+ 
+-    await setActiveAccount(accountId);
+-    resetScopedStores();
+-    await rehydrateScopedStores();
+-
+     try {
++      await setActiveAccount(accountId);
++      resetScopedStores();
++      await rehydrateScopedStores();
+       await authAPI.setSession(storedSession.access_token, storedSession.refresh_token);
+     } catch (error) {
+       // Treat account switching as a transaction. If the cached session is no
+@@ -415,3 +443,33 @@ export const deviceAccounts = {
+     ]);
+   },
+ };
++
++let deviceAccountMutation: Promise<void> = Promise.resolve();
++
++function mutateDeviceAccounts<T>(operation: () => Promise<T>): Promise<T> {
++  const result = deviceAccountMutation.then(operation, operation);
++  deviceAccountMutation = result.then(
++    () => undefined,
++    () => undefined,
++  );
++  return result;
++}
++
++export const deviceAccounts = {
++  initialize: () => mutateDeviceAccounts(() => deviceAccountOperations.initialize()),
++  list: () => mutateDeviceAccounts(() => deviceAccountOperations.list()),
++  getActiveAccountId: () =>
++    mutateDeviceAccounts(() => deviceAccountOperations.getActiveAccountId()),
++  retainRefreshedSession: (session: AuthSession | null) =>
++    mutateDeviceAccounts(() => deviceAccountOperations.retainRefreshedSession(session)),
++  captureCurrentAccount: (session: AuthSession | null, profile?: DeviceAccountProfile | null) =>
++    mutateDeviceAccounts(() => deviceAccountOperations.captureCurrentAccount(session, profile)),
++  switchTo: (accountId: string) =>
++    mutateDeviceAccounts(() => deviceAccountOperations.switchTo(accountId)),
++  removeAccount: (accountId: string) =>
++    mutateDeviceAccounts(() => deviceAccountOperations.removeAccount(accountId)),
++  signOutCurrentAccount: () =>
++    mutateDeviceAccounts(() => deviceAccountOperations.signOutCurrentAccount()),
++  signOutAllAccounts: () =>
++    mutateDeviceAccounts(() => deviceAccountOperations.signOutAllAccounts()),
++};
+diff --git a/packages/core/src/hooks/useAuthLifecycle.ts b/packages/core/src/hooks/useAuthLifecycle.ts
+index 62fc1339c..3829fedcf 100644
+--- a/packages/core/src/hooks/useAuthLifecycle.ts
++++ b/packages/core/src/hooks/useAuthLifecycle.ts
+@@ -16,10 +16,14 @@ import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
+ import { realtime } from '@repo/core/logic/managers/factory';
+ import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
+ import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
++import { useScopeSessionStore } from '@repo/core/store/scopeSession';
++import {
++  clearScopeSessionCompatibility,
++  commitIdentityScopeSession,
++} from '@repo/core/store/scopeSessionCoordinator';
+ import { useStore } from '@repo/core/store/useStore';
+ import type { User } from '@repo/core/types';
+ import { APIError } from '@repo/core/types/API';
+-import type { Bond } from '@repo/core/types/Identity';
+ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+ import { AppState, type AppStateStatus } from 'react-native';
+ 
+@@ -27,6 +31,7 @@ export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticat
+ 
+ /** Throttle minimum interval for mobile AppState wake-up profile reconciliation. */
+ const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;
++const REMEMBERED_SESSION_ERROR = 'Unable to retain refreshed device credentials.';
+ 
+ /**
+  * useAuthLifecycle
+@@ -55,19 +60,14 @@ export function useAuthLifecycle() {
+   const lastReconciledAtRef = useRef<number>(Date.now());
+ 
+   const setUser = useStore((state) => state.setUser);
+-  const setPerspective = useStore((state) => state.setPerspective);
+-  const setAvailableBonds = useStore((state) => state.setAvailableBonds);
+-  const setSchoolType = useStore((state) => state.setSchoolType);
+   const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
+   const setAuthSession = useStore((state) => state.setAuthSession);
+   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
+   const setDemoMode = useStore((state) => state.setDemoMode);
+ 
+   const clearDerivedIdentityState = useCallback(() => {
++    clearScopeSessionCompatibility();
+     setUser(null);
+-    setPerspective(null);
+-    setAvailableBonds([]);
+-    setSchoolType(null);
+     setOnboardingCompleted(false);
+     setIdentityAvailability('unknown');
+     resolvedAuthSubjectIdRef.current = null;
+@@ -75,12 +75,9 @@ export function useAuthLifecycle() {
+     setAccountLifecycleStatus(null);
+   }, [
+     setAccountLifecycleStatus,
+-    setAvailableBonds,
+     setIdentityAvailability,
+     setResolvedAuthSubjectId,
+     setOnboardingCompleted,
+-    setPerspective,
+-    setSchoolType,
+     setUser,
+   ]);
+ 
+@@ -117,7 +114,28 @@ export function useAuthLifecycle() {
+       const isFirstLoad = !hasBootstrappedRef.current;
+       const resolutionGeneration = identityResolutionGenerationRef.current + 1;
+       identityResolutionGenerationRef.current = resolutionGeneration;
++      const isCurrentResolution = () =>
++        isCurrentIdentityResolutionGeneration(
++          resolutionGeneration,
++          identityResolutionGenerationRef.current,
++        );
+       const authSubjectId = sessionToCapture?.user.id ?? null;
++      const restoreVerifiedLocalIdentity = async (): Promise<boolean> => {
++        const existingUser = useStore.getState().user;
++        const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
++          existingUser?.id,
++          authSubjectId,
++        );
++        if (!isCurrentResolution()) return false;
++        if (hasMatchingLocalUser) {
++          setIdentityAvailability('active');
++          resolvedAuthSubjectIdRef.current = authSubjectId;
++          setResolvedAuthSubjectId(authSubjectId);
++        } else {
++          clearDerivedIdentityState();
++        }
++        return true;
++      };
+       setIsProfileResolving(true);
+       setProfileError(null);
+       if (isFirstLoad) {
+@@ -140,28 +158,22 @@ export function useAuthLifecycle() {
+           },
+         });
+ 
+-        if (
+-          !isCurrentIdentityResolutionGeneration(
+-            resolutionGeneration,
+-            identityResolutionGenerationRef.current,
+-          )
+-        ) {
+-          return;
+-        }
++        if (!isCurrentResolution()) return;
+ 
+         if (resolution.kind === 'active') {
+           const { identity, schoolType } = resolution;
++          await commitIdentityScopeSession({
++            principalId: identity.id,
++            availableBonds: identity.availableBonds,
++            selectedBond: identity.activeBond,
++            schoolType,
++          });
++          if (!isCurrentResolution()) return;
+           setIdentityAvailability('active');
+           resolvedAuthSubjectIdRef.current = authSubjectId;
+           setResolvedAuthSubjectId(authSubjectId);
+           setAccountLifecycleStatus(null);
+           setUser(identity as unknown as User);
+-          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
+-          setPerspective({
+-            activeBond: identity.activeBond as unknown as Bond | undefined,
+-            availableBonds: identity.availableBonds as unknown as Bond[],
+-          });
+-
+           await captureAuthenticatedDeviceAccount({
+             capturedSessionKeys: capturedSessionKeysRef.current,
+             capturingSessionKeys: capturingSessionKeysRef.current,
+@@ -169,9 +181,9 @@ export function useAuthLifecycle() {
+             resolvedAuthSubjectId: authSubjectId,
+             session: sessionToCapture ?? null,
+           });
++          if (!isCurrentResolution()) return;
+ 
+           setOnboardingCompleted(Boolean(identity.onboarding_completed));
+-          setSchoolType(schoolType);
+ 
+           identifyAuthSubject({
+             id: identity.id,
+@@ -194,42 +206,19 @@ export function useAuthLifecycle() {
+           // resolution.kind === 'unavailable'
+           // Non-destructive offline fallback: If a valid local user exists in persisted storage,
+           // preserve their offline state and mark identity active rather than kicking them to onboarding.
+-          const existingUser = useStore.getState().user;
+-          const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
+-            existingUser?.id,
+-            authSubjectId,
+-          );
+-
+-          if (hasMatchingLocalUser) {
+-            setIdentityAvailability('active');
+-            resolvedAuthSubjectIdRef.current = authSubjectId;
+-            setResolvedAuthSubjectId(authSubjectId);
+-          } else {
+-            clearDerivedIdentityState();
+-          }
++          if (!(await restoreVerifiedLocalIdentity())) return;
+ 
+           if (resolution.profileError) {
+             setProfileError(resolution.profileError);
+           }
+         }
+       } catch (error) {
++        if (!isCurrentResolution()) return;
+         console.warn('❌ Profile: Fetching encountered an error:', error);
+-        const existingUser = useStore.getState().user;
+-        if (await hasVerifiedLocalIdentityForSubject(existingUser?.id, authSubjectId)) {
+-          setIdentityAvailability('active');
+-          resolvedAuthSubjectIdRef.current = authSubjectId;
+-          setResolvedAuthSubjectId(authSubjectId);
+-        } else {
+-          clearDerivedIdentityState();
+-        }
++        if (!(await restoreVerifiedLocalIdentity())) return;
+         setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
+       } finally {
+-        if (
+-          isCurrentIdentityResolutionGeneration(
+-            resolutionGeneration,
+-            identityResolutionGenerationRef.current,
+-          )
+-        ) {
++        if (isCurrentResolution()) {
+           setIsProfileResolving(false);
+           if (isFirstLoad) {
+             setIsProfileLoading(false);
+@@ -244,18 +233,36 @@ export function useAuthLifecycle() {
+       clearDerivedIdentityState,
+       hasVerifiedLocalIdentityForSubject,
+       setUser,
+-      setPerspective,
+-      setAvailableBonds,
+-      setSchoolType,
+       setOnboardingCompleted,
+     ],
+   );
+ 
+   const refreshProfile = useCallback(async () => {
++    const generation = authEventGenerationRef.current;
+     const currentSession = await authAPI.getAuthSession();
++    if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
+     await fetchAndSetUserProfile(currentSession);
+   }, [fetchAndSetUserProfile]);
+ 
++  const retainRefreshedDeviceSession = useCallback(
++    async (current: AuthSession | null, generation: number) => {
++      try {
++        const retained = await deviceAccounts.retainRefreshedSession(current);
++        if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
++        if (retained) {
++          setProfileError((error) => (error === REMEMBERED_SESSION_ERROR ? null : error));
++        } else {
++          await fetchAndSetUserProfile(current);
++        }
++      } catch {
++        if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
++        setProfileError(REMEMBERED_SESSION_ERROR);
++        console.warn('[auth] Refreshed device credential retention failed.');
++      }
++    },
++    [fetchAndSetUserProfile],
++  );
++
+   useEffect(() => {
+     // 1. Initialize error monitoring. Product analytics is initialized by the
+     // application shell so there is only one provider/transport instance.
+@@ -271,9 +278,17 @@ export function useAuthLifecycle() {
+         ) {
+           return;
+         }
++        const initialSubjectId = initialSession?.user?.id ?? null;
++        const persistedScopePrincipalId =
++          useScopeSessionStore.getState().snapshot?.principalId ??
++          useStore.getState().user?.id ??
++          null;
++        if (persistedScopePrincipalId && persistedScopePrincipalId !== initialSubjectId) {
++          clearDerivedIdentityState();
++        }
+         setSession(initialSession);
+         setAuthSession(initialSession);
+-        previousUserIdRef.current = initialSession?.user?.id ?? null;
++        previousUserIdRef.current = initialSubjectId;
+ 
+         const sessionMode = getSessionIdentityMode(initialSession);
+         if (sessionMode === 'authenticated') {
+@@ -282,19 +297,27 @@ export function useAuthLifecycle() {
+           clearDerivedIdentityState();
+         }
+       } catch (error) {
++        if (!isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current))
++          return;
+         if (error instanceof APIError) {
+           if (
+             error.message?.includes('Refresh Token') ||
+             (error as { status?: number }).status === 400
+           ) {
+             await authAPI.signOut({ scope: 'local' });
++            if (
++              !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
++            )
++              return;
+             setSession(null);
+             setAuthSession(null);
+           }
+         }
+       } finally {
+-        setLoading(false);
+-        setAuthSessionResolved(true);
++        if (isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)) {
++          setLoading(false);
++          setAuthSessionResolved(true);
++        }
+       }
+     };
+ 
+@@ -308,32 +331,37 @@ export function useAuthLifecycle() {
+       setSession(currentSession);
+       setAuthSession(currentSession);
+       setAuthSessionResolved(true);
++      setLoading(false);
+ 
+       const currentUserId = currentSession?.user?.id ?? null;
++      const isSubjectChanged = currentUserId !== previousUserIdRef.current;
+       const isTokenOnlyRefresh =
+         event === 'TOKEN_REFRESHED' &&
+         currentUserId !== null &&
+         currentUserId === previousUserIdRef.current;
+ 
+       previousUserIdRef.current = currentUserId;
++      const currentMode = getSessionIdentityMode(currentSession);
++      if (isSubjectChanged || currentMode !== 'authenticated') {
++        identityResolutionGenerationRef.current += 1;
++        setIsProfileResolving(false);
++        setIsProfileLoading(false);
++        setProfileError(null);
++      }
+ 
+-      if (isTokenOnlyRefresh) {
+-        // Only the auth token refreshed in the background for the same active user.
+-        // Skip redundant remote RPCs to preserve radio bandwidth and battery.
++      if (isSubjectChanged) {
++        clearDerivedIdentityState();
++      }
++
++      if (isTokenOnlyRefresh && currentMode === 'authenticated') {
++        await retainRefreshedDeviceSession(currentSession, authEventGenerationRef.current);
+         return;
+       }
+ 
+-      const currentMode = getSessionIdentityMode(currentSession);
+       if (currentMode === 'authenticated') {
+         await fetchAndSetUserProfile(currentSession);
+       } else if (currentSession?.user) {
+-        setUser(null);
+-        setPerspective(null);
+-        setAvailableBonds([]);
+-        setSchoolType(null);
+-        setOnboardingCompleted(false);
+-        setIdentityAvailability('unknown');
+-        setAccountLifecycleStatus(null);
++        clearDerivedIdentityState();
+       } else if (event === 'SIGNED_OUT') {
+         clearAuthSubject();
+         clearDerivedIdentityState();
+@@ -363,6 +391,8 @@ export function useAuthLifecycle() {
+     });
+ 
+     return () => {
++      authEventGenerationRef.current += 1;
++      identityResolutionGenerationRef.current += 1;
+       subscription.unsubscribe();
+       appStateSubscription.remove();
+     };
+@@ -371,12 +401,10 @@ export function useAuthLifecycle() {
+     setAuthSessionResolved,
+     clearDerivedIdentityState,
+     fetchAndSetUserProfile,
++    retainRefreshedDeviceSession,
+     refreshProfile,
+     setDemoMode,
+     setUser,
+-    setPerspective,
+-    setAvailableBonds,
+-    setSchoolType,
+     setOnboardingCompleted,
+   ]);
+ 

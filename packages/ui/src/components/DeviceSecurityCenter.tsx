@@ -1,4 +1,6 @@
-import { useAuthStore, useDeviceSecurity } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useDeviceSecurity } from '@repo/core/logic';
 import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
@@ -16,7 +18,7 @@ import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useCallback, useMemo, useOptimistic, useReducer, useTransition } from 'react';
+import React, { useCallback, useMemo, useReducer } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { BrandPulse } from './BrandPulse';
 
@@ -145,7 +147,7 @@ const SectionHeader = React.memo(
 // ── Main Component ──────────────────────────────────────────────────────────
 
 export default function DeviceSecurityCenter({ compact = false }: { compact?: boolean }) {
-  const isOnline = useAuthStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const {
     currentDevice,
     devices,
@@ -154,7 +156,6 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
     sessions,
     loading,
     error,
-    refresh,
     syncPending,
     healthScore,
     unlinkDevice,
@@ -163,34 +164,13 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
 
   const { showToast } = useSanctuaryToast();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [_isPending, startTransition] = useTransition();
-
-  // ✅ 2026 Optimistic Updates: The device vanishes instantly from the trust list
-  const [optimisticDevices, addOptimisticDevice] = useOptimistic(
-    devices,
-    (state, deviceIdToRemove) => state.filter((d) => d.deviceId !== deviceIdToRemove),
-  );
-
-  const [optimisticSessions, addOptimisticSession] = useOptimistic(
-    sessions,
-    (state, sessionIdToRevoke) =>
-      state.map((s) =>
-        s.sessionId === sessionIdToRevoke ? { ...s, status: 'revoked' as const } : s,
-      ),
-  );
-
-  const { busyDeviceId, busySessionId, pendingConfirm } = state;
+  const { pendingConfirm } = state;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const performUnlinkDevice = useCallback(
     async (deviceId: string, isCurrent: boolean) => {
       dispatch({ type: 'setBusyDeviceId', value: deviceId });
-      // Optimistically remove
-      startTransition(() => {
-        addOptimisticDevice(deviceId);
-      });
-
       try {
         const result = await unlinkDevice(deviceId);
         hapticSuccess();
@@ -201,7 +181,6 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
               : 'Device removed successfully.',
           type: 'success',
         });
-        await refresh();
       } catch (_err) {
         hapticError();
         showToast?.({ message: 'Failed to remove device.', type: 'error' });
@@ -209,16 +188,12 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
         dispatch({ type: 'setBusyDeviceId', value: null });
       }
     },
-    [dispatch, addOptimisticDevice, unlinkDevice, syncPending, showToast, refresh],
+    [dispatch, unlinkDevice, syncPending, showToast],
   );
 
   const performRevokeSession = useCallback(
     async (sessionId: string, isCurrent: boolean) => {
       dispatch({ type: 'setBusySessionId', value: sessionId });
-      startTransition(() => {
-        addOptimisticSession(sessionId);
-      });
-
       try {
         const result = await revokeSession(sessionId);
         hapticSuccess();
@@ -230,7 +205,6 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
               : 'Session revoked.',
           type: 'success',
         });
-        await refresh();
       } catch (_err) {
         hapticError();
         showToast?.({ message: 'Failed to revoke session.', type: 'error' });
@@ -238,7 +212,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
         dispatch({ type: 'setBusySessionId', value: null });
       }
     },
-    [dispatch, addOptimisticSession, revokeSession, showToast, refresh],
+    [dispatch, revokeSession, showToast],
   );
 
   const handleAction = useCallback(
@@ -249,7 +223,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
         dispatch({ type: 'setPendingConfirm', value: action });
         return;
       }
-      // Perform directly with optimistic feedback
+      // The confirmed server summary remains visible until a command settles.
       if (action.type === 'unlinkDevice') performUnlinkDevice(action.deviceId, action.isCurrent);
       if (action.type === 'revokeSession') performRevokeSession(action.sessionId, action.isCurrent);
     },
@@ -289,10 +263,10 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
       subtitle: 'Managed trust across your identity.',
       icon: Laptop,
     });
-    if (optimisticDevices.length === 0) {
+    if (devices.length === 0) {
       items.push({ type: 'EMPTY', message: 'No other linked devices found.' });
     } else {
-      optimisticDevices.forEach((d) => {
+      devices.forEach((d) => {
         items.push({ type: 'DEVICE_CARD', device: d });
       });
     }
@@ -304,7 +278,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
       subtitle: 'Active access keys.',
       icon: Lock,
     });
-    optimisticSessions
+    sessions
       .filter((s) => s.status === 'active')
       .forEach((s) => {
         items.push({ type: 'SESSION_CARD', session: s });
@@ -345,8 +319,8 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
     syncPending,
     healthScore,
     currentDevice,
-    optimisticDevices,
-    optimisticSessions,
+    devices,
+    sessions,
     events,
     authEvents,
   ]);

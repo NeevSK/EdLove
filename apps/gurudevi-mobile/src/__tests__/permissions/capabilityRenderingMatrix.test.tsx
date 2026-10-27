@@ -37,7 +37,11 @@ const mocks = vi.hoisted(() => {
   return {
     authState,
     authStore,
-    perspectiveState: { activePerspective: { kind: 'personal' as const } },
+    scopeState: {
+      snapshot: null as
+        | null
+        | { principalId: string; activePerspective: { kind: string }; activeBond: null; availableBonds: [] },
+    },
     tenantState: { schoolType: null },
     featureState: { flags: {} },
     cedarState: {
@@ -55,9 +59,10 @@ const mocks = vi.hoisted(() => {
 });
 
 vi.mock('@repo/core/store/useAuthStore', () => ({ useAuthStore: mocks.authStore }));
-vi.mock('@repo/core/store/usePerspectiveStore', () => ({
-  usePerspectiveStore: (selector: (state: typeof mocks.perspectiveState) => unknown) =>
-    selector(mocks.perspectiveState),
+vi.mock('@repo/core/store/scopeSession', () => ({
+  PERSONAL_SCOPE_PERSPECTIVE: { id: 'personal', kind: 'personal', displayName: 'Personal Sanctuary' },
+  useScopeSessionStore: (selector: (state: typeof mocks.scopeState) => unknown) =>
+    selector(mocks.scopeState),
 }));
 vi.mock('@repo/core/store/useTenantStore', () => ({
   useTenantStore: (selector: (state: typeof mocks.tenantState) => unknown) =>
@@ -71,8 +76,8 @@ vi.mock('@repo/core/store/useCedarDecisionStore', () => ({
   useCedarDecisionStore: (selector: (state: typeof mocks.cedarState) => unknown) =>
     selector(mocks.cedarState),
 }));
-vi.mock('@repo/core/store/useEntitlementStore', () => ({
-  useEntitlementStore: () => mocks.entitlementState,
+vi.mock('@repo/core/hooks/useEntitlementQuery', () => ({
+  useEntitlementQuery: () => mocks.entitlementState,
 }));
 
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
@@ -110,6 +115,7 @@ describe('Capability rendering matrix (component-real scenarios)', () => {
     mocks.entitlementState.manifestLoaded = false;
     mocks.entitlementState.readiness = 'unknown';
     mocks.cedarState.snapshotLoaded = false;
+    mocks.scopeState.snapshot = null;
   });
 
   it.each(capacities)('renders baseline read UI for %s capacity', async (capacity) => {
@@ -151,5 +157,17 @@ describe('Capability rendering matrix (component-real scenarios)', () => {
     mocks.authState.user.citizenship = 'SECOND_CLASS';
 
     await expect(renderDecision('manage', 'FounderDashboard')).resolves.toBe('blocked');
+  });
+
+  it('does not treat an unbonded workspace lens as membership', async () => {
+    mocks.authState.user.capacity = 'student';
+    mocks.scopeState.snapshot = {
+      principalId: 'user-1',
+      activePerspective: { kind: 'institutional' },
+      activeBond: null,
+      availableBonds: [],
+    };
+
+    await expect(renderDecision('manage', 'AdminDashboard')).resolves.toBe('blocked');
   });
 });

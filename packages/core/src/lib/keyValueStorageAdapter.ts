@@ -8,11 +8,7 @@ import type { KeyValueStorage } from '@repo/core/logic/ports/storage';
 export function createKeyValueStorageAdapter(storage: RuntimeStorage): KeyValueStorage {
   return {
     getItem: async (key) => (await storage.getStringAsync(key)) ?? null,
-    setItem: (key, value) => {
-      storage.set(key, value);
-    },
-    removeItem: (key) => {
-      storage.delete(key);
-    },
+    setItem: (key, value) => storage.setAsync(key, value),
+    removeItem: (key) => storage.deleteAsync(key),
   };
 }

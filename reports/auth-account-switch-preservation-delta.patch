@@ -1,0 +1,201 @@
+diff --git a/packages/core/src/accounts/__tests__/accountTransition.test.ts b/packages/core/src/accounts/__tests__/accountTransition.test.ts
+index 68e58ec2f..b6715cc11 100644
+--- a/packages/core/src/accounts/__tests__/accountTransition.test.ts
++++ b/packages/core/src/accounts/__tests__/accountTransition.test.ts
+@@ -1,10 +1,14 @@
+ import type { QueuedMutation } from '@repo/core/lib/sync/types';
+ import { beforeEach, describe, expect, it, vi } from 'vitest';
+ 
+-const mocks = vi.hoisted(() => ({ clearPowerSyncAccount: vi.fn() }));
++const mocks = vi.hoisted(() => ({
++  clearPowerSyncAccount: vi.fn(),
++  disconnectPowerSync: vi.fn(),
++}));
+ 
+ vi.mock('../../adapters/powersync/database', () => ({
+   clearPowerSyncAccount: mocks.clearPowerSyncAccount,
++  disconnectPowerSync: mocks.disconnectPowerSync,
+ }));
+ 
+ import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+@@ -45,14 +49,15 @@ describe('accountTransition', () => {
+       outgoingPrincipalId: 'account-a',
+       incomingPrincipalId: 'account-b',
+       disposition: 'preserve-and-quarantine',
+-      clearReplicatedData: true,
++      clearReplicatedData: false,
+     });
+ 
+-    expect(mocks.clearPowerSyncAccount).toHaveBeenCalledOnce();
++    expect(mocks.disconnectPowerSync).toHaveBeenCalledOnce();
++    expect(mocks.clearPowerSyncAccount).not.toHaveBeenCalled();
+     expect(outcome).toMatchObject({
+       quarantinedCommandCount: 1,
+       untouchedUnboundCommandCount: 1,
+-      replicatedDataCleared: true,
++      replicatedDataCleared: false,
+     });
+     expect(useMutationQueue.getState().queue).toEqual([
+       expect.objectContaining({ id: 'outgoing', commandState: 'auth_paused' }),
+@@ -92,8 +97,8 @@ describe('accountTransition', () => {
+     ]);
+   });
+ 
+-  it('does not change command ownership when clearing replicated data fails', async () => {
+-    mocks.clearPowerSyncAccount.mockRejectedValueOnce(new Error('local database unavailable'));
++  it('does not change command ownership when closing the outgoing runtime fails', async () => {
++    mocks.disconnectPowerSync.mockRejectedValueOnce(new Error('local database unavailable'));
+     useMutationQueue.setState({ queue: [command('outgoing', 'account-a')], isSyncing: true });
+ 
+     await expect(
+@@ -101,7 +106,7 @@ describe('accountTransition', () => {
+         outgoingPrincipalId: 'account-a',
+         incomingPrincipalId: 'account-b',
+         disposition: 'preserve-and-quarantine',
+-        clearReplicatedData: true,
++        clearReplicatedData: false,
+       }),
+     ).rejects.toThrow('local database unavailable');
+ 
+@@ -110,4 +115,34 @@ describe('accountTransition', () => {
+       queue: [expect.objectContaining({ id: 'outgoing', commandState: 'queued' })],
+     });
+   });
++
++  it('rejects a contradictory preservation request before cleanup or outbox mutation', async () => {
++    const outgoing = command('outgoing', 'account-a');
++    useMutationQueue.setState({ queue: [outgoing], isSyncing: true });
++    await expect(
++      accountTransition.transition({
++        outgoingPrincipalId: 'account-a',
++        incomingPrincipalId: 'account-b',
++        disposition: 'preserve-and-quarantine',
++        clearReplicatedData: true,
++      }),
++    ).rejects.toThrow('Preserving account work cannot clear its PowerSync database.');
++    expect(mocks.clearPowerSyncAccount).not.toHaveBeenCalled();
++    expect(mocks.disconnectPowerSync).not.toHaveBeenCalled();
++    expect(useMutationQueue.getState()).toMatchObject({ queue: [outgoing], isSyncing: true });
++  });
++
++  it('clears the database only for an explicit discard request', async () => {
++    useMutationQueue.setState({ queue: [command('outgoing', 'account-a')] });
++    const result = await accountTransition.transition({
++      outgoingPrincipalId: 'account-a',
++      incomingPrincipalId: null,
++      disposition: 'discard',
++      clearReplicatedData: true,
++    });
++    expect(mocks.clearPowerSyncAccount).toHaveBeenCalledOnce();
++    expect(mocks.disconnectPowerSync).not.toHaveBeenCalled();
++    expect(result).toMatchObject({ replicatedDataCleared: true, discardedCommandCount: 1 });
++    expect(useMutationQueue.getState().queue).toEqual([]);
++  });
+ });
+diff --git a/packages/core/src/accounts/__tests__/deviceAccounts.test.ts b/packages/core/src/accounts/__tests__/deviceAccounts.test.ts
+index 99af7d7e1..2c326e775 100644
+--- a/packages/core/src/accounts/__tests__/deviceAccounts.test.ts
++++ b/packages/core/src/accounts/__tests__/deviceAccounts.test.ts
+@@ -19,6 +19,7 @@ const mockUpsertCurrentSecuritySession = vi.fn();
+ const mockGetProfile = vi.fn();
+ const mockGetStoredSessionForAccount = vi.fn();
+ const mockClearPowerSyncAccount = vi.fn();
++const mockDisconnectPowerSync = vi.fn();
+ 
+ vi.mock('../../lib/storage', () => ({
+   storage: {
+@@ -83,9 +84,10 @@ vi.mock('../../lib/accountPin', () => ({
+ 
+ vi.mock('../../adapters/powersync/database', () => ({
+   clearPowerSyncAccount: (...args: unknown[]) => mockClearPowerSyncAccount(...args),
++  disconnectPowerSync: (...args: unknown[]) => mockDisconnectPowerSync(...args),
+ }));
+ 
+-import { setActiveAccountId } from '../../lib/accountScope';
++import { getActiveAccountId, setActiveAccountId } from '../../lib/accountScope';
+ import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+ import { deviceAccounts } from '../deviceAccounts';
+ 
+@@ -244,7 +246,8 @@ describe('deviceAccounts', () => {
+ 
+     await deviceAccounts.switchTo('account-2');
+ 
+-    expect(mockClearPowerSyncAccount).toHaveBeenCalledOnce();
++    expect(mockDisconnectPowerSync).toHaveBeenCalledOnce();
++    expect(mockClearPowerSyncAccount).not.toHaveBeenCalled();
+     expect(useMutationQueue.getState().queue).toEqual([
+       expect.objectContaining({ id: 'account-1-command', commandState: 'auth_paused' }),
+       expect.objectContaining({ id: 'account-2-command', commandState: 'queued' }),
+@@ -269,6 +272,28 @@ describe('deviceAccounts', () => {
+     expect(mockSignOut).toHaveBeenCalledWith({ scope: 'local' });
+   });
+ 
++  it.each(['runtime-close', 'incoming-session'] as const)(
++    'retains the outgoing account and its database when %s fails',
++    async (failure) => {
++      setActiveAccountId('account-1');
++      mockGetStoredSessionForAccount.mockResolvedValue({
++        access_token: validAccessToken,
++        refresh_token: validRefreshToken,
++      });
++      const error = new Error('synthetic switch failure');
++      if (failure === 'runtime-close') mockDisconnectPowerSync.mockRejectedValueOnce(error);
++      else mockSetSession.mockRejectedValueOnce(error);
++
++      await expect(deviceAccounts.switchTo('account-2')).rejects.toThrow(error);
++
++      expect(getActiveAccountId()).toBe('account-1');
++      expect(mockClearPowerSyncAccount).not.toHaveBeenCalled();
++      expect(mockDisconnectPowerSync).toHaveBeenCalledOnce();
++      expect(mockSetSession).toHaveBeenCalledTimes(failure === 'runtime-close' ? 0 : 1);
++      expect(mockTouchCurrentDevice).not.toHaveBeenCalled();
++    },
++  );
++
+   it('falls back to the next stored account when removing the active one', async () => {
+     setActiveAccountId('account-1');
+     mockGetInstallId.mockResolvedValue('install-1');
+diff --git a/packages/core/src/accounts/accountTransition.ts b/packages/core/src/accounts/accountTransition.ts
+index 49755c607..df0fd4b63 100644
+--- a/packages/core/src/accounts/accountTransition.ts
++++ b/packages/core/src/accounts/accountTransition.ts
+@@ -1,4 +1,4 @@
+-import { clearPowerSyncAccount } from '@repo/core/adapters/powersync/database';
++import { clearPowerSyncAccount, disconnectPowerSync } from '@repo/core/adapters/powersync/database';
+ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+ import type {
+   AccountTransitionOutcome,
+@@ -12,6 +12,9 @@ function ownedByPrincipal(userId: string | undefined, principalId: string | null
+ 
+ class LocalAccountTransitionAdapter implements AccountTransitionPort {
+   async transition(request: AccountTransitionRequest): Promise<AccountTransitionOutcome> {
++    if (request.disposition === 'preserve-and-quarantine' && request.clearReplicatedData)
++      throw new Error('Preserving account work cannot clear its PowerSync database.');
++
+     if (request.outgoingPrincipalId === request.incomingPrincipalId) {
+       return {
+         disposition: request.disposition,
+@@ -24,7 +27,9 @@ class LocalAccountTransitionAdapter implements AccountTransitionPort {
+       };
+     }
+ 
+-    if (request.clearReplicatedData) {
++    if (request.disposition === 'preserve-and-quarantine') {
++      await disconnectPowerSync();
++    } else if (request.clearReplicatedData) {
+       await clearPowerSyncAccount();
+     }
+ 
+diff --git a/packages/core/src/accounts/deviceAccounts.ts b/packages/core/src/accounts/deviceAccounts.ts
+index 346226900..895faa801 100644
+--- a/packages/core/src/accounts/deviceAccounts.ts
++++ b/packages/core/src/accounts/deviceAccounts.ts
+@@ -239,7 +239,7 @@ export const deviceAccounts = {
+       outgoingPrincipalId: previousAccountId,
+       incomingPrincipalId: accountId,
+       disposition: 'preserve-and-quarantine',
+-      clearReplicatedData: true,
++      clearReplicatedData: false,
+     });
+ 
+     await setActiveAccount(accountId);

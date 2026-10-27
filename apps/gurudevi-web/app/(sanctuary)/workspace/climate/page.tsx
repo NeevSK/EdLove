@@ -57,6 +57,27 @@ export default async function ClimatePage() {
     );
   }
 
+  const isAuthorized =
+    entry.activeCapacity === 'teacher' ||
+    entry.activeCapacity === 'principal' ||
+    entry.activeCapacity === 'assistantPrincipal' ||
+    entry.activeCapacity === 'gradeHead' ||
+    entry.activeCapacity === 'sectionHead' ||
+    entry.activeCapacity === 'admin' ||
+    entry.activeCapacity === 'founder' ||
+    entry.activeCapacity === 'developer' ||
+    (entry.activeScope?.roles?.some((r) => ['teacher', 'principal', 'admin', 'founder'].includes(r)) ?? false);
+
+  if (!isAuthorized) {
+    return (
+      <ClimateState
+        displayName={entry.displayName}
+        title="Access restricted"
+        detail="Classroom climate sensing and psychological pulse sensing are reserved for educators and administrators."
+      />
+    );
+  }
+
   return (
     <SanctuaryShell
       displayName={entry.displayName}

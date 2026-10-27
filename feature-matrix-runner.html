@@ -661,13 +661,13 @@
     "schemaTable": "MoodLog @ schema.zmodel:929 (table mood_logs)",
     "seamHealth": {
       "schema": "healthy",
-      "api": "warning",
+      "api": "healthy",
       "client": "healthy",
       "data": "healthy",
       "nav": "healthy"
     },
-    "discrepancy": "REST-UNMOUNTED",
-    "discrepancyNote": "Hono REST /self/mood was unmounted in e383ef01; needs migration to self.logMood over typed oRPC.",
+    "discrepancy": "SEAM-CLEAN",
+    "discrepancyNote": "Migrated to typed oRPC self.logMood and verified with sanctuary-api vitest suite.",
     "notes": "Interactive emotional state visualization over time. Native component has touch-responsive petal scaling and lotus unfold animation. Omnichannel WhatsApp text check-in planned via conversational agent."
   },
   {
@@ -885,12 +885,12 @@
     "seamHealth": {
       "schema": "healthy",
       "api": "warning",
-      "client": "warning",
-      "data": "warning",
+      "client": "healthy",
+      "data": "healthy",
       "nav": "healthy"
     },
-    "discrepancy": "UI-UNWIRED",
-    "discrepancyNote": "Component exists in packages/self, but web atlas flags student-goals as UI-UNWIRED on web.",
+    "discrepancy": "SEAM-CLEAN",
+    "discrepancyNote": "Wired into SelfFloor.tsx with useStudentGoals browser adapter.",
     "notes": "Personal quest log for academic and personal intentions. UI un-wired in web atlas, working in mobile with local state."
   },
   {
@@ -1191,13 +1191,13 @@
     "schemaTable": "ThoughtRecord @ schema.zmodel:958 (table thought_records)",
     "seamHealth": {
       "schema": "healthy",
-      "api": "warning",
+      "api": "healthy",
       "client": "healthy",
-      "data": "warning",
+      "data": "healthy",
       "nav": "healthy"
     },
-    "discrepancy": "REST-UNMOUNTED",
-    "discrepancyNote": "ThoughtRecord model is in schema.zmodel:958, but sanctuary-api endpoints were marked [NO-CLIENT] in atlas.",
+    "discrepancy": "SEAM-CLEAN",
+    "discrepancyNote": "Verified with sanctuary-api oRPC saveThoughtRecord and web ReframeWizard.",
     "notes": "Guided CBT thought record: captures automatic negative thoughts, identifies cognitive traps (catastrophizing, all-or-nothing), and formulates balanced reframes."
   },
   {

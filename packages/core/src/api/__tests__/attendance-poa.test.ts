@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { IStorage } from '../../logic/interfaces/storage.port';
 import { storage } from '../../logic/managers/StorageManager';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useTemporalStore } from '../../store/useTemporalStore';
@@ -24,16 +25,19 @@ import { attendanceAPI } from '../orchestration/operations';
 
 const mockStorage = {
   set: vi.fn(),
+  setAsync: vi.fn(async () => undefined),
   getString: vi.fn(),
   getStringAsync: vi.fn(),
   getBoolean: vi.fn(),
   getNumber: vi.fn(),
   delete: vi.fn(),
+  deleteAsync: vi.fn(async () => undefined),
   clearAll: vi.fn(),
+  clearAllAsync: vi.fn(async () => undefined),
   contains: vi.fn(),
-};
+} satisfies IStorage;
 
-storage.registerAdapter(mockStorage as any);
+storage.registerAdapter(mockStorage);
 
 vi.mock('../supabase', () => ({
   supabaseClient: {
@@ -79,7 +83,7 @@ describe('Attendance POA Orchestration', () => {
     });
     useTemporalStore.setState({
       phase: 'present',
-      isOffline: false,
+      readPolicy: 'live',
     });
   });
 

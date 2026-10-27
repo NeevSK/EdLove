@@ -50,6 +50,7 @@ import {
 import { createAdRewardRoutes } from './routes/adRewards';
 import { createAuthCredentialRoutes } from './routes/authCredentials';
 import { createAuthGatewayRoutes } from './routes/authGateway';
+import { createAuthSyncRoutes } from './routes/authSync';
 import { registerCanonicalV1Routes } from './routes/canonicalV1';
 import { createDurableAgentRoutes } from './routes/durableAgents';
 import { eventsStreamRoutes } from './routes/eventsStream';
@@ -323,6 +324,7 @@ app.use(
     allowHeaders: [
       'Content-Type',
       'Authorization',
+      'x-expected-auth-subject',
       'x-school-id',
       'x-capacity',
       'x-active-bond-id',
@@ -333,6 +335,10 @@ app.use(
       'x-device-trust',
       'x-network-zone',
       'x-idempotency-key',
+      'idempotency-key',
+      'x-pqc-kem',
+      'x-sovereign-epoch',
+      'x-poa-sig',
       'traceparent',
       'tracestate',
     ],
@@ -966,6 +972,7 @@ app.all('/api/openapi/*', async (c) => {
 app.route('/api', createAdRewardRoutes(getEnv));
 app.route('/api/auth', createAuthGatewayRoutes());
 app.route('/api/auth', createAuthCredentialRoutes());
+app.route('/api/auth', createAuthSyncRoutes());
 app.route('/api', eventsStreamRoutes);
 app.route('/api/mcp', createMcpDoor());
 app.route('/api/ws', createWebSocketDoor());

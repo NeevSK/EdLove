@@ -1,7 +1,9 @@
+import { useResources } from '@repo/classroom/hooks/useResources';
 import { api } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { CLASSROOM_RESOURCE_SCOPE } from '@repo/core/lib';
-import { useStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback';
+import { useAuthStore } from '@repo/core/store';
 import type { ClassroomResource } from '@repo/core/types';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { File, FileText, Pin, Plus, Trash2 } from '@repo/ui/icons';
@@ -26,7 +28,6 @@ import { confirmAction } from '@repo/ui/utils/dialogs';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useResources } from '@repo/classroom/hooks/useResources';
 
 interface ResourcesViewProps {
   classroomId: string;
@@ -34,10 +35,16 @@ interface ResourcesViewProps {
 }
 export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewProps) {
   const { t } = useTranslation();
-  const showToast = useStore((state) => state.showToast);
-  const user = useStore((state) => state.user);
+
+  const user = useAuthStore((state) => state.user);
   // Resilient Data Hook
-  const { resources, isLoading, error: resourceError, refreshData, setResources } = useResources(classroomId);
+  const {
+    resources,
+    isLoading,
+    error: resourceError,
+    refreshData,
+    setResources,
+  } = useResources(classroomId);
   const [filterType, setFilterType] = useState<'all' | 'link' | 'pdf' | 'note'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
   // Form State
@@ -210,7 +217,12 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                 <Text className="flex-1 text-sm text-phaseText-primary" accessibilityRole="alert">
                   {resourceError} Showing the last available resources.
                 </Text>
-                <Button variant="outline" size="sm" onPress={() => void refreshData()} accessibilityLabel="Retry loading resources">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={() => void refreshData()}
+                  accessibilityLabel="Retry loading resources"
+                >
                   <ButtonText>Retry</ButtonText>
                 </Button>
               </HStack>
@@ -230,7 +242,11 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
               onLongPress={() => resource.url && handleOpenResourceOptions(resource)}
               accessibilityRole="button"
               accessibilityLabel={`${resource.title}${resource.is_pinned ? ', pinned' : ''}`}
-              accessibilityHint={resource.url ? 'Opens the shared resource. Long press for link options.' : 'Opens the resource details.'}
+              accessibilityHint={
+                resource.url
+                  ? 'Opens the shared resource. Long press for link options.'
+                  : 'Opens the resource details.'
+              }
               className={`p-4 bg-phase-surface rounded-generous border border-phase-canvas shadow-sm overflow-hidden ${resource.is_pinned ? 'border-l-4 border-l-templeGold' : ''}`}
             >
               <HStack className="justify-between items-center">

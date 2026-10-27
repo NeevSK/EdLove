@@ -175,3 +175,16 @@ export const formTemplatesAPI = {
 };
 
 void formsContract;
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_OFFICIAL_CIRCULARS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'documents',
+  ghostMethods: ['getOfficialCirculars'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_OFFICIAL_CIRCULARS,
+});
+
+export type { MockOfficialCircularDoc } from '@repo/core/api/mockData';
+

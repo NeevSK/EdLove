@@ -49,8 +49,8 @@ WITH CHECK (true);
 CREATE POLICY "Admins have full access to climate data"
 ON public.edu_school_climate
 TO authenticated
-USING (auth.jwt() ->> 'authority' = 'admin')
-WITH CHECK (auth.jwt() ->> 'authority' = 'admin');
+USING ((current_setting('request.jwt.claims', true)::jsonb ->> 'authority') = 'admin')
+WITH CHECK ((current_setting('request.jwt.claims', true)::jsonb ->> 'authority') = 'admin');
 
 -- 5. Trigger for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()

@@ -6,15 +6,15 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
 import { ArrowRight, GraduationCap, ShieldCheck } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-import { router } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 interface InvitationWelcomeScreenProps {
   route?: {
     params: {
-      capacity: string;
-      schoolName: string;
+      capacity?: string;
+      schoolName?: string;
     };
   };
 }
@@ -22,8 +22,9 @@ interface InvitationWelcomeScreenProps {
 export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScreenProps) {
   const { showToast } = useSanctuaryToast();
   const { t } = useTranslation();
-  const capacity = route?.params?.capacity || 'User';
-  const schoolName = route?.params?.schoolName || 'the Sanctuary';
+  const localParams = useLocalSearchParams<{ capacity?: string; schoolName?: string }>();
+  const capacity = localParams.capacity || route?.params?.capacity || 'User';
+  const schoolName = localParams.schoolName || route?.params?.schoolName || 'the Sanctuary';
 
   const handleJoin = async () => {
     try {

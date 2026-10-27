@@ -57,6 +57,26 @@ export default async function TuitionPage() {
     );
   }
 
+  const isAuthorized =
+    entry.activeCapacity === 'principal' ||
+    entry.activeCapacity === 'assistantPrincipal' ||
+    entry.activeCapacity === 'admin' ||
+    entry.activeCapacity === 'founder' ||
+    entry.activeCapacity === 'developer' ||
+    entry.activeCapacity === 'guardian' ||
+    entry.activeCapacity === 'parent' ||
+    (entry.activeScope?.roles?.some((r) => ['principal', 'admin', 'founder', 'guardian'].includes(r)) ?? false);
+
+  if (!isAuthorized) {
+    return (
+      <TuitionState
+        displayName={entry.displayName}
+        title="Access restricted"
+        detail="Tuition and institutional fee ledgers are restricted to school leadership and verified guardians."
+      />
+    );
+  }
+
   return (
     <SanctuaryShell
       displayName={entry.displayName}

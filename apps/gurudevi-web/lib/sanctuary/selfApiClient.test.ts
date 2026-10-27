@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { getSession } = vi.hoisted(() => ({ getSession: vi.fn() }));
+const { getSession, getClaims } = vi.hoisted(() => ({ getSession: vi.fn(), getClaims: vi.fn() }));
+const canonicalAccountId = '01234567-89ab-8101-8000-010203040506';
 
 vi.mock('../supabase/browser', () => ({
-  createBrowserSupabaseClient: () => ({ auth: { getSession } }),
+  createBrowserSupabaseClient: () => ({ auth: { getSession, getClaims } }),
 }));
 
 import { requestAccountSelfProcedure } from './selfApiClient';
@@ -14,6 +15,15 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 describe('account Self browser adapter', () => {
   beforeEach(() => {
     getSession.mockReset();
+    getClaims.mockReset().mockImplementation(async () => ({
+      data: {
+        claims: {
+          sub: (await getSession()).data.session.user.id,
+          canonical_account_id: canonicalAccountId,
+        },
+      },
+      error: null,
+    }));
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example/');
     vi.stubGlobal('fetch', vi.fn());
   });
@@ -138,7 +148,7 @@ describe('account Self browser adapter', () => {
       JSON.stringify({
         json: {
           body: {
-            user_id: 'verified-account',
+            user_id: canonicalAccountId,
             mood: 'calm',
             mood_score: 4,
             note: null,
@@ -167,6 +177,32 @@ describe('account Self browser adapter', () => {
         'Invalid.',
       ),
     ).rejects.toThrow('Your secure session has ended. Please sign in again.');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { sub: 'credential-a' },
+    { sub: 'credential-b', canonical_account_id: canonicalAccountId },
+    { sub: 'credential-a', canonical_account_id: '123e4567-e89b-42d3-a456-426614174020' },
+  ])('rejects a missing, mismatched or legacy account claim before writing: %j', async (claims) => {
+    getSession.mockResolvedValue({
+      data: {
+        session: {
+          access_token: 'account-token',
+          user: { id: 'credential-a', is_anonymous: false },
+        },
+      },
+      error: null,
+    });
+    getClaims.mockResolvedValue({ data: { claims }, error: null });
+    await expect(
+      requestAccountSelfProcedure(
+        'burnJournal',
+        { body: { content: 'private thought' } },
+        isRecord,
+        'Invalid.',
+      ),
+    ).rejects.toThrow('account identity could not be verified');
     expect(fetch).not.toHaveBeenCalled();
   });
 

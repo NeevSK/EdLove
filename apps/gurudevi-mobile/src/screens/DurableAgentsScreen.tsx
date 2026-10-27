@@ -1,8 +1,8 @@
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Pressable } from '@repo/ui/primitives';
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,

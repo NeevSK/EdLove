@@ -1,6 +1,13 @@
-import type { GovernorConfig, GovernorEvent, RuntimePort, VergerPlatform } from '@repo/verger-core';
+import type {
+  VergerConfig,
+  VergerEvent,
+  RuntimePort,
+  SensorId,
+  VergerPlatform,
+} from '@repo/verger-core';
 import { NativeModule, requireOptionalNativeModule } from 'expo';
 import {
+  FRAME_WINDOW_MS,
   type NativeCapacity,
   type NativeExit,
   type NativeLever,
@@ -8,7 +15,7 @@ import {
   senseConfigFrom,
   toCapacityFacts,
   toExitRecords,
-  toGovernorEvent,
+  toVergerEvent,
   type VergerAndroidEvents,
 } from './src/mapping';
 
@@ -17,20 +24,40 @@ export * from './src/mapping';
 declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
   readCapacity(): NativeCapacity;
   readExits(sinceWallMs: number): NativeExit[] | null;
+  readProcessId(): number;
   start(config: NativeSenseConfig): void;
+  setSensors(sensors: Readonly<Record<SensorId, boolean>>): void;
   stop(): void;
   setRefreshCap(hz: number | null): void;
   setCpuBoost(enabled: boolean): void;
   readTotals(): { frames?: number; missedVsyncs?: number; costMs?: number };
 }
 
-/** Null on iOS, on web, and in any build that predates the module. */
-const native = requireOptionalNativeModule<VergerNativeModule>('Verger');
+/** What the module senses itself; long tasks come from React Native, in JavaScript. */
+const NATIVE_SENSORS: readonly SensorId[] = ['frames', 'threads', 'memory', 'thermal', 'power', 'network'];
 
-export const isVergerAndroidAvailable = native !== null;
+let looked = false;
+let found: VergerNativeModule | null = null;
+
+/**
+ * The native module, looked up on first use and never at import: a launch the kill switch keeps
+ * off never touches it (as `VergerRoot` promises). Null on iOS, on web, and in any build that
+ * predates the module.
+ */
+function nativeModule(): VergerNativeModule | null {
+  if (!looked) {
+    found = requireOptionalNativeModule<VergerNativeModule>('Verger');
+    looked = true;
+  }
+  return found;
+}
+
+export function isVergerAndroidAvailable(): boolean {
+  return nativeModule() !== null;
+}
 
 export function readFrameTotals(): { frames: number; missedVsyncs: number; costMs: number } {
-  const totals = native?.readTotals() ?? {};
+  const totals = nativeModule()?.readTotals() ?? {};
   return {
     frames: totals.frames ?? 0,
     missedVsyncs: totals.missedVsyncs ?? 0,
@@ -47,15 +74,19 @@ export function readFrameTotals(): { frames: number; missedVsyncs: number; costM
 export function createVergerAndroidPlatform(
   onLever?: (event: NativeLever) => void,
 ): VergerPlatform {
+  const native = nativeModule();
   return {
     readCapacity: () => toCapacityFacts(native?.readCapacity()),
     ...(native
       ? {
           readExits: (sinceWallMs: number) => toExitRecords(native.readExits(sinceWallMs)),
+          readProcessId: () => native.readProcessId(),
           readTotals: readFrameTotals,
         }
       : {}),
     memorySensing: native !== null,
+    // Without the module nothing is sensed natively, so the host's JS readings stand in.
+    senses: native ? NATIVE_SENSORS : [],
     createPort: (now) => createVergerAndroidPort(now, onLever),
   };
 }
@@ -65,35 +96,55 @@ export function createVergerAndroidPort(
   now: () => number = () => performance.now(),
   onLever?: (event: NativeLever) => void,
 ): RuntimePort {
+  const native = nativeModule();
   return {
-    start(config: GovernorConfig, onEvent: (event: GovernorEvent) => void) {
+    start(
+      config: VergerConfig,
+      onEvent: (event: VergerEvent) => void,
+      sensors?: Readonly<Record<SensorId, boolean>>,
+    ) {
       if (!native) return () => {};
       const subscriptions = [
         native.addListener('onFrameWindow', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onFrameWindow', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onFrameWindow', payload }, now())),
         ),
         native.addListener('onThermal', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onThermal', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onThermal', payload }, now())),
         ),
         native.addListener('onMemoryTrim', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onMemoryTrim', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onMemoryTrim', payload }, now())),
         ),
         native.addListener('onPowerSaver', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onPowerSaver', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onPowerSaver', payload }, now())),
         ),
         native.addListener('onThreadLoad', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onThreadLoad', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onThreadLoad', payload }, now())),
         ),
         native.addListener('onMemory', (payload) =>
-          onEvent(toGovernorEvent({ name: 'onMemory', payload }, now())),
+          onEvent(toVergerEvent({ name: 'onMemory', payload }, now())),
+        ),
+        native.addListener('onNetwork', (payload) =>
+          onEvent(toVergerEvent({ name: 'onNetwork', payload }, now())),
+        ),
+        native.addListener('onBattery', (payload) =>
+          onEvent(toVergerEvent({ name: 'onBattery', payload }, now())),
+        ),
+        native.addListener('onCpuHeadroom', (payload) =>
+          onEvent(toVergerEvent({ name: 'onCpuHeadroom', payload }, now())),
+        ),
+        native.addListener('onDataUsage', (payload) =>
+          onEvent(toVergerEvent({ name: 'onDataUsage', payload }, now())),
         ),
         native.addListener('onLever', (payload) => onLever?.(payload)),
       ];
-      native.start(senseConfigFrom(config));
+      native.start(senseConfigFrom(config, FRAME_WINDOW_MS, sensors));
       return () => {
         native.stop();
         for (const subscription of subscriptions) subscription.remove();
       };
+    },
+    setSensors(sensors) {
+      native?.setSensors(sensors);
     },
     setRefreshCap(hz) {
       native?.setRefreshCap(hz);

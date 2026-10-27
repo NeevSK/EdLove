@@ -1,51 +1,72 @@
 import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage';
-import { useTenantStore } from '@repo/core/store/useTenantStore';
-import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
+import { resetScopedStores } from '@repo/core/store/resetScopedStores';
+import { PERSONAL_SCOPE_PERSPECTIVE, useScopeSessionStore } from '@repo/core/store/scopeSession';
+import { transitionScopeSession } from '@repo/core/store/scopeSessionCoordinator';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Sanctuary Perspectives & Partitioned Storage Engine', () => {
   beforeEach(() => {
-    useTenantStore.getState().resetToPersonalPerspective();
+    resetScopedStores();
   });
 
-  it('initializes in Personal Sanctuary perspective by default', () => {
-    const state = useTenantStore.getState();
-    expect(state.activePerspective.kind).toBe('personal');
-    expect(state.activePerspective.id).toBe('personal');
-    expect(state.schoolId).toBeNull();
+  it('commits Personal Sanctuary as the canonical initial scope', async () => {
+    await transitionScopeSession({
+      principalId: null,
+      activePerspective: PERSONAL_SCOPE_PERSPECTIVE,
+      availablePerspectives: [PERSONAL_SCOPE_PERSPECTIVE],
+      availableBonds: [],
+    });
+
+    expect(useScopeSessionStore.getState().snapshot?.activePerspective).toEqual(
+      PERSONAL_SCOPE_PERSPECTIVE,
+    );
+    expect(useScopeSessionStore.getState().snapshot?.activeBond).toBeNull();
   });
 
-  it('switches between Personal Sanctuary and Institutional School Bonds cleanly', () => {
-    const schoolBond: SanctuaryPerspective = {
+  it('switches between personal scope and an account-owned school bond', async () => {
+    const schoolBond = {
       id: 'bond:royal_college:teacher',
-      kind: 'institutional',
-      displayName: 'Royal College - Teacher',
+      user_id: 'user-99',
+      entity_type: 'SCHOOL' as const,
       schoolId: 'school-royal-123',
-      schoolName: 'Royal College',
+      entity_id: 'school-royal-123',
       capacity: 'teacher',
-      roles: ['teacher'],
+      status: 'active' as const,
     };
+    const schoolPerspective = {
+      id: schoolBond.id,
+      kind: 'institutional' as const,
+      displayName: 'Royal College - Teacher',
+      schoolId: schoolBond.entity_id,
+      schoolName: 'Royal College',
+      capacity: schoolBond.capacity,
+      roles: [schoolBond.capacity],
+    };
+    const availablePerspectives = [PERSONAL_SCOPE_PERSPECTIVE, schoolPerspective];
 
-    useTenantStore
-      .getState()
-      .setAvailablePerspectives([
-        { id: 'personal', kind: 'personal', displayName: 'Personal Sanctuary' },
-        schoolBond,
-      ]);
+    await transitionScopeSession({
+      principalId: 'user-99',
+      activePerspective: schoolPerspective,
+      availablePerspectives,
+      availableBonds: [schoolBond],
+      selectedBond: schoolBond,
+    });
+    expect(useScopeSessionStore.getState().snapshot).toMatchObject({
+      activePerspective: schoolPerspective,
+      activeBond: schoolBond,
+    });
+    expect(useScopeSessionStore.getState().snapshot?.tenantId).toBe('school-royal-123');
 
-    // Switch to Royal College
-    useTenantStore.getState().switchPerspective('bond:royal_college:teacher');
-    let state = useTenantStore.getState();
-    expect(state.activePerspective.kind).toBe('institutional');
-    expect(state.activePerspective.id).toBe('bond:royal_college:teacher');
-    expect(state.schoolId).toBe('school-royal-123');
-    expect(state.schoolName).toBe('Royal College');
-
-    // Switch back to Personal Sanctuary
-    useTenantStore.getState().resetToPersonalPerspective();
-    state = useTenantStore.getState();
-    expect(state.activePerspective.kind).toBe('personal');
-    expect(state.schoolId).toBeNull();
+    await transitionScopeSession({
+      principalId: 'user-99',
+      activePerspective: PERSONAL_SCOPE_PERSPECTIVE,
+      availablePerspectives,
+      availableBonds: [schoolBond],
+    });
+    expect(useScopeSessionStore.getState().snapshot?.activePerspective).toEqual(
+      PERSONAL_SCOPE_PERSPECTIVE,
+    );
+    expect(useScopeSessionStore.getState().snapshot?.activeBond).toBeNull();
   });
 
   it('partitions local storage keys strictly across perspectives and users', () => {

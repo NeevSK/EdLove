@@ -3,6 +3,8 @@ import {
   GlobalProvider,
   useCapabilityHydration,
 } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store';
+import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import { LotusPetalFAB } from '@repo/ui/components/LotusPetalFAB';
@@ -10,7 +12,7 @@ import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@r
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
-import type { TabType } from '@repo/ui/types/fab';
+import { sensoryFeedback } from '@repo/ui/sensory';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
@@ -30,9 +32,13 @@ import { GuestLeaseBoundary } from '@/entry/GuestLeaseBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
+import { getCurrentFabTab } from '@/lib/navigation/fabTab';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
+import { GurudeviVerger } from '@/runtime/GurudeviVerger';
 import WelcomeConceptPreview from '@/screens/WelcomeConceptPreview';
+import { SanctuaryPulseOverlay } from '@/somatic/SanctuaryPulseOverlay';
+import { useSomaticShake } from '@/somatic/useSomaticShake';
 
 /**
  * The deliberately small route host for first paint.
@@ -44,6 +50,17 @@ import WelcomeConceptPreview from '@/screens/WelcomeConceptPreview';
 export function EntryShell() {
   const pathname = usePathname();
   const params = useGlobalSearchParams<{ preview?: string }>();
+  const isBreathingOpen = useUIStore((s) => s.isBreathingOpen);
+  const setBreathingOpen = useUIStore((s) => s.setBreathingOpen);
+
+  // Global physical kinetic shake sensor (10Hz on-device)
+  useSomaticShake({
+    enabled: !isBreathingOpen,
+    onShake: () => {
+      sensoryFeedback.emit('milestone');
+      setBreathingOpen(true);
+    },
+  });
 
   useEffect(() => {
     const stopObservingInteractions = observeDevelopmentInteractions();
@@ -77,49 +94,60 @@ export function EntryShell() {
           <QueryClientProvider client={queryClient}>
             <GlobalProvider>
               <EnvironmentProvider>
-                <OptionalStartupServices />
-                <WorldFonts />
-                <CircadianProvider>
-                  <PortalProvider>
-                    <ToastProvider>
-                      <ExternalLinkProvider>
-                        <DeepLinkProvider>
-                          <AuthQueryCacheBoundary />
-                          <FABProvider>
-                            <MascotProvider config={fireflyMascotConfig}>
-                              <LayoutLoopSentinel name="RootShell" style={styles.root}>
-                                <Box className="flex-1 bg-phase-canvas">
-                                  <AppVersionGateOverlay />
-                                  <GuestLeaseBoundary>
-                                    <GuestPersistenceNotice />
-                                    <GuestConversionBoundary />
-                                    <PasswordRecoveryBoundary />
-                                    <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                      <Stack screenOptions={{ headerShown: false }}>
-                                        <Stack.Screen name="index" />
-                                        <Stack.Screen name="welcome" />
-                                        <Stack.Screen name="auth" />
-                                        <Stack.Screen name="account-recovery" />
-                                        <Stack.Screen name="onboarding" />
-                                        <Stack.Screen name="public-form/[slug]" />
-                                        <Stack.Screen name="(tabs)" />
-                                        <Stack.Screen
-                                          name="(modal)"
-                                          options={{ presentation: 'modal' }}
-                                        />
-                                      </Stack>
-                                    </SessionRouteGate>
-                                  </GuestLeaseBoundary>
-                                  <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
-                                </Box>
-                              </LayoutLoopSentinel>
-                            </MascotProvider>
-                          </FABProvider>
-                        </DeepLinkProvider>
-                      </ExternalLinkProvider>
-                    </ToastProvider>
-                  </PortalProvider>
-                </CircadianProvider>
+                <GurudeviVerger>
+                  <OptionalStartupServices phase="public-ready" />
+                  <WorldFonts />
+                  <CircadianProvider>
+                    <PortalProvider>
+                      <ToastProvider>
+                        <ExternalLinkProvider>
+                          <DeepLinkProvider>
+                            <AuthQueryCacheBoundary />
+                            <FABProvider>
+                              <MascotProvider config={fireflyMascotConfig}>
+                                <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                  <Box className="flex-1 bg-phase-canvas">
+                                    <AppVersionGateOverlay />
+                                    <GuestLeaseBoundary>
+                                      <GuestPersistenceNotice />
+                                      <GuestConversionBoundary />
+                                      <PasswordRecoveryBoundary />
+                                      <SessionRouteGate appServices={<AuthenticatedAppServices />}>
+                                        <Stack screenOptions={{ headerShown: false }}>
+                                          <Stack.Screen name="index" />
+                                          <Stack.Screen name="welcome" />
+                                          <Stack.Screen name="auth" />
+                                          <Stack.Screen name="account-recovery" />
+                                          <Stack.Screen name="onboarding" />
+                                          <Stack.Screen name="public-form/[slug]" />
+                                          <Stack.Screen name="(tabs)" />
+                                          <Stack.Screen
+                                            name="(modal)"
+                                            options={{ presentation: 'modal' }}
+                                          />
+                                        </Stack>
+                                      </SessionRouteGate>
+                                    </GuestLeaseBoundary>
+                                    <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
+                                    <SanctuaryPulseOverlay
+                                      visible={isBreathingOpen}
+                                      onDismiss={() => setBreathingOpen(false)}
+                                      isPlayfulMode={true}
+                                      onSessionComplete={(seconds) => {
+                                        void inMemoryHealthAdapter.recordMindfulSession(seconds);
+                                        sensoryFeedback.emit('success');
+                                      }}
+                                    />
+                                  </Box>
+                                </LayoutLoopSentinel>
+                              </MascotProvider>
+                            </FABProvider>
+                          </DeepLinkProvider>
+                        </ExternalLinkProvider>
+                      </ToastProvider>
+                    </PortalProvider>
+                  </CircadianProvider>
+                </GurudeviVerger>
               </EnvironmentProvider>
             </GlobalProvider>
           </QueryClientProvider>
@@ -127,16 +155,6 @@ export function EntryShell() {
       </ErrorBoundary>
     </GestureHandlerRootView>
   );
-}
-
-function getCurrentFabTab(pathname: string): TabType | null {
-  if (pathname.startsWith('/(tabs)/self') || pathname === '/self') return 'self';
-  if (pathname.startsWith('/(tabs)/library') || pathname === '/library') return 'library';
-  if (pathname.startsWith('/(tabs)/workspace') || pathname.startsWith('/classroom'))
-    return 'classroom';
-  if (pathname.startsWith('/(tabs)/community') || pathname === '/community') return 'community';
-  if (pathname.startsWith('/(tabs)/profile') || pathname === '/profile') return 'profile';
-  return null;
 }
 
 function AuthenticatedAppServices() {

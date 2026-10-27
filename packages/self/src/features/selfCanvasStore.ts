@@ -4,7 +4,7 @@ import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
 import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useAuthStore } from '@repo/core/store';
 import type { SelfCanvasPersistenceState } from '@repo/self/features/selfCanvasPersistence';
 import {
   DEFAULT_SELF_PREFERENCES,

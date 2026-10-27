@@ -1,6 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
 import { echoAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { useStore } from '@repo/core/logic';
+
 
 import { BrandPulse } from '@repo/ui';
 import { EyeOff, Inbox, User } from '@repo/ui/icons';
@@ -45,7 +46,7 @@ interface Props {
 
 export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) {
   const { t } = useTranslation();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const { showToast } = useSanctuaryToast();
   const [echoes, setEchoes] = useState<Echo[]>([]);
   const [isLoading, setIsLoading] = useState(true);

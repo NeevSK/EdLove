@@ -6,11 +6,14 @@ import {
   SHADOW_STUDENT_NOTICE,
   saveGradeClassRegister,
 } from '@repo/classroom/logic/gradeClassRegister';
-import { attendanceAPI } from '@repo/core/api/attendance';
 import { academicCyclesAPI, growthSignalsAPI } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
-import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback';
+import { type AttendanceStatus, type StudentAttendance } from '@repo/core/logic';
 import { resolveGradeClassFromClassroom } from '@repo/core/logic/classroomResolver';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useAuthStore, useTenantStore } from '@repo/core/store';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { parseInstitutionalQR, ScannerModal } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
@@ -19,7 +22,7 @@ import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { ObserveInteractiveMarker } from 'expo-observe';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-
+import { useScopedAttendanceRegister } from '../hooks/useScopedAttendanceRegister';
 
 type GradeClassOption = { id: string; name: string };
 
@@ -31,30 +34,60 @@ export default function AttendanceScreen() {
     classroomId?: string;
   }>();
   const { triggerReview } = useAppStoreReview();
-  const schoolId = useStore((state) => state.schoolId);
-  const isOnline = useStore((state) => state.isOnline);
-  const academicCycleId = useStore((state) => state.academicCycleId);
-  const setAcademicCycleId = useStore((state) => state.setAcademicCycleId);
-  const showToast = useStore((state) => state.showToast);
-  const currentUser = useStore((state) => state.user);
+  const schoolId = useScopeSessionStore((state) =>
+    !state.isTransitioning && state.snapshot?.activePerspective.kind === 'institutional'
+      ? state.snapshot.activePerspective.schoolId
+      : null,
+  );
+  const { status: networkStatus, isOnline } = useOfflineStatus();
+  const academicCycleId = useTenantStore((state) => state.academicCycleId);
+  const setAcademicCycleId = useTenantStore((state) => state.setAcademicCycleId);
 
+  const currentUser = useAuthStore((state) => state.user);
 
   const [selectedGradeClassId, setSelectedGradeClassId] = useState<string | undefined>(undefined);
   const gradeClassId = selectedGradeClassId ?? gradeClassParam;
   const [gradeClasses, setGradeClasses] = useState<GradeClassOption[] | null>(null);
+  const [gradeClassesProjectionIdentity, setGradeClassesProjectionIdentity] = useState<
+    string | null
+  >(null);
   const [students, setStudents] = useState<StudentAttendance[]>([]);
+  const [studentProjectionIdentity, setStudentProjectionIdentity] = useState<string | null>(null);
   const [excludedWithoutAccount, setExcludedWithoutAccount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isResolvingLegacyClassroom, setIsResolvingLegacyClassroom] = useState(
+    Boolean(classroomId && !gradeClassParam),
+  );
   const [error, setError] = useState<string | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [attendanceDate] = useState(() => localDate());
   const [reloadToken, setReloadToken] = useState(0);
+  const registerRead = useScopedAttendanceRegister(gradeClassId || undefined, attendanceDate);
+  const hasCurrentStudentProjection =
+    studentProjectionIdentity !== null && studentProjectionIdentity === registerRead.identity;
+  const activeStudents = hasCurrentStudentProjection ? students : [];
+  const hasCurrentGradeClassProjection =
+    gradeClassesProjectionIdentity !== null &&
+    gradeClassesProjectionIdentity === registerRead.classesIdentity;
+  const activeGradeClasses = hasCurrentGradeClassProjection ? (gradeClasses ?? []) : [];
 
   const retry = useCallback(() => {
-    setIsLoading(true);
     setError(null);
     setReloadToken((prev) => prev + 1);
-  }, []);
+    void (gradeClassId
+      ? registerRead.registerQuery.refetch()
+      : registerRead.classesQuery.refetch());
+  }, [gradeClassId, registerRead.classesQuery, registerRead.registerQuery]);
+
+  useEffect(() => {
+    setStudents([]);
+    setStudentProjectionIdentity(null);
+    setExcludedWithoutAccount(0);
+  }, [registerRead.identity]);
+
+  useEffect(() => {
+    setGradeClasses([]);
+    setGradeClassesProjectionIdentity(null);
+  }, [registerRead.classesIdentity]);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,19 +101,8 @@ export default function AttendanceScreen() {
             if (!cancelled) setSelectedGradeClassId(resolved);
           }
         }
-        if (!activeId) {
-          const options = await attendanceAPI.getMyGradeClasses();
-          if (cancelled) return;
-          setGradeClasses(options.map((option) => ({ id: option.id, name: option.name })));
-          setStudents([]);
-          return;
-        }
-        const register = await loadGradeClassRegister(activeId, attendanceDate);
-        if (cancelled) return;
-        setStudents(register.students);
-        setExcludedWithoutAccount(register.excludedWithoutAccount);
+        if (!activeId) return;
       } catch (_err) {
-
         if (cancelled) return;
         setError(
           gradeClassId || classroomId
@@ -88,16 +110,60 @@ export default function AttendanceScreen() {
             : 'Failed to load your classes',
         );
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        if (!cancelled) setIsResolvingLegacyClassroom(false);
       }
     };
     void execute();
     return () => {
       cancelled = true;
     };
-  }, [gradeClassId, classroomId, attendanceDate, reloadToken, schoolId, showToast]);
+  }, [gradeClassId, classroomId, reloadToken, schoolId]);
+
+  useEffect(() => {
+    if (!registerRead.scope) {
+      setError('Attendance is unavailable until the active school scope is ready.');
+      return;
+    }
+    if (!gradeClassId) {
+      if (registerRead.classesQuery.isPending) return;
+      if (registerRead.classesQuery.error) {
+        setError('Failed to load your classes');
+      } else {
+        setGradeClasses(
+          registerRead.gradeClasses.map((option) => ({ id: option.id, name: option.name })),
+        );
+        setGradeClassesProjectionIdentity(registerRead.classesIdentity);
+        setStudents([]);
+        setError(null);
+      }
+      return;
+    }
+    if (registerRead.registerQuery.isPending) return;
+    if (registerRead.registerQuery.error || !registerRead.register) {
+      setError('Failed to load the class register');
+      return;
+    }
+    setStudents(registerRead.register.students);
+    setStudentProjectionIdentity(registerRead.identity);
+    setExcludedWithoutAccount(registerRead.register.excludedWithoutAccount);
+    setError(null);
+  }, [
+    gradeClassId,
+    registerRead.classesQuery.error,
+    registerRead.classesQuery.isPending,
+    registerRead.classesIdentity,
+    registerRead.gradeClasses,
+    registerRead.register,
+    registerRead.registerQuery.error,
+    registerRead.registerQuery.isPending,
+    registerRead.identity,
+    registerRead.scope,
+  ]);
+
+  const isLoading =
+    isResolvingLegacyClassroom ||
+    (registerRead.scope !== null &&
+      (gradeClassId ? registerRead.registerQuery.isPending : registerRead.classesQuery.isPending));
 
   useEffect(() => {
     const syncCycle = async () => {
@@ -108,7 +174,6 @@ export default function AttendanceScreen() {
     };
     syncCycle();
   }, [schoolId, academicCycleId, setAcademicCycleId]);
-
 
   const saveMutation = useSafeMutation(
     // Variables are self-contained so an offline save can be replayed from the outbox
@@ -142,6 +207,7 @@ export default function AttendanceScreen() {
           });
         }
         void triggerReview('attendance_marked', { minActions: 2, probability: 0.5 });
+        void registerRead.invalidateRegister();
       },
       onError: (err: any) => {
         showToast(
@@ -154,9 +220,8 @@ export default function AttendanceScreen() {
     },
   );
 
-
-
   const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {
+    if (!hasCurrentStudentProjection) return;
     setStudents(updatedAttendance);
   };
 
@@ -165,10 +230,11 @@ export default function AttendanceScreen() {
       const parsed = parseInstitutionalQR(scannedToken);
       if (parsed && (parsed.kind === 'attendance' || parsed.kind === 'student_id')) {
         const studentId = parsed.studentId;
-        const target = students.find((s) => s.student_id === studentId || s.id === studentId);
+        if (!hasCurrentStudentProjection) return;
+        const target = activeStudents.find((s) => s.student_id === studentId || s.id === studentId);
         if (target) {
           hapticSuccess();
-          const updated = students.map((s) =>
+          const updated = activeStudents.map((s) =>
             s.id === target.id ? { ...s, status: 'present' as AttendanceStatus } : s,
           );
           setStudents(updated);
@@ -180,16 +246,17 @@ export default function AttendanceScreen() {
         showToast('Unrecognized student or attendance badge', 'error');
       }
     },
-    [students, showToast],
+    [activeStudents, hasCurrentStudentProjection, showToast],
   );
 
   const handleSave = () => {
+    if (!hasCurrentStudentProjection) return;
     saveMutation.mutate({
       gradeClassId: gradeClassId || undefined,
       classroomId: classroomId || undefined,
       schoolId: schoolId ?? undefined,
       date: attendanceDate,
-      students,
+      students: activeStudents,
     });
   };
 
@@ -218,16 +285,26 @@ export default function AttendanceScreen() {
     );
   }
 
+  if (!registerRead.scope) {
+    return (
+      <Box className="flex-1 justify-center items-center bg-phase-surface-primary p-6">
+        <Text className="text-emberRed font-black text-center">
+          Attendance is unavailable until the active school scope is ready.
+        </Text>
+      </Box>
+    );
+  }
+
   if (!gradeClassId) {
     return (
       <VStack className="flex-1 bg-phase-surface-primary p-6 gap-4">
         <Text className="text-phase-text-secondary">{PICK_GRADE_CLASS_NOTICE}</Text>
-        {(gradeClasses ?? []).length === 0 ? (
+        {activeGradeClasses.length === 0 ? (
           <Text className="text-phase-text-secondary font-black">
             No classes are assigned to you for the current academic year.
           </Text>
         ) : (
-          (gradeClasses ?? []).map((option) => (
+          activeGradeClasses.map((option) => (
             <Button
               key={option.id}
               variant="outline"
@@ -244,8 +321,10 @@ export default function AttendanceScreen() {
 
   return (
     <VStack className="flex-1 bg-phase-surface-primary">
-      <ObserveInteractiveMarker params={{ entry_surface: 'classroom-attendance', student_count: students.length }} />
-      {!isOnline && (
+      <ObserveInteractiveMarker
+        params={{ entry_surface: 'classroom-attendance', student_count: activeStudents.length }}
+      />
+      {networkStatus === 'offline' && (
         <Box className="bg-phase-canvas border-b border-phase-border px-4 py-2 flex-row items-center justify-between">
           <Text className="text-xs text-phase-text-secondary font-medium">
             Offline mode: records will save to local outbox and sync automatically
@@ -255,13 +334,11 @@ export default function AttendanceScreen() {
       )}
 
       <Box className="px-4 py-2 border-b border-phase-border">
-        <Text className="text-xs text-phase-text-secondary">
-          {SHADOW_STUDENT_NOTICE}
-        </Text>
+        <Text className="text-xs text-phase-text-secondary">{SHADOW_STUDENT_NOTICE}</Text>
       </Box>
       <AttendanceSheet
         classroomId={gradeClassId}
-        initialStudents={students}
+        initialStudents={activeStudents}
         onAttendanceChange={handleAttendanceChange}
         onScanBadgePress={() => setIsScannerOpen(true)}
       />
@@ -277,7 +354,9 @@ export default function AttendanceScreen() {
       <Box className="p-4 bg-phase-surface-primary pb-10 border-t border-phase-border">
         <Button
           onPress={handleSave}
-          disabled={saveMutation.isLoading || students.length === 0}
+          disabled={
+            saveMutation.isLoading || activeStudents.length === 0 || !hasCurrentStudentProjection
+          }
           className="bg-sanctuarySaffron rounded-[24px] h-[56px] justify-center"
         >
           <ButtonText className="text-white font-black">

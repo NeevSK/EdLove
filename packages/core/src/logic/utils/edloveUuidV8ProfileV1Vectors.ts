@@ -17,6 +17,8 @@ export const edloveUuidV8ProfileV1RejectedAccountVectors = {
   wrongVersion: '01234567-89ab-7101-8000-010203040506',
   wrongVariant: '01234567-89ab-8101-c000-010203040506',
   unregisteredDomain: '01234567-89ab-8e01-8000-010203040506',
+  wrongIdentitySubtype: '01234567-89ab-8102-8000-010203040506',
+  unapprovedEdgeOrigin: '01234567-89ab-8101-8200-010203040506',
   unregisteredSubtype: '01234567-89ab-81ff-8000-010203040506',
   unregisteredMintOrigin: '01234567-89ab-8101-8600-010203040506',
 } as const;

@@ -303,3 +303,24 @@ export const communityAPI = {
     }
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_ANNOUNCEMENTS,
+  MOCK_COMMUNITY_GROUPS,
+  MOCK_COMMUNITY_POSTS,
+  MOCK_GROUP_MESSAGES,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'community',
+  ghostMethods: ['getPosts', 'getGroups', 'getAnnouncements', 'getGroupMessages'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getPosts') return MOCK_COMMUNITY_POSTS;
+    if (method === 'getGroups') return MOCK_COMMUNITY_GROUPS;
+    if (method === 'getAnnouncements') return MOCK_ANNOUNCEMENTS;
+    if (method === 'getGroupMessages') return MOCK_GROUP_MESSAGES;
+    return [];
+  },
+});

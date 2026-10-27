@@ -1,7 +1,11 @@
+import { useState } from 'react';
+import { ClaimInviteModal } from '../ClaimInviteModal';
+import { FireflyMascot } from '@repo/ui';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 
 interface Classroom {
@@ -14,15 +18,18 @@ interface Classroom {
 interface StudentClassroomListProps {
   classrooms: Classroom[];
   loading: boolean;
-  isDemo: boolean;
+  isDemo?: boolean;
+  onInviteClaimed?: () => void;
 }
 
 export const StudentClassroomList = ({
   classrooms,
   loading,
-  isDemo,
+  isDemo = false,
+  onInviteClaimed,
 }: StudentClassroomListProps) => {
   const router = useRouter();
+  const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
 
   if (loading) {
     return (
@@ -36,17 +43,42 @@ export const StudentClassroomList = ({
 
   if (classrooms.length === 0) {
     return (
-      <Box className="py-10 items-center">
-        <PositiveInvitation
-          type="empty"
-          title={isDemo ? 'Join Your First Sanctuary' : 'No Classrooms found'}
-          description={
-            isDemo
-              ? 'Welcome to the student sanctuary. Ready to officially join your classes and begin your quest? Connect with your teachers to get started.'
-              : "You haven't joined any classrooms yet. Reach out to your teacher for an invite code or search for a sanctuary."
-          }
-          actionLabel="Join a Classroom"
-          onAction={() => router.push('/community')}
+      <Box className="py-8 items-center w-full">
+        <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-8 items-center w-full max-w-md shadow-sm">
+          <FireflyMascot size={72} mode="glowing" role="guide" />
+          <VStack className="gap-2 items-center mt-5">
+            <Text className="text-xl font-black text-phaseText-primary text-center">
+              Join Your Classroom Sanctuary
+            </Text>
+            <Text className="text-xs text-phaseText-secondary text-center max-w-[280px] leading-5">
+              Enter your 6-digit classroom invitation code or desk pass from your teacher to enter your learning space.
+            </Text>
+          </VStack>
+          <Box className="w-full mt-6">
+            <Pressable
+              onPress={() => {
+                hapticLight();
+                setIsClaimModalOpen(true);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Enter classroom invitation code"
+              className="w-full py-3.5 bg-templeGold rounded-2xl items-center shadow-sm active:opacity-90"
+            >
+              <Text className="text-white font-bold text-sm tracking-wide">
+                Enter Invitation Code
+              </Text>
+            </Pressable>
+          </Box>
+        </Box>
+
+        <ClaimInviteModal
+          isOpen={isClaimModalOpen}
+          onClose={() => setIsClaimModalOpen(false)}
+          onSuccess={() => {
+            hapticSuccess();
+            setIsClaimModalOpen(false);
+            onInviteClaimed?.();
+          }}
         />
       </Box>
     );

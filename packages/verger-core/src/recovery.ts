@@ -1,5 +1,5 @@
 import type { SessionReport } from './session';
-import type { GovernorMode, MemoryLevel, ThermalLevel } from './types';
+import type { LeverGain, RunMode, MemoryLevel, ThermalLevel } from './types';
 
 /**
  * Recovery, healing and growth across launches.
@@ -31,11 +31,20 @@ export type ExitReason =
 
 export interface ExitRecord {
   readonly reason: ExitReason;
+  /** The process id, when the platform records it; matches a marker's `pid`. */
+  readonly pid?: number;
   /** Wall-clock milliseconds when the process ended. */
   readonly atWallMs: number;
   /** The process was visible to the user when it ended. */
   readonly foreground: boolean;
 }
+
+/**
+ * Endings that are not failures of the app's code but, while visible, are the very thing a
+ * resource supervisor exists to prevent: the system killing the app in front of the user.
+ * They prove nothing either way, so they count neither as failures nor as clean sessions.
+ */
+const VISIBLE_STRAIN: ReadonlySet<ExitReason> = new Set(['low-memory', 'signaled']);
 
 /** Exits that are the app failing, as opposed to the system or the user ending it. */
 const FAILURES: ReadonlySet<ExitReason> = new Set([
@@ -53,15 +62,20 @@ const FAILURES: ReadonlySet<ExitReason> = new Set([
  */
 export type Rung = 0 | 1 | 2 | 3 | 4;
 
-export type RuntimeLevel = 'off' | GovernorMode;
+export type RuntimeLevel = 'off' | RunMode;
 
 export interface RecoveryConfig {
   /** Failures within `failureWindowMs` that step the ladder down one rung (restart intensity). */
   readonly failuresToEscalate: number;
   readonly failureWindowMs: number;
-  /** Clean sessions needed to step back up one rung, doubled after each relapse. */
+  /** Clean sessions needed to step back up one rung; doubled for each escalation after the first. */
   readonly cleanToRecover: number;
   readonly maxRelapseDoublings: number;
+  /**
+   * Clean sessions at full trust (rung 0) that forgive one relapse, so a device that crashed once
+   * long ago recovers at the ordinary pace again; without it, relapses never decayed.
+   */
+  readonly relapseDecayClean: number;
   /** A session shorter than this in the foreground is evidence of nothing. */
   readonly minEvidenceForegroundMs: number;
   readonly trustInitial: number;
@@ -89,6 +103,7 @@ export const DEFAULT_RECOVERY_CONFIG: RecoveryConfig = {
   failureWindowMs: 24 * 60 * 60 * 1000,
   cleanToRecover: 3,
   maxRelapseDoublings: 3,
+  relapseDecayClean: 20,
   minEvidenceForegroundMs: 30_000,
   trustInitial: 0.5,
   trustPerCleanSession: 0.1,
@@ -106,7 +121,11 @@ export const DEFAULT_RECOVERY_CONFIG: RecoveryConfig = {
 /** Written during a session, read at the next launch. */
 export interface SessionMarker {
   readonly v: 1;
+  /** The ladder key (policy and release) the session ran under; other keys' outcomes are ignored. */
+  readonly key: string;
   readonly startedAtWall: number;
+  /** The process id, once known (after the native side is read); null in `starting`. */
+  readonly pid: number | null;
   /** `starting` until the native side is up: dying then points at verger itself. */
   readonly phase: 'starting' | 'running' | 'stopped';
   readonly foreground: boolean;
@@ -120,6 +139,8 @@ export interface VergerRecord {
   readonly v: 1;
   /** Policy version and release the ladder belongs to; a new one starts the ladder over. */
   readonly key: string;
+  /** `startedAtWall` of the last marker folded, so no session is ever counted twice. */
+  readonly lastFolded: number | null;
   readonly ladder: {
     readonly rung: Rung;
     /** Wall times of recent failures, inside the failure window. */
@@ -134,6 +155,11 @@ export interface VergerRecord {
     readonly grant: number;
     readonly proving: number;
     readonly prior: Readonly<Record<string, number>>;
+    /**
+     * Each lever's measured gain on this device (R6), carried across launches; a lever not
+     * measured in a session keeps its gain with half its samples, so old measurements fade.
+     */
+    readonly gains?: Readonly<Record<string, LeverGain>>;
   };
 }
 
@@ -143,6 +169,12 @@ export type SessionOutcome =
       readonly kind: 'clean';
       readonly marker: SessionMarker;
       readonly exit: ExitReason | null;
+    }
+  | {
+      /** Killed by the system while visible: neither failure nor clean, but strain. */
+      readonly kind: 'neutral';
+      readonly marker: SessionMarker;
+      readonly exit: ExitReason;
     }
   | {
       readonly kind: 'failure';
@@ -164,6 +196,8 @@ export interface LaunchPlan {
   readonly prior: Readonly<Record<string, number>>;
   /** Steps of capacity floor relaxed on this device. */
   readonly grant: number;
+  /** Lever gains measured on this device in earlier sessions (R6). */
+  readonly gains: Readonly<Record<string, LeverGain>>;
   readonly reason: string;
 }
 
@@ -176,6 +210,24 @@ export interface Transition {
   readonly grantTo: number;
 }
 
+/**
+ * What to start from when a record exists but cannot be trusted (corrupt, or a format this
+ * version does not know): shadow, so verger proves itself again before it acts. Never rung 0:
+ * the unreadable record may have been holding verger down for a reason. Never below `atLeast`,
+ * the rung the last session's marker shows it ran on: an unreadable record must not lift a
+ * phone off rung 4 (found by the ladder's model-based test).
+ */
+export function guardedRecord(
+  key: string,
+  device: string | null,
+  config: RecoveryConfig,
+  atLeast: Rung = 3,
+): VergerRecord {
+  const fresh = freshRecord(key, device, config);
+  const rung: Rung = atLeast > 3 ? atLeast : 3;
+  return { ...fresh, ladder: { ...fresh.ladder, rung, relapses: 1 } };
+}
+
 export function freshRecord(
   key: string,
   device: string | null,
@@ -184,6 +236,7 @@ export function freshRecord(
   return {
     v: 1,
     key,
+    lastFolded: null,
     ladder: { rung: 0, failures: [], clean: 0, relapses: 0 },
     profile: freshProfile(device, config),
   };
@@ -209,21 +262,33 @@ export function classifySession(
 ): SessionOutcome {
   if (!marker) return { kind: 'none' };
   if (marker.phase === 'stopped') return { kind: 'clean', marker, exit: null };
-  const exit = exits
-    ?.filter((e) => e.atWallMs >= marker.startedAtWall)
-    .reduce<ExitRecord | null>(
-      (first, e) => (first && first.atWallMs <= e.atWallMs ? first : e),
-      null,
-    );
+  const exit = exitOf(marker, exits);
   const boot = marker.phase === 'starting';
   if (exit) {
-    return FAILURES.has(exit.reason)
-      ? { kind: 'failure', marker, cause: exit.reason, boot }
-      : { kind: 'clean', marker, exit: exit.reason };
+    if (FAILURES.has(exit.reason)) return { kind: 'failure', marker, cause: exit.reason, boot };
+    if (exit.foreground && VISIBLE_STRAIN.has(exit.reason))
+      return { kind: 'neutral', marker, exit: exit.reason };
+    return { kind: 'clean', marker, exit: exit.reason };
   }
   return marker.foreground
     ? { kind: 'failure', marker, cause: 'unclean', boot }
     : { kind: 'clean', marker, exit: null };
+}
+
+/**
+ * The exit that ended the marker's process. With a pid on both sides, only that process's
+ * exit counts (an older or unrelated process's crash is never charged to this session);
+ * without one, the first exit after the session started.
+ */
+function exitOf(marker: SessionMarker, exits: readonly ExitRecord[] | null): ExitRecord | null {
+  if (!exits) return null;
+  const after = exits.filter((e) => e.atWallMs >= marker.startedAtWall);
+  const candidates =
+    marker.pid !== null ? after.filter((e) => e.pid === undefined || e.pid === marker.pid) : after;
+  return candidates.reduce<ExitRecord | null>(
+    (first, e) => (first && first.atWallMs <= e.atWallMs ? first : e),
+    null,
+  );
 }
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
@@ -231,6 +296,20 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 
 const COOL: ReadonlySet<ThermalLevel> = new Set(['unknown', 'nominal']);
 const ROOMY: ReadonlySet<MemoryLevel> = new Set(['unknown', 'normal']);
+
+/** A session's gains replace the stored ones; a lever it did not measure keeps half its samples. */
+function mergeGains(
+  stored: Readonly<Record<string, LeverGain>> | undefined,
+  session: Readonly<Record<string, LeverGain>>,
+): Record<string, LeverGain> {
+  const merged: Record<string, LeverGain> = {};
+  for (const [id, gain] of Object.entries(stored ?? {})) {
+    const samples = Math.floor(gain.samples / 2);
+    if (samples > 0) merged[id] = { gain: gain.gain, samples };
+  }
+  for (const [id, gain] of Object.entries(session)) if (gain.samples > 0) merged[id] = gain;
+  return merged;
+}
 
 /**
  * Folds the last session into the record. Order matters and is fixed: a changed policy or
@@ -251,10 +330,28 @@ export function foldSession(
       ? record.profile
       : freshProfile(context.device, config);
   const from = { rung: ladder.rung, trust: profile.trust, grant: profile.grant };
+  let lastFolded = record.key === context.key ? record.lastFolded : null;
 
-  if (outcome.kind !== 'none' && outcome.marker.runtime !== 'off') {
+  // Only a session that ran verger, under this ladder, and was not folded before is evidence.
+  const counts =
+    outcome.kind !== 'none' &&
+    outcome.marker.runtime !== 'off' &&
+    outcome.marker.key === context.key &&
+    outcome.marker.startedAtWall !== lastFolded;
+  if (outcome.kind !== 'none') lastFolded = outcome.marker.startedAtWall;
+
+  if (counts) {
     const report = outcome.marker.report;
-    if (outcome.kind === 'failure') {
+    // Gains are measurements of the levers on this device, whatever the session's outcome; every
+    // reported session ages the ones it did not measure.
+    if (report && (report.gains || profile.gains)) {
+      const gains = mergeGains(profile.gains, report.gains ?? {});
+      profile = { ...profile, gains };
+    }
+    if (outcome.kind === 'neutral') {
+      // Strain without blame: give back growth, learn nothing, move no rung.
+      profile = { ...profile, grant: Math.max(0, profile.grant - 1), proving: 0 };
+    } else if (outcome.kind === 'failure') {
       const failures = [
         ...ladder.failures.filter(
           (t) => context.nowWall - t < config.failureWindowMs && t <= context.nowWall,
@@ -287,10 +384,12 @@ export function foldSession(
         2 ** Math.min(Math.max(0, ladder.relapses - 1), config.maxRelapseDoublings);
       const clean = ladder.clean + 1;
       const recovers = ladder.rung > 0 && ladder.rung < 4 && clean >= needed;
+      const forgives = ladder.rung === 0 && ladder.relapses > 0 && clean >= config.relapseDecayClean;
       ladder = {
         ...ladder,
         rung: recovers ? ((ladder.rung - 1) as Rung) : ladder.rung,
-        clean: recovers ? 0 : clean,
+        clean: recovers || forgives ? 0 : clean,
+        relapses: forgives ? ladder.relapses - 1 : ladder.relapses,
       };
       profile = { ...profile, trust: round2(clamp01(profile.trust + config.trustPerCleanSession)) };
       const learns =
@@ -302,7 +401,7 @@ export function foldSession(
   }
 
   return {
-    record: { v: 1, key: context.key, ladder, profile },
+    record: { v: 1, key: context.key, lastFolded, ladder, profile },
     transition: {
       from: from.rung,
       to: ladder.rung,
@@ -353,6 +452,9 @@ function learn(
     }
   }
 
+  // Too little drawing to say where the loop would hold levers: keep the starting point.
+  if (report.evidenceMs < config.minEvidenceForegroundMs)
+    return { ...profile, grant, proving: streak };
   const prior: Record<string, number> = {};
   const ids = new Set([...Object.keys(profile.prior), ...Object.keys(report.pressure)]);
   for (const id of ids) {
@@ -373,7 +475,7 @@ function learn(
  */
 export function planLaunch(
   record: VergerRecord,
-  requested: GovernorMode,
+  requested: RunMode,
   random: number,
   config: RecoveryConfig,
 ): LaunchPlan {
@@ -387,6 +489,7 @@ export function planLaunch(
       hardware: false,
       prior: {},
       grant: 0,
+      gains: {},
       reason: 'rung-4-off',
     };
   }
@@ -398,6 +501,7 @@ export function planLaunch(
       hardware: false,
       prior: {},
       grant: 0,
+      gains: {},
       reason: 'rung-3-shadow',
     };
   }
@@ -410,6 +514,7 @@ export function planLaunch(
       hardware: false,
       prior: {},
       grant: 0,
+      gains: {},
       reason: 'exercise',
     };
   }
@@ -427,6 +532,9 @@ export function planLaunch(
     hardware: rung < 2,
     prior,
     grant: rung === 0 ? grant : 0,
+    // Measurements, not a starting point: they only steer which lever helps, so every running rung
+    // keeps them.
+    gains: record.profile.gains ?? {},
     reason: `rung-${rung}`,
   };
 }
@@ -441,6 +549,19 @@ const isFiniteNumber = (v: unknown): v is number => typeof v === 'number' && Num
 const isRung = (v: unknown): v is Rung => v === 0 || v === 1 || v === 2 || v === 3 || v === 4;
 const isLevelMap = (v: unknown): v is Record<string, number> =>
   isObject(v) && Object.values(v).every((x) => isFiniteNumber(x) && x >= 0 && x <= 16);
+const isGainMap = (v: unknown): boolean =>
+  isObject(v) &&
+  Object.keys(v).length <= 64 &&
+  Object.values(v).every(
+    (g) =>
+      isObject(g) &&
+      isFiniteNumber(g.gain) &&
+      g.gain >= -1 &&
+      g.gain <= 1 &&
+      isFiniteNumber(g.samples) &&
+      Number.isInteger(g.samples) &&
+      g.samples >= 0,
+  );
 const THERMALS: readonly unknown[] = ['unknown', 'nominal', 'warm', 'hot', 'critical'];
 const MEMORIES: readonly unknown[] = ['unknown', 'normal', 'trimmed', 'low'];
 
@@ -459,13 +580,16 @@ function parseReport(v: unknown): SessionReport | null | undefined {
   const ok =
     isFiniteNumber(v.foregroundMs) &&
     v.foregroundMs >= 0 &&
+    isFiniteNumber(v.evidenceMs) &&
+    v.evidenceMs >= 0 &&
     isFiniteNumber(v.stressedMs) &&
     v.stressedMs >= 0 &&
     THERMALS.includes(v.worstThermal) &&
     MEMORIES.includes(v.worstMemory) &&
     typeof v.contentionExhausted === 'boolean' &&
     isFiniteNumber(v.qualityCost) &&
-    isLevelMap(v.pressure);
+    isLevelMap(v.pressure) &&
+    (v.gains === undefined || isGainMap(v.gains));
   return ok ? (v as unknown as SessionReport) : undefined;
 }
 
@@ -474,6 +598,8 @@ export function parseMarker(text: string | null | undefined): SessionMarker | nu
   if (!isObject(v) || v.v !== 1) return null;
   const report = parseReport(v.report);
   const ok =
+    typeof v.key === 'string' &&
+    (v.pid === null || (isFiniteNumber(v.pid) && v.pid > 0)) &&
     isFiniteNumber(v.startedAtWall) &&
     (v.phase === 'starting' || v.phase === 'running' || v.phase === 'stopped') &&
     typeof v.foreground === 'boolean' &&
@@ -508,8 +634,10 @@ export function parseRecord(text: string | null | undefined): VergerRecord | nul
     profile.grant <= 8 &&
     isFiniteNumber(profile.proving) &&
     profile.proving >= 0 &&
-    isLevelMap(profile.prior);
-  return ladderOk && profileOk ? (v as unknown as VergerRecord) : null;
+    isLevelMap(profile.prior) &&
+    (profile.gains === undefined || isGainMap(profile.gains));
+  const foldedOk = v.lastFolded === null || isFiniteNumber(v.lastFolded);
+  return ladderOk && profileOk && foldedOk ? (v as unknown as VergerRecord) : null;
 }
 
 /** Validates a recovery configuration. Throws at startup, never at decision time. */

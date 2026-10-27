@@ -47,6 +47,24 @@ export default async function WorkspaceKioskPage() {
     );
   }
 
+  const isLeaderOrAdmin =
+    entry.activeCapacity === 'principal' ||
+    entry.activeCapacity === 'assistantPrincipal' ||
+    entry.activeCapacity === 'admin' ||
+    entry.activeCapacity === 'founder' ||
+    entry.activeCapacity === 'developer' ||
+    (entry.activeScope?.roles?.some((r) => ['principal', 'admin', 'founder'].includes(r)) ?? false);
+
+  if (!isLeaderOrAdmin) {
+    return (
+      <KioskState
+        displayName={entry.displayName}
+        title="Access restricted"
+        detail="The doorway ingress kiosk station is restricted to institutional administrators and school leadership."
+      />
+    );
+  }
+
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
       <KioskFloor

@@ -1,3 +1,4 @@
+import { CompleteProfileSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { z } from 'zod';
 import { ScopeBootstrapSchema } from './identity.orpc.contract';
 
@@ -7,6 +8,18 @@ const userIdentity = (action: 'update') =>
   }) as const;
 
 export const onboardingORPCContract = {
+  completeProfile: {
+    method: 'post',
+    path: '/identity/complete-profile',
+    request: { body: CompleteProfileSchema },
+    responses: {
+      200: {
+        schema: z.strictObject({ success: z.literal(true) }),
+        description: 'Profile details completed for the authenticated account',
+      },
+    },
+    metadata: userIdentity('update'),
+  },
   createInitialBond: {
     method: 'post',
     path: '/identity/initial-bond',

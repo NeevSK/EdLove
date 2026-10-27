@@ -1,0 +1,2190 @@
+diff --git a/apps/gurudevi-mobile/src/lib/backgroundSync.ts b/apps/gurudevi-mobile/src/lib/backgroundSync.ts
+index c371c8234..7efab6b66 100644
+--- a/apps/gurudevi-mobile/src/lib/backgroundSync.ts
++++ b/apps/gurudevi-mobile/src/lib/backgroundSync.ts
+@@ -11,7 +11,11 @@
+ 
+ import { evaluateEfficiency, normalizeNetworkConditions } from '@repo/core/efficiency';
+ import { getActiveAccountId } from '@repo/core/lib/accountScope';
++import { tryBeginReplay } from '@repo/core/lib/sync/replayAdmission';
++import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity';
++import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
+ import { coreRuntime, useMutationQueue } from '@repo/core/logic';
++import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+ import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core/sync';
+ import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
+ import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
+@@ -161,21 +165,29 @@ export async function runBackgroundSyncTask() {
+   try {
+     // Filter items ready for retry (backoff expired)
+     const now = Date.now();
+-    const readyItems = queue
+-      .filter(
+-        (item) =>
+-          item.userId === activeUserId &&
+-          item.commandState !== 'auth_paused' &&
+-          item.commandState !== 'conflict' &&
+-          item.commandState !== 'rejected' &&
+-          (!item.lockLeaseExpiresAt || now >= item.lockLeaseExpiresAt) &&
+-          (!item.backoffUntil || now >= item.backoffUntil),
+-      )
+-      .slice(0, SYNC_CONFIG.maxBatchSize);
++    const readyItems = planMutationReplay(
++      queue,
++      activeUserId,
++      useTemporalStore.getState().readPolicy,
++      now,
++    ).ready.slice(0, SYNC_CONFIG.maxBatchSize);
+ 
+     for (const item of readyItems) {
++      const principalId = item.userId;
++      const admission = principalId ? tryBeginReplay(principalId) : null;
++      if (!principalId || !admission) continue;
+       try {
+-        if (!tryAcquireMutationLease(item.id, 15000)) continue;
++        if (!tryAcquireMutationLease(item.id, 15000)) {
++          admission.release();
++          continue;
++        }
++        if (!(await isReplayPrincipalCurrent(principalId))) {
++          updateMutation(item.id, {
++            commandState: 'auth_paused',
++            lockLeaseExpiresAt: undefined,
++          });
++          continue;
++        }
+         const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
+         if (workflowResult === 'pending') {
+           updateMutation(item.id, {
+@@ -199,6 +211,10 @@ export async function runBackgroundSyncTask() {
+           continue;
+         }
+ 
++        if (isMutationReplayDeferred(item)) {
++          updateMutation(item.id, { commandState: 'queued', lockLeaseExpiresAt: undefined });
++          continue;
++        }
+         await mutationFn(item.variables, {
+           idempotencyKey: item.idempotencyKey,
+           commandId: item.id,
+@@ -228,6 +244,8 @@ export async function runBackgroundSyncTask() {
+             lockLeaseExpiresAt: undefined,
+           });
+         }
++      } finally {
++        admission.release();
+       }
+     }
+   } finally {
+@@ -308,21 +326,29 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
+ 
+   try {
+     const now = Date.now();
+-    const readyItems = queue
+-      .filter(
+-        (item) =>
+-          item.userId === activeUserId &&
+-          item.commandState !== 'auth_paused' &&
+-          item.commandState !== 'conflict' &&
+-          item.commandState !== 'rejected' &&
+-          (!item.lockLeaseExpiresAt || now >= item.lockLeaseExpiresAt) &&
+-          (!item.backoffUntil || now >= item.backoffUntil),
+-      )
+-      .slice(0, SYNC_CONFIG.maxBatchSize);
++    const readyItems = planMutationReplay(
++      queue,
++      activeUserId,
++      useTemporalStore.getState().readPolicy,
++      now,
++    ).ready.slice(0, SYNC_CONFIG.maxBatchSize);
+ 
+     for (const item of readyItems) {
++      const principalId = item.userId;
++      const admission = principalId ? tryBeginReplay(principalId) : null;
++      if (!principalId || !admission) continue;
+       try {
+-        if (!tryAcquireMutationLease(item.id, 15000)) continue;
++        if (!tryAcquireMutationLease(item.id, 15000)) {
++          admission.release();
++          continue;
++        }
++        if (!(await isReplayPrincipalCurrent(principalId))) {
++          updateMutation(item.id, {
++            commandState: 'auth_paused',
++            lockLeaseExpiresAt: undefined,
++          });
++          continue;
++        }
+         const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
+         if (workflowResult === 'pending') {
+           updateMutation(item.id, {
+@@ -346,6 +372,10 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
+           continue;
+         }
+ 
++        if (isMutationReplayDeferred(item)) {
++          updateMutation(item.id, { commandState: 'queued', lockLeaseExpiresAt: undefined });
++          continue;
++        }
+         await mutationFn(item.variables, {
+           idempotencyKey: item.idempotencyKey,
+           commandId: item.id,
+@@ -370,6 +400,8 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
+             lockLeaseExpiresAt: undefined,
+           });
+         }
++      } finally {
++        admission.release();
+       }
+     }
+   } finally {
+diff --git a/apps/sanctuary-api/src/core/handlers/community.ts b/apps/sanctuary-api/src/core/handlers/community.ts
+index eddd61756..68151d002 100644
+--- a/apps/sanctuary-api/src/core/handlers/community.ts
++++ b/apps/sanctuary-api/src/core/handlers/community.ts
+@@ -1,5 +1,7 @@
++import { ORPCError } from '@orpc/server';
+ import { communityORPCContract } from '@repo/core/api/community.orpc.contract';
+ import { assertDatabase } from '../apiErrors';
++import { settleChatMessage } from '../chatMessageSettlement';
+ import { implement, type ORPCContext } from '../orpc';
+ import { doubleGateMiddleware } from '../orpcMiddleware';
+ 
+@@ -72,6 +74,12 @@ const mapGroupMember = (row: any) => ({
+ });
+ 
+ export const communityRouter = impl.router({
++  sendMessageCommand: impl.sendMessageCommand
++    .use(doubleGateMiddleware)
++    .handler(({ input, context }) => {
++      if (input.body.channel.kind !== 'group') throw new ORPCError('BAD_REQUEST');
++      return settleChatMessage(context, input.body);
++    }),
+   getGroups: impl.getGroups.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+     const query = input.query;
+     const rows = await (context.db as any).group.findMany({
+diff --git a/apps/sanctuary-api/src/core/handlers/messaging.ts b/apps/sanctuary-api/src/core/handlers/messaging.ts
+index f4b0a0e94..069e5a6b4 100644
+--- a/apps/sanctuary-api/src/core/handlers/messaging.ts
++++ b/apps/sanctuary-api/src/core/handlers/messaging.ts
+@@ -1,6 +1,8 @@
++import { ORPCError } from '@orpc/server';
+ import { messagingORPCContract } from '@repo/core/api/messaging.orpc.contract';
+ import { SovereignError } from '@repo/core/types/Errors';
+ import { assertDatabase } from '../apiErrors';
++import { settleChatMessage } from '../chatMessageSettlement';
+ import { implement, type ORPCContext } from '../orpc';
+ import { doubleGateMiddleware } from '../orpcMiddleware';
+ 
+@@ -47,6 +49,12 @@ async function requireConversationParticipant(context: ORPCContext, conversation
+ }
+ 
+ export const messagingRouter = impl.router({
++  sendMessageCommand: impl.sendMessageCommand
++    .use(doubleGateMiddleware)
++    .handler(({ input, context }) => {
++      if (input.body.channel.kind !== 'direct') throw new ORPCError('BAD_REQUEST');
++      return settleChatMessage(context, input.body);
++    }),
+   getConversations: impl.getConversations.use(doubleGateMiddleware).handler(async ({ context }) => {
+     assertDatabase(context);
+     const rows = await context.db.directConversation.findMany({
+diff --git a/packages/community/src/screens/BaseChatScreen.tsx b/packages/community/src/screens/BaseChatScreen.tsx
+index e3fbef4c2..97a5cc74f 100644
+--- a/packages/community/src/screens/BaseChatScreen.tsx
++++ b/packages/community/src/screens/BaseChatScreen.tsx
+@@ -1,502 +1,155 @@
++import { useChatMessages } from '@repo/community/hooks/useChatMessages';
++import { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
++import { useChatRealtime } from '@repo/community/hooks/useChatRealtime';
+ import type { ChatMessage } from '@repo/community/types';
+-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+-import { useSafeMutation } from '@repo/core/hooks';
+-import { storage } from '@repo/core/native';
+-import { useStore, useTemporalStore } from '@repo/core/store';
+-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+-import { ChatComposer } from '@repo/ui/components/ChatComposer';
++import {
++  type ChatChannel,
++  ChatSendCommandSchema,
++} from '@repo/core/logic/schemas/chat-command.schema';
++import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
++import { useAuthStore, useTemporalStore } from '@repo/core/store';
+ import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+ import GlobalHeader from '@repo/ui/components/GlobalHeader';
+-import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
+ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+-import { UserAvatar } from '@repo/ui/components/UserAvatar';
+ import { ChatProvider } from '@repo/ui/context/ChatContext';
+-import { MessageSquare } from '@repo/ui/icons';
+-import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+-import type React from 'react';
+-import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from 'react';
+-import { useTranslation } from 'react-i18next';
+-import { StyleSheet } from 'react-native';
+-import { FadeInDown } from 'react-native-reanimated';
+-
+-import { deliverQueuedMessages } from './chatQueueDelivery';
+-
+-let optimisticId = 0;
+-
+-const styles = StyleSheet.create({
+-  listCentered: { paddingVertical: 20, flexGrow: 1, justifyContent: 'center' },
+-  listStart: { paddingVertical: 20, flexGrow: 1, justifyContent: 'flex-start' },
+-});
++import { Box, Text } from '@repo/ui/primitives';
++import type { ReactNode } from 'react';
++import {
++  type ChatComposerAccess,
++  ChatDeliveryNotice,
++  ChatHistory,
++  ChatInput,
++} from './chatPresentation';
+ 
+ export interface SubscriptionConfig {
+-  /** Supabase table name to listen on (e.g. 'group_messages') */
+   table: string;
+-  /** Row filter string (e.g. 'group_id=eq.<uuid>') */
+   filter: string;
+-  /** Query to fetch the full message row with author join after INSERT */
+-  fetchById: (id: string) => Promise<ChatMessage | null>;
+ }
+-
+ export interface BaseChatScreenProps {
+-  /** Unique key for the Supabase realtime channel */
+   channelKey: string;
+   title: string;
+   subtitle?: string;
+-  fetchMessages: () => Promise<ChatMessage[]>;
+-  sendMessage: (content: string) => Promise<ChatMessage>;
++  fetchMessages: (viewCutoff: string) => Promise<ChatMessage[]>;
++  channel: ChatChannel;
+   subscription: SubscriptionConfig;
+   onPressAuthor?: (userId: string, userName: string) => void;
+-  headerRight?: React.ReactNode;
++  headerRight?: ReactNode;
+   isBlocked?: boolean;
+   blockedMessage?: string;
+   isReadOnly?: boolean;
+ }
+ 
+-export default function BaseChatScreen({
+-  channelKey,
+-  title,
+-  subtitle,
+-  fetchMessages,
+-  sendMessage: performSendMessage,
+-  subscription,
+-  onPressAuthor,
+-  headerRight,
+-  isBlocked,
+-  blockedMessage,
+-  isReadOnly,
+-}: BaseChatScreenProps) {
+-  const user = useStore((state) => state.user);
+-  const isOffline = useTemporalStore((state) => state.isOffline);
+-  const { t } = useTranslation();
+-
+-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+-  const [loading, setLoading] = useState(true);
+-  const [loadError, setLoadError] = useState<string | null>(null);
+-  const [failedMessage, setFailedMessage] = useState<string | null>(null);
+-  const [queuedMessageCount, setQueuedMessageCount] = useState(0);
+-  const [isFlushingQueue, setIsFlushingQueue] = useState(false);
+-  const [queueError, setQueueError] = useState<string | null>(null);
+-  const [retryNonce, setRetryNonce] = useState(0);
+-  const [draft, setDraft] = useState('');
+-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+-  const [isPending, startTransition] = useTransition();
+-  const isFlushingQueueRef = useRef(false);
+-
+-  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+-    messages,
+-    (state: ChatMessage[], newMessage: ChatMessage) => [...state, newMessage],
+-  );
+-
+-  const { mutate: sendMessage } = useSafeMutation<ChatMessage, string>(
+-    (content: string) => performSendMessage(content),
+-    {
+-      mutationKey: 'sendMessage',
+-      scope: 'chat',
+-      mutationType: 'CREATE',
+-      onError: (_error: unknown, content: string) => setFailedMessage(content),
+-      onSuccess: (data: ChatMessage | null) => {
+-        if (data) {
+-          setMessages((prev) => [...prev, data]);
+-        }
+-      },
+-    },
++export default function BaseChatScreen(props: BaseChatScreenProps) {
++  const principalId = useAuthStore((state) => state.user?.id);
++  if (!principalId) return <BrandedErrorState title="Sign in to open this conversation" />;
++  return (
++    <AccountChat
++      key={`${principalId}:${props.channel.kind}:${props.channel.id}`}
++      {...props}
++      principalId={principalId}
++    />
+   );
++}
+ 
+-  // Initial load — a local async function declared inside the effect is the
+-  // sanctioned fetch-then-setState pattern for this repo's set-state-in-effect rule.
+-  useEffect(() => {
+-    async function load() {
+-      setLoading(true);
+-      setLoadError(null);
+-      try {
+-        const data = await fetchMessages();
+-        setMessages(data);
+-        setLoadError(null);
+-      } catch (err) {
+-        console.error('[BaseChatScreen] fetch error', err);
+-        setLoadError(err instanceof Error ? err.message : 'Messages could not be loaded.');
+-      } finally {
+-        setLoading(false);
+-      }
+-    }
+-    void load();
+-  }, [fetchMessages, retryNonce]);
+-
+-  // Real-time subscription
+-  useEffect(() => {
+-    const channel = supabase
+-      .channel(channelKey)
+-      .on(
+-        'postgres_changes',
+-        {
+-          event: 'INSERT',
+-          schema: 'public',
+-          table: subscription.table,
+-          filter: subscription.filter,
+-        },
+-        (payload) => {
+-          void subscription
+-            .fetchById(payload.new.id)
+-            .then((msg) => {
+-              if (!msg) return;
+-              setMessages((prev) => {
+-                if (prev.some((m) => m.id === msg.id)) return prev;
+-                return [...prev, msg];
+-              });
+-            })
+-            .catch((err: unknown) => {
+-              console.error('[BaseChatScreen] realtime fetch error', err);
+-            });
+-        },
+-      )
+-      .subscribe();
+-
+-    return () => {
+-      void supabase.removeChannel(channel);
++function composerAccess(props: BaseChatScreenProps): ChatComposerAccess {
++  if (props.isReadOnly) return { kind: 'history' };
++  if (props.isBlocked)
++    return {
++      kind: 'blocked',
++      message: props.blockedMessage ?? 'You cannot send messages to this sanctuary.',
+     };
+-  }, [channelKey, subscription]);
++  return { kind: 'editable' };
++}
+ 
+-  // Typing indicator via Supabase broadcast
+-  useEffect(() => {
+-    const typingChannel = supabase
+-      .channel(`typing:${channelKey}`)
+-      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+-        const name = (payload as { userId?: string; userName?: string })?.userName;
+-        const uid = (payload as { userId?: string })?.userId;
+-        if (!name || uid === user?.id) return;
+-        setTypingUsers((prev) => (prev.includes(name) ? prev : [...prev, name]));
+-        setTimeout(() => setTypingUsers((prev) => prev.filter((n) => n !== name)), 3000);
+-      })
+-      .subscribe();
+-    return () => {
+-      void supabase.removeChannel(typingChannel);
++function pendingMessages(
++  outbox: ReturnType<typeof useChatOutbox>,
++  principalId: string,
++  userName: string,
++): ChatMessage[] {
++  return outbox.pending.map((item) => {
++    const command = ChatSendCommandSchema.parse(item.variables);
++    return {
++      id: command.operationId,
++      author_id: principalId,
++      content: command.content,
++      created_at: new Date(item.timestamp),
++      author: { full_name: userName },
+     };
+-  }, [channelKey, user?.id]);
+-
+-  const handleTyping = (text: string) => {
+-    setDraft(text);
+-    if (text.length > 0 && text.length % 5 === 0) {
+-      void supabase.channel(`typing:${channelKey}`).send({
+-        type: 'broadcast',
+-        event: 'typing',
+-        payload: { userId: user?.id, userName: user?.full_name || 'Someone' },
+-      });
+-    }
+-  };
+-
+-  const queueMessage = useCallback(
+-    (content: string) => {
+-      try {
+-        const key = `chat_queue:${channelKey}`;
+-        const raw = storage.getString(key);
+-        const queued: string[] = raw ? JSON.parse(raw) : [];
+-        queued.push(content);
+-        storage.set(key, JSON.stringify(queued));
+-        setQueuedMessageCount(queued.length);
+-        setQueueError(null);
+-        return true;
+-      } catch (error) {
+-        console.error('[BaseChatScreen] could not persist queued message', error);
+-        setQueueError(
+-          'This message could not be saved for retry. Restore the draft and try again.',
+-        );
+-        return false;
+-      }
+-    },
+-    [channelKey],
+-  );
+-
+-  useEffect(() => {
+-    try {
+-      const raw = storage.getString(`chat_queue:${channelKey}`);
+-      const queued: string[] = raw ? JSON.parse(raw) : [];
+-      setQueuedMessageCount(queued.length);
+-    } catch (error) {
+-      console.error('[BaseChatScreen] could not inspect queued messages', error);
+-      setQueueError(
+-        'Queued messages are temporarily unavailable. Your current draft is still safe.',
+-      );
+-    }
+-  }, [channelKey]);
+-
+-  const flushQueuedMessages = useCallback(async () => {
+-    if (isOffline || isFlushingQueueRef.current) return;
+-
+-    isFlushingQueueRef.current = true;
+-    let startedVisualFeedback = false;
+-    try {
+-      const key = `chat_queue:${channelKey}`;
+-      const raw = storage.getString(key);
+-      if (!raw) return;
+-      const queued: string[] = JSON.parse(raw);
+-      if (queued.length === 0) return;
+-      startedVisualFeedback = true;
+-      setIsFlushingQueue(true);
+-      setQueuedMessageCount(queued.length);
+-
+-      const result = await deliverQueuedMessages(queued, sendMessage);
+-      if (result.status === 'delivered') {
+-        storage.delete(key);
+-        setQueuedMessageCount(0);
+-        setQueueError(null);
+-        return;
+-      }
++  });
++}
+ 
+-      storage.set(key, JSON.stringify(result.remainingMessages));
+-      setQueuedMessageCount(result.remainingMessages.length);
+-      console.error('[BaseChatScreen] queued send error', result.error);
+-      setQueueError(
+-        'Some queued messages could not send yet. They are still saved and ready to retry.',
+-      );
+-    } catch (error) {
+-      console.error('[BaseChatScreen] could not read queued messages', error);
+-      setQueueError(
+-        'Queued messages are temporarily unavailable. Your current draft is still safe.',
+-      );
+-    } finally {
+-      isFlushingQueueRef.current = false;
+-      if (startedVisualFeedback) setIsFlushingQueue(false);
++function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
++  const { principalId, channel, channelKey, fetchMessages, subscription } = props;
++  const userName = useAuthStore((state) => state.user?.full_name ?? 'You');
++  const { isOffline, isOnline } = useOfflineStatus();
++  const viewDate = useTemporalStore((state) => state.viewDate);
++  const outbox = useChatOutbox(principalId, channel);
++  const deferDelivery = isOffline || outbox.readPolicy === 'cached-only';
++  const history = useChatMessages({
++    principalId,
++    channel,
++    viewDate,
++    fetchMessages,
++    remoteEnabled: isOnline && outbox.readPolicy === 'live',
++  });
++  const realtime = useChatRealtime({
++    principalId,
++    channelKey,
++    userName,
++    canBroadcast: isOnline && !deferDelivery,
++    table: subscription.table,
++    filter: subscription.filter,
++    queryKey: history.queryKey,
++  });
++  const messages = history.data ?? [];
++  const pending = props.isReadOnly ? [] : pendingMessages(outbox, principalId, userName);
++  const visibleMessages = [
++    ...messages,
++    ...pending.filter((item) => !messages.some((saved) => saved.id === item.id)),
++  ];
++  const retry = async () => {
++    if (!deferDelivery) {
++      outbox.retryPending();
++      await history.refresh();
+     }
+-  }, [channelKey, isOffline, sendMessage]);
+-
+-  // Reconnection is an explicit delivery opportunity. The queue is drained in
+-  // order and persisted after a failure so a later message cannot overtake it.
+-  useEffect(() => {
+-    if (!isOffline) void flushQueuedMessages();
+-  }, [flushQueuedMessages, isOffline]);
+-
+-  // Send — offline queue via MMKV + backgroundSync
+-  const handleSend = async () => {
+-    const content = draft.trim();
+-    if (!content || !user) return;
+-    setDraft('');
+-
+-    startTransition(async () => {
+-      const optimistic: ChatMessage = {
+-        id: `opt-${++optimisticId}`,
+-        author_id: user.id,
+-        content,
+-        created_at: new Date(),
+-        author: {
+-          full_name: user.full_name || 'You',
+-          avatar_url: user.avatar_url ?? undefined,
+-        },
+-      };
+-
+-      addOptimisticMessage(optimistic);
+-
+-      // If offline, queue immediately and keep optimistic
+-      if (isOffline) {
+-        const wasQueued = queueMessage(content);
+-        if (!wasQueued) {
+-          setDraft(content);
+-          setFailedMessage(content);
+-        }
+-        return;
+-      }
+-
+-      try {
+-        await sendMessage(content);
+-      } catch (err) {
+-        console.error('[BaseChatScreen] send error', err);
+-        const wasQueued = queueMessage(content);
+-        if (wasQueued) {
+-          setFailedMessage(null);
+-        } else {
+-          setDraft(content);
+-          setFailedMessage(content);
+-        }
+-      }
+-    });
+-  };
+-
+-  // Message renderer
+-  const renderMessage = ({ item }: { item: ChatMessage }) => {
+-    const isOwn = item.author_id === user?.id;
+-    const authorName = item.author?.full_name || 'Unknown';
+-    const time = new Date(item.created_at).toLocaleTimeString([], {
+-      hour: '2-digit',
+-      minute: '2-digit',
+-    });
+-
+-    return (
+-      <HStack className={`justify-${isOwn ? 'end' : 'start'} mb-4 px-5`}>
+-        {!isOwn && (
+-          <Box className="mr-3">
+-            <Pressable
+-              onPress={() => onPressAuthor?.(item.author_id, authorName)}
+-              className="bg-phase-surface rounded-full shadow-sm"
+-              accessibilityRole="button"
+-              accessibilityLabel={`View profile of ${authorName}`}
+-              accessibilityHint="Opens this member's profile"
+-            >
+-              <UserAvatar avatarUrl={item.author?.avatar_url} fullName={authorName} size={32} />
+-            </Pressable>
+-          </Box>
+-        )}
+-
+-        <VStack className={`max-w-[75%] gap-1 ${isOwn ? 'items-end' : 'items-start'}`}>
+-          {!isOwn && (
+-            <Text className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">
+-              {authorName}
+-            </Text>
+-          )}
+-          <Box
+-            className={`px-4 py-3 rounded-2xl border ${
+-              isOwn
+-                ? 'bg-phase-interactive border-phase-interactive rounded-tr-sm'
+-                : 'bg-phase-surface border-border rounded-tl-sm'
+-            }`}
+-          >
+-            <Text
+-              className={`text-sm leading-relaxed font-medium ${isOwn ? 'text-white' : 'text-ink'}`}
+-            >
+-              {item.content}
+-            </Text>
+-          </Box>
+-          <Text className="text-[9px] font-bold text-ink/20 px-1">{time}</Text>
+-        </VStack>
+-      </HStack>
+-    );
+   };
+-
+   return (
+-    <ScreenWrapper scroll={false} noTopInset={true} className="bg-phase-canvas">
+-      <GlobalHeader title={title} subtitle={subtitle} showBack rightAction={headerRight} />
+-
++    <ScreenWrapper scroll={false} noTopInset className="bg-phase-canvas">
++      <GlobalHeader
++        title={props.title}
++        subtitle={props.subtitle}
++        showBack
++        rightAction={props.headerRight}
++      />
+       <ChatProvider>
+         <Box className="flex-1">
+-          {loading ? (
+-            <Box className="flex-1 items-center justify-center">
+-              <BrandPulse size={32} accessibilityLabel="Loading messages" />
+-              <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
+-                Tuning Frequencies...
+-              </Text>
+-            </Box>
+-          ) : loadError ? (
+-            <BrandedErrorState
+-              title="Messages could not settle"
+-              message={isOffline ? 'Reconnect to try again.' : loadError}
+-            >
+-              <Pressable
+-                onPress={() => setRetryNonce((value) => value + 1)}
+-                accessibilityRole="button"
+-                accessibilityLabel="Try loading messages again"
+-              >
+-                <Text className="text-phase-interactive font-bold">Try again</Text>
+-              </Pressable>
+-            </BrandedErrorState>
+-          ) : (
+-            <SanctuaryLegendList
+-              keyboardLiftBehavior="always"
+-              initialScrollAtEnd
+-              maintainScrollAtEnd
+-              data={optimisticMessages}
+-              keyExtractor={(item) => item.id}
+-              renderItem={renderMessage}
+-              contentContainerStyle={messages.length === 0 ? styles.listCentered : styles.listStart}
+-              showsVerticalScrollIndicator={false}
+-              ListEmptyComponent={
+-                <AnimatedView entering={FadeInDown.duration(800).springify()}>
+-                  <Box className="items-center px-10">
+-                    <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
+-                      <Icon as={MessageSquare} size="lg" className="text-ink/20" />
+-                    </Box>
+-                    <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
+-                      {t('chat.empty')}
+-                    </Text>
+-                  </Box>
+-                </AnimatedView>
+-              }
+-            />
+-          )}
+-
+-          {/* Compose bar */}
++          <ChatHistory
++            messages={visibleMessages}
++            loading={history.isLoading}
++            error={history.error}
++            unavailable={history.data === undefined}
++            retry={history.refresh}
++            principalId={principalId}
++            onPressAuthor={props.onPressAuthor}
++          />
+           <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
+-            {isOffline && !isReadOnly ? (
+-              <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2">
+-                <Text className="text-phase-warning text-[11px] font-semibold text-center">
+-                  Offline — sending may be delayed until you reconnect.
+-                </Text>
+-              </Box>
+-            ) : null}
+-            {queuedMessageCount > 0 ? (
+-              <Box
+-                className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2"
+-                accessibilityLiveRegion="polite"
+-              >
+-                <Text className="text-phase-warning text-[11px] font-semibold">
+-                  {isFlushingQueue
+-                    ? `Sending ${queuedMessageCount} queued ${queuedMessageCount === 1 ? 'message' : 'messages'}…`
+-                    : `${queuedMessageCount} ${queuedMessageCount === 1 ? 'message is' : 'messages are'} queued securely. ${isOffline ? 'They will send when the connection returns.' : 'They are ready to retry.'}`}
+-                </Text>
+-              </Box>
+-            ) : null}
+-            {queueError ? (
+-              <Box
+-                className="mb-3 rounded-xl border border-phase-danger/30 bg-phase-danger/10 px-3 py-2"
+-                accessibilityRole="alert"
+-              >
+-                <Text className="text-phase-danger text-[11px] font-semibold">{queueError}</Text>
+-                {!isOffline ? (
+-                  <Pressable
+-                    onPress={() => void flushQueuedMessages()}
+-                    accessibilityRole="button"
+-                    accessibilityLabel="Retry queued messages"
+-                    className="mt-2 self-start"
+-                  >
+-                    <Text className="text-phase-interactive text-[11px] font-bold">
+-                      Retry queued messages
+-                    </Text>
+-                  </Pressable>
+-                ) : null}
+-              </Box>
+-            ) : null}
+-            {failedMessage ? (
+-              <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2 flex-row items-center justify-between">
+-                <Text className="text-phase-warning text-[11px] font-semibold">
+-                  Message could not be sent or queued.
+-                </Text>
+-                <Pressable
+-                  onPress={() => {
+-                    setDraft(failedMessage);
+-                    setFailedMessage(null);
+-                  }}
+-                >
+-                  <Text className="text-phase-interactive text-[11px] font-bold">
+-                    Restore draft
+-                  </Text>
+-                </Pressable>
+-              </Box>
+-            ) : null}
+-            {isReadOnly ? (
+-              <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
+-                <Text className="text-ink/40 text-[11px] font-medium italic">
+-                  {t('chat.historicalView')}
+-                </Text>
+-              </Box>
+-            ) : isBlocked ? (
+-              <Box className="py-2 items-center bg-phase-danger/5 rounded-xl border border-dashed border-phase-danger/20">
+-                <Text className="text-phase-danger text-[11px] font-medium italic">
+-                  {blockedMessage || 'You cannot send messages to this sanctuary.'}
+-                </Text>
+-              </Box>
+-            ) : (
+-              <>
+-                <ChatComposer
+-                  value={draft}
+-                  onChangeText={handleTyping}
+-                  onSend={() => void handleSend()}
+-                  isSending={isPending}
+-                  placeholder={t('chat.placeholder')}
+-                />
+-                {typingUsers.length > 0 ? (
+-                  <Text className="text-[11px] text-ink/40 italic mt-2 px-1">
+-                    {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing…
+-                  </Text>
+-                ) : null}
+-              </>
++            {isOffline && !props.isReadOnly && (
++              <Text className="text-phase-warning text-[11px] font-semibold text-center">
++                Offline — sending may be delayed until you reconnect.
++              </Text>
+             )}
++            <ChatDeliveryNotice
++              outbox={outbox}
++              deferred={deferDelivery}
++              hasLegacyQueue={outbox.hasLegacyQueue}
++              retry={retry}
++            />
++            <ChatInput
++              outbox={outbox}
++              access={composerAccess(props)}
++              onTyping={realtime.sendTyping}
++              typingUsers={realtime.typingUsers}
++            />
+           </Box>
+         </Box>
+       </ChatProvider>
+diff --git a/packages/community/src/screens/DirectMessageScreen.tsx b/packages/community/src/screens/DirectMessageScreen.tsx
+index 7b3819500..17edf7bdf 100644
+--- a/packages/community/src/screens/DirectMessageScreen.tsx
++++ b/packages/community/src/screens/DirectMessageScreen.tsx
+@@ -5,16 +5,14 @@
+  * Wires up DM-specific data sources (fetch, send, realtime subscription).
+  */
+ 
+-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+-
+-import { useTemporalStore } from '@repo/core/store';
+-import { useAuthStore } from '@repo/core/store';
+-import { router, useLocalSearchParams } from 'expo-router';
+-import React from 'react';
+ import { communityAPI } from '@repo/community/api/community';
+ import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
+-import type { ChatMessage } from '@repo/community/types';
+ import BaseChatScreen, { type SubscriptionConfig } from '@repo/community/screens/BaseChatScreen';
++import type { ChatMessage } from '@repo/community/types';
++import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
++import { useAuthStore, useTemporalStore } from '@repo/core/store';
++import { router, useLocalSearchParams } from 'expo-router';
++import React from 'react';
+ 
+ export default function DirectMessageScreen() {
+   const params = useLocalSearchParams<{ conversationId?: string; userName?: string }>();
+@@ -52,26 +50,17 @@ export default function DirectMessageScreen() {
+     void fetchContext();
+   }, [conversationId, user]);
+ 
+-  const fetchMessages = React.useCallback(async (): Promise<ChatMessage[]> => {
+-    return communityAPI.getDirectMessages(conversationId, 60, viewDate) as Promise<ChatMessage[]>;
+-  }, [conversationId, viewDate]);
+-
+-  const sendMessage = React.useCallback(async (content: string): Promise<ChatMessage> => {
+-    if (isPastView) throw new Error('Cannot send messages in historical view');
+-    return communityAPI.sendDirectMessage(conversationId, content) as Promise<ChatMessage>;
+-  }, [conversationId, isPastView]);
++  const fetchMessages = React.useCallback(
++    async (cutoff: string): Promise<ChatMessage[]> => {
++      return communityAPI.getDirectMessages(conversationId, 60, cutoff) as Promise<ChatMessage[]>;
++    },
++    [conversationId],
++  );
+ 
+-  const subscription = React.useMemo<SubscriptionConfig>(() => ({
++  const subscription = React.useMemo<SubscriptionConfig>(
++    () => ({
+       table: 'direct_messages',
+       filter: `conversation_id=eq.${conversationId}`,
+-      fetchById: async (id: string) => {
+-        const { data } = await supabase
+-          .from('direct_messages')
+-          .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
+-          .eq('id', id)
+-          .single();
+-        return data as ChatMessage | null;
+-      },
+     }),
+     [conversationId],
+   );
+@@ -82,7 +71,7 @@ export default function DirectMessageScreen() {
+       title={userName}
+       subtitle="Direct Message"
+       fetchMessages={fetchMessages}
+-      sendMessage={sendMessage}
++      channel={{ kind: 'direct', id: conversationId }}
+       subscription={subscription}
+       onPressAuthor={(userId) => {
+         router.push({
+diff --git a/packages/community/src/screens/GroupChatScreen.tsx b/packages/community/src/screens/GroupChatScreen.tsx
+index 48d2a965a..c17f32df0 100644
+--- a/packages/community/src/screens/GroupChatScreen.tsx
++++ b/packages/community/src/screens/GroupChatScreen.tsx
+@@ -6,15 +6,13 @@
+  * data sources (fetch, send, realtime subscription).
+  */
+ 
+-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+-
+-import { useTemporalStore } from '@repo/core/store';
+-import { router, useLocalSearchParams } from 'expo-router';
+-import React from 'react';
+ import { communityAPI } from '@repo/community/api/community';
+ import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
+-import type { ChatMessage } from '@repo/community/types';
+ import BaseChatScreen, { type SubscriptionConfig } from '@repo/community/screens/BaseChatScreen';
++import type { ChatMessage } from '@repo/community/types';
++import { useTemporalStore } from '@repo/core/store';
++import { router, useLocalSearchParams } from 'expo-router';
++import React from 'react';
+ 
+ export default function GroupChatScreen() {
+   const params = useLocalSearchParams<{ conversationId?: string; groupName?: string }>();
+@@ -25,27 +23,17 @@ export default function GroupChatScreen() {
+ 
+   const { viewDate, isPastView } = useTemporalStore();
+ 
+-  const fetchMessages = React.useCallback(async (): Promise<ChatMessage[]> => {
+-    return communityAPI.getGroupMessages(groupId, 60, viewDate) as Promise<ChatMessage[]>;
+-  }, [groupId, viewDate]);
+-
+-  const sendMessage = React.useCallback(async (content: string): Promise<ChatMessage> => {
+-    if (isPastView) throw new Error('Cannot send messages in historical view');
+-    return communityAPI.sendGroupMessage(groupId, content) as Promise<ChatMessage>;
+-  }, [groupId, isPastView]);
++  const fetchMessages = React.useCallback(
++    async (cutoff: string): Promise<ChatMessage[]> => {
++      return communityAPI.getGroupMessages(groupId, 60, cutoff) as Promise<ChatMessage[]>;
++    },
++    [groupId],
++  );
+ 
+   const subscription = React.useMemo<SubscriptionConfig>(
+     () => ({
+       table: 'group_messages',
+       filter: `group_id=eq.${groupId}`,
+-      fetchById: async (id: string) => {
+-        const { data } = await supabase
+-          .from('group_messages')
+-          .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
+-          .eq('id', id)
+-          .single();
+-        return data as ChatMessage | null;
+-      },
+     }),
+     [groupId],
+   );
+@@ -56,7 +44,7 @@ export default function GroupChatScreen() {
+       title={groupName}
+       subtitle="Group Chat"
+       fetchMessages={fetchMessages}
+-      sendMessage={sendMessage}
++      channel={{ kind: 'group', id: groupId }}
+       subscription={subscription}
+       isReadOnly={isPastView}
+       key={viewDate} // Force remount/refetch on date change for consistency
+diff --git a/packages/community/src/screens/baseChatDeliveryRecovery.test.ts b/packages/community/src/screens/baseChatDeliveryRecovery.test.ts
+index e531c9111..155fab764 100644
+--- a/packages/community/src/screens/baseChatDeliveryRecovery.test.ts
++++ b/packages/community/src/screens/baseChatDeliveryRecovery.test.ts
+@@ -2,24 +2,25 @@ import { readFileSync } from 'node:fs';
+ import { resolve } from 'node:path';
+ import { describe, expect, it } from 'vitest';
+ 
+-const baseChatScreen = readFileSync(resolve(import.meta.dirname, 'BaseChatScreen.tsx'), 'utf8');
++const baseChatScreen = ['BaseChatScreen.tsx', 'chatPresentation.tsx']
++  .map((file) => readFileSync(resolve(import.meta.dirname, file), 'utf8'))
++  .join('\n');
+ 
+-describe('chat delivery recovery', () => {
++describe('chat delivery recovery source contract (G0)', () => {
+   it('keeps queued delivery count and reconnection state visible to assistive technology', () => {
+-    expect(baseChatScreen).toContain('setQueuedMessageCount(queued.length);');
+-    expect(baseChatScreen).toContain('deliverQueuedMessages(queued, sendMessage)');
++    expect(baseChatScreen).toContain('outbox.pending.length');
++    expect(baseChatScreen).toContain('await outbox.submit(content)');
+     expect(baseChatScreen).toContain('accessibilityLiveRegion="polite"');
+-    expect(baseChatScreen).toContain('queued securely');
++    expect(baseChatScreen).toContain('saved for delivery');
+   });
+ 
+   it('does not silently discard queue persistence or delivery errors and gives a retry action', () => {
+-    expect(baseChatScreen).toContain(
+-      "console.error('[BaseChatScreen] could not persist queued message', error);",
+-    );
+-    expect(baseChatScreen).toContain(
+-      "console.error('[BaseChatScreen] queued send error', result.error);",
+-    );
++    expect(baseChatScreen).toContain('outbox.admission.error?.message');
++    expect(baseChatScreen).toContain('outbox.rejected.length');
+     expect(baseChatScreen).toContain('Retry queued messages');
+-    expect(baseChatScreen).toContain('Some queued messages could not send yet.');
++    expect(baseChatScreen).toContain('Some saved messages need review before delivery.');
++    expect(baseChatScreen).toContain('setFailedMessage(content)');
++    expect(baseChatScreen).not.toContain('useSafeMutation');
++    expect(baseChatScreen).not.toContain('storage.delete(');
+   });
+ });
+diff --git a/packages/core/src/api/community.orpc.contract.ts b/packages/core/src/api/community.orpc.contract.ts
+index d468f7e78..fdf152c89 100644
+--- a/packages/core/src/api/community.orpc.contract.ts
++++ b/packages/core/src/api/community.orpc.contract.ts
+@@ -1,3 +1,7 @@
++import {
++  ChatSendCommandSchema,
++  ChatSendReceiptSchema,
++} from '@repo/core/logic/schemas/chat-command.schema';
+ import { z } from 'zod';
+ 
+ const communityPolicy = (action: 'create' | 'read' | 'update' | 'delete', subject: 'Post') =>
+@@ -6,9 +10,9 @@ const communityPolicy = (action: 'create' | 'read' | 'update' | 'delete', subjec
+   }) as const;
+ 
+ const comment = z.object({
+-  id: z.string().uuid(),
+-  post_id: z.string().uuid(),
+-  author_id: z.string().uuid().nullable(),
++  id: z.uuid(),
++  post_id: z.uuid(),
++  author_id: z.uuid().nullable(),
+   content: z.string(),
+   is_anonymous: z.boolean(),
+   is_official_answer: z.boolean(),
+@@ -20,9 +24,9 @@ const comment = z.object({
+ 
+ const success = z.object({ success: z.literal(true) });
+ const groupMember = z.object({
+-  id: z.string().uuid(),
+-  group_id: z.string().uuid(),
+-  user_id: z.string().uuid(),
++  id: z.uuid(),
++  group_id: z.uuid(),
++  user_id: z.uuid(),
+   role: z.string(),
+   status: z.string(),
+   joined_at: z.string().optional(),
+@@ -39,7 +43,7 @@ export const communityORPCContract = {
+       query: z.object({
+         limit: z.coerce.number().int().positive().max(200).optional(),
+         offset: z.coerce.number().int().nonnegative().optional(),
+-        schoolId: z.string().uuid().optional(),
++        schoolId: z.uuid().optional(),
+         search: z.string().trim().min(1).max(120).optional(),
+         isPublic: z.boolean().optional(),
+         type: z.string().trim().min(1).max(64).optional(),
+@@ -51,7 +55,7 @@ export const communityORPCContract = {
+   getGroup: {
+     method: 'get',
+     path: '/community/groups/:groupId',
+-    request: { params: z.object({ groupId: z.string().uuid() }) },
++    request: { params: z.object({ groupId: z.uuid() }) },
+     metadata: { policy: { action: 'read', subject: 'Group' } },
+     responses: { 200: { schema: z.any(), description: 'Community group' } },
+   },
+@@ -62,7 +66,7 @@ export const communityORPCContract = {
+       body: z.object({
+         name: z.string().trim().min(1).max(120),
+         description: z.string().trim().max(4000).optional(),
+-        schoolId: z.string().uuid().optional(),
++        schoolId: z.uuid().optional(),
+         type: z.string().trim().min(1).max(64).optional(),
+         visibility: z.string().trim().min(1).max(64).optional(),
+       }),
+@@ -73,7 +77,7 @@ export const communityORPCContract = {
+   joinGroup: {
+     method: 'post',
+     path: '/community/groups/:groupId/join',
+-    request: { params: z.object({ groupId: z.string().uuid() }) },
++    request: { params: z.object({ groupId: z.uuid() }) },
+     metadata: { policy: { action: 'create', subject: 'Group' } },
+     responses: { 201: { schema: groupMember, description: 'Joined group' } },
+   },
+@@ -82,10 +86,10 @@ export const communityORPCContract = {
+     path: '/community/posts',
+     request: {
+       query: z.object({
+-        groupId: z.string().uuid().optional(),
++        groupId: z.uuid().optional(),
+         limit: z.coerce.number().int().positive().max(200).optional(),
+         offset: z.coerce.number().int().nonnegative().optional(),
+-        viewDate: z.string().datetime().optional(),
++        viewDate: z.iso.datetime().optional(),
+       }),
+     },
+     metadata: communityPolicy('read', 'Post'),
+@@ -95,8 +99,8 @@ export const communityORPCContract = {
+     method: 'get',
+     path: '/community/resonance/:userId',
+     request: {
+-      params: z.object({ userId: z.string().uuid() }),
+-      query: z.object({ viewDate: z.string().datetime().optional() }),
++      params: z.object({ userId: z.uuid() }),
++      query: z.object({ viewDate: z.iso.datetime().optional() }),
+     },
+     metadata: communityPolicy('read', 'Post'),
+     responses: {
+@@ -110,10 +114,10 @@ export const communityORPCContract = {
+     method: 'get',
+     path: '/community/groups/:groupId/messages',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
++      params: z.object({ groupId: z.uuid() }),
+       query: z.object({
+         limit: z.coerce.number().int().positive().max(200).optional(),
+-        viewDate: z.string().datetime().optional(),
++        viewDate: z.iso.datetime().optional(),
+       }),
+     },
+     metadata: { policy: { action: 'read', subject: 'Group' } },
+@@ -123,18 +127,27 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/groups/:groupId/messages',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
++      params: z.object({ groupId: z.uuid() }),
+       body: z.object({ content: z.string().trim().min(1).max(4000) }),
+     },
+     metadata: { policy: { action: 'create', subject: 'Group' } },
+     responses: { 201: { schema: z.any(), description: 'Sent group message' } },
+   },
++  sendMessageCommand: {
++    method: 'post',
++    path: '/community/message-commands',
++    request: { body: ChatSendCommandSchema },
++    metadata: { policy: { action: 'create', subject: 'Group' } },
++    responses: {
++      201: { schema: ChatSendReceiptSchema, description: 'Committed circle message receipt' },
++    },
++  },
+   createPost: {
+     method: 'post',
+     path: '/community/posts',
+     request: {
+       body: z.object({
+-        groupId: z.string().uuid(),
++        groupId: z.uuid(),
+         content: z.string().trim().min(1).max(4000),
+         postType: z.string().trim().min(1).max(64).default('discussion'),
+         authorTier: z.string().trim().min(1).max(64),
+@@ -147,7 +160,7 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/posts/:postId/reactions',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+       body: z.object({ emoji: z.string().trim().min(1).max(32).optional() }),
+     },
+     metadata: communityPolicy('create', 'Post'),
+@@ -159,9 +172,9 @@ export const communityORPCContract = {
+     method: 'patch',
+     path: '/community/groups/:groupId/members/status',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
++      params: z.object({ groupId: z.uuid() }),
+       body: z.object({
+-        userId: z.string().uuid(),
++        userId: z.uuid(),
+         status: z.enum(['active', 'rejected', 'pending']),
+       }),
+     },
+@@ -172,7 +185,7 @@ export const communityORPCContract = {
+     method: 'patch',
+     path: '/community/groups/:groupId/policy',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
++      params: z.object({ groupId: z.uuid() }),
+       body: z.object({ joinPolicy: z.string().trim().min(1).max(64) }),
+     },
+     metadata: { policy: { action: 'update', subject: 'Group' } },
+@@ -182,7 +195,7 @@ export const communityORPCContract = {
+     method: 'get',
+     path: '/community/groups/:groupId/members',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
++      params: z.object({ groupId: z.uuid() }),
+       query: z.object({ status: z.string().optional() }),
+     },
+     metadata: { policy: { action: 'read', subject: 'Group' } },
+@@ -192,8 +205,8 @@ export const communityORPCContract = {
+     method: 'patch',
+     path: '/community/groups/:groupId/members/role',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
+-      body: z.object({ userId: z.string().uuid(), role: z.string().trim().min(1).max(64) }),
++      params: z.object({ groupId: z.uuid() }),
++      body: z.object({ userId: z.uuid(), role: z.string().trim().min(1).max(64) }),
+     },
+     metadata: { policy: { action: 'update', subject: 'Group' } },
+     responses: { 200: { schema: groupMember, description: 'Updated group member role' } },
+@@ -202,7 +215,7 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/groups/:groupId/members/approve-all',
+     request: {
+-      params: z.object({ groupId: z.string().uuid() }),
++      params: z.object({ groupId: z.uuid() }),
+     },
+     metadata: { policy: { action: 'update', subject: 'Group' } },
+     responses: { 200: { schema: success, description: 'Approved pending group members' } },
+@@ -211,7 +224,7 @@ export const communityORPCContract = {
+     method: 'get',
+     path: '/community/posts/:postId/comments',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+       query: z.object({
+         limit: z.number().int().positive().max(200).optional(),
+       }),
+@@ -223,7 +236,7 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/posts/:postId/comments',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+       body: z.object({
+         content: z.string().trim().min(1).max(4000),
+         isAnonymous: z.boolean().optional(),
+@@ -236,7 +249,7 @@ export const communityORPCContract = {
+     method: 'delete',
+     path: '/community/comments/:commentId',
+     request: {
+-      params: z.object({ commentId: z.string().uuid() }),
++      params: z.object({ commentId: z.uuid() }),
+     },
+     metadata: communityPolicy('delete', 'Post'),
+     responses: { 200: { schema: success, description: 'Comment deleted' } },
+@@ -245,7 +258,7 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/comments/:commentId/upvote',
+     request: {
+-      params: z.object({ commentId: z.string().uuid() }),
++      params: z.object({ commentId: z.uuid() }),
+     },
+     metadata: communityPolicy('create', 'Post'),
+     responses: {
+@@ -256,7 +269,7 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/comments/:commentId/official',
+     request: {
+-      params: z.object({ commentId: z.string().uuid() }),
++      params: z.object({ commentId: z.uuid() }),
+     },
+     metadata: communityPolicy('update', 'Post'),
+     responses: { 200: { schema: success, description: 'Official answer state updated' } },
+@@ -265,7 +278,7 @@ export const communityORPCContract = {
+     method: 'get',
+     path: '/community/polls/:postId',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+     },
+     metadata: communityPolicy('read', 'Post'),
+     responses: {
+@@ -273,7 +286,7 @@ export const communityORPCContract = {
+         schema: z.object({
+           counts: z.record(z.string(), z.number().int().nonnegative()),
+           totalVotes: z.number().int().nonnegative(),
+-          userVotes: z.array(z.string().uuid()),
++          userVotes: z.array(z.uuid()),
+         }),
+         description: 'Poll status',
+       },
+@@ -283,16 +296,16 @@ export const communityORPCContract = {
+     method: 'post',
+     path: '/community/polls/:postId/vote',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+       body: z.object({
+-        optionId: z.string().uuid(),
++        optionId: z.uuid(),
+         allowMultiple: z.boolean().optional(),
+       }),
+     },
+     metadata: communityPolicy('create', 'Post'),
+     responses: {
+       200: {
+-        schema: z.object({ selectedOptionIds: z.array(z.string().uuid()) }),
++        schema: z.object({ selectedOptionIds: z.array(z.uuid()) }),
+         description: 'Selected poll options',
+       },
+     },
+@@ -301,7 +314,7 @@ export const communityORPCContract = {
+     method: 'patch',
+     path: '/community/posts/:postId',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+       body: z.object({ content: z.string().trim().min(1).max(4000) }),
+     },
+     metadata: communityPolicy('update', 'Post'),
+@@ -311,7 +324,7 @@ export const communityORPCContract = {
+     method: 'delete',
+     path: '/community/posts/:postId',
+     request: {
+-      params: z.object({ postId: z.string().uuid() }),
++      params: z.object({ postId: z.uuid() }),
+     },
+     metadata: communityPolicy('delete', 'Post'),
+     responses: { 200: { schema: success, description: 'Deleted community post' } },
+@@ -319,7 +332,7 @@ export const communityORPCContract = {
+   getReactionStatus: {
+     method: 'get',
+     path: '/community/posts/:postId/reaction',
+-    request: { params: z.object({ postId: z.string().uuid() }) },
++    request: { params: z.object({ postId: z.uuid() }) },
+     metadata: communityPolicy('read', 'Post'),
+     responses: {
+       200: { schema: z.object({ active: z.boolean() }), description: 'Current reaction state' },
+@@ -330,9 +343,9 @@ export const communityORPCContract = {
+     path: '/community/report',
+     request: {
+       body: z.object({
+-        postId: z.string().uuid().optional(),
+-        groupId: z.string().uuid().optional(),
+-        targetUserId: z.string().uuid().nullable().optional(),
++        postId: z.uuid().optional(),
++        groupId: z.uuid().optional(),
++        targetUserId: z.uuid().nullable().optional(),
+         reason: z.string(),
+         details: z.string().nullable().optional(),
+         reportTarget: z.string().optional(),
+diff --git a/packages/core/src/api/messaging.orpc.contract.ts b/packages/core/src/api/messaging.orpc.contract.ts
+index ef5898de8..5cff1767e 100644
+--- a/packages/core/src/api/messaging.orpc.contract.ts
++++ b/packages/core/src/api/messaging.orpc.contract.ts
+@@ -1,20 +1,24 @@
++import {
++  ChatSendCommandSchema,
++  ChatSendReceiptSchema,
++} from '@repo/core/logic/schemas/chat-command.schema';
+ import { z } from 'zod';
+ 
+ const conversation = z.object({
+-  id: z.string().uuid(),
+-  user1_id: z.string().uuid(),
+-  user2_id: z.string().uuid(),
++  id: z.uuid(),
++  user1_id: z.uuid(),
++  user2_id: z.uuid(),
+   created_at: z.string(),
+   updated_at: z.string(),
+-  other_user_id: z.string().uuid(),
++  other_user_id: z.uuid(),
+   other_user_name: z.string(),
+   other_user_avatar: z.string().nullable(),
+ });
+ 
+ const message = z.object({
+-  id: z.string().uuid(),
+-  conversation_id: z.string().uuid(),
+-  author_id: z.string().uuid(),
++  id: z.uuid(),
++  conversation_id: z.uuid(),
++  author_id: z.uuid(),
+   content: z.string(),
+   created_at: z.string(),
+   author_name: z.string().nullable(),
+@@ -22,6 +26,15 @@ const message = z.object({
+ });
+ 
+ export const messagingORPCContract = {
++  sendMessageCommand: {
++    method: 'post',
++    path: '/messaging/message-commands',
++    request: { body: ChatSendCommandSchema },
++    metadata: { policy: { action: 'create', subject: 'DirectMessage' } },
++    responses: {
++      201: { schema: ChatSendReceiptSchema, description: 'Committed direct message receipt' },
++    },
++  },
+   getConversations: {
+     method: 'get',
+     path: '/messaging/conversations',
+@@ -34,10 +47,10 @@ export const messagingORPCContract = {
+     metadata: { policy: { action: 'create', subject: 'DirectConversation' } },
+     request: {
+       body: z.object({
+-        targetUserId: z.string().uuid(),
++        targetUserId: z.uuid(),
+       }),
+     },
+-    responses: { 201: { schema: z.string().uuid(), description: 'Conversation ID' } },
++    responses: { 201: { schema: z.uuid(), description: 'Conversation ID' } },
+   },
+   getMessages: {
+     method: 'get',
+@@ -45,8 +58,8 @@ export const messagingORPCContract = {
+     metadata: { policy: { action: 'read', subject: 'DirectMessage' } },
+     request: {
+       query: z.object({
+-        conversationId: z.string().uuid(),
+-        viewDate: z.string().datetime().optional(),
++        conversationId: z.uuid(),
++        viewDate: z.iso.datetime().optional(),
+         limit: z.number().int().positive().max(200).optional(),
+       }),
+     },
+@@ -58,7 +71,7 @@ export const messagingORPCContract = {
+     metadata: { policy: { action: 'create', subject: 'DirectMessage' } },
+     request: {
+       body: z.object({
+-        conversationId: z.string().uuid(),
++        conversationId: z.uuid(),
+         content: z.string(),
+       }),
+     },
+diff --git a/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts b/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts
+index a42e3ecb9..68a1051bb 100644
+--- a/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts
++++ b/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts
+@@ -1,19 +1,123 @@
+ import { setActiveAccountId } from '@repo/core/lib/accountScope';
++import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+ import {
+   MAX_DEAD_LETTER_QUEUE_SIZE,
+   MAX_MUTATION_QUEUE_SIZE,
+   MutationQueueCapacityError,
+ } from '@repo/core/lib/sync/types';
+-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+-import { beforeEach, describe, expect, it } from 'vitest';
++import {
++  isQueuedMutationAcknowledged,
++  useMutationQueue,
++} from '@repo/core/lib/sync/useMutationQueue';
++import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+ 
+ describe('useMutationQueue (G0 Unit / G1 State)', () => {
+-  beforeEach(() => {
++  beforeEach(async () => {
++    await useMutationQueue.persist.rehydrate();
+     useMutationQueue.getState().clearQueue();
+     useMutationQueue.getState().clearDeadLetterQueue();
+     setActiveAccountId(null);
+   });
+ 
++  afterEach(() => vi.restoreAllMocks());
++
++  it('publishes durable acceptance to observers without a second storage write', async () => {
++    const write = Promise.withResolvers<void>();
++    const storageWrite = vi.spyOn(SafeZustandStorage, 'setItem').mockReturnValue(write.promise);
++    const observed: boolean[] = [];
++    const unsubscribe = useMutationQueue.subscribe((state) => {
++      const item = state.queue[0];
++      if (item) observed.push(isQueuedMutationAcknowledged(item.id));
++    });
++    const append = useMutationQueue.getState().addToQueue({
++      name: 'observed-command',
++      scope: 'chat',
++      type: 'CREATE',
++      variables: { text: 'retained' },
++      userId: 'account-a',
++    });
++    await vi.waitFor(() => expect(storageWrite).toHaveBeenCalledTimes(1));
++    expect(observed).toEqual([false]);
++    write.resolve();
++    await append;
++    expect(observed).toEqual([false, true]);
++    expect(storageWrite).toHaveBeenCalledTimes(1);
++    unsubscribe();
++  });
++
++  it('does not resolve an append or grant a replay lease before persistence acknowledges it', async () => {
++    let acknowledgeWrite!: () => void;
++    const storageWrite = vi.spyOn(SafeZustandStorage, 'setItem').mockImplementation(
++      () =>
++        new Promise<void>((resolve) => {
++          acknowledgeWrite = resolve;
++        }),
++    );
++    const { addToQueue, tryAcquireMutationLease } = useMutationQueue.getState();
++    let appendResolved = false;
++    const append = addToQueue({
++      name: 'acknowledged-command',
++      scope: 'workspace',
++      type: 'UPDATE',
++      variables: { value: 'durable only after ack' },
++      userId: 'account-a',
++    }).then(() => {
++      appendResolved = true;
++    });
++
++    await vi.waitFor(() => expect(storageWrite).toHaveBeenCalledTimes(1));
++    const queued = useMutationQueue.getState().queue[0];
++    expect(queued).toBeDefined();
++    expect(appendResolved).toBe(false);
++    if (!queued) throw new Error('Expected in-memory command before persistence acknowledgment');
++    expect(tryAcquireMutationLease(queued.id, 15_000, 1_000)).toBe(false);
++
++    acknowledgeWrite();
++    await append;
++    expect(appendResolved).toBe(true);
++    const serializedOutbox = storageWrite.mock.calls[0]?.[1];
++    expect(serializedOutbox).toBeDefined();
++    if (!serializedOutbox)
++      throw new Error('Expected the acknowledged outbox snapshot to be written');
++    const persisted = JSON.parse(serializedOutbox) as {
++      state: { queue: Array<{ id: string; commandState?: string }> };
++    };
++    expect(persisted.state.queue).toContainEqual(
++      expect.objectContaining({ id: queued.id, commandState: 'queued' }),
++    );
++    expect(tryAcquireMutationLease(queued.id, 15_000, 1_000)).toBe(true);
++  });
++
++  it('retains a failed append and re-persists it when the same intent is retried', async () => {
++    const persistenceError = new Error('outbox storage unavailable');
++    vi.spyOn(console, 'error').mockImplementation(() => undefined);
++    const storageWrite = vi
++      .spyOn(SafeZustandStorage, 'setItem')
++      .mockRejectedValueOnce(persistenceError)
++      .mockResolvedValue(undefined);
++    const { addToQueue, tryAcquireMutationLease } = useMutationQueue.getState();
++    const intent = {
++      name: 'retryable-command',
++      scope: 'workspace',
++      type: 'UPDATE' as const,
++      variables: { value: 'retain me' },
++      userId: 'account-a',
++    };
++
++    await expect(addToQueue(intent)).rejects.toBe(persistenceError);
++    const retained = useMutationQueue.getState().queue[0];
++    expect(retained).toMatchObject({ name: intent.name, variables: intent.variables });
++    if (!retained) throw new Error('Expected failed append input to remain available for retry');
++    expect(tryAcquireMutationLease(retained.id, 15_000, 1_000)).toBe(false);
++
++    await addToQueue(intent);
++
++    expect(storageWrite).toHaveBeenCalledTimes(2);
++    expect(useMutationQueue.getState().queue).toHaveLength(1);
++    expect(useMutationQueue.getState().queue[0]?.id).toBe(retained.id);
++    expect(tryAcquireMutationLease(retained.id, 15_000, 1_000)).toBe(true);
++  });
++
+   it('preserves an explicitly prepared operation identity and payload metadata', async () => {
+     const operationId = '123e4567-e89b-12d3-a456-426614174001';
+     await useMutationQueue.getState().addToQueue({
+diff --git a/packages/core/src/lib/sync/registry.ts b/packages/core/src/lib/sync/registry.ts
+index 4fc43dc9d..711d10591 100644
+--- a/packages/core/src/lib/sync/registry.ts
++++ b/packages/core/src/lib/sync/registry.ts
+@@ -1,9 +1,13 @@
+ import { replayAssignmentSubmission } from '@repo/core/api/assignmentCommands';
+ import { attendanceAPI } from '@repo/core/api/attendance';
++import { replayChatSendCommand } from '@repo/core/api/chatCommands';
+ import { api } from '@repo/core/api/client';
+ import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+ import { orpcClient } from '@repo/core/api/orpcClient';
++import { submitWorkspaceLayoutPatch } from '@repo/core/api/workspaceLayoutPatch';
+ import { resolveGradeClassFromClassroom } from '@repo/core/logic/classroomResolver';
++import { CHAT_SEND_COMMAND } from '@repo/core/logic/schemas/chat-command.schema';
++import { WorkspaceLayoutPatchSchema } from '@repo/core/logic/workspace/layoutPatch';
+ 
+ /**
+  * Mutation Registry
+@@ -27,6 +31,19 @@ function requireIdempotencyKey(context: MutationExecutionContext | undefined): s
+ }
+ 
+ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
++  [CHAT_SEND_COMMAND]: (variables: unknown, context) =>
++    replayChatSendCommand(variables, context?.userId),
++  'workspace.layout.patch': (variables: unknown, context) => {
++    const envelope =
++      variables && typeof variables === 'object' && 'input' in variables
++        ? variables.input
++        : undefined;
++    const patch = WorkspaceLayoutPatchSchema.parse(envelope);
++    if (!context?.userId || patch.userId !== context.userId) {
++      throw new Error('Workspace patch owner does not match the queued principal.');
++    }
++    return submitWorkspaceLayoutPatch(patch);
++  },
+   'assignment.submit': (variables, context) => replayAssignmentSubmission(variables, context ?? {}),
+   'classroom.attendance.batchRecord': async (vars) => {
+     const rows = vars?.rows ?? (Array.isArray(vars) ? vars : []);
+diff --git a/packages/core/src/lib/sync/sync/SyncManager.tsx b/packages/core/src/lib/sync/sync/SyncManager.tsx
+index ac53dddf4..0dcb16c90 100644
+--- a/packages/core/src/lib/sync/sync/SyncManager.tsx
++++ b/packages/core/src/lib/sync/sync/SyncManager.tsx
+@@ -3,13 +3,22 @@ import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+ import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+ import { migrateQueuedMutation } from '@repo/core/lib/sync/outboxMigration';
+ import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
++import {
++  isReplayAdmissionOpen,
++  subscribeReplayAdmission,
++  tryBeginReplay,
++} from '@repo/core/lib/sync/replayAdmission';
++import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity';
++import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
+ import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
+ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+ import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
+ import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
++import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
++import { useAuthStore } from '@repo/core/store/useAuthStore';
+ import { useConflictStore } from '@repo/core/store/useConflictStore';
+-import { useStore } from '@repo/core/store/useStore';
+-import { useCallback, useEffect } from 'react';
++import { useTemporalStore } from '@repo/core/store/useTemporalStore';
++import { useCallback, useEffect, useSyncExternalStore } from 'react';
+ 
+ /**
+  * SyncManager
+@@ -44,7 +53,14 @@ export interface SyncManagerTraceEvent {
+ }
+ 
+ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncManagerProps = {}) {
+-  const isOnline = useStore((state) => state.isOnline);
++  const { isOnline } = useOfflineStatus();
++  const readPolicy = useTemporalStore((state) => state.readPolicy);
++  const activeAccountId = useAuthStore((state) => state.user?.id);
++  const replayOpen = useSyncExternalStore(
++    subscribeReplayAdmission,
++    () => Boolean(activeAccountId && isReplayAdmissionOpen(activeAccountId)),
++    () => false,
++  );
+   const {
+     queue,
+     removeFromQueue,
+@@ -56,7 +72,7 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+   } = useMutationQueue();
+   const { updateEntry } = useMutationAuditLog();
+   const { addConflict, activeConflicts } = useConflictStore();
+-  const showToast = useStore((state) => state.showToast);
++  const showToast = useAuthStore((state) => state.showToast);
+ 
+   const MAX_RETRIES = 5; // Increased for better robustness
+ 
+@@ -87,10 +103,11 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+       return;
+     }
+ 
+-    const activeUserId = useStore.getState().user?.id;
++    if (!replayOpen) return;
++    const activeUserId = useAuthStore.getState().user?.id;
+     // Fail closed: legacy unbound commands require an explicit migration or
+     // discard decision. Never replay them for whichever account is active.
+-    const eligibleQueue = activeUserId ? queue.filter((item) => item.userId === activeUserId) : [];
++    const eligibleQueue = planMutationReplay(queue, activeUserId, readPolicy).ready;
+ 
+     if (eligibleQueue.length === 0) {
+       trace?.({ event: 'drain', state: 'skipped', reason: 'no-eligible-items', queueDepth: 0 });
+@@ -175,9 +192,23 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+         // Schema Evolution / Migration: ensure payload is migrated to current version
+         item = migrateQueuedMutation(item);
+ 
++        const principalId = item.userId;
++        const admission = principalId ? tryBeginReplay(principalId) : null;
++        if (!principalId || !admission) {
++          trace?.({
++            event: 'item',
++            state: 'skipped',
++            reason: 'replay-admission-closed',
++            mutationType: traceMutationType(item.name),
++            queueDepth: itemQueueDepth,
++          });
++          continue;
++        }
++
+         // Atomically claim the lease so another foreground/background coordinator
+         // cannot replay the same snapshot concurrently.
+         if (!tryAcquireMutationLease(item.id, 15000)) {
++          admission.release();
+           trace?.({
+             event: 'item',
+             state: 'skipped',
+@@ -197,6 +228,21 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+           queueWaitMs: elapsedBetween(drainStartedAt, itemStartedAt),
+         });
+         try {
++          if (!(await isReplayPrincipalCurrent(principalId))) {
++            updateMutation(item.id, {
++              commandState: 'auth_paused',
++              lockLeaseExpiresAt: undefined,
++            });
++            trace?.({
++              event: 'item',
++              state: 'skipped',
++              reason: 'credential-owner-mismatch',
++              mutationType: traceMutationType(item.name),
++              queueDepth: itemQueueDepth,
++            });
++            continue;
++          }
++
+           const mutationFn = MUTATION_REGISTRY[item.name];
+ 
+           if (!mutationFn) {
+@@ -254,6 +300,10 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+           }
+ 
+           updateEntry(item.id, 'syncing');
++          if (isMutationReplayDeferred(item)) {
++            updateMutation(item.id, { commandState: 'queued', lockLeaseExpiresAt: undefined });
++            continue;
++          }
+           await mutationFn(item.variables, {
+             idempotencyKey: item.idempotencyKey,
+             commandId: item.id,
+@@ -378,6 +428,8 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+             updateEntry(item.id, 'retrying', error.message);
+             failedCount++;
+           }
++        } finally {
++          admission.release();
+         }
+       }
+     } catch (error) {
+@@ -409,6 +461,8 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+       showToast(`Synced ${processedCount} pending actions`, 'success');
+     }
+   }, [
++    replayOpen,
++    readPolicy,
+     queue,
+     removeFromQueue,
+     updateMutation,
+@@ -425,12 +479,21 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
+   ]);
+ 
+   useEffect(() => {
+-    if (isOnline && queue.length > 0 && !isSyncing) {
+-      processQueue().catch((e) => {
++    if (!isOnline || isSyncing || !replayOpen) return;
++    const plan = planMutationReplay(queue, activeAccountId, readPolicy);
++    const drain = () => {
++      void processQueue().catch((e) => {
+         console.error('SyncManager: Failed to process sync queue', e);
+       });
++    };
++    if (plan.ready.length > 0) {
++      drain();
++      return;
+     }
+-  }, [isOnline, queue.length, isSyncing, processQueue]);
++    if (plan.nextWakeAt === null) return;
++    const timer = setTimeout(drain, Math.max(0, plan.nextWakeAt - Date.now()));
++    return () => clearTimeout(timer);
++  }, [isOnline, queue, isSyncing, processQueue, replayOpen, activeAccountId, readPolicy]);
+ 
+   return null;
+ }
+diff --git a/packages/core/src/lib/sync/useMutationQueue.ts b/packages/core/src/lib/sync/useMutationQueue.ts
+index d39b59d84..30b382688 100644
+--- a/packages/core/src/lib/sync/useMutationQueue.ts
++++ b/packages/core/src/lib/sync/useMutationQueue.ts
+@@ -13,219 +13,252 @@ import { v7 as uuidv7 } from 'uuid';
+ import { create } from 'zustand';
+ import { createJSONStorage, persist } from 'zustand/middleware';
+ 
+-export const useMutationQueue = create<MutationQueueState>()(
+-  persist(
+-    (set, get) => ({
+-      queue: [],
+-      deadLetterQueue: [],
+-      isSyncing: false,
+-
+-      addToQueue: async (mutation) => {
+-        const userId = mutation.userId ?? getActiveAccountId() ?? undefined;
+-        const idempotencyKey = await generateIdempotencyKey(
+-          mutation.scope,
+-          mutation.name,
+-          mutation.variables,
+-          userId,
+-        );
+-        const legacyIdempotencyKey = userId
+-          ? await generateIdempotencyKey(mutation.scope, mutation.name, mutation.variables)
+-          : idempotencyKey;
+-
+-        // Keep legacy unscoped de-duplication; scoped intents cannot collide across accounts.
+-        const isDuplicate = get().queue.some((queued) => {
+-          if (queued.userId !== userId) return false;
+-          return (
+-            queued.idempotencyKey === idempotencyKey ||
+-            queued.idempotencyKey === legacyIdempotencyKey
+-          );
+-        });
+-        if (isDuplicate) {
+-          if (__DEV__) {
+-            console.log(`[MutationQueue] Skipping duplicate intent: ${mutation.name}`);
+-          }
+-          return;
+-        }
++const unacknowledgedCommandIds = new Set<string>();
++let publishAcknowledgement: () => void;
+ 
+-        let accepted = false;
+-        set((state) => {
+-          if (state.queue.length >= MAX_MUTATION_QUEUE_SIZE) return state;
+-          const commandId = uuidv7();
+-          const highestLogicalClock = state.queue.reduce(
+-            (max, item) => Math.max(max, item.logicalClock ?? 0),
+-            0,
+-          );
+-          accepted = true;
+-          return {
+-            queue: [
+-              ...state.queue,
+-              {
+-                ...mutation,
+-                userId,
+-                id: commandId,
+-                operationId: mutation.operationId ?? commandId,
+-                idempotencyKey,
+-                timestamp: Date.now(),
+-                retryCount: 0,
+-                schemaVersion: CURRENT_OUTBOX_SCHEMA_VERSION,
+-                logicalClock: highestLogicalClock + 1,
+-                commandState: 'queued',
+-              },
+-            ],
+-          };
+-        });
+-        if (!accepted) throw new MutationQueueCapacityError();
+-      },
+-
+-      removeFromQueue: (id) => {
+-        set((state) => ({
+-          queue: state.queue.filter((m) => m.id !== id),
+-        }));
+-      },
+-
+-      moveToDeadLetter: (id, reason) => {
+-        const item = get().queue.find((m) => m.id === id);
+-        if (item) {
+-          set((state) => {
+-            const nextDlq = [
+-              ...state.deadLetterQueue,
+-              {
+-                ...item,
+-                commandState: 'rejected' as const,
+-                lastError: reason,
+-                failedAt: Date.now(),
+-              },
+-            ]
+-              .sort((a, b) => (b.failedAt ?? b.timestamp) - (a.failedAt ?? a.timestamp))
+-              .slice(0, MAX_DEAD_LETTER_QUEUE_SIZE);
+-            return {
+-              queue: state.queue.filter((m) => m.id !== id),
+-              deadLetterQueue: nextDlq,
+-            };
+-          });
+-        }
+-      },
++export function isQueuedMutationAcknowledged(id: string): boolean {
++  return !unacknowledgedCommandIds.has(id);
++}
+ 
+-      importDeadLetterMutations: (mutations) => {
+-        if (mutations.length === 0) return;
+-        set((state) => {
+-          const knownIds = new Set(state.deadLetterQueue.map((mutation) => mutation.id));
+-          const imported = mutations.filter((mutation) => !knownIds.has(mutation.id));
+-          if (imported.length === 0) return state;
+-          return {
+-            deadLetterQueue: [...state.deadLetterQueue, ...imported]
+-              .map((mutation) => ({ ...mutation, commandState: 'rejected' as const }))
+-              .sort((a, b) => (b.failedAt ?? b.timestamp) - (a.failedAt ?? a.timestamp))
+-              .slice(0, MAX_DEAD_LETTER_QUEUE_SIZE),
+-          };
+-        });
+-      },
++const persistedQueueInitializer = persist<MutationQueueState>(
++  (set, get) => ({
++    queue: [],
++    deadLetterQueue: [],
++    isSyncing: false,
+ 
+-      restoreDeadLetterMutation: (id) => {
+-        const item = get().deadLetterQueue.find((mutation) => mutation.id === id);
+-        if (!item || get().queue.length >= MAX_MUTATION_QUEUE_SIZE) return false;
++    addToQueue: async (mutation) => {
++      const acknowledgePendingSnapshot = async (acknowledgement: unknown): Promise<void> => {
++        const snapshotIds = new Set(
++          get()
++            .queue.filter((queued) => unacknowledgedCommandIds.has(queued.id))
++            .map((queued) => queued.id),
++        );
++        await acknowledgement;
++        snapshotIds.forEach((id) => unacknowledgedCommandIds.delete(id));
++        if (snapshotIds.size > 0) publishAcknowledgement();
++      };
++
++      const userId = mutation.userId ?? getActiveAccountId() ?? undefined;
++      const idempotencyKey = await generateIdempotencyKey(
++        mutation.scope,
++        mutation.name,
++        mutation.variables,
++        userId,
++      );
++      const legacyIdempotencyKey = userId
++        ? await generateIdempotencyKey(mutation.scope, mutation.name, mutation.variables)
++        : idempotencyKey;
+ 
+-        set((state) => ({
+-          deadLetterQueue: state.deadLetterQueue.filter((mutation) => mutation.id !== id),
++      const duplicate = get().queue.find(
++        (queued) =>
++          queued.userId === userId &&
++          (queued.idempotencyKey === idempotencyKey ||
++            queued.idempotencyKey === legacyIdempotencyKey),
++      );
++      if (duplicate) {
++        if (__DEV__) {
++          console.log(`[MutationQueue] Skipping duplicate intent: ${mutation.name}`);
++        }
++        if (unacknowledgedCommandIds.has(duplicate.id)) {
++          await acknowledgePendingSnapshot(set((state) => state));
++        }
++        return;
++      }
++
++      const commandId = uuidv7();
++      const highestLogicalClock = get().queue.reduce(
++        (max, item) => Math.max(max, item.logicalClock ?? 0),
++        0,
++      );
++      let accepted = false;
++      unacknowledgedCommandIds.add(commandId);
++      const acknowledgement = set((state) => {
++        if (state.queue.length >= MAX_MUTATION_QUEUE_SIZE) return state;
++        accepted = true;
++        return {
+           queue: [
+             ...state.queue,
+             {
+-              ...item,
+-              commandState: 'queued',
++              ...mutation,
++              userId,
++              id: commandId,
++              operationId: mutation.operationId ?? commandId,
++              idempotencyKey,
++              timestamp: Date.now(),
+               retryCount: 0,
+-              backoffUntil: undefined,
+-              lockLeaseExpiresAt: undefined,
+-              lastError: undefined,
+-              lastErrorCode: undefined,
+-              failedAt: undefined,
++              schemaVersion: CURRENT_OUTBOX_SCHEMA_VERSION,
++              logicalClock: highestLogicalClock + 1,
++              commandState: 'queued',
+             },
+           ],
+-        }));
+-        return true;
+-      },
++        };
++      });
++      if (!accepted) {
++        unacknowledgedCommandIds.delete(commandId);
++        throw new MutationQueueCapacityError();
++      }
++
++      await acknowledgePendingSnapshot(acknowledgement);
++    },
+ 
+-      tryAcquireMutationLease: (id, leaseDurationMs, now = Date.now()) => {
+-        if (!Number.isFinite(leaseDurationMs) || leaseDurationMs <= 0) return false;
++    removeFromQueue: (id) => {
++      set((state) => ({
++        queue: state.queue.filter((m) => m.id !== id),
++      }));
++    },
+ 
+-        let acquired = false;
++    moveToDeadLetter: (id, reason) => {
++      const item = get().queue.find((m) => m.id === id);
++      if (item) {
+         set((state) => {
+-          const mutation = state.queue.find((item) => item.id === id);
+-          if (!mutation || (mutation.lockLeaseExpiresAt && mutation.lockLeaseExpiresAt > now)) {
+-            return state;
+-          }
+-
+-          const commandState = mutation.commandState ?? 'queued';
+-          if (
+-            commandState === 'auth_paused' ||
+-            commandState === 'conflict' ||
+-            commandState === 'rejected' ||
+-            commandState === 'reconciled' ||
+-            commandState === 'discarded'
+-          ) {
+-            return state;
+-          }
+-
+-          assertMutationCommandTransition(commandState, 'dispatching');
+-          acquired = true;
++          const nextDlq = [
++            ...state.deadLetterQueue,
++            {
++              ...item,
++              commandState: 'rejected' as const,
++              lastError: reason,
++              failedAt: Date.now(),
++            },
++          ]
++            .sort((a, b) => (b.failedAt ?? b.timestamp) - (a.failedAt ?? a.timestamp))
++            .slice(0, MAX_DEAD_LETTER_QUEUE_SIZE);
+           return {
+-            queue: state.queue.map((item) =>
+-              item.id === id
+-                ? {
+-                    ...item,
+-                    commandState: 'dispatching' as const,
+-                    lockLeaseExpiresAt: now + leaseDurationMs,
+-                  }
+-                : item,
+-            ),
++            queue: state.queue.filter((m) => m.id !== id),
++            deadLetterQueue: nextDlq,
+           };
+         });
+-        return acquired;
+-      },
+-
+-      updateMutation: (id, updates) => {
+-        set((state) => ({
+-          queue: state.queue.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+-        }));
+-      },
+-
+-      clearQueue: () => {
+-        set({ queue: [] });
+-      },
+-
+-      clearDeadLetterQueue: () => {
+-        set({ deadLetterQueue: [] });
+-      },
+-
+-      resumePausedMutationsForUser: (userId) => {
+-        set((state) => ({
+-          queue: state.queue.map((mutation) =>
+-            mutation.userId === userId && mutation.commandState === 'auth_paused'
++      }
++    },
++
++    importDeadLetterMutations: (mutations) => {
++      if (mutations.length === 0) return;
++      set((state) => {
++        const knownIds = new Set(state.deadLetterQueue.map((mutation) => mutation.id));
++        const imported = mutations.filter((mutation) => !knownIds.has(mutation.id));
++        if (imported.length === 0) return state;
++        return {
++          deadLetterQueue: [...state.deadLetterQueue, ...imported]
++            .map((mutation) => ({ ...mutation, commandState: 'rejected' as const }))
++            .sort((a, b) => (b.failedAt ?? b.timestamp) - (a.failedAt ?? a.timestamp))
++            .slice(0, MAX_DEAD_LETTER_QUEUE_SIZE),
++        };
++      });
++    },
++
++    restoreDeadLetterMutation: (id) => {
++      const item = get().deadLetterQueue.find((mutation) => mutation.id === id);
++      if (!item || get().queue.length >= MAX_MUTATION_QUEUE_SIZE) return false;
++
++      set((state) => ({
++        deadLetterQueue: state.deadLetterQueue.filter((mutation) => mutation.id !== id),
++        queue: [
++          ...state.queue,
++          {
++            ...item,
++            commandState: 'queued',
++            retryCount: 0,
++            backoffUntil: undefined,
++            lockLeaseExpiresAt: undefined,
++            lastError: undefined,
++            lastErrorCode: undefined,
++            failedAt: undefined,
++          },
++        ],
++      }));
++      return true;
++    },
++
++    tryAcquireMutationLease: (id, leaseDurationMs, now = Date.now()) => {
++      if (!Number.isFinite(leaseDurationMs) || leaseDurationMs <= 0) return false;
++      if (!isQueuedMutationAcknowledged(id)) return false;
++
++      let acquired = false;
++      set((state) => {
++        const mutation = state.queue.find((item) => item.id === id);
++        if (!mutation || (mutation.lockLeaseExpiresAt && mutation.lockLeaseExpiresAt > now)) {
++          return state;
++        }
++
++        const commandState = mutation.commandState ?? 'queued';
++        if (
++          commandState === 'auth_paused' ||
++          commandState === 'conflict' ||
++          commandState === 'rejected' ||
++          commandState === 'reconciled' ||
++          commandState === 'discarded'
++        ) {
++          return state;
++        }
++
++        assertMutationCommandTransition(commandState, 'dispatching');
++        acquired = true;
++        return {
++          queue: state.queue.map((item) =>
++            item.id === id
+               ? {
+-                  ...mutation,
+-                  commandState: 'queued',
+-                  backoffUntil: undefined,
+-                  lockLeaseExpiresAt: undefined,
++                  ...item,
++                  commandState: 'dispatching' as const,
++                  lockLeaseExpiresAt: now + leaseDurationMs,
+                 }
+-              : mutation,
++              : item,
+           ),
+-        }));
+-      },
++        };
++      });
++      return acquired;
++    },
+ 
+-      setSyncing: (isSyncing) => {
+-        set({ isSyncing });
+-      },
++    updateMutation: (id, updates) => {
++      set((state) => ({
++        queue: state.queue.map((m) => (m.id === id ? { ...m, ...updates } : m)),
++      }));
++    },
+ 
+-      getQueueForUser: (userId?: string) => {
+-        const currentQueue = get().queue;
+-        if (!userId) {
+-          return currentQueue.filter((m) => !m.userId);
+-        }
+-        return currentQueue.filter((m) => m.userId === userId);
+-      },
+-    }),
+-    {
+-      name: 'gurudevi-mutation-queue',
+-      storage: createJSONStorage(() => SafeZustandStorage),
++    clearQueue: () => {
++      unacknowledgedCommandIds.clear();
++      set({ queue: [] });
++    },
++
++    clearDeadLetterQueue: () => {
++      set({ deadLetterQueue: [] });
++    },
++
++    resumePausedMutationsForUser: (userId) => {
++      set((state) => ({
++        queue: state.queue.map((mutation) =>
++          mutation.userId === userId && mutation.commandState === 'auth_paused'
++            ? {
++                ...mutation,
++                commandState: 'queued',
++                backoffUntil: undefined,
++                lockLeaseExpiresAt: undefined,
++              }
++            : mutation,
++        ),
++      }));
+     },
+-  ),
++
++    setSyncing: (isSyncing) => {
++      set({ isSyncing });
++    },
++
++    getQueueForUser: (userId?: string) => {
++      const currentQueue = get().queue;
++      if (!userId) {
++        return currentQueue.filter((m) => !m.userId);
++      }
++      return currentQueue.filter((m) => m.userId === userId);
++    },
++  }),
++  {
++    name: 'gurudevi-mutation-queue',
++    storage: createJSONStorage(() => SafeZustandStorage),
++  },
+ );
++
++const queueInitializer: typeof persistedQueueInitializer = (set, get, api) => {
++  // Raw publication wakes replay after the acknowledged write without persisting it again.
++  publishAcknowledgement = () => set((state) => ({ queue: [...state.queue] }));
++  return persistedQueueInitializer(set, get, api);
++};
++
++export const useMutationQueue = create<MutationQueueState>()(queueInitializer);

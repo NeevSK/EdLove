@@ -1,4 +1,3 @@
-import { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
@@ -8,8 +7,9 @@ import {
   sanctuaryFeature,
 } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
+import { resetScopedStores } from '@repo/core/store/resetScopedStores';
+import { transitionScopeSession } from '@repo/core/store/scopeSessionCoordinator';
 import type { Bond } from '@repo/core/types/Identity';
 import type {
   GuardianBondPerspective,
@@ -17,7 +17,7 @@ import type {
   PersonalPerspective,
   SanctuaryPerspective,
 } from '@repo/core/types/Perspective';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds & Primary/Secondary Capacities', () => {
   // Scenario Context: Dr. Maya is a teacher & department head at Royal College,
@@ -93,14 +93,20 @@ describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds &
     },
   ];
 
-  beforeEach(() => {
-    usePerspectiveStore.getState().resetToPersonalPerspective();
-    usePerspectiveStore.getState().setAvailablePerspectives(allPerspectives);
+  beforeEach(async () => {
+    resetScopedStores();
+    await transitionScopeSession({
+      principalId: user.id,
+      activePerspective: personalPerspective,
+      availablePerspectives: allPerspectives,
+      availableBonds: bonds,
+    });
   });
 
   it('Scenario 1: Personal Sanctuary Baseline Isolation (Second-Class Citizenship)', () => {
     // 1. Initial State: Must be personal sanctuary
-    const state = usePerspectiveStore.getState();
+    const state = useScopeSessionStore.getState().snapshot;
+    if (!state) throw new Error('Expected canonical scope snapshot.');
     expect(state.activePerspective.kind).toBe('personal');
     expect(state.activePerspective.id).toBe('personal');
 
@@ -170,8 +176,16 @@ describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds &
 
   it('Scenario 2: Primary vs Secondary Capacities in Institutional Bond (Teacher vs Admin)', async () => {
     // 1. Switch to Royal College Teacher Perspective
-    await usePerspectiveStore.getState().switchPerspective('bond:royal_college:teacher');
-    let state = usePerspectiveStore.getState();
+    const availablePerspectives = [personalPerspective, royalTeacherPerspective, oxfordAdminPerspective];
+    await transitionScopeSession({
+      principalId: user.id,
+      activePerspective: royalTeacherPerspective,
+      availablePerspectives,
+      availableBonds: bonds,
+      selectedBond: bonds[0],
+    });
+    let state = useScopeSessionStore.getState().snapshot;
+    if (!state) throw new Error('Expected canonical scope snapshot.');
     expect(state.activePerspective.kind).toBe('institutional');
 
     const activeInst = state.activePerspective as InstitutionalBondPerspective;
@@ -185,8 +199,15 @@ describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds &
     expect(bondScope.isPersonal).toBe(false);
 
     // 3. Switch to Oxford Academy Admin Perspective
-    await usePerspectiveStore.getState().switchPerspective('bond:oxford_academy:admin');
-    state = usePerspectiveStore.getState();
+    await transitionScopeSession({
+      principalId: user.id,
+      activePerspective: oxfordAdminPerspective,
+      availablePerspectives,
+      availableBonds: bonds,
+      selectedBond: bonds[1],
+    });
+    state = useScopeSessionStore.getState().snapshot;
+    if (!state) throw new Error('Expected canonical scope snapshot.');
     expect(state.activePerspective.id).toBe('bond:oxford_academy:admin');
     const adminInst = state.activePerspective as InstitutionalBondPerspective;
     expect(adminInst.schoolId).toBe('school_oxford_academy');
@@ -349,12 +370,14 @@ describe('Real-World Scenario Suite: Personal Sanctuary vs Institutional Bonds &
       },
     ];
 
-    await usePerspectiveStore.getState().hydratePerspectivesFromDatabase('user_maya_101', {
-      getCommercialBatches: async () => mockDbCommercial,
-      getGuardianBonds: async () => mockDbGuardian,
+    await transitionScopeSession({
+      principalId: user.id,
+      activePerspective: personalPerspective,
+      availablePerspectives: [personalPerspective, ...mockDbCommercial, ...mockDbGuardian],
+      availableBonds: [],
     });
 
-    const perspectives = usePerspectiveStore.getState().availablePerspectives;
+    const perspectives = useScopeSessionStore.getState().snapshot?.availablePerspectives ?? [];
     expect(perspectives).toHaveLength(3); // personal + commercial + guardian
     expect(perspectives.some((p) => p.kind === 'personal')).toBe(true);
     expect(perspectives.some((p) => p.id === 'batch-apex-1')).toBe(true);

@@ -34,12 +34,13 @@ describe('capability bootstrap browser boundary', () => {
       data: { session: { access_token: 'account-token', user: { is_anonymous: false } } },
       error: null,
     });
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+    const fetcherMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ features: [] }), { status: 200 }),
     );
+    const fetcher = fetcherMock as unknown as typeof fetch;
 
     await expect(loadAccountCapabilities('self', fetcher)).resolves.toEqual([]);
-    expect(fetcher.mock.calls[0]?.[1]?.redirect).toBe('error');
+    expect(fetcherMock.mock.calls[0]?.[1]?.redirect).toBe('error');
   });
 
   it('only treats an explicitly available server feature as launchable', () => {

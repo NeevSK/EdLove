@@ -1,6 +1,8 @@
+import { ORPCError } from '@orpc/server';
 import { messagingORPCContract } from '@repo/core/api/messaging.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
+import { settleChatMessage } from '../chatMessageSettlement';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
@@ -47,6 +49,12 @@ async function requireConversationParticipant(context: ORPCContext, conversation
 }
 
 export const messagingRouter = impl.router({
+  sendMessageCommand: impl.sendMessageCommand
+    .use(doubleGateMiddleware)
+    .handler(({ input, context }) => {
+      if (input.body.channel.kind !== 'direct') throw new ORPCError('BAD_REQUEST');
+      return settleChatMessage(context, input.body);
+    }),
   getConversations: impl.getConversations.use(doubleGateMiddleware).handler(async ({ context }) => {
     assertDatabase(context);
     const rows = await context.db.directConversation.findMany({

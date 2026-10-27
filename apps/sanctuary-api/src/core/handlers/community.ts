@@ -1,5 +1,7 @@
+import { ORPCError } from '@orpc/server';
 import { communityORPCContract } from '@repo/core/api/community.orpc.contract';
 import { assertDatabase } from '../apiErrors';
+import { settleChatMessage } from '../chatMessageSettlement';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
@@ -72,6 +74,12 @@ const mapGroupMember = (row: any) => ({
 });
 
 export const communityRouter = impl.router({
+  sendMessageCommand: impl.sendMessageCommand
+    .use(doubleGateMiddleware)
+    .handler(({ input, context }) => {
+      if (input.body.channel.kind !== 'group') throw new ORPCError('BAD_REQUEST');
+      return settleChatMessage(context, input.body);
+    }),
   getGroups: impl.getGroups.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const query = input.query;
     const rows = await (context.db as any).group.findMany({

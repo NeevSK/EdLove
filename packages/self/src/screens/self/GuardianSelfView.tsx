@@ -1,5 +1,6 @@
 import { useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import FireJournal from '@repo/self/components/FireJournal';
@@ -27,8 +28,8 @@ export default function GuardianSelfView() {
   const { t } = useTranslation();
   const { context } = usePermissions();
   const userId = context.userId;
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
 
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
   const { logs: moodLogs, loading: loadingMoods } = useMoodLogs(userId ?? undefined);

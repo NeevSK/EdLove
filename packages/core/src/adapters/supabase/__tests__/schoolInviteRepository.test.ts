@@ -1,107 +1,84 @@
-import { describe, expect, it } from 'vitest';
-import { createSupabaseSchoolInviteRepository } from '../schoolInviteRepository';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  claimAndSelectSchoolInvite,
+  createSupabaseSchoolInviteRepository,
+} from '../schoolInviteRepository';
 
 describe('createSupabaseSchoolInviteRepository', () => {
-  it('validates active invite code, increments used count, and creates bond in database', async () => {
-    const mockInvite = {
-      id: 'invite-1',
-      code: 'ROYAL2026',
-      capacity: 'teacher',
-      roles: ['teacher'],
-      used_count: 5,
-      max_uses: 50,
-      is_active: true,
-      expires_at: new Date(Date.now() + 86400000).toISOString(),
-      schools: {
-        id: 'school-royal',
-        name: 'Royal College',
-        type: '1AB',
+  it('uses the atomic server claim and returns only its validated authority result', async () => {
+    const rpc = vi.fn().mockResolvedValue({
+      data: {
+        success: true,
+        bond_id: 'bond-royal-teacher',
+        school_id: 'school-royal',
+        capacity: 'teacher',
+        already_claimed: false,
       },
-    };
-
-    let updatedTable = '';
-    let upsertedTable = '';
-    let upsertedData: any = null;
-
-    const supabase = {
-      from: (table: string) => {
-        if (table === 'school_invite_codes') {
-          const query: any = {
-            select: () => query,
-            eq: () => query,
-            maybeSingle: () => Promise.resolve({ data: mockInvite, error: null }),
-            update: (payload: any) => {
-              updatedTable = table;
-              return {
-                eq: () => Promise.resolve({ data: null, error: null }),
-              };
-            },
-          };
-          return query;
-        }
-
-        if (table === 'bonds') {
-          return {
-            upsert: (payload: any) => {
-              upsertedTable = table;
-              upsertedData = payload;
-              return Promise.resolve({ data: null, error: null });
-            },
-          };
-        }
-
-        throw new Error(`Unexpected table: ${table}`);
-      },
-    };
-
-    const repo = createSupabaseSchoolInviteRepository(supabase as any);
-    const result = await repo.verifyAndRedeemInviteCode('ROYAL2026', 'user-teacher-1');
-
-    expect(result).toEqual({
-      schoolId: 'school-royal',
-      schoolName: 'Royal College',
-      capacity: 'teacher',
-      roles: ['teacher'],
+      error: null,
     });
+    const repo = createSupabaseSchoolInviteRepository({ rpc } as any);
 
-    expect(updatedTable).toBe('school_invite_codes');
-    expect(upsertedTable).toBe('bonds');
-    expect(upsertedData).toMatchObject({
-      user_id: 'user-teacher-1',
-      entity_id: 'school-royal',
-      entity_type: 'school',
+    await expect(repo.verifyAndRedeemInviteCode(' royal2026 ', 'user-teacher-1')).resolves.toEqual({
+      bondId: 'bond-royal-teacher',
+      schoolId: 'school-royal',
       capacity: 'teacher',
+      alreadyClaimed: false,
+    });
+    expect(rpc).toHaveBeenCalledWith('claim_invite_code', {
+      p_invite_code: 'ROYAL2026',
+      p_user_id: 'user-teacher-1',
     });
   });
 
-  it('rejects expired invite code', async () => {
-    const expiredInvite = {
-      id: 'invite-expired',
-      code: 'OLDCODE',
-      capacity: 'student',
-      roles: ['student'],
-      used_count: 0,
-      max_uses: 10,
-      is_active: true,
-      expires_at: new Date(Date.now() - 86400000).toISOString(),
-      schools: { id: 'school-1', name: 'School 1' },
-    };
+  it('does not treat a failed or malformed claim as a usable authority result', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: { success: false, message: 'Invite exhausted' }, error: null })
+      .mockResolvedValueOnce({
+        data: { success: true, bond_id: 'bond-1', school_id: 'school-1', capacity: 'unknown' },
+        error: null,
+      });
+    const repo = createSupabaseSchoolInviteRepository({ rpc } as any);
 
-    const supabase = {
-      from: () => ({
-        select: () => ({
-          eq: () => ({
-            eq: () => ({
-              maybeSingle: () => Promise.resolve({ data: expiredInvite, error: null }),
-            }),
-          }),
-        }),
-      }),
-    };
-
-    const repo = createSupabaseSchoolInviteRepository(supabase as any);
-    await expect(repo.verifyAndRedeemInviteCode('OLDCODE', 'user-1')).rejects.toThrow(
-      'This invite code has expired',
+    await expect(repo.verifyAndRedeemInviteCode('EXHAUSTED', 'user-1')).rejects.toThrow(
+      'Invite exhausted',
     );
+    await expect(repo.verifyAndRedeemInviteCode('MALFORMED', 'user-1')).rejects.toThrow(
+      'invalid authority result',
+    );
+  });
+
+  it('selects and refreshes only after the atomic claim, and keeps retry safe after selection failure', async () => {
+    const repository = {
+      verifyAndRedeemInviteCode: vi
+        .fn()
+        .mockResolvedValue({ bondId: 'bond-1', schoolId: 'school-1', capacity: 'teacher' }),
+    };
+    const identity = { switchPerspective: vi.fn().mockRejectedValueOnce(new Error('offline')) };
+    const refreshIdentity = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      claimAndSelectSchoolInvite({
+        repository,
+        identity,
+        refreshIdentity,
+        code: 'SCHOOL',
+        userId: 'user-1',
+      }),
+    ).rejects.toThrow('offline');
+    expect(refreshIdentity).not.toHaveBeenCalled();
+
+    identity.switchPerspective.mockResolvedValueOnce(undefined);
+    await expect(
+      claimAndSelectSchoolInvite({
+        repository,
+        identity,
+        refreshIdentity,
+        code: 'SCHOOL',
+        userId: 'user-1',
+      }),
+    ).resolves.toMatchObject({ bondId: 'bond-1' });
+    expect(identity.switchPerspective).toHaveBeenLastCalledWith('school-1', 'teacher');
+    expect(refreshIdentity).toHaveBeenCalledTimes(1);
   });
 });

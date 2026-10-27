@@ -1,8 +1,9 @@
+import { useAuthStore } from '@repo/core/store';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 
-import { useStore } from '@repo/core/store';
+
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
@@ -61,7 +62,7 @@ export default function UserPublicProfileScreen() {
   const userId = userIdParam || id || '';
   const { can, flags } = usePermissions();
   const isMessagingEnabled = useDomainRollout('messages');
-  const currentUserId = useStore((state) => state.user?.id);
+  const currentUserId = useAuthStore(state => state.user?.id);
 
   const [user, setUser] = useState<PublicUser | null>(null);
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });

@@ -37,7 +37,7 @@
 }
 
 .timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0.5rem;
   top: 0.5rem;
@@ -58,7 +58,7 @@
 }
 
 .recordCard::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -1.35rem;
   top: 1.25rem;

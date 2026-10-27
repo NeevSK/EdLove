@@ -18,6 +18,8 @@
 // Add new event types here. The type system enforces payload shapes everywhere.
 
 export interface SovereignEventMap {
+  'feedback:toast': { message: string; type: 'success' | 'error' | 'info'; duration: number };
+  'feedback:clear': Record<string, never>;
   // Sync lifecycle
   'sync:started': { queueLength: number };
   'sync:completed': { processedCount: number; failedCount: number };
@@ -56,6 +58,15 @@ export interface SovereignEventMap {
   // Auth / Session
   'auth:session_expired': Record<string, never>;
   'auth:user_switched': { newUserId: string };
+
+  // Sanctuary scope lifecycle
+  'perspective:transition_started': {
+    from: unknown;
+    to: unknown;
+  };
+  'perspective:transition_completed': {
+    activePerspective: unknown;
+  };
 
   // PowerSync (future-ready — no-op until adapter is wired)
   'powersync:sync_complete': { tablesAffected: string[] };

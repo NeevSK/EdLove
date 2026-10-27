@@ -15,6 +15,7 @@ import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { useThemedColors } from '@repo/ui/hooks';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import {
   ArrowLeft,
   CirclePlay,
@@ -153,7 +154,7 @@ export default function ResourceHubScreen() {
   const router = useRouter();
   const colors = useThemedColors();
   const user = useAuthStore((state) => state.user);
-  const isOnline = useAuthStore((state) => state.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const [qrVisible, setQrVisible] = useState(false);
 
   const { resourceId } = useLocalSearchParams<{ resourceId?: string }>();
@@ -340,11 +341,11 @@ export default function ResourceHubScreen() {
       <ScreenWrapper>
         <VStack className="flex-1 items-center justify-center px-6">
           <BrandedErrorState
-            title={isOnline ? 'We could not load this resource' : 'You are offline'}
+            title={networkStatus === 'offline' ? 'You are offline' : 'We could not load this resource'}
             message={
-              isOnline
-                ? String((error as Error)?.message || 'The resource may have moved or been removed.')
-                : 'Reconnect to open this resource.'
+              networkStatus === 'offline'
+                ? 'Reconnect to open this resource.'
+                : String((error as Error)?.message || 'The resource may have moved or been removed.')
             }
           >
             <HStack className="gap-2.5">

@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 56rem;
+  max-width: clamp(64rem, 90vw, 84rem);
+  width: 100%;
   margin: 0 auto;
   font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
 }
@@ -29,6 +30,15 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .sectionsList {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+    align-items: start;
+  }
 }
 
 .settingSection {

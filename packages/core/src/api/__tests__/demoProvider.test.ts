@@ -1,3 +1,6 @@
+import '../index';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getDemoAssignments,
@@ -9,19 +12,18 @@ import {
   interceptApiCall,
   processGhostData,
 } from '../demoProvider';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { useStore } from '@repo/core/store/useStore';
 import { createResonantProxy } from '../resonantProxy';
+
 
 describe('Canonical demoProvider and Ghost Seeding', () => {
   beforeEach(() => {
-    useAuthStore.setState({
+    useExperienceState.setState({
       isDemoMode: false,
       isExplorerMode: false,
-      dismissedSampleIds: [],
       isBridging: false,
     });
-    useStore.getState().setDemoMode(false);
+    useUIStore.setState({ dismissedSampleIds: [] });
+    useExperienceState.getState().setDemoMode(false);
   });
 
   describe('interceptApiCall', () => {
@@ -54,7 +56,7 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     });
 
     it('intercepts teacher temporal snapshots', async () => {
-      useAuthStore.setState({ isDemoMode: true });
+      useExperienceState.setState({ isDemoMode: true });
       const result = await interceptApiCall('teacherDashboard', 'getTemporalSnapshot', ['mock-t']);
       expect(result).toBeTruthy();
       expect(Array.isArray(result)).toBe(true);
@@ -67,41 +69,54 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     });
 
     it('serves Library browse data and counts in demo mode without a backend call', async () => {
-      useStore.getState().setDemoMode(true);
+      useExperienceState.getState().setDemoMode(true);
 
       const resources = await interceptApiCall('library', 'getResources');
       const collections = await interceptApiCall('library', 'getCollections');
       const resourceCount = await interceptApiCall('library', 'getResourcesCount');
       const collectionCount = await interceptApiCall('library', 'getCollectionsCount');
 
-      expect(resources).toHaveLength(3);
-      expect(collections).toHaveLength(1);
-      expect(resourceCount).toBe(3);
-      expect(collectionCount).toBe(1);
+      expect(resources).toHaveLength(11);
+      expect(collections).toHaveLength(4);
+      expect(resourceCount).toBe(11);
+      expect(collectionCount).toBe(4);
     });
 
     it('short-circuits Library API reads through the resonant proxy in demo mode', async () => {
-      useStore.getState().setDemoMode(true);
+      useExperienceState.getState().setDemoMode(true);
       const getResources = vi.fn(async () => [{ id: 'live-resource' }]);
       const api = createResonantProxy('library', { getResources });
 
       const resources = await api.getResources();
 
-      expect(resources.map((resource) => resource.id)).toEqual(['v-r1', 'v-r2', 'v-r3']);
+      expect(resources).toHaveLength(11);
+      expect(resources.map((resource) => resource.id)).toEqual([
+        'v-r1',
+        'v-r2',
+        'v-r3',
+        'res-contemplative-pedagogy',
+        'res-dialogues-truth',
+        'res-reflective-journaling',
+        'res-quiet-classrooms',
+        'mangroves',
+        'intro-botany',
+        'classical-verse',
+        'geometry-proofs',
+      ]);
       expect(getResources).not.toHaveBeenCalled();
     });
   });
 
   describe('processGhostData', () => {
     it('returns empty realData untouched when isExplorerMode is false', () => {
-      useAuthStore.setState({ isExplorerMode: false });
+      useExperienceState.setState({ isExplorerMode: false });
       const realData: any[] = [];
       const output = processGhostData('classrooms', 'getByTeacher', realData);
       expect(output).toEqual([]);
     });
 
     it('injects sample classrooms with is_sample: true when isExplorerMode is true and real data is empty', () => {
-      useAuthStore.setState({ isExplorerMode: true });
+      useExperienceState.setState({ isExplorerMode: true });
       const realData: any[] = [];
       const output = processGhostData('classrooms', 'getByTeacher', realData);
       expect(output.length).toBeGreaterThan(0);
@@ -110,14 +125,15 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     });
 
     it('filters out sample classrooms that have been dismissed by the user', () => {
-      useAuthStore.setState({ isExplorerMode: true, dismissedSampleIds: ['sample-c1'] });
+      useExperienceState.setState({ isExplorerMode: true });
+      useUIStore.setState({ dismissedSampleIds: ['sample-c1'] });
       const realData: any[] = [];
       const output = processGhostData('classrooms', 'getByTeacher', realData);
       expect(output.some((c: any) => c.id === 'sample-c1')).toBe(false);
     });
 
     it('does not inject sample classrooms if real data already exists in the database', () => {
-      useAuthStore.setState({ isExplorerMode: true });
+      useExperienceState.setState({ isExplorerMode: true });
       const realData = [{ id: 'real-classroom-uuid', name: 'My Real Classroom' }];
       const output = processGhostData('classrooms', 'getByTeacher', realData);
       expect(output).toEqual(realData);
@@ -126,7 +142,7 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     });
 
     it('injects mock school stats if real stats are all zero and isExplorerMode is true', () => {
-      useAuthStore.setState({ isExplorerMode: true });
+      useExperienceState.setState({ isExplorerMode: true });
       const emptyStats = { total_students: 0, total_teachers: 0, total_classrooms: 0 };
       const output = processGhostData('school', 'getSchoolStats', emptyStats);
       expect(output.is_sample).toBe(true);
@@ -135,14 +151,14 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     });
 
     it('injects ghost echoes when isExplorerMode is true and real echoes are empty', () => {
-      useAuthStore.setState({ isExplorerMode: true });
+      useExperienceState.setState({ isExplorerMode: true });
       const output = processGhostData('echo', 'getEchoesByClassroom', []);
       expect(output.length).toBeGreaterThan(0);
       expect(output.every((e: any) => e.is_sample === true)).toBe(true);
     });
 
     it('injects ghost teacher observations and classroom notes in explorer mode', () => {
-      useAuthStore.setState({ isExplorerMode: true });
+      useExperienceState.setState({ isExplorerMode: true });
       const obs = processGhostData('teacherInsights', 'listStudentObservations', []);
       expect(obs.length).toBeGreaterThan(0);
       expect(obs.every((o: any) => o.is_sample === true)).toBe(true);
@@ -153,7 +169,7 @@ describe('Canonical demoProvider and Ghost Seeding', () => {
     });
 
     it('injects ghost student stats in explorer mode', () => {
-      useAuthStore.setState({ isExplorerMode: true });
+      useExperienceState.setState({ isExplorerMode: true });
       const stats = processGhostData('classrooms', 'getStudentStats', {
         active_sanctuaries: 0,
         goals_set: 0,

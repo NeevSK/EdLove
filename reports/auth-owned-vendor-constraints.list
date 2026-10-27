@@ -1,0 +1,12 @@
+10410; 2606 16494 CONSTRAINT auth audit_log_entries audit_log_entries_pkey supabase_auth_admin
+10408; 2606 16487 CONSTRAINT auth instances instances_pkey supabase_auth_admin
+10405; 2606 16477 CONSTRAINT auth refresh_tokens refresh_tokens_pkey supabase_auth_admin
+10413; 2606 16500 CONSTRAINT auth schema_migrations schema_migrations_pkey supabase_auth_admin
+10397; 2606 16466 CONSTRAINT auth users users_email_key supabase_auth_admin
+10401; 2606 16464 CONSTRAINT auth users users_pkey supabase_auth_admin
+10411; 1259 16495 INDEX auth audit_logs_instance_id_idx supabase_auth_admin
+10402; 1259 16478 INDEX auth refresh_tokens_instance_id_idx supabase_auth_admin
+10403; 1259 16479 INDEX auth refresh_tokens_instance_id_user_id_idx supabase_auth_admin
+10406; 1259 16480 INDEX auth refresh_tokens_token_idx supabase_auth_admin
+10398; 1259 16467 INDEX auth users_instance_id_email_idx supabase_auth_admin
+10399; 1259 16468 INDEX auth users_instance_id_idx supabase_auth_admin

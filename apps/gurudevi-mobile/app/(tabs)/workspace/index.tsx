@@ -5,12 +5,13 @@ import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { Center, Pressable, Text } from '@repo/ui/primitives';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function WorkspaceDispatcher() {
+  const router = useRouter();
   const { context } = usePermissions();
   const { activePerspective } = usePerspectiveSwitch();
   const { classroomId: requestedClassroomId, classroomName } = useLocalSearchParams<{
@@ -86,7 +87,16 @@ export default function WorkspaceDispatcher() {
   if (routeResolution.kind === 'empty') {
     return (
       <Center className="flex-1 bg-phase-canvas px-6">
-        <BrandedEmptyState title="No classroom selected" message={routeResolution.message} />
+        <BrandedEmptyState title="No classroom selected" message={routeResolution.message}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Enter classroom invitation code"
+            onPress={() => router.push('/workspace/classroom')}
+            className="mt-4 rounded-full bg-phase-primary px-6 py-3.5 shadow-sm active:opacity-90"
+          >
+            <Text className="font-bold text-white text-sm">Join Classroom Sanctuary</Text>
+          </Pressable>
+        </BrandedEmptyState>
       </Center>
     );
   }
@@ -96,6 +106,15 @@ export default function WorkspaceDispatcher() {
   }
   if (routeResolution.target.kind === 'principal') {
     return <Redirect href="/workspace/principal" />;
+  }
+  if (routeResolution.target.kind === 'admin') {
+    return <Redirect href="/workspace/admin" />;
+  }
+  if (routeResolution.target.kind === 'section-head') {
+    return <Redirect href="/workspace/section-head" />;
+  }
+  if (routeResolution.target.kind === 'grade-head') {
+    return <Redirect href="/workspace/grade-head" />;
   }
   if (routeResolution.target.kind === 'guardian') {
     return <Redirect href="/workspace/guardian" />;

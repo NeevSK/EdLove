@@ -1,7 +1,7 @@
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
-import { SafeZustandStorage } from '@repo/core/storage-wrapper';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { useStore } from '@repo/core/store/useStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -45,14 +45,14 @@ export function useLocalFirstQuery<TData>({
   const user = useAuthStore((s) => s.user);
   const isAnonymous = Boolean(!user || user.is_anonymous);
   const isLocalOnly = isLocalOnlyIdentity(user);
-  const isOnline = useStore((s) => s.isOnline);
+  const { status: networkStatus, isOnline } = useOfflineStatus();
   const viewDate = useTemporalStore((s) => s.viewDate);
 
   const activeUserId = customUserId || user?.id || (isAnonymous ? 'guest' : null);
 
   const [data, setDataState] = useState<TData | null>(initialData);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOfflineState, setIsOfflineState] = useState<boolean>(!isOnline);
+  const [isOfflineState, setIsOfflineState] = useState(false);
 
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
@@ -126,8 +126,10 @@ export function useLocalFirstQuery<TData>({
       return;
     }
 
-    if (!activeUserId || !isOnline) {
-      setIsOfflineState(true);
+    if (!activeUserId) return;
+
+    if (!isOnline) {
+      setIsOfflineState(networkStatus === 'offline');
       return;
     }
 
@@ -149,7 +151,7 @@ export function useLocalFirstQuery<TData>({
         setIsOfflineState(true);
       }
     }
-  }, [activeUserId, enabled, isLocalOnly, isOnline, queryKey, storageKey, viewDate]);
+  }, [activeUserId, enabled, isLocalOnly, isOnline, networkStatus, queryKey, storageKey, viewDate]);
 
   useEffect(() => {
     void syncRemote();
@@ -175,11 +177,11 @@ export function useLocalFirstQuery<TData>({
     () => ({
       data,
       isLoading,
-      isOffline: isOfflineState || !isOnline,
+      isOffline: isOfflineState || networkStatus === 'offline',
       isAnonymous,
       refetch: syncRemote,
       setData,
     }),
-    [data, isLoading, isOfflineState, isOnline, isAnonymous, syncRemote, setData],
+    [data, isLoading, isOfflineState, networkStatus, isAnonymous, syncRemote, setData],
   );
 }

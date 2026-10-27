@@ -1,19 +1,31 @@
+import { experienceOf } from '@repo/core/verger';
+import { useVergerSnapshot } from '@repo/verger-react';
 import { useMemo } from 'react';
 import { useFidelityOptional } from './FidelityProvider';
-import { useRealityOptional } from './RealityProvider';
 import { useSensoryPreferencesOptional } from './SensoryProvider';
 import type { VisualCapabilities } from './types';
-import { resolveVisualCapabilities } from './visualPolicy';
-import { applyVisualSafeMode } from './visualSafety';
+import { isVisualSafeModeEnabled } from './visualSafety';
 
+/** Outside verger's provider nothing is known about the phone: no floor, only the user's settings. */
+const UNGOVERNED = { levels: {}, capacityClass: 'unknown' } as const;
+
+/**
+ * What components may spend: verger's levels and the phone's class, read through Gurudevi's view
+ * (`experienceOf`), with the user's own settings and the emergency safe mode.
+ */
 export function useVisualCapabilities(): VisualCapabilities {
-  const { reality } = useRealityOptional();
   const { fidelityLevel } = useFidelityOptional();
   const sensoryPreferences = useSensoryPreferencesOptional();
+  const snapshot = useVergerSnapshot();
+  const levels = snapshot?.levels ?? UNGOVERNED.levels;
+  const capacityClass = snapshot?.capacityClass ?? UNGOVERNED.capacityClass;
 
   return useMemo(
     () =>
-      applyVisualSafeMode(resolveVisualCapabilities(reality, fidelityLevel, sensoryPreferences)),
-    [reality, fidelityLevel, sensoryPreferences],
+      experienceOf(
+        { levels, capacityClass },
+        { fidelity: fidelityLevel, ...sensoryPreferences, safeMode: isVisualSafeModeEnabled() },
+      ),
+    [levels, capacityClass, fidelityLevel, sensoryPreferences],
   );
 }

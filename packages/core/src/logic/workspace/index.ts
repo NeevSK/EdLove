@@ -21,6 +21,13 @@ export {
   WORKSPACE_COMPACT_BREAKPOINT,
 } from '@repo/core/logic/workspace/layoutSync';
 export {
+  type ProvisionalWorkspaceCommand,
+  queueCommercialWorkspace,
+  queueGuardianWorkspace,
+  reconcileProvisionalWorkspaces,
+  useProvisionalWorkspaceQueue,
+} from '@repo/core/logic/workspace/provisionalWorkspace';
+export {
   createWorkspaceRendererConfig,
   resolveWorkspaceRendererPlatform,
 } from '@repo/core/logic/workspace/renderer';

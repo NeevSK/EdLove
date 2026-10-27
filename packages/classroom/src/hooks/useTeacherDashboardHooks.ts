@@ -1,9 +1,11 @@
-import { assignmentsAPI, classroomsAPI, echoAPI, interceptApiCall } from '@repo/core/api/client';
+import { assignmentsAPI, classroomsAPI, echoAPI } from '@repo/core/api/client';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import {
   useTeacherClassroomsQuery,
   useTeacherStatsQuery,
 } from '@repo/core/api/hooks/classroom.hooks';
-import { type Assignment, type Echo, type TeacherStats, useAuthStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { type Assignment, type Echo, type TeacherStats } from '@repo/core/logic';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -60,16 +62,14 @@ export function useTeacherEchoesPulse() {
       if (!userId) return [];
       const classrooms = await classroomsAPI.getTeacherClassrooms(userId);
       if (!classrooms || classrooms.length === 0) {
-        const intercepted = interceptApiCall('echo', 'getTeacherEchoes', [userId]);
-        return (intercepted ? await intercepted : []) as Echo[];
+        return getSandboxSamples<Echo[]>('echo', 'getTeacherEchoes', [userId], []);
       }
       const allEchoes = await Promise.all(
         classrooms.map((c: any) => echoAPI.getEchoesByClassroom(c.id)),
       );
       const flat = allEchoes.flat();
       if (flat.length === 0) {
-        const intercepted = interceptApiCall('echo', 'getTeacherEchoes', [userId]);
-        return (intercepted ? await intercepted : []) as Echo[];
+        return getSandboxSamples<Echo[]>('echo', 'getTeacherEchoes', [userId], []);
       }
       return flat as Echo[];
     },
@@ -88,11 +88,7 @@ export function useTeacherTemporalSnapshot() {
     queryKey: ['teacher-temporal-snapshot', userId],
     queryFn: async () => {
       if (!userId) return [];
-      const intercepted = interceptApiCall('teacherDashboard', 'getTemporalSnapshot', [userId]);
-      if (intercepted) {
-        return intercepted;
-      }
-      return [];
+      return getSandboxSamples<any[]>('teacherDashboard', 'getTemporalSnapshot', [userId], []);
     },
     enabled: !!userId,
   });

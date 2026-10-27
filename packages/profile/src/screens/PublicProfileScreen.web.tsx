@@ -1,3 +1,8 @@
+/**
+ * @deprecated Legacy React Native Web screen.
+ * The canonical browser web interface is hosted in `apps/gurudevi-web`.
+ * Preserved for historical test fixtures and migration parity per AGENTS.md Deletion Veto.
+ */
 import { useEntity } from '@repo/core/hooks';
 import type { EntityType } from '@repo/core/logic';
 import { useProfile } from '@repo/profile/hooks/useProfile';

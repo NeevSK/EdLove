@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
+  getCanonicalSampleStudents,
   loadAccountAttendance,
   loadAccountClassrooms,
   type WorkspaceClassroom,
@@ -50,64 +51,7 @@ export function BadgeSheetFloor({ mode, subjectId }: BadgeSheetFloorProps) {
           };
           setClassrooms([sampleClass]);
           setClassroom(sampleClass);
-          const sampleStudents: WorkspaceStudent[] = [
-            {
-              id: '00000000-0000-4000-8000-000000000001',
-              studentId: 'stu-01',
-              name: 'Nimal Bandara',
-              rollNumber: 1,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000002',
-              studentId: 'stu-02',
-              name: 'Kasun Perera',
-              rollNumber: 2,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000003',
-              studentId: 'stu-03',
-              name: 'Ananya Sharma',
-              rollNumber: 3,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000004',
-              studentId: 'stu-04',
-              name: 'Devinda Silva',
-              rollNumber: 4,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000005',
-              studentId: 'stu-05',
-              name: 'Fatima Zahra',
-              rollNumber: 5,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000006',
-              studentId: 'stu-06',
-              name: 'Praveen Jayawardena',
-              rollNumber: 6,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000007',
-              studentId: 'stu-07',
-              name: 'Sanduni Fernando',
-              rollNumber: 7,
-              status: 'present',
-            },
-            {
-              id: '00000000-0000-4000-8000-000000000008',
-              studentId: 'stu-08',
-              name: 'Dulip Mendis',
-              rollNumber: 8,
-              status: 'present',
-            },
-          ];
+          const sampleStudents: readonly WorkspaceStudent[] = getCanonicalSampleStudents();
           setStudents(sampleStudents);
         }
       } catch {

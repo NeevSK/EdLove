@@ -1,0 +1,261 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepDot {
+  flex: 1;
+  height: 4px;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.stepDotActive {
+  background: #0284c7;
+}
+
+.stepTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.stepSubtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Step 1: Energy Grid */
+.energyGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.energyBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.875rem 0.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.energyBtn:hover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+  transform: translateY(-2px);
+}
+
+.energyBtnSelected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.energyNum {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.energyLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Step 2: Breathing Rings */
+.breathContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  gap: 1.25rem;
+}
+
+.breathCircleWrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breathOuterRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.25) 0%, rgba(13, 148, 136, 0.05) 70%, transparent 100%);
+  border: 1.5px solid rgba(13, 148, 136, 0.35);
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.breathInnerRing {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 9999px;
+  background: #0d9488;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.5rem;
+  box-shadow: 0 0 24px rgba(13, 148, 136, 0.4);
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.breathPhaseLabel {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0d9488;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.breathCountText {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+/* Step 3: Intentions */
+.intentionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.intentionChip {
+  padding: 0.5rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.intentionChip:hover {
+  border-color: #7c3aed;
+  background: #faf5ff;
+  color: #7c3aed;
+}
+
+.intentionChipActive {
+  background: #7c3aed;
+  color: #ffffff;
+  border-color: #7c3aed;
+}
+
+.completeBtn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.completeBtn:hover {
+  background: #0369a1;
+}
+
+.skipBtn {
+  align-self: center;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.skipBtn:hover {
+  color: #64748b;
+}

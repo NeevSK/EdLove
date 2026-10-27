@@ -1,19 +1,17 @@
+import {
+  assertSupabaseSessionContinuity,
+  readSupabaseSession,
+} from '@repo/core/adapters/supabase/sessionContinuity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { assertHighway } from '@repo/core/api/highways';
+import { IdentityBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
-
-/**
- * Simplified bond structure returned by the identity API
- * The full Bond structure includes additional fields like user_id, entity_id, etc.
- * that are filled in by the store layer
- */
-export interface SimplifiedBond {
-  id: string;
-  capacity: string;
-}
+import type { Bond } from '@repo/core/types/Identity';
 
 /**
  * IDENTITY API (Sovereign RPC Proxy)
@@ -26,10 +24,46 @@ export interface ActiveCitizen {
   id: string;
   email: string | null;
   display_name: string;
-  availableBonds: SimplifiedBond[];
-  activeBond?: SimplifiedBond | null;
+  availableBonds: Bond[];
+  activeBond?: Bond | null;
   onboarding_completed?: boolean;
   schoolId?: string;
+}
+
+function normalizeLocalGuestIdentity(
+  identity: Awaited<ReturnType<typeof getLocalGuestIdentity>>,
+): ActiveCitizen {
+  const availableBonds = identity.availableBonds.flatMap((bond) => {
+    const capacity = CapacitySchema.safeParse(bond.capacity);
+    return capacity.success ? [{ ...bond, capacity: capacity.data }] : [];
+  });
+  return {
+    ...identity,
+    availableBonds,
+    activeBond: availableBonds.find((bond) => bond.id === identity.activeBond?.id) ?? null,
+  };
+}
+
+function normalizeBootstrapIdentity(identity: unknown): ActiveCitizen {
+  const bootstrap = IdentityBootstrapSchema.parse(identity);
+  const availableBonds = bootstrap.availableBonds.map((bond) => ({
+    ...bond,
+    capacity: CapacitySchema.parse(bond.capacity),
+  }));
+  const activeBond = bootstrap.activeBond
+    ? (availableBonds.find((bond) => bond.id === bootstrap.activeBond?.id) ?? null)
+    : null;
+  if (bootstrap.activeBond && activeBond === null) {
+    throw new Error('Identity bootstrap selected a bond outside its available bonds.');
+  }
+  return {
+    id: bootstrap.id,
+    email: bootstrap.email ?? null,
+    display_name: bootstrap.display_name ?? bootstrap.name ?? '',
+    availableBonds,
+    activeBond,
+    onboarding_completed: bootstrap.onboarding_completed,
+  };
 }
 
 const inFlightIdentityRequests = new Map<string, Promise<ActiveCitizen | null>>();
@@ -45,12 +79,15 @@ export const identityAPI = {
    */
   async identifyActiveCitizen(): Promise<ActiveCitizen | null> {
     assertHighway('identity_bootstrap', 'direct-api');
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const session = sessionData.session;
+    const session = await readSupabaseSession();
+    if (!session) {
+      setGuestScope(null);
+      return null;
+    }
     if (session?.user?.is_anonymous) {
       setGuestScope(session.user.id);
       const local = await getLocalGuestIdentity(session.user.id);
-      return local;
+      return normalizeLocalGuestIdentity(local);
     }
     setGuestScope(null);
     const requestKey = getIdentityRequestKey(session);
@@ -59,9 +96,16 @@ export const identityAPI = {
     const inFlight = inFlightIdentityRequests.get(requestKey);
     if (inFlight) return inFlight;
 
-    const request = (orpcClient.identity.identifyActiveCitizen({}) as unknown as Promise<ActiveCitizen | null>).finally(() => {
-      inFlightIdentityRequests.delete(requestKey);
-    });
+    const expectedSession = { accessToken: session.access_token, subject: session.user.id };
+    const request = orpcClient.identity
+      .identifyActiveCitizen({}, { context: { expectedSession, retry: 0 } })
+      .then(async (response) => {
+        await assertSupabaseSessionContinuity(expectedSession);
+        return normalizeBootstrapIdentity(response);
+      })
+      .finally(() => {
+        inFlightIdentityRequests.delete(requestKey);
+      });
     inFlightIdentityRequests.set(requestKey, request);
     return request;
   },
@@ -95,7 +139,10 @@ export const identityAPI = {
         }),
       });
     }
-    return orpcClient.identity.modifyUserProfile({ params: { id }, body: updates as any });
+    return orpcClient.identity.modifyUserProfile(
+      { params: { id }, body: UserProfilePatchSchema.parse(updates) },
+      { context: { expectedAccountId: id, retry: 0 } },
+    );
   },
 
   /**

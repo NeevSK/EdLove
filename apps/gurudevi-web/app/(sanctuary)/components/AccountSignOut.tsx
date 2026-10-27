@@ -12,9 +12,13 @@ export function AccountSignOut() {
     setMessage(null);
     try {
       await executeSovereignSignOut('/');
-    } catch {
+    } catch (cause) {
       setIsSigningOut(false);
-      setMessage('We could not complete sign out. Please try again.');
+      setMessage(
+        cause instanceof Error
+          ? cause.message
+          : 'We could not complete sign out. Please try again.',
+      );
     }
   }
 

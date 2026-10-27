@@ -6,19 +6,14 @@ import type {
 } from '@repo/core/api/deviceTrust';
 import type {
   DeviceSecurityMutationResult,
+  DeviceSecuritySummary,
   IDeviceSecurityPort,
 } from '@repo/core/logic/ports/deviceSecurity.port';
 
 export class DeviceSecurityManager implements IDeviceSecurityPort {
   constructor(private adapter: IDeviceSecurityPort) {}
 
-  async getSecuritySummary(): Promise<{
-    devices: DeviceTrustSummary[];
-    events: DeviceSecurityEvent[];
-    authEvents: AuthEvent[];
-    sessions: DeviceSecuritySession[];
-    currentDevice: DeviceTrustSummary | null;
-  }> {
+  async getSecuritySummary(): Promise<DeviceSecuritySummary> {
     return this.adapter.getSecuritySummary();
   }
 

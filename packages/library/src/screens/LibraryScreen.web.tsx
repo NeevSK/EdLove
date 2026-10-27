@@ -1,7 +1,19 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { showToast } from '@repo/core/lib/feedback';
+
+/**
+ * @deprecated LEGACY RN-WEB ARTIFACT (DO NOT USE IN NEXT.JS 16)
+ *
+ * In accordance with AGENTS.md monorepo rules:
+ * - "Import *.web.tsx in gurudevi-web: NEVER -> Build browser-native in apps/gurudevi-web"
+ * - The authoritative web library floor is: `apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx`
+ * This file is retained as an un-shimmed historical reference only.
+ */
+
 import { growthSignalsAPI, impactRipplesAPI } from '@repo/core/api/client';
+import { invokeEdgeFunction } from '@repo/core/api/functions';
 import { usePendingGateAction } from '@repo/core/hooks';
-import { setPendingGateAction, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import { setPendingGateAction, usePermissions, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import type { User } from '@repo/core/types';
 import { libraryAPI } from '@repo/library/api/library';
 import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
@@ -22,13 +34,13 @@ import type {
 } from '@repo/library/types';
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import {
   AssetCreationModal,
   CollectionCreationModal,
 } from '@repo/ui/components/media/AssetCreationPortal';
 import { ResourceActionSheet } from '@repo/ui/components/media/ResourceActionSheet';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
 import { UniversalPerspective } from '@repo/ui/components/visualization';
@@ -71,7 +83,10 @@ function StackFallback() {
       aria-live="polite"
       style={{ padding: '48px 32px', display: 'grid', placeItems: 'center', gap: '12px' }}
     >
-      <BrandPulse size={32} accessibilityLabel={t('library.loadingSanctuary', 'Loading the sanctuary')} />
+      <BrandPulse
+        size={32}
+        accessibilityLabel={t('library.loadingSanctuary', 'Loading the sanctuary')}
+      />
       <span>{t('library.loadingSanctuary', 'Loading the sanctuary...')}</span>
     </div>
   );
@@ -126,8 +141,7 @@ export default function LibraryScreenWeb() {
   const { isPastView } = useTemporalStore();
 
   const pending = usePendingGateAction();
-  const user = useStore((state) => state.user);
-  const showToast = useStore((state) => state.showToast);
+  const user = useAuthStore((state) => state.user);
 
   interface LibraryState {
     searchQuery: string;
@@ -383,7 +397,8 @@ export default function LibraryScreenWeb() {
         .catch(() => {
           dispatch({
             type: 'SET_FALLBACK_ERROR',
-            error: 'Public collections could not be loaded. Your personal library is still available.',
+            error:
+              'Public collections could not be loaded. Your personal library is still available.',
           });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
@@ -508,7 +523,10 @@ export default function LibraryScreenWeb() {
         return;
       }
       openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
-        showToast(t('library.openFailed', 'Could not open this resource. Please try again.'), 'error');
+        showToast(
+          t('library.openFailed', 'Could not open this resource. Please try again.'),
+          'error',
+        );
       });
     },
     [router, showToast, t],
@@ -526,7 +544,10 @@ export default function LibraryScreenWeb() {
       }
 
       showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
-        showToast(t('library.linkOptionsFailed', 'Could not show link options. Please try again.'), 'error');
+        showToast(
+          t('library.linkOptionsFailed', 'Could not show link options. Please try again.'),
+          'error',
+        );
       });
     },
     [showToast, t],
@@ -1540,11 +1561,9 @@ export default function LibraryScreenWeb() {
                 (user as User & { authority?: string; role?: string }).role ??
                 'student';
               const created = await libraryAPI.createResource(input, user.id, creatorRole);
-              supabase.functions
-                .invoke('library-etl', {
-                  body: { resourceId: created.id, action: 'enrich' },
-                })
-                .catch((err) => console.warn('[LibraryScreen] ETL enrichment failed:', err));
+              invokeEdgeFunction('library-etl', {
+                body: { resourceId: created.id, action: 'enrich' },
+              }).catch((err) => console.warn('[LibraryScreen] ETL enrichment failed:', err));
               dispatch({
                 type: 'SET_MODAL',
                 name: 'assetCreation',

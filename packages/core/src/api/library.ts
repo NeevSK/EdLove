@@ -224,3 +224,77 @@ export const libraryAPI = {
     return orpcClient.library.getMapTopology({ query: {} });
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_DOCUMENT_OUTLINES,
+  MOCK_KNOWLEDGE_TOPOLOGY,
+  MOCK_LEARNING_CENTERS,
+  MOCK_LIBRARY_COLLECTIONS,
+  MOCK_LIBRARY_RESOURCES,
+  MOCK_VIDEO_CHAPTERS,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'library',
+  ghostMethods: [
+    'getResources',
+    'getCollections',
+    'getMapTopology',
+    'fetchMapTopology',
+    'getLearningCenters',
+    'getDocumentOutlines',
+    'getVideoChapters',
+  ],
+  isEmpty: (method, d) => {
+    if (method === 'getMapTopology' || method === 'fetchMapTopology') {
+      return !d || typeof d !== 'object' || !Array.isArray((d as any).nodes) || (d as any).nodes.length === 0;
+    }
+    return isEmptyArray(d);
+  },
+  getSamples: (method) => {
+    if (method === 'getMapTopology' || method === 'fetchMapTopology') {
+      return MOCK_KNOWLEDGE_TOPOLOGY;
+    }
+    if (method === 'getCollections') {
+      return MOCK_LIBRARY_COLLECTIONS;
+    }
+    if (method === 'getLearningCenters') {
+      return MOCK_LEARNING_CENTERS;
+    }
+    if (method === 'getDocumentOutlines') {
+      return MOCK_DOCUMENT_OUTLINES;
+    }
+    if (method === 'getVideoChapters') {
+      return MOCK_VIDEO_CHAPTERS;
+    }
+    return MOCK_LIBRARY_RESOURCES;
+  },
+});
+
+import {
+  MOCK_CURATOR_BROKEN_ITEMS,
+  MOCK_CURATOR_STAGED_ITEMS,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'curator',
+  ghostMethods: ['getStagedItems', 'getBrokenItems'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getStagedItems') return [...MOCK_CURATOR_STAGED_ITEMS];
+    return [...MOCK_CURATOR_BROKEN_ITEMS];
+  },
+});
+
+export type {
+  MockLearningCenter,
+  MockKnowledgeTopology,
+  MockTopologyNode,
+  MockTopologyLink,
+  MockVideoChapter,
+  MockDocumentOutlineItem,
+  MockCuratorStagedItem,
+  MockCuratorBrokenItem,
+} from '@repo/core/api/mockData';
+

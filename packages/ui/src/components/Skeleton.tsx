@@ -16,20 +16,12 @@
  *
  * Platform note: Uses platform-specific animation implementations.
  */
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { tokens } from '@repo/ui/tokens';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
+import { WorldSkeleton } from '../world/native/Waiting';
 import { useResponsiveGrid } from './layout';
-import { duration, nativeEasing } from './motion';
-
-// Conditional imports for Reanimated
-let Animated: any = null;
-try {
-  Animated = require('react-native-reanimated');
-} catch (e) {
-  // Reanimated not available
-}
-
-const AnimatedView = Animated?.createAnimatedComponent(View) || View;
+import { duration } from './motion';
 
 type ShimmerBlockProps = {
   width?: number | `${number}%`;
@@ -46,6 +38,8 @@ export function ShimmerBlock({
   style,
   className,
 }: ShimmerBlockProps) {
+  // verger's `loading-shimmer` lever: at rest, the placeholder holds still (no animation cost).
+  const { allowShimmer } = useVisualCapabilities();
   // Web implementation using CSS animations
   if (Platform.OS === 'web') {
     const webStyle: any = {
@@ -56,6 +50,7 @@ export function ShimmerBlock({
       ...(style || {}),
     };
 
+    if (!allowShimmer) return <div className={className} style={webStyle} />;
     return (
       <div className={className} style={webStyle}>
         <style>{`
@@ -72,46 +67,15 @@ export function ShimmerBlock({
     );
   }
 
-  // Native implementation
-  if (!Animated) {
-    return (
-      <View
-        className={className}
-        style={[
-          {
-            width,
-            height,
-            borderRadius: radius,
-            backgroundColor: tokens.colors.skeletonBase,
-          },
-          style,
-        ]}
-      />
-    );
-  }
-
+  // Native: the world's sunken colour and lamp shimmer.
   return (
-    <AnimatedView
+    <WorldSkeleton
+      width={width}
+      height={height}
+      radius={radius}
+      still={!allowShimmer}
       className={className}
-      style={[
-        {
-          width,
-          height,
-          borderRadius: radius,
-          backgroundColor: tokens.colors.skeletonBase,
-        },
-        {
-          animationName: {
-            '0%': { opacity: 0.55 },
-            '50%': { opacity: 1 },
-            '100%': { opacity: 0.55 },
-          },
-          animationDuration: duration.breathe * 0.55, // a bit brisker than the ambient breathe
-          animationTimingFunction: nativeEasing.standard,
-          animationIterationCount: 'infinite',
-        } as any,
-        style,
-      ]}
+      style={style}
     />
   );
 }

@@ -1,4 +1,5 @@
-import { type Capacity, useStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { type Capacity } from '@repo/core/logic';
 
 import { useThemedColors } from '@repo/ui/hooks';
 import {
@@ -55,7 +56,7 @@ export default function IdentityInitialState({
 }: IdentityInitialStateProps) {
   const { t } = useTranslation();
   const colors = useThemedColors();
-  const setDemoMode = useStore((state) => state.setDemoMode);
+  const setDemoMode = useExperienceState((state) => state.setDemoMode);
 
   const getIdentityContent = () => {
     switch (capacity) {

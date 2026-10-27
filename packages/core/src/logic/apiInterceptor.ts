@@ -1,5 +1,6 @@
+import { showToast } from '@repo/core/lib/feedback';
 import { captureException } from '@repo/core/monitoring';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError } from '@repo/core/types/API';
 
 /**
@@ -78,7 +79,7 @@ export function handleAPIError(error: any, silent = false) {
   }
 
   if (!silent && apiError.message) {
-    useStore.getState().showToast(apiError.message, 'error');
+    showToast(apiError.message, 'error');
   }
 
   return apiError;

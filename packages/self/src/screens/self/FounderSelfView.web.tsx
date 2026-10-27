@@ -1,5 +1,6 @@
 import { useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
 import MoodLotus from '@repo/self/components/MoodLotus';
@@ -29,8 +30,8 @@ export default function FounderSelfView() {
   const { userId } = context;
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
 
-  const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((s) => s.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((s) => s.setJustFinishedOnboarding);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
   const { logs: moodLogs, loading: moodLoading, addMoodLog } = useMoodLogs();

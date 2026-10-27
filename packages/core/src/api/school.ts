@@ -150,3 +150,26 @@ export const schoolAPI = {
     );
   },
 };
+
+// ---------------------------------------------------------------------------
+// Sandbox ghost-seeding registration for this domain.
+// ---------------------------------------------------------------------------
+import { isEmptyOrNull, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_SCHOOL, MOCK_SCHOOL_STATS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'school',
+  ghostMethods: ['getSchool', 'getSchoolStats'],
+  isEmpty: (method, data) => {
+    if (method === 'getSchool') return !data || !(data as any).id;
+    if (method === 'getSchoolStats') {
+      const s = data as any;
+      return !s || (s.total_students === 0 && s.total_teachers === 0 && s.total_classrooms === 0);
+    }
+    return isEmptyOrNull(data);
+  },
+  getSamples: (method) => {
+    if (method === 'getSchool') return { ...MOCK_SCHOOL, is_sample: true };
+    return { ...MOCK_SCHOOL_STATS, is_sample: true };
+  },
+});

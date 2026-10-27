@@ -1,3 +1,9 @@
+/**
+ * @deprecated Legacy React Native Web component.
+ * In accordance with AGENTS.md, all modern web experiences are built in `apps/gurudevi-web`.
+ * For modern web resource and living cards, use `apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor`.
+ * Retained solely as a backward-compatible source and historical reference.
+ */
 import {
   BadgeCheck,
   BookMarked,

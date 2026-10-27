@@ -62,19 +62,53 @@ function writePinnedIds(key: string, ids: string[]): void {
   }
 }
 
+export function getCircadianPhase(): 'morning' | 'afternoon' | 'night' {
+  if (typeof window === 'undefined') return 'morning';
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 18) return 'afternoon';
+  return 'night';
+}
+
+export function scoreFeatureForRoles(
+  feature: SelfFeatureManifestItem,
+  roles: readonly string[],
+  phase: 'morning' | 'afternoon' | 'night',
+): number {
+  const activeRoles = roles.length > 0 ? roles : ['teacher'];
+  const maxRoleWeight = Math.max(
+    ...activeRoles.map((r) => {
+      const w = feature.roleWeights?.[r as keyof typeof feature.roleWeights];
+      return typeof w === 'number' ? w : 50;
+    }),
+  );
+  const timingBonus = feature.timing?.preferredPhase === phase ? 25 : 0;
+  return maxRoleWeight + timingBonus - (feature.defaultOrder * 0.01);
+}
+
 export interface UseSelfCanvasOptions {
   readonly accountId?: string;
   readonly enableRemoteSync?: boolean;
   readonly activeFeatureId?: string | null;
+  readonly role?: string;
+  readonly roles?: readonly string[];
 }
 
 export function useSelfCanvas({
   accountId = 'anonymous',
   enableRemoteSync = true,
   activeFeatureId = null,
+  role,
+  roles,
 }: UseSelfCanvasOptions = {}) {
   const pinCap = getMaxPinnedForWorkspace('self');
   const [viewport, setViewport] = useState<ViewportKind>('desktop');
+  const phase = useMemo(() => getCircadianPhase(), []);
+  const activeRoles = useMemo(() => {
+    if (roles && roles.length > 0) return roles;
+    if (role) return [role];
+    return ['teacher'];
+  }, [role, roles]);
 
   const appearanceHook = useBrowserWorkspaceAppearance({
     accountId,
@@ -127,7 +161,7 @@ export function useSelfCanvas({
     [appearanceHook, pinCap, pinnedIds],
   );
 
-  // Group features by category
+  // Group features by category and sort them dynamically by role & circadian phase
   const featuresByCategory = useMemo(() => {
     const map = new Map<SelfCategory, SelfFeatureManifestItem[]>();
     for (const cat of DEFAULT_SELF_CATEGORIES) {
@@ -139,8 +173,23 @@ export function useSelfCanvas({
         list.push(feature);
       }
     }
+    for (const [, list] of map) {
+      list.sort(
+        (a, b) =>
+          scoreFeatureForRoles(b, activeRoles, phase) -
+          scoreFeatureForRoles(a, activeRoles, phase),
+      );
+    }
     return map;
-  }, []);
+  }, [activeRoles, phase]);
+
+  const sortedManifestAll = useMemo(() => {
+    return [...SELF_FEATURE_MANIFEST.all].sort(
+      (a, b) =>
+        scoreFeatureForRoles(b, activeRoles, phase) -
+        scoreFeatureForRoles(a, activeRoles, phase),
+    );
+  }, [activeRoles, phase]);
 
   // Resolve pinned features
   const pinnedFeatures = useMemo(() => {
@@ -178,6 +227,7 @@ export function useSelfCanvas({
     layoutMode,
     groupOrder,
     featuresByCategory,
+    sortedManifestAll,
     pinnedIds,
     pinnedFeatures,
     togglePin,
@@ -186,5 +236,6 @@ export function useSelfCanvas({
     resetAppearance: appearanceHook.resetAppearance,
     status: appearanceHook.status,
     setGroupOrder: appearanceHook.setGroupOrder,
+    phase,
   };
 }

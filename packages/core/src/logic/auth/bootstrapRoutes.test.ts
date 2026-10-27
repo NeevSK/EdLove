@@ -44,7 +44,7 @@ describe('web auth callback bootstrap route', () => {
     ).toMatchObject({ decision: 'app', redirectTo: '/workspace' });
   });
 
-  it('admits guest onboarding only for an anonymous session', () => {
+  it('admits guest onboarding only for an anonymous Auth session or local device guest', () => {
     expect(
       getAuthRouteTarget({
         bootstrapReady: true,
@@ -55,6 +55,18 @@ describe('web auth callback bootstrap route', () => {
         guestOnboardingIntent: true,
       }),
     ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasLocalGuestSession: true,
+        hasSession: false,
+        onboardingCompleted: false,
+        pathname: '/onboarding',
+        sessionMode: 'unauthenticated',
+        guestOnboardingIntent: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
 
     expect(
       getAuthRouteTarget({

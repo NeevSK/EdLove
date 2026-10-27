@@ -1,4 +1,9 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+/**
+ * @deprecated Legacy React Native Web screen.
+ * In accordance with AGENTS.md, all modern web experiences are built in `apps/gurudevi-web`.
+ * For modern web collection views, use `apps/gurudevi-web/app/(sanctuary)/library/collections/[id]`.
+ * Retained solely as a backward-compatible source and historical reference.
+ */
 import { useAuthStore } from '@repo/core/store';
 import { libraryAPI } from '@repo/library/api/library';
 import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
@@ -53,26 +58,28 @@ function ResourceSearchResults({
     if (!q) {
       // Show recent resources when no search term
       setIsSearching(true);
-      supabase
-        .from('nodes')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20)
-        .then(({ data }) => {
+      libraryAPI
+        .getResources({ limit: 20 })
+        .then((data) => {
           setResults(data || []);
+          setIsSearching(false);
+        })
+        .catch(() => {
+          setResults([]);
           setIsSearching(false);
         });
       return;
     }
     const timer = setTimeout(() => {
       setIsSearching(true);
-      supabase
-        .from('nodes')
-        .select('*')
-        .ilike('title', `%${q}%`)
-        .limit(20)
-        .then(({ data }) => {
+      libraryAPI
+        .getResources({ search: q, limit: 20 })
+        .then((data) => {
           setResults(data || []);
+          setIsSearching(false);
+        })
+        .catch(() => {
+          setResults([]);
           setIsSearching(false);
         });
     }, 350);

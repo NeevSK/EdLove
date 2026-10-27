@@ -1,31 +1,68 @@
-import type { INetwork } from '@repo/core/logic/interfaces/network.port';
+import type { INetwork, NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
 
-/**
- * NetworkManager - Sovereign Dispatcher for Connectivity.
- *
- * Part of the "Hat 04 - Data Reliability" domain.
- */
-class NetworkManager implements INetwork {
+const UNKNOWN_SNAPSHOT: NetworkSnapshot = Object.freeze({
+  status: 'unknown',
+  source: 'none',
+  connection: null,
+});
+
+/** Owns the single platform observation and publishes a stable external-store snapshot. */
+export class NetworkManager implements INetwork {
   private adapter: INetwork | null = null;
+  private adapterUnsubscribe: (() => void) | null = null;
+  private snapshot: NetworkSnapshot = UNKNOWN_SNAPSHOT;
+  private readonly listeners = new Set<() => void>();
 
-  registerAdapter(adapter: INetwork) {
+  registerAdapter(adapter: INetwork): void {
+    this.adapterUnsubscribe?.();
+    this.adapterUnsubscribe = null;
     this.adapter = adapter;
+    this.snapshot = adapter.getSnapshot();
+    if (this.listeners.size > 0) this.subscribeToAdapter();
+    this.notifyListeners();
   }
 
-  private getAdapter(): INetwork {
-    if (!this.adapter) {
-      // In production, we assume connected if no adapter is registered (optimistic)
-      // but warn in dev.
-      if (__DEV__) {
-        console.warn('[NetworkManager] No adapter registered. Defaulting to isConnected=true.');
+  getSnapshot = (): NetworkSnapshot => {
+    return this.snapshot;
+  };
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    if (this.listeners.size === 1) this.subscribeToAdapter();
+
+    return () => {
+      this.listeners.delete(listener);
+      if (this.listeners.size === 0) {
+        this.adapterUnsubscribe?.();
+        this.adapterUnsubscribe = null;
       }
-      return { isConnected: async () => true };
-    }
-    return this.adapter;
+    };
   }
 
+  /** Unknown is not permission to attempt a network-only operation. */
   async isConnected(): Promise<boolean> {
-    return this.getAdapter().isConnected();
+    return this.snapshot.status === 'online';
+  }
+
+  private subscribeToAdapter(): void {
+    if (!this.adapter || this.adapterUnsubscribe) return;
+    const adapter = this.adapter;
+    const unsubscribe = adapter.subscribe(() => {
+      if (this.adapter !== adapter) return;
+      const next = adapter.getSnapshot();
+      if (next === this.snapshot) return;
+      this.snapshot = next;
+      this.notifyListeners();
+    });
+    if (this.adapter !== adapter || this.listeners.size === 0) {
+      unsubscribe();
+      return;
+    }
+    this.adapterUnsubscribe = unsubscribe;
+  }
+
+  private notifyListeners(): void {
+    for (const listener of this.listeners) listener();
   }
 }
 

@@ -1,17 +1,184 @@
 import { setActiveAccountId } from '@repo/core/lib/accountScope';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
   MutationQueueCapacityError,
 } from '@repo/core/lib/sync/types';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { beforeEach, describe, expect, it } from 'vitest';
+import {
+  isQueuedMutationAcknowledged,
+  useMutationQueue,
+} from '@repo/core/lib/sync/useMutationQueue';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('useMutationQueue (G0 Unit / G1 State)', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await useMutationQueue.persist.rehydrate();
     useMutationQueue.getState().clearQueue();
     useMutationQueue.getState().clearDeadLetterQueue();
     setActiveAccountId(null);
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('waits for hydration and preserves older commands before accepting new work', async () => {
+    const read = Promise.withResolvers<string | null>();
+    vi.spyOn(SafeZustandStorage, 'getItem').mockReturnValue(read.promise);
+    const write = vi.spyOn(SafeZustandStorage, 'setItem').mockResolvedValue(undefined);
+    const initialRead = useMutationQueue.persist.rehydrate();
+    const append = useMutationQueue
+      .getState()
+      .addToQueue({
+        name: 'new-work',
+        scope: 'chat',
+        type: 'CREATE',
+        variables: { text: 'new' },
+        userId: 'account-a',
+      });
+    await Promise.resolve();
+    expect(write).not.toHaveBeenCalled();
+    const saved = {
+      id: 'old-command',
+      name: 'old-work',
+      scope: 'chat',
+      type: 'CREATE',
+      userId: 'account-a',
+      variables: { text: 'old' },
+      idempotencyKey: 'old-key',
+      timestamp: 1,
+      logicalClock: 1,
+      retryCount: 0,
+      commandState: 'queued',
+    };
+    read.resolve(
+      JSON.stringify({
+        state: { queue: [saved], deadLetterQueue: [], isSyncing: true },
+        version: 0,
+      }),
+    );
+    await initialRead;
+    await append;
+    expect(useMutationQueue.getState().queue.map((item) => item.name)).toEqual([
+      'old-work',
+      'new-work',
+    ]);
+    expect(useMutationQueue.getState().isSyncing).toBe(false);
+    expect(write).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not overwrite an unreadable durable outbox', async () => {
+    vi.spyOn(SafeZustandStorage, 'getItem').mockRejectedValue(new Error('unreadable storage'));
+    const write = vi.spyOn(SafeZustandStorage, 'setItem').mockResolvedValue(undefined);
+    await useMutationQueue.persist.rehydrate();
+    await expect(
+      useMutationQueue
+        .getState()
+        .addToQueue({
+          name: 'new-work',
+          scope: 'chat',
+          type: 'CREATE',
+          variables: { text: 'retain draft' },
+          userId: 'account-a',
+        }),
+    ).rejects.toThrow('Original work was retained');
+    expect(write).not.toHaveBeenCalled();
+  });
+
+  it('publishes durable acceptance to observers without a second storage write', async () => {
+    const write = Promise.withResolvers<void>();
+    const storageWrite = vi.spyOn(SafeZustandStorage, 'setItem').mockReturnValue(write.promise);
+    const observed: boolean[] = [];
+    const unsubscribe = useMutationQueue.subscribe((state) => {
+      const item = state.queue[0];
+      if (item) observed.push(isQueuedMutationAcknowledged(item.id));
+    });
+    const append = useMutationQueue.getState().addToQueue({
+      name: 'observed-command',
+      scope: 'chat',
+      type: 'CREATE',
+      variables: { text: 'retained' },
+      userId: 'account-a',
+    });
+    await vi.waitFor(() => expect(storageWrite).toHaveBeenCalledTimes(1));
+    expect(observed).toEqual([false]);
+    write.resolve();
+    await append;
+    expect(observed).toEqual([false, true]);
+    expect(storageWrite).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
+  it('does not resolve an append or grant a replay lease before persistence acknowledges it', async () => {
+    let acknowledgeWrite!: () => void;
+    const storageWrite = vi.spyOn(SafeZustandStorage, 'setItem').mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          acknowledgeWrite = resolve;
+        }),
+    );
+    const { addToQueue, tryAcquireMutationLease } = useMutationQueue.getState();
+    let appendResolved = false;
+    const append = addToQueue({
+      name: 'acknowledged-command',
+      scope: 'workspace',
+      type: 'UPDATE',
+      variables: { value: 'durable only after ack' },
+      userId: 'account-a',
+    }).then(() => {
+      appendResolved = true;
+    });
+
+    await vi.waitFor(() => expect(storageWrite).toHaveBeenCalledTimes(1));
+    const queued = useMutationQueue.getState().queue[0];
+    expect(queued).toBeDefined();
+    expect(appendResolved).toBe(false);
+    if (!queued) throw new Error('Expected in-memory command before persistence acknowledgment');
+    expect(tryAcquireMutationLease(queued.id, 15_000, 1_000)).toBe(false);
+
+    acknowledgeWrite();
+    await append;
+    expect(appendResolved).toBe(true);
+    const serializedOutbox = storageWrite.mock.calls[0]?.[1];
+    expect(serializedOutbox).toBeDefined();
+    if (!serializedOutbox)
+      throw new Error('Expected the acknowledged outbox snapshot to be written');
+    const persisted = JSON.parse(serializedOutbox) as {
+      state: { queue: Array<{ id: string; commandState?: string }> };
+    };
+    expect(persisted.state.queue).toContainEqual(
+      expect.objectContaining({ id: queued.id, commandState: 'queued' }),
+    );
+    expect(tryAcquireMutationLease(queued.id, 15_000, 1_000)).toBe(true);
+  });
+
+  it('retains a failed append and re-persists it when the same intent is retried', async () => {
+    const persistenceError = new Error('outbox storage unavailable');
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const storageWrite = vi
+      .spyOn(SafeZustandStorage, 'setItem')
+      .mockRejectedValueOnce(persistenceError)
+      .mockResolvedValue(undefined);
+    const { addToQueue, tryAcquireMutationLease } = useMutationQueue.getState();
+    const intent = {
+      name: 'retryable-command',
+      scope: 'workspace',
+      type: 'UPDATE' as const,
+      variables: { value: 'retain me' },
+      userId: 'account-a',
+    };
+
+    await expect(addToQueue(intent)).rejects.toBe(persistenceError);
+    const retained = useMutationQueue.getState().queue[0];
+    expect(retained).toMatchObject({ name: intent.name, variables: intent.variables });
+    if (!retained) throw new Error('Expected failed append input to remain available for retry');
+    expect(tryAcquireMutationLease(retained.id, 15_000, 1_000)).toBe(false);
+
+    await addToQueue(intent);
+
+    expect(storageWrite).toHaveBeenCalledTimes(2);
+    expect(useMutationQueue.getState().queue).toHaveLength(1);
+    expect(useMutationQueue.getState().queue[0]?.id).toBe(retained.id);
+    expect(tryAcquireMutationLease(retained.id, 15_000, 1_000)).toBe(true);
   });
 
   it('preserves an explicitly prepared operation identity and payload metadata', async () => {

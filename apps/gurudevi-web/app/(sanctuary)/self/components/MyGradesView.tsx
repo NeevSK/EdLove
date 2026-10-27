@@ -1,19 +1,26 @@
 'use client';
 
-import { Award, BookOpen, Clock } from '@repo/ui/icons';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import { Award, BookOpen, Clock } from 'lucide-react';
 
 interface MyGradesViewProps {
   userId?: string;
   onClose?: () => void;
 }
 
-const SAMPLE_GRADES = [
-  { course: 'Foundational Sanskrit & Poetics', grade: 88, status: 'Distinction', updated: 'Yesterday' },
-  { course: 'Computational Logic & Systems', grade: 92, status: 'Distinction', updated: '2 days ago' },
-  { course: 'Ecological Ethics & Agronomy', grade: 78, status: 'Merit', updated: 'Last week' },
-];
-
 export function MyGradesView({ onClose }: MyGradesViewProps) {
+  const rawGrades = getSandboxSamples<any[]>('assignments', 'getRecentGradesOverviewForStudent', [], []);
+  const grades = rawGrades.map((g) => ({
+    course: g.assignments?.title ?? g.classrooms?.name ?? 'Practical Study',
+    grade: g.grade,
+    status: g.grade >= 85 ? 'Distinction' : 'Merit',
+    updated: 'Verified',
+  }));
+
+  const overallAverage =
+    grades.length > 0
+      ? Math.round(grades.reduce((acc, curr) => acc + curr.grade, 0) / grades.length)
+      : 86;
   return (
     <div
       style={{
@@ -35,16 +42,24 @@ export function MyGradesView({ onClose }: MyGradesViewProps) {
             Official mastery evaluations and semester portfolio milestones
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#0284c7', fontWeight: 700 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            color: '#0284c7',
+            fontWeight: 700,
+          }}
+        >
           <Award size={18} />
-          <span>Overall: 86%</span>
+          <span>Overall: {overallAverage}%</span>
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {SAMPLE_GRADES.map((g) => (
+        {grades.map((g, idx) => (
           <div
-            key={g.course}
+            key={idx}
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -58,15 +73,29 @@ export function MyGradesView({ onClose }: MyGradesViewProps) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <BookOpen size={18} color="#64748b" />
               <div>
-                <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#0f172a' }}>{g.course}</div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#0f172a' }}>
+                  {g.course}
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                  }}
+                >
                   <Clock size={11} /> {g.updated}
                 </div>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <span style={{ fontSize: '1.125rem', fontWeight: 700, color: '#10b981' }}>{g.grade}%</span>
-              <div style={{ fontSize: '0.6875rem', color: '#64748b', fontWeight: 600 }}>{g.status}</div>
+              <span style={{ fontSize: '1.125rem', fontWeight: 700, color: '#10b981' }}>
+                {g.grade}%
+              </span>
+              <div style={{ fontSize: '0.6875rem', color: '#64748b', fontWeight: 600 }}>
+                {g.status}
+              </div>
             </div>
           </div>
         ))}

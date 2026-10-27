@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * World guardrail (scripts/check-world.mjs)
  *
@@ -19,7 +20,8 @@
  * To dress a new file, migrate it and add it to DRESSED below.
  */
 
-import { readdirSync, readFileSync, statSync, writeFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,6 +43,8 @@ const DRESSED = [
 /** Where palettes are defined; raw colours are the point here. */
 const PALETTE_FILES = new Set([
   'packages/ui/src/world/worlds.ts',
+  'packages/core/src/scene/sky.ts',
+  'packages/core/src/scene/landscape.ts',
   'packages/ui/src/world/build.ts',
   'packages/ui/src/world/color.ts',
   'packages/ui/src/world/resolve.ts',
@@ -51,6 +55,7 @@ const PALETTE_FILES = new Set([
 
 const SCAN_ROOTS = ['apps', 'packages'];
 const SKIP_DIRS = new Set([
+  '.agents',
   'node_modules',
   'dist',
   'build',
@@ -67,28 +72,6 @@ const HEX = /#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{2})?)?\b(?![-\w])/g;
 const FUNC = /\b(?:rgba?|hsla?)\(/g;
 const LEGACY = /\btokens\.(?:semantic|colors)\.[\w.]+/g;
 
-function walk(dir, out) {
-  let entries;
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return out;
-  }
-  for (const name of entries) {
-    if (SKIP_DIRS.has(name)) continue;
-    const p = join(dir, name);
-    const st = statSync(p);
-    if (st.isDirectory()) walk(p, out);
-    else if (
-      /\.(tsx?|jsx?)$/.test(name) &&
-      !/\.(test|spec|stories)\./.test(name) &&
-      !name.endsWith('.d.ts')
-    )
-      out.push(p);
-  }
-  return out;
-}
-
 /** Ignore comments so documentation can mention colours. */
 function stripComments(src) {
   return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
@@ -98,7 +81,23 @@ function isDressed(rel) {
   return DRESSED.some((d) => rel === d || rel.startsWith(`${d}/`));
 }
 
-const files = SCAN_ROOTS.flatMap((r) => walk(join(ROOT, r), []));
+// Include tracked and new source; ignored build exports and tool caches are not app code.
+const files = execFileSync(
+  'git',
+  ['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', ...SCAN_ROOTS],
+  { cwd: ROOT, encoding: 'utf8' },
+)
+  .split('\0')
+  .filter(
+    (file) =>
+      file &&
+      !file.split('/').some((part) => SKIP_DIRS.has(part)) &&
+      /\.(tsx?|jsx?)$/.test(file) &&
+      !/\.(test|spec|stories)\./.test(file) &&
+      !file.endsWith('.d.ts'),
+  )
+  .map((file) => join(ROOT, file))
+  .filter(existsSync);
 const violations = [];
 let hexCount = 0;
 

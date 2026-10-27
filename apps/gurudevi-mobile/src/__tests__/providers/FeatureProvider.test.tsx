@@ -3,41 +3,32 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   context: { userId: 'user-1', citizenship: 'SECOND_CLASS' },
-  recomputeFlags: vi.fn(),
-  subscribeToFlagChanges: vi.fn(() => vi.fn()),
+  cleanup: vi.fn(),
+  bindContext: vi.fn(),
 }));
-
-vi.mock('@repo/core/logic', () => ({
-  featureFlags: {
-    subscribeToFlagChanges: mocks.subscribeToFlagChanges,
-  },
-  useFeatureStore: (
-    selector: (state: { recomputeFlags: typeof mocks.recomputeFlags }) => unknown,
-  ) => selector({ recomputeFlags: mocks.recomputeFlags }),
-  usePermissions: () => ({ context: mocks.context }),
+vi.mock('@repo/core/logic', () => ({ usePermissions: () => ({ context: mocks.context }) }));
+vi.mock('@repo/core/store', () => ({
+  useFeatureStore: (selector: (state: { bindContext: typeof mocks.bindContext }) => unknown) =>
+    selector({ bindContext: mocks.bindContext }),
 }));
 
 import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 
-describe('FeatureProvider (component-real web synchronization)', () => {
+describe('FeatureProvider (real React, owner substituted)', () => {
   beforeEach(() => {
-    mocks.recomputeFlags.mockClear();
-    mocks.subscribeToFlagChanges.mockClear();
+    vi.clearAllMocks();
+    mocks.bindContext.mockReturnValue(mocks.cleanup);
   });
-
-  it('recomputes and subscribes to flag changes without withholding the shell', async () => {
-    let tree: ReturnType<typeof create>;
+  it('binds rollout ownership without withholding the shell and releases it on unmount', async () => {
+    let tree!: ReturnType<typeof create>;
     await act(async () => {
-      tree = create(
-        <FeatureProvider>
-          <>{'shell'}</>
-        </FeatureProvider>,
-      );
-      await Promise.resolve();
+      tree = create(<FeatureProvider>{'shell'}</FeatureProvider>);
     });
-
-    expect(tree!.toJSON()).toBe('shell');
-    expect(mocks.recomputeFlags).toHaveBeenCalledWith(mocks.context);
-    expect(mocks.subscribeToFlagChanges).toHaveBeenCalledWith(mocks.context, expect.any(Function));
+    expect(tree.toJSON()).toBe('shell');
+    expect(mocks.bindContext).toHaveBeenCalledWith(mocks.context);
+    await act(async () => {
+      tree.unmount();
+    });
+    expect(mocks.cleanup).toHaveBeenCalledTimes(1);
   });
 });

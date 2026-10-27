@@ -94,7 +94,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
 
         dispatch({
           type: 'FETCH_SUCCESS',
-          payload: { group: groupData, pending, active },
+          payload: { group: groupData, pending: pending as any, active: active as any },
         });
       } catch (error) {
         console.error('Failed to load group management data:', error);

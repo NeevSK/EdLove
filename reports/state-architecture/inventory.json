@@ -1,21 +1,21 @@
 {
-  "generatedAt": "2026-10-23T05:51:21.570Z",
+  "generatedAt": "2026-10-23T10:51:35.065Z",
   "scope": "apps-and-packages-source-excluding-docs-conventional-tests-and-generated-output",
   "counts": {
-    "filesScanned": 2814,
-    "zustandStores": 18,
+    "filesScanned": 2882,
+    "zustandStores": 19,
     "persistedStores": 15,
     "queryClients": 2,
     "xstateImports": 0,
-    "contexts": 43,
+    "contexts": 45,
     "reducers": 53,
     "fullStoreSubscriptions": 52,
-    "rawStoreAccesses": 46,
-    "browserStorageAccesses": 114,
+    "rawStoreAccesses": 68,
+    "browserStorageAccesses": 117,
     "queryOperations": 138,
     "queryPersistence": 0,
     "serviceWorkerRegistrations": 1,
-    "stateRegistryEntries": 20,
+    "stateRegistryEntries": 21,
     "unregisteredZustandStorePaths": 0
   },
   "zustandStores": [
@@ -32,6 +32,13 @@
       "line": 45,
       "candidateOwner": "navigation-handoff",
       "persisted": true
+    },
+    {
+      "symbol": "useScopeSessionStore",
+      "path": "packages/core/src/store/scopeSession.ts",
+      "line": 106,
+      "candidateOwner": "unclassified",
+      "persisted": false
     },
     {
       "symbol": "useActiveSubTabsStore",
@@ -141,7 +148,7 @@
     {
       "symbol": "useSelfCanvasStore",
       "path": "packages/self/src/features/selfCanvasStore.ts",
-      "line": 170,
+      "line": 179,
       "candidateOwner": "scoped-preference",
       "persisted": false
     }
@@ -365,7 +372,7 @@
     {
       "path": "packages/ui/src/context/CircadianProvider.tsx",
       "lines": [
-        13
+        16
       ]
     },
     {
@@ -407,7 +414,7 @@
     {
       "path": "packages/ui/src/context/ThemeProvider.tsx",
       "lines": [
-        27
+        32
       ]
     },
     {
@@ -420,6 +427,18 @@
       "path": "packages/ui/src/providers/ToastProvider.tsx",
       "lines": [
         45
+      ]
+    },
+    {
+      "path": "packages/ui/src/world/native/WorldContext.tsx",
+      "lines": [
+        25
+      ]
+    },
+    {
+      "path": "packages/verger-react/src/VergerProvider.tsx",
+      "lines": [
+        28
       ]
     }
   ],
@@ -581,7 +600,7 @@
     {
       "path": "packages/library/src/screens/CuratorReviewScreen.tsx",
       "lines": [
-        78
+        80
       ]
     },
     {
@@ -671,7 +690,7 @@
     {
       "path": "packages/ui/src/components/GlobalHeader.tsx",
       "lines": [
-        94
+        96
       ]
     },
     {
@@ -1028,7 +1047,7 @@
     {
       "symbol": "useTemporalStore",
       "path": "packages/classroom/src/screens/StudentProfileScreen.tsx",
-      "line": 45
+      "line": 49
     },
     {
       "symbol": "useConflictStore",
@@ -1309,24 +1328,6 @@
       "line": 28
     },
     {
-      "symbol": "useTenantStore",
-      "operation": "getState",
-      "path": "packages/core/src/hooks/usePerspectiveSwitch.ts",
-      "line": 43
-    },
-    {
-      "symbol": "useTenantStore",
-      "operation": "getState",
-      "path": "packages/core/src/hooks/usePerspectiveSwitch.ts",
-      "line": 45
-    },
-    {
-      "symbol": "useTenantStore",
-      "operation": "getState",
-      "path": "packages/core/src/hooks/usePerspectiveSwitch.ts",
-      "line": 66
-    },
-    {
       "symbol": "useAuthStore",
       "operation": "getState",
       "path": "packages/core/src/hooks/useSafeMutation.ts",
@@ -1351,40 +1352,190 @@
       "line": 82
     },
     {
+      "symbol": "useScopeSessionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 58
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/resetScopedStores.ts",
+      "line": 59
+    },
+    {
       "symbol": "useAuthStore",
       "operation": "setState",
       "path": "packages/core/src/store/resetScopedStores.ts",
-      "line": 49
+      "line": 60
     },
     {
       "symbol": "useTenantStore",
       "operation": "setState",
       "path": "packages/core/src/store/resetScopedStores.ts",
-      "line": 50
+      "line": 61
     },
     {
       "symbol": "usePerspectiveStore",
-      "operation": "getState",
+      "operation": "setState",
       "path": "packages/core/src/store/resetScopedStores.ts",
-      "line": 51
+      "line": 62
     },
     {
       "symbol": "useUIStore",
       "operation": "setState",
       "path": "packages/core/src/store/resetScopedStores.ts",
-      "line": 52
+      "line": 67
     },
     {
       "symbol": "useGrowthStore",
       "operation": "getState",
       "path": "packages/core/src/store/resetScopedStores.ts",
-      "line": 53
+      "line": 68
     },
     {
       "symbol": "useFeatureStore",
       "operation": "setState",
       "path": "packages/core/src/store/resetScopedStores.ts",
-      "line": 54
+      "line": 69
+    },
+    {
+      "symbol": "useScopeSessionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSession.ts",
+      "line": 121
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 44
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 45
+    },
+    {
+      "symbol": "useScopeSessionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 59
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 60
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 61
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 62
+    },
+    {
+      "symbol": "useScopeSessionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 64
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 65
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 68
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 74
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 79
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 80
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 98
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 103
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 110
+    },
+    {
+      "symbol": "useScopeSessionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 117
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 119
+    },
+    {
+      "symbol": "useScopeSessionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 196
+    },
+    {
+      "symbol": "useCedarDecisionStore",
+      "operation": "getState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 197
+    },
+    {
+      "symbol": "usePerspectiveStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 198
+    },
+    {
+      "symbol": "useTenantStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 203
+    },
+    {
+      "symbol": "useAuthStore",
+      "operation": "setState",
+      "path": "packages/core/src/store/scopeSessionCoordinator.ts",
+      "line": 210
     },
     {
       "symbol": "useAuthStore",
@@ -1498,7 +1649,7 @@
       "symbol": "useAuthStore",
       "operation": "getState",
       "path": "packages/self/src/features/selfCanvasStore.ts",
-      "line": 55
+      "line": 69
     },
     {
       "symbol": "useAuthStore",
@@ -1582,45 +1733,57 @@
     },
     {
       "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 11
+    },
+    {
+      "facility": "localStorage",
       "operation": "setItem",
       "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
-      "line": 25
+      "line": 39
     },
     {
       "facility": "localStorage",
       "operation": "setItem",
       "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
-      "line": 26
+      "line": 40
+    },
+    {
+      "facility": "localStorage",
+      "operation": "setItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 58
     },
     {
       "facility": "localStorage",
       "operation": "getItem",
       "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
-      "line": 41
-    },
-    {
-      "facility": "localStorage",
-      "operation": "getItem",
-      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
-      "line": 42
-    },
-    {
-      "facility": "localStorage",
-      "operation": "getItem",
-      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
-      "line": 43
-    },
-    {
-      "facility": "localStorage",
-      "operation": "getItem",
-      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
-      "line": 64
+      "line": 66
     },
     {
       "facility": "localStorage",
       "operation": "getItem",
       "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
       "line": 67
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 68
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 89
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "line": 92
     },
     {
       "facility": "sessionStorage",
@@ -1836,18 +1999,6 @@
       "facility": "localStorage",
       "operation": "getItem",
       "path": "apps/gurudevi-web/app/layout.tsx",
-      "line": 68
-    },
-    {
-      "facility": "localStorage",
-      "operation": "getItem",
-      "path": "apps/gurudevi-web/app/layout.tsx",
-      "line": 69
-    },
-    {
-      "facility": "localStorage",
-      "operation": "getItem",
-      "path": "apps/gurudevi-web/app/layout.tsx",
       "line": 70
     },
     {
@@ -1855,6 +2006,24 @@
       "operation": "getItem",
       "path": "apps/gurudevi-web/app/layout.tsx",
       "line": 71
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 72
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 73
+    },
+    {
+      "facility": "localStorage",
+      "operation": "getItem",
+      "path": "apps/gurudevi-web/app/layout.tsx",
+      "line": 76
     },
     {
       "facility": "localStorage",
@@ -2136,19 +2305,19 @@
       "facility": "localStorage",
       "operation": "getItem",
       "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
-      "line": 509
+      "line": 510
     },
     {
       "facility": "localStorage",
       "operation": "getItem",
       "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
-      "line": 527
+      "line": 528
     },
     {
       "facility": "localStorage",
       "operation": "setItem",
       "path": "apps/gurudevi-web/lib/workspace/attendance.ts",
-      "line": 542
+      "line": 543
     },
     {
       "facility": "localStorage",
@@ -2789,77 +2958,77 @@
     {
       "operation": "useQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 127
+      "line": 130
     },
     {
       "operation": "useQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 132
+      "line": 135
     },
     {
       "operation": "useInfiniteQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 139
+      "line": 142
     },
     {
       "operation": "useInfiniteQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 152
+      "line": 155
     },
     {
       "operation": "useInfiniteQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 169
+      "line": 172
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 186
+      "line": 189
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 204
+      "line": 207
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 217
+      "line": 220
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 233
+      "line": 236
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 255
+      "line": 258
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 274
+      "line": 277
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 291
+      "line": 294
     },
     {
       "operation": "useMutation",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 308
+      "line": 311
     },
     {
       "operation": "useQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 401
+      "line": 404
     },
     {
       "operation": "useInfiniteQuery",
       "path": "packages/library/src/hooks/useLibrary.ts",
-      "line": 416
+      "line": 419
     },
     {
       "operation": "useQuery",
@@ -2906,7 +3075,7 @@
   ],
   "stateRegistry": {
     "path": "packages/core/src/lib/clientStateFoundation.ts",
-    "entryCount": 20,
+    "entryCount": 21,
     "unregisteredZustandStorePaths": []
   }
 }

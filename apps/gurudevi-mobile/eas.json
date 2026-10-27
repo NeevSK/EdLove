@@ -54,13 +54,15 @@
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "NODE_ENV": "production",
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+        "NODE_ENV": "production"
       },
       "android": {
         "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-58",
         "resourceClass": "medium",
         "buildType": "app-bundle"
+      },
+      "ios": {
+        "simulator": false
       }
     }
   },

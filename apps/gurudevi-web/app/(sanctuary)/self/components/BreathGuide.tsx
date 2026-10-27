@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';
+import { logReminderFeedback } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './breath-guide.module.css';
+import { SacredLotusMandala } from './SacredLotusMandala';
 
 interface BreathGuideProps {
   onComplete?: () => void;
@@ -93,6 +96,14 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
     clearAllTimers();
     setActive(false);
     setDone(true);
+    playSingingBowlChime(432);
+    void logReminderFeedback('guest', {
+      reminder_id: `breath-guide-${Date.now()}`,
+      user_id: 'guest',
+      action: 'done',
+      category: 'breathe',
+      note: 'Completed 4-cycle Breath Resonance session',
+    }).catch(() => {});
     onComplete?.();
   };
 
@@ -194,9 +205,11 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
                   : undefined,
               }}
             >
-              <span className={styles.orbIcon} aria-hidden="true">
-                {active ? currentStep.emoji : '🌬️'}
-              </span>
+              <SacredLotusMandala
+                phase={active ? currentStep.phase : 'rest'}
+                size={84}
+                primaryColor={active ? currentStep.accentColor : '#d4843a'}
+              />
               {active && <span className={styles.orbSeconds}>{secondsRemaining}s</span>}
             </div>
           </div>

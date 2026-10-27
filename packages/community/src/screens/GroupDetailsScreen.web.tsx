@@ -1,5 +1,6 @@
+import { useAuthStore } from '@repo/core/store';
 import { usePermissions } from '@repo/core/logic';
-import { useStore, useTemporalStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -15,8 +16,8 @@ export default function GroupDetailsScreenWeb() {
   const params = useLocalSearchParams<{ groupId?: string }>();
   const groupId = Array.isArray(params.groupId) ? params.groupId[0] : params.groupId;
   const { can } = usePermissions();
-  const userId = useStore((state) => state.user?.id);
-  const isOffline = useTemporalStore((state) => state.isOffline);
+  const userId = useAuthStore(state => state.user?.id);
+  const { isOffline } = useOfflineStatus();
   const { posts, isLoadingPosts, error: postsError } = useCommunity(groupId);
   const [group, setGroup] = useState<any>(null);
   const [loading, setLoading] = useState(true);

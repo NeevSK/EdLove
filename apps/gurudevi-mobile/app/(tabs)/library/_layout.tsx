@@ -9,6 +9,7 @@ export default function LibraryLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="document-scanner" />
+        <Stack.Screen name="contribute" />
         <Stack.Screen name="map" />
         <Stack.Screen name="review" />
         <Stack.Screen name="collections/[id]" />

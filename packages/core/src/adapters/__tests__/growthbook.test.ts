@@ -1,14 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { UserContext } from '../../logic/schemas/user.schema';
+import { UserContextSchema } from '../../logic/schemas/user.schema';
 import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFeatureRollout.adapter';
 
 const growthBookInit = vi.hoisted(() => vi.fn());
+vi.mock('@repo/core/logic/managers/NetworkManager', () => ({
+  networkManager: { getSnapshot: () => ({ status: 'online' }), subscribe: () => () => undefined },
+}));
 
 // Mock GrowthBook SDK internally to prevent network calls
 vi.mock('@growthbook/growthbook', () => {
   class MockGrowthBook {
-    private attributes: any = {};
-    private renderer: () => void = () => {};
+    private attributes: Record<string, unknown> = {};
 
     constructor() {}
 
@@ -17,7 +19,7 @@ vi.mock('@growthbook/growthbook', () => {
       return Promise.resolve({ success: true, source: 'network' });
     }
 
-    setAttributes(attrs: any) {
+    setAttributes(attrs: Record<string, unknown>) {
       this.attributes = attrs;
       return Promise.resolve();
     }
@@ -35,9 +37,7 @@ vi.mock('@growthbook/growthbook', () => {
       return { value: false };
     }
 
-    setRenderer(renderer: () => void) {
-      this.renderer = renderer;
-    }
+    setRenderer(_renderer: (() => void) | null) {}
   }
 
   return {
@@ -47,33 +47,37 @@ vi.mock('@growthbook/growthbook', () => {
 });
 
 describe('GrowthBookFeatureRolloutAdapter', () => {
-  it('uses polling instead of unsupported native EventSource streaming', () => {
-    new GrowthBookFeatureRolloutAdapter('http://mock', 'sdk-mock');
+  it('loads lazily without an unowned SDK stream or poller', async () => {
+    growthBookInit.mockClear();
+    const adapter = new GrowthBookFeatureRolloutAdapter('http://mock', 'sdk-mock');
+    expect(growthBookInit).not.toHaveBeenCalled();
+    await adapter.resolveFlags(UserContextSchema.parse({ userId: 'user-123' }));
 
     expect(growthBookInit).toHaveBeenCalledWith({
       streaming: false,
-      pollingInterval: 15 * 60 * 1000,
+      skipCache: true,
+      timeout: 10_000,
     });
   });
 
   it('maps UserContext and resolves manifest flags by GrowthBook key', async () => {
     const adapter = new GrowthBookFeatureRolloutAdapter('http://mock', 'sdk-mock');
-    const context = {
+    const context = UserContextSchema.parse({
       userId: 'user-123',
       pricing_tier: 'PRO',
-      citizenship: 'CITIZEN',
-    } as unknown as UserContext;
+      citizenship: 'FIRST_CLASS',
+    });
 
     const snapshot = await adapter.resolveFlags(context);
     expect(snapshot.flags['isGraphicsEngineEnabled']).toBe(true);
     expect(snapshot.flags['isAIAssistantEnabled']).toBe(false);
     expect(snapshot.source).toBe('remote');
 
-    const contextFree = {
+    const contextFree = UserContextSchema.parse({
       userId: 'user-123',
       pricing_tier: 'FREE',
-      citizenship: 'CITIZEN',
-    } as unknown as UserContext;
+      citizenship: 'FIRST_CLASS',
+    });
 
     const snapshotFree = await adapter.resolveFlags(contextFree);
     expect(snapshotFree.flags['isGraphicsEngineEnabled']).toBe(false);
@@ -81,11 +85,11 @@ describe('GrowthBookFeatureRolloutAdapter', () => {
 
   it('emits app keys only, never raw GrowthBook keys', async () => {
     const adapter = new GrowthBookFeatureRolloutAdapter('http://mock', 'sdk-mock');
-    const context = {
+    const context = UserContextSchema.parse({
       userId: 'user-123',
       pricing_tier: 'PRO',
-      citizenship: 'CITIZEN',
-    } as unknown as UserContext;
+      citizenship: 'FIRST_CLASS',
+    });
 
     const snapshot = await adapter.resolveFlags(context);
     expect(Object.keys(snapshot.flags).sort()).toEqual(

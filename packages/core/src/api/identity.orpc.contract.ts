@@ -1,4 +1,6 @@
 import { FacetedProfileSchema, IdentitySchema } from '@repo/core/api/identity.generated';
+import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { z } from 'zod';
 
 export const OnboardingStateSchema = z.enum([
@@ -9,7 +11,7 @@ export const OnboardingStateSchema = z.enum([
 ]);
 
 export const ClassroomCapacitySummarySchema = z.strictObject({
-  user_id: z.uuid(),
+  user_id: CanonicalAccountIdSchema,
   school_id: z.uuid().nullable(),
   profile_completed: z.boolean(),
   onboarding_completed: z.boolean(),
@@ -20,7 +22,7 @@ export const ClassroomCapacitySummarySchema = z.strictObject({
 
 export const ScopeBootstrapSchema = z.strictObject({
   version: z.literal(1),
-  userId: z.uuid().nullable(),
+  userId: CanonicalAccountIdSchema.nullable(),
   name: z.string(),
   primaryCapacity: z.string().nullable(),
   selection: z.enum(['selected', 'needs_selection']),
@@ -36,7 +38,7 @@ export const ScopeBootstrapSchema = z.strictObject({
 
 const BootstrapBondSchema = z.strictObject({
   id: z.uuid(),
-  user_id: z.uuid(),
+  user_id: CanonicalAccountIdSchema,
   entity_id: z.string(),
   entity_type: z.enum([
     'PLATFORM',
@@ -56,7 +58,7 @@ export const IdentityBootstrapSchema = IdentitySchema.omit({
   activeBond: true,
   availableBonds: true,
 }).extend({
-  id: z.union([z.uuid(), z.literal('anonymous')]),
+  id: z.union([CanonicalAccountIdSchema, z.literal('anonymous')]),
   activeBond: BootstrapBondSchema.nullable().optional(),
   availableBonds: z.array(BootstrapBondSchema),
   scopeBootstrap: ScopeBootstrapSchema,
@@ -66,9 +68,9 @@ export type ScopeBootstrap = z.infer<typeof ScopeBootstrapSchema>;
 
 export const CapabilityBootstrapSchema = z.strictObject({
   schemaVersion: z.literal(1),
-  subjectId: z.uuid(),
-  generatedAt: z.string().datetime(),
-  expiresAt: z.string().datetime(),
+  subjectId: CanonicalAccountIdSchema,
+  generatedAt: z.iso.datetime(),
+  expiresAt: z.iso.datetime(),
   scopeBootstrap: ScopeBootstrapSchema,
   features: z.array(
     z.strictObject({
@@ -109,7 +111,7 @@ export const identityORPCContract = {
   fetchUserProfile: {
     method: 'get',
     path: '/identity/profile/:id',
-    request: { params: z.object({ id: z.uuid() }) },
+    request: { params: z.object({ id: CanonicalAccountIdSchema }) },
     responses: {
       200: { schema: IdentityBootstrapSchema, description: 'Get profile and remembered scope' },
     },
@@ -148,7 +150,7 @@ export const identityORPCContract = {
     method: 'get',
     path: '/identity/classroom-capacity-summary/:id',
     request: {
-      params: z.object({ id: z.union([z.uuid(), z.literal('anonymous')]) }),
+      params: z.object({ id: z.union([CanonicalAccountIdSchema, z.literal('anonymous')]) }),
     },
     responses: {
       200: { schema: ClassroomCapacitySummarySchema, description: 'Get capacity summary' },
@@ -160,8 +162,8 @@ export const identityORPCContract = {
     method: 'patch',
     path: '/identity/profile/:id',
     request: {
-      params: z.object({ id: z.uuid() }),
-      body: IdentitySchema.partial(),
+      params: z.object({ id: CanonicalAccountIdSchema }),
+      body: UserProfilePatchSchema,
     },
     responses: {
       200: {

@@ -6,7 +6,10 @@ import {
   type DeviceTrustSummary,
   deviceTrustAPI,
 } from '@repo/core/api/deviceTrust';
-import type { IDeviceSecurityPort } from '@repo/core/logic/ports/deviceSecurity.port';
+import type {
+  DeviceSecuritySummary,
+  IDeviceSecurityPort,
+} from '@repo/core/logic/ports/deviceSecurity.port';
 
 /**
  * SupabaseDeviceSecurityAdapter
@@ -14,13 +17,7 @@ import type { IDeviceSecurityPort } from '@repo/core/logic/ports/deviceSecurity.
  * Maps the Device Security Port to the Supabase-backed API.
  */
 export class SupabaseDeviceSecurityAdapter implements IDeviceSecurityPort {
-  async getSecuritySummary(): Promise<{
-    devices: DeviceTrustSummary[];
-    events: DeviceSecurityEvent[];
-    authEvents: AuthEvent[];
-    sessions: DeviceSecuritySession[];
-    currentDevice: DeviceTrustSummary | null;
-  }> {
+  async getSecuritySummary(): Promise<DeviceSecuritySummary> {
     return deviceTrustAPI.getSecuritySummary();
   }
 

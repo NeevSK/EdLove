@@ -311,7 +311,6 @@ jest.mock(`${__dirname}/../../packages/ui/src/context/EnvironmentContext`, () =>
     temporalPhase: 'morning',
     deviceTier: 'standard',
     networkQuality: 'good',
-    isOnline: true,
     language: 'en',
   };
   return {

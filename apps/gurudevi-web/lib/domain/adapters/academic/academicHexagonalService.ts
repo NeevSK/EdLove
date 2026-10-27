@@ -11,10 +11,12 @@
 
 import { storage } from '@repo/core/lib/storage';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type {
   AcademicSubmissionView,
   AssignmentQuest,
   AssignmentSubmissionItem,
+  GradebookStudent,
   GradeSubmissionInput,
   IAcademicPort,
   IAcademicStoragePort,
@@ -148,6 +150,10 @@ export class AcademicHexagonalService implements IAcademicPort, IAcademicStorage
     return studentId
       ? INITIAL_CANONICAL_SUBMISSIONS.filter((s) => s.student_id === studentId)
       : INITIAL_CANONICAL_SUBMISSIONS;
+  }
+
+  async getGradebookRoster(): Promise<readonly GradebookStudent[]> {
+    return getSandboxSamples<GradebookStudent[]>('gradebook', 'getRoster', [], []);
   }
 
   async submitAssignment(

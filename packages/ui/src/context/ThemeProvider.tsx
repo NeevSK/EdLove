@@ -1,5 +1,11 @@
+import { useStorageString } from '@repo/core/hooks/useStorageString';
+import {
+  DEVICE_THEME_MODE_KEY,
+  ensureDeviceThemePreference,
+  isDeviceThemeMode,
+} from '@repo/core/lib/devicePreferences';
 import { storage } from '@repo/core/lib/storage';
-import { useStore } from '@repo/core/logic';
+
 import {
   createContext,
   type ReactNode,
@@ -38,21 +44,15 @@ const STORAGE_KEYS = {
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const themeMode = useStore((state: any) => state.themeMode ?? state.theme ?? 'system');
-  const setStoredThemeMode = useStore((state: any) => state.setTheme ?? state.setThemeMode);
-
+  const savedThemeMode = useStorageString(DEVICE_THEME_MODE_KEY);
+  const savedVeil = useStorageString(STORAGE_KEYS.IS_VEIL_ACTIVE);
+  const savedLivingTheme = useStorageString(STORAGE_KEYS.ENABLE_LIVING_THEME);
+  const savedWorld = useStorageString(STORAGE_KEYS.WORLD);
+  const themeMode = isDeviceThemeMode(savedThemeMode) ? savedThemeMode : 'system';
+  const isVeilActive = savedVeil === 'true';
+  const enableLivingTheme = savedLivingTheme !== 'false';
+  const worldId = isWorldId(savedWorld) ? savedWorld : DEFAULT_WORLD;
   const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
-  const [isVeilActive, setIsVeilActive] = useState(false);
-  const [enableLivingTheme, setEnableLivingThemeState] = useState<boolean>(true);
-  // Read synchronously so a chosen world paints on the first frame, with no flash of Sanctuary.
-  const [worldId, setWorldState] = useState<WorldId>(() => {
-    try {
-      const saved = storage.getString?.(STORAGE_KEYS.WORLD);
-      return isWorldId(saved) ? saved : DEFAULT_WORLD;
-    } catch {
-      return DEFAULT_WORLD;
-    }
-  });
   const systemColorScheme = useColorScheme();
 
   // Derived
@@ -64,23 +64,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [themeMode, systemColorScheme, temporalPhase],
   );
 
-  // Load Persisted
   useEffect(() => {
-    async function loadThemeSettings() {
-      try {
-        const [veil, living, world] = await Promise.all([
-          storage.getStringAsync(STORAGE_KEYS.IS_VEIL_ACTIVE),
-          storage.getStringAsync(STORAGE_KEYS.ENABLE_LIVING_THEME),
-          storage.getStringAsync(STORAGE_KEYS.WORLD),
-        ]);
-        if (veil !== undefined) setIsVeilActive(veil === 'true');
-        if (living !== undefined) setEnableLivingThemeState(living === 'true');
-        if (isWorldId(world)) setWorldState(world);
-      } catch (e) {
-        console.warn('[ThemeProvider] Load error:', e);
-      }
-    }
-    loadThemeSettings();
+    void ensureDeviceThemePreference().catch((error: unknown) => {
+      console.error('[ThemeProvider] Preference migration failed', error);
+    });
   }, []);
 
   // Temporal Sync
@@ -98,48 +85,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       mode: ThemeMode,
       transitionType?: import('../theme/nitroThemeTransition.types').ThemeTransitionType,
     ) => {
-      const applyChange = () => {
-        if (typeof setStoredThemeMode === 'function') {
-          setStoredThemeMode(mode);
-        } else {
-          console.warn('[ThemeProvider] setThemeMode store action is unavailable');
-        }
+      const applyChange = async () => {
+        await storage.setAsync(DEVICE_THEME_MODE_KEY, mode);
         if (mode === 'auto') setTemporalPhase(getTemporalPhase());
       };
 
       const { startThemeTransition } = await import('../theme/nitroThemeTransition');
       await startThemeTransition(applyChange, { type: transitionType || 'circularReveal' });
     },
-    [setStoredThemeMode],
+    [],
   );
 
   const toggleVeil = useCallback(async () => {
-    const newValue = !isVeilActive;
-    setIsVeilActive(newValue);
-    try {
-      storage.set(STORAGE_KEYS.IS_VEIL_ACTIVE, String(newValue));
-    } catch (e) {
-      console.warn('[ThemeProvider] Veil error:', e);
-    }
+    await storage.setAsync(STORAGE_KEYS.IS_VEIL_ACTIVE, String(!isVeilActive));
   }, [isVeilActive]);
 
   const setEnableLivingTheme = useCallback(async (enabled: boolean) => {
-    setEnableLivingThemeState(enabled);
-    try {
-      storage.set(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
-    } catch (e) {
-      console.warn('[ThemeProvider] Living error:', e);
-    }
+    await storage.setAsync(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
   }, []);
 
   const setWorld = useCallback(async (world: WorldId) => {
-    if (!isWorldId(world)) return;
-    setWorldState(world);
-    try {
-      storage.set(STORAGE_KEYS.WORLD, world);
-    } catch (e) {
-      console.warn('[ThemeProvider] World error:', e);
-    }
+    if (!isWorldId(world)) throw new Error('Unknown theme world.');
+    await storage.setAsync(STORAGE_KEYS.WORLD, world);
   }, []);
 
   const value = useMemo(

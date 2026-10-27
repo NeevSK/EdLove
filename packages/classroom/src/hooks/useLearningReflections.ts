@@ -1,3 +1,5 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import type {
   LearningReflection,
   ReframeOutcome,
@@ -8,7 +10,7 @@ import {
   fetchLearningReflectionsForView,
 } from '@repo/classroom/api/learningReflectionRepository';
 import { authAPI } from '@repo/core/api/client';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -21,7 +23,7 @@ const LEARNING_REFLECTION_CACHE_KEY = 'gurudevi-learning-reflection-cache';
  * Mirrors useThoughtRecords but scoped to the classroom domain.
  */
 export const useLearningReflections = (userId?: string, classroomId?: string) => {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const { viewDate, phase } = useTemporalStore();
   const [records, setRecords] = useState<LearningReflection[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
-export default function AdminIncidentQueue() {
+export default function AdminIncidentQueue({ onBack }: { onBack?: () => void } = {}) {
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const router = useRouter();
 
@@ -16,7 +16,7 @@ export default function AdminIncidentQueue() {
       title="Incident queue"
       description="Triage cross-tenant incidents, regressions, and operational noise with a monitor-first stance and explicit handoff."
       caution="Keep this room read-first until the incident is validated. Escalations should preserve a clear audit trail and a named tenant scope."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
       stats={[
         {
           label: 'Open incidents',

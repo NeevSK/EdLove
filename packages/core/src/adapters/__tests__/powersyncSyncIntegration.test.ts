@@ -1,11 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { setActiveAccountId } from '../../lib/accountScope';
-import { getDrizzleDB, injectNativePowerSyncDB, registerPermissionValidator } from '../powersync/database';
+import {
+  getDrizzleDB,
+  injectNativePowerSyncDB,
+  registerPermissionValidator,
+} from '../powersync/database';
 import { SupabasePowerSyncConnector } from '../powersync/SupabasePowerSyncConnector';
 
 // Mock store state
-vi.mock('../../store/useStore', () => ({
-  useStore: {
+vi.mock('../../store/useAuthStore', () => ({
+  useAuthStore: {
     getState: vi.fn(() => ({
       user: {
         id: 'user-123',
@@ -33,6 +37,15 @@ vi.mock('../supabaseClient', () => ({
   supabaseClient: {
     auth: {
       getSession: () => mockGetSession(),
+      getClaims: async () => ({
+        data: {
+          claims: {
+            sub: 'user-123',
+            canonical_account_id: 'user-123',
+          },
+        },
+        error: null,
+      }),
     },
   },
 }));
@@ -120,7 +133,7 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
 
     injectNativePowerSyncDB({} as any, rawMockDb);
     secureDb = getDrizzleDB();
-    connector = new SupabasePowerSyncConnector('user-123');
+    connector = new SupabasePowerSyncConnector('user-123', () => true);
 
     mockBatch = {
       crud: mockCrudQueue,

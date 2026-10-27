@@ -1,3 +1,8 @@
+/**
+ * @deprecated Legacy React Native Web screen.
+ * The canonical browser web interface is hosted in `apps/gurudevi-web` (`app/(sanctuary)/profile/ProfileFloor.tsx`).
+ * Preserved for historical test fixtures and migration parity per AGENTS.md Deletion Veto.
+ */
 import { usePermissions } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import { StaffPresencePulse } from '@repo/people';

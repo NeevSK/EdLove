@@ -1,5 +1,6 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import { usePermissions, useTemporalStore } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import DecisionJournalSection from '@repo/self/components/DecisionJournalSection';
@@ -41,8 +42,8 @@ export default function TeacherSelfView() {
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
   const { viewDate } = useTemporalStore();
-  const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((s) => s.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((s) => s.setJustFinishedOnboarding);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
   const { logs: moodLogs, loading: moodLoading, addMoodLog } = useMoodLogs();

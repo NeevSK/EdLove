@@ -153,7 +153,7 @@ export async function resolveAuthorizedEntry(
   }
 
   try {
-    const response = await fetcher(`${origin}/api/identity/resolveIdentity`, {
+    const response = await fetcher(`${origin}/api/openapi/identity/resolveIdentity`, {
       headers: { Authorization: `Bearer ${session.access_token}` },
       method: 'GET',
       cache: 'no-store',

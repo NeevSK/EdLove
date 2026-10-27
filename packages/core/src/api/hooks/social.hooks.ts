@@ -1,5 +1,5 @@
 import { socialAPI } from '@repo/core/api/social';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useMutation } from '@tanstack/react-query';
 
 /**
@@ -7,7 +7,7 @@ import { useMutation } from '@tanstack/react-query';
  * Uses TanStack Query Mutations for better state handling and architectural parity.
  */
 export function useSocialShieldHooks() {
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
 
   const reportMutation = useMutation({
     mutationFn: (params: {

@@ -28,14 +28,6 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
 
     if (error) throw new APIError('Failed to create school', error.code, error);
 
-    // Update user's school_id
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({ school_id: newSchool.id })
-      .eq('id', data.created_by);
-
-    if (updateError) console.warn('Failed to auto-assign principal to school:', updateError);
-
     return newSchool;
   },
 

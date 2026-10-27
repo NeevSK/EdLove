@@ -52,6 +52,22 @@ export default async function FounderPage() {
     );
   }
 
+  const isFounder =
+    entry.activeCapacity === 'founder' ||
+    entry.activeCapacity === 'developer' ||
+    entry.activeCapacity === 'admin' ||
+    (entry.activeScope?.roles?.includes('founder') ?? false);
+
+  if (!isFounder) {
+    return (
+      <FounderState
+        displayName={entry.displayName}
+        title="Access restricted"
+        detail="Founder command is restricted to platform founders and system administrators."
+      />
+    );
+  }
+
   return (
     <SanctuaryShell
       displayName={entry.displayName}

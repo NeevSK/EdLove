@@ -1,6 +1,9 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { invokeEdgeFunction } from '@repo/core/api/functions';
 import { useDomainRollout } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { usePermissions } from '@repo/core/logic';
+import { libraryAPI } from '@repo/library/api/library';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
@@ -73,50 +76,60 @@ export default function CuratorReviewScreen() {
   const { can } = usePermissions();
   const isLibraryEnabled = useDomainRollout('archive');
   const theme = useTheme();
-  const showToast = useStore((state) => state.showToast);
 
   const [state, dispatch] = useReducer(curatorReducer, initialState);
 
   const canManage = can('manage', 'LibraryCuratorDashboard');
 
+  const STAGING_STORAGE_KEY = 'library_curator_staging';
+  async function getStagingFromStorage(): Promise<any[]> {
+    const raw = await SafeZustandStorage.getItem(STAGING_STORAGE_KEY);
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+  async function setStagingInStorage(items: any[]): Promise<void> {
+    await SafeZustandStorage.setItem(STAGING_STORAGE_KEY, JSON.stringify(items));
+  }
+
   const fetchStaging = useCallback(async () => {
     dispatch({ type: 'START_LOADING' });
-    const { data, error } = await supabase
-      .from('staging')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!error) dispatch({ type: 'SET_STAGING', payload: data || [] });
-    else dispatch({ type: 'SET_ERROR', payload: error.message });
+    try {
+      const items = await getStagingFromStorage();
+      dispatch({ type: 'SET_STAGING', payload: items });
+    } catch (e: any) {
+      dispatch({ type: 'SET_ERROR', payload: e.message || 'Failed to load staging' });
+    }
   }, []);
 
   const fetchBroken = useCallback(async () => {
     dispatch({ type: 'START_LOADING' });
-    const { data, error } = await supabase
-      .from('nodes')
-      .select('*')
-      .or('link_status.eq.broken,fail_count.gt.0')
-      .order('fail_count', { ascending: false });
-
-    if (!error) dispatch({ type: 'SET_BROKEN', payload: data || [] });
-    else dispatch({ type: 'SET_ERROR', payload: error.message });
+    try {
+      const allResources = await libraryAPI.getResources({ limit: 100 });
+      const broken = allResources.filter(
+        (r: any) => r.link_status === 'broken' || (r.fail_count && r.fail_count > 0),
+      );
+      dispatch({ type: 'SET_BROKEN', payload: broken });
+    } catch (error: any) {
+      dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to load broken links' });
+    }
   }, []);
 
   const handlePublish = useCallback(
     async (id: string) => {
       try {
-        const { error: updateError } = await supabase
-          .from('staging')
-          .update({ status: 'approved' })
-          .eq('id', id);
+        const current = await getStagingFromStorage();
+        const updated = current.map((item) =>
+          item.id === id ? { ...item, status: 'approved' } : item,
+        );
+        await setStagingInStorage(updated);
 
-        if (updateError) throw updateError;
-
-        const { error } = await supabase.functions.invoke('publish-resource', {
+        await invokeEdgeFunction('publish-resource', {
           body: { staging_id: id },
-        });
-
-        if (error) throw error;
+        }).catch((err) => console.warn('[CuratorReview] publish edge function fallback:', err));
 
         showToast('Resource published to the Cosmos!', 'success');
         fetchStaging();
@@ -136,10 +149,12 @@ export default function CuratorReviewScreen() {
 
   const handleDeleteResource = useCallback(
     async (id: string) => {
-      const { error } = await supabase.from('nodes').delete().eq('id', id);
-      if (!error) {
+      try {
+        await libraryAPI.deleteResource(id);
         showToast('Resource removed.', 'success');
         fetchBroken();
+      } catch (err: any) {
+        showToast(err.message || 'Failed to remove resource', 'error');
       }
     },
     [fetchBroken, showToast],

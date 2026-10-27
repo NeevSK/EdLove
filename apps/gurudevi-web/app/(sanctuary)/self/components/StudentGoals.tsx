@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
+import { useStudentGoals } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './student-goals.module.css';
 
 interface StudentGoalsProps {
@@ -82,11 +82,7 @@ export function StudentGoals({ userId = 'guest-explorer' }: Readonly<StudentGoal
           </div>
 
           <div className={styles.formActions}>
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={saving || !text.trim()}
-            >
+            <button type="submit" className={styles.submitBtn} disabled={saving || !text.trim()}>
               {saving ? 'Saving…' : 'Set Goal 🪷'}
             </button>
           </div>

@@ -219,7 +219,7 @@ export function ExploreMuseumModal({
                           type="button"
                         >
                           <span aria-hidden="true" className={styles.roleEmoji}>
-                            {{ teacher: '🧑‍🏫', principal: '🏫', student: '📚', guardian: '👪' }[role.id]}
+                            {({ teacher: '🧑‍🏫', principal: '🏫', student: '📚', guardian: '👪', founder: '🏛️', researcher: '🔬' } as Record<string, string>)[role.id] ?? '✨'}
                           </span>
                           <span>{role.label}</span>
                           {selectedRole === role.id ? <span aria-hidden="true">✓</span> : null}

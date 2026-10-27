@@ -7,7 +7,7 @@ import { commitFeatureGateChanges, stageFeatureGateChanges } from '@repo/admin/a
 import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
-export default function AdminReleaseControl() {
+export default function AdminReleaseControl({ onBack }: { onBack?: () => void } = {}) {
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const { flags } = usePermissions();
   const [preview, setPreview] = useState(() =>
@@ -24,7 +24,7 @@ export default function AdminReleaseControl() {
       title="Release watch"
       description="Track deployment posture, feature flags, and post-release health for the cross-tenant platform."
       caution="Treat release changes as production changes. If maintenance is active, prefer read-only monitoring and staged rollouts."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
       stats={[
         {
           label: 'Schools',

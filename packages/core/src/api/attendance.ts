@@ -373,3 +373,28 @@ export const attendanceAPI$ = {
       }),
     ),
 };
+
+import { registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_ATTENDANCE_SNAPSHOTS,
+  MOCK_STUDENT_PULSE,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'attendance',
+  ghostMethods: ['getClassroomAttendanceSnapshot', 'getSchoolAttendancePulse'],
+  isEmpty: (method, d) => {
+    if (method === 'getClassroomAttendanceSnapshot') {
+      return !d || typeof d !== 'object' || !Array.isArray((d as any).records) || (d as any).records.length === 0;
+    }
+    return !d;
+  },
+  getSamples: (method, args) => {
+    if (method === 'getClassroomAttendanceSnapshot') {
+      const classroomId = args[0] as string | undefined;
+      const key = classroomId && MOCK_ATTENDANCE_SNAPSHOTS[classroomId] ? classroomId : 'sample-c1';
+      return MOCK_ATTENDANCE_SNAPSHOTS[key] || { records: [] };
+    }
+    return MOCK_STUDENT_PULSE;
+  },
+});

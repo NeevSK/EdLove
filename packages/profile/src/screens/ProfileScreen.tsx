@@ -1,11 +1,12 @@
 import { useAccountDeletion, useAccountLifecycle, useTracking } from '@repo/core/hooks';
+import { showToast } from '@repo/core/lib/feedback';
 import {
   type AccountLifecycleCommand,
   resolveWorkspaceAppearanceColor,
   usePermissions,
-  useStore,
 } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useAuthStore } from '@repo/core/store';
 import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
 import NegentropyHubModal from '@repo/profile/components/NegentropyHubModal';
 import ProfileListItem from '@repo/profile/components/ProfileListItem';
@@ -31,10 +32,12 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import IdentityCard from '@repo/ui/components/IdentityCard';
 import LogoutModal from '@repo/ui/components/LogoutModal';
 import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
+import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
+  Check,
   ChevronDown,
   CircleQuestionMark,
   Eye,
@@ -62,6 +65,8 @@ import {
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { EXTERNAL_URLS, GURUDEVI_SUPPORT_EMAIL, GURUDEVI_WEB } from '@repo/ui/utils/urls';
+import { useWorld } from '@repo/ui/world/native';
+import * as Clipboard from 'expo-clipboard';
 import type { TFunction } from 'i18next';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -94,8 +99,21 @@ const IdentitySection = ({
 }: IdentitySectionProps) => {
   const { context } = usePermissions();
   const { accent } = useTheme();
+  const wt = useWorld().tokens;
   const isWanderer = context.isAnonymous;
   const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
+
+  const [copiedPass, setCopiedPass] = useState(false);
+
+  const handleCopyPass = async () => {
+    const passUrl = profile?.id
+      ? `https://gurudevi.app/profile/public/${profile.username || profile.id}`
+      : 'https://explore.gurudevi.app';
+    await Clipboard.setStringAsync(passUrl);
+    hapticSuccess();
+    setCopiedPass(true);
+    setTimeout(() => setCopiedPass(false), 2500);
+  };
 
   return (
     <Center>
@@ -153,8 +171,12 @@ const IdentitySection = ({
             ? 'Navigates to the account creation screen'
             : 'Opens your full profile for viewing and editing'
         }
-        className="mt-6 h-[52px] bg-phase-canvas rounded-2xl flex-row items-center justify-center border border-phase-surface shadow-sm"
-        style={{ width: cardWidth }}
+        className="mt-6 h-[52px] rounded-2xl flex-row items-center justify-center border shadow-sm"
+        style={{
+          width: cardWidth,
+          backgroundColor: wt.raised,
+          borderColor: wt.line,
+        }}
       >
         <HStack space="sm" className="items-center">
           {isWanderer ? (
@@ -162,11 +184,69 @@ const IdentitySection = ({
           ) : (
             <SquarePen size={18} color={accent.action} />
           )}
-          <Text className="text-phase-text-primary font-bold">
+          <Text style={{ color: wt.ink }} className="font-bold">
             {isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
           </Text>
         </HStack>
       </Pressable>
+
+      {profile?.id && !isWanderer && (
+        <VStack
+          className="mt-6 rounded-3xl p-5 border shadow-sm items-center"
+          style={{
+            width: cardWidth,
+            backgroundColor: wt.raised,
+            borderColor: wt.line,
+          }}
+        >
+          <HStack className="w-full justify-between items-center mb-3">
+            <VStack>
+              <Text style={{ color: wt.ink }} className="font-bold text-base">
+                Living Sanctuary Pass
+              </Text>
+              <Text style={{ color: wt.inkSoft }} className="text-xs">
+                Scan to verify contemplative identity & certifications
+              </Text>
+            </VStack>
+            <Sparkles size={18} color={accent.action} />
+          </HStack>
+
+          <Box className="my-2 p-3 rounded-2xl bg-white border border-stone-200">
+            <QRCodeGenerator
+              value={`https://gurudevi.app/profile/public/${profile.username || profile.id}`}
+              size={150}
+              color="#131e27"
+              backgroundColor="#FFFFFF"
+              showLotus={true}
+              showFrame={true}
+              frameText="SANCTUARY PASS"
+            />
+          </Box>
+
+          <Pressable
+            onPress={handleCopyPass}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Copy Permanent Sanctuary Pass Link"
+            className="mt-3 w-full py-2.5 px-4 rounded-xl border flex-row items-center justify-center"
+            style={{
+              borderColor: wt.line,
+              backgroundColor: copiedPass ? wt.sunken : wt.ground,
+            }}
+          >
+            <HStack space="xs" className="items-center">
+              {copiedPass ? (
+                <Check size={16} color={accent.action} />
+              ) : (
+                <SquarePen size={16} color={accent.action} />
+              )}
+              <Text style={{ color: wt.ink }} className="text-xs font-semibold">
+                {copiedPass ? 'Pass URL Copied!' : 'Copy Permanent Sanctuary Link'}
+              </Text>
+            </HStack>
+          </Pressable>
+        </VStack>
+      )}
     </Center>
   );
 };
@@ -191,7 +271,7 @@ interface SupportSectionProps {
 
 const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
   const { scene } = useTheme();
-  const showToast = useStore((state) => state.showToast);
+  const wt = useWorld().tokens;
 
   const openSupportDestination = async (url: string) => {
     hapticLight();
@@ -208,9 +288,11 @@ const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
   return (
     <Center>
       <VStack
-        className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
+        className="rounded-3xl p-4 border shadow-md"
         style={{
           width: cardWidth,
+          backgroundColor: wt.raised,
+          borderColor: wt.line,
           shadowColor: scene.text.muted,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
@@ -218,7 +300,7 @@ const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
         }}
         space="sm"
       >
-        <Heading className="text-phase-text-secondary text-sm mt-1 mb-3 px-1">
+        <Heading style={{ color: wt.inkSoft }} className="text-sm mt-1 mb-3 px-1">
           {t('profile.account.support')}
         </Heading>
         <ProfileListItem
@@ -248,14 +330,17 @@ interface AppExperienceSectionProps {
 }
 
 const AppExperienceSection = ({ t, cardWidth, onOpenNegentropyHub }: AppExperienceSectionProps) => {
-  const showToast = useStore((state) => state.showToast);
-  const { scene, accent } = useTheme();
+  const { scene } = useTheme();
+  const wt = useWorld().tokens;
+
   return (
     <Center>
       <VStack
-        className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
+        className="rounded-3xl p-4 border shadow-md"
         style={{
           width: cardWidth,
+          backgroundColor: wt.raised,
+          borderColor: wt.line,
           shadowColor: scene.text.muted,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
@@ -263,7 +348,7 @@ const AppExperienceSection = ({ t, cardWidth, onOpenNegentropyHub }: AppExperien
         }}
         space="sm"
       >
-        <Heading className="text-phase-text-secondary text-sm mt-1 mb-3 px-1">
+        <Heading style={{ color: wt.inkSoft }} className="text-sm mt-1 mb-3 px-1">
           {t('profile.account.support_app', 'Sponsorship & Support')}
         </Heading>
         <ProfileListItem
@@ -311,12 +396,13 @@ const DisclosureSection = ({
   children,
 }: DisclosureSectionProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
+  const wt = useWorld().tokens;
 
   return (
     <Center>
       <Box
-        style={{ width: cardWidth }}
-        className="rounded-3xl border border-phase-surface bg-phase-canvas overflow-hidden"
+        style={{ width: cardWidth, backgroundColor: wt.raised, borderColor: wt.line }}
+        className="rounded-3xl border overflow-hidden"
       >
         <Pressable
           accessibilityRole="button"
@@ -328,12 +414,16 @@ const DisclosureSection = ({
         >
           <HStack className="items-center justify-between gap-4">
             <VStack className="flex-1 gap-1">
-              <Heading className="text-phase-text-primary text-base font-bold">{title}</Heading>
-              <Text className="text-phase-text-secondary text-xs">{description}</Text>
+              <Heading style={{ color: wt.ink }} className="text-base font-bold">
+                {title}
+              </Heading>
+              <Text style={{ color: wt.inkSoft }} className="text-xs">
+                {description}
+              </Text>
             </VStack>
             <ChevronDown
               size={20}
-              color="var(--phase-interactive)"
+              color={wt.lampDeep}
               style={{ transform: [{ rotate: expanded ? '180deg' : '0deg' }] }}
             />
           </HStack>
@@ -348,7 +438,7 @@ export const ProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
   const { profile, error, loading, refreshing, refresh, logout } = useProfile();
-  const user = useStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
   const profileSurfaces = useProfileWorkspaceSurfaces();
   const { layout: profileLayout, surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
     workspaceId: 'profile',
@@ -392,7 +482,6 @@ export const ProfileScreen = () => {
     unavailableReason: deletionUnavailableReason,
   } = useAccountDeletion();
   const { discoverFeature } = useTracking();
-  const showToast = useStore((state) => state.showToast);
 
   const bannerShake = useSharedValue(0);
   const animatedBannerStyle = useAnimatedStyle(() => ({
@@ -528,12 +617,10 @@ export const ProfileScreen = () => {
     );
   }
 
+  const wt = useWorld().tokens;
+
   return (
-    <ScreenWrapper
-      backgroundColor={resolveWorkspaceAppearanceColor(profileLayout?.appearance?.preset)}
-      scroll={false}
-      noTopInset={true}
-    >
+    <ScreenWrapper backgroundColor={wt.ground} scroll={false} noTopInset={true}>
       <GlobalHeader
         title={t('profile.title')}
         subtitle={t('profile.subtitle')}
@@ -547,13 +634,19 @@ export const ProfileScreen = () => {
             accessibilityRole="button"
             accessibilityLabel={t('settings.title')}
             accessibilityHint="Opens the settings screen"
-            className="p-2 rounded-xl bg-phase-canvas border border-phase-surface"
+            style={{
+              padding: 8,
+              borderRadius: 12,
+              backgroundColor: wt.raised,
+              borderWidth: 1,
+              borderColor: wt.line,
+            }}
           >
-            <Settings size={24} color={accent.action} />
+            <Settings size={24} color={wt.lampDeep} />
           </Pressable>
         }
       />
-      <Box className="flex-1 bg-phase-canvas">
+      <Box style={{ flex: 1, backgroundColor: wt.ground }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -567,15 +660,19 @@ export const ProfileScreen = () => {
           <VStack space={isCompactLandscape ? 'lg' : '2xl'}>
             {error && (
               <Center>
-                <Box style={{ width: cardWidth }} className="rounded-2xl bg-phase-surface p-4">
+                <Box
+                  style={{ width: cardWidth, backgroundColor: wt.raised, borderColor: wt.line }}
+                  className="rounded-2xl border p-4"
+                >
                   <VStack className="gap-2">
                     <Text
-                      className="text-phase-text-primary text-sm font-bold"
+                      style={{ color: wt.ink }}
+                      className="text-sm font-bold"
                       accessibilityRole="alert"
                     >
                       {t('profile.refreshFailed', 'Your profile could not be refreshed.')}
                     </Text>
-                    <Text className="text-phase-text-secondary text-xs">
+                    <Text style={{ color: wt.inkSoft }} className="text-xs">
                       {t(
                         'profile.refreshFailedDescription',
                         'Your last available details are still shown.',
@@ -617,10 +714,12 @@ export const ProfileScreen = () => {
             <Animated.View entering={FadeInDown.delay(80).duration(500)}>
               <Center>
                 <Box
-                  className="bg-phase-canvas rounded-3xl border border-phase-surface shadow-md"
+                  className="rounded-3xl border shadow-md"
                   style={{
                     width: cardWidth,
                     padding: isCompactLandscape ? 16 : 24,
+                    backgroundColor: wt.raised,
+                    borderColor: wt.line,
                     shadowColor: scene.text.muted,
                     shadowOffset: { width: 0, height: 10 },
                     shadowOpacity: 0.1,
@@ -632,22 +731,29 @@ export const ProfileScreen = () => {
                       {['Identity', 'Journey', 'Support'].map((pillar) => (
                         <Box
                           key={pillar}
-                          className="px-3 py-1 rounded-full bg-phase-surface border border-phase-surface"
+                          style={{ backgroundColor: wt.sunken, borderColor: wt.line }}
+                          className="px-3 py-1 rounded-full border"
                         >
-                          <Text className="text-[10px] text-phase-text-secondary font-bold uppercase">
+                          <Text
+                            style={{ color: wt.inkSoft }}
+                            className="text-[10px] font-bold uppercase"
+                          >
                             {pillar}
                           </Text>
                         </Box>
                       ))}
                     </HStack>
-                    <Text className="text-[10px] text-phase-interactive font-bold tracking-widest">
+                    <Text
+                      style={{ color: wt.lampDeep }}
+                      className="text-[10px] font-bold tracking-widest"
+                    >
                       {t('profile.landingEyebrow', 'YOUR SANCTUARY')}
                     </Text>
-                    <Heading className="text-base text-phase-text-primary">
+                    <Heading style={{ color: wt.ink }} className="text-base">
                       {t('profile.landingTitle', 'Your identity and journey, in one place.')}
                     </Heading>
                     {!isCompactLandscape && (
-                      <Text className="text-phase-text-secondary text-sm">
+                      <Text style={{ color: wt.inkSoft }} className="text-sm">
                         {t(
                           'profile.landingDescription',
                           'See who you are becoming, then open the quieter tools when you need them.',

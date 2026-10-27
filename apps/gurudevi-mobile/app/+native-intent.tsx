@@ -56,6 +56,17 @@ export async function redirectSystemPath({
 
       case 'internalRoute': {
         const targetPath = intent.path;
+        if (targetPath.startsWith('/pulse')) {
+          // Immediately awaken the Somatic Sanctuary Space without gating
+          try {
+            const { useUIStore } = await import('@repo/core/store');
+            useUIStore.getState().setBreathingOpen(true);
+          } catch {
+            // Safe fallback
+          }
+          return '/pulse';
+        }
+
         // Stash internal intent so that if the user is unauthenticated, SessionRouteGate
         // will automatically drain and navigate to this target after sign-in.
         pendingIntentStore.getState().setPendingIntent({

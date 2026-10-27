@@ -833,3 +833,109 @@
     opacity: 0.8;
   }
 }
+
+.burnGlow {
+  position: relative;
+  box-shadow: 0 0 35px -5px rgba(234, 88, 12, 0.45);
+  transition: box-shadow 0.6s ease;
+}
+
+.textareaContainer {
+  position: relative;
+  width: 100%;
+}
+
+.dissolvingTextarea {
+  color: #ea580c !important;
+  text-shadow: 0 0 12px rgba(234, 88, 12, 0.8), 0 0 24px rgba(249, 115, 22, 0.6);
+  opacity: 0.15;
+  filter: blur(2px);
+  transform: scale(0.99);
+  transition: all 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Diurnal solar atmospheric canvas tints */
+.diurnalDawn {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(254, 243, 199, 0.35) 0%,
+    rgba(255, 237, 213, 0.15) 40%,
+    transparent 75%
+  );
+}
+
+.diurnalSolar {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(240, 253, 250, 0.4) 0%,
+    rgba(224, 242, 254, 0.15) 45%,
+    transparent 80%
+  );
+}
+
+.diurnalDusk {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(241, 245, 249, 0.45) 0%,
+    rgba(226, 232, 240, 0.2) 50%,
+    transparent 85%
+  );
+}
+
+.livingAnchorBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, #0d9488 12%, transparent);
+  border: 1px solid color-mix(in srgb, #0d9488 28%, transparent);
+  color: #0f766e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.audioToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.audioToggleBtn:hover {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.centerNowBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #0d9488, #0284c7);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.centerNowBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(13, 148, 136, 0.35);
+}
+
+

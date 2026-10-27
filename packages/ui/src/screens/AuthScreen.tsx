@@ -3,6 +3,16 @@ import { handleAPIError } from '@repo/core/api/interceptor';
 import { useDeviceAccounts } from '@repo/core/hooks';
 import { accountPin, deepLink, getSessionIdentityMode } from '@repo/core/logic';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
+import {
+  authorizeExistingAccountTransfer,
+  beginGuestConversion,
+  beginLocalGuestConversion,
+  bindGuestConversionTarget,
+  clearExistingAccountTransferAuthorization,
+  clearGuestConversionRecord,
+  discardGuestConversion,
+} from '@repo/core/native/guestConversionLedger';
+import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
 import { storage } from '@repo/core/storage';
 import { validators } from '@repo/core/utils';
 import AccountPinModal, { type AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
@@ -29,7 +39,9 @@ import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics'
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import type React from 'react';
-import { memo, useCallback, useMemo, useReducer, useState } from 'react';
+import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import { createAuthOrchestrationActor } from '@repo/ui/machines/authOrchestrationMachine';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Required for expo-auth-session to complete the auth session on Android
@@ -84,48 +96,6 @@ interface AuthScreenProps {
   }>;
 }
 
-// --- 1. STATE MACHINE (Mechanism) ---
-interface AuthState {
-  email: string;
-  password: string;
-  loading: boolean;
-  showScanner: boolean;
-  errors: Record<string, string>;
-  showSyncModal: boolean;
-  newUserId: string;
-}
-
-type AuthAction =
-  | {
-      type: 'SET_FIELD';
-      field: 'email' | 'password' | 'newUserId';
-      value: string;
-    }
-  | { type: 'SET_LOADING'; loading: boolean }
-  | { type: 'SET_SCANNER'; visible: boolean }
-  | { type: 'SET_ERRORS'; errors: Record<string, string> }
-  | { type: 'SET_SYNC_MODAL'; isOpen: boolean }
-  | { type: 'RESET_ERRORS' };
-
-function authReducer(state: AuthState, action: AuthAction): AuthState {
-  switch (action.type) {
-    case 'SET_FIELD':
-      return { ...state, [action.field]: action.value };
-    case 'SET_LOADING':
-      return { ...state, loading: action.loading };
-    case 'SET_SCANNER':
-      return { ...state, showScanner: action.visible };
-    case 'SET_ERRORS':
-      return { ...state, errors: action.errors };
-    case 'SET_SYNC_MODAL':
-      return { ...state, showSyncModal: action.isOpen };
-    case 'RESET_ERRORS':
-      return { ...state, errors: {} };
-    default:
-      return state;
-  }
-}
-
 const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScreenProps) => {
   const { t } = useTranslation();
   const { accent, text } = useTheme();
@@ -149,26 +119,75 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
     [accent.action, accent.danger, text.primary],
   );
 
-  const initialState: AuthState = useMemo(
-    () => ({
-      email: '',
-      password: '',
-      loading: false,
-      showScanner: false,
-      errors: {},
-      showSyncModal: false,
-      newUserId: '',
-    }),
-    [],
+  const actor = useMemo(() => createAuthOrchestrationActor(), []);
+  const snapshot = useActorSnapshot(actor);
+  const context = snapshot.context;
+  const loading = snapshot.value === 'authenticating';
+  const {
+    email,
+    password,
+    errors,
+    showScanner,
+    showSyncModal,
+    newUserId,
+    pendingPinAccountId,
+    pinError,
+    usePassword,
+  } = context;
+
+  const setPendingPinAccountId = useCallback(
+    (id: string | null) => {
+      if (id) actor.send({ type: 'OPEN_PIN_MODAL', accountId: id });
+      else actor.send({ type: 'CLOSE_PIN_MODAL' });
+    },
+    [actor],
   );
 
-  const [state, dispatch] = useReducer(authReducer, initialState);
-  const { email, password, loading, showScanner, errors, showSyncModal, newUserId } = state;
+  const setPinError = useCallback(
+    (err: string | null) => {
+      actor.send({ type: 'SET_PIN_ERROR', error: err });
+    },
+    [actor],
+  );
+
+  const setUsePassword = useCallback(
+    (_fnOrVal: boolean | ((prev: boolean) => boolean)) => {
+      actor.send({ type: 'TOGGLE_PASSWORD_MODE' });
+    },
+    [actor],
+  );
+
+  const dispatch = useCallback(
+    (action: any) => {
+      switch (action.type) {
+        case 'SET_FIELD':
+          actor.send({ type: 'SET_FIELD', field: action.field, value: action.value });
+          break;
+        case 'SET_ERRORS':
+          actor.send({ type: 'SET_ERRORS', errors: action.errors });
+          break;
+        case 'RESET_ERRORS':
+          actor.send({ type: 'RESET_ERRORS' });
+          break;
+        case 'SET_SCANNER':
+          if (action.visible) actor.send({ type: 'OPEN_SCANNER' });
+          else actor.send({ type: 'CLOSE_SCANNER' });
+          break;
+        case 'SET_SYNC_MODAL':
+          if (action.isOpen) actor.send({ type: 'OPEN_SYNC_MODAL', newUserId: context.newUserId });
+          else actor.send({ type: 'CLOSE_SYNC_MODAL' });
+          break;
+        case 'SET_LOADING':
+          if (action.loading) actor.send({ type: 'START_AUTHENTICATING' });
+          else if (snapshot.value === 'authenticating')
+            actor.send({ type: 'AUTH_FAILURE', error: '' });
+          break;
+      }
+    },
+    [actor, context.newUserId, snapshot.value],
+  );
 
   const { accounts, busyAccountId, loading: accountsLoading, switchAccount } = useDeviceAccounts();
-  const [pendingPinAccountId, setPendingPinAccountId] = useState<string | null>(null);
-  const [pinError, setPinError] = useState<string | null>(null);
-  const [usePassword, setUsePassword] = useState(false);
 
   const getRedirectUrl = useCallback(() => {
     // Mobile always uses deep link scheme
@@ -194,16 +213,43 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
     }
   }, [showToast]);
 
+  const prepareGuestConversion = useCallback(
+    async (session: Awaited<ReturnType<typeof authAPI.getAuthSession>>): Promise<string | null> => {
+      if (getSessionIdentityMode(session) === 'anonymous' && session?.user) {
+        await beginGuestConversion({ id: session.user.id, is_anonymous: true });
+        return session.user.id;
+      }
+
+      const localGuest = await restoreLocalGuestSession();
+      if (localGuest) {
+        await beginLocalGuestConversion(localGuest.id);
+        return localGuest.id;
+      }
+      return null;
+    },
+    [],
+  );
+
   const finishSignIn = useCallback(
-    async ({ isAnon, guestUserId }: { isAnon: boolean; guestUserId?: string | null }) => {
+    async ({ guestSourceId }: { guestSourceId?: string | null }) => {
+      if (guestSourceId) {
+        const currentSession = await authAPI.getAuthSession();
+        const targetUser = currentSession?.user;
+        if (!targetUser || targetUser.is_anonymous === true) {
+          throw new Error('Account conversion did not produce a durable authenticated identity.');
+        }
+        await bindGuestConversionTarget(guestSourceId, {
+          id: targetUser.id,
+          is_anonymous: false,
+        });
+      }
       const internalId = await identityAPI.getMyInternalId();
       if (internalId) {
         await notifyPendingInvite();
       }
 
-      const hasGuestData =
-        isAnon && guestUserId ? await GuestDataSync.hasGuestData(guestUserId) : false;
-      if (isAnon && hasGuestData && internalId) {
+      const hasGuestData = guestSourceId ? await GuestDataSync.hasGuestData(guestSourceId) : false;
+      if (guestSourceId && hasGuestData && internalId) {
         dispatch({
           type: 'SET_FIELD',
           field: 'newUserId',
@@ -222,6 +268,7 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
     async (
       session: Awaited<ReturnType<typeof authAPI.getAuthSession>>,
       isAnon: boolean,
+      guestSourceId: string | null,
       signIn: NonNullable<typeof onGoogleNative>,
     ) => {
       const { idToken, accessToken } = await signIn();
@@ -240,9 +287,13 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
             linkError?.code === 'link_identity_failed' ||
             linkError?.code === 'same_identity';
           if (!alreadyLinked) throw linkError;
+          await authorizeExistingAccountTransfer(session.user.id);
           nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
         }
       } else {
+        if (guestSourceId) {
+          await authorizeExistingAccountTransfer(guestSourceId);
+        }
         nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
       }
 
@@ -250,10 +301,10 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
         throw new Error('Native Google sign-in returned no session');
       }
       hapticSuccess();
-      // `session` is the pre-sign-in identity (anonymous guest id). Passing it
-      // as guestUserId keeps the guest-data scope intact so finishSignIn can
+      // The conversion source is established before sign-in. Passing it
+      // keeps the guest-data scope intact so finishSignIn can
       // migrate any locally-cached guest work into the new permanent account.
-      await finishSignIn({ isAnon, guestUserId: session?.user?.id });
+      await finishSignIn({ guestSourceId });
     },
     [finishSignIn],
   );
@@ -263,15 +314,24 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
       provider: 'google',
       session: Awaited<ReturnType<typeof authAPI.getAuthSession>>,
       isAnon: boolean,
+      guestSourceId: string | null,
     ) => {
       const redirectUrl = getRedirectUrl();
       const oauthOptions =
         isAnon && session?.user
           ? await authAPI.linkOAuthIdentity(provider, redirectUrl, true)
-          : await authAPI.signInWithOAuth(provider, redirectUrl, true);
+          : await (async () => {
+              if (guestSourceId) {
+                await authorizeExistingAccountTransfer(guestSourceId);
+              }
+              return authAPI.signInWithOAuth(provider, redirectUrl, true);
+            })();
 
       const oauthUrl = (oauthOptions as { url?: string })?.url;
       if (!oauthUrl) {
+        if (guestSourceId) {
+          await clearExistingAccountTransferAuthorization(guestSourceId);
+        }
         showToast({
           message: 'Could not reach Google sign-in. Please check your connection.',
           type: 'error',
@@ -283,6 +343,9 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
       if (authResponse.type === 'success' && (authResponse as any).url) {
         const result = await deepLink.handleURL((authResponse as { url: string }).url);
         if (!result.isHandled) {
+          if (guestSourceId) {
+            await clearExistingAccountTransferAuthorization(guestSourceId);
+          }
           showToast({
             message: 'Authentication could not be completed. Please start sign-in again.',
             type: 'error',
@@ -290,7 +353,9 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
           return;
         }
         hapticSuccess();
-        await finishSignIn({ isAnon, guestUserId: session?.user?.id });
+        await finishSignIn({ guestSourceId });
+      } else if (guestSourceId) {
+        await clearExistingAccountTransferAuthorization(guestSourceId);
       }
     },
     [getRedirectUrl, finishSignIn, showToast],
@@ -304,17 +369,18 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
 
       const session = await authAPI.getAuthSession().catch(() => null);
       const isAnon = getSessionIdentityMode(session) === 'anonymous';
-      if (isAnon && session?.user) {
-        await GuestDataSync.rememberGuestSession(session.user.id);
-      }
+      const guestSourceId = await prepareGuestConversion(session);
 
       try {
         if (onGoogleNative) {
-          await signInWithNativeGoogle(session, isAnon, onGoogleNative);
+          await signInWithNativeGoogle(session, isAnon, guestSourceId, onGoogleNative);
         } else {
-          await signInWithBrowserOAuth(provider, session, isAnon);
+          await signInWithBrowserOAuth(provider, session, isAnon, guestSourceId);
         }
       } catch (error: any) {
+        if (guestSourceId) {
+          await clearExistingAccountTransferAuthorization(guestSourceId);
+        }
         if (error.message?.includes('already linked')) {
           showToast({
             message:
@@ -332,7 +398,14 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
       }
       dispatch({ type: 'SET_LOADING', loading: false });
     },
-    [showToast, t, onGoogleNative, signInWithNativeGoogle, signInWithBrowserOAuth],
+    [
+      showToast,
+      t,
+      onGoogleNative,
+      prepareGuestConversion,
+      signInWithNativeGoogle,
+      signInWithBrowserOAuth,
+    ],
   );
 
   const handleGoogleSignIn = useCallback(() => handleOAuthSignIn('google'), [handleOAuthSignIn]);
@@ -347,16 +420,21 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
     }
     dispatch({ type: 'SET_LOADING', loading: true });
     hapticLight();
+    let guestSourceId: string | null = null;
     let isAnonymousGuest = false;
     try {
       const session = await authAPI.getAuthSession().catch(() => null);
       isAnonymousGuest = getSessionIdentityMode(session) === 'anonymous';
+      guestSourceId = await prepareGuestConversion(session);
       if (isAnonymousGuest && session?.user) {
         // Persist the guest scope before the email-confirmation callback so
         // the shell can recover local work after a cold process restart.
-        await GuestDataSync.rememberGuestSession(session.user.id);
+        await beginGuestConversion({ id: session.user.id, is_anonymous: true });
         await authAPI.linkAnonymousEmail(email, getRedirectUrl());
       } else {
+        if (guestSourceId) {
+          await authorizeExistingAccountTransfer(guestSourceId);
+        }
         await authAPI.signInWithMagicLink(email);
       }
       hapticSuccess();
@@ -368,6 +446,9 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
         duration: 5000,
       });
     } catch (error: any) {
+      if (guestSourceId) {
+        await clearExistingAccountTransferAuthorization(guestSourceId);
+      }
       hapticError();
       const apiError = handleAPIError(error);
       showToast({
@@ -379,7 +460,7 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [email, getRedirectUrl, showToast, t]);
+  }, [email, getRedirectUrl, prepareGuestConversion, showToast, t]);
 
   const handlePasswordSignIn = useCallback(async () => {
     if (!email || !validators.email(email)) {
@@ -396,20 +477,24 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
 
     dispatch({ type: 'SET_LOADING', loading: true });
     hapticLight();
-    const priorSession = await authAPI.getAuthSession().catch(() => null);
-    const isAnon = getSessionIdentityMode(priorSession) === 'anonymous';
-    if (isAnon && priorSession?.user) {
-      await GuestDataSync.rememberGuestSession(priorSession.user.id);
-    }
+    let guestSourceId: string | null = null;
 
     try {
+      const priorSession = await authAPI.getAuthSession().catch(() => null);
+      guestSourceId = await prepareGuestConversion(priorSession);
+      if (guestSourceId) {
+        await authorizeExistingAccountTransfer(guestSourceId);
+      }
       const result = await authAPI.signIn(email, password);
       if (!result.session || !result.user) {
         throw new Error('Password sign-in returned no session.');
       }
       hapticSuccess();
-      await finishSignIn({ isAnon, guestUserId: priorSession?.user?.id });
+      await finishSignIn({ guestSourceId });
     } catch (error: any) {
+      if (guestSourceId) {
+        await clearExistingAccountTransferAuthorization(guestSourceId);
+      }
       hapticError();
       const apiError = handleAPIError(error);
       dispatch({
@@ -423,7 +508,7 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [email, finishSignIn, password, t]);
+  }, [email, finishSignIn, password, prepareGuestConversion, t]);
 
   const handlePasswordRecovery = useCallback(async () => {
     if (!email || !validators.email(email)) {
@@ -803,8 +888,8 @@ const AuthScreen = memo(({ onSuccess, onBack, onGoogleNative, Scanner }: AuthScr
         userId={newUserId}
         onSyncComplete={handleSyncComplete}
         onClose={handleSyncClose}
-        onSkipEmpty={() => GuestDataSync.clearPendingGuestSession()}
-        onDiscard={() => GuestDataSync.discardPendingGuestData()}
+        onSkipEmpty={clearGuestConversionRecord}
+        onDiscard={discardGuestConversion}
       />
       <AccountPinModal
         isOpen={pendingPinAccountId !== null}

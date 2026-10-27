@@ -1,8 +1,10 @@
 import { useStudentDashboardSurfaces } from '@repo/classroom/workspace/useStudentDashboardSurfaces';
 import { useStudentWorkspaceData } from '@repo/classroom/workspace/useStudentWorkspaceData';
 import { useIsGuest } from '@repo/core/hooks';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback';
+import { useTemporalStore } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useUIStore } from '@repo/core/store';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -23,7 +25,7 @@ interface StudentDashboardProps {
 export default function StudentDashboard({ forceDemo, userId }: StudentDashboardProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const showToast = useStore((state: any) => state.showToast);
+
   const isGuest = useIsGuest();
   const { isPastView } = useTemporalStore();
   const _colors = useThemedColors();
@@ -52,7 +54,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     },
     onOpenBreathing: () => {
       hapticLight();
-      const { setBreathingOpen } = useStore.getState();
+      const { setBreathingOpen } = useUIStore.getState();
       setBreathingOpen(true);
     },
     onOpenReflect: () => {

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resolveAuthorizedEntry } from './authorizedEntry';
 
 const subject = '00000000-0000-4000-8000-000000000001';
-const accountId = '00000000-0000-4000-8000-000000000002';
+const accountId = '01234567-89ab-8101-8000-010203040506';
 
 function supabaseFor(subjectId = subject) {
   return {
@@ -66,7 +66,7 @@ describe('resolveAuthorizedEntry', () => {
         roles: ['teacher'],
       },
     });
-    expect(fetcher).toHaveBeenCalledWith('https://sanctuary.example/api/identity/resolveIdentity', {
+    expect(fetcher).toHaveBeenCalledWith('https://sanctuary.example/api/openapi/identity/resolveIdentity', {
       headers: { Authorization: 'Bearer verified-token' },
       method: 'GET',
       cache: 'no-store',
@@ -92,7 +92,7 @@ describe('resolveAuthorizedEntry', () => {
       supabaseFor(),
       vi.fn().mockResolvedValue(
         response({
-          id: subject,
+          id: accountId,
           display_name: 'Nadeesha',
           onboarding_completed: true,
           activeBond: { capacity: 'teacher' },

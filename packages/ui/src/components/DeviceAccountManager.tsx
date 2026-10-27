@@ -1,10 +1,5 @@
 import { useAccountLifecycle } from '@repo/core/hooks';
-import {
-  type AccountLifecycleCommand,
-  accountPin,
-  type DeviceAccountRecord,
-  useDeviceAccounts,
-} from '@repo/core/logic';
+import { type AccountLifecycleCommand, accountPin, type DeviceAccountRecord, useDeviceAccounts } from '@repo/core/logic';
 import AccountPinModal, {
   type AccountPinModalMode,
   type AccountPinModalSubmit,

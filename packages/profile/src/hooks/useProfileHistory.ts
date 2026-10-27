@@ -1,7 +1,8 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { identityAPI, profileAPI } from '@repo/core/api/client';
-import { handleAPIError, type ProfileHistoryEntry, useStore } from '@repo/core/logic';
+import { handleAPIError, type ProfileHistoryEntry } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCallback, useEffect, useReducer } from 'react';
 
 const PROFILE_HISTORY_CACHE_PREFIX = 'gurudevi-profile-history-cache';
@@ -37,7 +38,7 @@ export function useProfileHistory(userId?: string, limit = 20) {
 
   const authUser = useAuthStore((s) => s.user);
   const isAnonymous = !authUser || authUser.is_anonymous;
-  const isOnline = useStore((s) => s.isOnline);
+  const { isOnline } = useOfflineStatus();
 
   const { history, loading } = state;
 

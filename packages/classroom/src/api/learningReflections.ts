@@ -1,9 +1,10 @@
+import { useAuthStore } from '@repo/core/store';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import { useStore } from '@repo/core/logic';
+
 import type { LearningReflection } from '@repo/core/logic/schemas/classroom.schema';
 
 function assertAuthenticated() {
-  const state = useStore.getState();
+  const state = useAuthStore.getState();
   if (!state.user || state.user.is_anonymous) {
     throw new Error('Forbidden');
   }

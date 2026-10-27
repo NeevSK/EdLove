@@ -128,6 +128,10 @@ export const BROWSER_SELF_FEATURES: Readonly<Record<string, BrowserFeatureRegist
     renderer: 'professional-history',
     taskKind: 'task',
   },
+  journey_timeline: {
+    renderer: 'professional-history',
+    taskKind: 'task',
+  },
 };
 
 function browserSelfFeature(featureId: string): BrowserFeatureRegistration | null {

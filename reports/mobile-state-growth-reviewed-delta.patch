@@ -1,0 +1,700 @@
+diff --git a/packages/core/src/hooks/useBanyanGrowth.ts b/packages/core/src/hooks/useBanyanGrowth.ts
+index 9a9bc5280..2f9ae0b45 100644
+--- a/packages/core/src/hooks/useBanyanGrowth.ts
++++ b/packages/core/src/hooks/useBanyanGrowth.ts
+@@ -1,62 +1,15 @@
+-import { growth } from '@repo/core/logic';
+-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+-import { useCallback, useEffect, useMemo, useState } from 'react';
++import { useGrowthQuery } from '@repo/core/hooks/useGrowthQuery';
+ 
+-/**
+- * useBanyanGrowth
+- *
+- * A hook to fetch and manage a teacher's or principal's Banyan growth state.
+- */
+ export function useBanyanGrowth() {
+-  const { context } = usePermissions();
+-  const userId = context.userId || null;
+-
+-  const banyanStage = useGrowthStore((state) => state.banyan_stage);
+-  const peerMentoredCount = useGrowthStore((state) => state.peer_mentored_count);
+-  const circlesFacilitatedCount = useGrowthStore((state) => state.circles_facilitated_count);
+-
+-  const [isLoading, setIsLoading] = useState(true);
+-
+-  const refreshBanyan = useCallback(async () => {
+-    if (!userId) return;
+-    setIsLoading(true);
+-    try {
+-      const state = await growth.getGrowthState(userId);
+-      if (state) {
+-        useGrowthStore.getState().setGrowthState({
+-          banyan_stage: state.banyan_stage,
+-          peer_mentored_count: state.peer_mentored_count,
+-          circles_facilitated_count: state.circles_facilitated_count,
+-        });
+-      }
+-    } catch (error) {
+-      console.error('[useBanyanGrowth] Error fetching Banyan state:', error);
+-    } finally {
+-      setIsLoading(false);
+-    }
+-  }, [userId]);
+-
+-  useEffect(() => {
+-    refreshBanyan().catch((e) => {
+-      console.error('Banyan: Failed to refresh on mount', e);
+-    });
+-  }, [refreshBanyan]);
+-
+-  const banyan = useMemo(() => {
+-    return {
+-      banyan_stage: banyanStage,
+-      peer_mentored_count: peerMentoredCount,
+-      circles_facilitated_count: circlesFacilitatedCount,
+-    };
+-  }, [banyanStage, peerMentoredCount, circlesFacilitatedCount]);
+-
+-  return useMemo(
+-    () => ({
+-      banyan,
+-      isLoading,
+-      refreshBanyan,
+-    }),
+-    [banyan, isLoading, refreshBanyan],
+-  );
++  const query = useGrowthQuery();
++  return {
++    banyan: {
++      banyan_stage: query.data?.banyan_stage ?? null,
++      peer_mentored_count: query.data?.peer_mentored_count ?? 0,
++      circles_facilitated_count: query.data?.circles_facilitated_count ?? 0,
++    },
++    isLoading: query.isLoading,
++    error: query.error,
++    refreshBanyan: query.refresh,
++  };
+ }
+diff --git a/packages/core/src/hooks/useNaturePaths.ts b/packages/core/src/hooks/useNaturePaths.ts
+index 4ddef3f23..fd5208ee5 100644
+--- a/packages/core/src/hooks/useNaturePaths.ts
++++ b/packages/core/src/hooks/useNaturePaths.ts
+@@ -1,65 +1,16 @@
+-import { growth } from '@repo/core/logic';
+-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+-import { useCallback, useEffect, useMemo, useState } from 'react';
++import { useGrowthQuery } from '@repo/core/hooks/useGrowthQuery';
+ 
+-/**
+- * useNaturePaths
+- *
+- * A hook to fetch and manage a student's nature path state (River & Crystal).
+- */
+-export const useNaturePaths = () => {
+-  const { context } = usePermissions();
+-  const userId = context.userId;
+-
+-  const riverStage = useGrowthStore((state) => state.river_stage);
+-  const crystalTier = useGrowthStore((state) => state.crystal_tier);
+-  const crystalsFoundCount = useGrowthStore((state) => state.crystals_found_count);
+-  const fractalMomentsCount = useGrowthStore((state) => state.fractal_moments_count);
+-
+-  const [isLoading, setIsLoading] = useState(true);
+-
+-  const refreshPaths = useCallback(async () => {
+-    if (!userId) return;
+-    setIsLoading(true);
+-    try {
+-      const state = await growth.getGrowthState(userId);
+-      if (state) {
+-        useGrowthStore.getState().setGrowthState({
+-          river_stage: state.river_stage,
+-          crystal_tier: state.crystal_tier,
+-          crystals_found_count: state.crystals_found_count,
+-          fractal_moments_count: state.fractal_moments_count,
+-        });
+-      }
+-    } catch (error) {
+-      console.error('[useNaturePaths] Error fetching paths:', error);
+-    } finally {
+-      setIsLoading(false);
+-    }
+-  }, [userId]);
+-
+-  useEffect(() => {
+-    refreshPaths().catch((e) => {
+-      console.error('NaturePaths: Failed to load on mount', e);
+-    });
+-  }, [refreshPaths]);
+-
+-  const paths = useMemo(() => {
+-    return {
+-      river_stage: riverStage,
+-      crystal_tier: crystalTier,
+-      crystals_found_count: crystalsFoundCount,
+-      fractal_moments_count: fractalMomentsCount,
+-    };
+-  }, [riverStage, crystalTier, crystalsFoundCount, fractalMomentsCount]);
+-
+-  return useMemo(
+-    () => ({
+-      paths,
+-      isLoading,
+-      refreshPaths,
+-    }),
+-    [paths, isLoading, refreshPaths],
+-  );
+-};
++export function useNaturePaths() {
++  const query = useGrowthQuery();
++  return {
++    paths: {
++      river_stage: query.data?.river_stage ?? null,
++      crystal_tier: query.data?.crystal_tier ?? null,
++      crystals_found_count: query.data?.crystals_found_count ?? 0,
++      fractal_moments_count: query.data?.fractal_moments_count ?? 0,
++    },
++    isLoading: query.isLoading,
++    error: query.error,
++    refreshPaths: query.refresh,
++  };
++}
+diff --git a/packages/core/src/lib/clientStateFoundation.test.ts b/packages/core/src/lib/clientStateFoundation.test.ts
+index 347a9c472..5a19eff0a 100644
+--- a/packages/core/src/lib/clientStateFoundation.test.ts
++++ b/packages/core/src/lib/clientStateFoundation.test.ts
+@@ -2,8 +2,10 @@ import { QueryClient } from '@tanstack/react-query';
+ import { describe, expect, it } from 'vitest';
+ import {
+   assessProtocolAdmission,
++  abortableQueryRead,
+   CLIENT_STATE_REGISTRY,
+   createPersistedRecord,
++  disposeAccountBoundaryQueries,
+   disposeQueryScope,
+   invalidateQueryScope,
+   type PersistedRecordPolicy,
+@@ -61,6 +63,13 @@ describe('persisted record foundation', () => {
+ });
+ 
+ describe('scoped Query lifecycle', () => {
++  it('rejects a late non-abortable transport when Query cancels the read', async () => {
++    const controller = new AbortController();
++    const pending = abortableQueryRead(controller.signal, () => new Promise(() => {}));
++    controller.abort();
++    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
++  });
++
+   it('invalidates only the named scope without starting refetch work', async () => {
+     const client = new QueryClient();
+     const alpha = { principalId: 'alpha', tenantId: 'school-a', perspectiveId: 'teacher' };
+@@ -94,14 +103,44 @@ describe('scoped Query lifecycle', () => {
+     expect(client.getQueryData(scopedQueryKey(beta, ['profile']))).toEqual({ name: 'Beta' });
+     expect(client.getQueryData(['public', 'library'])).toEqual({ title: 'Public' });
+   });
++
++  it('clears legacy Query data at an account boundary without clearing mutations', async () => {
++    const client = new QueryClient();
++    const alpha = { principalId: 'alpha', tenantId: 'school-a', perspectiveId: 'teacher' };
++    const beta = { principalId: 'beta', tenantId: 'school-b', perspectiveId: 'teacher' };
++    const mutation = client.getMutationCache().build(client, {
++      mutationKey: ['command', 'alpha'],
++      mutationFn: async () => undefined,
++    });
++    client.setQueryData(scopedQueryKey(alpha, ['profile']), { name: 'Alpha' });
++    client.setQueryData(scopedQueryKey(beta, ['profile']), { name: 'Beta' });
++    client.setQueryData(['legacy', 'private-profile'], { name: 'Legacy Alpha' });
++
++    await expect(disposeAccountBoundaryQueries(client, 'alpha')).resolves.toEqual({
++      outgoingPrincipalId: 'alpha',
++      scopedQueryCount: 1,
++      legacyQueryCount: 1,
++    });
++    expect(client.getQueryData(scopedQueryKey(alpha, ['profile']))).toBeUndefined();
++    expect(client.getQueryData(['legacy', 'private-profile'])).toBeUndefined();
++    expect(client.getQueryData(scopedQueryKey(beta, ['profile']))).toEqual({ name: 'Beta' });
++    expect(client.getMutationCache().find({ mutationId: mutation.mutationId })).toBe(mutation);
++  });
+ });
+ 
+ describe('state registry and XState admission', () => {
+   it('has one uniquely identified, classified entry for each reviewed state holder', () => {
+     const ids = CLIENT_STATE_REGISTRY.map((entry) => entry.id);
+     expect(new Set(ids).size).toBe(ids.length);
+-    expect(CLIENT_STATE_REGISTRY).toHaveLength(20);
++    expect(CLIENT_STATE_REGISTRY).toHaveLength(21);
+     expect(CLIENT_STATE_REGISTRY.every((entry) => entry.owner && entry.source)).toBe(true);
++    const perspective = CLIENT_STATE_REGISTRY.find((entry) => entry.id === 'perspective');
++    const scope = CLIENT_STATE_REGISTRY.find((entry) => entry.id === 'scope-session');
++    expect(perspective?.disposition).toBe('consolidated');
++    expect(perspective?.source).toBe(scope?.source);
++    expect(CLIENT_STATE_REGISTRY.find((entry) => entry.id === 'growth')).toMatchObject({
++      source: 'packages/core/src/hooks/useGrowthQuery.ts', disposition: 'query',
++    });
+   });
+ 
+   it('rejects ceremony-only machines and admits a fully evidenced protocol', () => {
+diff --git a/packages/core/src/lib/clientStateFoundation.ts b/packages/core/src/lib/clientStateFoundation.ts
+index b10a7a507..ea2c3beab 100644
+--- a/packages/core/src/lib/clientStateFoundation.ts
++++ b/packages/core/src/lib/clientStateFoundation.ts
+@@ -147,6 +147,36 @@ export function scopedQueryKey<T extends readonly unknown[]>(
+   return [...queryScopePrefix(scope), ...resourceKey];
+ }
+ 
++/**
++ * Makes an existing non-abortable transport respect a Query cancellation. The
++ * underlying transport can still settle, but its late value cannot repopulate
++ * a Query that was disposed during an account or scope transition.
++ */
++export function abortableQueryRead<T>(
++  signal: AbortSignal,
++  operation: () => Promise<T>,
++): Promise<T> {
++  if (signal.aborted) return Promise.reject(signal.reason);
++  return new Promise((resolve, reject) => {
++    const abort = () => {
++      const error = new Error('Query read aborted.');
++      error.name = 'AbortError';
++      reject(signal.reason ?? error);
++    };
++    signal.addEventListener('abort', abort, { once: true });
++    void operation().then(
++      (value) => {
++        signal.removeEventListener('abort', abort);
++        resolve(value);
++      },
++      (error) => {
++        signal.removeEventListener('abort', abort);
++        reject(error);
++      },
++    );
++  });
++}
++
+ function queryMatchesScope(query: Query, prefix: QueryScopePrefix): boolean {
+   const key = query.queryKey;
+   return prefix.every((segment, index) => key[index] === segment);
+@@ -162,6 +192,12 @@ export interface QueryScopeInvalidationResult {
+   readonly matchedQueryCount: number;
+ }
+ 
++export interface QueryAccountBoundaryDisposalResult {
++  readonly outgoingPrincipalId: string | null;
++  readonly scopedQueryCount: number;
++  readonly legacyQueryCount: number;
++}
++
+ /**
+  * Cancels and removes only queries bearing the supplied scope prefix. It never
+  * calls `QueryClient.clear()` and deliberately leaves mutations/outbox state to
+@@ -179,6 +215,39 @@ export async function disposeQueryScope(
+   return { scope: prefix, matchedQueryCount };
+ }
+ 
++/**
++ * Removes Query cache entries at an account boundary without touching the
++ * MutationCache. Scoped entries for the outgoing principal are removed by
++ * their namespace; legacy unscoped entries use the existing broad-query
++ * fallback until their resource family adopts `scopedQueryKey`.
++ */
++export async function disposeAccountBoundaryQueries(
++  queryClient: QueryClient,
++  outgoingPrincipalId: string | null,
++): Promise<QueryAccountBoundaryDisposalResult> {
++  const scopedPredicate = (query: Query) =>
++    query.queryKey[0] === 'scope' &&
++    typeof query.queryKey[1] === 'string' &&
++    query.queryKey[1] === outgoingPrincipalId;
++  const legacyPredicate = (query: Query) => query.queryKey[0] !== 'scope';
++  const scopedQueryCount = outgoingPrincipalId
++    ? queryClient.getQueryCache().findAll({ predicate: scopedPredicate }).length
++    : 0;
++  const legacyQueryCount = queryClient
++    .getQueryCache()
++    .findAll({ predicate: legacyPredicate }).length;
++
++  const predicates = outgoingPrincipalId ? [scopedPredicate, legacyPredicate] : [legacyPredicate];
++  await Promise.all(
++    predicates.map(async (predicate) => {
++      await queryClient.cancelQueries({ predicate });
++      queryClient.removeQueries({ predicate });
++    }),
++  );
++
++  return { outgoingPrincipalId, scopedQueryCount, legacyQueryCount };
++}
++
+ /**
+  * Marks only a scoped resource family stale without removing its cached data.
+  * `refetchType: 'none'` prevents a scope transition utility from implicitly
+@@ -214,6 +283,8 @@ export interface StateRegistryEntry {
+   readonly scope: PersistedRecordScope | 'component';
+   readonly disposition:
+     | 'retain'
++    | 'consolidated'
++    | 'query'
+     | 'query-review'
+     | 'scope-session-review'
+     | 'protocol-review'
+@@ -225,6 +296,22 @@ export interface StateRegistryEntry {
+  * that prevents this foundation from becoming another global state mechanism.
+  */
+ export const CLIENT_STATE_REGISTRY = [
++  {
++    id: 'scope-session',
++    source: 'packages/core/src/store/scopeSession.ts',
++    owner: 'identity',
++    stateClass: 'scope-session',
++    scope: 'principal',
++    disposition: 'retain',
++  },
++  {
++    id: 'perspective',
++    source: 'packages/core/src/store/scopeSession.ts',
++    owner: 'identity',
++    stateClass: 'scope-session',
++    scope: 'perspective',
++    disposition: 'consolidated',
++  },
+   {
+     id: 'auth',
+     source: 'packages/core/src/store/useAuthStore.ts',
+@@ -241,14 +328,6 @@ export const CLIENT_STATE_REGISTRY = [
+     scope: 'tenant',
+     disposition: 'scope-session-review',
+   },
+-  {
+-    id: 'perspective',
+-    source: 'packages/core/src/store/usePerspectiveStore.ts',
+-    owner: 'identity',
+-    stateClass: 'scope-session',
+-    scope: 'perspective',
+-    disposition: 'scope-session-review',
+-  },
+   {
+     id: 'feature',
+     source: 'packages/core/src/store/useFeatureStore.ts',
+@@ -259,7 +338,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'entitlement',
+-    source: 'packages/core/src/store/useEntitlementStore.ts',
++    source: 'packages/core/src/hooks/useEntitlementQuery.ts',
+     owner: 'authorization',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -275,7 +354,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'notification',
+-    source: 'packages/core/src/store/useNotificationStore.ts',
++    source: 'packages/core/src/hooks/useScopedNotifications.ts',
+     owner: 'notification-domain',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -283,7 +362,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'device-security',
+-    source: 'packages/core/src/store/useDeviceSecurityStore.ts',
++    source: 'packages/core/src/hooks/useScopedDeviceSecurity.ts',
+     owner: 'security',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -363,11 +442,11 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'growth',
+-    source: 'packages/core/src/store/useGrowthStore.ts',
++    source: 'packages/core/src/hooks/useGrowthQuery.ts',
+     owner: 'growth-domain',
+     stateClass: 'domain-projection-review',
+     scope: 'principal',
+-    disposition: 'split-review',
++    disposition: 'query',
+   },
+   {
+     id: 'temporal',
+diff --git a/packages/core/src/store/index.ts b/packages/core/src/store/index.ts
+index c3c852413..0fdeda8bc 100644
+--- a/packages/core/src/store/index.ts
++++ b/packages/core/src/store/index.ts
+@@ -1,4 +1,16 @@
+ export { resetScopedStores } from '@repo/core/store/resetScopedStores';
++export {
++  createScopeSessionSnapshot,
++  PERSONAL_SCOPE_PERSPECTIVE,
++  useScopeSessionStore,
++} from '@repo/core/store/scopeSession';
++export {
++  clearScopeSessionCompatibility,
++  commitIdentityScopeSession,
++  replaceScopeSessionPerspectives,
++  type ScopeSessionTransitionInput,
++  transitionScopeSession,
++} from '@repo/core/store/scopeSessionCoordinator';
+ export {
+   type ActiveSubTabItem,
+   type ActiveSubTabsState,
+@@ -9,9 +21,7 @@ export { useAuthStore } from '@repo/core/store/useAuthStore';
+ export { useConsentStore } from '@repo/core/store/useConsentStore';
+ export { type DraftEntry, type DraftsState, useDraftsStore } from '@repo/core/store/useDraftsStore';
+ export { useFeatureStore } from '@repo/core/store/useFeatureStore';
+-export { useGrowthStore } from '@repo/core/store/useGrowthStore';
+-export { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+-export { type TotalState, useStore } from '@repo/core/store/useStore';
++export { type SensoryPreferencesState, useSensoryStore } from '@repo/core/store/useSensoryStore';
+ export * from '@repo/core/store/useTemporalStore';
+ export { useTenantStore } from '@repo/core/store/useTenantStore';
+ export { useUIStore } from '@repo/core/store/useUIStore';
+diff --git a/packages/core/src/store/resetScopedStores.ts b/packages/core/src/store/resetScopedStores.ts
+index 753008709..d76290409 100644
+--- a/packages/core/src/store/resetScopedStores.ts
++++ b/packages/core/src/store/resetScopedStores.ts
+@@ -1,12 +1,13 @@
++import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage';
+ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+-import type { UISlice } from '@repo/core/store/slices/ui.slice';
++import { useScopeSessionStore } from '@repo/core/store/scopeSession';
+ import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
++import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
+ import { useAuthStore } from '@repo/core/store/useAuthStore';
++import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+ import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+ import { useTenantStore } from '@repo/core/store/useTenantStore';
+-import { useUIStore } from '@repo/core/store/useUIStore';
++import { migrateLegacyDismissalsForCurrentOwner, useUIStore } from '@repo/core/store/useUIStore';
+ 
+ const authScopedDefaults = {
+   userName: 'Gurudevi',
+@@ -20,46 +21,61 @@ const authScopedDefaults = {
+   isSandboxMode: false,
+   isExplorerMode: true,
+   isBridging: false,
+-  dismissedSampleIds: [],
+   demoLogs: [],
+-  isOnline: true,
+   toast: null,
+ };
+ 
+ const tenantScopedDefaults = {
+-  schoolId: null,
+-  schoolName: null,
+   tenantResolved: false,
+   schoolType: 'generic',
+   realClassCount: 0,
+ };
+ 
+-const uiScopedDefaults: Partial<UISlice> = {
++const uiScopedDefaults = {
+   isSidebarCollapsed: false,
+-  theme: 'system' as UISlice['theme'],
+-  themeMode: 'system' as NonNullable<UISlice['themeMode']>,
+   dismissedSampleIds: [],
+   deskItems: [],
+   isBreathingOpen: false,
++  scaffoldCompletions: {},
++};
++
++const activeSubTabsScopedDefaults = {
++  tabsByDomain: {},
++  activeTabByDomain: {},
++  pinnedFeatureIdsByDomain: {
++    self: ['daily_rhythm', 'mood_lotus', 'decision_journal'],
++    workspace: ['attendance', 'gradebook', 'curriculum'],
++  },
++  preferences: {
++    headerStyle: 'adaptive' as const,
++    catalogDefaultAction: 'open_in_subtab' as const,
++    showActiveSubTabs: true,
++    autoHideChromeOnScroll: true,
++    maxTabsPerDomain: 5,
++  },
++  isChromeVisible: true,
+ };
+ 
+ const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
+ 
+ export const resetScopedStores = () => {
+-  useAuthStore.setState(authScopedDefaults);
+-  useTenantStore.setState(tenantScopedDefaults);
+-  usePerspectiveStore.getState().resetToPersonalPerspective();
+-  useUIStore.setState(uiScopedDefaults);
+-  useGrowthStore.getState().resetGrowthState();
+-  useFeatureStore.setState((state) => ({
+-    ...state,
+-    flags: featureScopedDefaults,
+-    snapshot: null,
+-  }));
+-  // Commands are partitioned by their original principal. Account lifecycle
+-  // owns an explicit preserve/quarantine/discard transition; a UI-store reset
+-  // must never silently destroy work that still needs reconciliation.
+-  useMutationQueue.setState({ isSyncing: false });
++  withScopedStateWritesPaused(() => {
++    useScopeSessionStore.getState().clear();
++    useCedarDecisionStore.getState().clearDecisions();
++    useAuthStore.setState(authScopedDefaults);
++    useTenantStore.setState(tenantScopedDefaults);
++    useUIStore.setState(uiScopedDefaults);
++    useActiveSubTabsStore.setState(activeSubTabsScopedDefaults);
++    useFeatureStore.setState((state) => ({
++      ...state,
++      flags: featureScopedDefaults,
++      snapshot: null,
++    }));
++    // Commands are partitioned by their original principal. Account lifecycle
++    // owns an explicit preserve/quarantine/discard transition; a UI-store reset
++    // must never silently destroy work that still needs reconciliation.
++    useMutationQueue.setState({ isSyncing: false });
++  });
+ };
+ 
+ export const rehydrateScopedStores = async () => {
+@@ -67,8 +83,9 @@ export const rehydrateScopedStores = async () => {
+     useAuthStore.persist?.rehydrate?.(),
+     useTenantStore.persist?.rehydrate?.(),
+     useUIStore.persist?.rehydrate?.(),
+-    useGrowthStore.persist?.rehydrate?.(),
++    useActiveSubTabsStore.persist?.rehydrate?.(),
+     useFeatureStore.persist?.rehydrate?.(),
+     useMutationQueue.persist?.rehydrate?.(),
+   ]);
++  await migrateLegacyDismissalsForCurrentOwner();
+ };
+diff --git a/packages/core/src/store/useGrowthStore.ts b/packages/core/src/store/useGrowthStore.ts
+deleted file mode 100644
+index f2574c7c1..000000000
+--- a/packages/core/src/store/useGrowthStore.ts
++++ /dev/null
+@@ -1,125 +0,0 @@
+-import { create } from 'zustand';
+-import { createJSONStorage, persist } from 'zustand/middleware';
+-import { SafeZustandStorage } from '../lib/storageWrapper';
+-import type { BanyanStage, BhumiStage, CrystalTier, RiverStage } from '../types/Growth';
+-
+-export interface GrowthState {
+-  // Bhumi (Lotus) path
+-  bhumi_stage: BhumiStage;
+-  presence_signals: number;
+-  nourishing_signals: number;
+-  witnessing_signals: number;
+-  weaving_signals: number;
+-  blooming_signals: number;
+-
+-  // Banyan (Vata) path
+-  banyan_stage: BanyanStage | null;
+-  peer_mentored_count: number;
+-  circles_facilitated_count: number;
+-
+-  // River (Ganga) path
+-  river_stage: RiverStage | null;
+-  lessons_completed_count: number;
+-  reflections_submitted_count: number;
+-
+-  // Crystal (Spatika) path
+-  crystal_tier: CrystalTier | null;
+-  crystals_found_count: number;
+-  fractal_moments_count: number;
+-
+-  // Previous values for delta/change detection
+-  prev_presence_signals: number;
+-  prev_nourishing_signals: number;
+-  prev_witnessing_signals: number;
+-  prev_weaving_signals: number;
+-  prev_blooming_signals: number;
+-
+-  // Actions
+-  setGrowthState: (state: Partial<GrowthState>) => void;
+-  resetGrowthState: () => void;
+-}
+-
+-const DEFAULT_GROWTH_STATE = {
+-  bhumi_stage: 'bijam' as BhumiStage,
+-  presence_signals: 0,
+-  nourishing_signals: 0,
+-  witnessing_signals: 0,
+-  weaving_signals: 0,
+-  blooming_signals: 0,
+-
+-  banyan_stage: null,
+-  peer_mentored_count: 0,
+-  circles_facilitated_count: 0,
+-
+-  river_stage: null,
+-  lessons_completed_count: 0,
+-  reflections_submitted_count: 0,
+-
+-  crystal_tier: null,
+-  crystals_found_count: 0,
+-  fractal_moments_count: 0,
+-
+-  prev_presence_signals: 0,
+-  prev_nourishing_signals: 0,
+-  prev_witnessing_signals: 0,
+-  prev_weaving_signals: 0,
+-  prev_blooming_signals: 0,
+-};
+-
+-export const useGrowthStore = create<GrowthState>()(
+-  persist(
+-    (set, get) => ({
+-      ...DEFAULT_GROWTH_STATE,
+-
+-      setGrowthState: (newState) => {
+-        const currentState = get();
+-
+-        // Track the deltas by storing the previous signal values
+-        const updatedDeltas: Partial<GrowthState> = {};
+-        if (newState.presence_signals !== undefined) {
+-          updatedDeltas.prev_presence_signals = currentState.presence_signals;
+-        }
+-        if (newState.nourishing_signals !== undefined) {
+-          updatedDeltas.prev_nourishing_signals = currentState.nourishing_signals;
+-        }
+-        if (newState.witnessing_signals !== undefined) {
+-          updatedDeltas.prev_witnessing_signals = currentState.witnessing_signals;
+-        }
+-        if (newState.weaving_signals !== undefined) {
+-          updatedDeltas.prev_weaving_signals = currentState.weaving_signals;
+-        }
+-        if (newState.blooming_signals !== undefined) {
+-          updatedDeltas.prev_blooming_signals = currentState.blooming_signals;
+-        }
+-
+-        set({
+-          ...newState,
+-          ...updatedDeltas,
+-        });
+-      },
+-
+-      resetGrowthState: () => set(DEFAULT_GROWTH_STATE),
+-    }),
+-    {
+-      name: 'gurudevi-growth-storage',
+-      storage: createJSONStorage(() => SafeZustandStorage),
+-      partialize: (state) => ({
+-        bhumi_stage: state.bhumi_stage,
+-        presence_signals: state.presence_signals,
+-        nourishing_signals: state.nourishing_signals,
+-        witnessing_signals: state.witnessing_signals,
+-        weaving_signals: state.weaving_signals,
+-        blooming_signals: state.blooming_signals,
+-        banyan_stage: state.banyan_stage,
+-        peer_mentored_count: state.peer_mentored_count,
+-        circles_facilitated_count: state.circles_facilitated_count,
+-        river_stage: state.river_stage,
+-        lessons_completed_count: state.lessons_completed_count,
+-        reflections_submitted_count: state.reflections_submitted_count,
+-        crystal_tier: state.crystal_tier,
+-        crystals_found_count: state.crystals_found_count,
+-        fractal_moments_count: state.fractal_moments_count,
+-      }),
+-    },
+-  ),
+-);

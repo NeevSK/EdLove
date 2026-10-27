@@ -1,15 +1,13 @@
 /**
+ * @deprecated Legacy React Native Web screen.
+ * In accordance with AGENTS.md, all modern web experiences are built in `apps/gurudevi-web`.
+ * For modern web reading and annotation, use `apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]`.
+ * Retained solely as a backward-compatible source and historical reference.
+ *
  * PDFViewerScreen.web.tsx  Pattern A: full web replacement
  *
  * On native, PDFViewerScreen uses expo-file-system + expo-sharing to download
- * and open PDFs via the device's native viewer.  Neither package ships a web
- * implementation, so importing them in the Metro web bundle crashes the build.
- *
- * On web, Metro resolves this file instead.  We use two browser-native APIs:
- *   1. <iframe> embed  shows the PDF inline without any download.
- *   2. window.open()   opens the PDF in a new tab as a fallback.
- *
- * No expo-file-system or expo-sharing imports here.
+ * and open PDFs via the device's native viewer.
  */
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

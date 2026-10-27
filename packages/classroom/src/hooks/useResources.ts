@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { api } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
+
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import type { ClassroomResource } from '@repo/core/types';
 import { useCallback, useEffect, useState } from 'react';
@@ -13,7 +15,7 @@ const RESOURCES_CACHE_KEY = 'gurudevi-resources-cache';
  * - Background fetches from API to stay fresh.
  */
 export function useResources(classroomId: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [resources, setResources] = useState<ClassroomResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

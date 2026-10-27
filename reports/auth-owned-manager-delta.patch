@@ -1,0 +1,264 @@
+diff --git a/packages/core/src/logic/managers/__tests__/AuthManager.test.ts b/packages/core/src/logic/managers/__tests__/AuthManager.test.ts
+index 7cc8d7ae0..724cf088f 100644
+--- a/packages/core/src/logic/managers/__tests__/AuthManager.test.ts
++++ b/packages/core/src/logic/managers/__tests__/AuthManager.test.ts
+@@ -11,6 +11,7 @@ vi.mock('../../../api/deviceTrust', () => ({
+ import { AuthManager } from '../AuthManager';
+ 
+ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
++  const canonicalAccount = '123e4567-e89b-8101-8100-426614174000';
+   const authPort = {
+     getSession: vi.fn(),
+     getUser: vi.fn(),
+@@ -40,12 +41,15 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+     getProfile: vi.fn(),
+     updateProfile: vi.fn(),
+     linkIdentity: vi.fn(),
++    createInitialBond: vi.fn(),
++    completeOnboarding: vi.fn(),
+   };
+ 
+   const manager = new AuthManager(authPort as any, identityPort as any);
+ 
+   beforeEach(() => {
+-    vi.clearAllMocks();
++    vi.resetAllMocks();
++    identityPort.identifyActiveCitizen.mockResolvedValue({ id: canonicalAccount });
+   });
+ 
+   it('logs passkey sign-in attempts', async () => {
+@@ -64,7 +68,7 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+         outcome: 'initiated',
+         hasUrl: true,
+       }),
+-      undefined,
++      canonicalAccount,
+     );
+     expect(result).toEqual({ url: 'https://example.com/passkey' });
+   });
+@@ -115,13 +119,14 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+     expect(mockLogAuditEvent).toHaveBeenCalledWith(
+       'AUTH_SIGN_UP_PASSWORD',
+       expect.objectContaining({ outcome: 'success', hasSession: true }),
+-      undefined,
++      canonicalAccount,
+     );
+   });
+ 
+   it('preserves the claimed guest capacity in the authenticated profile', async () => {
+-    authPort.updateUser.mockResolvedValue({ user: { id: 'supabase-user-1' } });
+-    identityPort.identifyActiveCitizen.mockResolvedValue({ id: 'internal-user-1' });
++    authPort.getSession.mockResolvedValue({ user: { id: 'supabase-user-1', is_anonymous: true } });
++    authPort.updateUser.mockResolvedValue({ user: { id: 'supabase-user-1', is_anonymous: false } });
++    identityPort.identifyActiveCitizen.mockResolvedValue({ id: canonicalAccount });
+ 
+     await manager.linkAnonymousToEmail(
+       'person@example.com',
+@@ -130,17 +135,47 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+       'guardian',
+     );
+ 
+-    expect(identityPort.updateProfile).toHaveBeenCalledWith(
+-      'internal-user-1',
+-      expect.objectContaining({ capacity: 'guardian', onboarding_completed: true }),
+-    );
++    expect(identityPort.createInitialBond).toHaveBeenCalledWith('guardian', {
++      userId: canonicalAccount,
++      displayName: 'Person',
++      fullName: 'Person',
++    });
++    expect(identityPort.completeOnboarding).toHaveBeenCalledWith(canonicalAccount);
++    expect(identityPort.updateProfile).not.toHaveBeenCalled();
++    expect(authPort.updateUser).toHaveBeenCalledWith({
++      email: 'person@example.com',
++      password: 'secure-password',
++      data: { display_name: 'Person' },
++    });
+     expect(mockLogAuditEvent).toHaveBeenCalledWith(
+       'AUTH_LINK_ANONYMOUS_TO_EMAIL',
+       expect.objectContaining({ capacity: 'guardian' }),
+-      'internal-user-1',
++      canonicalAccount,
+     );
+   });
+ 
++  it('does not complete domain onboarding if the credential subject changes during conversion', async () => {
++    authPort.getSession.mockResolvedValue({ user: { id: 'guest-a', is_anonymous: true } });
++    authPort.updateUser.mockResolvedValue({ user: { id: 'different-account' } });
++    await expect(
++      manager.linkAnonymousToEmail('person@example.com', 'secure-password', 'Person', 'guardian'),
++    ).rejects.toMatchObject({ code: 'AUTH_SESSION_CHANGED' });
++    expect(identityPort.createInitialBond).not.toHaveBeenCalled();
++    expect(identityPort.completeOnboarding).not.toHaveBeenCalled();
++  });
++
++  it('requires provider-confirmed durable conversion before completing domain onboarding', async () => {
++    authPort.getSession.mockResolvedValue({ user: { id: 'guest-a', is_anonymous: true } });
++    authPort.updateUser.mockResolvedValue({ user: { id: 'guest-a', is_anonymous: true } });
++    identityPort.identifyActiveCitizen.mockResolvedValue({ id: canonicalAccount });
++    await expect(
++      manager.linkAnonymousToEmail('person@example.com', 'secure-password', 'Person', 'guardian'),
++    ).rejects.toMatchObject({ code: 'AUTH_CONFIRMATION_REQUIRED' });
++    expect(identityPort.createInitialBond).not.toHaveBeenCalled();
++    expect(identityPort.completeOnboarding).not.toHaveBeenCalled();
++    expect(identityPort.updateProfile).not.toHaveBeenCalled();
++  });
++
+   it('links an email to the current anonymous subject instead of creating a second session', async () => {
+     authPort.getSession.mockResolvedValue({ user: { id: 'guest-1', is_anonymous: true } });
+     authPort.updateUser.mockResolvedValue({ user: { id: 'guest-1' } });
+@@ -155,7 +190,7 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+     expect(mockLogAuditEvent).toHaveBeenCalledWith(
+       'AUTH_LINK_ANONYMOUS_EMAIL_STARTED',
+       expect.objectContaining({ method: 'email_link', outcome: 'initiated' }),
+-      'guest-1',
++      canonicalAccount,
+     );
+   });
+ 
+@@ -168,7 +203,7 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+     expect(authPort.updateUser).not.toHaveBeenCalled();
+   });
+ 
+-  it('keeps password recovery separate from sign-in and records completion only after update', async () => {
++  it('keeps recovery initiation separate and records only the confirmed password update', async () => {
+     authPort.resetPasswordForEmail.mockResolvedValue(undefined);
+     authPort.updateUser.mockResolvedValue({ user: { id: 'member-1' } });
+ 
+@@ -182,9 +217,9 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+     expect(authPort.signInWithPassword).not.toHaveBeenCalled();
+     expect(authPort.updateUser).toHaveBeenCalledWith({ password: 'new-secure-password' });
+     expect(mockLogAuditEvent).toHaveBeenCalledWith(
+-      'AUTH_PASSWORD_RECOVERY_COMPLETED',
++      'AUTH_PASSWORD_UPDATED',
+       expect.objectContaining({ outcome: 'success' }),
+-      'member-1',
++      canonicalAccount,
+     );
+   });
+ 
+@@ -202,7 +237,7 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+         friendlyName: 'Parent phone',
+         factorId: 'factor-1',
+       }),
+-      undefined,
++      canonicalAccount,
+     );
+     expect(result.factorId).toBe('factor-1');
+   });
+@@ -230,7 +265,7 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+         factorId: 'factor-1',
+         hasSession: true,
+       }),
+-      'user-1',
++      canonicalAccount,
+     );
+     expect(result.user?.id).toBe('user-1');
+   });
+@@ -253,12 +288,103 @@ describe('AuthManager', { tags: ['security', 'fast'] }, () => {
+     expect(clearAll).toHaveBeenCalledTimes(1);
+     expect(authPort.signOut).toHaveBeenCalledTimes(1);
+     expect(mockLogAuditEvent).toHaveBeenCalledWith(
+-      'AUTH_SIGN_OUT',
++      'AUTH_SIGN_OUT_STARTED',
+       expect.objectContaining({
+         method: 'session',
+-        outcome: 'success',
++        outcome: 'initiated',
+       }),
+-      undefined,
++      canonicalAccount,
++    );
++  });
++
++  it('never attributes provider subjects to canonical account telemetry', async () => {
++    authPort.signInWithPassword.mockResolvedValue({
++      user: { id: 'provider-subject' },
++      session: { access_token: 'synthetic-token' },
++    });
++    await manager.signIn('person@example.com', 'synthetic-password');
++    expect(mockLogAuditEvent).toHaveBeenCalledWith(
++      'AUTH_SIGN_IN_PASSWORD',
++      expect.objectContaining({ outcome: 'success' }),
++      canonicalAccount,
++    );
++  });
++
++  it('preserves the provider result when account telemetry cannot resolve', async () => {
++    const result = { user: { id: 'provider-subject' }, session: null };
++    authPort.signInWithPassword.mockResolvedValue(result);
++    identityPort.identifyActiveCitizen.mockResolvedValue({ id: 'provider-subject' });
++    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
++    try {
++      expect(await manager.signIn('person@example.com', 'synthetic-password')).toBe(result);
++      expect(mockLogAuditEvent).not.toHaveBeenCalled();
++      expect(warning).toHaveBeenCalledWith(
++        '[AuthManager] auth telemetry has no resolved canonical account',
++      );
++    } finally {
++      warning.mockRestore();
++    }
++  });
++
++  it('attempts all sign-out boundaries and reports cleanup failures without provider error data', async () => {
++    const onSignOut = vi.fn().mockRejectedValue(new Error('private storage detail'));
++    const clearAll = vi.fn(() => {
++      throw new Error('private storage detail');
++    });
++    authPort.signOut.mockRejectedValue(new Error('private provider token detail'));
++    const subject = new AuthManager(authPort as any, identityPort as any, {
++      onSignOut,
++      storage: { clearAll },
++    });
++    let failure: unknown;
++    try {
++      await subject.signOut();
++    } catch (error) {
++      failure = error;
++    }
++    expect(failure).toBeInstanceOf(AggregateError);
++    if (!(failure instanceof AggregateError)) throw new Error('Expected aggregate failure');
++    expect(failure.errors.map((error: Error) => error.message)).toEqual([
++      'Platform account teardown failed',
++      'Account storage cleanup failed',
++      'Provider sign-out was not confirmed',
++    ]);
++    expect(authPort.signOut).toHaveBeenCalledTimes(1);
++    expect(clearAll).toHaveBeenCalledTimes(1);
++    expect(mockLogAuditEvent).not.toHaveBeenCalledWith(
++      'AUTH_SIGN_OUT',
++      expect.anything(),
++      expect.anything(),
++    );
++  });
++
++  it('does not report complete logout when cleanup fails but provider revocation succeeds', async () => {
++    authPort.signOut.mockResolvedValue(undefined);
++    const subject = new AuthManager(authPort as any, identityPort as any, {
++      onSignOut: async () => {
++        throw new Error('cleanup failed');
++      },
++    });
++    await expect(subject.signOut()).rejects.toBeInstanceOf(AggregateError);
++    expect(authPort.signOut).toHaveBeenCalledTimes(1);
++  });
++
++  it('revokes other sessions without tearing down the current account or storage', async () => {
++    authPort.signOut.mockResolvedValue(undefined);
++    const onSignOut = vi.fn();
++    const clearAll = vi.fn();
++    const subject = new AuthManager(authPort as any, identityPort as any, {
++      onSignOut,
++      storage: { clearAll },
++    });
++    await subject.signOut({ scope: 'others' });
++    expect(authPort.signOut).toHaveBeenCalledWith({ scope: 'others' });
++    expect(onSignOut).not.toHaveBeenCalled();
++    expect(clearAll).not.toHaveBeenCalled();
++    expect(mockLogAuditEvent).toHaveBeenCalledWith(
++      'AUTH_SIGN_OUT_STARTED',
++      expect.objectContaining({ scope: 'others', outcome: 'initiated' }),
++      canonicalAccount,
+     );
+   });
+ 

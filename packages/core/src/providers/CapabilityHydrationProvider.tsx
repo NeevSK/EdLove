@@ -1,11 +1,11 @@
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import { useAuth } from '@repo/core/providers/AuthProvider';
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
-import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
+import type { Bond } from '@repo/core/types/Identity';
 import type { ReactNode } from 'react';
-import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
 
 type CapabilityHydrationProviderProps = {
   children: ReactNode;
@@ -19,25 +19,11 @@ type CapabilityHydrationContextValue = {
 
 const CapabilityHydrationContext = createContext<CapabilityHydrationContextValue | null>(null);
 
-function getEntitlementScope(activePerspective: SanctuaryPerspective) {
+function getEntitlementScope(activeBond: Bond | null) {
   return {
-    activeBondId: activePerspective.kind === 'personal' ? null : activePerspective.id,
-    activeEntityId:
-      activePerspective.kind === 'institutional'
-        ? activePerspective.schoolId
-        : activePerspective.kind === 'commercial'
-          ? activePerspective.batchId
-          : activePerspective.kind === 'guardian'
-            ? activePerspective.wardUserId
-            : null,
-    activeEntityType:
-      activePerspective.kind === 'institutional'
-        ? ('SCHOOL' as const)
-        : activePerspective.kind === 'commercial'
-          ? ('COMMERCIAL_BATCH' as const)
-          : activePerspective.kind === 'guardian'
-            ? ('GUARDIAN_BOND' as const)
-            : null,
+    activeBondId: activeBond?.id ?? null,
+    activeEntityId: activeBond?.entity_id ?? null,
+    activeEntityType: activeBond?.entity_type ?? null,
   };
 }
 
@@ -55,70 +41,37 @@ export function useCapabilityHydration(): CapabilityHydrationContextValue {
  * this runs; paid and privileged actions continue to fail closed.
  */
 export function CapabilityHydrationProvider({ children }: CapabilityHydrationProviderProps) {
-  const { identityAvailability, loading, session } = useAuth();
+  const { identityAvailability, loading, session, resolvedAuthSubjectId } = useAuth();
   const user = useAuthStore((state) => state.user);
-  const activePerspective = usePerspectiveStore((state) => state.activePerspective);
-  const loadEntitlements = useEntitlementStore((state) => state.loadEntitlements);
-  const clearEntitlements = useEntitlementStore((state) => state.clearEntitlements);
-  const error = useEntitlementStore((state) => state.error);
-  const isLoading = useEntitlementStore((state) => state.isLoading);
+  const scopeSnapshot = useScopeSessionStore((state) => state.snapshot);
+  const scopeTransitioning = useScopeSessionStore((state) => state.isTransitioning);
+  const activeBond =
+    !scopeTransitioning && scopeSnapshot?.principalId === (user?.id ?? null)
+      ? (scopeSnapshot?.activeBond ?? null)
+      : null;
   const isCloudAccount = getSessionIdentityMode(session) === 'authenticated';
-
+  const canLoad = Boolean(
+    !loading &&
+      session?.user.id &&
+      user?.id &&
+      resolvedAuthSubjectId === session.user.id &&
+      identityAvailability === 'active' &&
+      !scopeTransitioning &&
+      scopeSnapshot?.principalId === user.id &&
+      isCloudAccount,
+  );
+  const entitlement = useEntitlementQuery(
+    user?.id ?? null,
+    getEntitlementScope(activeBond),
+    canLoad,
+  );
   const retry = useCallback(() => {
-    if (
-      loading ||
-      !session?.user.id ||
-      !user?.id ||
-      session.user.id !== user.id ||
-      identityAvailability !== 'active' ||
-      !isCloudAccount
-    ) {
-      return;
-    }
-
-    void loadEntitlements(user.id, getEntitlementScope(activePerspective));
-  }, [
-    activePerspective,
-    identityAvailability,
-    isCloudAccount,
-    loadEntitlements,
-    loading,
-    session?.user.id,
-    user?.id,
-  ]);
-
-  useEffect(() => {
-    // Do not erase a cached snapshot while auth/profile state is still booting.
-    if (loading) return;
-
-    if (!session?.user.id && !user?.id) {
-      clearEntitlements();
-      return;
-    }
-
-    if (
-      !session?.user.id ||
-      !user?.id ||
-      session.user.id !== user.id ||
-      identityAvailability !== 'active' ||
-      !isCloudAccount
-    ) {
-      return;
-    }
-
-    void loadEntitlements(user.id, getEntitlementScope(activePerspective));
-  }, [
-    activePerspective,
-    clearEntitlements,
-    identityAvailability,
-    isCloudAccount,
-    loading,
-    loadEntitlements,
-    session?.user.id,
-    user?.id,
-  ]);
-
-  const value = useMemo(() => ({ error, isLoading, retry }), [error, isLoading, retry]);
+    if (canLoad) void entitlement.refetch();
+  }, [canLoad, entitlement.refetch]);
+  const value = useMemo(
+    () => ({ error: entitlement.error, isLoading: entitlement.isLoading, retry }),
+    [entitlement.error, entitlement.isLoading, retry],
+  );
 
   return (
     <CapabilityHydrationContext.Provider value={value}>

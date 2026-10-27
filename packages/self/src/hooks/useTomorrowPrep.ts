@@ -1,4 +1,6 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   createTomorrowPrepItem,
@@ -11,7 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 const PREP_CACHE_KEY = 'gurudevi-prep-cache';
 export function useTomorrowPrep(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [prepItems, setPrepItems] = useState<DailyPrepItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {

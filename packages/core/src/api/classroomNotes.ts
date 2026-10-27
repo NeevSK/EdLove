@@ -64,3 +64,13 @@ export const classroomNotesAPI = {
     return educational.classroomNotes.getTimeline(id) as Promise<ClassroomNoteLifecycleEvent[]>;
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_CLASSROOM_NOTES } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'classroomNotes',
+  ghostMethods: ['getAll', 'getSnapshotAsOf'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_CLASSROOM_NOTES,
+});

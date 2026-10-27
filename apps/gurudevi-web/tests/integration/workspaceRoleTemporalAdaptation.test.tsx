@@ -1,6 +1,17 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorkspaceFloor } from '../../app/(sanctuary)/workspace/WorkspaceFloor';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
+}));
+
+function renderWorkspace(children: ReactNode) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>);
+}
 
 // Mock the attendance procedures & storage
 vi.mock('../../lib/workspace/attendance', async () => {
@@ -36,7 +47,7 @@ describe('Workspace Role & Temporal Adaptation (G1)', () => {
   });
 
   it('renders RoleLensSwitcher and default teacher posture on explore mode', async () => {
-    render(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
+    renderWorkspace(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
 
     // Check RoleLensSwitcher presence
     expect(screen.getByRole('toolbar', { name: /role perspective lens/i })).toBeDefined();
@@ -57,7 +68,7 @@ describe('Workspace Role & Temporal Adaptation (G1)', () => {
   });
 
   it('filters workspace tools when switching to Student role lens', async () => {
-    render(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
+    renderWorkspace(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
 
     const studentRadio = screen.getByRole('radio', { name: /student/i });
     fireEvent.click(studentRadio);
@@ -77,7 +88,7 @@ describe('Workspace Role & Temporal Adaptation (G1)', () => {
   });
 
   it('filters workspace tools when switching to Principal role lens', async () => {
-    render(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
+    renderWorkspace(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
 
     const principalRadio = screen.getByRole('radio', { name: /principal/i });
     fireEvent.click(principalRadio);
@@ -95,7 +106,7 @@ describe('Workspace Role & Temporal Adaptation (G1)', () => {
   });
 
   it('adapts posture across temporal horizons (review, plan, current)', async () => {
-    render(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
+    renderWorkspace(<WorkspaceFloor mode="explore" capacity="TEACHER" />);
 
     // Current posture
     expect(screen.getByText(/Daily Attendance Roll Call/i)).toBeDefined();

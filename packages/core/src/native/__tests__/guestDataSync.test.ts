@@ -77,4 +77,33 @@ describe('GuestDataSync conversion handoff', () => {
     await expect(GuestDataSync.restorePendingGuestSession()).resolves.toBeNull();
     expect(mocks.removeItem).toHaveBeenCalledWith('auth:pending-guest-conversion');
   });
+
+  it('refuses transfer before a conversion has a confirmed durable target and preserves source data', async () => {
+    const result = await GuestDataSync.syncAllData('untrusted-client-target');
+
+    expect(result).toMatchObject({ success: false });
+    expect(result.errors.join(' ')).toContain('confirmed durable account conversion');
+    expect(mocks.clearAllGuestData).not.toHaveBeenCalled();
+  });
+
+  it('fails closed before submitting data while no server-owned transfer contract exists', () => {
+    expect(GuestDataSync.getTransferAvailability()).toMatchObject({ isAvailable: false });
+  });
+
+  it('keeps a record-level policy fail-closed until a Sanctuary receipt contract exists', () => {
+    expect(
+      GuestDataSync.getTransferAvailability({
+        version: 1,
+        records: {
+          timetable: 'awaiting-server-contract',
+          mood: 'retain-local',
+          journal: 'retain-local',
+          students: 'retain-local',
+        },
+      }),
+    ).toEqual({
+      isAvailable: false,
+      reason: expect.stringContaining('Sanctuary'),
+    });
+  });
 });

@@ -1,7 +1,4 @@
-import { EaseView } from '@repo/ui/components/EaseView';
-import { Flower } from '@repo/ui/icons';
-import { Center, Text, VStack } from '@repo/ui/primitives';
-import { BrandPulse } from './BrandPulse';
+import { WorldLoading } from '../world/native/Waiting';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';
@@ -9,44 +6,11 @@ interface LotusLoaderProps {
   fullscreen?: boolean;
 }
 
-const SIZES = {
-  sm: 24,
-  md: 48,
-  lg: 72,
-};
-
+/** Kept for existing screens: waiting now shows the active world's own sign. */
 export default function LotusLoader({
   size = 'md',
   text = 'Loading...',
   fullscreen = false,
 }: LotusLoaderProps) {
-  const content = (
-    <VStack space="md" className="items-center justify-center">
-      <EaseView
-        initialAnimate={{ scale: 1, opacity: 0.6 }}
-        animate={{ scale: 1.2, opacity: 1 }}
-        transition={{ type: 'timing', duration: 1500, easing: 'easeInOut', loop: 'reverse' }}
-      >
-        <EaseView
-          initialAnimate={{ rotate: 0 }}
-          animate={{ rotate: 360 }}
-          transition={{ type: 'timing', duration: 12000, easing: 'linear', loop: 'repeat' }}
-        >
-          <Flower size={SIZES[size]} className="text-phase-accent" strokeWidth={1.5} />
-        </EaseView>
-      </EaseView>
-      <BrandPulse size={SIZES[size]} tintColor="#6B647F" />
-      {text && <Text className="text-phase-text-secondary text-sm tracking-[1px]">{text}</Text>}
-    </VStack>
-  );
-
-  if (fullscreen) {
-    return (
-      <Center className="flex-1 z-[1000] bg-phase-canvas absolute top-0 left-0 right-0 bottom-0">
-        {content}
-      </Center>
-    );
-  }
-
-  return <Center className="p-8">{content}</Center>;
+  return <WorldLoading label={text} size={size} fullscreen={fullscreen} />;
 }

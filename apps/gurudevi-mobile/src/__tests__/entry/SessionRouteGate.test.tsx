@@ -170,6 +170,7 @@ describe('SessionRouteGate account isolation', () => {
       redirectTo: null,
       policy: { canRenderCurrentPath: true },
     };
+    mocks.routeState = { session: { user: { id: 'durable-account-1' } } };
     await act(async () => {
       tree!.update(
         <SessionRouteGate appServices={<AppServices />}>
@@ -197,6 +198,7 @@ describe('SessionRouteGate account isolation', () => {
       redirectTo: null,
       policy: { canRenderCurrentPath: true },
     };
+    mocks.routeState = { session: { user: { id: 'durable-account-2' } } };
     await act(async () => {
       tree!.update(
         <SessionRouteGate>
@@ -219,6 +221,27 @@ describe('SessionRouteGate account isolation', () => {
         </SessionRouteGate>,
       );
     });
+    expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'public-ready' });
+  });
+
+  it('keeps cloud services unmounted for an admitted device-local guest', async () => {
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    mocks.routeState = {};
+
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate appServices={<AppServices />}>
+          <>{'local-guest-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
     expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'public-ready' });
   });
 

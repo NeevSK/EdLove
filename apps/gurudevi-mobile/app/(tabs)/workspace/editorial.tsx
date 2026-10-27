@@ -12,13 +12,15 @@ import { storage } from '@repo/core/lib/storage';
 import { usePermissions } from '@repo/core/logic';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Pressable } from '@repo/ui/primitives';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import {
   EnrichedMarkdownText,
   EnrichedMarkdownTextInput,
   type EnrichedMarkdownTextInputInstance,
 } from 'react-native-enriched-markdown';
+import { FlashList } from '@shopify/flash-list';
 
 const accent = '#B96D3A';
 const ink = '#302A24';
@@ -328,9 +330,106 @@ export default function EditorialScreen() {
     }
   };
 
+  const renderSubmissionItem = ({ item: submission }: { item: EditorialSubmissionSummary }) => (
+    <View key={submission.id} style={styles.card}>
+      <Text style={styles.meta}>
+        {submission.publication} · {submission.language} · {submission.status}
+      </Text>
+      <Text style={styles.cardTitle}>{submission.title}</Text>
+      <Text style={styles.summary}>{submission.summary}</Text>
+      <View style={styles.preview}>
+        <Text style={styles.previewLabel}>Markdown submission</Text>
+        <EnrichedMarkdownText
+          markdown={submission.body}
+          selectable
+          markdownStyle={{
+            h1: { color: ink, fontSize: 26, fontWeight: '800' },
+            h2: { color: ink, fontSize: 21, fontWeight: '800' },
+            link: { color: accent, underline: true },
+          }}
+        />
+      </View>
+      {submission.sourceUrl ? (
+        <Text style={styles.evidence}>Source: {submission.sourceUrl}</Text>
+      ) : null}
+      {submission.rightsAgreementId ? (
+        <Text style={styles.evidence}>Rights agreement: {submission.rightsAgreementId}</Text>
+      ) : null}
+      {submission.translationOfVersionId ? (
+        <Text style={styles.evidence}>
+          Translation of version: {submission.translationOfVersionId}
+        </Text>
+      ) : null}
+      {isAdmin && authorProfiles.length ? (
+        <View style={styles.assignmentBlock}>
+          <Text style={styles.previewLabel}>Author attribution</Text>
+          <View style={styles.options}>
+            {authorProfiles.map((author) => (
+              <Pressable
+                key={author.id}
+                onPress={() =>
+                  setAssignedAuthorIds((current) => ({
+                    ...current,
+                    [submission.id]: author.id,
+                  }))
+                }
+                style={[
+                  styles.option,
+                  assignedAuthorIds[submission.id] === author.id && styles.optionSelected,
+                ]}
+              >
+                <Text
+                  style={
+                    assignedAuthorIds[submission.id] === author.id
+                      ? styles.optionTextSelected
+                      : styles.optionText
+                  }
+                >
+                  {author.displayName}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
+      {isAdmin && submission.status !== 'approved' && submission.status !== 'withdrawn' ? (
+        <View style={styles.actions}>
+          <Pressable
+            disabled={busy}
+            onPress={() => void review(submission, 'in_review')}
+            style={styles.secondary}
+          >
+            <Text style={styles.secondaryText}>Review</Text>
+          </Pressable>
+          <Pressable
+            disabled={busy}
+            onPress={() => void review(submission, 'rights_review')}
+            style={styles.secondary}
+          >
+            <Text style={styles.secondaryText}>Rights</Text>
+          </Pressable>
+          <Pressable
+            disabled={busy}
+            onPress={() => void review(submission, 'approved')}
+            style={styles.primarySmall}
+          >
+            <Text style={styles.primaryText}>Approve</Text>
+          </Pressable>
+        </View>
+      ) : null}
+    </View>
+  );
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.eyebrow}>{isAdmin ? 'EDITORIAL DESK' : 'CONTRIBUTOR SPACE'}</Text>
+    <FlashList
+      data={submissions}
+      keyExtractor={(item) => item.id}
+      renderItem={renderSubmissionItem}
+      contentContainerStyle={styles.container}
+      ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+      ListHeaderComponent={
+        <View style={styles.headerContainer}>
+          <Text style={styles.eyebrow}>{isAdmin ? 'EDITORIAL DESK' : 'CONTRIBUTOR SPACE'}</Text>
       <Text style={styles.title}>
         {isAdmin ? 'Review the work people bring.' : 'Bring a piece of thinking.'}
       </Text>
@@ -674,109 +773,25 @@ export default function EditorialScreen() {
         </View>
       ) : null}
 
-      {message ? <Text style={styles.message}>{message}</Text> : null}
-      {busy && !submissions.length ? <BrandPulse size={28} tintColor={accent} /> : null}
-      {submissions.map((submission) => (
-        <View key={submission.id} style={styles.card}>
-          <Text style={styles.meta}>
-            {submission.publication} · {submission.language} · {submission.status}
-          </Text>
-          <Text style={styles.cardTitle}>{submission.title}</Text>
-          <Text style={styles.summary}>{submission.summary}</Text>
-          <View style={styles.preview}>
-            <Text style={styles.previewLabel}>Markdown submission</Text>
-            <EnrichedMarkdownText
-              markdown={submission.body}
-              selectable
-              markdownStyle={{
-                h1: { color: ink, fontSize: 26, fontWeight: '800' },
-                h2: { color: ink, fontSize: 21, fontWeight: '800' },
-                link: { color: accent, underline: true },
-              }}
-            />
-          </View>
-          {submission.sourceUrl ? (
-            <Text style={styles.evidence}>Source: {submission.sourceUrl}</Text>
-          ) : null}
-          {submission.rightsAgreementId ? (
-            <Text style={styles.evidence}>Rights agreement: {submission.rightsAgreementId}</Text>
-          ) : null}
-          {submission.translationOfVersionId ? (
-            <Text style={styles.evidence}>
-              Translation of version: {submission.translationOfVersionId}
-            </Text>
-          ) : null}
-          {isAdmin && authorProfiles.length ? (
-            <View style={styles.assignmentBlock}>
-              <Text style={styles.previewLabel}>Author attribution</Text>
-              <View style={styles.options}>
-                {authorProfiles.map((author) => (
-                  <Pressable
-                    key={author.id}
-                    onPress={() =>
-                      setAssignedAuthorIds((current) => ({
-                        ...current,
-                        [submission.id]: author.id,
-                      }))
-                    }
-                    style={[
-                      styles.option,
-                      assignedAuthorIds[submission.id] === author.id && styles.optionSelected,
-                    ]}
-                  >
-                    <Text
-                      style={
-                        assignedAuthorIds[submission.id] === author.id
-                          ? styles.optionTextSelected
-                          : styles.optionText
-                      }
-                    >
-                      {author.displayName}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          ) : null}
-          {isAdmin && submission.status !== 'approved' && submission.status !== 'withdrawn' ? (
-            <View style={styles.actions}>
-              <Pressable
-                disabled={busy}
-                onPress={() => void review(submission, 'in_review')}
-                style={styles.secondary}
-              >
-                <Text style={styles.secondaryText}>Review</Text>
-              </Pressable>
-              <Pressable
-                disabled={busy}
-                onPress={() => void review(submission, 'rights_review')}
-                style={styles.secondary}
-              >
-                <Text style={styles.secondaryText}>Rights</Text>
-              </Pressable>
-              <Pressable
-                disabled={busy}
-                onPress={() => void review(submission, 'approved')}
-                style={styles.primarySmall}
-              >
-                <Text style={styles.primaryText}>Approve</Text>
-              </Pressable>
-            </View>
-          ) : null}
+          {message ? <Text style={styles.message}>{message}</Text> : null}
+          {busy && !submissions.length ? <BrandPulse size={28} tintColor={accent} /> : null}
         </View>
-      ))}
-      {!busy && !submissions.length && !message ? (
-        <BrandedEmptyState
-          title="No submissions yet"
-          message="The first contribution is waiting to be written."
-        />
-      ) : null}
-    </ScrollView>
+      }
+      ListFooterComponent={
+        !busy && !submissions.length && !message ? (
+          <BrandedEmptyState
+            title="No submissions yet"
+            message="The first contribution is waiting to be written."
+          />
+        ) : null
+      }
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, gap: 16, padding: 24, backgroundColor: '#F7F1E8' },
+  container: { flexGrow: 1, padding: 24, backgroundColor: '#F7F1E8' },
+  headerContainer: { gap: 16, marginBottom: 16 },
   eyebrow: { color: accent, fontSize: 11, fontWeight: '800', letterSpacing: 2 },
   title: { color: ink, fontSize: 34, fontWeight: '800', lineHeight: 40, maxWidth: 620 },
   lede: { color: muted, fontSize: 17, lineHeight: 25, maxWidth: 620 },

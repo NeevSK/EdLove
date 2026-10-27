@@ -1,16 +1,9 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { authProfileStorage, restoreIdentityProfile } from '@repo/core/lib/authProfileStorage';
 import { type AuthSlice, createAuthSlice } from '@repo/core/store/slices/auth.slice';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-/**
- * useAuthStore: Sovereign store for authentication and user identity.
- *
- * onRehydrateStorage: Called by Zustand immediately after persisted state
- * has been restored from MMKV (or AsyncStorage fallback). Setting
- * `isStoreHydrated = true` at this point eliminates the race condition where
- * `usePermissions` evaluates with an empty bonds array during app bootstrap.
- */
+/** Canonical profile observable. Credentials belong to AuthProvider; scope to scopeSession. */
 export const useAuthStore = create<AuthSlice>()(
   persist(
     (set, get, api) => ({
@@ -18,19 +11,15 @@ export const useAuthStore = create<AuthSlice>()(
     }),
     {
       name: 'gurudevi-auth-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
-      partialize: (state) => ({
-        userName: state.userName,
-        user: state.user,
-        onboardingCompleted: state.onboardingCompleted,
-        isExplorerMode: state.isExplorerMode,
-        dismissedSampleIds: state.dismissedSampleIds,
-      }),
+      version: 2,
+      storage: createJSONStorage(() => authProfileStorage),
+      partialize: (state) => ({ user: state.user }),
+      migrate: (value) => restoreIdentityProfile(value),
+      merge: (value, current) => ({ ...current, ...restoreIdentityProfile(value) }),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {
           console.error('[AuthStore] Rehydration failed:', error);
         }
-        // Mark the store as fully hydrated — SanctuaryProvider unblocks here.
         useAuthStore.getState().setStoreHydrated(true);
       },
     },

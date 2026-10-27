@@ -1,10 +1,6 @@
-import { createContext, type ReactNode, useCallback, useContext, useMemo } from 'react';
-import {
-  createFeedbackController,
-  type FeedbackEvent,
-  type SoundCue,
-} from '../utils/feedbackPolicy';
-import { useVisualCapabilities } from './VisualCapabilities';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
+import type { FeedbackEvent, SoundCue } from '../utils/feedbackPolicy';
+import { sensoryFeedback } from '../sensory/SensoryFeedbackService';
 
 interface FeedbackContextValue {
   emit: (event: FeedbackEvent) => void;
@@ -19,11 +15,10 @@ export function FeedbackProvider({
   children: ReactNode;
   playSound?: (cue: SoundCue) => void;
 }) {
-  const { experience } = useVisualCapabilities();
-  const emit = useMemo(
-    () => createFeedbackController(experience, playSound).emit,
-    [experience, playSound],
-  );
+  useEffect(() => {
+    if (playSound) return sensoryFeedback.registerNativeSoundPlayer(playSound);
+  }, [playSound]);
+  const emit = useCallback((event: FeedbackEvent) => sensoryFeedback.emit(event), []);
   const value = useMemo(() => ({ emit }), [emit]);
 
   return <FeedbackContext value={value}>{children}</FeedbackContext>;

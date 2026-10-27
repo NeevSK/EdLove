@@ -1,13 +1,22 @@
 ---
 title: "Immediate Database Decoupling Remediation Plan"
-status: "active"
+status: "superseded"
 created: 2026-10-23
+updated: 2026-10-25
+superseded_by: "../current_progress/2026-10-25-identity-auth-and-decoupling-plan-reconciliation.md"
 author: "Naveen"
 scribe: "Antigravity"
 tags: [database, refactoring, decoupling, remediation, zenstack, supabase]
 ---
 
 # Immediate Database Decoupling Remediation Plan
+
+> Superseded as execution guidance by the [October 25 source reconciliation](../current_progress/2026-10-25-identity-auth-and-decoupling-plan-reconciliation.md).
+> The `any` query facade below does not establish provider independence.
+> Do not import a server PostgreSQL client into the shared browser/native
+> identity adapter: reuse authenticated Sanctuary commands and server-owned
+> persistence. The historical snippets and effort estimates are not a delivery
+> contract or a verified provider migration.
 
 ## Objective
 

@@ -1,12 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ATTENDANCE_BATCH_RECORD_CAPABILITY, AttendanceBatchRecordEventDecision } from './contract';
-import type { AttendanceBatchAuthority, AttendanceBatchCommandDependencies } from './ports';
+import {
+  ATTENDANCE_BATCH_RECORD_CAPABILITY,
+  AttendanceBatchRecordEventDecision,
+  AttendanceBatchRecordFoundationPolicy,
+} from './contract';
+import type {
+  AttendanceBatchAuthority,
+  AttendanceBatchCommandDependencies,
+  AttendanceBatchReceiptPort,
+  AttendanceBatchRepository,
+} from './ports';
 import { AttendanceBatchCommandError, executeAttendanceBatchRecord } from './service';
 
 const command = {
   gradeClassId: '123e4567-e89b-12d3-a456-426614174001',
   date: '2026-10-23',
-  idempotencyKey: 'attendance-command-1',
+  idempotencyKey: '123e4567-e89b-12d3-a456-426614174007',
   records: [
     {
       studentId: '123e4567-e89b-12d3-a456-426614174002',
@@ -24,45 +33,58 @@ const authority: AttendanceBatchAuthority = {
   },
 };
 
-function dependencies(overrides: Partial<AttendanceBatchCommandDependencies> = {}) {
+type TestDependencies = AttendanceBatchCommandDependencies & {
+  receipts: AttendanceBatchReceiptPort;
+  attendance: AttendanceBatchRepository;
+};
+
+function dependencies(overrides: Partial<Pick<TestDependencies, 'receipts' | 'attendance'>> = {}) {
   const receipt = {
     operationId: '123e4567-e89b-12d3-a456-426614174005',
     status: 'pending' as const,
     payloadHash: 'attendance-payload-hash',
     result: null,
   };
+  const receipts: AttendanceBatchReceiptPort = {
+    claim: vi.fn(async () => ({ kind: 'claimed' as const, receipt })),
+    complete: vi.fn(
+      async ({
+        result,
+      }: {
+        result: readonly {
+          attendanceId: string;
+          studentId: string;
+          status: 'present' | 'absent' | 'late' | 'excused';
+        }[];
+      }) => ({
+        ...receipt,
+        status: 'completed' as const,
+        result,
+      }),
+    ),
+    fail: vi.fn(async () => undefined),
+  };
+  const attendance: AttendanceBatchRepository = {
+    recordBatch: vi.fn(async () => [
+      {
+        attendanceId: '123e4567-e89b-12d3-a456-426614174006',
+        studentId: command.records[0]!.studentId,
+        status: 'present' as const,
+      },
+    ]),
+  };
+  const resolvedReceipts = overrides.receipts ?? receipts;
+  const resolvedAttendance = overrides.attendance ?? attendance;
   return {
-    receipts: {
-      claim: vi.fn(async () => ({ kind: 'claimed' as const, receipt })),
-      complete: vi.fn(
-        async ({
-          result,
-        }: {
-          result: readonly {
-            attendanceId: string;
-            studentId: string;
-            status: 'present' | 'absent' | 'late' | 'excused';
-          }[];
-        }) => ({
-          ...receipt,
-          status: 'completed' as const,
-          result,
-        }),
+    receipts: resolvedReceipts,
+    attendance: resolvedAttendance,
+    transaction: {
+      run: vi.fn(async (work) =>
+        work({ receipts: resolvedReceipts, attendance: resolvedAttendance }),
       ),
-      fail: vi.fn(async () => undefined),
-    },
-    attendance: {
-      recordBatch: vi.fn(async () => [
-        {
-          attendanceId: '123e4567-e89b-12d3-a456-426614174006',
-          studentId: command.records[0]!.studentId,
-          status: 'present' as const,
-        },
-      ]),
     },
     hashPayload: vi.fn(() => 'attendance-payload-hash'),
-    ...overrides,
-  } satisfies AttendanceBatchCommandDependencies;
+  } satisfies TestDependencies;
 }
 
 describe('executeAttendanceBatchRecord', () => {
@@ -154,7 +176,7 @@ describe('executeAttendanceBatchRecord', () => {
     expect(deps.receipts.claim).not.toHaveBeenCalled();
   });
 
-  it('records a recoverable failed receipt when the persistence boundary fails', async () => {
+  it('rolls the settlement back when the persistence boundary fails', async () => {
     const deps = dependencies({
       attendance: { recordBatch: vi.fn(async () => Promise.reject(new Error('database down'))) },
     });
@@ -162,11 +184,8 @@ describe('executeAttendanceBatchRecord', () => {
     await expect(executeAttendanceBatchRecord(command, authority, deps)).rejects.toMatchObject({
       code: 'DEPENDENCY_FAILURE',
     } satisfies Partial<AttendanceBatchCommandError>);
-    expect(deps.receipts.fail).toHaveBeenCalledWith({
-      operationId: '123e4567-e89b-12d3-a456-426614174005',
-      payloadHash: 'attendance-payload-hash',
-      failureCode: 'DEPENDENCY_FAILURE',
-    });
+    expect(deps.receipts.fail).not.toHaveBeenCalled();
+    expect(deps.transaction.run).toHaveBeenCalledOnce();
   });
 
   it('does not overwrite a possibly committed receipt when receipt completion is uncertain', async () => {
@@ -207,36 +226,36 @@ describe('executeAttendanceBatchRecord', () => {
         status: 'present' as const,
       },
     ]);
+    const receiptPort: AttendanceBatchReceiptPort = {
+      claim: async ({ idempotencyKey, payloadHash }) => {
+        const existing = receipts.get(idempotencyKey);
+        if (existing && existing.payloadHash !== payloadHash) {
+          return { kind: 'payload-conflict', receipt: existing };
+        }
+        if (existing?.status === 'completed') return { kind: 'replay', receipt: existing };
+        if (existing) return { kind: 'in-progress', receipt: existing };
+        const created = {
+          operationId: '123e4567-e89b-12d3-a456-426614174005',
+          status: 'pending' as const,
+          payloadHash,
+          result: null,
+        };
+        receipts.set(idempotencyKey, created);
+        return { kind: 'claimed', receipt: created };
+      },
+      complete: async ({ operationId, payloadHash, result }) => {
+        const receipt = [...receipts.values()].find((item) => item.operationId === operationId);
+        if (!receipt || receipt.payloadHash !== payloadHash) throw new Error('Receipt disappeared');
+        const completed = { ...receipt, status: 'completed' as const, result };
+        receipts.set(command.idempotencyKey, completed);
+        return completed;
+      },
+      fail: async () => undefined,
+    };
+    const attendance: AttendanceBatchRepository = { recordBatch };
     const deps: AttendanceBatchCommandDependencies = {
       hashPayload: () => 'attendance-payload-hash',
-      attendance: { recordBatch },
-      receipts: {
-        claim: async ({ idempotencyKey, payloadHash }) => {
-          const existing = receipts.get(idempotencyKey);
-          if (existing && existing.payloadHash !== payloadHash) {
-            return { kind: 'payload-conflict', receipt: existing };
-          }
-          if (existing?.status === 'completed') return { kind: 'replay', receipt: existing };
-          if (existing) return { kind: 'in-progress', receipt: existing };
-          const created = {
-            operationId: '123e4567-e89b-12d3-a456-426614174005',
-            status: 'pending' as const,
-            payloadHash,
-            result: null,
-          };
-          receipts.set(idempotencyKey, created);
-          return { kind: 'claimed', receipt: created };
-        },
-        complete: async ({ operationId, payloadHash, result }) => {
-          const receipt = [...receipts.values()].find((item) => item.operationId === operationId);
-          if (!receipt || receipt.payloadHash !== payloadHash)
-            throw new Error('Receipt disappeared');
-          const completed = { ...receipt, status: 'completed' as const, result };
-          receipts.set(command.idempotencyKey, completed);
-          return completed;
-        },
-        fail: async () => undefined,
-      },
+      transaction: { run: async (work) => work({ receipts: receiptPort, attendance }) },
     };
 
     await executeAttendanceBatchRecord(command, authority, deps); // Response is lost after settlement.
@@ -253,6 +272,11 @@ describe('executeAttendanceBatchRecord', () => {
       productActivity: { emit: false },
       telemetry: { emit: true },
     });
+    expect(AttendanceBatchRecordEventDecision.telemetry.fields).toEqual(
+      AttendanceBatchRecordFoundationPolicy.telemetry.kind === 'operational'
+        ? AttendanceBatchRecordFoundationPolicy.telemetry.allowedFields
+        : [],
+    );
     expect(AttendanceBatchRecordEventDecision.telemetry.excludes).toContain('requestPayload');
   });
 });

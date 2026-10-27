@@ -1,4 +1,6 @@
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createDecisionLog, fetchDecisionLogs } from '@repo/self/api/selfFeatureRepository';
 import type { DecisionLog } from '@repo/self/types';
@@ -13,7 +15,7 @@ const DECISION_journal_CACHE_KEY = 'gurudevi-decision-journal-cache';
  * - Syncs with Supabase in background.
  */
 export function useDecisionJournal(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const { viewDate, isPastView } = useTemporalStore();
   const [decisions, setDecisions] = useState<DecisionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -1,5 +1,7 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../../../lib/supabase/server';
 import { signInPath } from '../../../auth/routeSafety';
@@ -14,26 +16,48 @@ interface VideoPlayerPageProps {
 
 export default async function VideoPlayerPage({ params }: VideoPlayerPageProps) {
   const { videoId } = await params;
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore = classifyGurudeviHost(host) === 'explore';
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <VideoPlayerFloor videoId={videoId} displayName="Guest Explorer" />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <VideoState
-        displayName="Explorer"
-        title="Video player is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <VideoPlayerFloor videoId={videoId} displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <VideoState
-        action={<Link href={signInPath(`/library/video/${videoId}`)}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to stream library video lectures."
-        title="Video lectures are private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <VideoPlayerFloor videoId={videoId} displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 

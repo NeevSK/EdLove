@@ -83,6 +83,12 @@ model User {
   thought_records ThoughtRecord[]
   learning_reflections LearningReflection[]
   preferences UserPreferences?
+  joy_moments JoyMoment[]
+  gratitude_glimmers GratitudeGlimmer[]
+  sleep_logs SleepLog[]
+  timetable_periods TimetablePeriod[]
+  daily_prep_items DailyPrepItem[]
+  personal_reminders PersonalReminder[]
   personal_classrooms PersonalClassroom[]
   notifications Notification[]
   push_tokens PushToken[]
@@ -1207,6 +1213,121 @@ model UserPreferences {
 
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_preferences")
+}
+
+// ============================================================================
+// SELF: JOY JAR
+// ============================================================================
+model JoyMoment {
+  id                 String   @id @default(uuid())
+  user_id            String
+  student_name       String?
+  moment_description String
+  category           String   @default("breakthrough")
+  idempotency_key    String?  @unique
+  created_at         DateTime @default(now())
+
+  user               User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("joy_moments")
+}
+
+// ============================================================================
+// SELF: GRATITUDE GLIMMERS
+// ============================================================================
+model GratitudeGlimmer {
+  id              String   @id @default(uuid())
+  user_id         String
+  content         String
+  category        String   @default("personal-win")
+  idempotency_key String?  @unique
+  created_at      DateTime @default(now())
+
+  user            User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("gratitude_glimmers")
+}
+
+// ============================================================================
+// SELF: SLEEP TRACKER
+// ============================================================================
+model SleepLog {
+  id              String   @id @default(uuid())
+  user_id         String
+  quality         Int
+  hours_slept     Float?
+  note            String?
+  idempotency_key String?  @unique
+  created_at      DateTime @default(now())
+
+  user            User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("sleep_logs")
+}
+
+// ============================================================================
+// SELF: TIMETABLE PERIODS (STUDY RHYTHM)
+// ============================================================================
+model TimetablePeriod {
+  id            String   @id @default(uuid())
+  user_id       String
+  day_of_week   Int
+  period_number Int
+  subject       String
+  class_name    String
+  type          String   @default("subject")
+  start_time    String
+  end_time      String
+  created_at    DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, day_of_week])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("timetable_periods")
+}
+
+// ============================================================================
+// SELF: TOMORROW PREP
+// ============================================================================
+model DailyPrepItem {
+  id           String   @id @default(uuid())
+  user_id      String
+  item_text    String
+  prep_date    String
+  is_completed Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  user         User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, prep_date])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("daily_prep_items")
+}
+
+// ============================================================================
+// SELF: PERSONAL REMINDERS
+// ============================================================================
+model PersonalReminder {
+  id              String   @id @default(uuid())
+  user_id         String
+  title           String
+  scheduled_time  String
+  is_recurring    Boolean  @default(false)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+
+  user            User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, scheduled_time])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("personal_reminders")
 }
 
 //  ============================================================================
@@ -2685,6 +2806,33 @@ model SchoolRegistry {
 
 // Canonical national school facts registry. This is distinct from SchoolRegistry,
 // which maps to the legacy compatibility view `school_registry`.
+// ============================================================================
+// NATIONAL GEOGRAPHIC & JURISDICTIONAL TOPOLOGY
+// ============================================================================
+
+model JurisdictionNode {
+    id          String   @id @default(uuid())
+    level       String   // country, province, district, zone, division, gn_division
+    code        String   @unique
+    name_en     String
+    name_si     String?
+    name_ta     String?
+    parent_id   String?
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+
+    parent      JurisdictionNode?  @relation("JurisdictionHierarchy", fields: [parent_id], references: [id])
+    children    JurisdictionNode[] @relation("JurisdictionHierarchy")
+
+    // Publicly discoverable read access
+    @@allow('read', true)
+    @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+    @@index([level])
+    @@index([parent_id])
+    @@map("jurisdiction_nodes")
+}
+
 model EduSchool {
     id                  String   @id
     census_no           String   @unique

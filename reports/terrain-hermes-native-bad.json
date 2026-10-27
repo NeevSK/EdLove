@@ -1,0 +1,11 @@
+{
+  "valid": false,
+  "engineUsed": "native_hermesc",
+  "simulationTier": "NATIVE_HERMESC_BYTECODE",
+  "compilerPath": "C:\\x\\node_modules\\.pnpm\\hermes-compiler@260318099.0.4\\node_modules\\hermes-compiler\\hermesc\\win64-bin\\hermesc.exe",
+  "error": "invalid destructuring target",
+  "line": 1,
+  "column": 36,
+  "status": "rejected",
+  "bytecodeVerified": false
+}

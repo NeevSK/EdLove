@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { getAdminAuditEntries } from '@repo/admin/admin/adminControl';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
-export default function AdminAuditLog() {
+export default function AdminAuditLog({ onBack }: { onBack?: () => void } = {}) {
   const router = useRouter();
   const entries = getAdminAuditEntries();
 
@@ -14,7 +14,7 @@ export default function AdminAuditLog() {
       title="Accountability log"
       description="Review recent operator context, approvals, and cross-tenant signals so every action stays attributable."
       caution="This room is about accountability. If a change cannot be explained in the log, it should not be shipped."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
       stats={[
         {
           label: 'Entries',

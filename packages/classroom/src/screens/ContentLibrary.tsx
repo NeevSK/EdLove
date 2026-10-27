@@ -1,3 +1,5 @@
+import { useUIStore } from '@repo/core/store';
+import { useAuthStore } from '@repo/core/store';
 /**
  * ContentLibrary Screen
  *
@@ -9,7 +11,7 @@
 
 import { api } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
+
 import type { ClassroomResource, ClassroomStackParamList, ResourceType } from '@repo/core/types';
 
 import { libraryAPI } from '@repo/library';
@@ -67,9 +69,9 @@ export default function ContentLibrary() {
   const { classroomId = 'demo-class' } = useLocalSearchParams<{ classroomId?: string }>();
 
   const { t } = useTranslation();
-  const user = useStore((state) => state.user);
-  const addToDesk = useStore((state) => state.addToDesk);
-  const deskItems = useStore((state) => state.deskItems || []);
+  const user = useAuthStore(state => state.user);
+  const addToDesk = useUIStore(state => state.addToDesk);
+  const deskItems = useUIStore(state => state.deskItems || []);
   const { showToast } = useToast();
 
   // Resilient Data Hook

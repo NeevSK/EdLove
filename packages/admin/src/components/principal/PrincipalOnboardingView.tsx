@@ -1,3 +1,4 @@
+import { FireflyMascot } from '@repo/ui';
 import { Compass, DoorOpen, School, Users } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -42,18 +43,24 @@ export default function PrincipalOnboardingView({
   return (
     <VStack className="gap-6">
       <Box className="rounded-[32px] p-8 bg-phase-surface border border-phase-border shadow-sm">
-        <VStack className="gap-2 mb-10">
-          <Text className="text-[11px] font-black tracking-[2px] uppercase text-phase-interactive">
-            Principal Sanctuary
-          </Text>
-          <Heading className="text-[32px] leading-[40px] font-black text-phaseText-primary tracking-tight">
-            Leadership begins with institutional clarity.
-          </Heading>
-          <Text className="text-[15px] font-bold text-phaseText-secondary leading-[24px] mt-4 opacity-80">
-            Start with a faithful demo experience, or found your institution if it does not exist
-            yet. Move from chaos to governance rhythm.
-          </Text>
-        </VStack>
+        <HStack className="items-center justify-between mb-8">
+          <VStack className="gap-2 flex-1 pr-4">
+            <Text className="text-[11px] font-black tracking-[2px] uppercase text-phase-interactive">
+              Principal Sanctuary · Guided by Tutii
+            </Text>
+            <Heading className="text-[28px] leading-[36px] font-black text-phaseText-primary tracking-tight">
+              Leadership begins with institutional clarity.
+            </Heading>
+          </VStack>
+          <Box className="w-18 h-18 items-center justify-center">
+            <FireflyMascot size={64} mode="glowing" role="guide" />
+          </Box>
+        </HStack>
+
+        <Text className="text-[15px] font-bold text-phaseText-secondary leading-[24px] mb-8 opacity-80">
+          Welcome to the leadership cockpit. Start with a faithful demo experience, or found your
+          institution if it does not exist yet. Move from chaos to governance rhythm with Tutii.
+        </Text>
 
         <VStack className="gap-5 mb-10">
           {highlights.map((item) => (

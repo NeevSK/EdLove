@@ -45,6 +45,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
+import { useWorld } from '@repo/ui/world/native';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams } from 'expo-router';
@@ -57,6 +58,7 @@ const readParam = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 
 export const FullProfileScreen = () => {
+  const wt = useWorld().tokens;
   const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();
   const profileId = readParam(params.id) || readParam(params.userId) || '';
   const initialProfile = useMemo(
@@ -193,7 +195,7 @@ export const FullProfileScreen = () => {
   };
 
   return (
-    <ScreenWrapper scroll={false}>
+    <ScreenWrapper scroll={false} style={{ backgroundColor: wt.ground }}>
       <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => safeBack('/profile')} />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -204,8 +206,11 @@ export const FullProfileScreen = () => {
       >
         <VStack space="2xl">
           {(error || saveError) && (
-            <Box className="rounded-2xl bg-phase-surface p-3">
-              <Text className="text-phase-text-secondary text-xs" accessibilityRole="alert">
+            <Box
+              className="rounded-2xl p-3 border"
+              style={{ backgroundColor: wt.sunken, borderColor: wt.line }}
+            >
+              <Text style={{ color: wt.inkSoft, fontSize: 12 }} accessibilityRole="alert">
                 {saveError || error}
               </Text>
             </Box>
@@ -232,7 +237,7 @@ export const FullProfileScreen = () => {
               }}
             />
             {!isOtherProfile && (
-              <Text className="text-phase-text-tertiary text-xs mt-2">
+              <Text style={{ color: wt.inkSoft, fontSize: 12, marginTop: 8 }}>
                 Tap to update your photo
               </Text>
             )}
@@ -243,7 +248,8 @@ export const FullProfileScreen = () => {
               <Button
                 size="lg"
                 onPress={() => setShowThuthimalModal(true)}
-                className="bg-phase-interactive rounded-2xl"
+                className="rounded-2xl"
+                style={{ backgroundColor: wt.lampDeep || tokens.colors.primary }}
                 action="primary"
               >
                 <HStack space="sm" className="items-center">
@@ -268,16 +274,14 @@ export const FullProfileScreen = () => {
 
           <Center>
             <Box
-              className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+              className="rounded-3xl p-6 border shadow-sm"
               style={{
                 width: cardWidth,
-                shadowColor: tokens.colors.shadowColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.1,
-                shadowRadius: 10,
+                backgroundColor: wt.raised,
+                borderColor: wt.line,
               }}
             >
-              <Heading className="text-phase-text-primary text-lg mb-6">
+              <Heading style={{ color: wt.ink, fontSize: 18, marginBottom: 24 }}>
                 {t('profile.personalDetails')}
               </Heading>
               <VStack space="xl">
@@ -354,16 +358,14 @@ export const FullProfileScreen = () => {
           {isTeacherProfile && (
             <Center>
               <Box
-                className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+                className="rounded-3xl p-6 border shadow-sm"
                 style={{
                   width: cardWidth,
-                  shadowColor: tokens.colors.shadowColor,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 10,
+                  backgroundColor: wt.raised,
+                  borderColor: wt.line,
                 }}
               >
-                <Heading className="text-phase-text-primary text-lg mb-6">
+                <Heading style={{ color: wt.ink, fontSize: 18, marginBottom: 24 }}>
                   {t('profile.professionalDetails')}
                 </Heading>
                 <VStack space="xl">
@@ -414,16 +416,14 @@ export const FullProfileScreen = () => {
 
           <Center>
             <Box
-              className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+              className="rounded-3xl p-6 border shadow-sm"
               style={{
                 width: cardWidth,
-                shadowColor: tokens.colors.shadowColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.1,
-                shadowRadius: 10,
+                backgroundColor: wt.raised,
+                borderColor: wt.line,
               }}
             >
-              <Heading className="text-phase-text-primary text-lg mb-6">
+              <Heading style={{ color: wt.ink, fontSize: 18, marginBottom: 24 }}>
                 {t('profile.aboutMe')}
               </Heading>
               <EditableItem
@@ -454,11 +454,15 @@ export const FullProfileScreen = () => {
                   accessibilityRole="button"
                   accessibilityLabel="Manage Social Hub"
                   accessibilityHint="Opens a modal to manage your social media links"
-                  className="mt-4 p-4 rounded-2xl border border-dashed border-phase-surface items-center bg-phase-surface/30"
+                  className="mt-4 p-4 rounded-2xl border border-dashed items-center shadow-sm"
+                  style={{
+                    backgroundColor: wt.sunken,
+                    borderColor: wt.line,
+                  }}
                 >
                   <HStack space="sm" className="items-center">
-                    <SquarePen size={18} color={tokens.colors.primary} />
-                    <Text className="text-phase-interactive font-bold">Manage Social Hub</Text>
+                    <SquarePen size={18} color={wt.lampDeep || tokens.colors.primary} />
+                    <Text style={{ color: wt.ink, fontWeight: 'bold' }}>Manage Social Hub</Text>
                   </HStack>
                 </Pressable>
               )}
@@ -474,8 +478,15 @@ export const FullProfileScreen = () => {
           )}
 
           <Box className="items-center mt-4">
-            <Text className="text-phase-text-tertiary text-[10px] uppercase tracking-widest">
-              v1.2.0 â€¢ Sanctuary ID: {profile.id?.substring(0, 8)}
+            <Text
+              style={{
+                color: wt.inkSoft,
+                fontSize: 10,
+                textTransform: 'uppercase',
+                letterSpacing: 1.5,
+              }}
+            >
+              v1.2.0 • Sanctuary ID: {profile.id?.substring(0, 8)}
             </Text>
           </Box>
         </VStack>

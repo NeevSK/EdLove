@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export type TemporalPhase = 'past' | 'present' | 'future';
 export type TemporalScale = 'day' | 'week' | 'month' | 'year' | 'custom';
 export type TemporalViewMode = 'spotlight' | 'timeline';
+export type TemporalReadPolicy = 'live' | 'cached-only';
 export type TemporalCapability =
   | 'snapshot'
   | 'event_stream'
@@ -15,7 +16,7 @@ export interface TemporalState {
   intensity: number;
   phase: TemporalPhase;
   viewScale: TemporalScale;
-  isOffline: boolean;
+  readPolicy: TemporalReadPolicy;
   viewMode: TemporalViewMode;
   timelineFocus: string;
   isPastView: boolean;
@@ -23,7 +24,7 @@ export interface TemporalState {
   setIntensity: (value: number) => void;
   resetToToday: () => void;
   setScale: (scale: TemporalScale) => void;
-  setOffline: (offline: boolean) => void;
+  setReadPolicy: (policy: TemporalReadPolicy) => void;
   setViewMode: (mode: TemporalViewMode) => void;
   setTimelineFocus: (focus: string) => void;
   isPast: () => boolean;
@@ -39,7 +40,7 @@ export const useTemporalStore = create<TemporalState>((set, get) => ({
   intensity: 1,
   phase: 'present',
   viewScale: 'day',
-  isOffline: false,
+  readPolicy: 'live',
   viewMode: 'spotlight',
   timelineFocus: 'all',
   isPastView: false,
@@ -72,7 +73,7 @@ export const useTemporalStore = create<TemporalState>((set, get) => ({
       isPastView: false,
     }),
   setScale: (scale) => set({ viewScale: scale }),
-  setOffline: (offline) => set({ isOffline: offline }),
+  setReadPolicy: (readPolicy) => set({ readPolicy }),
   setViewMode: (mode) => set({ viewMode: mode }),
   setTimelineFocus: (focus) => set({ timelineFocus: focus }),
   isPast: () => get().phase === 'past',

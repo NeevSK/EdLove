@@ -4,7 +4,15 @@
  * Refactored for Sanctuary Resonance.
  */
 import { formatDuration, formatFileSize } from '@repo/core/lib';
-import { useStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback';
+import { libraryAPI } from '@repo/library/api/library';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import {
+  ResourceRow,
+  resolveResourceDisplayType as resolveDisplayType,
+  RESOURCE_TYPE_CONFIG as TYPE_CONFIG,
+} from '@repo/library/components/ResourceRow';
+import type { LibraryResource } from '@repo/library/types';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { ArrowLeftRight, Play, TriangleAlert, X } from '@repo/ui/icons';
@@ -23,14 +31,6 @@ import {
 import { Theme } from '@repo/ui/theme';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { libraryAPI } from '@repo/library/api/library';
-import type { LibraryResource } from '@repo/library/types';
-import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
-import {
-  ResourceRow,
-  resolveResourceDisplayType as resolveDisplayType,
-  RESOURCE_TYPE_CONFIG as TYPE_CONFIG,
-} from '@repo/library/components/ResourceRow';
 export interface ResourceListProps {
   resources: LibraryResource[];
   onOpenResource?: (resource: LibraryResource) => void;
@@ -56,7 +56,7 @@ export function ResourceList({
   viewMode = 'list',
 }: ResourceListProps) {
   const [flashPlayResource, setFlashPlayResource] = useState<LibraryResource | null>(null);
-  const showToast = useStore((state) => state.showToast);
+
   const handleFlashPlay = useCallback((resource: LibraryResource) => {
     setFlashPlayResource(resource);
   }, []);

@@ -1,5 +1,6 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
 import { storage } from '@repo/core/lib/storage';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
 import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
@@ -11,16 +12,20 @@ import { trackProductEvent } from '@repo/core/monitoring';
 // Apply the platform-agnostic storage polyfill for GrowthBook cache persistence
 setPolyfills({
   localStorage: {
-    getItem: (key: string) => storage.getString(key) ?? null,
-    setItem: (key: string, value: string) => storage.set(key, value),
+    getItem: async (key: string) => (await storage.getStringAsync(key)) ?? null,
+    setItem: (key: string, value: string) => storage.setAsync(key, value),
   },
 });
 
 export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   private growthbook: GrowthBook;
-  private readonly initialization: Promise<void>;
-  private snapshotSource: FeatureRolloutSnapshot['source'] = 'computed';
+  private initialized = false;
+  private refreshedAt: string | null = null;
+  private loadingPayload = false;
   private currentContext: UserContext | null = null;
+  private evaluation: Promise<void> = Promise.resolve();
+  private rendererOwner: object | null = null;
+  private static readonly POLL_INTERVAL_MS = 15 * 60 * 1000;
 
   constructor(apiHost?: string, clientKey?: string) {
     this.growthbook = new GrowthBook({
@@ -38,25 +43,21 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
         this.trackExposure(experiment.key, result.key);
       },
     });
-
-    // React Native has no EventSource implementation. Keep remote flags fresh
-    // while the app is alive with a bounded poll rather than enabling a stream
-    // that the runtime cannot create.
-    this.initialization = this.growthbook
-      .init({ streaming: false, pollingInterval: 15 * 60 * 1000 })
-      .then((result) => {
-        this.snapshotSource =
-          result.source === 'cache' ? 'cache' : result.source === 'network' ? 'remote' : 'computed';
-      })
-      .catch(() => {
-        // The local persisted snapshot remains the safe fallback when the
-        // control plane is unavailable.
-        this.snapshotSource = 'computed';
-      });
   }
 
-  async resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
-    await this.initialization;
+  resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
+    // setAttributes can await sticky buckets. Serialize the shared SDK so one
+    // context cannot read another context's attributes after that await.
+    const result = this.evaluation.then(() => this.evaluateContext(context));
+    this.evaluation = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+
+  private async evaluateContext(context: UserContext): Promise<FeatureRolloutSnapshot> {
+    await this.refreshPayload();
     this.currentContext = context;
 
     // Map UserContext to GrowthBook attributes
@@ -81,6 +82,41 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
     return this.readSnapshot();
   }
 
+  private async refreshPayload(): Promise<void> {
+    if (networkManager.getSnapshot().status !== 'online') return;
+    const elapsed = this.refreshedAt ? Date.now() - Date.parse(this.refreshedAt) : Infinity;
+    if (elapsed >= 0 && elapsed < GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS) return;
+    this.loadingPayload = true;
+    try {
+      await this.loadPayload();
+      this.refreshedAt = new Date().toISOString();
+    } finally {
+      this.loadingPayload = false;
+    }
+  }
+
+  private async loadPayload(): Promise<void> {
+    if (!this.initialized) {
+      const result = await this.growthbook.init({
+        streaming: false,
+        skipCache: true,
+        timeout: 10_000,
+      });
+      this.initialized = true;
+      if (!result.success || result.source !== 'network') {
+        throw result.error ?? new Error(`Feature payload load failed (${result.source}).`);
+      }
+    } else {
+      // Installed refreshFeatures changes the payload only when it received data.
+      // Its void return cannot itself attest a successful network response.
+      const previousPayload = this.growthbook.getPayload();
+      await this.growthbook.refreshFeatures({ skipCache: true, timeout: 10_000 });
+      if (this.growthbook.getPayload() === previousPayload) {
+        throw new Error('Feature payload refresh did not receive a new network response.');
+      }
+    }
+  }
+
   private readSnapshot(): FeatureRolloutSnapshot {
     const flags: Record<string, boolean | string> = {};
 
@@ -89,13 +125,13 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
     // gates never see the remote naming scheme.
     for (const [appKey, metadata] of Object.entries(FEATURE_FLAG_MANIFEST)) {
       const value = this.growthbook.evalFeature(metadata.growthbookKey).value;
-      if (value !== undefined) flags[appKey] = value;
+      if (typeof value === 'boolean' || typeof value === 'string') flags[appKey] = value;
     }
 
     return {
       flags,
-      source: this.snapshotSource,
-      refreshedAt: new Date().toISOString(),
+      source: this.refreshedAt ? 'remote' : 'computed',
+      refreshedAt: this.refreshedAt ?? new Date(0).toISOString(),
     };
   }
 
@@ -103,15 +139,67 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
     context: UserContext,
     callback: (snapshot: FeatureRolloutSnapshot) => void,
   ): () => void {
-    this.currentContext = context;
+    const owner = {};
+    this.rendererOwner = owner;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let refreshing = false;
+    const nextDelay = () =>
+      this.refreshedAt
+        ? Math.max(
+            1,
+            Date.parse(this.refreshedAt) +
+              GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS -
+              Date.now(),
+          )
+        : GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS;
+    const refresh = () => {
+      clearTimeout(timer);
+      if (this.rendererOwner !== owner || networkManager.getSnapshot().status !== 'online') return;
+      if (refreshing) return;
+      refreshing = true;
+      let succeeded = false;
+      void this.resolveFlags(context)
+        .then((snapshot) => {
+          succeeded = true;
+          if (this.rendererOwner === owner) callback(snapshot);
+        })
+        .catch((error: unknown) => {
+          if (this.rendererOwner === owner)
+            console.warn('[FeatureRollout] payload refresh failed', error);
+        })
+        .finally(() => {
+          refreshing = false;
+          if (this.rendererOwner === owner && networkManager.getSnapshot().status === 'online') {
+            timer = setTimeout(
+              refresh,
+              succeeded ? nextDelay() : GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS,
+            );
+          }
+        });
+    };
     this.growthbook.setRenderer(() => {
       // setAttributes invokes this renderer, so writing attributes here would
       // create an endless microtask loop and prevent native input processing.
-      callback(this.readSnapshot());
+      if (
+        this.rendererOwner === owner &&
+        this.currentContext === context &&
+        this.refreshedAt &&
+        !this.loadingPayload
+      )
+        callback(this.readSnapshot());
     });
+    const unsubscribeNetwork = networkManager.subscribe(refresh);
+    if (networkManager.getSnapshot().status === 'online') {
+      timer = setTimeout(refresh, nextDelay());
+    }
 
     return () => {
-      this.growthbook.setRenderer(null);
+      clearTimeout(timer);
+      unsubscribeNetwork();
+      if (this.rendererOwner === owner) {
+        this.rendererOwner = null;
+        this.growthbook.setRenderer(null);
+      }
     };
   }
 

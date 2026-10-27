@@ -1,20 +1,16 @@
 import {
-  getDemoClassrooms,
-  MOCK_ASSIGNMENTS,
-  MOCK_STUDENT_STATS,
-} from '@repo/core/api/client';
-import { useAuthStore, useStore } from '@repo/core/logic';
-
-import { useMemo } from 'react';
-import {
   useStudentGrowthPulse,
   useStudentQuestsPulse,
   useStudentRegistry,
 } from '@repo/classroom/hooks/useStudentDashboardHooks';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useAuthStore } from '@repo/core/store';
+import { useMemo } from 'react';
 
 export function useStudentWorkspaceData(forceDemo?: boolean) {
-  const isDemoMode = useStore((state) => state.isDemoMode);
-  const isExplorerMode = useAuthStore((state) => state.isExplorerMode);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
+  const isExplorerMode = useExperienceState((state) => state.isExplorerMode);
   const user = useAuthStore((state) => state.user);
   const isGuest = Boolean(user?.is_anonymous);
   const isDemoExperience = isDemoMode || forceDemo === true || isExplorerMode || isGuest;
@@ -23,26 +19,20 @@ export function useStudentWorkspaceData(forceDemo?: boolean) {
   const questsPulse = useStudentQuestsPulse();
   const growthPulse = useStudentGrowthPulse();
 
-  const realClassrooms = registry.sanctuaries.data ?? [];
-  const realAssignments = questsPulse.quests.data ?? [];
-
   const classrooms =
-    realClassrooms.length > 0
-      ? realClassrooms
-      : isDemoExperience
-        ? getDemoClassrooms()
-        : [];
-
+    registry.sanctuaries.data ??
+    (isDemoExperience ? getSandboxSamples<any[]>('classrooms', 'getByTeacher', [], []) : []);
   const assignments =
-    realAssignments.length > 0
-      ? realAssignments
-      : isDemoExperience
-        ? (MOCK_ASSIGNMENTS as any)
-        : [];
+    questsPulse.quests.data ??
+    (isDemoExperience ? getSandboxSamples<any[]>('assignments', 'getAll', [], []) : []);
 
   const pendingAssignments = assignments.filter(
     (assignment: { submitted?: boolean }) => !assignment.submitted,
   ).length;
+
+  const defaultGrowthPoints =
+    getSandboxSamples<any>('school', 'getSchoolStats', [], { growth_points: 120 })?.growth_points ??
+    120;
 
   const stats = useMemo(
     () =>
@@ -53,13 +43,14 @@ export function useStudentWorkspaceData(forceDemo?: boolean) {
             enrolledClasses: classrooms.length,
             pendingAssignments,
             growthPoints:
-              growthPulse.points > 0 ? growthPulse.points : MOCK_STUDENT_STATS.growth_points,
+              growthPulse.points > 0 ? growthPulse.points : defaultGrowthPoints,
           }
         : {
             enrolledClasses: classrooms.length,
             pendingAssignments,
             growthPoints: growthPulse.points,
           },
+
     [
       classrooms.length,
       growthPulse.points,

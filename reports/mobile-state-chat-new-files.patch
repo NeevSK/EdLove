@@ -1,0 +1,926 @@
+diff --git a/packages/core/src/logic/schemas/chat-command.schema.ts b/packages/core/src/logic/schemas/chat-command.schema.ts
+new file mode 100644
+index 000000000..2c92e30f6
+--- /dev/null
++++ b/packages/core/src/logic/schemas/chat-command.schema.ts
+@@ -0,0 +1,22 @@
++import { z } from 'zod';
++
++export const CHAT_SEND_COMMAND = 'community.message.send';
++export const ChatChannelSchema = z.strictObject({
++  kind: z.enum(['group', 'direct']),
++  id: z.uuid(),
++});
++export const ChatSendCommandSchema = z.strictObject({
++  operationId: z.uuid(),
++  principalId: z.uuid(),
++  channel: ChatChannelSchema,
++  content: z.string().trim().min(1).max(4000),
++});
++export const ChatMessageResultSchema = z.strictObject({ messageId: z.uuid() });
++export const ChatSendReceiptSchema = ChatMessageResultSchema.extend({
++  operationId: z.uuid(),
++  receiptId: z.uuid(),
++  status: z.literal('completed'),
++});
++export type ChatChannel = z.infer<typeof ChatChannelSchema>;
++export type ChatSendCommand = z.infer<typeof ChatSendCommandSchema>;
++export type ChatSendReceipt = z.infer<typeof ChatSendReceiptSchema>;
+diff --git a/packages/core/src/api/chatCommands.ts b/packages/core/src/api/chatCommands.ts
+new file mode 100644
+index 000000000..864fc1cac
+--- /dev/null
++++ b/packages/core/src/api/chatCommands.ts
+@@ -0,0 +1,26 @@
++import { orpcClient } from '@repo/core/api/orpcClient';
++import {
++  type ChatSendCommand,
++  ChatSendCommandSchema,
++  ChatSendReceiptSchema,
++} from '@repo/core/logic/schemas/chat-command.schema';
++
++export async function replayChatSendCommand(input: unknown, principalId: string | undefined) {
++  const command = ChatSendCommandSchema.parse(input);
++  if (!principalId || command.principalId !== principalId)
++    throw new Error('Chat command owner does not match the queued account.');
++  return sendChatCommand(command);
++}
++
++/** A queue acceptance is never returned here as a successful delivery. */
++export async function sendChatCommand(command: ChatSendCommand) {
++  const body = ChatSendCommandSchema.parse(command);
++  const result =
++    body.channel.kind === 'group'
++      ? await orpcClient.community.sendMessageCommand({ body })
++      : await orpcClient.messaging.sendMessageCommand({ body });
++  const receipt = ChatSendReceiptSchema.parse(result);
++  if (receipt.operationId !== body.operationId || receipt.messageId !== body.operationId)
++    throw new Error('Chat receipt does not match the pending operation.');
++  return receipt;
++}
+diff --git a/packages/core/src/lib/sync/replayPolicy.ts b/packages/core/src/lib/sync/replayPolicy.ts
+new file mode 100644
+index 000000000..557f888d0
+--- /dev/null
++++ b/packages/core/src/lib/sync/replayPolicy.ts
+@@ -0,0 +1,65 @@
++import type { QueuedMutation } from '@repo/core/lib/sync/types';
++import {
++  isQueuedMutationAcknowledged,
++  useMutationQueue,
++} from '@repo/core/lib/sync/useMutationQueue';
++import {
++  CHAT_SEND_COMMAND,
++  ChatSendCommandSchema,
++} from '@repo/core/logic/schemas/chat-command.schema';
++import { type TemporalReadPolicy, useTemporalStore } from '@repo/core/store/useTemporalStore';
++
++/** A pending message cannot overtake an unresolved predecessor in the same account/channel. */
++export function isMutationReplayDeferred(
++  item: QueuedMutation,
++  readPolicy: TemporalReadPolicy = useTemporalStore.getState().readPolicy,
++  queue: readonly QueuedMutation[] = useMutationQueue.getState().queue,
++): boolean {
++  if (item.name !== CHAT_SEND_COMMAND) return false;
++  if (readPolicy === 'cached-only') return true;
++  const command = ChatSendCommandSchema.safeParse(item.variables);
++  if (!command.success) return false;
++  const order = item.logicalClock ?? item.timestamp;
++  return queue.some((other) => {
++    if (
++      other.id === item.id ||
++      other.userId !== item.userId ||
++      other.name !== CHAT_SEND_COMMAND ||
++      (other.logicalClock ?? other.timestamp) >= order
++    )
++      return false;
++    const earlier = ChatSendCommandSchema.safeParse(other.variables);
++    return (
++      earlier.success &&
++      earlier.data.channel.kind === command.data.channel.kind &&
++      earlier.data.channel.id === command.data.channel.id
++    );
++  });
++}
++
++/** Selects ready work and one real wake-up deadline, without changing command state. */
++export function planMutationReplay(
++  queue: readonly QueuedMutation[],
++  principalId: string | undefined,
++  readPolicy: TemporalReadPolicy,
++  now = Date.now(),
++): { ready: QueuedMutation[]; nextWakeAt: number | null } {
++  const ready: QueuedMutation[] = [];
++  let nextWakeAt: number | null = null;
++  if (!principalId) return { ready, nextWakeAt };
++  for (const item of queue) {
++    if (
++      item.userId !== principalId ||
++      !isQueuedMutationAcknowledged(item.id) ||
++      ['auth_paused', 'conflict', 'rejected', 'reconciled', 'discarded'].includes(
++        item.commandState ?? '',
++      ) ||
++      isMutationReplayDeferred(item, readPolicy, queue)
++    )
++      continue;
++    const wakeAt = Math.max(item.backoffUntil ?? 0, item.lockLeaseExpiresAt ?? 0);
++    if (wakeAt > now) nextWakeAt = Math.min(nextWakeAt ?? wakeAt, wakeAt);
++    else ready.push(item);
++  }
++  return { ready, nextWakeAt };
++}
+diff --git a/apps/sanctuary-api/src/core/chatMessageSettlement.ts b/apps/sanctuary-api/src/core/chatMessageSettlement.ts
+new file mode 100644
+index 000000000..5df5701cb
+--- /dev/null
++++ b/apps/sanctuary-api/src/core/chatMessageSettlement.ts
+@@ -0,0 +1,124 @@
++import { ORPCError } from '@orpc/server';
++import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
++import {
++  CHAT_SEND_COMMAND,
++  ChatMessageResultSchema,
++  type ChatSendCommand,
++  ChatSendCommandSchema,
++  type ChatSendReceipt,
++} from '@repo/core/logic/schemas/chat-command.schema';
++import { assertDatabase } from './apiErrors';
++import { createOperationReceiptPort } from './operationReceiptStore';
++import type { ORPCContext } from './orpc';
++
++type ChatRepository = Pick<
++  NonNullable<ORPCContext['db']>,
++  'groupMember' | 'directConversation' | 'userBlock' | 'groupMessage' | 'directMessage'
++>;
++
++async function assertChatAuthority(db: ChatRepository, command: ChatSendCommand): Promise<void> {
++  const { principalId, channel } = command;
++  if (channel.kind === 'group') {
++    const membership = await db.groupMember.findFirst({
++      where: { group_id: channel.id, user_id: principalId, status: 'active' },
++      select: { id: true },
++    });
++    if (!membership)
++      throw new ORPCError('FORBIDDEN', { message: 'Active circle membership is required.' });
++    return;
++  }
++  const conversation = await db.directConversation.findUnique({
++    where: { id: channel.id },
++    select: { user1_id: true, user2_id: true },
++  });
++  if (
++    !conversation ||
++    (conversation.user1_id !== principalId && conversation.user2_id !== principalId)
++  )
++    throw new ORPCError('NOT_FOUND', { message: 'Conversation not found.' });
++  const otherId =
++    conversation.user1_id === principalId ? conversation.user2_id : conversation.user1_id;
++  const block = await db.userBlock.findFirst({
++    where: {
++      OR: [
++        { blocker_id: principalId, blocked_id: otherId },
++        { blocker_id: otherId, blocked_id: principalId },
++      ],
++    },
++    select: { id: true },
++  });
++  if (block) throw new ORPCError('FORBIDDEN', { message: 'This conversation is paused.' });
++}
++
++async function createMessage(db: ChatRepository, command: ChatSendCommand) {
++  const data = { id: command.operationId, author_id: command.principalId, content: command.content };
++  const message =
++    command.channel.kind === 'group'
++      ? await db.groupMessage.create({
++          data: { ...data, group_id: command.channel.id },
++          select: { id: true },
++        })
++      : await db.directMessage.create({
++          data: { ...data, conversation_id: command.channel.id },
++          select: { id: true },
++        });
++  return { messageId: message.id };
++}
++
++/** Message and payload-bound receipt commit together; a lost response replays the receipt. */
++export async function settleChatMessage(
++  context: ORPCContext,
++  input: ChatSendCommand,
++): Promise<ChatSendReceipt> {
++  const command = ChatSendCommandSchema.parse(input);
++  if (command.principalId !== context.user.id)
++    throw new ORPCError('FORBIDDEN', { message: 'Chat command belongs to another account.' });
++  assertDatabase(context);
++  const payloadHash = await getConsistentIdempotencyKey(
++    {
++      principalId: command.principalId,
++      channel: command.channel,
++      content: command.content,
++    },
++    CHAT_SEND_COMMAND,
++  );
++  return context.db.$transaction(async (tx) => {
++    await tx.$executeRaw`SET TRANSACTION ISOLATION LEVEL READ COMMITTED`;
++    await tx.$executeRaw`SET LOCAL statement_timeout = '8s'`;
++    await tx.$executeRaw`SET LOCAL lock_timeout = '2s'`;
++    const receipts = createOperationReceiptPort<{ messageId: string }>(tx, command.principalId);
++    const claim = await receipts.claim({
++      capability: CHAT_SEND_COMMAND,
++      principalId: command.principalId,
++      idempotencyKey: command.operationId,
++      payloadHash,
++    });
++    if (claim.kind === 'payload-conflict' || claim.kind === 'conflict')
++      throw new ORPCError('CONFLICT', {
++        message: 'Chat operation ID was used for another message.',
++      });
++    if (claim.kind === 'failed' || claim.kind === 'in-progress')
++      throw new ORPCError('SERVICE_UNAVAILABLE', {
++        message: 'Chat outcome is not committed. Retry the same operation.',
++      });
++    let result: { messageId: string };
++    if (claim.kind === 'replay') result = ChatMessageResultSchema.parse(claim.receipt.result);
++    else {
++      await assertChatAuthority(tx, command);
++      result = await createMessage(tx, command);
++      await tx.sentinelAuditLog.create({ data: {
++        action: 'chat_message_sent', actor_id: command.principalId,
++        resource_type: command.channel.kind === 'group' ? 'group_message' : 'direct_message',
++        resource_id: result.messageId,
++        details: { channelId: command.channel.id, operationId: command.operationId },
++      } });
++      await receipts.complete({ operationId: claim.receipt.operationId, payloadHash, result });
++    }
++    return {
++      ...result,
++      operationId: command.operationId,
++      receiptId: claim.receipt.operationId,
++      status: 'completed',
++    };
++  });
++}
+diff --git a/packages/community/src/hooks/useChatMessages.ts b/packages/community/src/hooks/useChatMessages.ts
+new file mode 100644
+index 000000000..5ef906869
+--- /dev/null
++++ b/packages/community/src/hooks/useChatMessages.ts
+@@ -0,0 +1,112 @@
++import type { ChatMessage } from '@repo/community/types';
++import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope';
++import { storage } from '@repo/core/lib/storage';
++import type { ChatChannel } from '@repo/core/logic/schemas/chat-command.schema';
++import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
++import { useQuery, useQueryClient } from '@tanstack/react-query';
++import { useEffect, useMemo, useState } from 'react';
++import { z } from 'zod';
++
++const messageSchema = z
++  .object({
++    id: z.string(),
++    group_id: z.string().optional(),
++    conversation_id: z.string().optional(),
++    author_id: z.string(),
++    content: z.string(),
++    created_at: z.coerce.date(),
++    author: z.object({ full_name: z.string(), avatar_url: z.string().optional() }).optional(),
++    author_name: z.string().nullish(),
++    author_avatar_url: z.string().nullish(),
++  })
++  .transform(
++    ({ author_name, author_avatar_url, ...message }): ChatMessage => ({
++      ...message,
++      author: message.author ?? {
++        full_name: author_name ?? 'Anonymous User',
++        avatar_url: author_avatar_url ?? undefined,
++      },
++    }),
++  );
++const messagesSchema = z.array(messageSchema);
++const snapshotSchema = z.object({ savedAt: z.number().nonnegative(), data: messagesSchema });
++
++export function chatHistoryQueryKey(principalId: string, channel: ChatChannel, viewDate: string) {
++  const cutoff = new Date(getTemporalRange(viewDate, 'day').end).toISOString();
++  return ['chat-messages', principalId, channel.kind, channel.id, cutoff] as const;
++}
++
++export function useChatMessages(input: {
++  principalId: string;
++  channel: ChatChannel;
++  viewDate: string;
++  remoteEnabled: boolean;
++  fetchMessages: (viewCutoff: string) => Promise<ChatMessage[]>;
++}) {
++  const { principalId, channel, viewDate, remoteEnabled, fetchMessages } = input;
++  const client = useQueryClient();
++  const key = useMemo(
++    () => chatHistoryQueryKey(principalId, channel, viewDate),
++    [principalId, channel.kind, channel.id, viewDate],
++  );
++  const cacheKey = JSON.stringify(key);
++  const storageKey = `chat-history:v1:${cacheKey}`;
++  const [hydratedKey, setHydratedKey] = useState<string | null>(null);
++  const query = useQuery({
++    queryKey: key,
++    enabled: remoteEnabled,
++    retry: false,
++    placeholderData: undefined,
++    queryFn: async ({ signal }) => {
++      const revision = getAccountScopeRevision();
++      if (getActiveAccountId() !== principalId) throw new Error('Chat account is not ready.');
++      const result = await fetchMessages(key[4]);
++      if (
++        signal.aborted ||
++        revision !== getAccountScopeRevision() ||
++        getActiveAccountId() !== principalId
++      )
++        throw new Error('Chat account ended before the response arrived.');
++      return messagesSchema.parse(result);
++    },
++  });
++
++  useEffect(() => {
++    let active = true;
++    void storage
++      .getStringAsync(storageKey)
++      .then((raw) => {
++        if (!active || !raw) return;
++        const saved = snapshotSchema.parse(JSON.parse(raw));
++        if (client.getQueryData(key) === undefined)
++          client.setQueryData(key, saved.data, { updatedAt: saved.savedAt });
++      })
++      .catch((error: unknown) => {
++        console.warn('[Chat] Saved history could not be read; original record retained.', error);
++      })
++      .finally(() => {
++        if (active) setHydratedKey(storageKey);
++      });
++    return () => {
++      active = false;
++    };
++  }, [client, storageKey, key]);
++
++  useEffect(() => {
++    if (query.data === undefined || query.isPlaceholderData) return;
++    void storage
++      .setAsync(storageKey, JSON.stringify({ savedAt: query.dataUpdatedAt, data: query.data }))
++      .catch((error: unknown) =>
++        console.warn('[Chat] Recent history could not be retained offline.', error),
++      );
++  }, [storageKey, query.data, query.dataUpdatedAt, query.isPlaceholderData]);
++
++  return {
++    ...query,
++    queryKey: key,
++    isLoading: hydratedKey !== storageKey || query.isLoading,
++    refresh: async () => {
++      if (remoteEnabled) await query.refetch();
++    },
++  };
++}
+diff --git a/packages/community/src/hooks/useChatOutbox.ts b/packages/community/src/hooks/useChatOutbox.ts
+new file mode 100644
+index 000000000..fd32aeb7e
+--- /dev/null
++++ b/packages/community/src/hooks/useChatOutbox.ts
+@@ -0,0 +1,116 @@
++import { storage } from '@repo/core/lib/storage';
++import type { QueuedMutation } from '@repo/core/lib/sync/types';
++import {
++  isQueuedMutationAcknowledged,
++  useMutationQueue,
++} from '@repo/core/lib/sync/useMutationQueue';
++import {
++  CHAT_SEND_COMMAND,
++  type ChatChannel,
++  type ChatSendCommand,
++  ChatSendCommandSchema,
++} from '@repo/core/logic/schemas/chat-command.schema';
++import { uuidv7 } from '@repo/core/logic/utils/uuid';
++import { useTemporalStore } from '@repo/core/store/useTemporalStore';
++import { useMutation } from '@tanstack/react-query';
++import { useEffect, useMemo, useState } from 'react';
++
++function readCommand(
++  item: QueuedMutation,
++  principalId: string,
++  channel: ChatChannel,
++): ChatSendCommand | null {
++  if (item.userId !== principalId || item.name !== CHAT_SEND_COMMAND) return null;
++  const parsed = ChatSendCommandSchema.safeParse(item.variables);
++  return parsed.success &&
++    parsed.data.channel.kind === channel.kind &&
++    parsed.data.channel.id === channel.id
++    ? parsed.data
++    : null;
++}
++
++export function useChatOutbox(principalId: string, channel: ChatChannel) {
++  const [hasLegacyQueue, setHasLegacyQueue] = useState(false);
++  const legacyKey = `chat_queue:${channel.kind === 'group' ? 'group_chat_' : 'dm_'}${channel.id}`;
++  useEffect(() => {
++    let active = true;
++    void storage
++      .getStringAsync(legacyKey)
++      .then((raw) => {
++        if (active) setHasLegacyQueue(Boolean(raw && raw !== '[]'));
++      })
++      .catch((error: unknown) =>
++        console.warn(
++          '[Chat] Older offline work could not be inspected; original record retained.',
++          error,
++        ),
++      );
++    return () => {
++      active = false;
++    };
++  }, [legacyKey]);
++  const queue = useMutationQueue((state) => state.queue);
++  const deadLetters = useMutationQueue((state) => state.deadLetterQueue);
++  const addToQueue = useMutationQueue((state) => state.addToQueue);
++  const pending = useMemo(
++    () =>
++      queue.filter((item) => {
++        return (
++          isQueuedMutationAcknowledged(item.id) && readCommand(item, principalId, channel) !== null
++        );
++      }),
++    [queue, principalId, channel.kind, channel.id],
++  );
++  const rejected = useMemo(
++    () =>
++      deadLetters.filter((item) => {
++        return readCommand(item, principalId, channel) !== null;
++      }),
++    [deadLetters, principalId, channel.kind, channel.id],
++  );
++  const admission = useMutation({
++    mutationFn: async (command: ChatSendCommand) => {
++      await addToQueue({
++        name: CHAT_SEND_COMMAND,
++        scope: 'chat',
++        type: 'CREATE',
++        userId: principalId,
++        operationId: command.operationId,
++        variables: command,
++      });
++      return command.operationId;
++    },
++    retry: false,
++    networkMode: 'always',
++  });
++  const submit = (content: string) => {
++    const uncertain = useMutationQueue
++      .getState()
++      .queue.find(
++        (item) =>
++          !isQueuedMutationAcknowledged(item.id) &&
++          readCommand(item, principalId, channel)?.content === content.trim(),
++      );
++    const command = uncertain
++      ? ChatSendCommandSchema.parse(uncertain.variables)
++      : ChatSendCommandSchema.parse({ principalId, channel, content, operationId: uuidv7() });
++    return admission.mutateAsync(command);
++  };
++  const retryPending = () => {
++    const state = useMutationQueue.getState();
++    for (const item of rejected) state.restoreDeadLetterMutation(item.id);
++    for (const item of pending) {
++      if (item.commandState === 'retry_scheduled')
++        state.updateMutation(item.id, { backoffUntil: undefined });
++    }
++  };
++  return {
++    pending,
++    rejected,
++    admission,
++    submit,
++    retryPending,
++    hasLegacyQueue,
++    readPolicy: useTemporalStore((state) => state.readPolicy),
++  };
++}
+diff --git a/packages/community/src/hooks/useChatRealtime.ts b/packages/community/src/hooks/useChatRealtime.ts
+new file mode 100644
+index 000000000..b29bbf2c4
+--- /dev/null
++++ b/packages/community/src/hooks/useChatRealtime.ts
+@@ -0,0 +1,111 @@
++import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
++import { sovereignBus } from '@repo/core/lib/sync/eventBus';
++import { CHAT_SEND_COMMAND } from '@repo/core/logic/schemas/chat-command.schema';
++import { useQueryClient } from '@tanstack/react-query';
++import { useCallback, useEffect, useRef, useState } from 'react';
++import { z } from 'zod';
++
++const typingSchema = z.object({ userId: z.string().min(1), userName: z.string().min(1) });
++
++/** Owns one typing channel and every timeout it creates. */
++export function subscribeChatTyping(
++  channelKey: string,
++  principalId: string,
++  onTyping: (userId: string, name: string | null) => void,
++) {
++  const timers = new Map<string, ReturnType<typeof setTimeout>>();
++  let active = true;
++  const channel = supabase
++    .channel(`typing:${channelKey}`)
++    .on('broadcast', { event: 'typing' }, ({ payload }) => {
++      const parsed = typingSchema.safeParse(payload);
++      if (!active || !parsed.success || parsed.data.userId === principalId) return;
++      const { userId, userName } = parsed.data;
++      clearTimeout(timers.get(userId));
++      onTyping(userId, userName);
++      timers.set(
++        userId,
++        setTimeout(() => {
++          timers.delete(userId);
++          onTyping(userId, null);
++        }, 3000),
++      );
++    })
++    .subscribe();
++  return {
++    send: (userName: string) => {
++      if (!active) return;
++      void channel
++        .send({ type: 'broadcast', event: 'typing', payload: { userId: principalId, userName } })
++        .catch((error: unknown) => console.warn('[Chat] Typing broadcast failed.', error));
++    },
++    dispose: () => {
++      active = false;
++      for (const timer of timers.values()) clearTimeout(timer);
++      timers.clear();
++      void supabase.removeChannel(channel);
++    },
++  };
++}
++
++export function useChatRealtime(input: {
++  principalId: string;
++  channelKey: string;
++  userName: string;
++  canBroadcast: boolean;
++  table: string;
++  filter: string;
++  queryKey: readonly string[];
++}) {
++  const { principalId, channelKey, table, filter, queryKey, userName, canBroadcast } = input;
++  const client = useQueryClient();
++  const [names, setNames] = useState<Record<string, string>>({});
++  const typing = useRef<ReturnType<typeof subscribeChatTyping> | null>(null);
++  useEffect(() => {
++    const owner = subscribeChatTyping(channelKey, principalId, (userId, name) =>
++      setNames((previous) => {
++        const next = { ...previous };
++        if (name === null) delete next[userId];
++        else next[userId] = name;
++        return next;
++      }),
++    );
++    typing.current = owner;
++    return () => {
++      if (typing.current === owner) typing.current = null;
++      owner.dispose();
++    };
++  }, [channelKey, principalId]);
++  useEffect(() => {
++    const invalidate = () => {
++      void client.invalidateQueries({ queryKey });
++    };
++    const channel = supabase
++      .channel(channelKey)
++      .on(
++        'postgres_changes',
++        {
++          event: 'INSERT',
++          schema: 'public',
++          table,
++          filter,
++        },
++        invalidate,
++      )
++      .subscribe();
++    const stop = sovereignBus.on('sync:item_succeeded', (event) => {
++      if (event.name === CHAT_SEND_COMMAND) invalidate();
++    });
++    return () => {
++      stop();
++      void supabase.removeChannel(channel);
++    };
++  }, [channelKey, table, filter, queryKey, client]);
++  const sendTyping = useCallback(
++    (text: string) => {
++      if (canBroadcast && text.length > 0 && text.length % 5 === 0) typing.current?.send(userName);
++    },
++    [canBroadcast, userName],
++  );
++  return { typingUsers: Object.values(names), sendTyping };
++}
+diff --git a/packages/community/src/screens/chatPresentation.tsx b/packages/community/src/screens/chatPresentation.tsx
+new file mode 100644
+index 000000000..13bca3653
+--- /dev/null
++++ b/packages/community/src/screens/chatPresentation.tsx
+@@ -0,0 +1,302 @@
++import type { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
++import type { ChatMessage } from '@repo/community/types';
++import { BrandPulse } from '@repo/ui/components/BrandPulse';
++import { ChatComposer } from '@repo/ui/components/ChatComposer';
++import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
++import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
++import { UserAvatar } from '@repo/ui/components/UserAvatar';
++import { MessageSquare } from '@repo/ui/icons';
++import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
++import { useState } from 'react';
++import { useTranslation } from 'react-i18next';
++import { StyleSheet } from 'react-native';
++import { FadeInDown } from 'react-native-reanimated';
++
++type Outbox = ReturnType<typeof useChatOutbox>;
++export type ChatComposerAccess =
++  | { kind: 'editable' }
++  | { kind: 'history' }
++  | { kind: 'blocked'; message: string };
++const styles = StyleSheet.create({
++  listCentered: { paddingVertical: 20, flexGrow: 1, justifyContent: 'center' },
++  listStart: { paddingVertical: 20, flexGrow: 1, justifyContent: 'flex-start' },
++});
++
++function ChatEmptyState() {
++  const { t } = useTranslation();
++  return (
++    <AnimatedView entering={FadeInDown.duration(800).springify()}>
++      <Box className="items-center px-10">
++        <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
++          <Icon as={MessageSquare} size="lg" className="text-ink/20" />
++        </Box>
++        <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
++          {t('chat.empty')}
++        </Text>
++      </Box>
++    </AnimatedView>
++  );
++}
++
++function ChatMessageRow({
++  item,
++  principalId,
++  onPressAuthor,
++}: {
++  item: ChatMessage;
++  principalId: string;
++  onPressAuthor?: (id: string, name: string) => void;
++}) {
++  const isOwn = item.author_id === principalId;
++  const authorName = item.author?.full_name || 'Unknown';
++  const time = new Date(item.created_at).toLocaleTimeString([], {
++    hour: '2-digit',
++    minute: '2-digit',
++  });
++  return (
++    <HStack className={`justify-${isOwn ? 'end' : 'start'} mb-4 px-5`}>
++      {!isOwn && (
++        <Box className="mr-3">
++          <Pressable
++            onPress={() => onPressAuthor?.(item.author_id, authorName)}
++            className="bg-phase-surface rounded-full shadow-sm"
++            accessibilityRole="button"
++            accessibilityLabel={`View profile of ${authorName}`}
++            accessibilityHint="Opens this member's profile"
++          >
++            <UserAvatar avatarUrl={item.author?.avatar_url} fullName={authorName} size={32} />
++          </Pressable>
++        </Box>
++      )}
++      <VStack className={`max-w-[75%] gap-1 ${isOwn ? 'items-end' : 'items-start'}`}>
++        {!isOwn && (
++          <Text className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">
++            {authorName}
++          </Text>
++        )}
++        <Box
++          className={`px-4 py-3 rounded-2xl border ${isOwn ? 'bg-phase-interactive border-phase-interactive rounded-tr-sm' : 'bg-phase-surface border-border rounded-tl-sm'}`}
++        >
++          <Text
++            className={`text-sm leading-relaxed font-medium ${isOwn ? 'text-white' : 'text-ink'}`}
++          >
++            {item.content}
++          </Text>
++        </Box>
++        <Text className="text-[9px] font-bold text-ink/20 px-1">{time}</Text>
++      </VStack>
++    </HStack>
++  );
++}
++
++export function ChatHistory({
++  messages,
++  loading,
++  error,
++  unavailable,
++  retry,
++  principalId,
++  onPressAuthor,
++}: {
++  messages: ChatMessage[];
++  loading: boolean;
++  error: Error | null;
++  unavailable: boolean;
++  retry: () => Promise<void>;
++  principalId: string;
++  onPressAuthor?: (id: string, name: string) => void;
++}) {
++  if (loading)
++    return (
++      <Box className="flex-1 items-center justify-center">
++        <BrandPulse size={32} accessibilityLabel="Loading messages" />
++        <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
++          Tuning Frequencies...
++        </Text>
++      </Box>
++    );
++  if (unavailable)
++    return (
++      <BrandedErrorState
++        title="Messages could not settle"
++        message={
++          error?.message ?? 'No saved history is available. Enable live access to load messages.'
++        }
++      >
++        <Pressable
++          onPress={() => void retry()}
++          accessibilityRole="button"
++          accessibilityLabel="Try loading messages again"
++        >
++          <Text className="text-phase-interactive font-bold">Try again</Text>
++        </Pressable>
++      </BrandedErrorState>
++    );
++  return (
++    <>
++      {error && (
++        <Text accessibilityRole="alert">
++          Recent messages could not refresh. Showing saved history.
++        </Text>
++      )}
++      <SanctuaryLegendList
++        keyboardLiftBehavior="always"
++        initialScrollAtEnd
++        maintainScrollAtEnd
++        data={messages}
++        keyExtractor={(item) => item.id}
++        renderItem={({ item }) => (
++          <ChatMessageRow item={item} principalId={principalId} onPressAuthor={onPressAuthor} />
++        )}
++        contentContainerStyle={messages.length === 0 ? styles.listCentered : styles.listStart}
++        showsVerticalScrollIndicator={false}
++        ListEmptyComponent={<ChatEmptyState />}
++      />
++    </>
++  );
++}
++
++function deliveryText(outbox: Outbox, deferred: boolean): string {
++  const count = outbox.pending.length;
++  if (outbox.pending.some((item) => item.commandState === 'dispatching'))
++    return `Sending ${count} queued messages…`;
++  if (outbox.pending.some((item) => item.commandState === 'auth_paused'))
++    return `${count} saved messages are waiting for account verification.`;
++  if (outbox.pending.some((item) => item.commandState === 'conflict'))
++    return `${count} saved messages need conflict review in the outbox.`;
++  return `${count} ${count === 1 ? 'message is' : 'messages are'} saved for delivery. ${deferred ? 'They will send when live access is available.' : 'They are ready to retry.'}`;
++}
++
++export function ChatDeliveryNotice({
++  outbox,
++  deferred,
++  hasLegacyQueue,
++  retry,
++}: {
++  outbox: Outbox;
++  deferred: boolean;
++  hasLegacyQueue: boolean;
++  retry: () => Promise<void>;
++}) {
++  const error =
++    outbox.rejected.length > 0
++      ? 'Some saved messages need review before delivery. Retry them from the outbox.'
++      : hasLegacyQueue
++        ? 'Older offline work needs account recovery before it can be delivered.'
++        : outbox.admission.error?.message;
++  const canRetry =
++    !deferred &&
++    (outbox.rejected.length > 0 ||
++      outbox.pending.some((item) => item.commandState === 'retry_scheduled'));
++  return (
++    <>
++      {outbox.pending.length > 0 && (
++        <Box
++          className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2"
++          accessibilityLiveRegion="polite"
++        >
++          <Text className="text-phase-warning text-[11px] font-semibold">
++            {deliveryText(outbox, deferred)}
++          </Text>
++        </Box>
++      )}
++      {error && (
++        <Box
++          className="mb-3 rounded-xl border border-phase-danger/30 bg-phase-danger/10 px-3 py-2"
++          accessibilityRole="alert"
++        >
++          <Text className="text-phase-danger text-[11px] font-semibold">{error}</Text>
++          {canRetry && (
++            <Pressable
++              onPress={() => void retry()}
++              accessibilityRole="button"
++              accessibilityLabel="Retry queued messages"
++              className="mt-2 self-start"
++            >
++              <Text className="text-phase-interactive text-[11px] font-bold">
++                Retry queued messages
++              </Text>
++            </Pressable>
++          )}
++        </Box>
++      )}
++    </>
++  );
++}
++
++export function ChatInput({
++  outbox,
++  access,
++  onTyping,
++  typingUsers,
++}: {
++  outbox: Pick<Outbox, 'submit' | 'admission'>;
++  access: ChatComposerAccess;
++  onTyping: (text: string) => void;
++  typingUsers: string[];
++}) {
++  const { t } = useTranslation();
++  const [draft, setDraft] = useState('');
++  const [failedMessage, setFailedMessage] = useState<string | null>(null);
++  const send = async () => {
++    const content = draft.trim();
++    if (!content || access.kind !== 'editable' || outbox.admission.isPending) return;
++    try {
++      await outbox.submit(content);
++      setDraft((current) => (current.trim() === content ? '' : current));
++      setFailedMessage(null);
++    } catch {
++      setFailedMessage(content);
++    }
++  };
++  if (access.kind === 'history')
++    return (
++      <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
++        <Text className="text-ink/40 text-[11px] font-medium italic">
++          {t('chat.historicalView')}
++        </Text>
++      </Box>
++    );
++  if (access.kind === 'blocked')
++    return (
++      <Box className="py-2 items-center bg-phase-danger/5 rounded-xl border border-dashed border-phase-danger/20">
++        <Text className="text-phase-danger text-[11px] font-medium italic">{access.message}</Text>
++      </Box>
++    );
++  return (
++    <>
++      {failedMessage && (
++        <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2 flex-row items-center justify-between">
++          <Text className="text-phase-warning text-[11px] font-semibold">
++            Message could not be sent or queued.
++          </Text>
++          <Pressable
++            onPress={() => {
++              setDraft(failedMessage);
++              setFailedMessage(null);
++            }}
++            accessibilityRole="button"
++            accessibilityLabel="Restore message draft"
++          >
++            <Text className="text-phase-interactive text-[11px] font-bold">Restore draft</Text>
++          </Pressable>
++        </Box>
++      )}
++      <ChatComposer
++        value={draft}
++        onChangeText={(text) => {
++          setDraft(text);
++          onTyping(text);
++        }}
++        onSend={() => void send()}
++        isSending={outbox.admission.isPending}
++        placeholder={t('chat.placeholder')}
++      />
++      {typingUsers.length > 0 && (
++        <Text className="text-[11px] text-ink/40 italic mt-2 px-1">
++          {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing…
++        </Text>
++      )}
++    </>
++  );
++}

@@ -19,6 +19,7 @@ tags: [architecture, canonical, client-state, offline-first, web, mobile, zustan
 - [`2026-10-23-client-state-phase-0-baseline.md`](2026-10-23-client-state-phase-0-baseline.md) records the first reproducible scan and ownership hypotheses.
 - [`2026-10-23-client-state-phase-0-hostile-review.md`](2026-10-23-client-state-phase-0-hostile-review.md) records the adversarial release gates.
 - [`2026-10-23-client-state-phase-1-foundation.md`](2026-10-23-client-state-phase-1-foundation.md) records the non-destructive foundation delivery.
+- [`2026-10-23-client-state-phase-2-scope-session.md`](2026-10-23-client-state-phase-2-scope-session.md) scopes the active compatibility-mirror migration and its remaining gates.
 - [`2026-10-23-client-state-and-web-offline-conflict-audit.md`](2026-10-23-client-state-and-web-offline-conflict-audit.md) records active-document alignment and open gaps.
 - [`offline-state-resilience-sop.md`](offline-state-resilience-sop.md) remains authoritative for resilience, outbox, replay, and failure behavior.
 

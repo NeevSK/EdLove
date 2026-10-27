@@ -1,10 +1,9 @@
 import { type MappingTopology, mappingAPI } from '@repo/core/api/client';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { useEffect, useState } from 'react';
 
 /**
- * useMappingSync  Hook for real-time collaborative topology mapping.
+ * useMappingSync — Hook for real-time collaborative topology mapping.
  * Subscribes to changes in mapping_topologies for a specific ID.
  */
 export function useMappingSync(topologyId?: string) {
@@ -27,28 +26,38 @@ export function useMappingSync(topologyId?: string) {
       }
     };
 
-    loadAndSync();
+    void loadAndSync();
 
-    // Real-time subscription
-    const channel = supabase
-      .channel(`topology-resonance-${topologyId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'mapping_topologies',
-          filter: `id=eq.${topologyId}`,
-        },
-        (payload: any) => {
-          console.log('[useMappingSync] Resonance pulse received:', payload.new);
-          setTopology(payload.new as MappingTopology);
-        },
-      )
-      .subscribe();
+    // Real-time subscription via sovereign realtime port
+    let unsub: (() => Promise<void>) | null = null;
+    let isCancelled = false;
+
+    void import('@repo/core/logic/managers/misc.factory')
+      .then(({ realtime }) => {
+        if (isCancelled || !realtime || typeof realtime.subscribe !== 'function') return;
+        const sub = realtime.subscribe(
+          `topology-resonance-${topologyId}`,
+          {
+            event: 'UPDATE',
+            table: 'mapping_topologies',
+            filter: `id=eq.${topologyId}`,
+          },
+          (payload: any) => {
+            console.log('[useMappingSync] Resonance pulse received:', payload.new);
+            if (payload.new) {
+              setTopology(payload.new as MappingTopology);
+            }
+          },
+        );
+        unsub = sub.unsubscribe;
+      })
+      .catch((err) => {
+        console.warn('[useMappingSync] subscription error:', err);
+      });
 
     return () => {
-      supabase.removeChannel(channel);
+      isCancelled = true;
+      if (unsub) void unsub();
     };
   }, [topologyId]);
 

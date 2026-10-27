@@ -1,4 +1,5 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -13,7 +14,7 @@ export default function GuardianStudentDetailScreen() {
     studentId?: string;
     studentName?: string;
   }>();
-  const user = useStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
   const { dashboard } = useGuardianWorkspaceData(user?.id || '');
 
   const student = useMemo(

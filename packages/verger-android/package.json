@@ -20,18 +20,18 @@
     "README.md"
   ],
   "scripts": {
-    "test": "vitest run",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_verger-android-test\" --evidence-level G1",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@repo/verger-core": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "~58.0.17"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "7.0.2",
+    "typescript": "7.1.0-beta",
     "vitest": "5.0.5"
   }
 }

@@ -1,6 +1,6 @@
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { secureApiFetch } from '@repo/core/api/transportSecurity';
 
 const mocks = vi.hoisted(() => ({
   exchangeCodeForSession: vi.fn(),
@@ -37,6 +37,24 @@ describe('GET /auth/complete', () => {
     expect(response.headers.get('cache-control')).toBe('private, no-store');
   });
 
+  it('preserves a validated post-recovery destination through the reset page', async () => {
+    const response = await GET(
+      new NextRequest(
+        'https://sanctuary.gurudevi.app/auth/complete?code=recovery-code&next=%2Freset-password&returnTo=%2Fprofile',
+      ),
+    );
+    expect(response.headers.get('location')).toBe(
+      'https://sanctuary.gurudevi.app/reset-password?returnTo=%2Fprofile',
+    );
+    const external = await GET(
+      new NextRequest(
+        'https://sanctuary.gurudevi.app/auth/complete?code=recovery-code&next=%2Freset-password&returnTo=https%3A%2F%2Fattacker.example',
+      ),
+    );
+    expect(external.headers.get('location')).toBe(
+      'https://sanctuary.gurudevi.app/reset-password?returnTo=%2Fself',
+    );
+  });
   it('rejects malformed callbacks without calling Supabase', async () => {
     const response = await GET(
       new NextRequest('https://sanctuary.gurudevi.app/auth/complete?access_token=exposed-token'),

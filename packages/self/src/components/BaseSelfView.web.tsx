@@ -1,4 +1,6 @@
-import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { usePermissions, useTemporalStore } from '@repo/core/logic';
 import type { BaseSelfViewProps, SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
 import { getCalmFeatureLabel, getHistoryNotice } from '@repo/self/components/selfEntryPresentation';
@@ -27,7 +29,7 @@ import { useWindowDimensions } from 'react-native';
 export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseSelfViewProps) {
   const { context } = usePermissions();
   const isAnonymous = context.isAnonymous;
-  const isOnline = useStore((state) => state.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const { width } = useWindowDimensions();
   const breakpoint = width >= 1024 ? 'desktop' : width >= 600 ? 'tablet' : 'phone';
   const frame = {
@@ -289,7 +291,7 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
         showsVerticalScrollIndicator={false}
       >
         <Box style={{ maxWidth: frame.maxWidth, width: '100%', alignSelf: 'center' }}>
-          {!isOnline && (
+          {networkStatus === 'offline' && (
             <Box
               style={{
                 marginBottom: tokens.spacing.lg,

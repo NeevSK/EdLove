@@ -1,6 +1,6 @@
 import { profileAPI, profileAPI as rawProfileAPI } from '@repo/core/api/profile';
-import type { TotalState } from '@repo/core/store';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const profileMocks = vi.hoisted(() => ({
@@ -29,10 +29,14 @@ describe('profile POA enforcement', () => {
   });
 
   it('blocks profile update for guests before service execution', async () => {
-    vi.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useAuthStore, 'getState').mockReturnValue({
+      ...useAuthStore.getState(),
       user: null,
+    });
+    vi.spyOn(useTenantStore, 'getState').mockReturnValue({
+      ...useTenantStore.getState(),
       schoolType: null,
-    } as unknown as TotalState);
+    });
 
     const fetchSpy = vi.spyOn(global, 'fetch');
 
@@ -44,10 +48,14 @@ describe('profile POA enforcement', () => {
   });
 
   it('blocks social link mutation for guests before service execution', async () => {
-    vi.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useAuthStore, 'getState').mockReturnValue({
+      ...useAuthStore.getState(),
       user: null,
+    });
+    vi.spyOn(useTenantStore, 'getState').mockReturnValue({
+      ...useTenantStore.getState(),
       schoolType: null,
-    } as unknown as TotalState);
+    });
 
     await expect(
       profileAPI.upsertSocialLink(USER_ID, {
@@ -63,17 +71,22 @@ describe('profile POA enforcement', () => {
   });
 
   it('allows an authenticated teacher to update their profile through the service boundary', async () => {
-    vi.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useAuthStore, 'getState').mockReturnValue({
+      ...useAuthStore.getState(),
       user: {
         id: USER_ID,
+        display_name: 'Teacher',
         email: 'teacher@example.com',
-        capacitys: ['teacher'],
         capacity: 'teacher',
         school_id: SCHOOL_ID,
         is_anonymous: false,
+        created_at: '2026-10-26T00:00:00.000Z',
       },
+    });
+    vi.spyOn(useTenantStore, 'getState').mockReturnValue({
+      ...useTenantStore.getState(),
       schoolType: 'school_workspace',
-    } as unknown as TotalState);
+    });
 
     const updateSpy = vi.spyOn(rawProfileAPI, 'updateProfile').mockResolvedValue({
       id: USER_ID,

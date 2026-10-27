@@ -34,9 +34,11 @@ CREATE TABLE public.schools (
   province TEXT,
   contact_email TEXT,
   contact_phone TEXT,
+  census_id TEXT,
   metadata JSONB DEFAULT '{}'::jsonb, -- Flexibility for future school-specific info
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  deleted_at TIMESTAMPTZ
 );
 
 -- 1.2 Sections (SL School Hierarchy)
@@ -94,7 +96,94 @@ CREATE TABLE public.users (
   
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  last_seen_at TIMESTAMPTZ
+  last_seen_at TIMESTAMPTZ,
+  -- Required by the later soft-deletion and identity migrations. This is a
+  -- nullable lifecycle marker; it does not delete or rewrite a user.
+  deleted_at TIMESTAMPTZ
+);
+
+-- Retired identity projections required by the April-to-August historical
+-- migration segment. Later tracked migrations replace authority with ReBAC
+-- and remove tier_id/tier tables; keeping this narrow compatibility substrate
+-- here lets a clean replay preserve that sequence.
+CREATE TABLE public.tiers (
+  id UUID PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL
+);
+
+INSERT INTO public.tiers (id, slug) VALUES
+  ('4bbc88cc-bd13-4c09-872f-6f5d0cf1e4f6', 'thuthimal'),
+  ('8a45d2cf-0201-45d8-8ea9-e5a67fa24401', 'standard');
+
+ALTER TABLE public.users
+  ADD COLUMN authority TEXT,
+  ADD COLUMN tier_id UUID REFERENCES public.tiers(id),
+  ADD COLUMN profile_completed BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN orientation_seeds JSONB,
+  ADD COLUMN gender TEXT,
+  ADD COLUMN date_of_birth DATE,
+  ADD COLUMN school_role TEXT,
+  ADD COLUMN work_roles TEXT[];
+
+-- The faceted profile tables predate the retained migration ledger. Their
+-- lifecycle columns and policy evolution remain in later migrations; these
+-- definitions are the minimum predecessor contracts used by that history.
+CREATE TABLE public.student_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  index_number TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE TABLE public.teacher_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  school_id UUID REFERENCES public.schools(id) ON DELETE SET NULL,
+  nic_number TEXT,
+  is_section_head BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE TABLE public.principal_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  school_id UUID REFERENCES public.schools(id) ON DELETE SET NULL,
+  nic_number TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMPTZ
+);
+
+-- Institutional membership is the predecessor of the later authority and
+-- approval migrations. It is deliberately stateful (rather than a role on
+-- users) so its historical tenure can be retained.
+CREATE TABLE public.school_memberships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  school_id UUID NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+  role TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active',
+  is_primary BOOLEAN NOT NULL DEFAULT false,
+  start_date DATE,
+  joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  left_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE TABLE public.school_join_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE,
+  role TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Now add foreign key back to users for heads
@@ -132,7 +221,8 @@ CREATE TABLE public.classrooms (
   color_theme TEXT DEFAULT 'blue',
   is_archived BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  deleted_at TIMESTAMPTZ
 );
 
 -- 2.2 Classroom Students (Enrollment)
@@ -346,6 +436,32 @@ CREATE TABLE public.feature_usage_log (id UUID PRIMARY KEY DEFAULT uuid_generate
 
 -- 6.4 Gamification & Rewards
 CREATE TABLE public.user_rewards (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), user_id UUID REFERENCES public.users(id) ON DELETE CASCADE, points INTEGER DEFAULT 0, badges TEXT[], created_at TIMESTAMPTZ DEFAULT now());
+-- This entity was present in the archived master baseline but omitted from the
+-- active replay baseline. The first dependent migration is the following
+-- month's atomic growth RPC, so keep the original schema here rather than
+-- inventing a later-shaped substitute.
+CREATE TABLE public.user_growth_state (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  bhumi_stage TEXT DEFAULT 'bijam' NOT NULL,
+  presence_signals INTEGER DEFAULT 0,
+  nourishing_signals INTEGER DEFAULT 0,
+  witnessing_signals INTEGER DEFAULT 0,
+  weaving_signals INTEGER DEFAULT 0,
+  blooming_signals INTEGER DEFAULT 0,
+  banyan_stage TEXT DEFAULT 'sapling',
+  river_stage TEXT DEFAULT 'trickle',
+  crystal_tier TEXT DEFAULT 'spark',
+  peer_mentored_count INTEGER DEFAULT 0,
+  circles_facilitated_count INTEGER DEFAULT 0,
+  lessons_completed_count INTEGER DEFAULT 0,
+  reflections_submitted_count INTEGER DEFAULT 0,
+  crystals_found_count INTEGER DEFAULT 0,
+  fractal_moments_count INTEGER DEFAULT 0,
+  last_seen_at TIMESTAMPTZ DEFAULT now(),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
 CREATE TABLE public.gift_codes (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), code TEXT UNIQUE NOT NULL, type TEXT NOT NULL, value INTEGER, is_redeemed BOOLEAN DEFAULT false, redeemed_by UUID REFERENCES public.users(id), created_at TIMESTAMPTZ DEFAULT now());
 CREATE TABLE public.pricing_subscriptions (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), user_id UUID REFERENCES public.users(id) ON DELETE CASCADE, plan_name TEXT NOT NULL, amount DECIMAL, period TEXT, active BOOLEAN DEFAULT true, created_at TIMESTAMPTZ DEFAULT now());
 

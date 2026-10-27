@@ -7,7 +7,7 @@ import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermission
 import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import type { DomainFeature } from '@repo/core/types/Workspace';
 import { useMemo } from 'react';
@@ -25,8 +25,16 @@ export function useFeatureRegistry(
   const { context } = usePermissions();
   const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
   const getDecision = useCedarDecisionStore((s) => s.getDecision);
-  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
-    useEntitlementStore();
+  const entitlement = useEntitlementQuery(
+    context.userId,
+    {
+      activeBondId: context.activeBond?.id ?? null,
+      activeEntityId: context.activeEntityId,
+      activeEntityType: context.activeEntityType,
+    },
+    Boolean(context.userId && !context.isLocalOnly),
+  );
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } = entitlement;
   const flags = useFeatureStore((s) => s.flags);
 
   return useMemo(() => {

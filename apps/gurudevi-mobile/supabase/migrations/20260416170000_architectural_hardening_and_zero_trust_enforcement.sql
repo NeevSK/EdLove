@@ -103,17 +103,23 @@ DROP POLICY IF EXISTS "Users can manage their own device links" ON public.device
 CREATE POLICY "Users can manage their own device links" ON public.device_accounts
     FOR ALL USING (account_id = auth.uid());
 
--- Location Infrastructure (Provinces/Districts)
-ALTER TABLE public.provinces ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.districts ENABLE ROW LEVEL SECURITY;
+-- Location Infrastructure is optional in the active geographic model.
+DO $$
+BEGIN
+    IF to_regclass('public.provinces') IS NOT NULL THEN
+        ALTER TABLE public.provinces ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Public read access for provinces" ON public.provinces;
+        CREATE POLICY "Public read access for provinces" ON public.provinces
+            FOR SELECT USING (true);
+    END IF;
 
-DROP POLICY IF EXISTS "Public read access for provinces" ON public.provinces;
-CREATE POLICY "Public read access for provinces" ON public.provinces
-    FOR SELECT USING (true);
-
-DROP POLICY IF EXISTS "Public read access for districts" ON public.districts;
-CREATE POLICY "Public read access for districts" ON public.districts
-    FOR SELECT USING (true);
+    IF to_regclass('public.districts') IS NOT NULL THEN
+        ALTER TABLE public.districts ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Public read access for districts" ON public.districts;
+        CREATE POLICY "Public read access for districts" ON public.districts
+            FOR SELECT USING (true);
+    END IF;
+END $$;
 
 -- School Memberships
 ALTER TABLE public.school_memberships ENABLE ROW LEVEL SECURITY;

@@ -32,6 +32,10 @@ export function SessionRouteGate({
     profileError: routeState.profileError,
     routeTarget,
   });
+  const mountCloudServices =
+    presentation.kind === 'content' &&
+    presentation.mountProtectedServices &&
+    Boolean(routeState.session?.user);
 
   console.log('[SessionRouteGate]', {
     pathname,
@@ -128,15 +132,9 @@ export function SessionRouteGate({
 
   const content = (
     <>
-      <OptionalStartupServices
-        phase={
-          presentation.kind === 'content' && presentation.mountProtectedServices
-            ? 'protected-ready'
-            : 'public-ready'
-        }
-      />
+      <OptionalStartupServices phase={mountCloudServices ? 'protected-ready' : 'public-ready'} />
       {children}
-      {presentation.kind === 'content' && presentation.mountProtectedServices ? appServices : null}
+      {mountCloudServices ? appServices : null}
     </>
   );
   if (presentation.kind !== 'transition') return content;

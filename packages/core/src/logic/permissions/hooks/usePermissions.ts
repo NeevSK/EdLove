@@ -22,10 +22,9 @@ import {
 } from '@repo/core/logic/schemas/user.schema';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
-import { useTenantStore } from '@repo/core/store/useTenantStore';
+import { PERSONAL_SCOPE_PERSPECTIVE, useScopeSessionStore } from '@repo/core/store/scopeSession';
 import type { Action, Subject } from '@repo/core/types/authorization';
 import { useCallback, useMemo } from 'react';
 
@@ -44,61 +43,44 @@ const PERSONAL_SANCTUARY_READ_SUBJECTS = new Set<string>([
  */
 export const usePermissions = () => {
   const user = useAuthStore((state) => state.user);
-  const activeBondState = useAuthStore((state) => state.activeBond);
-  const activePerspective = usePerspectiveStore((state) => state.activePerspective);
-  const schoolType = useTenantStore((state) => state.schoolType);
+  const scopeSnapshot = useScopeSessionStore((state) => state.snapshot);
+  const scopeTransitioning = useScopeSessionStore((state) => state.isTransitioning);
+  const scopeMatchesIdentity =
+    !scopeTransitioning &&
+    scopeSnapshot !== null &&
+    scopeSnapshot.principalId === (user?.id ?? null);
+  const activePerspective = scopeMatchesIdentity && scopeSnapshot
+    ? scopeSnapshot.activePerspective
+    : PERSONAL_SCOPE_PERSPECTIVE;
+  const schoolType =
+    scopeMatchesIdentity && scopeSnapshot?.activePerspective.kind === 'institutional'
+      ? (scopeSnapshot.activePerspective.schoolType ?? null)
+      : null;
   const flags = useFeatureStore((state) => state.flags);
   const cedarSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
   const getDecision = useCedarDecisionStore((state) => state.getDecision);
-  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
-    useEntitlementStore();
+  const entitlement = useEntitlementQuery(
+    user?.id ?? null,
+    {
+      activeBondId: scopeMatchesIdentity ? (scopeSnapshot?.activeBond?.id ?? null) : null,
+      activeEntityId: scopeMatchesIdentity ? (scopeSnapshot?.activeBond?.entity_id ?? null) : null,
+      activeEntityType: scopeMatchesIdentity ? (scopeSnapshot?.activeBond?.entity_type ?? null) : null,
+    },
+    Boolean(user?.id && scopeMatchesIdentity),
+  );
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } = entitlement;
 
   const context: UserContext = useMemo(() => {
-    const availableBonds = useAuthStore.getState().availableBonds || [];
-    let activeBond = activeBondState;
-
-    if (activePerspective.kind === 'institutional') {
-      activeBond = {
-        id: activePerspective.id,
-        school_id: activePerspective.schoolId,
-        capacity: activePerspective.capacity,
-        entity_type: 'SCHOOL',
-        entity_id: activePerspective.schoolId,
-      } as any;
-    } else if (activePerspective.kind === 'commercial') {
-      activeBond = {
-        id: activePerspective.id,
-        school_id: activePerspective.instituteId,
-        capacity: activePerspective.role === 'founder' ? 'founder' : 'teacher',
-        entity_type: 'COMMERCIAL_BATCH',
-        entity_id: activePerspective.batchId,
-      } as any;
-    } else if (activePerspective.kind === 'guardian') {
-      activeBond = {
-        id: activePerspective.id,
-        school_id: activePerspective.schoolId ?? null,
-        capacity: 'guardian',
-        entity_type: 'GUARDIAN_BOND',
-        entity_id: activePerspective.wardUserId,
-      } as any;
-    } else if (!activeBond && user?.capacity) {
-      const personalCapacity: Capacity = CapacitySchema.safeParse(user.capacity).data ?? 'student';
-      activeBond = {
-        id: 'personal',
-        user_id: user.id,
-        entity_id: `personal-${user.id}`,
-        entity_type: 'PERSONAL',
-        capacity: personalCapacity,
-        status: 'active',
-      };
-    }
+    const availableBonds = scopeMatchesIdentity && scopeSnapshot ? scopeSnapshot.availableBonds : [];
+    const activeBond = scopeMatchesIdentity && scopeSnapshot ? scopeSnapshot.activeBond : null;
+    const personalCapacity: Capacity = CapacitySchema.safeParse(user?.capacity).data ?? 'student';
 
     const bondScope = resolveBondScope(activeBond);
     const isPersonal =
       bondScope.isPersonal ||
       schoolType === 'personal_workspace' ||
       activePerspective.kind === 'personal';
-    const entitlementScope = isPersonal ? 'individual' : 'active_bond';
+    const entitlementScope = isPersonal || activeBond === null ? 'individual' : 'active_bond';
     const effectiveEntitlement = resolveScopedEntitlement(
       {
         pricingTier,
@@ -109,7 +91,7 @@ export const usePermissions = () => {
       entitlementScope,
     );
 
-    const effectiveCapacity = (activeBond?.capacity || user?.capacity || 'student') as Capacity;
+    const effectiveCapacity = activeBond?.capacity ?? personalCapacity;
 
     const rawContext: UserContext = {
       userId: user?.id || null,
@@ -119,7 +101,7 @@ export const usePermissions = () => {
           : null,
 
       bonds: availableBonds as UserContext['bonds'],
-      primaryCapacity: availableBonds[0]?.capacity || effectiveCapacity,
+      primaryCapacity: activeBond?.capacity ?? effectiveCapacity,
       activeBond: activeBond as UserContext['activeBond'],
       capacity: effectiveCapacity as UserContext['capacity'],
       traits: effectiveCapacity ? [`capacity:${effectiveCapacity}`] : ['capacity:student'],
@@ -167,7 +149,8 @@ export const usePermissions = () => {
     return parsed.data;
   }, [
     user,
-    activeBondState,
+    scopeSnapshot,
+    scopeMatchesIdentity,
     activePerspective,
     schoolType,
     pricingTier,

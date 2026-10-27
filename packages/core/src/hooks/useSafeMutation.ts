@@ -1,4 +1,5 @@
 import { OfflineMutationError, runToPromise } from '@repo/core/effect';
+import { showToast } from '@repo/core/lib/feedback';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
@@ -104,7 +105,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
   });
 
   const inFlightKeysRef = useRef<Set<string>>(new Set());
-  const showToast = useAuthStore((s) => s.showToast);
+
   const addToQueue = useMutationQueue((s) => s.addToQueue);
   const logAudit = useMutationAuditLog((s) => s.logEntry);
 

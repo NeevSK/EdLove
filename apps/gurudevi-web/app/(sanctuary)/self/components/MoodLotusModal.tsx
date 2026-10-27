@@ -1,6 +1,7 @@
 'use client';
 
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { AccountSafeTrySelfPracticeAdapter } from '../../../../lib/sanctuary/selfExplore';
 import {
   loadMoodHistory,
   logMood,
@@ -8,7 +9,6 @@ import {
   type MoodLog,
   type MoodValue,
 } from '../../../../lib/sanctuary/selfWellbeing';
-import type { AccountSafeTrySelfPracticeAdapter } from '../../../../lib/sanctuary/selfExplore';
 import styles from '../self-floor.module.css';
 import { BreathGuide } from './BreathGuide';
 import { formatDate } from './formatDate';

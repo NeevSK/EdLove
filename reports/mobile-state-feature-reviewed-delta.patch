@@ -1,0 +1,1219 @@
+diff --git a/apps/gurudevi-mobile/src/__tests__/providers/FeatureProvider.test.tsx b/apps/gurudevi-mobile/src/__tests__/providers/FeatureProvider.test.tsx
+index 50334cce1..f6e1f5e89 100644
+--- a/apps/gurudevi-mobile/src/__tests__/providers/FeatureProvider.test.tsx
++++ b/apps/gurudevi-mobile/src/__tests__/providers/FeatureProvider.test.tsx
+@@ -3,41 +3,32 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
+ 
+ const mocks = vi.hoisted(() => ({
+   context: { userId: 'user-1', citizenship: 'SECOND_CLASS' },
+-  recomputeFlags: vi.fn(),
+-  subscribeToFlagChanges: vi.fn(() => vi.fn()),
++  cleanup: vi.fn(),
++  bindContext: vi.fn(),
+ }));
+-
+-vi.mock('@repo/core/logic', () => ({
+-  featureFlags: {
+-    subscribeToFlagChanges: mocks.subscribeToFlagChanges,
+-  },
+-  useFeatureStore: (
+-    selector: (state: { recomputeFlags: typeof mocks.recomputeFlags }) => unknown,
+-  ) => selector({ recomputeFlags: mocks.recomputeFlags }),
+-  usePermissions: () => ({ context: mocks.context }),
++vi.mock('@repo/core/logic', () => ({ usePermissions: () => ({ context: mocks.context }) }));
++vi.mock('@repo/core/store', () => ({
++  useFeatureStore: (selector: (state: { bindContext: typeof mocks.bindContext }) => unknown) =>
++    selector({ bindContext: mocks.bindContext }),
+ }));
+ 
+ import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
+ 
+-describe('FeatureProvider (component-real web synchronization)', () => {
++describe('FeatureProvider (real React, owner substituted)', () => {
+   beforeEach(() => {
+-    mocks.recomputeFlags.mockClear();
+-    mocks.subscribeToFlagChanges.mockClear();
++    vi.clearAllMocks();
++    mocks.bindContext.mockReturnValue(mocks.cleanup);
+   });
+-
+-  it('recomputes and subscribes to flag changes without withholding the shell', async () => {
+-    let tree: ReturnType<typeof create>;
++  it('binds rollout ownership without withholding the shell and releases it on unmount', async () => {
++    let tree!: ReturnType<typeof create>;
+     await act(async () => {
+-      tree = create(
+-        <FeatureProvider>
+-          <>{'shell'}</>
+-        </FeatureProvider>,
+-      );
+-      await Promise.resolve();
++      tree = create(<FeatureProvider>{'shell'}</FeatureProvider>);
+     });
+-
+-    expect(tree!.toJSON()).toBe('shell');
+-    expect(mocks.recomputeFlags).toHaveBeenCalledWith(mocks.context);
+-    expect(mocks.subscribeToFlagChanges).toHaveBeenCalledWith(mocks.context, expect.any(Function));
++    expect(tree.toJSON()).toBe('shell');
++    expect(mocks.bindContext).toHaveBeenCalledWith(mocks.context);
++    await act(async () => {
++      tree.unmount();
++    });
++    expect(mocks.cleanup).toHaveBeenCalledTimes(1);
+   });
+ });
+diff --git a/packages/core/src/adapters/__tests__/growthbook.subscription.test.ts b/packages/core/src/adapters/__tests__/growthbook.subscription.test.ts
+index 2870a172e..3a310cc15 100644
+--- a/packages/core/src/adapters/__tests__/growthbook.subscription.test.ts
++++ b/packages/core/src/adapters/__tests__/growthbook.subscription.test.ts
+@@ -11,6 +11,59 @@ vi.mock('@repo/core/monitoring', () => ({ trackProductEvent: vi.fn() }));
+ afterEach(() => vi.restoreAllMocks());
+ 
+ describe('GrowthBook renderer subscription with the installed SDK', () => {
++  it('serializes attribute updates and keeps a replacement subscription alive after old cleanup', async () => {
++    vi.spyOn(GrowthBook.prototype, 'init').mockResolvedValue({ success: true, source: 'network' });
++    const originalSetAttributes = GrowthBook.prototype.setAttributes;
++    let releaseFirst!: () => void;
++    const firstPending = new Promise<void>((resolve) => {
++      releaseFirst = resolve;
++    });
++    let sdk: GrowthBook | undefined;
++    const writes = vi
++      .spyOn(GrowthBook.prototype, 'setAttributes')
++      .mockImplementation(async function (attributes) {
++        sdk = this;
++        await originalSetAttributes.call(this, attributes);
++        if (attributes.id === 'account-a') await firstPending;
++      });
++    const adapter = new GrowthBookFeatureRolloutAdapter('http://unused', 'sdk-test');
++    const first = UserContextSchema.parse({ userId: 'account-a', pricing_tier: 'PRO' });
++    const second = UserContextSchema.parse({ userId: 'account-b', pricing_tier: 'FREE' });
++    const stopFirst = adapter.subscribeToFlagChanges(first, vi.fn());
++    const resultFirst = adapter.resolveFlags(first);
++    await vi.waitFor(() => expect(writes).toHaveBeenCalledTimes(1));
++    if (!sdk) throw new Error('SDK attributes were not configured');
++    const onSecond = vi.fn();
++    const stopSecond = adapter.subscribeToFlagChanges(second, onSecond);
++    const resultSecond = adapter.resolveFlags(second);
++    stopFirst();
++    try {
++      await sdk.setPayload({
++        features: {
++          'gurudevi.core.graphics-engine': {
++            defaultValue: false,
++            rules: [{ condition: { pricing_tier: 'PRO' }, force: true }],
++          },
++        },
++      });
++      expect(onSecond).not.toHaveBeenCalled();
++      expect(writes).toHaveBeenCalledTimes(1);
++      releaseFirst();
++      expect((await resultFirst).flags.isGraphicsEngineEnabled).toBe(true);
++      expect((await resultSecond).flags.isGraphicsEngineEnabled).toBe(false);
++      expect(onSecond).toHaveBeenCalledTimes(1);
++      expect(onSecond.mock.lastCall?.[0].flags.isGraphicsEngineEnabled).toBe(false);
++      await sdk.setPayload({
++        features: { 'gurudevi.core.graphics-engine': { defaultValue: true } },
++      });
++      expect(onSecond).toHaveBeenCalledTimes(2);
++    } finally {
++      releaseFirst();
++      stopSecond();
++      sdk.destroy();
++    }
++  });
++
+   it('publishes attribute and payload changes without feeding them back into setAttributes', async () => {
+     vi.spyOn(GrowthBook.prototype, 'init').mockResolvedValue({
+       success: true,
+@@ -18,16 +71,16 @@ describe('GrowthBook renderer subscription with the installed SDK', () => {
+     });
+     const originalSetAttributes = GrowthBook.prototype.setAttributes;
+     let sdk: GrowthBook | undefined;
+-    const attributeWrites = vi.spyOn(GrowthBook.prototype, 'setAttributes').mockImplementation(
+-      function (this: GrowthBook, attributes) {
++    const attributeWrites = vi
++      .spyOn(GrowthBook.prototype, 'setAttributes')
++      .mockImplementation(function (this: GrowthBook, attributes) {
+         sdk = this;
+         // Bound a regression so a recursive renderer fails instead of hanging the runner.
+         if (attributeWrites.mock.calls.length > 3) {
+           return Promise.reject(new Error('Renderer recursively rewrote attributes'));
+         }
+         return originalSetAttributes.call(this, attributes);
+-      },
+-    );
++      });
+     const adapter = new GrowthBookFeatureRolloutAdapter('http://unused', 'sdk-test');
+     const context = UserContextSchema.parse({
+       userId: 'local-guest',
+diff --git a/packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts b/packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts
+index 7da44d544..7a465babf 100644
+--- a/packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts
++++ b/packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts
+@@ -21,6 +21,8 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
+   private readonly initialization: Promise<void>;
+   private snapshotSource: FeatureRolloutSnapshot['source'] = 'computed';
+   private currentContext: UserContext | null = null;
++  private evaluation: Promise<void> = Promise.resolve();
++  private rendererOwner: object | null = null;
+ 
+   constructor(apiHost?: string, clientKey?: string) {
+     this.growthbook = new GrowthBook({
+@@ -55,7 +57,18 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
+       });
+   }
+ 
+-  async resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
++  resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
++    // setAttributes can await sticky buckets. Serialize the shared SDK so one
++    // context cannot read another context's attributes after that await.
++    const result = this.evaluation.then(() => this.evaluateContext(context));
++    this.evaluation = result.then(
++      () => undefined,
++      () => undefined,
++    );
++    return result;
++  }
++
++  private async evaluateContext(context: UserContext): Promise<FeatureRolloutSnapshot> {
+     await this.initialization;
+     this.currentContext = context;
+ 
+@@ -89,7 +102,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
+     // gates never see the remote naming scheme.
+     for (const [appKey, metadata] of Object.entries(FEATURE_FLAG_MANIFEST)) {
+       const value = this.growthbook.evalFeature(metadata.growthbookKey).value;
+-      if (value !== undefined) flags[appKey] = value;
++      if (typeof value === 'boolean' || typeof value === 'string') flags[appKey] = value;
+     }
+ 
+     return {
+@@ -103,15 +116,20 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
+     context: UserContext,
+     callback: (snapshot: FeatureRolloutSnapshot) => void,
+   ): () => void {
+-    this.currentContext = context;
++    const owner = {};
++    this.rendererOwner = owner;
+     this.growthbook.setRenderer(() => {
+       // setAttributes invokes this renderer, so writing attributes here would
+       // create an endless microtask loop and prevent native input processing.
+-      callback(this.readSnapshot());
++      if (this.rendererOwner === owner && this.currentContext === context)
++        callback(this.readSnapshot());
+     });
+ 
+     return () => {
+-      this.growthbook.setRenderer(null);
++      if (this.rendererOwner === owner) {
++        this.rendererOwner = null;
++        this.growthbook.setRenderer(null);
++      }
+     };
+   }
+ 
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index e8aac1e2e..0635a06cd 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -89,6 +89,7 @@ export {
+ } from '@repo/core/logic/deeplink/pendingIntentStore';
+ export {
+   createDomainServices,
++  type DomainRepositories,
+   type DomainServices,
+ } from '@repo/core/logic/domains/factory';
+ export type {
+@@ -195,9 +196,7 @@ export {
+   useCapabilityHydration,
+ } from '@repo/core/providers/CapabilityHydrationProvider';
+ export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
+-export type { FeatureSlice } from '@repo/core/store/slices/feature.slice';
+ // 2. Logic State & Storage (Zustand & Supabase)
+-export { type TotalState, useStore } from '@repo/core/store/useStore';
+ export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
+ export { useTenantStore } from '@repo/core/store/useTenantStore';
+ export { useUIStore } from '@repo/core/store/useUIStore';
+@@ -271,12 +270,17 @@ export {
+ export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
+ export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMediaDownloader';
+ export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
+-export { useNotifications } from '@repo/core/hooks/useNotifications';
+ export { usePendingActions } from '@repo/core/hooks/usePendingActions';
+ export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
+ export { useRewards } from '@repo/core/hooks/useRewards';
+ export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
+ export { useSchoolCreation } from '@repo/core/hooks/useSchoolCreation';
++export {
++  deviceSecurityQueryKeys,
++  invalidateDeviceSecuritySummary,
++  resolveDeviceSecurityQueryScope,
++  useScopedDeviceSecurity,
++} from '@repo/core/hooks/useScopedDeviceSecurity';
+ export { useStudentGoals } from '@repo/core/hooks/useStudentGoals';
+ export { useTaskActions } from '@repo/core/hooks/useTaskActions';
+ export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
+diff --git a/packages/core/src/lib/clientStateFoundation.ts b/packages/core/src/lib/clientStateFoundation.ts
+index b10a7a507..75c459171 100644
+--- a/packages/core/src/lib/clientStateFoundation.ts
++++ b/packages/core/src/lib/clientStateFoundation.ts
+@@ -147,6 +147,36 @@ export function scopedQueryKey<T extends readonly unknown[]>(
+   return [...queryScopePrefix(scope), ...resourceKey];
+ }
+ 
++/**
++ * Makes an existing non-abortable transport respect a Query cancellation. The
++ * underlying transport can still settle, but its late value cannot repopulate
++ * a Query that was disposed during an account or scope transition.
++ */
++export function abortableQueryRead<T>(
++  signal: AbortSignal,
++  operation: () => Promise<T>,
++): Promise<T> {
++  if (signal.aborted) return Promise.reject(signal.reason);
++  return new Promise((resolve, reject) => {
++    const abort = () => {
++      const error = new Error('Query read aborted.');
++      error.name = 'AbortError';
++      reject(signal.reason ?? error);
++    };
++    signal.addEventListener('abort', abort, { once: true });
++    void operation().then(
++      (value) => {
++        signal.removeEventListener('abort', abort);
++        resolve(value);
++      },
++      (error) => {
++        signal.removeEventListener('abort', abort);
++        reject(error);
++      },
++    );
++  });
++}
++
+ function queryMatchesScope(query: Query, prefix: QueryScopePrefix): boolean {
+   const key = query.queryKey;
+   return prefix.every((segment, index) => key[index] === segment);
+@@ -162,6 +192,12 @@ export interface QueryScopeInvalidationResult {
+   readonly matchedQueryCount: number;
+ }
+ 
++export interface QueryAccountBoundaryDisposalResult {
++  readonly outgoingPrincipalId: string | null;
++  readonly scopedQueryCount: number;
++  readonly legacyQueryCount: number;
++}
++
+ /**
+  * Cancels and removes only queries bearing the supplied scope prefix. It never
+  * calls `QueryClient.clear()` and deliberately leaves mutations/outbox state to
+@@ -179,6 +215,39 @@ export async function disposeQueryScope(
+   return { scope: prefix, matchedQueryCount };
+ }
+ 
++/**
++ * Removes Query cache entries at an account boundary without touching the
++ * MutationCache. Scoped entries for the outgoing principal are removed by
++ * their namespace; legacy unscoped entries use the existing broad-query
++ * fallback until their resource family adopts `scopedQueryKey`.
++ */
++export async function disposeAccountBoundaryQueries(
++  queryClient: QueryClient,
++  outgoingPrincipalId: string | null,
++): Promise<QueryAccountBoundaryDisposalResult> {
++  const scopedPredicate = (query: Query) =>
++    query.queryKey[0] === 'scope' &&
++    typeof query.queryKey[1] === 'string' &&
++    query.queryKey[1] === outgoingPrincipalId;
++  const legacyPredicate = (query: Query) => query.queryKey[0] !== 'scope';
++  const scopedQueryCount = outgoingPrincipalId
++    ? queryClient.getQueryCache().findAll({ predicate: scopedPredicate }).length
++    : 0;
++  const legacyQueryCount = queryClient
++    .getQueryCache()
++    .findAll({ predicate: legacyPredicate }).length;
++
++  const predicates = outgoingPrincipalId ? [scopedPredicate, legacyPredicate] : [legacyPredicate];
++  await Promise.all(
++    predicates.map(async (predicate) => {
++      await queryClient.cancelQueries({ predicate });
++      queryClient.removeQueries({ predicate });
++    }),
++  );
++
++  return { outgoingPrincipalId, scopedQueryCount, legacyQueryCount };
++}
++
+ /**
+  * Marks only a scoped resource family stale without removing its cached data.
+  * `refetchType: 'none'` prevents a scope transition utility from implicitly
+@@ -214,6 +283,8 @@ export interface StateRegistryEntry {
+   readonly scope: PersistedRecordScope | 'component';
+   readonly disposition:
+     | 'retain'
++    | 'consolidated'
++    | 'query'
+     | 'query-review'
+     | 'scope-session-review'
+     | 'protocol-review'
+@@ -225,6 +296,22 @@ export interface StateRegistryEntry {
+  * that prevents this foundation from becoming another global state mechanism.
+  */
+ export const CLIENT_STATE_REGISTRY = [
++  {
++    id: 'scope-session',
++    source: 'packages/core/src/store/scopeSession.ts',
++    owner: 'identity',
++    stateClass: 'scope-session',
++    scope: 'principal',
++    disposition: 'retain',
++  },
++  {
++    id: 'perspective',
++    source: 'packages/core/src/store/scopeSession.ts',
++    owner: 'identity',
++    stateClass: 'scope-session',
++    scope: 'perspective',
++    disposition: 'consolidated',
++  },
+   {
+     id: 'auth',
+     source: 'packages/core/src/store/useAuthStore.ts',
+@@ -241,25 +328,17 @@ export const CLIENT_STATE_REGISTRY = [
+     scope: 'tenant',
+     disposition: 'scope-session-review',
+   },
+-  {
+-    id: 'perspective',
+-    source: 'packages/core/src/store/usePerspectiveStore.ts',
+-    owner: 'identity',
+-    stateClass: 'scope-session',
+-    scope: 'perspective',
+-    disposition: 'scope-session-review',
+-  },
+   {
+     id: 'feature',
+     source: 'packages/core/src/store/useFeatureStore.ts',
+     owner: 'platform',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+-    disposition: 'query-review',
++    disposition: 'retain',
+   },
+   {
+     id: 'entitlement',
+-    source: 'packages/core/src/store/useEntitlementStore.ts',
++    source: 'packages/core/src/hooks/useEntitlementQuery.ts',
+     owner: 'authorization',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -275,7 +354,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'notification',
+-    source: 'packages/core/src/store/useNotificationStore.ts',
++    source: 'packages/core/src/hooks/useScopedNotifications.ts',
+     owner: 'notification-domain',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -283,7 +362,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'device-security',
+-    source: 'packages/core/src/store/useDeviceSecurityStore.ts',
++    source: 'packages/core/src/hooks/useScopedDeviceSecurity.ts',
+     owner: 'security',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -363,11 +442,11 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'growth',
+-    source: 'packages/core/src/store/useGrowthStore.ts',
++    source: 'packages/core/src/hooks/useGrowthQuery.ts',
+     owner: 'growth-domain',
+     stateClass: 'domain-projection-review',
+     scope: 'principal',
+-    disposition: 'split-review',
++    disposition: 'query',
+   },
+   {
+     id: 'temporal',
+diff --git a/packages/core/src/logic/store-slices/feature.slice.ts b/packages/core/src/logic/store-slices/feature.slice.ts
+deleted file mode 100644
+index 929590379..000000000
+--- a/packages/core/src/logic/store-slices/feature.slice.ts
++++ /dev/null
+@@ -1,14 +0,0 @@
+-/**
+- * @deprecated
+- * ⚠️ This file is a legacy shim.
+- *
+- * The canonical implementation lives at:
+- *   `@repo/core/store` → `slices/feature.slice`
+- *
+- * Migration: Replace all imports of this path with:
+- *   import { createFeatureSlice, FeatureSlice } from '@repo/core/store/slices/feature.slice';
+- *
+- * This shim will be removed in a future cleanup sprint.
+- * DO NOT add new consumers of this path.
+- */
+-export * from '@repo/core/store/slices/feature.slice';
+diff --git a/packages/core/src/logic/store-slices/index.ts b/packages/core/src/logic/store-slices/index.ts
+index a1e90b95e..6771cf69f 100644
+--- a/packages/core/src/logic/store-slices/index.ts
++++ b/packages/core/src/logic/store-slices/index.ts
+@@ -1,4 +1,3 @@
+ export * from '@repo/core/logic/store-slices/auth.slice';
+-export * from '@repo/core/logic/store-slices/feature.slice';
+ export * from '@repo/core/logic/store-slices/tenant.slice';
+ export * from '@repo/core/logic/store-slices/ui.slice';
+diff --git a/packages/core/src/store/__tests__/featureSlice.test.ts b/packages/core/src/store/__tests__/featureSlice.test.ts
+index 15797e428..65782fa79 100644
+--- a/packages/core/src/store/__tests__/featureSlice.test.ts
++++ b/packages/core/src/store/__tests__/featureSlice.test.ts
+@@ -1,136 +1,225 @@
+-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
++import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
+ import {
+-  createFeatureSlice,
+-  FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS,
+   normalizeFeatureRolloutSnapshot,
+-} from '../slices/feature.slice';
+-
+-const mockResolveFlags = vi.fn();
++  FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS as ttl,
++} from '@repo/core/lib/featureRolloutSnapshot';
++import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
++import { UserContextSchema } from '@repo/core/logic/schemas/user.schema';
++import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+ 
+-vi.mock('../../logic/managers/featureFlag.factory', () => ({
++const fixture = vi.hoisted(() => ({
++  resolve: vi.fn(),
++  read: vi.fn(),
++  write: vi.fn().mockResolvedValue(undefined),
++  unsubscribe: vi.fn(),
++  listeners: [] as ((snapshot: FeatureRolloutSnapshot) => void)[],
++}));
++vi.mock('@repo/core/logic/managers/featureFlag.factory', () => ({
+   featureFlags: {
+-    resolveFlags: (...args: any[]) => mockResolveFlags(...args),
++    resolveFlags: fixture.resolve,
++    subscribeToFlagChanges: (
++      _context: unknown,
++      callback: (snapshot: FeatureRolloutSnapshot) => void,
++    ) => {
++      fixture.listeners.push(callback);
++      return fixture.unsubscribe;
++    },
+   },
+ }));
++vi.mock('@repo/core/lib/storage', () => ({
++  storage: { getStringAsync: fixture.read, setAsync: fixture.write },
++}));
+ 
+-describe('featureSlice', () => {
+-  let set: ReturnType<typeof vi.fn>;
+-  let get: ReturnType<typeof vi.fn>;
+-  let slice: ReturnType<typeof createFeatureSlice>;
++import { useFeatureStore } from '../useFeatureStore';
+ 
++const context = (userId = 'account-a', pricing_tier = 'FREE') =>
++  UserContextSchema.parse({ userId, pricing_tier });
++const snapshot = (flags: FeatureRolloutSnapshot['flags'], age = 0): FeatureRolloutSnapshot => ({
++  flags,
++  source: 'remote',
++  refreshedAt: new Date(Date.now() - age).toISOString(),
++});
++const flush = async () => {
++  await Promise.resolve();
++  await Promise.resolve();
++  await Promise.resolve();
++};
++function deferred<T>() {
++  let resolve!: (value: T) => void;
++  const promise = new Promise<T>((done) => {
++    resolve = done;
++  });
++  return { promise, resolve };
++}
++
++describe('Feature rollout owner (SDK and storage substituted)', () => {
+   beforeEach(() => {
+-    set = vi.fn();
+-    get = vi.fn(() => ({ applySnapshot: vi.fn() }));
+-    slice = createFeatureSlice(set as any, get as any, {} as any);
++    vi.useFakeTimers();
++    vi.setSystemTime(new Date('2026-10-26T00:00:00Z'));
+     vi.clearAllMocks();
++    fixture.listeners.length = 0;
++    fixture.resolve.mockImplementation(() => new Promise(() => undefined));
++    fixture.read.mockResolvedValue(undefined);
++    setActiveAccountId('account-a');
++  });
++  afterEach(() => {
++    useFeatureStore.getState().clear();
++    setActiveAccountId(null);
++    vi.useRealTimers();
+   });
+ 
+-  async function resolveAndReadFlags(flags: Record<string, boolean | string>) {
+-    mockResolveFlags.mockResolvedValue({
+-      flags,
+-      source: 'remote',
+-      refreshedAt: new Date().toISOString(),
+-    });
+-
+-    slice.recomputeFlags({ userId: 'user-123' } as any);
+-    await vi.waitFor(() => {
+-      expect(set).toHaveBeenCalled();
+-    });
+-
+-    return (set.mock.calls[0]?.[0] as any).flags;
+-  }
+-
+-  it('fails closed for temporary flags in an expired snapshot', () => {
+-    const now = Date.parse('2026-07-26T00:00:00.000Z');
+-    const snapshot = normalizeFeatureRolloutSnapshot(
+-      {
+-        flags: { isAIAssistantEnabled: true, isUnderMaintenance: false },
+-        source: 'cache',
+-        refreshedAt: new Date(now - FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS - 1).toISOString(),
+-      },
+-      now,
++  it('drops temporary flags at expiry, retaining operational flags', () => {
++    const result = normalizeFeatureRolloutSnapshot(
++      snapshot({ isAIAssistantEnabled: true, isUnderMaintenance: false }, ttl),
+     );
+-
+-    expect(snapshot.stale).toBe(true);
+-    expect(snapshot.flags).toEqual({ isUnderMaintenance: false });
++    expect(result.stale).toBe(true);
++    expect(result.flags).toEqual({ isUnderMaintenance: false });
+   });
+-
+-  describe('recomputeFlags', () => {
+-    it('ignores a stale rollout response after a newer context recompute', async () => {
+-      let resolveFirst: (snapshot: unknown) => void = () => undefined;
+-      let resolveSecond: (snapshot: unknown) => void = () => undefined;
+-      const first = new Promise((resolve) => {
+-        resolveFirst = resolve;
+-      });
+-      const second = new Promise((resolve) => {
+-        resolveSecond = resolve;
+-      });
+-      mockResolveFlags.mockReturnValueOnce(first).mockReturnValueOnce(second);
+-
+-      slice.recomputeFlags({ userId: 'first-user' } as any);
+-      slice.recomputeFlags({ userId: 'second-user' } as any);
+-
+-      resolveSecond({
+-        flags: { isInventoryEnabled: true },
+-        source: 'remote',
+-        refreshedAt: new Date().toISOString(),
+-      });
+-      await vi.waitFor(() => expect(set).toHaveBeenCalledTimes(1));
+-
+-      resolveFirst({
+-        flags: { isInventoryEnabled: false },
+-        source: 'remote',
+-        refreshedAt: new Date().toISOString(),
+-      });
+-      await Promise.resolve();
+-
+-      expect(set).toHaveBeenCalledTimes(1);
+-    });
+-
+-    it('calls resolveFlags with the provided context', () => {
+-      const context = { userId: 'user-123', email: 'test@test.com' };
+-      mockResolveFlags.mockResolvedValue({
+-        flags: {},
+-        source: 'remote',
+-        refreshedAt: new Date().toISOString(),
+-      });
+-
+-      slice.recomputeFlags(context as any);
+-
+-      expect(mockResolveFlags).toHaveBeenCalledWith(context);
+-    });
+-
+-    it('updates state with resolved flags, merged with defaults', async () => {
+-      const flags = await resolveAndReadFlags({
+-        isInventoryEnabled: true,
+-        isUnderMaintenance: false,
+-      });
+-      expect(flags.isInventoryEnabled).toBe(true);
+-      expect(flags.isUnderMaintenance).toBe(false);
+-    });
+-
+-    it('keeps default flags when GrowthBook returns empty flags', async () => {
+-      const flags = await resolveAndReadFlags({});
+-      expect(flags.isUnderMaintenance).toBe(false);
+-    });
+-
+-    it('keeps existing flags on GrowthBook rejection', async () => {
+-      mockResolveFlags.mockRejectedValue(new Error('Network error'));
+-
+-      slice.recomputeFlags({ userId: 'user-123' } as any);
+-
+-      await vi.waitFor(() => {
+-        expect(set).not.toHaveBeenCalled();
+-      });
++  it('rejects future-dated snapshots', () => {
++    expect(normalizeFeatureRolloutSnapshot(snapshot({ isInventoryEnabled: true }, -1)).stale).toBe(
++      true,
++    );
++  });
++  it('resolves the exact context, projects booleans, and persists only a qualified snapshot', async () => {
++    const ctx = context();
++    fixture.resolve.mockResolvedValue(
++      snapshot({ isInventoryEnabled: 'true', isUnderMaintenance: 'false' }),
++    );
++    useFeatureStore.getState().bindContext(ctx);
++    await flush();
++    expect(fixture.resolve).toHaveBeenCalledWith(ctx);
++    expect(useFeatureStore.getState().flags).toMatchObject({
++      isInventoryEnabled: true,
++      isUnderMaintenance: false,
+     });
+-
+-    it('converts string "true"/"false" values to booleans', async () => {
+-      const flags = await resolveAndReadFlags({
+-        isInventoryEnabled: 'true',
+-        isUnderMaintenance: 'true',
+-      });
+-      expect(flags.isInventoryEnabled).toBe(true);
+-      expect(flags.isUnderMaintenance).toBe(true);
++    const [key, raw] = fixture.write.mock.calls[0]!;
++    expect(key).toBe('gurudevi:account-a:feature-rollout:v1');
++    expect(JSON.parse(raw)).toEqual({
++      context: JSON.stringify(ctx),
++      snapshot: expect.objectContaining({
++        flags: { isInventoryEnabled: 'true', isUnderMaintenance: 'false' },
++      }),
+     });
++    expect(JSON.parse(raw)).not.toHaveProperty('flags');
++  });
++  it('uses defaults for empty flags and ignores unknown remote keys', async () => {
++    fixture.resolve.mockResolvedValue(snapshot({ unknownFlag: true }));
++    useFeatureStore.getState().bindContext(context());
++    await flush();
++    expect(useFeatureStore.getState().flags.isUnderMaintenance).toBe(false);
++    expect(useFeatureStore.getState().flags).not.toHaveProperty('unknownFlag');
++  });
++  it('retains a matching saved snapshot after a remote failure', async () => {
++    const ctx = context();
++    fixture.read.mockResolvedValue(
++      JSON.stringify({
++        context: JSON.stringify(ctx),
++        snapshot: snapshot({ isInventoryEnabled: true }),
++      }),
++    );
++    fixture.resolve.mockRejectedValue(new Error('503'));
++    useFeatureStore.getState().bindContext(ctx);
++    await flush();
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(true);
++    expect(useFeatureStore.getState().snapshot?.source).toBe('cache');
++    expect(fixture.write).not.toHaveBeenCalled();
++  });
++  it('expires a mounted snapshot without another fetch or render', async () => {
++    fixture.resolve.mockResolvedValue(
++      snapshot({ isInventoryEnabled: true, isUnderMaintenance: true }, ttl - 500),
++    );
++    useFeatureStore.getState().bindContext(context());
++    await flush();
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(true);
++    await vi.advanceTimersByTimeAsync(500);
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(false);
++    expect(useFeatureStore.getState().flags.isUnderMaintenance).toBe(true);
++    expect(fixture.resolve).toHaveBeenCalledTimes(1);
++  });
++  it('rejects old responses and subscription callbacks after context replacement', async () => {
++    const first = deferred<FeatureRolloutSnapshot>();
++    fixture.resolve
++      .mockReturnValueOnce(first.promise)
++      .mockResolvedValueOnce(snapshot({ isInventoryEnabled: false }));
++    const endFirst = useFeatureStore.getState().bindContext(context());
++    const oldListener = fixture.listeners[0]!;
++    useFeatureStore.getState().bindContext(context('account-a', 'PRO'));
++    await flush();
++    first.resolve(snapshot({ isInventoryEnabled: true }));
++    oldListener(snapshot({ isInventoryEnabled: true }));
++    endFirst();
++    await flush();
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(false);
++    expect(fixture.write).toHaveBeenCalledTimes(1);
++    expect(fixture.unsubscribe).toHaveBeenCalledTimes(1);
++  });
++  it('clear invalidates pending work and old listeners even before a new context binds', async () => {
++    const pending = deferred<FeatureRolloutSnapshot>();
++    fixture.resolve.mockReturnValue(pending.promise);
++    useFeatureStore.getState().bindContext(context());
++    useFeatureStore.getState().clear();
++    fixture.listeners[0]!(snapshot({ isInventoryEnabled: true }));
++    pending.resolve(snapshot({ isInventoryEnabled: true }));
++    await flush();
++    expect(useFeatureStore.getState().snapshot).toBeNull();
++    expect(fixture.write).not.toHaveBeenCalled();
++  });
++  it('rejects account ABA late results even if no new provider effect has run', async () => {
++    const pending = deferred<FeatureRolloutSnapshot>();
++    fixture.resolve.mockReturnValue(pending.promise);
++    useFeatureStore.getState().bindContext(context());
++    setActiveAccountId('account-b');
++    setActiveAccountId('account-a');
++    pending.resolve(snapshot({ isInventoryEnabled: true }));
++    await flush();
++    expect(getActiveAccountId()).toBe('account-a');
++    expect(useFeatureStore.getState().snapshot).toBeNull();
++    expect(fixture.write).not.toHaveBeenCalled();
++  });
++  it('does not adopt saved evaluations for another entitlement context or overwrite a newer SDK result', async () => {
++    fixture.read.mockResolvedValue(
++      JSON.stringify({
++        context: JSON.stringify(context('account-a', 'PRO')),
++        snapshot: snapshot({ isInventoryEnabled: true }),
++      }),
++    );
++    useFeatureStore.getState().bindContext(context());
++    await flush();
++    expect(useFeatureStore.getState().snapshot).toBeNull();
++    const cached = deferred<string>();
++    fixture.read.mockReturnValue(cached.promise);
++    fixture.resolve.mockResolvedValue(snapshot({ isInventoryEnabled: false }));
++    const ctx = context();
++    useFeatureStore.getState().bindContext(ctx);
++    await flush();
++    cached.resolve(
++      JSON.stringify({
++        context: JSON.stringify(ctx),
++        snapshot: snapshot({ isInventoryEnabled: true }),
++      }),
++    );
++    await flush();
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(false);
++  });
++  it('diagnoses optional persistence failure without losing the active evaluation', async () => {
++    fixture.write.mockRejectedValueOnce(new Error('disk full'));
++    fixture.resolve.mockResolvedValue(snapshot({ isInventoryEnabled: true }));
++    useFeatureStore.getState().bindContext(context());
++    await flush();
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(true);
++  });
++  it('does not replace saved offline evaluation with an SDK that has no loaded payload', async () => {
++    const ctx = context();
++    fixture.read.mockResolvedValue(
++      JSON.stringify({
++        context: JSON.stringify(ctx),
++        snapshot: snapshot({ isInventoryEnabled: true }),
++      }),
++    );
++    fixture.resolve.mockResolvedValue({ ...snapshot({}), source: 'computed' });
++    useFeatureStore.getState().bindContext(ctx);
++    await flush();
++    expect(useFeatureStore.getState().flags.isInventoryEnabled).toBe(true);
++    expect(fixture.write).not.toHaveBeenCalled();
+   });
+ });
+diff --git a/packages/core/src/store/resetScopedStores.ts b/packages/core/src/store/resetScopedStores.ts
+index 753008709..b8a9145dd 100644
+--- a/packages/core/src/store/resetScopedStores.ts
++++ b/packages/core/src/store/resetScopedStores.ts
+@@ -1,12 +1,12 @@
++import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage';
+ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+-import type { UISlice } from '@repo/core/store/slices/ui.slice';
+-import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
++import { useScopeSessionStore } from '@repo/core/store/scopeSession';
++import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
+ import { useAuthStore } from '@repo/core/store/useAuthStore';
++import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+ import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+ import { useTenantStore } from '@repo/core/store/useTenantStore';
+-import { useUIStore } from '@repo/core/store/useUIStore';
++import { migrateLegacyDismissalsForCurrentOwner, useUIStore } from '@repo/core/store/useUIStore';
+ 
+ const authScopedDefaults = {
+   userName: 'Gurudevi',
+@@ -20,46 +20,55 @@ const authScopedDefaults = {
+   isSandboxMode: false,
+   isExplorerMode: true,
+   isBridging: false,
+-  dismissedSampleIds: [],
+   demoLogs: [],
+-  isOnline: true,
+   toast: null,
+ };
+ 
+ const tenantScopedDefaults = {
+-  schoolId: null,
+-  schoolName: null,
+   tenantResolved: false,
+   schoolType: 'generic',
+   realClassCount: 0,
+ };
+ 
+-const uiScopedDefaults: Partial<UISlice> = {
++const uiScopedDefaults = {
+   isSidebarCollapsed: false,
+-  theme: 'system' as UISlice['theme'],
+-  themeMode: 'system' as NonNullable<UISlice['themeMode']>,
+   dismissedSampleIds: [],
+   deskItems: [],
+   isBreathingOpen: false,
++  scaffoldCompletions: {},
+ };
+ 
+-const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
++const activeSubTabsScopedDefaults = {
++  tabsByDomain: {},
++  activeTabByDomain: {},
++  pinnedFeatureIdsByDomain: {
++    self: ['daily_rhythm', 'mood_lotus', 'decision_journal'],
++    workspace: ['attendance', 'gradebook', 'curriculum'],
++  },
++  preferences: {
++    headerStyle: 'adaptive' as const,
++    catalogDefaultAction: 'open_in_subtab' as const,
++    showActiveSubTabs: true,
++    autoHideChromeOnScroll: true,
++    maxTabsPerDomain: 5,
++  },
++  isChromeVisible: true,
++};
+ 
+ export const resetScopedStores = () => {
+-  useAuthStore.setState(authScopedDefaults);
+-  useTenantStore.setState(tenantScopedDefaults);
+-  usePerspectiveStore.getState().resetToPersonalPerspective();
+-  useUIStore.setState(uiScopedDefaults);
+-  useGrowthStore.getState().resetGrowthState();
+-  useFeatureStore.setState((state) => ({
+-    ...state,
+-    flags: featureScopedDefaults,
+-    snapshot: null,
+-  }));
+-  // Commands are partitioned by their original principal. Account lifecycle
+-  // owns an explicit preserve/quarantine/discard transition; a UI-store reset
+-  // must never silently destroy work that still needs reconciliation.
+-  useMutationQueue.setState({ isSyncing: false });
++  withScopedStateWritesPaused(() => {
++    useScopeSessionStore.getState().clear();
++    useCedarDecisionStore.getState().clearDecisions();
++    useAuthStore.setState(authScopedDefaults);
++    useTenantStore.setState(tenantScopedDefaults);
++    useUIStore.setState(uiScopedDefaults);
++    useActiveSubTabsStore.setState(activeSubTabsScopedDefaults);
++    useFeatureStore.getState().clear();
++    // Commands are partitioned by their original principal. Account lifecycle
++    // owns an explicit preserve/quarantine/discard transition; a UI-store reset
++    // must never silently destroy work that still needs reconciliation.
++    useMutationQueue.setState({ isSyncing: false });
++  });
+ };
+ 
+ export const rehydrateScopedStores = async () => {
+@@ -67,8 +76,8 @@ export const rehydrateScopedStores = async () => {
+     useAuthStore.persist?.rehydrate?.(),
+     useTenantStore.persist?.rehydrate?.(),
+     useUIStore.persist?.rehydrate?.(),
+-    useGrowthStore.persist?.rehydrate?.(),
+-    useFeatureStore.persist?.rehydrate?.(),
++    useActiveSubTabsStore.persist?.rehydrate?.(),
+     useMutationQueue.persist?.rehydrate?.(),
+   ]);
++  await migrateLegacyDismissalsForCurrentOwner();
+ };
+diff --git a/packages/core/src/store/slices/feature.slice.ts b/packages/core/src/store/slices/feature.slice.ts
+deleted file mode 100644
+index 16d01a202..000000000
+--- a/packages/core/src/store/slices/feature.slice.ts
++++ /dev/null
+@@ -1,92 +0,0 @@
+-import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
+-import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
+-import { FEATURE_FLAG_MANIFEST } from '@repo/core/logic/registry/featureLifecycleManifest';
+-import type { UserContext } from '@repo/core/logic/schemas/user.schema';
+-import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
+-import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@repo/core/store/types/featureFlags';
+-import type { StateCreator } from 'zustand';
+-
+-export interface FeatureSlice {
+-  flags: FeatureFlags;
+-  snapshot: FeatureRolloutSnapshot | null;
+-
+-  applySnapshot: (snapshot: FeatureRolloutSnapshot) => void;
+-
+-  recomputeFlags: (context: UserContext) => void;
+-}
+-
+-/** Maximum time a persisted rollout snapshot can influence temporary flags. */
+-export const FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+-
+-export function normalizeFeatureRolloutSnapshot(
+-  snapshot: FeatureRolloutSnapshot,
+-  now = Date.now(),
+-): FeatureRolloutSnapshot {
+-  const refreshedAt = Date.parse(snapshot.refreshedAt);
+-  const stale =
+-    !Number.isFinite(refreshedAt) || now - refreshedAt > FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS;
+-
+-  if (!stale) return { ...snapshot, stale: false };
+-
+-  const flags = Object.fromEntries(
+-    Object.entries(snapshot.flags).filter(([key]) => {
+-      const metadata = FEATURE_FLAG_MANIFEST[key as keyof typeof FEATURE_FLAG_MANIFEST];
+-      return metadata?.class === 'operational';
+-    }),
+-  );
+-
+-  return { ...snapshot, flags, stale: true };
+-}
+-
+-function toBoolean(value: boolean | string): boolean {
+-  if (typeof value === 'boolean') return value;
+-  return value === 'true';
+-}
+-
+-function applyFeatureFlags(
+-  base: FeatureFlags,
+-  overrides: Record<string, boolean | string>,
+-): FeatureFlags {
+-  const result = { ...base };
+-  for (const [key, value] of Object.entries(overrides)) {
+-    if (key in result) {
+-      (result as Record<string, unknown>)[key] = toBoolean(value);
+-    }
+-  }
+-  return result;
+-}
+-
+-export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
+-  let recomputeGeneration = 0;
+-
+-  const applySnapshot = (snapshot: FeatureRolloutSnapshot) => {
+-    const normalizedSnapshot = normalizeFeatureRolloutSnapshot(snapshot);
+-    leaveBreadcrumb('flags', 'Feature flags applied', 'info', {
+-      flagCount: Object.keys(snapshot.flags).length,
+-    });
+-    set({
+-      snapshot: normalizedSnapshot,
+-      flags: applyFeatureFlags(DEFAULT_FEATURE_FLAGS, normalizedSnapshot.flags),
+-    });
+-  };
+-
+-  return {
+-    flags: { ...DEFAULT_FEATURE_FLAGS },
+-    snapshot: null,
+-    applySnapshot,
+-    recomputeFlags: (context) => {
+-      const generation = ++recomputeGeneration;
+-      leaveBreadcrumb('flags', 'Recomputing feature flags', 'info');
+-      featureFlags
+-        .resolveFlags(context)
+-        .then((snapshot) => {
+-          if (generation !== recomputeGeneration) return;
+-          applySnapshot(snapshot);
+-        })
+-        .catch((err) => {
+-          console.warn('[FeatureSlice] resolveFlags failed, keeping defaults:', err);
+-          leaveBreadcrumb('flags', 'Recompute failed', 'error', { error: String(err) });
+-        });
+-    },
+-  };
+-};
+diff --git a/packages/core/src/store/useFeatureStore.ts b/packages/core/src/store/useFeatureStore.ts
+index b7a23dd23..dcb8878f2 100644
+--- a/packages/core/src/store/useFeatureStore.ts
++++ b/packages/core/src/store/useFeatureStore.ts
+@@ -1,30 +1,120 @@
+-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+-import { createFeatureSlice, type FeatureSlice } from '@repo/core/store/slices/feature.slice';
++import { getAccountScopeRevision, scopeStorageKey } from '@repo/core/lib/accountScope';
++import {
++  FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS,
++  normalizeFeatureRolloutSnapshot,
++  projectFeatureFlags,
++} from '@repo/core/lib/featureRolloutSnapshot';
++import { storage } from '@repo/core/lib/storage';
++import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
++import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
++import type { UserContext } from '@repo/core/logic/schemas/user.schema';
++import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
++import { getGuestScopeRevision, guestStorageKey } from '@repo/core/native/guestScope';
++import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@repo/core/store/types/featureFlags';
++import { z } from 'zod';
+ import { create } from 'zustand';
+-import { createJSONStorage, persist } from 'zustand/middleware';
+ 
+-/**
+- * useFeatureStore - Sovereign domain store for Feature Flags.
+- *
+- * Persists the resolved rollout view to MMKV (Native) or LocalStorage (Web) to avoid UI flicker on launch.
+- */
+-export const useFeatureStore = create<FeatureSlice>()(
+-  persist(
+-    (...args) => ({
+-      ...createFeatureSlice(...args),
+-    }),
+-    {
+-      name: 'gurudevi-feature-storage',
+-      storage: createJSONStorage(() => SafeZustandStorage),
++const SavedRollout = z.object({
++  context: z.string(),
++  snapshot: z.object({
++    flags: z.record(z.string(), z.union([z.boolean(), z.string()])),
++    source: z.enum(['cache', 'remote', 'computed']),
++    refreshedAt: z.string(),
++  }),
++});
+ 
+-      // Re-apply the persisted snapshot through the lifecycle freshness policy
+-      // before it can influence a screen after a long offline period.
+-      onRehydrateStorage: () => (state) => {
+-        if (state?.snapshot) state.applySnapshot(state.snapshot);
+-      },
++interface FeatureState {
++  flags: FeatureFlags;
++  snapshot: FeatureRolloutSnapshot | null;
++  bindContext: (context: UserContext) => () => void;
++  clear: () => void;
++}
+ 
+-      // Persist the last resolved rollout snapshot for instant, offline startup.
+-      partialize: (state) => ({ flags: state.flags, snapshot: state.snapshot }),
++/** One current SDK evaluation. Flags are an atomic projection, never a persisted authority. */
++export const useFeatureStore = create<FeatureState>((set) => {
++  let generation = 0;
++  let dispose: (() => void) | undefined;
++  const clear = () => {
++    generation += 1;
++    dispose?.();
++    dispose = undefined;
++    set({ flags: DEFAULT_FEATURE_FLAGS, snapshot: null });
++  };
++  return {
++    flags: DEFAULT_FEATURE_FLAGS,
++    snapshot: null,
++    clear,
++    bindContext: (context) => {
++      clear();
++      leaveBreadcrumb('flags', 'Recomputing feature flags', 'info');
++      const owner = generation;
++      const accountRevision = getAccountScopeRevision();
++      const guestRevision = getGuestScopeRevision();
++      const fingerprint = JSON.stringify(context);
++      const key =
++        context.userId && !context.isLocalOnly
++          ? scopeStorageKey('feature-rollout:v1', context.userId)
++          : guestStorageKey('feature-rollout:v1');
++      let timer: ReturnType<typeof setTimeout> | undefined;
++      let sdkPublished = false;
++      const isCurrent = () =>
++        owner === generation &&
++        accountRevision === getAccountScopeRevision() &&
++        guestRevision === getGuestScopeRevision();
++      const publish = (snapshot: FeatureRolloutSnapshot) => {
++        if (!isCurrent()) return;
++        clearTimeout(timer);
++        const normalized = normalizeFeatureRolloutSnapshot(snapshot);
++        set({ snapshot: normalized, flags: projectFeatureFlags(normalized.flags) });
++        if (!normalized.stale) {
++          timer = setTimeout(
++            () => publish(snapshot),
++            Date.parse(snapshot.refreshedAt) + FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS - Date.now(),
++          );
++        }
++      };
++      const accept = (snapshot: FeatureRolloutSnapshot) => {
++        if (!isCurrent()) return;
++        // An SDK without a loaded payload has not superseded a saved evaluation.
++        if (snapshot.source === 'computed' && Object.keys(snapshot.flags).length === 0) return;
++        sdkPublished = true;
++        publish(snapshot);
++        leaveBreadcrumb('flags', 'Feature flags applied', 'info', {
++          flagCount: Object.keys(snapshot.flags).length,
++        });
++        void storage
++          .setAsync(key, JSON.stringify({ context: fingerprint, snapshot }))
++          .catch((error: unknown) => {
++            console.warn('[FeatureRollout] snapshot write failed', error);
++          });
++      };
++      const unsubscribe = featureFlags.subscribeToFlagChanges(context, accept);
++      dispose = () => {
++        clearTimeout(timer);
++        unsubscribe();
++      };
++      void storage
++        .getStringAsync(key)
++        .then((raw) => {
++          if (!raw || !isCurrent() || sdkPublished) return;
++          const saved = SavedRollout.parse(JSON.parse(raw));
++          if (saved.context === fingerprint) publish({ ...saved.snapshot, source: 'cache' });
++        })
++        .catch((error: unknown) => {
++          console.warn('[FeatureRollout] snapshot read failed; record retained', error);
++        });
++      void featureFlags
++        .resolveFlags(context)
++        .then(accept)
++        .catch((error: unknown) => {
++          if (isCurrent()) {
++            console.warn('[FeatureRollout] refresh failed; keeping current snapshot', error);
++            leaveBreadcrumb('flags', 'Recompute failed', 'error', { error: String(error) });
++          }
++        });
++      return () => {
++        if (owner === generation) clear();
++      };
+     },
+-  ),
+-);
++  };
++});
+diff --git a/packages/ui/src/providers/FeatureProvider.tsx b/packages/ui/src/providers/FeatureProvider.tsx
+index e0816c5a7..86485d00d 100644
+--- a/packages/ui/src/providers/FeatureProvider.tsx
++++ b/packages/ui/src/providers/FeatureProvider.tsx
+@@ -1,4 +1,5 @@
+-import { featureFlags, useFeatureStore, usePermissions } from '@repo/core/logic';
++import { usePermissions } from '@repo/core/logic';
++import { useFeatureStore } from '@repo/core/store';
+ import type React from 'react';
+ import { useEffect } from 'react';
+ 
+@@ -6,26 +7,14 @@ export interface FeatureProviderProps {
+   children: React.ReactNode;
+ }
+ 
+-/**
+- * FeatureProvider - The synchronization engine for feature flags.
+- *
+- * FAANG Principle: "Contextual Reactivity". This component ensures that
+- * whenever the User Context changes (Auth, Tier, Roles), the Feature Flags
+- * are recomputed instantly across the entire platform.
+- */
+ export const FeatureProvider: React.FC<FeatureProviderProps> = ({ children }) => {
+   const { context } = usePermissions();
+-  const recomputeFlags = useFeatureStore((state) => state.recomputeFlags);
++  const bindContext = useFeatureStore((state) => state.bindContext);
+ 
+-  // Trigger re-computation of flags whenever user context changes
+   useEffect(() => {
+     if (!context) return undefined;
+-
+-    recomputeFlags(context);
+-    return featureFlags.subscribeToFlagChanges(context, (snapshot) => {
+-      useFeatureStore.getState().applySnapshot(snapshot);
+-    });
+-  }, [context, recomputeFlags]);
++    return bindContext(context);
++  }, [context, bindContext]);
+ 
+   return <>{children}</>;
+ };

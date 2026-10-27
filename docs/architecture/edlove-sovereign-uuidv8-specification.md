@@ -2,7 +2,7 @@
 title: "EdLove Sovereign UUIDv8 Specification"
 status: "active"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-25
 author: "Naveen"
 scribe: "Codex"
 tags: [architecture, edlove, uuidv8, identity, data-governance, interoperability]
@@ -60,7 +60,7 @@ compatibility, and documentation.
 | Use case | Identifier policy |
 |---|---|
 | Durable cross-product EdLove entity | EdLove UUIDv8 after its entity family is registered here. |
-| Existing durable entity | Preserve its existing primary key. Add a mapped EdLove ID only through an approved migration. |
+| Existing durable entity | Preserve its key unless an explicit migration is approved. The 2026-10-25 pre-production account cutover promotes UUIDv8 to `public.users.id` and rekeys domain references. |
 | High-volume operational/event row without cross-product identity | UUIDv7 generated at the authoritative write boundary. |
 | Provider or channel subject | Provider-scoped opaque text in a binding table, never rewritten into an EdLove UUID. |
 | Capability, invite, password-reset, QR, or session value | Dedicated random/cryptographic token format; never a predictable UUID. |
@@ -148,6 +148,44 @@ and reconciliation protocol.
 6. Entity metadata remains in typed columns. The ID is never parsed in a
    browser to decide access or product behavior.
 
+### Account issuer operating contract
+
+`public.new_edlove_account_id()` owns the account default. Its private clock
+singleton serializes issuance through the surrounding transaction's commit.
+It samples wall time after taking that lock, retains a logical timestamp for
+rollback up to 30 seconds, and rejects larger rollback with SQLSTATE `22008`.
+Lock acquisition is capped at five seconds (`55P03`); this is not a whole
+transaction timeout or a throughput guarantee.
+
+The issuer checks persisted account collisions and draws fresh CSPRNG bytes
+up to five times, failing with `54000` on entropy exhaustion. The Auth account
+provisioning trigger additionally retries an actual `public.users.users_pkey`
+violation up to five times. It verifies schema, table and constraint from the
+exception; email, username and trigger-side uniqueness failures propagate
+unchanged. The primary key remains the final persistence authority. Calling
+the generator without inserting does not reserve an identifier.
+
+`private.edlove_account_clock.mint_origin` accepts only central production
+(`0`) or central non-production (`1`). New pre-production databases default
+to `1`, including the approved hosted development target. Production admission
+requires an operator to set and verify `0` before accepting account creation.
+PUBLIC, anon, authenticated and service_role cannot alter the private clock
+or provenance. Origins never choose account permissions. Previously assigned
+IDs retain their original immutable provenance.
+
+Issuer events use stable log codes: `EDLOVE_ACCOUNT_ID_COLLISION`,
+`EDLOVE_ACCOUNT_INSERT_COLLISION`, `EDLOVE_ACCOUNT_CLOCK_ROLLBACK_RETAINED`
+and `EDLOVE_ACCOUNT_CLOCK_ROLLBACK_EXCEEDED`. Their application messages carry
+no account IDs or credentials. Hosted log collection, alert routing and
+operational load admission remain deployment evidence requirements; emitting
+a PostgreSQL log message does not prove an alert reached an operator.
+
+The local fault-injection suite is
+`apps/gurudevi-mobile/supabase/tests/migrations/canonical_uuidv8_issuer.test.sql`.
+It substitutes only the issuer's entropy call and provisioning issuer in a
+rollback-only isolated test database. The API PostgreSQL harness separately
+uses the unchanged CSPRNG and verifies concurrent issuance and lock timeout.
+
 ## 7. Governance and change control
 
 EdLove architecture owns this registry. Adding a domain, subtype, origin, or a
@@ -162,22 +200,27 @@ the value is not a durable cross-product boundary.
 
 ## 8. Adoption sequence
 
-1. Add conformance tests for the profile; do not alter database IDs yet.
-2. Implement the server generator and validation boundary with collision retry
-   and audit telemetry.
-3. Register `Identity/account` first, then introduce `public.users.edlove_id`
-   as a nullable, unique additive secondary key. It maps to the existing
-   canonical `public.users.id`; it does not replace the primary key, provider
-   bindings, or foreign keys.
-4. Prove provider-subject-to-EdLove-account resolution across web, mobile, API,
-   AI, and channel ingress.
+1. Preserve the profile and SQL/TypeScript conformance vectors. Complete
+   bounded collision handling, clock alerts and issuer operational evidence;
+   sample uniqueness and a valid UUID shape do not close those requirements.
+2. For accounts, apply the explicitly approved 2026-10-25 pre-production
+   cutover: the database issues immutable UUIDv8 `public.users.id` values and
+   domain foreign keys reference that account. Provider subjects remain
+   unchanged in server-owned bindings. The former nullable `edlove_id` and
+   asynchronous assignment sequence is superseded.
+3. Prove provider-subject-to-account resolution across web, mobile, API,
+   AI, and channel ingress. Local account tests do not establish hosted or
+   physical-device acceptance.
+4. Admit additional durable entity families individually with a registered
+   profile, authoritative issuer and migration evidence. The account cutover
+   does not authorize blanket rekeying of other tables.
 5. Consider offline minting only after device-key custody, clock, collision,
    and reconciliation evidence exists.
 
 The program order is maintained in
 [`edlove-identity-convergence-program.md`](edlove-identity-convergence-program.md).
-The bounded first implementation slice is maintained in
-[`2026-10-23-edlove-uuidv8-foundation-implementation-plan.md`](../current_progress/2026-10-23-edlove-uuidv8-foundation-implementation-plan.md).
+Current implementation evidence is maintained in the
+[canonical account cutover record](../current_progress/2026-10-25-canonical-uuidv8-account-cutover.md).
 
 ## References
 

@@ -10,7 +10,6 @@ export {
 export { isDemo } from '@repo/core/api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
-export * from '@repo/core/efficiency';
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
@@ -89,6 +88,7 @@ export {
 } from '@repo/core/logic/deeplink/pendingIntentStore';
 export {
   createDomainServices,
+  type DomainRepositories,
   type DomainServices,
 } from '@repo/core/logic/domains/factory';
 export type {
@@ -195,9 +195,7 @@ export {
   useCapabilityHydration,
 } from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
-export type { FeatureSlice } from '@repo/core/store/slices/feature.slice';
 // 2. Logic State & Storage (Zustand & Supabase)
-export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
@@ -271,12 +269,17 @@ export {
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMediaDownloader';
 export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
-export { useNotifications } from '@repo/core/hooks/useNotifications';
 export { usePendingActions } from '@repo/core/hooks/usePendingActions';
 export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
 export { useRewards } from '@repo/core/hooks/useRewards';
 export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
 export { useSchoolCreation } from '@repo/core/hooks/useSchoolCreation';
+export {
+  deviceSecurityQueryKeys,
+  invalidateDeviceSecuritySummary,
+  resolveDeviceSecurityQueryScope,
+  useScopedDeviceSecurity,
+} from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useStudentGoals } from '@repo/core/hooks/useStudentGoals';
 export { useTaskActions } from '@repo/core/hooks/useTaskActions';
 export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';

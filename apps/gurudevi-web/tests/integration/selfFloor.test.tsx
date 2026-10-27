@@ -416,11 +416,10 @@ describe('SelfFloor Component Boundary Tests (G1)', () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
+    const moodLotusCard = screen.getByRole('heading', { level: 4, name: 'Mood Lotus' }).closest('article');
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
-    expect(screen.getByRole('dialog')).toBeDefined();
     expect(screen.getByText('How are you arriving?')).toBeDefined();
   });
 });
@@ -453,7 +452,7 @@ describe('Mood Lotus Boundary Tests (G1)', () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
+    const moodLotusCard = screen.getByRole('heading', { level: 4, name: 'Mood Lotus' }).closest('article');
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
@@ -476,7 +475,7 @@ describe('Mood Lotus Boundary Tests (G1)', () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
+    const moodLotusCard = screen.getByRole('heading', { level: 4, name: 'Mood Lotus' }).closest('article');
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 

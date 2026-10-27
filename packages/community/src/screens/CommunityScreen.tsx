@@ -26,16 +26,14 @@ import {
   useManifestoHooks,
   usePostsInfiniteQuery,
 } from '@repo/core/api/hooks';
-import { useDomainRollout, useTracking } from '@repo/core/hooks';
-import {
-  resolveWorkspaceAppearanceColor,
-  setPendingGateAction,
-  usePermissions,
-} from '@repo/core/logic';
+import { useDomainRollout, useScaffoldDismissal, useTracking } from '@repo/core/hooks';
+import { resolveWorkspaceAppearanceColor, setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
-import { useAuthStore, useFeatureStore, useTemporalStore } from '@repo/core/store';
+import { useAuthStore, useFeatureStore } from '@repo/core/store';
+import { useTemporalStore } from '@repo/core/logic';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
-import { color, useScrollChromeCollapser } from '@repo/ui';
+import { color, FireflyMascot, useScrollChromeCollapser } from '@repo/ui';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -43,13 +41,16 @@ import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context';
 import { Info, Plus, Sparkles } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { router } from 'expo-router';
+import { Box, Button, ButtonText, Heading, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import InviteCodeEntry from '@repo/community/screens/InviteCodeEntry';
+import { router, useLocalSearchParams } from 'expo-router';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 
 interface CommunityScreenState {
@@ -184,7 +185,10 @@ export default function CommunityScreen() {
   const isShortLandscape = width > height && height < 500;
   const { discoverFeature } = useTracking();
   const { can } = usePermissions();
-  const { isPastView, isOffline } = useTemporalStore();
+  const { isDismissed: isDay0HearthDismissed, completeScaffold: dismissDay0Hearth } =
+    useScaffoldDismissal('community_day0_hearth_scaffold', 1);
+  const isPastView = useTemporalStore((state) => state.isPastView);
+  const { isOffline } = useOfflineStatus();
   const user = useAuthStore((state) => state.user);
   const flags = useFeatureStore((state) => state.flags);
   const isCommunityEnabled = useDomainRollout('hearth');
@@ -213,6 +217,21 @@ export default function CommunityScreen() {
   const resolvedCommunitySurfaces = resolvedSurfaces;
 
   const [state, dispatch] = useReducer(communityScreenReducer, initialState);
+  const routeParams = useLocalSearchParams<{ mode?: string; inviteCode?: string }>();
+  const [inviteCode] = useState<string | undefined>(() => {
+    const raw = routeParams.inviteCode;
+    return Array.isArray(raw) ? raw[0] : raw;
+  });
+  const [showInviteModal, setShowInviteModal] = useState<boolean>(() => Boolean(inviteCode));
+
+  useEffect(() => {
+    if (
+      routeParams.mode &&
+      ['feed', 'circles', 'messages', 'announcements'].includes(routeParams.mode)
+    ) {
+      dispatch({ type: 'SET_ACTIVE_MODE', payload: routeParams.mode as CommunityWorkspaceMode });
+    }
+  }, [routeParams.mode]);
 
   const {
     data: postsData,
@@ -544,23 +563,64 @@ export default function CommunityScreen() {
   );
 
   const renderHearthCard = () => (
-    <Box className="mx-4 mt-4 rounded-3xl border border-border bg-phase-surface/50 overflow-hidden">
-      <VStack className="gap-4 p-5">
-        <VStack className="gap-1">
-          <Heading className="text-lg text-ink font-bold">Community hearth</Heading>
-          <Text className="text-ink/60 leading-snug text-sm">
-            Presence, welcome, and manifesto energy stay first so the community feels alive before
-            it feels busy.
-          </Text>
+    <>
+      {!isDay0HearthDismissed && sanctuaryGroups.length === 0 ? (
+        <Box className="mx-4 mt-4 rounded-3xl border border-phase-interactive/30 bg-phase-surface p-5 shadow-sm">
+          <HStack className="items-center gap-4">
+            <FireflyMascot size={64} mode="glowing" role="guide" />
+            <VStack className="flex-1 gap-1">
+              <Text className="text-xs font-bold uppercase tracking-wider text-phase-interactive">
+                Welcome to the Community Hearth
+              </Text>
+              <Text className="text-sm font-semibold text-ink">
+                Circles are spaces of shared learning, curiosity, and resonance. Connect with peers or explore active discussions.
+              </Text>
+            </VStack>
+          </HStack>
+          <HStack className="mt-4 items-center justify-between gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-xl border-border"
+              onPress={() => {
+                hapticLight();
+                dismissDay0Hearth();
+              }}
+            >
+              <ButtonText className="text-xs text-ink/60">I know my way around</ButtonText>
+            </Button>
+            <Button
+              size="sm"
+              className="rounded-xl bg-phase-interactive"
+              onPress={() => {
+                hapticSuccess();
+                handleModeChange('circles');
+                dismissDay0Hearth();
+              }}
+            >
+              <ButtonText className="text-xs text-white font-bold">Explore Circles</ButtonText>
+            </Button>
+          </HStack>
+        </Box>
+      ) : null}
+      <Box className="mx-4 mt-4 rounded-3xl border border-border bg-phase-surface/50 overflow-hidden">
+        <VStack className="gap-4 p-5">
+          <VStack className="gap-1">
+            <Heading className="text-lg text-ink font-bold">Community hearth</Heading>
+            <Text className="text-ink/60 leading-snug text-sm">
+              Presence, welcome, and manifesto energy stay first so the community feels alive before
+              it feels busy.
+            </Text>
+          </VStack>
+          <HStack className="justify-between gap-3 flex-wrap">
+            <PulseCard label="Members seen" value={String(pulse.membersSeen || 0)} />
+            <PulseCard label="Active manifestos" value={String(pulse.manifestosActive)} />
+            <PulseCard label="Joined circles" value={String(sanctuaryGroups.length)} />
+          </HStack>
         </VStack>
-        <HStack className="justify-between gap-3 flex-wrap">
-          <PulseCard label="Members seen" value={String(pulse.membersSeen || 0)} />
-          <PulseCard label="Active manifestos" value={String(pulse.manifestosActive)} />
-          <PulseCard label="Joined circles" value={String(sanctuaryGroups.length)} />
-        </HStack>
-      </VStack>
-      <CommunityHearth manifestos={manifestos as any} userId={userId} />
-    </Box>
+        <CommunityHearth manifestos={manifestos as any} userId={userId} />
+      </Box>
+    </>
   );
 
   const renderComposeCard = () => (
@@ -708,23 +768,18 @@ export default function CommunityScreen() {
     }
 
     return (
-      <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}>
-        {renderHero()}
-        {!isShortLandscape ? renderHearthCard() : null}
-        <Box className="px-4 pt-4">
-          <SectionCard
-            title="My sanctuary"
-            description="Joined circles stay close, while discoverable circles remain one step away."
-          >
-            <GroupsScreen
-              userId={user?.id}
-              schoolId={schoolId}
-              onCreateGroup={() => dispatch({ type: 'SET_SHOW_CREATE_GROUP', payload: true })}
-              onNavigateToGroup={handleNavigateToGroup}
-            />
-          </SectionCard>
-        </Box>
-      </ScrollView>
+      <GroupsScreen
+        userId={user?.id}
+        schoolId={schoolId}
+        onCreateGroup={() => dispatch({ type: 'SET_SHOW_CREATE_GROUP', payload: true })}
+        onNavigateToGroup={handleNavigateToGroup}
+        ListHeaderComponent={
+          <VStack>
+            {renderHero()}
+            {!isShortLandscape ? renderHearthCard() : null}
+          </VStack>
+        }
+      />
     );
   };
 
@@ -765,17 +820,12 @@ export default function CommunityScreen() {
     }
 
     return (
-      <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}>
-        {renderHero()}
-        <Box className="px-4 pt-4">
-          <SectionCard
-            title="School guidance"
-            description="Announcements remain reachable without crowding the feed."
-          >
-            <AnnouncementsScreen schoolId={schoolId} userId={user.id} />
-          </SectionCard>
-        </Box>
-      </ScrollView>
+      <AnnouncementsScreen
+        schoolId={schoolId}
+        userId={user.id}
+        isEmbedded
+        headerComponent={renderHero()}
+      />
     );
   };
 
@@ -832,6 +882,27 @@ export default function CommunityScreen() {
           postType={state.comment.postType}
           onClose={handleCloseCommentSheet}
         />
+
+        <SanctuaryModal
+          isOpen={showInviteModal}
+          onClose={() => setShowInviteModal(false)}
+          title="Sanctuary Invitation"
+        >
+          <InviteCodeEntry
+            initialCode={inviteCode}
+            onCodeValidated={(codeData) => {
+              setShowInviteModal(false);
+              router.push({
+                pathname: '/invitation-welcome',
+                params: {
+                  capacity: codeData.capacity,
+                  schoolName: codeData.school_name,
+                },
+              });
+            }}
+            onSkip={() => setShowInviteModal(false)}
+          />
+        </SanctuaryModal>
       </Box>
     </ScreenWrapper>
   );

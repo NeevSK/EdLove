@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { assignmentsAPI } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
+
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -15,7 +17,7 @@ export interface GradeRow {
 }
 
 export function useStudentGrades(studentId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [grades, setGrades] = useState<GradeRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

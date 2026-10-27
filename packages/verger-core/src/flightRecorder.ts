@@ -1,5 +1,5 @@
 import { reasonCode } from './telemetry';
-import type { GovernorSnapshot } from './types';
+import type { VergerSnapshot } from './types';
 
 /**
  * The last decisions before a failure (Mars Pathfinder's lesson: you can only fix what you can
@@ -7,7 +7,9 @@ import type { GovernorSnapshot } from './types';
  * launcher and sent home once, after a failed session. Lines carry codes, never user data.
  */
 export interface FlightRecorder {
-  record(snapshot: GovernorSnapshot): void;
+  record(snapshot: VergerSnapshot): void;
+  /** A line already in the recorder's code form (a verdict), kept in the same ring. */
+  note(line: string): void;
   /** Oldest first. */
   lines(): readonly string[];
 }
@@ -24,6 +26,10 @@ export function createFlightRecorder(
       ring.push(flightLine(snapshot, sessionStartAt));
       if (ring.length > size) ring.splice(0, ring.length - size);
     },
+    note(line) {
+      ring.push(line);
+      if (ring.length > size) ring.splice(0, ring.length - size);
+    },
     lines: () => [...ring],
   };
 }
@@ -33,7 +39,7 @@ export function createFlightRecorder(
  * Levels list only levers away from full quality, as `id=level`, sorted, so a line reads at a
  * glance and two lines diff cleanly.
  */
-export function flightLine(snapshot: GovernorSnapshot, sessionStartAt: number): string {
+export function flightLine(snapshot: VergerSnapshot, sessionStartAt: number): string {
   const seconds = Math.max(0, Math.round((snapshot.at - sessionStartAt) / 100) / 10);
   const lowered = Object.entries(snapshot.proposedLevels)
     .filter(([, level]) => level > 0)

@@ -1,11 +1,11 @@
-import { authAPI } from '@repo/core/auth';
+import { authAPI } from '@repo/core/api/auth';
 import { LanguageUtils } from '@repo/core/logic';
+import { LanguageSwitcher } from '@repo/ui/components/LanguageSwitcher';
+import { SanctuaryDoorwayActions } from '@repo/ui/components/SanctuaryDoorwayActions';
 import {
-  LanguageSwitcher,
-  SanctuaryDoorwayActions,
   type SanctuaryRealmItem,
   SanctuaryRealmSelector,
-} from '@repo/ui/components';
+} from '@repo/ui/components/SanctuaryRealmSelector';
 import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { SkiaGlowAura } from '@repo/ui/components/SkiaGlowAura';
@@ -23,11 +23,13 @@ import { useTranslation } from 'react-i18next';
 export interface SanctuaryWelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
+  /** Mobile owns guest identity selection so offline entry can remain device-local. */
+  onStartGuest?: () => Promise<void>;
   exploreArtwork?: MascotArtworkSource;
 }
 
 export const SanctuaryWelcomeScreen = memo(
-  ({ onLogin, onGuest, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
+  ({ onLogin, onGuest, onStartGuest, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
     const { t, i18n } = useTranslation();
     const { accent, animationsEnabled, blurEnabled, scene } = useTheme();
     const { isReduceMotionEnabled } = useAccessibility();
@@ -49,8 +51,12 @@ export const SanctuaryWelcomeScreen = memo(
       setIsConnecting(true);
 
       try {
-        await authAPI.signInAnonymously();
-        if (onGuest) onGuest();
+        if (onStartGuest) {
+          await onStartGuest();
+        } else {
+          await authAPI.signInAnonymously();
+          if (onGuest) onGuest();
+        }
       } catch (error) {
         console.error('[SanctuaryWelcomeScreen] Guest login failed:', error);
         showToast({
@@ -67,7 +73,7 @@ export const SanctuaryWelcomeScreen = memo(
         guestEntryInFlightRef.current = false;
         setIsConnecting(false);
       }
-    }, [isConnecting, onGuest, showToast, t]);
+    }, [isConnecting, onGuest, onStartGuest, showToast, t]);
 
     const handleLoginPress = useCallback(() => {
       hapticLight();

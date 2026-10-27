@@ -1,7 +1,9 @@
 import { identityAPI } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useTemporalStore } from '@repo/core/logic';
 import { FlowResolver } from '@repo/core/native';
+import { useUIStore } from '@repo/core/store';
 import { resolveQR } from '@repo/scanner-kit';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useSanctuaryToast } from '@repo/ui/hooks';
@@ -20,7 +22,7 @@ type WorkspaceClassroom = {
 
 export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
   const router = useRouter();
-  const { isDemoMode } = useStore();
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
   const isGuest = useIsGuest();
   const { showToast } = useSanctuaryToast();
   const { isPastView } = useTemporalStore();
@@ -69,8 +71,8 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
     });
   }, []);
 
-  const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
-  const isGlobalBreathingOpen = useStore((state) => state.isBreathingOpen ?? false);
+  const setBreathingOpen = useUIStore((state) => state.setBreathingOpen ?? (() => {}));
+  const isGlobalBreathingOpen = useUIStore((state) => state.isBreathingOpen ?? false);
 
   const handleScan = useCallback(
     async (data: string) => {

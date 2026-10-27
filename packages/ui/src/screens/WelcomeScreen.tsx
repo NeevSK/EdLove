@@ -71,147 +71,166 @@ const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) =>
 interface WelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
+  /** Mobile owns guest identity selection so offline entry can remain device-local. */
+  onStartGuest?: () => Promise<void>;
   exploreArtwork?: MascotArtworkSource;
 }
 
-const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenProps) => {
-  const { t, i18n } = useTranslation();
-  const { accent, animationsEnabled, blurEnabled } = useTheme();
-  const [acceptedTerms, setAcceptedTerms] = useState(true);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const guestEntryInFlightRef = useRef(false);
-  const { showToast } = useSanctuaryToast();
+const WelcomeScreen = memo(
+  ({ onLogin, onGuest, onStartGuest, exploreArtwork }: WelcomeScreenProps) => {
+    const { t, i18n } = useTranslation();
+    const { accent, animationsEnabled, blurEnabled } = useTheme();
+    const [acceptedTerms, setAcceptedTerms] = useState(true);
+    const [isConnecting, setIsConnecting] = useState(false);
+    const guestEntryInFlightRef = useRef(false);
+    const { showToast } = useSanctuaryToast();
 
-  const changeLanguage = useCallback((langCode: string) => {
-    hapticLight();
-    void LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
-  }, []);
+    const changeLanguage = useCallback((langCode: string) => {
+      hapticLight();
+      void LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
+    }, []);
 
-  const showTermsToast = useCallback(() => {
-    showToast({
-      message:
-        t('auth.acceptTermsRequired') ||
-        'Please accept the Terms of Use and Privacy Policy to continue in the sanctuary',
-      type: 'error',
-    });
-  }, [showToast, t]);
-
-  const handleStartExploring = useCallback(async () => {
-    if (isConnecting || guestEntryInFlightRef.current) return;
-    if (!acceptedTerms) {
-      hapticError();
-      showTermsToast();
-      return;
-    }
-
-    hapticSuccess();
-    guestEntryInFlightRef.current = true;
-    setIsConnecting(true);
-    try {
-      await authAPI.signInAnonymously();
-      if (onGuest) onGuest();
-    } catch (error) {
-      console.error('Guest login failed:', error);
+    const showTermsToast = useCallback(() => {
       showToast({
-        message: getGuestEntryErrorMessage(
-          error,
-          t('auth.guestLoginFailed') ||
-            'We could not open the sanctuary doors for you right now. Please try again.',
-          t('common.offlineMessage') ||
-            'You appear to be offline. Please check your connection to enter as a guest.',
-        ),
+        message:
+          t('auth.acceptTermsRequired') ||
+          'Please accept the Terms of Use and Privacy Policy to continue in the sanctuary',
         type: 'error',
       });
-    } finally {
-      guestEntryInFlightRef.current = false;
-      setIsConnecting(false);
+    }, [showToast, t]);
+
+    const handleStartExploring = useCallback(async () => {
+      if (isConnecting || guestEntryInFlightRef.current) return;
+      if (!acceptedTerms) {
+        hapticError();
+        showTermsToast();
+        return;
+      }
+
+      hapticSuccess();
+      guestEntryInFlightRef.current = true;
+      setIsConnecting(true);
+      try {
+        if (onStartGuest) {
+          await onStartGuest();
+        } else {
+          await authAPI.signInAnonymously();
+          if (onGuest) onGuest();
+        }
+      } catch (error) {
+        console.error('Guest login failed:', error);
+        showToast({
+          message: getGuestEntryErrorMessage(
+            error,
+            t('auth.guestLoginFailed') ||
+              'We could not open the sanctuary doors for you right now. Please try again.',
+            t('common.offlineMessage') ||
+              'You appear to be offline. Please check your connection to enter as a guest.',
+          ),
+          type: 'error',
+        });
+      } finally {
+        guestEntryInFlightRef.current = false;
+        setIsConnecting(false);
+      }
+    }, [acceptedTerms, onGuest, onStartGuest, showTermsToast, showToast, t]);
+
+    const handleStartExploringPress = useCallback(() => {
+      void handleStartExploring();
+    }, [handleStartExploring]);
+
+    const handleLogin = useCallback(() => {
+      if (!acceptedTerms) {
+        hapticError();
+        showTermsToast();
+        return;
+      }
+      hapticLight();
+      // Identity Phase: Navigate to Auth screen
+      if (onLogin) onLogin();
+    }, [acceptedTerms, onLogin, showTermsToast]);
+
+    const handleTermsChange = useCallback((checked: boolean) => {
+      hapticLight();
+      setAcceptedTerms(checked);
+    }, []);
+
+    interface Pillar {
+      label: string;
+      tone: string;
     }
-  }, [acceptedTerms, onGuest, showTermsToast, showToast, t]);
 
-  const handleStartExploringPress = useCallback(() => {
-    void handleStartExploring();
-  }, [handleStartExploring]);
+    const pillars = useMemo<Pillar[]>(
+      () => [
+        { label: 'Self', tone: accent.action },
+        { label: 'Workspace', tone: Theme.colors.gurudeviBlue },
+        { label: 'Community', tone: Theme.colors.gurudeviViolet },
+        { label: 'Library', tone: Theme.colors.sageGreen },
+      ],
+      [accent.action],
+    );
 
-  const handleLogin = useCallback(() => {
-    if (!acceptedTerms) {
-      hapticError();
-      showTermsToast();
-      return;
-    }
-    hapticLight();
-    // Identity Phase: Navigate to Auth screen
-    if (onLogin) onLogin();
-  }, [acceptedTerms, onLogin, showTermsToast]);
+    return (
+      <ScreenWrapper fullWidth scroll>
+        <Box className="flex-1 min-h-full w-full bg-phase-surface px-6 pt-10 pb-12 overflow-hidden items-center justify-between">
+          {/* Background decorative blobs */}
+          <Box
+            className="absolute -top-14 -left-9 w-[220px] h-[220px] rounded-full"
+            style={{ backgroundColor: `${accent.action}14` }}
+          />
+          <Box
+            className="absolute right-[-44px] top-32 w-[180px] h-[180px] rounded-full"
+            style={{ backgroundColor: `${Theme.colors.gurudeviBlue}16` }}
+          />
+          <Box
+            className="absolute left-7 bottom-[92px] w-[140px] h-[140px] rounded-full"
+            style={{ backgroundColor: `${Theme.colors.gurudeviViolet}10` }}
+          />
 
-  const handleTermsChange = useCallback((checked: boolean) => {
-    hapticLight();
-    setAcceptedTerms(checked);
-  }, []);
+          <Box className="items-end mb-6">
+            <HStack className="bg-phase-surface rounded-[20px] p-1 border border-phase-border space-x-0.5">
+              {LANGUAGES.map((lang) => (
+                <LanguagePill
+                  key={lang.code}
+                  lang={lang}
+                  isActive={i18n.language?.startsWith(lang.code)}
+                  onPress={changeLanguage}
+                  t={t}
+                />
+              ))}
+            </HStack>
+          </Box>
 
-  interface Pillar {
-    label: string;
-    tone: string;
-  }
+          <VStack className="w-full max-w-[460px] self-center flex-1 gap-8">
+            <VStack className="gap-6 pt-4">
+              <Box className="self-start px-4 py-1.5 rounded-full bg-phase-accent/10 border border-phase-accent/30">
+                <Text className="text-[10px] font-bold text-phase-accent tracking-[0.6px]">
+                  SANCTUARY FOR TEACHERS
+                </Text>
+              </Box>
 
-  const pillars = useMemo<Pillar[]>(
-    () => [
-      { label: 'Self', tone: accent.action },
-      { label: 'Workspace', tone: Theme.colors.gurudeviBlue },
-      { label: 'Community', tone: Theme.colors.gurudeviViolet },
-      { label: 'Library', tone: Theme.colors.sageGreen },
-    ],
-    [accent.action],
-  );
-
-  return (
-    <ScreenWrapper fullWidth scroll>
-      <Box className="flex-1 min-h-full w-full bg-phase-surface px-6 pt-10 pb-12 overflow-hidden items-center justify-between">
-        {/* Background decorative blobs */}
-        <Box
-          className="absolute -top-14 -left-9 w-[220px] h-[220px] rounded-full"
-          style={{ backgroundColor: `${accent.action}14` }}
-        />
-        <Box
-          className="absolute right-[-44px] top-32 w-[180px] h-[180px] rounded-full"
-          style={{ backgroundColor: `${Theme.colors.gurudeviBlue}16` }}
-        />
-        <Box
-          className="absolute left-7 bottom-[92px] w-[140px] h-[140px] rounded-full"
-          style={{ backgroundColor: `${Theme.colors.gurudeviViolet}10` }}
-        />
-
-        <Box className="items-end mb-6">
-          <HStack className="bg-phase-surface rounded-[20px] p-1 border border-phase-border space-x-0.5">
-            {LANGUAGES.map((lang) => (
-              <LanguagePill
-                key={lang.code}
-                lang={lang}
-                isActive={i18n.language?.startsWith(lang.code)}
-                onPress={changeLanguage}
-                t={t}
-              />
-            ))}
-          </HStack>
-        </Box>
-
-        <VStack className="w-full max-w-[460px] self-center flex-1 gap-8">
-          <VStack className="gap-6 pt-4">
-            <Box className="self-start px-4 py-1.5 rounded-full bg-phase-accent/10 border border-phase-accent/30">
-              <Text className="text-[10px] font-bold text-phase-accent tracking-[0.6px]">
-                SANCTUARY FOR TEACHERS
-              </Text>
-            </Box>
-
-            <VStack className="gap-4">
-              <Box className="w-[156px] h-[156px] self-center justify-center items-center relative">
-                {animationsEnabled && blurEnabled ? (
-                  <SkiaGlowAura
-                    active
-                    blurRadius={20}
-                    color={`${accent.action}B3`}
-                    secondaryColor={`${accent.reward}1A`}
-                    size={156}
-                  >
+              <VStack className="gap-4">
+                <Box className="w-[156px] h-[156px] self-center justify-center items-center relative">
+                  {animationsEnabled && blurEnabled ? (
+                    <SkiaGlowAura
+                      active
+                      blurRadius={20}
+                      color={`${accent.action}B3`}
+                      secondaryColor={`${accent.reward}1A`}
+                      size={156}
+                    >
+                      <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
+                        <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
+                        <Mascot
+                          artwork={exploreArtwork}
+                          mode="glowing"
+                          podVariant="halo"
+                          size={156}
+                          state="guiding"
+                        />
+                      </Box>
+                    </SkiaGlowAura>
+                  ) : (
                     <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
                       <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
                       <Mascot
@@ -222,125 +241,114 @@ const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenP
                         state="guiding"
                       />
                     </Box>
-                  </SkiaGlowAura>
-                ) : (
-                  <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
-                    <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
-                    <Mascot
-                      artwork={exploreArtwork}
-                      mode="glowing"
-                      podVariant="halo"
-                      size={156}
-                      state="guiding"
-                    />
-                  </Box>
-                )}
-              </Box>
-
-              <VStack className="gap-2 items-center">
-                <Heading className="text-phase-text-primary text-4xl text-center font-bold tracking-[-1.8px]">
-                  Gurudevi
-                </Heading>
-                <Text className="text-phase-text-secondary text-lg text-center max-w-[320px] leading-relaxed">
-                  {t('welcome.subtitle')}
-                </Text>
-              </VStack>
-            </VStack>
-
-            <HStack className="justify-center gap-2 flex-wrap">
-              {pillars.map((pillar) => (
-                <Box
-                  key={pillar.label}
-                  className="px-4 py-1.5 rounded-full border"
-                  style={{
-                    backgroundColor: `${pillar.tone}12`,
-                    borderColor: `${pillar.tone}30`,
-                  }}
-                >
-                  <Text className="text-[10px] font-bold" style={{ color: pillar.tone }}>
-                    {pillar.label}
-                  </Text>
+                  )}
                 </Box>
-              ))}
-            </HStack>
-          </VStack>
 
-          <Box className="bg-phase-surface rounded-[28px] border border-phase-border p-6 shadow-lg">
-            <VStack className="gap-6">
-              <VStack className="gap-1.5 ">
-                <Text className="text-[10px] text-phase-text-secondary font-bold tracking-widest uppercase">
-                  BEGIN QUIETLY
-                </Text>
-                <Text className="text-phase-text-secondary text-sm leading-relaxed">
-                  Enter as an anonymous explorer to explore the sanctuary, or return to the account
-                  that already holds your path.
-                </Text>
-              </VStack>
-
-              <VStack className="gap-6">
-                <HStack className="gap-3 items-center justify-center">
-                  <Checkbox
-                    value="terms"
-                    isChecked={acceptedTerms}
-                    onChange={handleTermsChange}
-                    aria-label="Accept Terms"
-                  >
-                    <CheckboxIndicator>
-                      <CheckboxIcon as={CheckIcon} />
-                    </CheckboxIndicator>
-                  </Checkbox>
-                  <HStack className="gap-1 flex-shrink">
-                    <Text className="text-sm text-phase-text-secondary">
-                      {t('welcome.acceptTerms')}
-                    </Text>
-                    <Link href={EXTERNAL_URLS.privacy} isExternal>
-                      <LinkText className="text-sm">Privacy Policy</LinkText>
-                    </Link>
-                    <Text className="text-sm text-phase-text-secondary">and</Text>
-                    <Link href={EXTERNAL_URLS.terms} isExternal>
-                      <LinkText className="text-sm">Terms of Use</LinkText>
-                    </Link>
-                  </HStack>
-                </HStack>
-
-                <VStack className="gap-3">
-                  <Button
-                    onPress={handleStartExploringPress}
-                    isDisabled={isConnecting || !acceptedTerms}
-                    className={`h-[64px] rounded-2xl shadow-md w-full ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
-                  >
-                    {isConnecting ? (
-                      <Spinner color="white" />
-                    ) : (
-                      <ButtonText className="text-white font-bold text-lg">
-                        {t('welcome.exploreAsGuest')}
-                      </ButtonText>
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onPress={handleLogin}
-                    isDisabled={!acceptedTerms}
-                    className="h-[54px] rounded-2xl border-phase-border bg-transparent w-full"
-                  >
-                    <ButtonText className="text-phase-text-secondary font-medium">
-                      {t('welcome.login') || 'Sign In'}
-                    </ButtonText>
-                  </Button>
+                <VStack className="gap-2 items-center">
+                  <Heading className="text-phase-text-primary text-4xl text-center font-bold tracking-[-1.8px]">
+                    Gurudevi
+                  </Heading>
+                  <Text className="text-phase-text-secondary text-lg text-center max-w-[320px] leading-relaxed">
+                    {t('welcome.subtitle')}
+                  </Text>
                 </VStack>
               </VStack>
 
-              <Text className="text-phase-text-secondary text-[10px] text-center opacity-60">
-                {t('welcome.footer')}
-              </Text>
+              <HStack className="justify-center gap-2 flex-wrap">
+                {pillars.map((pillar) => (
+                  <Box
+                    key={pillar.label}
+                    className="px-4 py-1.5 rounded-full border"
+                    style={{
+                      backgroundColor: `${pillar.tone}12`,
+                      borderColor: `${pillar.tone}30`,
+                    }}
+                  >
+                    <Text className="text-[10px] font-bold" style={{ color: pillar.tone }}>
+                      {pillar.label}
+                    </Text>
+                  </Box>
+                ))}
+              </HStack>
             </VStack>
-          </Box>
-        </VStack>
-      </Box>
-    </ScreenWrapper>
-  );
-});
+
+            <Box className="bg-phase-surface rounded-[28px] border border-phase-border p-6 shadow-lg">
+              <VStack className="gap-6">
+                <VStack className="gap-1.5 ">
+                  <Text className="text-[10px] text-phase-text-secondary font-bold tracking-widest uppercase">
+                    BEGIN QUIETLY
+                  </Text>
+                  <Text className="text-phase-text-secondary text-sm leading-relaxed">
+                    Enter as an anonymous explorer to explore the sanctuary, or return to the
+                    account that already holds your path.
+                  </Text>
+                </VStack>
+
+                <VStack className="gap-6">
+                  <HStack className="gap-3 items-center justify-center">
+                    <Checkbox
+                      value="terms"
+                      isChecked={acceptedTerms}
+                      onChange={handleTermsChange}
+                      aria-label="Accept Terms"
+                    >
+                      <CheckboxIndicator>
+                        <CheckboxIcon as={CheckIcon} />
+                      </CheckboxIndicator>
+                    </Checkbox>
+                    <HStack className="gap-1 flex-shrink">
+                      <Text className="text-sm text-phase-text-secondary">
+                        {t('welcome.acceptTerms')}
+                      </Text>
+                      <Link href={EXTERNAL_URLS.privacy} isExternal>
+                        <LinkText className="text-sm">Privacy Policy</LinkText>
+                      </Link>
+                      <Text className="text-sm text-phase-text-secondary">and</Text>
+                      <Link href={EXTERNAL_URLS.terms} isExternal>
+                        <LinkText className="text-sm">Terms of Use</LinkText>
+                      </Link>
+                    </HStack>
+                  </HStack>
+
+                  <VStack className="gap-3">
+                    <Button
+                      onPress={handleStartExploringPress}
+                      isDisabled={isConnecting || !acceptedTerms}
+                      className={`h-[64px] rounded-2xl shadow-md w-full ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
+                    >
+                      {isConnecting ? (
+                        <Spinner color="white" />
+                      ) : (
+                        <ButtonText className="text-white font-bold text-lg">
+                          {t('welcome.exploreAsGuest')}
+                        </ButtonText>
+                      )}
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onPress={handleLogin}
+                      isDisabled={!acceptedTerms}
+                      className="h-[54px] rounded-2xl border-phase-border bg-transparent w-full"
+                    >
+                      <ButtonText className="text-phase-text-secondary font-medium">
+                        {t('welcome.login') || 'Sign In'}
+                      </ButtonText>
+                    </Button>
+                  </VStack>
+                </VStack>
+
+                <Text className="text-phase-text-secondary text-[10px] text-center opacity-60">
+                  {t('welcome.footer')}
+                </Text>
+              </VStack>
+            </Box>
+          </VStack>
+        </Box>
+      </ScreenWrapper>
+    );
+  },
+);
 
 LanguagePill.displayName = 'LanguagePill';
 WelcomeScreen.displayName = 'WelcomeScreen';

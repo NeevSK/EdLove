@@ -1,0 +1,351 @@
+---
+title: "The Gurudevi World Model: One Mental Model for Web, Mobile and Explore"
+status: "proposed"
+created: 2026-10-26
+updated: 2026-10-26
+author: "Naveen"
+tags: [gurudevi-mobile, gurudevi-web, explore, design, worlds, scene, mental-model]
+---
+
+# The Gurudevi World Model
+
+Every screen in Gurudevi, on web, mobile and explore.gurudevi.app, is drawn from one answer to six questions: **which world, what hour, which place, what backdrop, how rich, and what is the person doing.** One shared resolver turns those answers into a `Scene`, and each platform only paints it. This is how the October web floors, the October mobile worlds and the sun-and-moon idea fit together without fighting.
+
+Companion notes: `2026-10-26-living-world-vision.md` (why), `2026-10-26-ui-vision-timeline.md` (how we got here). The interactive mind map and scene lab: https://claude.ai/artifact/Hd9ig5vE7Q5VcNdKrnUpjH
+
+## The six questions
+
+| Question | Layer | Values today | Who decides | Platform state |
+| --- | --- | --- | --- | --- |
+| Which world? | **World** (identity) | Sanctuary, Temple walls, Wewa, Forest canopy, Angampora, Gems and lace | Person; default Sanctuary | Mobile and web (`packages/ui/src/world`) |
+| What hour? | **Time** | 6 phases (predawn 4 to 6, dawn 6 to 9, morning 9 to 12, afternoon 12 to 17, dusk 17 to 20, night 20 to 4), plus the sun or moon's position | The clock; person may pin a phase | Phase on both (`context/utils.ts`); sun position nowhere yet |
+| What season and weather? | **Sky condition** (part of Time) | Five Sri Lankan seasons (northeast monsoon, Maha harvest, first inter-monsoon, southwest monsoon, second inter-monsoon) and six skies (clear, cloudy, drizzle, monsoon rain, thunderstorm, after the rain) | The date for season; a coarse forecast or the person for weather | Prototype only (living sky artifact) |
+| Which place? | **Space** (the room) | Self, Classroom or Workspace, Community, Library, Profile | Navigation | Docs only (space specs); web floors partly. Each room can show its own view under the one shared sky (see Rooms) |
+| What backdrop? | **Ground** | Living sky, wallpaper (preset, own photo, slideshow), solid colour, plain | Person; default living sky | Web: wallpaper, slideshow, colour wash. Mobile: `WorkspaceWallpaper` built but not mounted |
+| How rich? | **Budget** | Rich, balanced, essential | Verger, from its levers (`ambient-motion`, `particles`, `blur`, `glass-material`, `transitions`) and its readings (visibility, power saver, heat, data) | `core/efficiency` visual budget now; verger glue (`packages/core/src/verger`) built on `feat/adaptive-runtime`, not yet mounted |
+| What is the person doing? | **Expression** | Quiet utility, living primary, sacred hero | The screen's role | Doctrine only (aesthetic doctrine, section 10) |
+
+The companion (firefly, Tutii) sits outside the stack. It is the only thing allowed to move on its own.
+
+## How the layers stack
+
+Back to front, matching the scene token hierarchy (world, chrome, canvas, surface, elevated, interactive):
+
+1. **Sky or ground.** The living sky, the wallpaper, a solid colour or plain world ground. Time of day acts here and only here.
+2. **Atmosphere.** None, washi grain, aurora, or embers. Optional, and only at the rich tier.
+3. **Wash.** A tint that keeps the backdrop behind text quiet: the world's ground at a set opacity, or the person's own colour.
+4. **Place accent.** A small shift per space, carried by `WorldScope`.
+5. **Surfaces and controls.** World recipes (`Surface`, `Section`, `Row`, `Button`). They never change with the hour, so text contrast is the same at noon and at night.
+6. **Companion.** Firefly or Tutii.
+
+Rule: layers 1 to 4 may be rich, and layer 5 stays readable. The existing contrast test guards layer 5 for every world, phase and mode. A new test should guard the wash: text over any backdrop at any tier must stay at 4.5:1.
+
+## The living sky, and what the sun and moon cost
+
+The local experiment drew a sun or moon that moves with the time on an HTML canvas. It looks alive, but a canvas animation loop costs battery on every frame. The model keeps the look and drops the loop. The sun moves about 0.25 degrees a minute, so redrawing once a minute already looks continuous.
+
+| Tier | When | Sky | Sun or moon | Atmosphere | Cost |
+| --- | --- | --- | --- | --- | --- |
+| Rich | Mid or high phone, not hot, not on battery saver | Painted gradient with 3 stops, horizon glow | Disc on its arc, redrawn once a minute; moon phase drawn | Grain, aurora or embers allowed | One redraw a minute plus an optional ambient layer |
+| Balanced | Default on 2GB phones | 2-stop gradient | Static disc placed by the hour, updated on phase change | None | One redraw per phase (6 a day) |
+| Essential | Battery saver, overheating, data saver plus low-end | Flat world ground with the phase tint | None | None | Zero |
+
+Implementation notes:
+
+- **No `requestAnimationFrame` and no Skia loop for the sky.** Mobile uses a Skia or SVG picture, or two `expo-linear-gradient` layers, rerendered by a one-minute timer that pauses when the app is in the background. Web uses CSS gradients and one absolutely positioned element.
+- **Sun times:** the phone clock with fixed phase hours, which is today's behaviour. An optional "true sky" mode would use sunrise and sunset for Sri Lanka, which vary only about 6:00 to 6:30 and 17:50 to 18:30 across the year (approximate). It is a small formula with no network.
+- **Embers (web `FloorAtmosphere`)** keep their 35 fps cap and reduced-motion guard, but only at the rich tier and never on mobile by default.
+- **Reduced motion:** the sky still changes with the hour (that is not motion), but the slideshow and atmosphere stop.
+
+## Opinionated default, full freedom
+
+The default shows how beautiful the world is. Every choice can be undone in one tap, down to a plain solid colour.
+
+| Choice | Default (opinionated) | Freedom (person can set) |
+| --- | --- | --- |
+| World | Sanctuary | Any of six; preview each at the current hour before choosing |
+| Time | Follow the hour | Pin a phase; follow Sri Lanka sunrise (true sky); light or dark only |
+| Ground | Living sky | Preset wallpaper, own photo, slideshow (3, 5 or 15 min), solid colour, plain |
+| Wash | World ground at the tier's opacity | Own colour; strength |
+| Atmosphere | None on mobile; washi grain on web rich tier | Grain, aurora, embers, none |
+| Per space | Same everywhere, with place accents | Different ground per space (web already stores per workspace) |
+| Richness | Set by the phone | Visual detail setting: full, balanced, simple (verger's setting, R12) |
+
+The taste behind the default, as gathered from the docs: washi and vellum paper, lamp light, warm ink, one lit thing at a time, Secret of Kells density held in small places, Columbus stillness, Swiss order, Sri Lankan materials (lime plaster, tank water, brass, beeralu lace), Dalu leaves after rain, aurora, the lotus. The taste avoids glassmorphism, black shadows, neon, emoji as decoration and badges everywhere. If this does not match Naveen's own sense of it, this list is the place to correct.
+
+## Showing how rich a world can be
+
+- **World gallery** (Settings and explore). Each world appears as a live card at the current hour, using `WorldScope`. A "play the day" slider runs predawn to night in a few seconds.
+- **explore.gurudevi.app** is the showroom. It runs the same resolver in showcase mode: rich tier where the device allows, one world per visit, and a "make it yours" panel that shows the same freedoms. It uses browser-local fixtures only, as the dual-surface contract already requires.
+- **Hero moments** (arrival, completion, empty states) get the full scene. Ordinary screens stay quiet, so the hero moments stand out.
+
+## The time plug: two clocks
+
+Explore's date row (`TemporalHorizon`, with `current`, `review` and `plan` intents from `@repo/core/logic/workbench`) already lets a teacher travel to the past to review and to the future to plan. The model adds a time part and separates two clocks:
+
+- **Now** is the real time. It drives the sky and never jumps when someone browses dates, so the world stays where the person actually is.
+- **Focus** is the date and time being looked at. It drives the data: register, timetable, journal.
+
+The time plug is one core cursor, `{ date, minute | null, intent }`, with three optional parts. Each space plugs in the parts it needs.
+
+| Part | What it shows | Options | Used by |
+| --- | --- | --- | --- |
+| Date strip | Days, with past and future labels (exists) | Week starts Monday or Sunday; markers for poya days, school terms, exams and holidays | Workspace, Self, timetable |
+| Time strip | The school day as periods, scrubbable | Periods from the timetable or plain hours; 12 or 24 hour | Workspace, timetable, attendance |
+| Clock face | The current time | None, digital, sky arc (the living sky is the clock) or a world-styled dial; redrawn once a minute | Home header, Self |
+
+How it stays alive without jumping:
+
+- When Focus is not Now, the time strip shows a small sky chip for that hour, drawn with `WorldScope`. Planning tomorrow at 08:00 shows a dawn chip, while the real sky stays as it is.
+- Review gets the canon's "memory" colour role (a slightly cooler and paler wash), and plan gets "invitation" (a little more lamp). The difference is small and readable, and it is never the only cue, because the label says "3 days ago" or "In a week".
+- Poya days line up with the moon phase drawn in the rich sky, so the calendar and the sky agree.
+- Returning to Now is one tap ("Today", which already exists) and settles with one short motion.
+
+Fix when this is built: `TemporalHorizon` formats dates with `en-US` and writes "Yesterday" and "In a week" in English only, so Sinhala and Tamil are missing.
+
+## Living atmosphere: particles, seasons and prior art
+
+Animated scenes with falling leaves or butterflies in React Native (Skia draws, Reanimated runs per-frame physics on the UI thread) are practical on mid and high-end phones. The author reported that low-end Android had not been tested. In this model they are an **atmosphere** option at the rich tier only:
+
+- Cap particle count (12 to 20), run at 30 fps, pause when the screen is not focused or the app is in the background, and stop on battery saver or heat. Verger can supply these signals once it is mounted.
+- Settle after arrival. Particles drift for a few seconds on the home screen or in a hero moment, then rest, so the surface stays quiet.
+- Use Sri Lankan seasons, not autumn: monsoon rain (Yala, Maha), fireflies at dusk (which ties to the companion), and drifting petals in April. Religious festivals such as Vesak need the same cultural care as the worlds, and their decoration should not be used as ornament.
+- System live wallpapers (outside the app) are out of scope. They are only practical on Android and they cost battery all day.
+
+Prior art. Each piece has been done before; the combination has not, as far as this note knows. Time-of-day wallpapers: macOS Dynamic Desktop (2018). Weather and hour backgrounds: Apple Weather and Pixel. Real-clock worlds: Animal Crossing, and the day cycles in Alto's Odyssey and Sky. Calm scenes: Calm and Headspace. No school platform is known to combine culturally grounded worlds that follow the real hour with a device budget for low-end phones and a planning timeline that can show another hour's sky. Check this against current sources before stating it publicly.
+
+## Time x season x weather
+
+The sky answers three things at once: the hour moves the light, the season sets the land (paddy green while Maha grows, gold at harvest), and the weather sets the cloud, the dimming and what falls. Prototype: https://claude.ai/artifact/GrMqM4tZEqQqn25sGRJ2Qu (hills, a wewa with lotus pads, paddy terraces, palms; rain with ripples on the tank, thunder, mist after rain, fireflies at dusk, stars, and the moon in its real phase with poya marked).
+
+- **Season comes from the date**, so it needs no network.
+- **Weather is optional and coarse.** One forecast per school district every three hours (for example from Open-Meteo, which needs no key), cached for offline use, skipped on Data Saver, and never from GPS. Without it the sky uses the season's usual weather. A person can also set the weather by hand ("it's raining here").
+- **Words follow the sky.** The greeting line changes with the weather ("Rain on the wewa. The register can wait for the first bell."), in en, si and ta.
+- **Cost stays the same as the living sky.** Land, hills and water are painted once per change, and only rain, ripples, fireflies, stars and clouds move, at the rich tier only.
+
+Reference, studied 2026-10-26: TesseraUI's Ambient Weather (https://tesseraui.in/components/ambient-weather, $29) does butterflies, rain that collects on cards and drips, snow, leaves landing on cards, and breeze. It uses Skia, Reanimated and `react-native-worklets` and needs a development build. It runs one UI-thread frame loop, reuses particles, and stops when paused, in the background or under Reduce Motion. The page gives no low-end device figures. It shows that "weather lands on the cards" works in React Native. Its licence terms were not checked; read them before buying, or build our own on the same pattern with Sri Lankan seasons.
+
+## The world is the whole app, and the scene must breathe
+
+A world is not a card on one screen. It dresses everything: the ground, cards, text, lines and lamp colour, corners, card edges, the main button, the label voice, chips, the ornament band and the lit tab. The only thing every world still shares is the two fonts, so a type voice per world is the next gap.
+
+Because the app covers the scene, the beauty can get buried. Four cheap ways to let it show. None needs a live blur, so all of them work on low-end phones:
+
+| Way | What the teacher sees | Cost |
+| --- | --- | --- |
+| Frost, baked once | Cards look like frosted glass over the scene | Each time the still scene repaints (at most once a minute), make one tiny blurred copy (two downscales, about 4 ms). Each card shows its slice of that copy. No live backdrop blur. In React Native this is one Skia image blurred once and clipped to each card. |
+| Look up | One tap on the greeting or the Look up button moves the app aside, and the scene fills the screen. Another tap brings it back. | A transform and a fade. |
+| Home opens on the sky | Home shows the greeting and the scene with one "Next" strip at the bottom. Tapping the strip opens the cards. | Layout only. |
+| Settle when idle | After a quiet spell on Home, the app drifts out of the way like a resting screen. | A timer, a transform and a fade. |
+
+Dense working screens, such as the register, keep Paper or Frost cards and never settle on their own. Reduced motion keeps the fades and drops the slides.
+
+## A world owns its backdrops
+
+The world is the top of the model, and it covers the whole app. The backdrop is one part of the world, next to its colours, shapes, voice and ornament.
+
+- **Each world ships a backdrop set**, not one picture: several views (scenes, painted or photographic), each lit by the hour, season and weather.
+- **The set rotates on a rhythm** the person picks:
+  - Daily (the default): a fresh view each morning at dawn.
+  - Each phase of the day.
+  - Every N minutes, like a slideshow.
+  - Never.
+  A change is one crossfade, so the rhythm costs nothing extra. The view a room shows comes from the set, so rooms still differ.
+- **Editing makes it yours, not a new world.** The person's changes sit as a thin layer on top of the world they started from, such as "Sanctuary, yours": their own photo, a solid colour, a different rhythm or a pinned view. Reset removes that layer. Only changing the colours or shapes forks a custom world, which keeps a link to its parent so it still gets the parent's updates.
+- **Choosing which worlds to make.** World ideas never end, so choose along a few axes rather than from a list:
+  - Mood: calm to energetic.
+  - Place: nature to crafted to technological.
+  - A Sri Lankan anchor.
+  The six worlds cover the calm, nature and craft side. Gaps worth filling next:
+  - A flower world (araliya, nelum).
+  - An energetic, young world (Perahera: drums, torches, colour).
+  - A technological world (Colombo at night, an observatory).
+  - A high-country scenic world (tea estates, mist on the Knuckles).
+  Worlds are data, so each one is cheap to add. Pilot feedback and usage decide which ones stay.
+
+## Nothing is outside the world
+
+The World Atelier settled eleven worlds in five families, all on one baseline: fixed type, colour, shape and voice roles, and fixed contrast rules (https://claude.ai/artifact/NsvcH2ixJxNGyVQ6JQwa33). Every face ships in the app as a variable font, built by `scripts/fonts/build-world-fonts.py`.
+
+A world dresses every moment, not only the rooms' homes. Screens that have not migrated already take the world's colours through `worldBridge`. The aim is shapes, type, ornament and motion too. What the app has today (count of files that use each):
+
+| Moment | Components in the code | How it follows the world |
+| --- | --- | --- |
+| First open | Splash (`splash-animation.json`), welcome, onboarding (34), sign-in, PIN | The splash stays one brand mark for the stores. From the first screen after it, the default world (Sanctuary at the hour) takes over, so a new person sees a world before they choose one |
+| Waiting | `LotusLoader`, `BreathingLoader`, `Skeleton` (55), `LoadingOverlay`, pull to refresh (49), sync status | Each world has a waiting sign made from its ornament. Skeletons use the world's sunken colour and corners, with a shimmer in its lamp at low strength. Under verger's still motion the sign holds still |
+| Nothing here | `EmptyState`, `BrandedEmptyState` (32) | A small crop of the world's backdrop set, with the shared words |
+| Something went wrong | `ErrorState`, `ErrorBoundary`, `JourneyErrorBoundary` (55), `NetworkStatusBanner` (26), not found | Plain on purpose: the world's surface, shapes and ink, no ornament and no motion. Clarity beats mood here. The offline banner sits in the header band |
+| Talking back | `SanctuaryToast` (100), `Success`, modals (141), sheets (137) | World surface, edge and corners, entering with the world's motion |
+| Celebrating | `CelebrationOverlay`, `AchievementUnlockOverlay`, `FireflyFeedbackScene` | The world's particle (table below), counted by verger's `particles` lever |
+| Tutii | `Mascot`, `FireflyMascot`, `LivingFirefly`, `MascotPod`, the Tutii dance | Tutii stays the same character in every world, because Tutii is the app's identity. Tutii wears the world's light (its glow is the world glow), has a perch in each world, and dances at the world's tempo |
+| Content | Chat bubbles, post cards, tables, charts (23), heatmaps, maps, PDF and video viewers, avatars, badges (43) | World surfaces and lines. Charts take a categorical palette derived from the world that passes contrast in light and dark |
+| Icons | Icons in 331 files | One icon set for every world. Stroke width follows the world's line weight |
+| Outside the app | App icon, notification colour, the web app | One app icon (alternative icons can come later). Android notifications take the world's lamp as their accent. The web app reads the same world data |
+| Senses | `expo-haptics`, `expo-audio` | Haptics follow the world's motion: soft for Quiet and Bloom, crisp for Cultural and Modern. Sound stays off by default |
+
+**The words do not change between worlds.** A world changes how things look and move, not what they say, so translation stays simple. The greeting is the one exception.
+
+| World | Waiting sign | Celebration particle | Tutii's perch |
+| --- | --- | --- | --- |
+| Sanctuary | A lamp flame breathing | Lamp sparks and fireflies | The clay lamp |
+| Wewa | A ripple widening | Ripples, a nelum opening | A lotus pad |
+| Gems and lace | A glint travelling a facet | Glints | A lace window |
+| Forest canopy | A leaf turning | Falling leaves | A branch |
+| Tea country | A tea row filling | Tea leaves on the wind | A silver oak |
+| Temple walls | The vine band drawing itself | Flower petals | A wall niche |
+| Angampora | A brass lamp lighting | Brass sparks | A lamp stand |
+| Perahera | Drum dots on the beat | Pennants in the flag colours | A torch pole |
+| Rose and pichcha | A petal opening | Rose and pichcha petals | A rose stem |
+| Colombo night | Signal dots | Light trails | The spire |
+| Spark | A charging bar | Lime sparks and a bolt | A floodlight |
+
+## Motion follows the world
+
+`packages/ui/src/components/motion.ts` already names motion by purpose: `micro`, `transition`, `shared`, `meaningful`, `breathe`. The purposes stay fixed as part of the baseline. Each world sets four values on top:
+
+- **Tempo:** a multiplier on every duration.
+- **Curve:** which easing family it uses.
+- **Travel:** how far things move as they enter.
+- **Settle:** whether things stop dead, ease in, or overshoot a little.
+
+| World | Tempo | Curve | Travel | Settle | Feel |
+| --- | --- | --- | --- | --- | --- |
+| Sanctuary | 1.0 | decelerate | 8 | none | Things fade up like lamp light |
+| Wewa | 1.25 | long decelerate | 6 | none | Ripples outward, unhurried |
+| Gems and lace | 1.1 | decelerate | 4 | none | Slight scale, with a glint at rest |
+| Forest canopy | 1.0 | soft spring | 10 | small sway | Leaves settling |
+| Tea country | 1.15 | standard | 12, sideways | none | Moves along rows |
+| Temple walls | 1.1 | decelerate | 0 | none | Frames draw themselves in |
+| Angampora | 0.85 | sharp ease out | 12 | firm stop | Exact, no bounce |
+| Perahera | 0.9 | standard, staggered on a beat | 10 | small | Rhythmic entries, 60 ms apart |
+| Rose and pichcha | 1.2 | soft spring | 6 | bloom (0.96 to 1.01 to 1) | Things open like flowers |
+| Colombo night | 0.9 | standard | 16 | none | Crisp slides |
+| Spark | 0.75 | snappy spring | 20 | quick overshoot | Fast, staggered 40 ms |
+
+Rules that hold for every world:
+
+- **Verger decides how much.** When motion is off, every change cuts. When motion is essential (or the phone's reduce motion setting is on), tempo goes back to 1, travel goes to 0 and everything fades. Durations stay between 120 and 600 ms whatever the tempo.
+- **Motion never costs more frames.** A world changes timing and shape, not the amount of work: transform and opacity only, on the UI thread.
+- **No flashing.** Spark and Perahera never flash more than three times a second, and no light pulses at full strength.
+- **Motion never carries meaning alone.** Every change it shows is also in the words or the shape.
+
+**Order of work for the states.** The shared state components appear on every screen, so they multiply. Moving loading, skeleton, empty, error, toast, modal and sheet onto the world reaches more of the app than any one screen does. They go first in step 2 of the order of work, before the screen-by-screen migration.
+
+## Rooms: one sky, many places
+
+What sets the scene matters less than that it is soulful, scenic and alive. The model keeps three jobs apart, so they never fight:
+
+- **The world is the skin.** Its colours, corners, edges, buttons, label voice, chips, ornament and lamp dress every screen in every room.
+- **The room is the view.** Each room looks out on its own place, painted once as a still foreground.
+- **The hour, season and weather are the light.** One sky is shared by every room, so moving between rooms feels like walking through one village under one sky.
+
+| Room | The view (first sketch) | Mood |
+| --- | --- | --- |
+| Self | A home veranda at the edge of the paddy, a clay lamp, a window | Close, private, quiet |
+| Classroom or Workspace | The village school: paddy terraces, the jak tree, the wewa (the current prototype) | Steady, working |
+| Community | The ambalama by the road and the village tank, where people pass | Open, shared |
+| Library | The temple library under a bo tree, with ola leaf books and the hills | Still, deep |
+| Profile | The hill above the village, the widest view | Looking back over the year |
+
+Setting: **Scene follows** the room (default), the world (one landscape per world everywhere), or one scene everywhere. Solid colour and plain stay one tap away. The cost is the same as one scene: the foreground is a still image per room, and the sky and particles are shared. Changing room is one crossfade, which verger's `transitions` lever can shorten or skip.
+
+## Every screen is alive: how present the scene is
+
+A screen does not choose its own look. It declares how present the scene may be, and the resolver does the rest.
+
+| Presence | Where | What shows | Why it still feels alive |
+| --- | --- | --- | --- |
+| Full | Each room's home | The whole scene, with the ways to breathe (frost, look up, sky first, settle when idle) | The scene itself |
+| Band | Lists and working screens: timetable, register, library shelves, threads | The same painter clipped to a horizon band behind the header, roughly 100 to 140 dp | The band carries the hour, weather and room view. The ground below takes the hour's tint |
+| Quiet | Forms, exams, focus mode, anything urgent | The world ground only | The hour tint, the greeting line, the clock stamp and the lit tab lamp still change |
+
+So every screen in every room lives with the hour, and none has to be rebuilt to get it. Surfaces never change with the hour, which keeps text contrast fixed.
+
+## Verger decides how much
+
+The scene does not sense the phone itself. It reads verger's snapshot through `GurudeviExperience`, and the person's settings only ever lower it.
+
+| Verger says | The scene does |
+| --- | --- |
+| `ambient-motion` 0 (full motion) | Rich tier: the loop runs, capped at 30 fps |
+| `ambient-motion` 1 (paced at half the refresh rate) | The loop runs at 15 fps. Clouds and rain only |
+| `ambient-motion` 2 (still) | Balanced tier: the scene repaints once a minute and nothing moves |
+| `particles` 0, 1, 2 | Full, half or no rain, fireflies and stars (inside `maxParticles`) |
+| `blur` 2 or `glass-material` 2 | Frost falls back to Paper. Baked frost is cheap, but it still needs one offscreen image |
+| `transitions` lowered | The room crossfade is shortened, then cut |
+| `effectiveFidelity` low, or safe mode | Essential tier: the world ground with the hour tint, no painter |
+| Visibility not active, power saver, or heat | The loop stops (the `whenHidden`, `whenBatteryLow` and `whenWarm` rules already cover the levers) |
+| Data saver or offline | Nothing changes, because the scene is drawn, not downloaded. Photo wallpapers follow `wallpaperAllowed` |
+
+Open chair: should the living sky get its own lever (`living-sky`: moving, still painting, flat colour) so verger can lower it apart from other ambient motion? Adding a lever never changes other levers, only the order they are lowered in.
+
+## One resolver, three painters
+
+```
+@repo/core  resolveScene({ world, phase, minute, space, ground, wash, atmosphere, tier, showcase })
+            -> Scene { sky, celestial, atmosphere, wash, accent, tokens }
+   |                         |                          |
+ mobile painter         web painter                explore
+ (RN, gradients/SVG)    (CSS, DOM, canvas rich)    (web painter, showcase: true)
+```
+
+- `resolveScene` is pure data, like `resolveWorld` today, and goes in `@repo/core` (or `@repo/ui/world`) so both apps share it.
+- It reads `WorkspaceAppearance` (already in `@repo/core/types`, synced through Supabase) for the ground, so a wallpaper chosen on the web shows on the phone too.
+- The tier comes from `resolveRuntimeVisualBudget` (`core/efficiency`) now, and from verger once it is mounted.
+
+## Old vocabulary mapped to the model
+
+| Existing thing | Where it goes |
+| --- | --- |
+| Web appearance presets: Sandstone, Dawn Coral, Verdant, Night Twilight, Off | Retire as separate presets. They are world plus phase (Sanctuary afternoon, Sanctuary dawn, Forest canopy, Wewa night) and "plain" |
+| Web custom colour wash | Wash layer, kept |
+| Web `FloorAtmosphere` (washi grain, aurora mesh, celestial embers) | Atmosphere layer, rich tier |
+| Web floors and furniture | Space layer (floors are clearings on the web); furniture is layout, outside the scene |
+| Web `DiurnalThemeToggle` | World and time choice, the same as mobile Settings |
+| Mobile `SanctuaryBackground` (Feb 24) | Replaced by the living sky painter |
+| Mobile `WorkspaceWallpaper` | Ground layer painter for wallpapers; mount it |
+| `phaseMatrix`, `worldBridge` | Legacy tokens; shrink as screens migrate |
+| Archetypes, profiles | Worlds |
+| Living Theme toggle (`enableLivingTheme`) | "Follow the hour" |
+
+## Findings in the current code
+
+- Web preset wallpapers Bamboo Grove, Misty Peaks and Cosmos load from `images.unsplash.com` at 1920px. That costs data, fails offline and is outside the Supabase asset authority. Bundle them, or host them in the same asset store as user uploads.
+- The web presets' labels use emoji (☀️ 🌅 🌿 🌌 ⚪). The worlds work removed emoji from labels on mobile.
+- Mobile `WorkspaceWallpaper` is built and budgeted but not mounted on any screen.
+- Phase hours are fixed in `packages/ui/src/context/utils.ts`. Nothing computes a sun position.
+
+## Order of work: middle out, with feedback loops
+
+Start in the middle with one room working end to end on a real phone. Then grow outward to every screen and room, and to web and explore.
+
+1. **The middle.** `resolveScene` in core reads world, hour, season, weather, room, ground and verger's experience. Tests cover the tier mapping, contrast over every backdrop and tier, and the presence rules. Then the mobile painter for the Classroom home at full presence, mounted under verger.
+2. **Every screen.** The band and quiet presences on all mobile screens, so the hour lives everywhere. Continue the worlds-foundation migration (workspace home, attendance, Self, Library, Community, Profile), then delete `SanctuaryButton` and `SanctuaryCard`.
+3. **Every room.** The Self, Community, Library and Profile views, and the "Scene follows" setting.
+4. **Web and explore.** The same resolver. Map the floors and presets onto it, bundle the Unsplash wallpapers, and give explore a showcase mode.
+5. **Richer.** The sun and moon arc, true sunrise times, and a type voice per world.
+
+**Built so far (2026-10-26):**
+- Verger is merged into the worlds line.
+- `@repo/core/scene` has `resolveScene`, the sky (light, season, weather, moon), the school landscape as plain geometry, and tests. Words on the sky stay readable at every minute and in every weather.
+- `@repo/ui/scene/native` has the Skia painter: a still layer that draws once a minute, and a moving layer for rain and fireflies, capped by verger.
+- The Classroom home opens on its scene.
+- Every screen's shared header carries the band, under a veil held to 4.5:1 for all six worlds.
+- `pnpm scene:shots` renders the still layer headless for review.
+
+The other rooms' views still show the school landscape until they are painted.
+
+Three feedback loops run the whole way:
+
+- **Taste.** The living sky prototype comes first, then Naveen reacts, then the doc changes, then the code. Each PR adds a screenshot grid (every world at dawn, noon, dusk and night, and at each presence) so a look can be judged without a phone.
+- **Runtime.** Verger's flight recorder logs frame times and lever changes on each screen while the scene runs. Phase F on real phones (the A52 fixture is the low anchor) sets the thresholds. A regression shows up as a lever lowering more often.
+- **People.** In the pilot, a one-tap "how does this feel" sits in Settings, next to the world and scene choices.
+
+## Open questions for Naveen
+
+- Should the default ground be the living sky, or the plain world ground with the sky only in headers?
+- Should the true-sky mode (sunrise times) be the default, or the fixed phase hours?
+- Should a wallpaper chosen on one device follow the person to the other? (The data model already allows it.)
+- Should explore show one world per visit, or let visitors switch freely?
+- Should the scene follow the room by default, or the world?
+- Should the living sky get its own verger lever?

@@ -4,9 +4,10 @@ import { inventoryAPI as rawInventoryAPI } from '@repo/core/api/inventory';
 import { operationsContract } from '@repo/core/api/operations.contract';
 import { schoolAPI as rawSchoolAPI } from '@repo/core/api/school';
 import { staffManagementAPI as rawStaffManagementAPI } from '@repo/core/api/staffManagement';
+import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
-export const staffManagementAPI = createTemporalProxy('staffManagement', rawStaffManagementAPI);
+export const staffManagementAPI = createTemporalProxy('staffManagement', createResonantProxy('staffManagement', rawStaffManagementAPI));
 
 assertContractCoverage(
   rawAttendanceAPI,
@@ -38,7 +39,7 @@ assertContractCoverage(
   }),
 );
 
-export const attendanceAPI = createTemporalProxy('attendance', rawAttendanceAPI);
+export const attendanceAPI = createTemporalProxy('attendance', createResonantProxy('attendance', rawAttendanceAPI));
 
 assertContractCoverage(
   rawSchoolAPI,
@@ -78,7 +79,7 @@ assertContractCoverage(
   }),
 );
 
-export const schoolAPI = createTemporalProxy('school', rawSchoolAPI);
+export const schoolAPI = createTemporalProxy('school', createResonantProxy('school', rawSchoolAPI));
 
 assertContractCoverage(
   rawInventoryAPI,
@@ -102,4 +103,4 @@ assertContractCoverage(
   }),
 );
 
-export const inventoryAPI = createTemporalProxy('inventory', rawInventoryAPI);
+export const inventoryAPI = createTemporalProxy('inventory', createResonantProxy('inventory', rawInventoryAPI));

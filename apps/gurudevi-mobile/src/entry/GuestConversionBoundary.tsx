@@ -1,5 +1,12 @@
-import { getSessionIdentityMode, useAuth, useStore } from '@repo/core/logic';
+import { getSessionIdentityMode, useAuth } from '@repo/core/logic';
 import { GuestDataSync } from '@repo/core/native';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import {
+  bindGuestConversionTarget,
+  clearGuestConversionRecord,
+  discardGuestConversion,
+  readGuestConversionRecord,
+} from '@repo/core/native/guestConversionLedger';
 import GuestDataSyncModal from '@repo/ui/components/GuestDataSyncModal';
 import { useEffect, useState } from 'react';
 
@@ -10,7 +17,7 @@ import { useEffect, useState } from 'react';
  */
 export function GuestConversionBoundary() {
   const { resolvedAuthSubjectId, session } = useAuth();
-  const profile = useStore((state) => state.user);
+  const profile = useAuthStore((state) => state.user);
   const [isOpen, setIsOpen] = useState(false);
 
   const isPermanentSession =
@@ -24,10 +31,16 @@ export function GuestConversionBoundary() {
     }
 
     let active = true;
-    GuestDataSync.restorePendingGuestSession()
-      .then(async (guestUserId) => {
-        if (!guestUserId) return false;
-        return GuestDataSync.hasGuestData(guestUserId);
+    readGuestConversionRecord()
+      .then(async (record) => {
+        if (!record) return false;
+        const targetUser = session?.user;
+        if (!targetUser || targetUser.is_anonymous === true) return false;
+        await bindGuestConversionTarget(record.sourceGuestId, {
+          id: targetUser.id,
+          is_anonymous: false,
+        });
+        return GuestDataSync.hasGuestData(record.sourceGuestId);
       })
       .then((hasGuestData) => {
         if (active) setIsOpen(hasGuestData);
@@ -40,7 +53,7 @@ export function GuestConversionBoundary() {
     return () => {
       active = false;
     };
-  }, [isPermanentSession]);
+  }, [isPermanentSession, session?.user]);
 
   if (!profile?.id) return null;
 
@@ -50,8 +63,8 @@ export function GuestConversionBoundary() {
       userId={profile.id}
       onClose={() => setIsOpen(false)}
       onSyncComplete={() => setIsOpen(false)}
-      onSkipEmpty={() => GuestDataSync.clearPendingGuestSession()}
-      onDiscard={() => GuestDataSync.discardPendingGuestData()}
+      onSkipEmpty={clearGuestConversionRecord}
+      onDiscard={discardGuestConversion}
     />
   );
 }

@@ -1,8 +1,8 @@
 'use client';
 
-import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
-import { Check, CircleCheck, Sparkles } from '@repo/ui/icons';
+import { Check, CircleCheck, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { saveWindDownRitual } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './wind-down-ritual.module.css';
 
 interface WindDownRitualProps {
@@ -14,7 +14,8 @@ const STEPS = [
   {
     id: 'breathe',
     title: '🌬️ Gentle Reset',
-    description: 'Inhale deeply for 4 counts, hold for 4, exhale slowly for 6. Let tension dissipate from your neck and spine.',
+    description:
+      'Inhale deeply for 4 counts, hold for 4, exhale slowly for 6. Let tension dissipate from your neck and spine.',
   },
   {
     id: 'reflect',
@@ -61,7 +62,9 @@ export function WindDownRitual({ userId, onClose }: WindDownRitualProps) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>Wind Down Ritual</h2>
-        <p className={styles.subtitle}>A peaceful closing transition to separate daytime demands from evening rest</p>
+        <p className={styles.subtitle}>
+          A peaceful closing transition to separate daytime demands from evening rest
+        </p>
       </div>
 
       {!completed ? (
@@ -117,7 +120,8 @@ export function WindDownRitual({ userId, onClose }: WindDownRitualProps) {
           <CircleCheck size={48} color="#22c55e" />
           <div className={styles.stepTitle}>Rest Well & Be at Ease</div>
           <p className={styles.stepDesc}>
-            Your day has been safely acknowledged and folded away. Return to your sanctuary whenever you wish.
+            Your day has been safely acknowledged and folded away. Return to your sanctuary whenever
+            you wish.
           </p>
         </div>
       )}

@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { authAPI, identityAPI } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
+
 import { GuestDataManager } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
@@ -14,7 +16,7 @@ const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 
 import type { Period } from '@repo/self/types';
 export const useTimetable = (activeDay: number) => {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [periods, setPeriods] = useState<Period[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

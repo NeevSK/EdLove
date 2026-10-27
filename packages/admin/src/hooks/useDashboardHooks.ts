@@ -1,19 +1,14 @@
-import { api as coreAPI, mappingAPI } from '@repo/core/api/client';
-import {
-  KnowledgeTopologySchema,
-  type PulseMetricsZod,
-  useStore,
-  useTemporalStore,
-} from '@repo/core/logic';
-import type { School, SchoolStats } from '@repo/core/types';
-
-import { useQuery } from '@tanstack/react-query';
 import { approvalsAPI } from '@repo/admin/approvals';
 import { adminCalendarAPI } from '@repo/admin/calendar';
 import { insightsAPI } from '@repo/admin/insights';
 import { adminInventoryAPI } from '@repo/admin/inventory';
 import { observationsAPI } from '@repo/admin/observations';
 import { staffOperationsAPI } from '@repo/admin/staff';
+import { api as coreAPI, mappingAPI } from '@repo/core/api/client';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { KnowledgeTopologySchema, type PulseMetricsZod, useTemporalStore } from '@repo/core/logic';
+import type { School, SchoolStats } from '@repo/core/types';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * Hook for School Pulse (metrics like resonance score)
@@ -53,7 +48,7 @@ export function useMappingTopologyQuery(schoolId: string) {
  */
 export function useSchoolStatsQuery(schoolId: string) {
   const viewDate = useTemporalStore((s) => s.viewDate);
-  const isDemoMode = useStore((state) => state.isDemoMode);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
   return useQuery({
     queryKey: ['school-stats', schoolId, viewDate, isDemoMode],
     queryFn: async () => {

@@ -1,13 +1,14 @@
+import { useAuthStore } from '@repo/core/store';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useSocialShieldHooks } from '@repo/core/api/hooks';
 
-import { useStore } from '@repo/core/store';
+
 import { useCallback, useState } from 'react';
 
 export type ReportTarget = 'teacher' | 'principal' | 'platform';
 
 export function useSocialShield() {
-  const user = useStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
   const [loading, setLoading] = useState(false);
   const { reportMutation, blockMutation, unblockMutation } = useSocialShieldHooks();
 

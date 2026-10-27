@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
+import { useTomorrowPrep } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './tomorrow-prep.module.css';
 
 interface TomorrowPrepProps {
@@ -41,7 +41,8 @@ export function TomorrowPrep({ userId = 'guest-explorer' }: Readonly<TomorrowPre
           <div>
             <h2 className={styles.title}>Tomorrow Prep</h2>
             <p className={styles.subtitle}>
-              Clear the cognitive runway for tomorrow's teaching. Complete closing intentions so rest is truly restful.
+              Clear the cognitive runway for tomorrow's teaching. Complete closing intentions so
+              rest is truly restful.
             </p>
           </div>
         </div>
@@ -69,11 +70,7 @@ export function TomorrowPrep({ userId = 'guest-explorer' }: Readonly<TomorrowPre
           disabled={saving}
           required
         />
-        <button
-          type="submit"
-          className={styles.addBtn}
-          disabled={saving || !newText.trim()}
-        >
+        <button type="submit" className={styles.addBtn} disabled={saving || !newText.trim()}>
           {saving ? 'Adding…' : '+ Add Intention'}
         </button>
       </form>
@@ -84,12 +81,17 @@ export function TomorrowPrep({ userId = 'guest-explorer' }: Readonly<TomorrowPre
       ) : prepItems.length === 0 ? (
         <div className={styles.emptyState}>
           <span style={{ fontSize: '2rem' }}>✨</span>
-          <p>No closing intentions left for tomorrow. You are centered and ready for restful sleep.</p>
+          <p>
+            No closing intentions left for tomorrow. You are centered and ready for restful sleep.
+          </p>
         </div>
       ) : (
         <div className={styles.list}>
           {prepItems.map((item) => (
-            <div key={item.id} className={`${styles.itemRow} ${item.is_completed ? styles.itemDone : ''}`}>
+            <div
+              key={item.id}
+              className={`${styles.itemRow} ${item.is_completed ? styles.itemDone : ''}`}
+            >
               <button
                 type="button"
                 className={`${styles.checkbox} ${item.is_completed ? styles.checkboxChecked : ''}`}

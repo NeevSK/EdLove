@@ -1,5 +1,6 @@
-import { SyncManager, type SyncManagerTraceEvent, useAuth, useStore } from '@repo/core';
+import { SyncManager, type SyncManagerTraceEvent, useAuth } from '@repo/core';
 import { getSessionIdentityMode } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
 
@@ -10,7 +11,7 @@ function recordOutboxTrace(event: SyncManagerTraceEvent): void {
 /** Starts foreground queue draining only after an active identity is available. */
 export function AuthenticatedSyncService() {
   const { identityAvailability, session } = useAuth();
-  const hasActiveIdentity = useStore((state) => state.user !== null);
+  const hasActiveIdentity = useAuthStore((state) => state.user !== null);
 
   if (
     !session ||

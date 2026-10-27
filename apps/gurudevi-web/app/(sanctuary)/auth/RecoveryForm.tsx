@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 
 type FormState = 'ready' | 'submitting' | 'sent' | 'unavailable' | 'error';
@@ -9,9 +9,18 @@ type FormState = 'ready' | 'submitting' | 'sent' | 'unavailable' | 'error';
 export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
+  const busy = useRef(false);
+  const active = useRef(true);
+  useEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+    };
+  }, []);
 
   async function requestRecovery(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy.current) return;
     const runtime = browserAuthRuntime();
     if (!runtime) {
       setState('unavailable');
@@ -24,16 +33,25 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
     redirectTo.searchParams.set('returnTo', safeReturnPath(returnTo));
 
     setState('submitting');
-    const { error } = await runtime.client.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectTo.toString(),
-    });
-    if (error) {
+    busy.current = true;
+    setMessage('');
+    try {
+      const { error } = await runtime.client.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectTo.toString(),
+      });
+      if (error) throw new Error('Recovery request unavailable');
+      if (!active.current) return;
+      setState('sent');
+      setMessage(
+        'If this address has a Gurudevi account, a recovery link has been requested. Check your email.',
+      );
+    } catch {
+      if (!active.current) return;
       setState('error');
-      setMessage(error.message);
-      return;
+      setMessage('Could not request account recovery. Check your connection and try again.');
+    } finally {
+      busy.current = false;
     }
-    setState('sent');
-    setMessage('If this address has a Gurudevi account, a recovery link is on its way.');
   }
 
   return (
@@ -46,6 +64,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
         className="mt-2 min-h-12 w-full border border-line bg-paper px-3 font-sans text-base focus:outline-3 focus:outline-offset-2 focus:outline-water"
         id="recovery-email"
         name="email"
+        disabled={state === 'submitting' || state === 'sent'}
         required
         type="email"
       />
@@ -67,7 +86,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
         {state === 'submitting'
           ? 'Sending…'
           : state === 'sent'
-            ? 'Email sent'
+            ? 'Recovery requested'
             : 'Send recovery email'}
       </button>
       <Link

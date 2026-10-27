@@ -30,6 +30,13 @@ export interface AuthSubscription {
   unsubscribe: () => void;
 }
 
+export interface PasswordChangeConfirmation {
+  currentPassword?: string;
+  nonce?: string;
+  /** Client continuity assertion; never an account selector or provider mutation attribute. */
+  expectedSubject?: string;
+}
+
 export interface AuthMfaFactor {
   id: string;
   friendly_name?: string;
@@ -119,6 +126,13 @@ export interface IAuthPort {
   /** Sends a recovery link; the password is changed only after that link opens a recovery session. */
   resetPasswordForEmail(email: string, redirectTo?: string): Promise<void>;
 
+  requestPasswordReauthentication(): Promise<void>;
+
+  unlinkIdentity(params: {
+    identityId: string;
+    expectedSubject?: string;
+  }): Promise<{ user: AuthUser | null }>;
+
   signInWithPhoneOtp(params: PhoneOtpRequest): Promise<void>;
 
   verifyPhoneOtp(params: PhoneOtpVerification): Promise<{
@@ -183,6 +197,9 @@ export interface IAuthPort {
   updateUser(params: {
     email?: string;
     password?: string;
+    currentPassword?: string;
+    nonce?: string;
+    expectedSubject?: string;
     data?: Record<string, any>;
     options?: { emailRedirectTo?: string };
   }): Promise<{ user: AuthUser | null }>;

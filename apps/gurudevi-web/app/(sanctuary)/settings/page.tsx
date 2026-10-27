@@ -124,7 +124,11 @@ export default async function SettingsPage() {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <SettingsFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <SettingsFloor
+        accountId={entry.accountId}
+        displayName={entry.displayName}
+        capacity={entry.activeCapacity}
+      />
     </SanctuaryShell>
   );
 }

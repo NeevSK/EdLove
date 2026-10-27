@@ -1,129 +1,140 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
-import { useDebouncedCallback, useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
-import {
-  type WorkspaceClassroom,
-  type WorkspaceStudent,
-  stepAttendanceStatus,
-} from '../../workspace/attendance';
+import { type QueryScope, scopedQueryKey } from '@repo/core/lib/clientStateFoundation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
+import type { WorkspaceClassroom, WorkspaceStudent } from '../../workspace/attendance';
 import { workspaceHexagonalService } from '../adapters/workspace/workspaceHexagonalService';
 
-export interface UseWorkspaceDomainOptions {
-  subjectId?: string | null;
-  date: string;
-  selectedClassroomId?: string | null;
+/** Facts supplied by the authorized Workspace entry, not inferred client state. */
+export type WorkspaceAttendanceReadScope = Readonly<{
+  principalId: string;
+  bondId: string;
+  entityId: string;
+}>;
+
+type ResolvedWorkspaceAttendanceScope = Readonly<{
+  queryScope: QueryScope;
+  entityId: string;
+}>;
+
+export function resolveWorkspaceAttendanceReadScope(
+  input: WorkspaceAttendanceReadScope | null,
+): ResolvedWorkspaceAttendanceScope | null {
+  if (!input) return null;
+  const principalId = input.principalId.trim();
+  const bondId = input.bondId.trim();
+  const entityId = input.entityId.trim();
+  if (!principalId || !bondId || !entityId) return null;
+  return { queryScope: { principalId, bondId }, entityId };
 }
 
+/**
+ * One workspace-owned cache contract. Scope facts prefix every private key;
+ * entity, class and date remain explicit resource coordinates.
+ */
+export const workspaceAttendanceCache = {
+  classrooms: (scope: ResolvedWorkspaceAttendanceScope) =>
+    scopedQueryKey(scope.queryScope, [
+      'workspace',
+      'attendance',
+      'entity',
+      scope.entityId,
+      'grade-classes',
+    ] as const),
+  roster: (scope: ResolvedWorkspaceAttendanceScope, classroomId: string, date: string) =>
+    scopedQueryKey(scope.queryScope, [
+      'workspace',
+      'attendance',
+      'entity',
+      scope.entityId,
+      'grade-class-roster',
+      classroomId,
+      date,
+    ] as const),
+};
+
+function shouldRetryWorkspaceRead(failureCount: number, error: unknown): boolean {
+  const message = error instanceof Error ? error.message : '';
+  if (/secure session has ended|current scope cannot access/i.test(message)) return false;
+  return failureCount < 2;
+}
+
+export type UseWorkspaceDomainOptions = Readonly<{
+  scope: WorkspaceAttendanceReadScope | null;
+  classroom: WorkspaceClassroom | null;
+  date: string;
+  enabled: boolean;
+}>;
+
+/**
+ * The single Workspace read boundary. It owns only remote classroom/roster
+ * lifecycles; durable drafts and attendance commands remain in their domain
+ * boundaries and are deliberately not copied into the Query cache.
+ */
 export function useWorkspaceDomain({
-  subjectId,
+  scope: inputScope,
+  classroom,
   date,
-  selectedClassroomId,
+  enabled,
 }: UseWorkspaceDomainOptions) {
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearch = useDebouncedValue(searchQuery, 300);
-  const throttledRefresh = useThrottledInvalidate(500);
+  const scope = useMemo(
+    () => resolveWorkspaceAttendanceReadScope(inputScope),
+    [inputScope?.bondId, inputScope?.entityId, inputScope?.principalId],
+  );
+  const admitted = enabled && scope !== null;
+  const classroomsKey = useMemo(
+    () =>
+      scope
+        ? workspaceAttendanceCache.classrooms(scope)
+        : (['workspace', 'attendance', 'disabled-classrooms'] as const),
+    [scope],
+  );
+  const rosterKey = useMemo(
+    () =>
+      scope && classroom
+        ? workspaceAttendanceCache.roster(scope, classroom.id, date)
+        : (['workspace', 'attendance', 'disabled-roster'] as const),
+    [classroom, date, scope],
+  );
 
-  // 1. TanStack Query: Classroom list
-  const { data: classrooms = [], isLoading: isClassroomsLoading } = useQuery({
-    queryKey: ['workspace', 'classrooms', subjectId],
-    queryFn: () => (subjectId ? workspaceHexagonalService.getClassrooms(subjectId) : []),
-    enabled: Boolean(subjectId),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const activeClassroom = useMemo(() => {
-    if (!classrooms.length) return null;
-    if (selectedClassroomId) {
-      return classrooms.find((c) => c.id === selectedClassroomId) ?? classrooms[0];
-    }
-    return classrooms[0];
-  }, [classrooms, selectedClassroomId]);
-
-  // 2. TanStack Query: Attendance Roster
-  const {
-    data: roster = [],
-    isLoading: isRosterLoading,
-    error: rosterError,
-  } = useQuery({
-    queryKey: ['workspace', 'attendance', subjectId, activeClassroom?.id, date],
-    queryFn: () =>
-      subjectId && activeClassroom
-        ? workspaceHexagonalService.getAttendanceRoster(activeClassroom, date, subjectId)
-        : [],
-    enabled: Boolean(subjectId && activeClassroom),
+  const classroomsQuery = useQuery({
+    queryKey: classroomsKey,
+    queryFn: ({ signal }) => {
+      if (!scope) throw new Error('The selected classroom scope is unavailable.');
+      return workspaceHexagonalService.getClassrooms(scope.queryScope.principalId, signal);
+    },
+    enabled: admitted,
+    retry: shouldRetryWorkspaceRead,
     staleTime: 30_000,
   });
-
-  // Local student state with optimistic updates
-  const [students, setStudents] = useState<readonly WorkspaceStudent[]>([]);
-
-  // TanStack Pacer: Debounced Draft Persistence (prevents storage thrashing on rapid taps)
-  const debouncedSaveDraft = useDebouncedCallback(
-    (studentsToSave: readonly WorkspaceStudent[]) => {
-      if (!subjectId || !activeClassroom) return;
-      workspaceHexagonalService.saveDraft(
-        { accountId: subjectId, classroomId: activeClassroom.id, date },
-        studentsToSave,
-      );
-    },
-    { wait: 400 },
-  );
-
-  // 3. TanStack Query Mutation: Submit Attendance
-  const submitMutation = useMutation({
-    mutationFn: async (studentsToSubmit: readonly WorkspaceStudent[]) => {
-      if (!subjectId || !activeClassroom) throw new Error('Cannot submit without active class');
-      return workspaceHexagonalService.submitAttendance(
-        activeClassroom,
+  const rosterQuery = useQuery({
+    queryKey: rosterKey,
+    queryFn: ({ signal }) => {
+      if (!scope || !classroom) throw new Error('The selected classroom scope is unavailable.');
+      return workspaceHexagonalService.getAttendanceRoster(
+        classroom,
         date,
-        subjectId,
-        studentsToSubmit,
+        scope.queryScope.principalId,
+        signal,
       );
     },
-    onSuccess: () => {
-      void throttledRefresh(['workspace', 'attendance', subjectId, activeClassroom?.id, date]);
-    },
+    enabled: admitted && classroom !== null,
+    retry: shouldRetryWorkspaceRead,
+    staleTime: 15_000,
   });
-
-  const markStudentStatus = useCallback(
-    (studentId: string) => {
-      setStudents((current) => {
-        const base = current.length ? current : roster;
-        const next = base.map((s) =>
-          s.studentId === studentId || s.id === studentId
-            ? { ...s, status: stepAttendanceStatus(s.status) }
-            : s,
-        );
-        debouncedSaveDraft(next);
-        return next;
-      });
-    },
-    [roster, debouncedSaveDraft],
-  );
-
-  const filteredStudents = useMemo(() => {
-    const list = students.length ? students : roster;
-    if (!debouncedSearch.trim()) return list;
-    const lower = debouncedSearch.toLowerCase();
-    return list.filter((s) => (s.name ?? s.studentId ?? '').toLowerCase().includes(lower));
-  }, [students, roster, debouncedSearch]);
+  const invalidateRoster = useCallback(async () => {
+    if (!scope || !classroom) return;
+    await queryClient.invalidateQueries({ queryKey: rosterKey, exact: true });
+  }, [classroom, queryClient, rosterKey, scope]);
 
   return {
-    classrooms,
-    activeClassroom,
-    students: students.length ? students : roster,
-    filteredStudents,
-    searchQuery,
-    setSearchQuery,
-    debouncedSearch,
-    markStudentStatus,
-    submitAttendance: submitMutation.mutateAsync,
-    isSubmitting: submitMutation.isPending,
-    isLoading: isClassroomsLoading || isRosterLoading,
-    error: rosterError,
-    throttledRefresh,
+    scope,
+    classrooms: classroomsQuery.data ?? ([] as readonly WorkspaceClassroom[]),
+    students: rosterQuery.data ?? ([] as readonly WorkspaceStudent[]),
+    classroomsQuery,
+    rosterQuery,
+    invalidateRoster,
   };
 }

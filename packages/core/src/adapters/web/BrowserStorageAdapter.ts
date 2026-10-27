@@ -51,6 +51,12 @@ export class BrowserStorageAdapter implements IStorage {
     }
   }
 
+  async setAsync(key: string, value: StoredValue): Promise<void> {
+    this.requireBrowserStorage().setItem(key, String(value));
+    this.cache.set(key, value);
+    this.knownKeys.add(key);
+  }
+
   getString(key: string): string | undefined {
     this.hydrateKey(key);
     const value = this.cache.get(key);
@@ -84,8 +90,24 @@ export class BrowserStorageAdapter implements IStorage {
     }
   }
 
+  async deleteAsync(key: string): Promise<void> {
+    this.requireBrowserStorage().removeItem(key);
+    this.cache.delete(key);
+    this.knownKeys.delete(key);
+  }
+
   clearAll(): void {
     for (const key of this.knownKeys) this.delete(key);
+  }
+
+  async clearAllAsync(): Promise<void> {
+    for (const key of this.knownKeys) await this.deleteAsync(key);
+  }
+
+  private requireBrowserStorage(): Storage {
+    const browserStorage = this.browserStorage;
+    if (!browserStorage) throw new Error('Browser storage is unavailable.');
+    return browserStorage;
   }
 
   contains(key: string): boolean {

@@ -1,3 +1,4 @@
+import { FireflyMascot } from '@repo/ui';
 import {
   BookOpen,
   CircleArrowRight,
@@ -26,15 +27,14 @@ export default function StudentOnboardingViewWeb({
     <VStack className="flex-1 bg-phase-canvas p-10 max-w-[1200px] self-center w-full gap-12">
       {/* Header */}
       <VStack className="gap-2 items-center">
-        <Box className="p-4 rounded-generous bg-templeGold/10 mb-3">
-          <Icon as={GraduationCap} className="text-templeGold" size="xl" />
+        <Box className="p-2 mb-2 items-center justify-center">
+          <FireflyMascot size={88} mode="glowing" role="guide" />
         </Box>
         <Heading className="text-4xl font-black text-phaseText-primary text-center">
           Your Learning Sanctuary Awaits
         </Heading>
         <Text className="text-phaseText-secondary text-lg max-w-[600px] text-center leading-relaxed font-medium">
-          Join your classrooms, track your growth, and collaborate with your peers in a digitally
-          empowered environment.
+          Tutii is here to guide you. Join your classrooms, track your growth, and collaborate with your peers in a digitally empowered environment.
         </Text>
       </VStack>
 

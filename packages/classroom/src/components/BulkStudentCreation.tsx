@@ -1,5 +1,14 @@
 import { StorageKeys, storage } from '@repo/core/logic';
 import type { BulkStudent } from '@repo/core/types';
+import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import {
+  createBulkStudentCreationActor,
+  executeBulkStudentImportEffect,
+  restoreBulkStudentDraftSnapshot,
+  saveBulkStudentDraftSnapshot,
+  type BulkStudentStep,
+  type DraftStudent,
+} from '@repo/classroom/machines/bulkStudentCreationMachine';
 import { Plus, Save, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -22,7 +31,7 @@ import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { confirmAction } from '@repo/ui/utils/dialogs';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface BulkStudentCreationProps {
@@ -30,51 +39,34 @@ interface BulkStudentCreationProps {
   onCancel: () => void;
 }
 
-type Step = 'count' | 'entry' | 'review';
-
-type DraftStudent = BulkStudent & { id: string };
-
-const createDraftStudent = (index: number): DraftStudent => ({
-  id: `draft-${index}-${globalThis.crypto?.randomUUID?.() ?? 'draft'}`,
-  name: '',
-  index_number: '',
-  notes: '',
-});
-
 export default function BulkStudentCreation({
   onStudentsCreated,
   onCancel,
 }: BulkStudentCreationProps) {
   const { t } = useTranslation();
   const toast = useToast();
-  const [totalCount, setTotalCount] = useState('');
-  const [students, setStudents] = useState<DraftStudent[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [step, setStep] = useState<Step>('count');
-
-  // Auto-save logic
-  useEffect(() => {
-    if (students.length > 0) {
-      storage.set(StorageKeys.DRAFT_STUDENTS, JSON.stringify({ students, step, currentIndex }));
-    }
-  }, [students, step, currentIndex]);
+  const actor = useMemo(() => createBulkStudentCreationActor(), []);
+  const snapshot = useActorSnapshot(actor);
+  const { totalCount, students, currentIndex, error } = snapshot.context;
+  const step = snapshot.value as BulkStudentStep;
 
   // Restore draft on mount
   useEffect(() => {
-    const saved = storage.getString(StorageKeys.DRAFT_STUDENTS);
-    if (saved && students.length === 0) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.students?.length > 0) {
-          setStudents(parsed.students);
-          setStep(parsed.step || 'entry');
-          setCurrentIndex(parsed.currentIndex || 0);
-        }
-      } catch (e) {
-        console.error('Failed to restore student draft:', e);
-      }
+    restoreBulkStudentDraftSnapshot(actor);
+  }, [actor]);
+
+  // Auto-save logic
+  useEffect(() => {
+    saveBulkStudentDraftSnapshot(actor);
+  }, [actor, students, step, currentIndex]);
+
+  // Show error via toast and clear it in machine
+  useEffect(() => {
+    if (error) {
+      toast.showToast({ message: error, type: 'error' });
+      actor.send({ type: 'CLEAR_ERROR' });
     }
-  }, [students.length]);
+  }, [error, toast, actor]);
 
   const currentStudent = students[currentIndex];
   const validStudentsCount = useMemo(
@@ -87,60 +79,32 @@ export default function BulkStudentCreation({
   };
 
   const initializeStudents = () => {
-    const count = Number.parseInt(totalCount, 10);
-    if (!Number.isFinite(count) || count < 1 || count > 100) {
-      showError(
-        t('bulk_creation.errors.invalidNumber') || 'Please enter a number between 1 and 100',
-      );
-      return;
-    }
-
     hapticLight();
-    setStudents(Array.from({ length: count }, (_, i) => createDraftStudent(i)));
-    setCurrentIndex(0);
-    setStep('entry');
+    actor.send({ type: 'START_ENTRY' });
   };
 
   const updateCurrentStudent = (field: keyof BulkStudent, value: string) => {
-    setStudents((prev) =>
-      prev.map((student, index) =>
-        index === currentIndex ? { ...student, [field]: value } : student,
-      ),
-    );
+    actor.send({ type: 'UPDATE_CURRENT_STUDENT', field, value });
   };
 
   const moveToPrevious = () => {
     hapticLight();
-    setCurrentIndex((index) => Math.max(0, index - 1));
+    actor.send({ type: 'PREV_STUDENT' });
   };
 
   const moveToNext = () => {
-    const student = students[currentIndex];
-    if (!student?.name.trim() || !student.index_number.trim()) {
-      showError(t('bulk_creation.errors.requiredFields') || 'Name and Index are required');
-      return;
-    }
-
     hapticLight();
-    if (currentIndex < students.length - 1) {
-      setCurrentIndex((index) => index + 1);
-      return;
-    }
-    setStep('review');
+    actor.send({ type: 'NEXT_STUDENT' });
   };
 
   const skipStudent = () => {
     hapticLight();
-    if (currentIndex < students.length - 1) {
-      setCurrentIndex((index) => index + 1);
-    }
+    actor.send({ type: 'SKIP_STUDENT' });
   };
 
   const addOneMore = () => {
     hapticLight();
-    setStudents((prev) => [...prev, createDraftStudent(prev.length)]);
-    setCurrentIndex(students.length);
-    setStep('entry');
+    actor.send({ type: 'ADD_ONE_MORE' });
   };
 
   const removeStudent = async (index: number) => {
@@ -152,17 +116,7 @@ export default function BulkStudentCreation({
     if (!confirmed) return;
 
     hapticLight();
-    setStudents((prev) => {
-      const next = prev.filter((_, i) => i !== index);
-      if (next.length === 0) {
-        setStep('count');
-        setTotalCount('');
-        setCurrentIndex(0);
-      } else if (currentIndex >= next.length) {
-        setCurrentIndex(next.length - 1);
-      }
-      return next;
-    });
+    actor.send({ type: 'REMOVE_STUDENT', index });
   };
 
   const handleCancel = async () => {
@@ -173,22 +127,23 @@ export default function BulkStudentCreation({
       );
       if (!confirmed) return;
       storage.delete(StorageKeys.DRAFT_STUDENTS);
+      actor.send({ type: 'RESET' });
     }
     onCancel();
   };
 
-  const confirmImport = () => {
-    const validStudents = students.filter(
-      (student) => student.name.trim() && student.index_number.trim(),
+  const confirmImport = async () => {
+    const result = await executeBulkStudentImportEffect(
+      actor,
+      (validList) => onStudentsCreated(validList),
+      () => storage.delete(StorageKeys.DRAFT_STUDENTS),
     );
-    if (validStudents.length === 0) {
-      showError(t('bulk_creation.errors.noValidStudents') || 'No valid students to add');
-      return;
-    }
 
-    hapticSuccess();
-    storage.delete(StorageKeys.DRAFT_STUDENTS); // Clear on success
-    onStudentsCreated(validStudents.map(({ id: _id, ...student }) => student));
+    if (result.success) {
+      hapticSuccess();
+    } else if (result.error) {
+      showError(result.error);
+    }
   };
 
   return (
@@ -228,7 +183,7 @@ export default function BulkStudentCreation({
                 <InputField
                   placeholder={t('bulk_creation.countPlaceholder') || 'Enter number (e.g., 35)'}
                   value={totalCount}
-                  onChangeText={setTotalCount}
+                  onChangeText={(value) => actor.send({ type: 'SET_TOTAL_COUNT', totalCount: value })}
                   keyboardType="number-pad"
                   className="py-4 text-center text-2xl font-black text-phase-text-primary"
                 />
@@ -349,7 +304,7 @@ export default function BulkStudentCreation({
             <Pressable
               onPress={() => {
                 hapticLight();
-                setStep('review');
+                actor.send({ type: 'GO_TO_REVIEW' });
               }}
               className="items-center py-2"
             >
@@ -403,8 +358,7 @@ export default function BulkStudentCreation({
                         <Pressable
                           onPress={() => {
                             hapticLight();
-                            setCurrentIndex(index);
-                            setStep('entry');
+                            actor.send({ type: 'EDIT_STUDENT', index });
                           }}
                           accessibilityRole="button"
                           accessibilityLabel={`Edit ${student.name || `student ${index + 1}`}`}
@@ -460,7 +414,7 @@ export default function BulkStudentCreation({
               <Pressable
                 onPress={() => {
                   hapticLight();
-                  setStep('entry');
+                  actor.send({ type: 'BACK_TO_ENTRY' });
                 }}
                 className="items-center py-2"
               >

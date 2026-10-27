@@ -25,8 +25,8 @@ export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
     setViewMode,
     timelineFocus,
     setTimelineFocus,
-    isOffline,
-    setOffline,
+    readPolicy,
+    setReadPolicy,
   } = useTemporalStore();
   const [isCalendarVisible, setCalendarVisible] = useState(false);
 
@@ -67,10 +67,18 @@ export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
 
           <Pressable
             accessibilityRole="button"
-            onPress={() => setOffline(!isOffline)}
+            accessibilityLabel={
+              readPolicy === 'cached-only' ? 'Allow live reads' : 'Use cached reads only'
+            }
+            accessibilityState={{ selected: readPolicy === 'cached-only' }}
+            onPress={() => setReadPolicy(readPolicy === 'cached-only' ? 'live' : 'cached-only')}
             className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
           >
-            {isOffline ? <WifiOff size={20} color={tokens.colors.error} /> : <Wifi size={20} color={tokens.colors.primary} />}
+            {readPolicy === 'cached-only' ? (
+              <WifiOff size={20} color={tokens.colors.error} />
+            ) : (
+              <Wifi size={20} color={tokens.colors.primary} />
+            )}
           </Pressable>
 
           <Pressable

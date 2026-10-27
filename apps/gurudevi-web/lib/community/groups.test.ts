@@ -56,7 +56,7 @@ describe('parseCommunityGroups', () => {
   });
 
   it('rejects an insecure endpoint override before sending the bearer token', async () => {
-    const fetcher = vi.fn<typeof fetch>();
+    const fetcher = vi.fn() as unknown as typeof fetch;
     await expect(
       loadCommunityGroups('verified-session-token', {
         fetcher,

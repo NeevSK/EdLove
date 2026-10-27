@@ -1,46 +1,40 @@
-/**
- * PowerSyncProvider — Native Local-First SQLCipher & Drizzle Engine (May 2026)
- *
- * This is the heart of the local-first architecture on the native mobile client.
- * It does the following:
- * 1. Generates and manages a secure device-bound AES-256 key via Expo SecureStore.
- * 2. Initializes the high-performance JSI-based C++ database engine (op-sqlite)
- *    configured with SQLCipher full-disk page encryption.
- * 3. Bridges the Drizzle ORM schema using DrizzleAppSchema to compile PowerSync sync rules.
- * 4. Wraps the native connection with Drizzle ORM to provide complete type-safety.
- * 5. Injects the native JSI database singletons into the shared @repo/core package
- *    to support zero-latency offline mutations and compiled AST reactive queries.
- *
- * @see https://docs.powersync.com/usage/use-case-examples/drizzle
- */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { PowerSyncContext } from '@powersync/react';
-import { PowerSyncDatabase } from '@powersync/react-native';
+import { type PowerSyncBackendConnector, PowerSyncDatabase } from '@powersync/react-native';
 import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
-import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
+import { injectNativePowerSyncDB } from '@repo/core/adapters/powersync/database';
+import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+import { AppSchema } from '@repo/core/adapters/powersync/schema';
 import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
-import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
-import { useStore } from '@repo/core/store/useStore';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
+import { createAccountDatabaseOptions } from '@/lib/powerSyncDatabase';
 
-type PowerSyncProviderProps = PropsWithChildren;
+type Runtime = {
+  accountId: string;
+  database: PowerSyncDatabase;
+  connector: PowerSyncBackendConnector;
+};
 const powerSyncRuntime = new SingleActivePowerSyncRuntime<PowerSyncDatabase>();
 
-export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
-  const [db, setDb] = useState<PowerSyncDatabase | null>(null);
-  const accountId = useStore((state) => state.user?.id ?? null);
-  const user = useStore((state) => state.user);
-  const isPowerSyncEnabled = useStore((state) => state.flags.isPowerSyncEnabled);
+/** Account lifecycle owns local SQL. Rollout/network/read policy only admit remote synchronization. */
+export function PowerSyncProvider({ children }: PropsWithChildren) {
+  const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const user = useAuthStore((state) => state.user);
+  const accountId = user?.id ?? null;
   const isLocalOnly = isLocalOnlyIdentity(user);
+  const isPowerSyncEnabled = useFeatureStore((state) => state.flags.isPowerSyncEnabled);
+  const readPolicy = useTemporalStore((state) => state.readPolicy);
+  const { isOnline } = useOfflineStatus();
 
   useEffect(() => {
     let active = true;
-    const activeAccountId = accountId;
-
-    if (!isPowerSyncEnabled || !activeAccountId || isLocalOnly) {
+    if (!accountId || isLocalOnly) {
       void powerSyncRuntime.deactivate().catch((error) => {
         console.error('[PowerSync] Failed to deactivate inactive runtime:', error);
       });
@@ -48,58 +42,76 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
         active = false;
       };
     }
-    const resolvedAccountId = activeAccountId as string;
-
+    const owner = accountId;
     async function initDB() {
       try {
-        const powersyncDb = await powerSyncRuntime.activate(resolvedAccountId, async () => {
-          const adapter = new OPSQLiteAdapter(resolvedAccountId);
-          const source = await adapter.createDatabaseFactory(resolvedAccountId);
-          const database = new PowerSyncDatabase({
-            schema: source.schema,
-            database: source.database,
+        const database = await powerSyncRuntime.activate(owner, async () => {
+          const database = new PowerSyncDatabase(await createAccountDatabaseOptions(owner));
+          const drizzle = wrapPowerSyncWithDrizzle(database, { schema: AppSchema });
+          injectNativePowerSyncDB(database, drizzle, {
+            isActive: () =>
+              useAuthStore.getState().user?.id === owner &&
+              !isLocalOnlyIdentity(useAuthStore.getState().user) &&
+              powerSyncRuntime.isActive(owner, database),
+            release: (clear) => powerSyncRuntime.deactivateIfCurrent(database, clear),
           });
-          const drizzleDb = wrapPowerSyncWithDrizzle(database, { schema: AppSchema });
-
-          injectNativePowerSyncDB(database, drizzleDb);
-          if (source.sync) {
-            void connectPowerSyncRuntime(database, source.sync, resolvedAccountId).catch(
-              (error) => {
-                // Local reads/writes remain available while the sync stream is
-                // offline; PowerSync will retry when connectivity returns.
-                console.warn('[PowerSync] Native first sync unavailable:', error);
-              },
-            );
-          }
           return database;
         });
-
-        if (active) setDb(powersyncDb);
+        if (active) {
+          const connector = new SupabasePowerSyncConnector(
+            owner,
+            () =>
+              useAuthStore.getState().user?.id === owner &&
+              !isLocalOnlyIdentity(useAuthStore.getState().user) &&
+              powerSyncRuntime.isActive(owner, database) &&
+              useFeatureStore.getState().flags.isPowerSyncEnabled &&
+              networkManager.getSnapshot().status === 'online' &&
+              useTemporalStore.getState().readPolicy === 'live',
+          );
+          setRuntime({ accountId: owner, database, connector });
+        }
       } catch (error) {
-        console.error('❌ [PowerSync] Native JSI initialization failed:', error);
+        console.error('[PowerSync] Native database initialization failed:', error);
       }
     }
-
     void initDB();
-
     return () => {
       active = false;
       void powerSyncRuntime.deactivate().catch((error) => {
         console.error('[PowerSync] Native runtime cleanup failed:', error);
       });
     };
-  }, [accountId, isLocalOnly, isPowerSyncEnabled]);
+  }, [accountId, isLocalOnly]);
 
-  if (!isPowerSyncEnabled || !accountId || isLocalOnly) {
+  useEffect(() => {
+    if (!runtime || runtime.accountId !== accountId || isLocalOnly) return undefined;
+    const controller = new AbortController();
+    const { database, connector } = runtime;
+    const allowSync = isPowerSyncEnabled && isOnline && readPolicy === 'live';
+    void powerSyncRuntime
+      .runIfActive(runtime.accountId, database, controller, async () => {
+        await database.disconnect();
+        if (controller.signal.aborted || !allowSync) return;
+        await connectPowerSyncRuntime(database, connector, runtime.accountId, controller.signal);
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted)
+          console.warn(
+            '[PowerSync] Remote synchronization unavailable; local data retained:',
+            error,
+          );
+      });
+    return () => controller.abort();
+  }, [runtime, accountId, isLocalOnly, isPowerSyncEnabled, isOnline, readPolicy]);
+
+  if (
+    !runtime ||
+    !accountId ||
+    isLocalOnly ||
+    runtime.accountId !== accountId ||
+    !powerSyncRuntime.isActive(accountId, runtime.database)
+  )
     return <>{children}</>;
-  }
 
-  if (!db) {
-    // Database startup is a capability, not the route-shell render gate.
-    // Screens render their loading/offline states while the local runtime
-    // becomes available.
-    return <>{children}</>;
-  }
-
-  return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
+  return <PowerSyncContext.Provider value={runtime.database}>{children}</PowerSyncContext.Provider>;
 }

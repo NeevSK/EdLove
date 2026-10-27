@@ -1,5 +1,6 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -58,8 +59,8 @@ export default function TeacherSelfView() {
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
   const [_isPulseDashboardOpen, _setIsPulseDashboardOpen] = useState(true);
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
   const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
   const { banyan, isLoading: banyanLoading } = useBanyanGrowth();

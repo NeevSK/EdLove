@@ -32,9 +32,9 @@ describe('SettingsFloor Integration (G1 boundary / jsdom)', () => {
     expect(screen.getByRole('heading', { level: 1, name: /sanctuary settings/i })).toBeTruthy();
     expect(screen.getByText(/Personalize your atmosphere/i)).toBeTruthy();
 
-    // Check Floor Studio trigger button
-    const studioButton = screen.getByRole('button', { name: /customize this settings floor/i });
-    expect(studioButton).toBeTruthy();
+    // Check Navigation layout options
+    expect(screen.getByRole('button', { name: /horizontal row/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /side rail/i })).toBeTruthy();
   });
 
   it('allows switching appearance modes and toggling high contrast', async () => {

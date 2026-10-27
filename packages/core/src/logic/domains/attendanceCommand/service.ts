@@ -69,8 +69,9 @@ function completedOutcome(receipt: AttendanceBatchReceipt, outcome: 'committed' 
 }
 
 /**
- * Transport-free v1 command. A persistence adapter must make receipt claim,
- * mutation, and completion atomic before this command is admitted to a route.
+ * Transport-free v1 command. The persistence adapter supplies receipt and
+ * attendance ports from one transaction, so a failed settlement cannot commit
+ * one half of the operation.
  */
 export async function executeAttendanceBatchRecord(
   rawCommand: unknown,
@@ -86,50 +87,68 @@ export async function executeAttendanceBatchRecord(
   }
   const command = validation.data;
   assertAuthority(authority, command);
-  const payloadHash = dependencies.hashPayload(command);
-  const claim = await dependencies.receipts.claim({
-    capability: ATTENDANCE_BATCH_RECORD_CAPABILITY,
-    principalId: authority.principalId,
-    idempotencyKey: command.idempotencyKey,
-    payloadHash,
-  });
-
-  if (claim.kind === 'payload-conflict') {
-    throw new AttendanceBatchCommandError(
-      'IDEMPOTENCY_CONFLICT',
-      'The idempotency key was already used for a different attendance batch.',
-    );
-  }
-  if (claim.kind === 'in-progress') {
-    throw new AttendanceBatchCommandError(
-      'OPERATION_IN_PROGRESS',
-      'The attendance batch is still being settled. Recover using the same idempotency key.',
-    );
-  }
-  if (claim.kind === 'replay') return completedOutcome(claim.receipt, 'replayed');
-
-  let records: readonly AttendanceBatchRecordedItem[];
+  const payloadHash = await dependencies.hashPayload(command);
   try {
-    records = await dependencies.attendance.recordBatch({ authority, command });
-  } catch {
-    await dependencies.receipts.fail({
-      operationId: claim.receipt.operationId,
-      payloadHash,
-      failureCode: 'DEPENDENCY_FAILURE',
-    });
-    throw new AttendanceBatchCommandError(
-      'DEPENDENCY_FAILURE',
-      'Attendance batch could not be recorded. Recover using the same idempotency key.',
-    );
-  }
+    return await dependencies.transaction.run(async ({ receipts, attendance }) => {
+      const claim = await receipts.claim({
+        capability: ATTENDANCE_BATCH_RECORD_CAPABILITY,
+        principalId: authority.principalId,
+        idempotencyKey: command.idempotencyKey,
+        payloadHash,
+      });
 
-  try {
-    const receipt = await dependencies.receipts.complete({
-      operationId: claim.receipt.operationId,
-      payloadHash,
-      result: records,
+      if (claim.kind === 'payload-conflict') {
+        throw new AttendanceBatchCommandError(
+          'IDEMPOTENCY_CONFLICT',
+          'The idempotency key was already used for a different attendance batch.',
+        );
+      }
+      if (claim.kind === 'conflict') {
+        throw new AttendanceBatchCommandError(
+          'IDEMPOTENCY_CONFLICT',
+          'The attendance batch receipt is in conflict. Recover with a new idempotency key.',
+        );
+      }
+      if (claim.kind === 'failed') {
+        throw new AttendanceBatchCommandError(
+          'DEPENDENCY_FAILURE',
+          'The previous attendance batch attempt failed. Recover with a new idempotency key.',
+        );
+      }
+      if (claim.kind === 'in-progress') {
+        throw new AttendanceBatchCommandError(
+          'OPERATION_IN_PROGRESS',
+          'The attendance batch is still being settled. Recover using the same idempotency key.',
+        );
+      }
+      if (claim.kind === 'replay') return completedOutcome(claim.receipt, 'replayed');
+
+      let records: readonly AttendanceBatchRecordedItem[];
+      try {
+        records = await attendance.recordBatch({ authority, command });
+      } catch (error) {
+        if (error instanceof AttendanceBatchCommandError) throw error;
+        throw new AttendanceBatchCommandError(
+          'DEPENDENCY_FAILURE',
+          'Attendance batch could not be recorded. Recover using the same idempotency key.',
+        );
+      }
+
+      try {
+        const receipt = await receipts.complete({
+          operationId: claim.receipt.operationId,
+          payloadHash,
+          result: records,
+        });
+        return completedOutcome(receipt, 'committed');
+      } catch (error) {
+        if (error instanceof AttendanceBatchCommandError) throw error;
+        throw new AttendanceBatchCommandError(
+          'OPERATION_IN_PROGRESS',
+          'Attendance may have been recorded. Recover using the same idempotency key.',
+        );
+      }
     });
-    return completedOutcome(receipt, 'committed');
   } catch (error) {
     if (error instanceof AttendanceBatchCommandError) throw error;
     throw new AttendanceBatchCommandError(

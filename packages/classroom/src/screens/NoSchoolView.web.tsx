@@ -1,9 +1,5 @@
 import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api/client';
-import {
-  incrementInviteCodeUsage,
-  usePermissions,
-  validateInviteCode,
-} from '@repo/core/logic';
+import { incrementInviteCodeUsage, usePermissions, validateInviteCode } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import type { School } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';

@@ -1,5 +1,7 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
@@ -9,26 +11,48 @@ import { LibraryMapFloor } from './LibraryMapFloor';
 export const metadata = { title: 'Library Map | Gurudevi Sanctuary' };
 
 export default async function LibraryMapPage() {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore = classifyGurudeviHost(host) === 'explore';
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <LibraryMapFloor displayName="Guest Explorer" capacity="guest" />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <MapState
-        displayName="Explorer"
-        title="Library map is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <LibraryMapFloor displayName="Guest Explorer" capacity="guest" />
+      </SanctuaryShell>
     );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
     return (
-      <MapState
-        action={<Link href={signInPath('/library/map')}>Sign in</Link>}
-        displayName="Explorer"
-        detail="Sign in to explore provincial learning centers and library maps."
-        title="Library map is private"
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <LibraryMapFloor displayName="Guest Explorer" capacity="guest" />
+      </SanctuaryShell>
     );
   }
 

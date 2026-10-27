@@ -1,6 +1,7 @@
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { profile } from '@repo/core/logic/managers/factory';
-import { useStore } from '@repo/core/store/useStore';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError, type SocialLink } from '@repo/core/types';
 import { SovereignError } from '@repo/core/types/Errors';
 
@@ -23,7 +24,7 @@ export const profileAPI = {
   },
 
   async updateProfile(id: string, updates: Record<string, any>) {
-    const state = useStore.getState();
+    const state = useAuthStore.getState();
     if (!state.user || state.user.is_anonymous) {
       throw SovereignError.unauthorized('update', 'User');
     }
@@ -31,7 +32,7 @@ export const profileAPI = {
     try {
       const res = await orpcClient.profile.updateProfile({
         params: { id },
-        body: updates,
+        body: UserProfilePatchSchema.parse(updates),
       });
 
       return res;
@@ -131,7 +132,7 @@ export const profileAPI = {
   },
 
   async upsertSocialLink(userId: string, link: Partial<SocialLink>) {
-    const state = useStore.getState();
+    const state = useAuthStore.getState();
     if (!state.user || state.user.is_anonymous) {
       throw new APIError('Forbidden', '403');
     }
@@ -139,7 +140,7 @@ export const profileAPI = {
   },
 
   async deleteSocialLink(linkId: string) {
-    const state = useStore.getState();
+    const state = useAuthStore.getState();
     if (!state.user || state.user.is_anonymous) {
       throw new APIError('Forbidden', '403');
     }

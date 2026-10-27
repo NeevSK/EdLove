@@ -1,16 +1,18 @@
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import {
   getAuthRouteTarget,
   getSessionIdentityMode,
   type IdentityAvailability,
   isResolvedAuthSubjectCurrent,
   useAuth,
-  useStore,
 } from '@repo/core/logic';
 import type { AuthSession } from '@repo/core/logic/ports/auth.port';
 import { getLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { getOrCreateGuestLease } from '@repo/core/native/guestLease';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useEffect, useState } from 'react';
 
 import {
@@ -30,19 +32,22 @@ export type BootstrapRouteState = {
   session: AuthSession | null;
   hasLiveCapacity: boolean;
   hasProfileName: boolean;
+  principalId: string | null;
   activeCapacity?: string | null;
   isProfileForSession: boolean;
   entitlement: Pick<
-    ReturnType<typeof useEntitlementStore.getState>,
+    ReturnType<typeof useEntitlementQuery>,
     'manifestLoaded' | 'readiness' | 'snapshotUserId'
   >;
   isGuestRouteStateLoading?: boolean;
+  hasLocalGuestSession?: boolean;
   isLocalGuestReady?: boolean;
 };
 
 type LocalGuestRouteState = {
   isLoading: boolean;
   isReady: boolean;
+  localGuestId: string | null;
 };
 
 function useLocalGuestRouteState(
@@ -51,40 +56,52 @@ function useLocalGuestRouteState(
 ): LocalGuestRouteState {
   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
   const [state, setState] = useState<LocalGuestRouteState>({
-    isLoading: isAnonymous,
+    isLoading: isAnonymous || session === null,
     isReady: false,
+    localGuestId: null,
   });
 
   useEffect(() => {
-    if (!isAnonymous || !session?.user.id) {
-      setGuestScope(null);
-      setState({ isLoading: false, isReady: false });
+    const anonymousGuestId = isAnonymous ? session?.user.id : null;
+    if (session?.user && !anonymousGuestId) {
+      setState({ isLoading: false, isReady: false, localGuestId: null });
       return;
     }
 
     let active = true;
-    setState({ isLoading: true, isReady: false });
-    void getLocalGuestIdentity(session.user.id)
+    setState({ isLoading: true, isReady: false, localGuestId: null });
+    void (anonymousGuestId ? Promise.resolve({ id: anonymousGuestId }) : restoreLocalGuestSession())
+      .then((guestSession) => {
+        if (!guestSession) return null;
+        return getLocalGuestIdentity(guestSession.id).then((identity) => ({
+          identity,
+          userId: guestSession.id,
+        }));
+      })
       .then(async (identity) => {
-        if (!identity.onboarding_completed || !identity.activeBond?.capacity) {
-          return { isReady: false };
+        if (
+          !identity ||
+          !identity.identity.onboarding_completed ||
+          !identity.identity.activeBond?.capacity
+        ) {
+          return { isReady: false, localGuestId: identity?.userId ?? null };
         }
-        setGuestScope(session.user.id);
-        const lease = await getOrCreateGuestLease(session.user.id);
-        return { isReady: !lease.isExpired };
+        setGuestScope(identity.userId);
+        const lease = await getOrCreateGuestLease(identity.userId);
+        return { isReady: !lease.isExpired, localGuestId: identity.userId };
       })
       .then((next) => {
-        if (active) setState({ isLoading: false, isReady: next.isReady });
+        if (active) setState({ isLoading: false, ...next });
       })
       .catch((error: unknown) => {
         console.warn('[entry] unable to restore local guest admission state:', error);
-        if (active) setState({ isLoading: false, isReady: false });
+        if (active) setState({ isLoading: false, isReady: false, localGuestId: null });
       });
 
     return () => {
       active = false;
     };
-  }, [isAnonymous, onboardingCompleted, session?.user.id]);
+  }, [isAnonymous, onboardingCompleted, session]);
 
   return state;
 }
@@ -102,16 +119,34 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
     resolvedAuthSubjectId,
     session,
   } = useAuth();
-  const profile = useStore((state) => state.user);
-  const activeBond = useStore((state) => state.activeBond);
-  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const profile = useAuthStore((state) => state.user);
+  const scopeSnapshot = useScopeSessionStore((state) => state.snapshot);
+  const scopeTransitioning = useScopeSessionStore((state) => state.isTransitioning);
+  const onboardingCompleted = useAuthStore((state) => Boolean(state.user?.onboarding_completed));
   const profileBelongsToSession = Boolean(
     profile?.id && isResolvedAuthSubjectCurrent(resolvedAuthSubjectId, session?.user.id),
   );
+  const entitlementScopeIsCurrent =
+    !scopeTransitioning && scopeSnapshot?.principalId === (profile?.id ?? null);
+  const activeBond = entitlementScopeIsCurrent ? (scopeSnapshot?.activeBond ?? null) : null;
   const hasLiveCapacity = Boolean(profileBelongsToSession && activeBond?.capacity);
   const activeCapacity = profileBelongsToSession ? (activeBond?.capacity ?? null) : null;
   const hasProfileName = Boolean(profileBelongsToSession && profile?.display_name?.trim());
-  const { manifestLoaded, readiness, snapshotUserId } = useEntitlementStore();
+  const entitlement = useEntitlementQuery(
+    profileBelongsToSession ? (profile?.id ?? null) : null,
+    {
+      activeBondId: activeBond?.id ?? null,
+      activeEntityId: activeBond?.entity_id ?? null,
+      activeEntityType: activeBond?.entity_type ?? null,
+    },
+    Boolean(
+      profileBelongsToSession &&
+        entitlementScopeIsCurrent &&
+        identityAvailability === 'active' &&
+        getSessionIdentityMode(session) === 'authenticated',
+    ),
+  );
+  const { manifestLoaded, readiness, snapshotUserId } = entitlement;
   const localGuest = useLocalGuestRouteState(session, onboardingCompleted);
   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
   const hasActiveAccessToken = Boolean(
@@ -125,17 +160,20 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
     identityAvailability,
     isProfileResolving,
     isSessionLoading: loading,
-    onboardingCompleted: isAnonymous ? localGuest.isReady : onboardingCompleted,
+    onboardingCompleted:
+      isAnonymous || localGuest.localGuestId ? localGuest.isReady : onboardingCompleted,
     pathname,
     profileError,
     session,
     hasLiveCapacity,
     activeCapacity,
     hasProfileName,
+    principalId: profileBelongsToSession ? (profile?.id ?? null) : null,
     isProfileForSession: profileBelongsToSession,
     entitlement: { manifestLoaded, readiness, snapshotUserId },
-    isGuestRouteStateLoading: isAnonymous && localGuest.isLoading,
-    isLocalGuestReady: isAnonymous && localGuest.isReady,
+    isGuestRouteStateLoading: (isAnonymous || session === null) && localGuest.isLoading,
+    hasLocalGuestSession: Boolean(localGuest.localGuestId),
+    isLocalGuestReady: localGuest.isReady,
   };
 }
 
@@ -149,6 +187,7 @@ export function getBootstrapRouteTarget(
       hasActiveCapacity: false,
       hasActiveAccessToken: state.hasActiveAccessToken,
       hasSession: Boolean(state.session),
+      hasLocalGuestSession: state.hasLocalGuestSession,
       identityAvailability: state.identityAvailability,
       hasProfileForSession: state.isProfileForSession,
       hasProfileName: state.hasProfileName,
@@ -160,7 +199,7 @@ export function getBootstrapRouteTarget(
     });
   }
   const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
-    sessionUserId: state.session?.user.id,
+    sessionUserId: state.principalId ?? undefined,
     snapshotUserId: state.entitlement.snapshotUserId,
     manifestLoaded: state.entitlement.manifestLoaded,
     readiness: state.entitlement.readiness,
@@ -169,7 +208,7 @@ export function getBootstrapRouteTarget(
     isSessionLoading: state.isSessionLoading,
     isProfileResolving: state.isProfileResolving,
     hasProfileError: Boolean(state.profileError),
-    hasSession: Boolean(state.session),
+    hasSession: Boolean(state.session) || Boolean(state.hasLocalGuestSession),
     guestOnboardingIntent: options.guestOnboardingIntent,
     hasCachedCapabilities: hasCachedCapabilities || Boolean(state.isLocalGuestReady),
     hasLiveCapacity: state.hasLiveCapacity || Boolean(state.isLocalGuestReady),
@@ -180,6 +219,7 @@ export function getBootstrapRouteTarget(
     hasActiveCapacity: readiness.hasActiveCapacity,
     hasActiveAccessToken: state.hasActiveAccessToken,
     hasSession: Boolean(state.session),
+    hasLocalGuestSession: state.hasLocalGuestSession,
     identityAvailability: state.identityAvailability,
     hasProfileForSession: state.isProfileForSession,
     hasProfileName: state.hasProfileName || Boolean(state.isLocalGuestReady),

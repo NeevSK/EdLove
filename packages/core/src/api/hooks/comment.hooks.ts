@@ -1,6 +1,6 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { communityAPI } from '@repo/core/api/community';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
@@ -14,7 +14,7 @@ export const commentKeys = {
  */
 export function useCommentHooks(postId: string | null) {
   const queryClient = useQueryClient();
-  const activeBond = useAuthStore((state) => state.activeBond);
+  const activeBond = useScopeSessionStore((state) => state.snapshot?.activeBond ?? null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: postId ? commentKeys.list(postId) : ['community', 'comments', '__none__'],

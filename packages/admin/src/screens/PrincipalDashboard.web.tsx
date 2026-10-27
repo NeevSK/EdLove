@@ -28,13 +28,8 @@ import {
   type TeacherCarouselItem,
 } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
-import {
-  type PublishedSchoolGradingCompletion,
-  type PulseMetricsZod,
-  useAuthStore,
-  usePermissions,
-  useTemporalStore,
-} from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { type PublishedSchoolGradingCompletion, type PulseMetricsZod, usePermissions, useTemporalStore } from '@repo/core/logic';
 import type {
   MappingTopologyZod as KnowledgeTopology,
   School,

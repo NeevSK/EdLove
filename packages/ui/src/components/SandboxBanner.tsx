@@ -1,4 +1,4 @@
-import { useAuthStore } from '@repo/core/store';
+import { useSandboxMode } from '@repo/core/api/sandboxMode';
 import { X, Zap } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -10,21 +10,25 @@ interface SandboxBannerProps {
 }
 
 const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
-  const isDemoMode = useAuthStore((state) => state.isDemoMode);
+  const mode = useSandboxMode();
   const { t } = useTranslation();
 
-  if (!isDemoMode) return null;
+  if (mode === 'live' || mode === 'bridging') return null;
+
+  const isDemo = mode === 'demo';
 
   return (
     <Box className="bg-phase-accent py-2 px-4 flex-row justify-between items-center z-50">
       <HStack space="xs" className="items-center">
         <Zap color="white" size={16} fill="white" />
         <Text className="text-white font-bold text-xs">
-          {t('demoMode.simulationAlert') || 'Exploring Sample Sanctuary'}
+          {isDemo
+            ? t('demoMode.simulationAlert') || 'Simulated Sanctuary (Interactive Sandbox)'
+            : t('demoMode.explorerAlert') || 'Exploring Sample Sanctuary'}
         </Text>
       </HStack>
 
-      {onExit && (
+      {onExit && isDemo && (
         <Pressable
           accessibilityRole="button"
           onPress={() => {

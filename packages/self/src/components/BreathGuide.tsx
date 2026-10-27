@@ -11,6 +11,7 @@ import { Blur, Canvas, Circle } from 'react-native-skia';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
+import { logReminderFeedback } from '../api/selfFeatureRepository';
 
 interface BreathGuideProps {
   onComplete?: () => void;
@@ -88,6 +89,13 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     setCurrentCycle(0);
     setPhaseIndex(0);
     emitFeedback('success');
+    void logReminderFeedback('mobile_user', {
+      reminder_id: `breath-guide-${Date.now()}`,
+      user_id: 'mobile_user',
+      action: 'done',
+      category: 'breathe',
+      note: 'Completed 1-minute somatic breath guide',
+    }).catch(() => {});
     onComplete?.();
   }, [clearTimer, emitFeedback, onComplete]);
 

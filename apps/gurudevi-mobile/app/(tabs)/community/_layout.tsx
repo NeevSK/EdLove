@@ -8,6 +8,8 @@ export default function CommunityLayout() {
     <ErrorBoundary name="CommunityLayout">
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="announcements" />
+        <Stack.Screen name="groups" />
         <Stack.Screen name="direct-messages" />
         <Stack.Screen name="chat/[conversationId]" />
         <Stack.Screen name="direct-messages/[conversationId]" />

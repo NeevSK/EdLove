@@ -15,6 +15,7 @@ import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { socialAPI } from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useAuthStore } from '@repo/core/store';
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
@@ -47,7 +48,8 @@ export default function DirectMessageScreen() {
   const [failedMessage, setFailedMessage] = useState<string | null>(null);
   const [targetUserId, setTargetUserId] = useState<string | undefined>();
   const [isBlocked, setIsBlocked] = useState(false);
-  const { viewDate, viewScale, isPastView, isOffline } = useTemporalStore();
+  const { viewDate, viewScale, isPastView } = useTemporalStore();
+  const { isOffline } = useOfflineStatus();
 
   const bottomRef = useRef<HTMLDivElement>(null);
 

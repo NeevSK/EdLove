@@ -3,9 +3,11 @@
 import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
 import { type Dispatch, type FormEvent, type SetStateAction, useState } from 'react';
+import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';
 import type { BurnedJournalEntry } from '../../../../lib/sanctuary/selfJournal';
 import { LivingCard } from '../../components/LivingCard';
 import styles from '../self-floor.module.css';
+import { EmberCanvasOverlay } from './EmberCanvasOverlay';
 import { formatDate } from './formatDate';
 
 export type ScreenState = Readonly<{
@@ -52,6 +54,7 @@ export function FireJournal({
   const isReview = temporalIntent === 'review';
   const isPlan = temporalIntent === 'plan';
   const [isRetroactiveComposing, setIsRetroactiveComposing] = useState(false);
+  const [isDissolving, setIsDissolving] = useState(false);
   const historySnapshot = journalHistorySnapshot(screen);
 
   return (
@@ -119,7 +122,8 @@ export function FireJournal({
                     : `A quiet day. No reflections were committed to the flame on ${selectedDate ? formatDate(selectedDate) : 'this date'}.`}
                 </p>
                 <p className={styles.hint}>
-                  Past days are preserved immutably. If you remembered an insight from this day, you may record it retrospectively.
+                  Past days are preserved immutably. If you remembered an insight from this day, you
+                  may record it retrospectively.
                 </p>
                 <button
                   type="button"
@@ -140,7 +144,8 @@ export function FireJournal({
                   Looking ahead to {selectedDate ? formatDate(selectedDate) : 'upcoming days'}.
                 </p>
                 <p className={styles.hint}>
-                  Fire Journal is practiced in the living present. When this date arrives, your practice awaits.
+                  Fire Journal is practiced in the living present. When this date arrives, your
+                  practice awaits.
                 </p>
               </div>
             ) : screen.notice ? (
@@ -166,10 +171,29 @@ export function FireJournal({
               </div>
             ) : (
               <form
-                className={`${styles.form} ${screen.isBurning ? styles.burnGlow : ''}`}
+                className={`${styles.form} ${screen.isBurning || isDissolving ? styles.burnGlow : ''}`}
                 onSubmit={async (event) => {
-                  await submit(event);
-                  setIsRetroactiveComposing(false);
+                  event.preventDefault();
+                  if (!screen.draft.trim() || screen.isBurning || isDissolving) return;
+
+                  if (isReview) {
+                    await submit(event);
+                    setIsRetroactiveComposing(false);
+                    return;
+                  }
+
+                  // Somatic ember particle dissolution & 396Hz release tone
+                  playSingingBowlChime(396);
+                  setIsDissolving(true);
+
+                  setTimeout(async () => {
+                    try {
+                      await submit(event);
+                    } finally {
+                      setIsDissolving(false);
+                      setIsRetroactiveComposing(false);
+                    }
+                  }, 1400);
                 }}
               >
                 {isReview && isRetroactiveComposing ? (
@@ -209,26 +233,34 @@ export function FireJournal({
                 <label htmlFor="fire-journal-entry">
                   {isReview ? 'A retrospective reflection' : 'A private reflection'}
                 </label>
-                <textarea
-                  disabled={screen.isBurning}
-                  id="fire-journal-entry"
-                  maxLength={10_000}
-                  onChange={(event) =>
-                    setScreen((current) => ({ ...current, draft: event.target.value }))
-                  }
-                  placeholder={
-                    isReview
-                      ? 'Record what you remember from this day. It will be stamped as a retrospective memory.'
-                      : 'Write without needing to carry every word forward.'
-                  }
-                  required
-                  rows={7}
-                  value={screen.draft}
-                />
+                <div className={styles.textareaContainer}>
+                  {isDissolving ? <EmberCanvasOverlay /> : null}
+                  <textarea
+                    disabled={screen.isBurning || isDissolving}
+                    id="fire-journal-entry"
+                    className={isDissolving ? styles.dissolvingTextarea : undefined}
+                    maxLength={10_000}
+                    onChange={(event) =>
+                      setScreen((current) => ({ ...current, draft: event.target.value }))
+                    }
+                    placeholder={
+                      isReview
+                        ? 'Record what you remember from this day. It will be stamped as a retrospective memory.'
+                        : 'Write without needing to carry every word forward.'
+                    }
+                    required
+                    rows={7}
+                    value={screen.draft}
+                  />
+                </div>
                 <div className={styles.actions}>
-                  <button className={styles.burnButton} disabled={screen.isBurning} type="submit">
-                    {screen.isBurning
-                      ? 'Releasing…'
+                  <button
+                    className={styles.burnButton}
+                    disabled={screen.isBurning || isDissolving}
+                    type="submit"
+                  >
+                    {isDissolving || screen.isBurning
+                      ? 'Consuming in Flame…'
                       : isReview
                         ? 'Save Retroactive Reflection'
                         : isPracticing

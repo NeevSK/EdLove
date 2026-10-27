@@ -32,6 +32,7 @@ interface GroupsScreenProps {
   onCreatePost?: (groupId?: string) => void;
   onCreateGroup?: () => void;
   onNavigateToGroup: (groupId: string) => void;
+  ListHeaderComponent?: React.ReactElement | null;
 }
 
 export default function GroupsScreen({
@@ -39,6 +40,7 @@ export default function GroupsScreen({
   schoolId,
   onCreateGroup,
   onNavigateToGroup,
+  ListHeaderComponent,
 }: GroupsScreenProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
@@ -286,15 +288,20 @@ export default function GroupsScreen({
 
   return (
     <Box className="flex-1 bg-phase-canvas">
-      {renderSubTabs()}
-      {renderSearchBar()}
-      {renderGalaxyActions()}
       <SanctuaryFlashList
         data={activeGroups}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
+        ListHeaderComponent={
+          <VStack>
+            {ListHeaderComponent}
+            {renderSubTabs()}
+            {renderSearchBar()}
+            {renderGalaxyActions()}
+          </VStack>
+        }
         ListFooterComponent={
           isFetchingNextGroups ? (
             <Box className="py-8 items-center">

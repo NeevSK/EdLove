@@ -26,7 +26,7 @@ export interface User extends ProfileStats {
   bonds?: Bond[]; // Sovereign Identity (ReBAC) Relationships
   school_id?: string | null; // UUID of the school they belong to
   username?: string | null; // Unique handle for the user
-  created_at: string | Date; // ISO timestamp or Date object
+  created_at?: string | Date; // Identity bootstrap may omit the full profile's creation timestamp.
   updated_at?: string | Date; // ISO timestamp or Date object (optional)
   avatar_url?: string | null; // Profile picture URL (optional)
   is_anonymous?: boolean | null; // Flag for anonymous/guest users

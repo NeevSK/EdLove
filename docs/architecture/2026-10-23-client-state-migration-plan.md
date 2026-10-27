@@ -42,6 +42,16 @@ Create minimal shared state primitives in `@repo/core`, without migrating consum
 
 ## Phase 2 — scope-session single source of truth
 
+**Implementation record:** [`2026-10-23-client-state-phase-2-scope-session.md`](2026-10-23-client-state-phase-2-scope-session.md).
+
+**Current status: accepted.** The supported scope-session transition and the
+mobile provisioning receipt seam have passed the Phase 2 hostile review.
+Focused scenario evidence now covers a persisted command interrupted during
+dispatch, same-key reconnect recovery, and account change while a response is
+in flight; pending workspace records never grant an active scope. Phase 3 may
+begin one remote-state family at a time, retaining all Phase 2 compatibility
+mirrors until each later exit gate is met.
+
 Replace the three active-perspective authorities with one scope-session authority. Keep compatibility selectors during migration.
 
 Transition order:
@@ -53,9 +63,45 @@ Transition order:
 5. Rehydrate allowed preferences, reload capabilities and entitlements, and refetch new scoped queries.
 6. Resume, quarantine, or retain offline commands according to their recorded principal and command policy.
 
-**Exit gate:** scenario tests cover signed-out → signed-in, Account A → Account B, personal → institutional, institutional → personal, failed transition rollback, and offline transition.
+### Phase 2.1 — hostile-review closure
+
+1. Resolve the school-invite authority contract without deleting either live
+   table or flow: trace issuance, claim, and selection against the actual
+   production migration chain; select one canonical contract; add an explicit
+   compatibility bridge or a human-approved retirement plan for the other.
+2. Perform a direct-writer audit of `AuthSlice`, `TenantSlice`, and
+   `usePerspectiveStore`. Every active-scope write must either route through
+   `ScopeSessionCoordinator` or be documented as a bounded migration input
+   whose result is atomically re-committed by that coordinator.
+3. Add G2 scenario contracts for signed-out → signed-in, Account A → Account
+   B, personal ↔ institutional, failed transition rollback, offline behavior,
+   and invite claim → selection → refresh. A scenario must assert the
+   canonical snapshot, all compatibility mirrors, Cedar denial/reload, Query
+   boundary behavior, and durable-command non-disposal as applicable.
+4. Reconcile the Phase 2 record's status and evidence with the executed
+   tests. Explicitly distinguish G1/G2 boundary evidence from unperformed
+   mobile device or deployed-backend evidence.
+5. For mobile commercial/guardian provisioning, retain offline requests as
+   account-scoped provisional commands only. Reconcile them through the
+   existing server repositories on reconnect and add a perspective only from
+   the returned record. A provisional request must never become a Bond,
+   active scope, tenant, or local permission grant. School-invite claims stay
+   online-authoritative. Browser offline work remains governed by the W2–W4
+   vertical-slice ladder, not by this mobile implementation.
+
+**Exit gate:** all direct writers are contained, the invite contract is
+unambiguous and characterized, and G2 scenarios cover signed-out → signed-in,
+Account A → Account B, personal → institutional, institutional → personal,
+failed transition rollback, offline transition, and the invite path. The raw
+delta must pass the deletion veto before Phase 3 begins.
 
 ## Phase 3 — migrate remote state to Query
+
+**Execution record:** [`2026-10-24-client-state-phase-3-query-migration-plan.md`](2026-10-24-client-state-phase-3-query-migration-plan.md).
+
+Phase 3 starts with a scoped-query readiness increment. It does not authorize a
+bulk store migration or shrinking the legacy account-boundary fallback before a
+real family proves canonical scope, disposal, and compatibility behavior.
 
 Migrate one resource family per pull request:
 

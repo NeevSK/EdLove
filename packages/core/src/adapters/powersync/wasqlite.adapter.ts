@@ -1,6 +1,5 @@
 import { DrizzleAppSchema } from '@powersync/drizzle-driver';
 import { WASQLiteVFS } from '@powersync/web';
-import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
 
 export class WASQLiteAdapter {
@@ -19,7 +18,6 @@ export class WASQLiteAdapter {
       schema: new DrizzleAppSchema(AppSchema),
       sourceType: 'database' as const,
       database,
-      sync: new SupabasePowerSyncConnector(accountId),
     };
   }
 }

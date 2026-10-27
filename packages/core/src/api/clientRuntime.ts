@@ -1,12 +1,17 @@
-import { v7 as uuidv7 } from 'uuid';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { hc } from 'hono/client';
+import { v7 as uuidv7 } from 'uuid';
 import { assertSecureApiUrl, secureApiFetch } from './transportSecurity';
 
 let tokenResolver: (() => Promise<string | null>) | null = null;
 let activeBondIdResolver: (() => Promise<string | null>) | null = null;
 let pqcWireEnabled = true;
 let poaSigner: ((payload: string) => Promise<string | null>) | null = null;
+
+export interface SessionContinuity {
+  accessToken: string;
+  subject: string;
+}
 
 export function registerTokenResolver(resolver: () => Promise<string | null>) {
   tokenResolver = resolver;
@@ -41,6 +46,7 @@ export async function authenticatedSovereignFetch(
   input: RequestInfo | URL,
   requestInit?: RequestInit,
   expectedAccountId?: string,
+  expectedSession?: SessionContinuity,
 ): Promise<Response> {
   const requestUrl =
     typeof input === 'string' || input instanceof URL
@@ -60,6 +66,13 @@ export async function authenticatedSovereignFetch(
   }
 
   const headers = new Headers(requestInit?.headers);
+  if (expectedSession) {
+    if (!token || token !== expectedSession.accessToken)
+      throw Object.assign(new Error('The authenticated session changed before dispatch.'), {
+        status: 401,
+      });
+    headers.set('X-Expected-Auth-Subject', expectedSession.subject);
+  }
   if (token) headers.set('Authorization', `Bearer ${token}`);
 
   // Leaning towards Post-Quantum Cryptography (PQC) & Zero-Trust Wire

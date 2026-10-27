@@ -1,5 +1,5 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useFeatureStore } from '@repo/core/store';
 import { useCallback, useEffect, useState } from 'react';
 
 export type SelfNavigatorMode = 'carousel' | 'tiled';

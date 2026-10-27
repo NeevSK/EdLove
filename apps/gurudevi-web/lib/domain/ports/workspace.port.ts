@@ -23,21 +23,23 @@ export interface AttendanceSubmissionResult {
 
 export type WorkspaceDraftScope = Readonly<{
   accountId: string;
-  bondId?: string;
-  entityId?: string;
+  bondId: string;
+  entityId: string;
   classroomId: string;
   date: string;
 }>;
 
 /** Inbound Port Driving Workspace Attendance UI */
 export interface IWorkspacePort {
-  getClassrooms(subjectId: string): Promise<readonly WorkspaceClassroom[]>;
+  getClassrooms(subjectId: string, signal?: AbortSignal): Promise<readonly WorkspaceClassroom[]>;
   getAttendanceRoster(
     classroom: WorkspaceClassroom,
     date: string,
     subjectId: string,
+    signal?: AbortSignal,
   ): Promise<readonly WorkspaceStudent[]>;
   submitAttendance(
+    draftScope: WorkspaceDraftScope,
     classroom: WorkspaceClassroom,
     date: string,
     subjectId: string,
@@ -48,6 +50,9 @@ export interface IWorkspacePort {
 /** Outbound Port for Durable Attendance Storage */
 export interface IWorkspaceStoragePort {
   loadDraft(scope: WorkspaceDraftScope): AccountAttendanceDraft | null;
-  saveDraft(scope: WorkspaceDraftScope, students: readonly WorkspaceStudent[]): AccountAttendanceDraft;
+  saveDraft(
+    scope: WorkspaceDraftScope,
+    students: readonly WorkspaceStudent[],
+  ): AccountAttendanceDraft;
   clearDraft(scope: WorkspaceDraftScope): void;
 }

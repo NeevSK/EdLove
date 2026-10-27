@@ -1,4 +1,7 @@
-import { useStore } from '@repo/core/logic';
+import { useFounderEcosystemStats } from '@repo/admin/bridge/founderWorkspace';
+import { GlobalCreateModal } from '@repo/admin/components';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useAuthStore, useUIStore } from '@repo/core/store';
 import type { School } from '@repo/core/types';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -27,14 +30,12 @@ import {
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFounderEcosystemStats } from '@repo/admin/bridge/founderWorkspace';
-import { GlobalCreateModal } from '@repo/admin/components';
 
 export default function FounderDashboard() {
   const { t } = useTranslation();
-  const user = useStore((s) => s.user);
-  const setBreathingOpen = useStore((s) => s.setBreathingOpen);
-  const _isDemoMode = useStore((s) => s.isDemoMode);
+  const user = useAuthStore((s) => s.user);
+  const setBreathingOpen = useUIStore((s) => s.setBreathingOpen);
+  const _isDemoMode = useExperienceState((s) => s.isDemoMode);
   const router = useRouter();
 
   const { stats, schools, isLoading, refreshData } = useFounderEcosystemStats();
@@ -57,7 +58,10 @@ export default function FounderDashboard() {
 
   const handleNavigateToSchool = React.useCallback(
     (schoolId: string) => {
-      router.push('/workspace');
+      router.push({
+        pathname: '/workspace/founder/[schoolId]',
+        params: { schoolId },
+      } as any);
     },
     [router],
   );

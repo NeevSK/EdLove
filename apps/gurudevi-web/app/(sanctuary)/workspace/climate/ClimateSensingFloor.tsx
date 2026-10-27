@@ -2,49 +2,14 @@
 
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { useClimateSensing } from '@/lib/repositories/climateSensingRepository';
+import {
+  CANONICAL_CLIMATE_DIMENSIONS,
+  type ClimateDimensionRating,
+  useClimateSensing,
+} from '@/lib/repositories/climateSensingRepository';
 import styles from './climate.module.css';
 
-interface DimensionRating {
-  id: string;
-  name: string;
-  description: string;
-  score: number;
-}
-
-const defaultDimensions: DimensionRating[] = [
-  {
-    id: 'safety',
-    name: 'Psychological & Emotional Safety',
-    description: 'Students feel accepted, safe from bullying, and unjudged when making errors.',
-    score: 4,
-  },
-  {
-    id: 'belonging',
-    name: 'Peer Belonging & Collaboration',
-    description: 'Classmates support each other naturally during group learning and quiet study.',
-    score: 5,
-  },
-  {
-    id: 'connection',
-    name: 'Teacher Warmth & Attunement',
-    description: 'Educators notice student distress, listen empathetically, and guide kindly.',
-    score: 4,
-  },
-  {
-    id: 'balance',
-    name: 'Workload & Sensory Pace',
-    description: 'Homework and syllabus speed allow adequate rest, sleep, and family time.',
-    score: 3,
-  },
-  {
-    id: 'vitality',
-    name: 'Classroom Vitality & Hope',
-    description:
-      'Joy, wonder, and curiosity are alive in classroom discussions and hands-on experiments.',
-    score: 4,
-  },
-];
+const defaultDimensions: readonly ClimateDimensionRating[] = CANONICAL_CLIMATE_DIMENSIONS;
 
 interface ClimateSensingFloorProps {
   displayName: string;
@@ -53,7 +18,7 @@ interface ClimateSensingFloorProps {
 
 export function ClimateSensingFloor({ displayName, capacity }: Readonly<ClimateSensingFloorProps>) {
   const { metrics, history, submitRating, isOffline, pendingCount } = useClimateSensing();
-  const [dimensions, setDimensions] = useState<DimensionRating[]>(defaultDimensions);
+  const [dimensions, setDimensions] = useState<readonly ClimateDimensionRating[]>(defaultDimensions);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedClassroom, setSelectedClassroom] = useState('Grade 10-A (Lotus Sanctuary)');

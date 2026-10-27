@@ -1,10 +1,11 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+
 
 import { Star } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 export function StudentHeader({ isDemo }: { isDemo: boolean }) {
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   return (
     <VStack className="mb-10 mt-2">
       <HStack className="items-center gap-3 mb-4">

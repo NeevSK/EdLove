@@ -12,6 +12,7 @@ export * from '@repo/ui/screens/index';
 export * from '@repo/ui/theme/Theme';
 export * from '@repo/ui/tokens';
 export * from '@repo/ui/utils';
+export * from './sensory';
 export { useTranslation } from 'react-i18next';
 export {
   default as Animated,

@@ -1,4 +1,4 @@
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
@@ -39,7 +39,7 @@ export default function SelfScreen() {
 }
 
 function SelfFeatureScreen({ featureId, title }: { featureId: string; title: string }) {
-  const user = useStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
 
   useTrackActiveSubTab({
     featureId,

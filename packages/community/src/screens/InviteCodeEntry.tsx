@@ -19,13 +19,18 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface InviteCodeEntryProps {
+  initialCode?: string;
   onCodeValidated: (codeData: InviteCodeData) => void;
   onSkip: () => void;
 }
 
-export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeEntryProps) {
+export default function InviteCodeEntry({
+  initialCode,
+  onCodeValidated,
+  onSkip,
+}: InviteCodeEntryProps) {
   const { t } = useTranslation();
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(initialCode ?? '');
   const [loading, setLoading] = useState(false);
   const { showToast } = useSanctuaryToast();
 

@@ -1,7 +1,20 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MemoryAuthAdapter } from '../memory/MemoryAuthAdapter';
 
-describe('MemoryAuthAdapter (G0 Unit Contract)', () => {
+describe('MemoryAuthAdapter (G1 in-memory contract)', () => {
+  it('preserves the current session when revoking other sessions', async () => {
+    const adapter = new MemoryAuthAdapter();
+    const { session, user } = await adapter.signInAnonymously();
+    const listener = vi.fn();
+    adapter.onAuthStateChange(listener);
+    await adapter.signOut({ scope: 'others' });
+    expect(await adapter.getSession()).toBe(session);
+    expect(await adapter.getUser()).toBe(user);
+    expect(listener).not.toHaveBeenCalled();
+    await adapter.signOut({ scope: 'local' });
+    expect(await adapter.getSession()).toBeNull();
+    expect(listener).toHaveBeenCalledWith('SIGNED_OUT', null);
+  });
   it('does not simulate phone OTP ownership', async () => {
     const adapter = new MemoryAuthAdapter();
 

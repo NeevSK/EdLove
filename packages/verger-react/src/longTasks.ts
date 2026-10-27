@@ -1,5 +1,5 @@
 /**
- * JS event-loop stalls as reported by React Native's own scheduler. RN 0.88's RuntimeScheduler
+ * JS event-loop stalls. On React Native, as its own scheduler reports them. RN 0.88's RuntimeScheduler
  * reports a task that ran without a yielding opportunity for 50 ms or more as a W3C `longtask`
  * entry, so this costs no polling and covers any code running as a scheduler task. It does not
  * see synchronous native calls outside the scheduler or work on the UI thread (worklets); the
@@ -19,17 +19,26 @@ type LongTaskObserverConstructor = {
   readonly supportedEntryTypes?: readonly string[];
 };
 
-/** Starts observing; returns a stop function. Inert where the API or entry type is missing. */
-export function observeLongTasks(onLongTask: (durationMs: number) => void): () => void {
+/**
+ * Starts observing the first supported entry type of `types`; returns a stop function. Inert
+ * where the API or every type is missing. A browser prefers `long-animation-frame` (Chromium
+ * 123+: also frames blocked by several shorter tasks), falling back to `longtask`.
+ */
+export function observeLongTasks(
+  onLongTask: (durationMs: number) => void,
+  types: readonly string[] = ['longtask'],
+): () => void {
   const Observer = (globalThis as { PerformanceObserver?: LongTaskObserverConstructor })
     .PerformanceObserver;
-  if (!Observer || !(Observer.supportedEntryTypes ?? []).includes('longtask')) return () => {};
+  const supported = Observer?.supportedEntryTypes ?? [];
+  const type = types.find((candidate) => supported.includes(candidate));
+  if (!Observer || type === undefined) return () => {};
   let observer: LongTaskObserver | null = null;
   try {
     observer = new Observer((list) => {
       for (const entry of list.getEntries()) onLongTask(entry.duration);
     });
-    observer.observe({ type: 'longtask' });
+    observer.observe({ type });
   } catch (error) {
     console.error('[verger] long-task observer unavailable', error);
     return () => {};

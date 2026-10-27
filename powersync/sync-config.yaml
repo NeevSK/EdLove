@@ -11,9 +11,9 @@ streams:
   identity:
     auto_subscribe: true
     queries:
-      - SELECT * FROM bonds WHERE user_id = auth.user_id()
-      - SELECT * FROM school_memberships WHERE user_id = auth.user_id()
-      - SELECT * FROM classroom_students WHERE student_id = auth.user_id()
+      - SELECT * FROM bonds WHERE user_id = auth.parameter('canonical_account_id')
+      - SELECT * FROM school_memberships WHERE user_id = auth.parameter('canonical_account_id')
+      - SELECT * FROM classroom_students WHERE student_id = auth.parameter('canonical_account_id')
 
   classroom_roster:
     auto_subscribe: true
@@ -21,5 +21,5 @@ streams:
       SELECT cs.*
       FROM classroom_students AS "cs"
       JOIN classrooms c ON c.id = cs.classroom_id
-      WHERE c.teacher_id = auth.user_id()
-         OR cs.student_id = auth.user_id()
+      WHERE c.teacher_id = auth.parameter('canonical_account_id')
+         OR cs.student_id = auth.parameter('canonical_account_id')

@@ -1,10 +1,5 @@
-﻿import {
-  resolveWorkspaceSwitcherTargets,
-  useDomainFeature,
-  usePermissions,
-  usePerspectiveSwitch,
-  useStore,
-} from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { resolveWorkspaceSwitcherTargets, useDomainFeature, usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
 import type { WorkspaceSwitcherTarget } from '@repo/core/types';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Button, ButtonText, Text } from '@repo/ui/primitives';
@@ -31,7 +26,7 @@ export default function GuardianDashboard() {
   const router = useRouter();
   const { can } = usePermissions();
   const { result: guardianFeature } = useDomainFeature('guardian-workspace');
-  const user = useStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
   const { availablePerspectives, switchPerspective, activePerspective } = usePerspectiveSwitch();
   const { dashboard, isLoading, error, refreshData } = useGuardianWorkspaceData(user?.id || '');
 

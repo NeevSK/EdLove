@@ -109,3 +109,19 @@ export const principalWorkspaceAPI = {
 };
 
 void principalWorkspaceContract;
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_PRINCIPAL_CURRICULUM_PROGRESS,
+  MOCK_PRINCIPAL_PENDING_LEAVES,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'principal',
+  ghostMethods: ['getCurriculumProgress', 'getPendingLeaves'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getCurriculumProgress') return MOCK_PRINCIPAL_CURRICULUM_PROGRESS;
+    return MOCK_PRINCIPAL_PENDING_LEAVES;
+  },
+});

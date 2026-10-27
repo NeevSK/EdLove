@@ -2,7 +2,7 @@ import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 import type { QueuedMutation } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { v7 as uuidv7 } from 'uuid';
 
 export const DEVICE_SECURITY_SCOPE = 'device_security';
@@ -19,7 +19,7 @@ export type DeviceSecurityMutationName =
   (typeof DEVICE_SECURITY_MUTATIONS)[keyof typeof DEVICE_SECURITY_MUTATIONS];
 
 function getUserIdSalt() {
-  return useStore.getState().user?.id;
+  return useAuthStore.getState().user?.id;
 }
 
 export async function queueDeviceSecurityIntent(

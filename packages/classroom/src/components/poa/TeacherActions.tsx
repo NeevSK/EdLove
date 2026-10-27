@@ -1,4 +1,4 @@
-import { } from '@repo/core/logic';
+
 import { SanctuaryGuard } from '@repo/ui';
 import { History, MessageSquare, Plus, QrCode } from '@repo/ui/icons';
 import { Icon, Pressable, Text } from '@repo/ui/primitives';

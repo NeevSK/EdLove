@@ -8,22 +8,20 @@ const mocks = vi.hoisted(() => ({
   ),
   syncManager: vi.fn(() => null),
   useAuth: vi.fn(),
-  useStore: vi.fn(),
+  useAuthStore: vi.fn(),
 }));
 
 vi.mock('expo-observe', () => ({ Observe: { logEvent: vi.fn() } }));
 
 vi.mock('@repo/core/logic', () => ({
   getSessionIdentityMode: mocks.getSessionIdentityMode,
-  useAuth: mocks.useAuth,
-  useStore: mocks.useStore,
 }));
 
 vi.mock('@repo/core', () => ({
   SyncManager: mocks.syncManager,
   useAuth: mocks.useAuth,
-  useStore: mocks.useStore,
 }));
+vi.mock('@repo/core/store/useAuthStore', () => ({ useAuthStore: mocks.useAuthStore }));
 
 vi.mock('@/lib/inngestEvents', () => ({
   dispatchQueuedMutationToSovereignBus: mocks.dispatchQueuedMutationToSovereignBus,
@@ -41,7 +39,7 @@ function renderService({
   session: object | null;
 }) {
   mocks.useAuth.mockReturnValue({ identityAvailability, session });
-  mocks.useStore.mockImplementation((selector: (state: { user: object | null }) => unknown) =>
+  mocks.useAuthStore.mockImplementation((selector: (state: { user: object | null }) => unknown) =>
     selector({ user: hasActiveIdentity ? { id: 'citizen-1' } : null }),
   );
 

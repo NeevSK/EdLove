@@ -165,9 +165,14 @@ ALTER TABLE public.sanctuary_manifestos
 ALTER TABLE public.sections
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
-ALTER TABLE public.grade_levels
-  ADD COLUMN IF NOT EXISTS number INTEGER NOT NULL DEFAULT 1,
-  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+DO $$
+BEGIN
+  IF to_regclass('public.grade_levels') IS NOT NULL THEN
+    ALTER TABLE public.grade_levels
+      ADD COLUMN IF NOT EXISTS number INTEGER NOT NULL DEFAULT 1,
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+  END IF;
+END $$;
 
 ALTER TABLE public.student_longitudinal_events
   ADD COLUMN IF NOT EXISTS metadata JSONB,

@@ -156,3 +156,13 @@ export const resourcesAPI = {
     return { success: true, id: targetId };
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_RESOURCES } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'resources',
+  ghostMethods: ['getAll', 'getByClassroom'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_RESOURCES,
+});

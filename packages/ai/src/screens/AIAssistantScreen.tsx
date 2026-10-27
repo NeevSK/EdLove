@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { type Message, useAIAgent } from '@repo/ai/hooks/useAIAgent';
-import { useDomainFeature, useStore } from '@repo/core/logic';
+import { useDomainFeature } from '@repo/core/logic';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
 import { MessageBubble } from '@repo/ui/components/MessageBubble';
 import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
@@ -39,7 +41,7 @@ export default function AIAssistantScreen() {
     privacyMode,
     setPrivacyMode,
   } = useAIAgent();
-  const userRole = useStore((state) => state.activeBond?.capacity ?? null);
+  const userRole = useScopeSessionStore((state) => state.snapshot?.activeBond?.capacity ?? null);
 
   const handleSend = () => {
     if (!input.trim()) return;

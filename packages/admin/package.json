@@ -94,10 +94,25 @@
       "import": "./src/screens/SchoolCreationScreen.tsx",
       "default": "./src/screens/SchoolCreationScreen.tsx"
     },
+    "./screens/AdminDashboard": {
+      "types": "./src/screens/AdminDashboard.tsx",
+      "import": "./src/screens/AdminDashboard.tsx",
+      "default": "./src/screens/AdminDashboard.tsx"
+    },
     "./screens/AdminDashboard.web": {
       "types": "./src/screens/AdminDashboard.tsx",
       "import": "./src/screens/AdminDashboard.tsx",
       "default": "./src/screens/AdminDashboard.tsx"
+    },
+    "./screens/SectionHeadDashboard": {
+      "types": "./src/screens/SectionHeadDashboard.tsx",
+      "import": "./src/screens/SectionHeadDashboard.tsx",
+      "default": "./src/screens/SectionHeadDashboard.tsx"
+    },
+    "./screens/GradeHeadDashboard": {
+      "types": "./src/screens/GradeHeadDashboard.tsx",
+      "import": "./src/screens/GradeHeadDashboard.tsx",
+      "default": "./src/screens/GradeHeadDashboard.tsx"
     },
     "./*": {
       "types": "./src/*.ts",
@@ -139,7 +154,9 @@
     "date-fns": "^4.4.0",
     "expo-clipboard": "~58.0.4",
     "expo-router": "~58.0.25",
-    "react-i18next": "^17.1.0"
+    "react-i18next": "^17.1.0",
+    "xstate": "6.0.0-alpha.70",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@jest/globals": "^30.5.2",

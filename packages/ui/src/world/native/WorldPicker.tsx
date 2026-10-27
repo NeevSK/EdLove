@@ -85,7 +85,9 @@ function WorldChoice({
         ]}
       />
       <View style={{ flex: 1, gap: 1 }}>
-        <RNText style={[typeStyle(r.text.title, language), { fontSize: 17, lineHeight: 22 }]}>
+        <RNText
+          style={[typeStyle(r.text.title, language, world), { fontSize: 17, lineHeight: 22 }]}
+        >
           {name}
         </RNText>
         <View

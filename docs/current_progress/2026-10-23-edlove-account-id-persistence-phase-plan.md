@@ -1,14 +1,20 @@
 ---
 title: "EdLove Account UUIDv8 Persistence: Next-Phase Plan"
-status: "active"
+status: "superseded"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-25
+superseded_by: "2026-10-25-canonical-uuidv8-account-cutover.md"
 author: "Naveen"
 scribe: "Codex"
 tags: [plan, edlove, uuidv8, supabase, identity, migration, verification]
 ---
 
 # EdLove Account UUIDv8 Persistence: Next-Phase Plan
+
+> Superseded as the active implementation plan by
+> [Canonical UUIDv8 Account Cutover](2026-10-25-canonical-uuidv8-account-cutover.md).
+> This remains the historical record of the 2026-10-23 UUIDv8 dark-schema
+> design and implementation state.
 
 ## Outcome
 
@@ -88,7 +94,7 @@ The assignment service follows this protocol inside the account write boundary:
 The database uniqueness constraint is final authority. The service does not
 pre-check an identifier with a separate query, because that creates a race.
 
-## Authority precondition discovered during implementation
+## Server-write authority
 
 The active migration ledger grants broad table privileges on `public.users` to
 `authenticated` and retains an own-profile `FOR UPDATE` policy. RLS limits
@@ -97,20 +103,20 @@ server. Therefore, adding the column before an attribute-level write boundary
 would let a client choose a syntactically valid UUIDv8 value. That violates the
 issuer invariant even if the profile check and unique index are correct.
 
-Before a migration is deployed, the operator must record the direct
-`DATABASE_URL` runtime role used by Sanctuary API and choose one reviewed
-database enforcement design:
+The server-owned writer is `private.assign_edlove_account_id(uuid, uuid)`. It
+is a `SECURITY DEFINER` function with an empty search path, owned by the
+non-login `edlove_identity_writer` role. The `private` schema grants no access
+to `PUBLIC`, `anon`, `authenticated`, or `service_role`. Sanctuary's protected
+direct `DATABASE_URL` connection is granted execution on this function only;
+it cannot `SET ROLE` to the writer identity. The public-column trigger permits a
+non-null `edlove_id` write only while this function is executing as
+`edlove_identity_writer`.
 
-1. a dedicated non-login `edlove_identity_writer` role, with an API connection
-   that assumes it only inside the assignment transaction; or
-2. a narrowly scoped guard trigger that rejects `edlove_id` changes unless the
-   known API database role performs them.
-
-The choice must be tested against both the API connection and an authenticated
-PostgREST request. A client-settable custom setting is not an authority proof
-and must not be used as the bypass. This is a deployment precondition, not a
-reason to weaken existing profile updates or to infer a production role from
-source code.
+This deliberately does not make an RPC available to browsers, mobile clients,
+or authenticated PostgREST sessions. A client-settable custom setting is not
+an authority proof and is not used. Deployment must still prove that the
+Sanctuary database connection is a protected server credential and that an
+authenticated Data API request cannot write `edlove_id`.
 
 ## Implementation record — 2026-10-23
 
@@ -137,10 +143,16 @@ source code.
   fetches one lookahead row, returns a cursor only after every selected account
   resolves, and intentionally propagates an assignment failure so an operator
   cannot checkpoint past an unprocessed account.
-- **Not deployed:** no `users.edlove_id` column migration has been written or
-  applied. The direct API database role and authenticated-client write proof
-  remain unavailable in this workspace, so the attribute-level authority guard
-  is intentionally unresolved rather than guessed.
+- **Deployed dark schema:** the validator and nullable column are deployed to
+  the linked Supabase project. At deployment inspection it contained 281
+  `public.users` rows; all remain `edlove_id IS NULL`. No assignment or
+  backfill has run.
+- **Server writer:** migration `20261023102000_edlove_account_id_server_writer.sql`
+  introduced the private write function. Its initial `postgres` trigger bypass
+  was too broad and is superseded by
+  `20261023103000_edlove_account_id_writer_role_hardening.sql`, which establishes
+  the non-login writer-role boundary. Neither migration creates a public RPC or
+  invokes assignment automatically.
 
 ## Work packages and exit gates
 

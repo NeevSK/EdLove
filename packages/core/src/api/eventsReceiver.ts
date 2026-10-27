@@ -9,8 +9,9 @@
  * 3. Atomic Query Invalidation: Maps SSE events directly into typed oRPC and TanStack Query cache keys.
  */
 
-import { orpc } from './orpcClient';
+import { notificationQueryKeys } from '@repo/core/lib/notificationQueryKeys';
 import type { QueryClient } from '@tanstack/react-query';
+import { orpc } from './orpcClient';
 
 export interface EventsReceiverOptions {
   queryClient: QueryClient;
@@ -18,6 +19,15 @@ export interface EventsReceiverOptions {
   getAuthToken?: () => Promise<string | null> | string | null;
   onEvent?: (event: { type: string; payload: any }) => void;
   onError?: (error: Error) => void;
+  lifecycle?: EventsReceiverLifecycle;
+}
+
+/**
+ * Platform adapters own lifecycle signals. Core only decides how a supplied
+ * sleep/wake event affects an active stream; it must not import native APIs.
+ */
+export interface EventsReceiverLifecycle {
+  subscribe(hooks: { onSleep: () => void; onWake: () => void }): () => void;
 }
 
 let activeAbortController: AbortController | null = null;
@@ -30,7 +40,11 @@ const BASE_RECONNECT_DELAY_MS = 1000;
 /**
  * Maps incoming event types to atomic TanStack Query invalidation actions.
  */
-export async function dispatchEventInvalidation(queryClient: QueryClient, eventType: string, payload: any) {
+export async function dispatchEventInvalidation(
+  queryClient: QueryClient,
+  eventType: string,
+  payload: any,
+) {
   switch (eventType) {
     case 'attendance_marked':
     case 'attendance_updated':
@@ -54,12 +68,21 @@ export async function dispatchEventInvalidation(queryClient: QueryClient, eventT
 
     case 'notification_sent':
     case 'notification_read':
-      await queryClient.invalidateQueries({
-        queryKey: orpc.social.getNotifications.key(),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: orpc.social.getUnreadNotificationCount.key(),
-      });
+      // Notification events carry their recipient. Never invalidate a broad
+      // legacy cache, which could refetch another account's former inbox.
+      if (typeof payload?.userId === 'string' && payload.userId.trim()) {
+        const scope = { principalId: payload.userId };
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: notificationQueryKeys.list(scope),
+            exact: true,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: notificationQueryKeys.count(scope),
+            exact: true,
+          }),
+        ]);
+      }
       break;
 
     case 'echo_created':
@@ -89,7 +112,6 @@ export async function dispatchEventInvalidation(queryClient: QueryClient, eventT
         queryKey: orpc.library.getCounts.key(),
       });
       break;
-
 
     default:
       break;
@@ -189,19 +211,22 @@ export function startEventsReceiver(options: EventsReceiverOptions): () => void 
   void connect();
 
   // Register Convivial Background Sleeping:
-  const detachBackgroundListener = setupBackgroundLifecycleListener({
-    onSleep: () => {
-      if (activeAbortController) {
-        activeAbortController.abort();
-        activeAbortController = null;
-      }
+  const detachBackgroundListener = setupBackgroundLifecycleListener(
+    {
+      onSleep: () => {
+        if (activeAbortController) {
+          activeAbortController.abort();
+          activeAbortController = null;
+        }
+      },
+      onWake: () => {
+        if (isStarted && !activeAbortController) {
+          void connect();
+        }
+      },
     },
-    onWake: () => {
-      if (isStarted && !activeAbortController) {
-        void connect();
-      }
-    },
-  });
+    options.lifecycle,
+  );
 
   return () => {
     detachBackgroundListener();
@@ -240,9 +265,15 @@ function scheduleReconnect(connectFn: () => void) {
 }
 
 /**
- * Cross-platform lifecycle handler (React Native AppState + Web document.visibilityState)
+ * Browser visibility is the default lifecycle. Native callers provide their
+ * own AppState adapter, keeping this shared module browser-safe.
  */
-function setupBackgroundLifecycleListener(hooks: { onSleep: () => void; onWake: () => void }) {
+function setupBackgroundLifecycleListener(
+  hooks: { onSleep: () => void; onWake: () => void },
+  lifecycle?: EventsReceiverLifecycle,
+) {
+  if (lifecycle) return lifecycle.subscribe(hooks);
+
   // Check Web visibilityState
   if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
     const handleVisibility = () => {
@@ -254,27 +285,6 @@ function setupBackgroundLifecycleListener(hooks: { onSleep: () => void; onWake: 
     };
     document.addEventListener('visibilitychange', handleVisibility);
     return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }
-
-  // React Native AppState fallback via dynamic check to prevent bundler errors in pure node
-  try {
-    const RN = require('react-native');
-    if (RN && RN.AppState && typeof RN.AppState.addEventListener === 'function') {
-      const subscription = RN.AppState.addEventListener('change', (nextState: string) => {
-        if (nextState === 'active') {
-          hooks.onWake();
-        } else {
-          hooks.onSleep();
-        }
-      });
-      return () => {
-        if (subscription && typeof subscription.remove === 'function') {
-          subscription.remove();
-        }
-      };
-    }
-  } catch {
-    // In Node or non-RN context
   }
 
   return () => {};

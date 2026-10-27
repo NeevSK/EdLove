@@ -6,22 +6,25 @@ import type {
   AuthSession,
   AuthUser,
   IAuthPort,
+  PasswordChangeConfirmation,
   PhoneOtpRequest,
   PhoneOtpVerification,
 } from '@repo/core/logic/ports/auth.port';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
 import { trackProductEvent } from '@repo/core/monitoring';
 import type { Capacity } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
 
 export interface AuthManagerConfig {
   onSignOut?: () => Promise<void>;
-  storage?: {
-    clearAll: () => void;
+  localState?: {
+    clear: () => void;
   };
 }
 
 export class AuthManager {
+  private sessionMutation: Promise<void> = Promise.resolve();
   private anonymousSignInPromise: Promise<{
     user: AuthUser | null;
     session: AuthSession | null;
@@ -33,12 +36,21 @@ export class AuthManager {
     private config: AuthManagerConfig = {},
   ) {}
 
+  private mutateSession<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.sessionMutation.then(operation, operation);
+    this.sessionMutation = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+
   async getSession(): Promise<AuthSession | null> {
     return this.authPort.getSession();
   }
 
   async getUser(): Promise<AuthUser | null> {
-    return this.authPort.getUser();
+    return this.mutateSession(() => this.authPort.getUser());
   }
 
   onAuthStateChange(
@@ -47,38 +59,40 @@ export class AuthManager {
     return this.authPort.onAuthStateChange(callback);
   }
 
-  private async recordAuthMethodUsage(
-    action: string,
-    metadata: Record<string, unknown>,
-    accountId?: string | null,
-  ) {
+  private async recordAuthMethodUsage(action: string, metadata: Record<string, unknown>) {
     try {
-      await deviceTrustAPI.logAuditEvent(action, metadata, accountId ?? undefined);
-    } catch (error) {
-      console.warn('[AuthManager] auth method audit log failed', error);
+      const identity = await this.identityPort.identifyActiveCitizen();
+      const accountId = CanonicalAccountIdSchema.safeParse(identity?.id);
+      if (!accountId.success) {
+        console.warn('[AuthManager] auth telemetry has no resolved canonical account');
+        return;
+      }
+      await deviceTrustAPI.logAuditEvent(action, metadata, accountId.data);
+    } catch {
+      console.warn('[AuthManager] auth method telemetry could not be recorded');
     }
   }
 
   async signIn(email: string, password: string) {
-    const result = await this.authPort.signInWithPassword(email, password);
-    await this.recordAuthMethodUsage(
-      'AUTH_SIGN_IN_PASSWORD',
-      {
-        method: 'password',
-        outcome: 'success',
-        hasSession: !!result.session,
-      },
-      result.user?.id,
+    const result = await this.mutateSession(() =>
+      this.authPort.signInWithPassword(email, password),
     );
+    await this.recordAuthMethodUsage('AUTH_SIGN_IN_PASSWORD', {
+      method: 'password',
+      outcome: 'success',
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async signInWithOAuth(provider: 'google', redirectTo?: string, skipBrowserRedirect = false) {
-    const result = await this.authPort.signInWithOAuth({
-      provider,
-      redirectTo,
-      skipBrowserRedirect,
-    });
+    const result = await this.mutateSession(() =>
+      this.authPort.signInWithOAuth({
+        provider,
+        redirectTo,
+        skipBrowserRedirect,
+      }),
+    );
     await this.recordAuthMethodUsage('AUTH_SIGN_IN_OAUTH_STARTED', {
       method: provider,
       outcome: 'initiated',
@@ -90,11 +104,13 @@ export class AuthManager {
   }
 
   async linkOAuthIdentity(provider: 'google', redirectTo?: string, skipBrowserRedirect = false) {
-    const result = await this.authPort.linkOAuthIdentity({
-      provider,
-      redirectTo,
-      skipBrowserRedirect,
-    });
+    const result = await this.mutateSession(() =>
+      this.authPort.linkOAuthIdentity({
+        provider,
+        redirectTo,
+        skipBrowserRedirect,
+      }),
+    );
     await this.recordAuthMethodUsage('AUTH_LINK_OAUTH_STARTED', {
       method: provider,
       outcome: 'initiated',
@@ -106,49 +122,41 @@ export class AuthManager {
   }
 
   async signInWithGoogleIdToken(idToken: string, accessToken?: string | null) {
-    const result = await this.authPort.signInWithGoogleIdToken({ idToken, accessToken });
-    await this.recordAuthMethodUsage(
-      'AUTH_SIGN_IN_GOOGLE_NATIVE',
-      {
-        method: 'google_native',
-        outcome: 'success',
-        hasSession: !!result.session,
-      },
-      result.user?.id,
+    const result = await this.mutateSession(() =>
+      this.authPort.signInWithGoogleIdToken({ idToken, accessToken }),
     );
+    await this.recordAuthMethodUsage('AUTH_SIGN_IN_GOOGLE_NATIVE', {
+      method: 'google_native',
+      outcome: 'success',
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async linkGoogleIdentity(idToken: string, accessToken?: string | null) {
-    const result = await this.authPort.linkGoogleIdentity({ idToken, accessToken });
-    await this.recordAuthMethodUsage(
-      'AUTH_LINK_GOOGLE_NATIVE',
-      {
-        method: 'google_native',
-        outcome: 'success',
-        hasSession: !!result.session,
-      },
-      result.user?.id,
+    const result = await this.mutateSession(() =>
+      this.authPort.linkGoogleIdentity({ idToken, accessToken }),
     );
+    await this.recordAuthMethodUsage('AUTH_LINK_GOOGLE_NATIVE', {
+      method: 'google_native',
+      outcome: 'success',
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async signInWithMagicLink(email: string) {
-    const result = await this.authPort.signInWithMagicLink(email);
-    await this.recordAuthMethodUsage(
-      'AUTH_SIGN_IN_MAGIC_LINK',
-      {
-        method: 'magic_link',
-        outcome: 'initiated',
-        hasSession: !!result.session,
-      },
-      result.user?.id ?? null,
-    );
+    const result = await this.mutateSession(() => this.authPort.signInWithMagicLink(email));
+    await this.recordAuthMethodUsage('AUTH_SIGN_IN_MAGIC_LINK', {
+      method: 'magic_link',
+      outcome: 'initiated',
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async requestPasswordRecovery(email: string, redirectTo?: string): Promise<void> {
-    await this.authPort.resetPasswordForEmail(email, redirectTo);
+    await this.mutateSession(() => this.authPort.resetPasswordForEmail(email, redirectTo));
     await this.recordAuthMethodUsage('AUTH_PASSWORD_RECOVERY_STARTED', {
       method: 'email_recovery',
       outcome: 'initiated',
@@ -156,15 +164,33 @@ export class AuthManager {
     });
   }
 
-  async updatePassword(password: string) {
-    const { user } = await this.authPort.updateUser({ password });
-    if (!user) throw new APIError('Password update returned no user.', 'AUTH_ERROR');
-    await this.recordAuthMethodUsage(
-      'AUTH_PASSWORD_RECOVERY_COMPLETED',
-      { method: 'email_recovery', outcome: 'success' },
-      user.id,
+  async updatePassword(password: string, confirmation?: PasswordChangeConfirmation) {
+    const { user } = await this.mutateSession(() =>
+      this.authPort.updateUser({
+        password,
+        ...(confirmation?.currentPassword === undefined
+          ? {}
+          : { currentPassword: confirmation.currentPassword }),
+        ...(confirmation?.nonce === undefined ? {} : { nonce: confirmation.nonce }),
+        ...(confirmation?.expectedSubject === undefined
+          ? {}
+          : { expectedSubject: confirmation.expectedSubject }),
+      }),
     );
+    if (!user) throw new APIError('Password update returned no user.', 'AUTH_ERROR');
+    await this.recordAuthMethodUsage('AUTH_PASSWORD_UPDATED', {
+      method: 'password',
+      outcome: 'success',
+    });
     return { user };
+  }
+
+  async requestPasswordReauthentication(): Promise<void> {
+    await this.mutateSession(() => this.authPort.requestPasswordReauthentication());
+  }
+
+  async unlinkIdentity(identityId: string, expectedSubject?: string) {
+    return this.mutateSession(() => this.authPort.unlinkIdentity({ identityId, expectedSubject }));
   }
 
   /**
@@ -173,6 +199,10 @@ export class AuthManager {
    * different Auth user and split the guest's server-owned work.
    */
   async linkAnonymousEmail(email: string, emailRedirectTo?: string) {
+    return this.mutateSession(() => this.performLinkAnonymousEmail(email, emailRedirectTo));
+  }
+
+  private async performLinkAnonymousEmail(email: string, emailRedirectTo?: string) {
     const session = await this.authPort.getSession();
     if (!session?.user?.is_anonymous) {
       throw new APIError(
@@ -187,42 +217,36 @@ export class AuthManager {
     });
     if (!user) throw new APIError('Email identity update returned no user.', 'AUTH_ERROR');
 
-    await this.recordAuthMethodUsage(
-      'AUTH_LINK_ANONYMOUS_EMAIL_STARTED',
-      {
-        method: 'email_link',
-        outcome: 'initiated',
-        email_domain: email.includes('@') ? (email.split('@')[1] ?? null) : null,
-      },
-      user.id,
-    );
+    await this.recordAuthMethodUsage('AUTH_LINK_ANONYMOUS_EMAIL_STARTED', {
+      method: 'email_link',
+      outcome: 'initiated',
+      email_domain: email.includes('@') ? (email.split('@')[1] ?? null) : null,
+    });
     return { user };
   }
 
   signInWithPhoneOtp(params: PhoneOtpRequest): Promise<void> {
-    return this.authPort.signInWithPhoneOtp(params);
+    return this.mutateSession(() => this.authPort.signInWithPhoneOtp(params));
   }
 
   verifyPhoneOtp(params: PhoneOtpVerification) {
-    return this.authPort.verifyPhoneOtp(params);
+    return this.mutateSession(() => this.authPort.verifyPhoneOtp(params));
   }
 
   async exchangeCodeForSession(code: string) {
-    const result = await this.authPort.exchangeCodeForSession(code);
-    await this.recordAuthMethodUsage(
-      'AUTH_MAGIC_LINK_EXCHANGE',
-      {
-        method: 'magic_link',
-        outcome: 'success',
-        hasSession: !!result.session,
-      },
-      result.user?.id,
-    );
+    const result = await this.mutateSession(() => this.authPort.exchangeCodeForSession(code));
+    await this.recordAuthMethodUsage('AUTH_MAGIC_LINK_EXCHANGE', {
+      method: 'magic_link',
+      outcome: 'success',
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async signInWithPasskey(redirectTo?: string, skipBrowserRedirect = false) {
-    const result = await this.authPort.signInWithPasskey({ redirectTo, skipBrowserRedirect });
+    const result = await this.mutateSession(() =>
+      this.authPort.signInWithPasskey({ redirectTo, skipBrowserRedirect }),
+    );
     await this.recordAuthMethodUsage('AUTH_SIGN_IN_PASSKEY_STARTED', {
       method: 'passkey',
       outcome: 'initiated',
@@ -234,7 +258,9 @@ export class AuthManager {
   }
 
   async registerPasskey(redirectTo?: string, skipBrowserRedirect = false) {
-    const result = await this.authPort.registerPasskey({ redirectTo, skipBrowserRedirect });
+    const result = await this.mutateSession(() =>
+      this.authPort.registerPasskey({ redirectTo, skipBrowserRedirect }),
+    );
     await this.recordAuthMethodUsage('AUTH_REGISTER_PASSKEY_STARTED', {
       method: 'passkey',
       outcome: 'initiated',
@@ -250,7 +276,7 @@ export class AuthManager {
   }
 
   async enrollTotp(friendlyName?: string) {
-    const result = await this.authPort.enrollTotp({ friendlyName });
+    const result = await this.mutateSession(() => this.authPort.enrollTotp({ friendlyName }));
     await this.recordAuthMethodUsage('AUTH_ENROLL_TOTP_STARTED', {
       method: 'totp',
       outcome: 'initiated',
@@ -261,7 +287,7 @@ export class AuthManager {
   }
 
   async challengeTotp(factorId: string) {
-    const result = await this.authPort.challengeTotp(factorId);
+    const result = await this.mutateSession(() => this.authPort.challengeTotp(factorId));
     await this.recordAuthMethodUsage('AUTH_TOTP_CHALLENGE_STARTED', {
       method: 'totp',
       outcome: 'initiated',
@@ -272,42 +298,36 @@ export class AuthManager {
   }
 
   async verifyTotp(params: { factorId: string; challengeId: string; code: string }) {
-    const result = await this.authPort.verifyTotp(params);
-    await this.recordAuthMethodUsage(
-      'AUTH_TOTP_VERIFIED',
-      {
-        method: 'totp',
-        outcome: 'success',
-        factorId: params.factorId,
-        challengeId: params.challengeId,
-        hasSession: !!result.session,
-      },
-      result.user?.id,
-    );
+    const result = await this.mutateSession(() => this.authPort.verifyTotp(params));
+    await this.recordAuthMethodUsage('AUTH_TOTP_VERIFIED', {
+      method: 'totp',
+      outcome: 'success',
+      factorId: params.factorId,
+      challengeId: params.challengeId,
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async challengeAndVerifyTotp(params: { factorId: string; code: string }) {
-    const result = await this.authPort.challengeAndVerifyTotp(params);
-    await this.recordAuthMethodUsage(
-      'AUTH_TOTP_VERIFIED',
-      {
-        method: 'totp',
-        outcome: 'success',
-        factorId: params.factorId,
-        hasSession: !!result.session,
-      },
-      result.user?.id,
-    );
+    const result = await this.mutateSession(() => this.authPort.challengeAndVerifyTotp(params));
+    await this.recordAuthMethodUsage('AUTH_TOTP_VERIFIED', {
+      method: 'totp',
+      outcome: 'success',
+      factorId: params.factorId,
+      hasSession: !!result.session,
+    });
     return result;
   }
 
   async signUp(email: string, password: string, fullName?: string) {
-    const result = await this.authPort.signUp({
-      email,
-      password,
-      options: { data: { display_name: fullName } },
-    });
+    const result = await this.mutateSession(() =>
+      this.authPort.signUp({
+        email,
+        password,
+        options: { data: { display_name: fullName } },
+      }),
+    );
 
     if (!result.session) {
       throw new APIError(
@@ -332,15 +352,17 @@ export class AuthManager {
    * Cedar policies.
    */
   async signInAnonymously() {
-    const currentSession = await this.authPort.getSession();
-    if (currentSession?.user?.is_anonymous) {
-      return { session: currentSession, user: currentSession.user as AuthUser };
-    }
     if (this.anonymousSignInPromise) return this.anonymousSignInPromise;
-    this.anonymousSignInPromise = this.authPort.signInAnonymously();
+    this.anonymousSignInPromise = this.mutateSession(async () => {
+      const currentSession = await this.authPort.getSession();
+      if (currentSession?.user?.is_anonymous)
+        return { session: currentSession, user: currentSession.user };
+      const result = await this.authPort.signInAnonymously();
+      trackProductEvent('guest_started');
+      return result;
+    });
     try {
       const result = await this.anonymousSignInPromise;
-      trackProductEvent('guest_started');
       return result;
     } finally {
       this.anonymousSignInPromise = null;
@@ -353,19 +375,41 @@ export class AuthManager {
     fullName: string,
     capacity: Capacity,
   ) {
+    return this.mutateSession(() =>
+      this.performLinkAnonymousToEmail(email, password, fullName, capacity),
+    );
+  }
+
+  private async performLinkAnonymousToEmail(
+    email: string,
+    password: string,
+    fullName: string,
+    capacity: Capacity,
+  ) {
+    const sourceSession = await this.authPort.getSession();
+    if (!sourceSession?.user?.is_anonymous) {
+      throw new APIError(
+        'An anonymous session is required for credential conversion.',
+        'AUTH_GUEST_REQUIRED',
+      );
+    }
     // 1. Update Auth Identity
     const { user } = await this.authPort.updateUser({
       email,
       password,
       data: {
         display_name: fullName,
-        capacity,
-        is_anonymous: false,
-        citizenship: 'SECOND_CLASS',
       },
     });
 
     if (!user) throw new APIError('Auth update returned no user', 'AUTH_ERROR');
+    const activeSession = await this.authPort.getSession();
+    if (user.id !== sourceSession.user.id || activeSession?.user?.id !== user.id) {
+      throw new APIError(
+        'The authenticated subject changed during conversion.',
+        'AUTH_SESSION_CHANGED',
+      );
+    }
 
     // 2. Resolve Internal Identity
     const identity = await this.identityPort.identifyActiveCitizen();
@@ -373,31 +417,27 @@ export class AuthManager {
       throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
     const internalId = identity.id;
 
-    // 3. Update Domain Profile
-    await this.identityPort.updateProfile(internalId, {
-      email,
-      display_name: fullName,
-      is_anonymous: false,
-      citizenship: 'SECOND_CLASS',
-      capacity,
-      onboarding_completed: true,
-      onboarding_completed_at: new Date().toISOString(),
-    });
-
-    // 4. Ensure Link Presence
     await this.identityPort.linkIdentity(internalId, 'supabase', user.id);
+    if (user.is_anonymous !== false) {
+      throw new APIError(
+        'Confirm the email address before completing account conversion.',
+        'AUTH_CONFIRMATION_REQUIRED',
+      );
+    }
+    await this.identityPort.createInitialBond(capacity, {
+      userId: internalId,
+      displayName: fullName,
+      fullName,
+    });
+    await this.identityPort.completeOnboarding(internalId);
 
-    await this.recordAuthMethodUsage(
-      'AUTH_LINK_ANONYMOUS_TO_EMAIL',
-      {
-        method: 'password',
-        outcome: 'success',
-        linkedFrom: 'anonymous',
-        capacity,
-        email_domain: email.includes('@') ? (email.split('@')[1] ?? null) : null,
-      },
-      internalId,
-    );
+    await this.recordAuthMethodUsage('AUTH_LINK_ANONYMOUS_TO_EMAIL', {
+      method: 'password',
+      outcome: 'success',
+      linkedFrom: 'anonymous',
+      capacity,
+      email_domain: email.includes('@') ? (email.split('@')[1] ?? null) : null,
+    });
 
     trackProductEvent('account_converted');
 
@@ -415,48 +455,57 @@ export class AuthManager {
    * Sovereign Sign-Out Flow
    */
   async signOut(options?: { scope?: 'global' | 'local' | 'others' }) {
-    // 1. Clear identity cache (usually in identityPort implementation)
-    // In this manager pattern, we might need a dedicated clear method or it happens in identityPort.
+    return this.mutateSession(() => this.performSignOut(options));
+  }
+
+  private async performSignOut(options?: { scope?: 'global' | 'local' | 'others' }) {
+    await this.recordAuthMethodUsage('AUTH_SIGN_OUT_STARTED', {
+      method: 'session',
+      outcome: 'initiated',
+      scope: options?.scope ?? 'global',
+    });
+    if (options?.scope === 'others') {
+      await this.authPort.signOut(options);
+      return;
+    }
+    const failures: Error[] = [];
 
     // 2. Platform-specific teardown (PowerSync, etc.) via config
     if (this.config.onSignOut) {
       try {
         await this.config.onSignOut();
-      } catch (e) {
-        console.warn('[AuthManager] onSignOut hook failed', e);
+      } catch {
+        failures.push(new Error('Platform account teardown failed'));
       }
     }
 
-    // 3. Clear storage
-    if (this.config.storage) {
+    try {
+      await this.authPort.signOut(options);
+    } catch {
+      failures.push(new Error('Provider sign-out was not confirmed'));
+    }
+
+    if (this.config.localState) {
       try {
-        this.config.storage.clearAll();
-      } catch (e) {
-        console.warn('[AuthManager] storage clearing failed', e);
+        this.config.localState.clear();
+      } catch {
+        failures.push(new Error('Account state cleanup failed'));
       }
     }
 
-    // 4. Server-side sign out
-    await this.recordAuthMethodUsage('AUTH_SIGN_OUT', {
-      method: 'session',
-      outcome: 'success',
-    });
-
-    await this.authPort.signOut(options);
+    if (failures.length) throw new AggregateError(failures, 'Sign-out did not complete');
   }
 
   async setSession(access_token: string, refresh_token: string) {
-    const result = await this.authPort.setSession(access_token, refresh_token);
-    await this.recordAuthMethodUsage(
-      'AUTH_SESSION_SET',
-      {
-        method: 'session',
-        outcome: 'success',
-        hasUser: !!result.user,
-        hasSession: !!result.session,
-      },
-      result.user?.id,
+    const result = await this.mutateSession(() =>
+      this.authPort.setSession(access_token, refresh_token),
     );
+    await this.recordAuthMethodUsage('AUTH_SESSION_SET', {
+      method: 'session',
+      outcome: 'success',
+      hasUser: !!result.user,
+      hasSession: !!result.session,
+    });
     return result;
   }
 

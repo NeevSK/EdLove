@@ -38,6 +38,9 @@ export interface ReminderRecord {
   title: string;
   description?: string;
   icon_type: string;
+  category?: 'water' | 'medication' | 'movement' | 'breathe' | 'custom';
+  schedule?: 'hourly' | 'every-2-hours' | 'morning-and-night' | 'daily' | 'once';
+  scheduled_time?: string;
   is_default: boolean;
   is_active: boolean;
   created_at: string;
@@ -47,8 +50,58 @@ export interface ReminderInput {
   title: string;
   description?: string;
   icon_type: string;
+  category?: 'water' | 'medication' | 'movement' | 'breathe' | 'custom';
+  schedule?: 'hourly' | 'every-2-hours' | 'morning-and-night' | 'daily' | 'once';
+  scheduled_time?: string;
   is_default?: boolean;
   is_active?: boolean;
+}
+
+export type ReminderFeedbackAction = 'done' | 'snoozed' | 'skipped' | 'noted';
+
+export interface ReminderFeedbackEvent {
+  id: string;
+  reminder_id: string;
+  user_id: string;
+  action: ReminderFeedbackAction;
+  category?: 'water' | 'medication' | 'movement' | 'breathe' | 'custom';
+  note?: string;
+  snooze_minutes?: number;
+  created_at: string;
+}
+
+export async function logReminderFeedback(
+  userId: string,
+  event: Omit<ReminderFeedbackEvent, 'id' | 'created_at'>,
+): Promise<ReminderFeedbackEvent> {
+  const all = await getCollection<ReminderFeedbackEvent>(`reminder_feedback:${userId}`);
+  const record: ReminderFeedbackEvent = {
+    ...event,
+    id: uid('rfb'),
+    created_at: new Date().toISOString(),
+  };
+  all.unshift(record);
+  await setCollection(`reminder_feedback:${userId}`, all);
+
+  // Somatic loop closure:
+  if (event.action === 'done' && event.category === 'breathe') {
+    const sessions = await getCollection<any>(`somatic_sessions:${userId}`);
+    sessions.unshift({
+      id: uid('som'),
+      user_id: userId,
+      seconds: 180,
+      source: 'breath_guide',
+      started_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    });
+    await setCollection(`somatic_sessions:${userId}`, sessions);
+  }
+
+  return record;
+}
+
+export async function fetchReminderFeedback(userId: string): Promise<ReminderFeedbackEvent[]> {
+  return getCollection<ReminderFeedbackEvent>(`reminder_feedback:${userId}`);
 }
 
 export async function fetchReminders(userId: string): Promise<ReminderRecord[]> {
@@ -67,6 +120,9 @@ export async function createReminder(
     title: input.title,
     description: input.description,
     icon_type: input.icon_type,
+    category: input.category,
+    schedule: input.schedule,
+    scheduled_time: input.scheduled_time,
     is_default: input.is_default ?? false,
     is_active: input.is_active ?? true,
     created_at: new Date().toISOString(),

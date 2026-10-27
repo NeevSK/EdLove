@@ -68,8 +68,8 @@ describe('Responsive Floors Master-Detail & Stage Switching (G1 boundary / jsdom
       expect(
         screen.getByRole('heading', { level: 1, name: /your sanctuary persona/i }),
       ).toBeTruthy();
-      expect(screen.getByText('Aria Star')).toBeTruthy();
-      expect(screen.getByText('Learner')).toBeTruthy();
+      expect(screen.getAllByText('Aria Star')[0]).toBeTruthy();
+      expect(screen.getAllByText('Learner')[0]).toBeTruthy();
 
       // Check sections rail
       const rail = screen.getByRole('complementary', { name: /profile navigation rail/i });

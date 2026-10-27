@@ -1,14 +1,16 @@
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { showToast } from '@repo/core/lib/feedback';
+import { useAuthStore, useUIStore } from '@repo/core/store';
 /**
  * LibraryScreen — Netflix-Style Holistic Digital Library
  */
 
 import { identityAPI } from '@repo/core/api/client';
-import { useDomainRollout, useTracking } from '@repo/core/hooks';
+import { useDomainRollout, useScaffoldDismissal, useTracking } from '@repo/core/hooks';
 import {
   coreRuntime,
   resolveWorkspaceAppearanceColor,
   usePermissions,
-  useStore,
   useTemporalStore,
 } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
@@ -22,6 +24,7 @@ import type { CreateResourceInput, LibraryResource, ResourceType } from '@repo/l
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
 import { useLibraryWorkspaceSurfaces } from '@repo/library/workspace/useLibraryWorkspaceSurfaces';
+import { FireflyMascot } from '@repo/ui';
 import { CollectionCard } from '@repo/ui/components/CollectionCard';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
@@ -49,6 +52,8 @@ import {
 import {
   AnimatedView,
   Box,
+  Button,
+  ButtonText,
   HStack,
   Icon,
   ImageBackground,
@@ -60,8 +65,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
-import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
-import { useRouter } from 'expo-router';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
@@ -71,6 +76,7 @@ import {
   HeroBanner,
   MapInvitation,
   SanctuaryPulse,
+  ToolsInvitation,
 } from '../components/furniture';
 
 const LIBRARY_UI_CATEGORIES = [
@@ -97,6 +103,11 @@ function getLibraryCreateErrorMessage(error: unknown): string {
 export default function LibraryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useLocalSearchParams<{
+    category?: string;
+    view?: string;
+    section?: string;
+  }>();
   const { can } = usePermissions();
   const isLibraryManagementEnabled = useDomainRollout('archive');
 
@@ -229,10 +240,9 @@ export default function LibraryScreen() {
   ] = useReducer(libraryReducer, initialState);
 
   const isPastView = useTemporalStore((state) => state.isPastView);
-  const deskItems = useStore((state) => state.deskItems);
-  const user = useStore((state) => state.user);
-  const isDemoMode = useStore((state) => state.isDemoMode);
-  const showToast = useStore((state) => state.showToast);
+  const deskItems = useUIStore((state) => state.deskItems);
+  const user = useAuthStore((state) => state.user);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
 
   // Search Debouncing (Orchestrated by Reducer)
   useEffect(() => {
@@ -241,6 +251,27 @@ export default function LibraryScreen() {
     }, 500);
     return () => clearTimeout(handler);
   }, [searchQuery]);
+
+  // Route Query Parameters Synchronization (Subtabs & Deep Links)
+  useEffect(() => {
+    if (searchParams.category) {
+      dispatch({ type: 'SET_CATEGORY', id: searchParams.category });
+    }
+    if (
+      searchParams.section === 'browse' ||
+      searchParams.section === 'collections' ||
+      searchParams.section === 'contribute'
+    ) {
+      dispatch({ type: 'SET_SECTION', section: searchParams.section });
+    }
+    if (
+      searchParams.section === 'contribute' ||
+      (searchParams as any).contribute === 'true' ||
+      (searchParams as any).contribute === '1'
+    ) {
+      dispatch({ type: 'SET_MODAL', name: 'add', isOpen: true });
+    }
+  }, [searchParams.category, searchParams.section, (searchParams as any).contribute]);
 
   const theme = useTheme();
   const { width, height } = useWindowDimensions();
@@ -311,6 +342,8 @@ export default function LibraryScreen() {
   const { resources: bookmarkedResources, refetch: refetchBookmarks } = useBookmarkedResources(
     user?.id,
   );
+  const { isDismissed: isDay0LibraryDismissed, completeScaffold: dismissDay0Library } =
+    useScaffoldDismissal('library_day0_explorer_scaffold', 1);
 
   useEffect(() => {
     if (isDemoMode) return;
@@ -404,6 +437,7 @@ export default function LibraryScreen() {
     }
 
     rows.push({ type: 'MAP_INVITATION', id: 'map-invit' });
+    rows.push({ type: 'TOOLS_INVITATION', id: 'tools-invit' });
 
     // Only show curator if allowed
     rows.push({
@@ -521,27 +555,12 @@ export default function LibraryScreen() {
 
   const handleOpenResource = useCallback(
     (resource: LibraryResource) => {
-      if (!resource.url) return;
-      if (resource.type === 'pdf') {
-        router.push({
-          pathname: '/library/document/[resourceId]',
-          params: buildLibraryResourceOpenParams(resource),
-        });
-        return;
-      }
-      if (resource.type === 'video' || resource.type === 'movie_trailer') {
-        router.push({
-          pathname: '/library/video/[resourceId]',
-          params: buildLibraryResourceOpenParams(resource),
-        });
-        return;
-      }
-      openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
-        hapticError();
-        showToast('Could not open this resource. Please try again.', 'error');
+      router.push({
+        pathname: '/library/resource/[resourceId]',
+        params: buildLibraryResourceOpenParams(resource),
       });
     },
-    [router, showToast],
+    [router],
   );
 
   const handleOpenResourceOptions = useCallback(
@@ -929,6 +948,8 @@ export default function LibraryScreen() {
           return <HeroBanner resource={item.resource} onPress={handleOpenResource} />;
         case 'MAP_INVITATION':
           return <MapInvitation onPress={handleNavigateToMap} />;
+        case 'TOOLS_INVITATION':
+          return <ToolsInvitation onPress={handleNavigateToTools} />;
         case 'CURATOR_INVITATION_GUARD':
           return isLibraryManagementEnabled && can('manage', 'LibraryCuratorDashboard') ? (
             <CuratorInvitation onPress={handleNavigateToCuratorReview} />
@@ -1105,6 +1126,47 @@ export default function LibraryScreen() {
           </HStack>
         }
       />
+
+      {!isDay0LibraryDismissed && bookmarkedResources.length === 0 ? (
+        <Box className="mx-4 mt-3 rounded-3xl border border-phase-interactive/30 bg-phase-surface p-5 shadow-sm">
+          <HStack className="items-center gap-4">
+            <FireflyMascot size={64} mode="glowing" role="guide" />
+            <VStack className="flex-1 gap-1">
+              <Text className="text-xs font-bold uppercase tracking-wider text-phase-interactive">
+                Welcome to the Living Library
+              </Text>
+              <Text className="text-sm font-semibold text-ink">
+                Immerse yourself in books, video archives, and interactive documents. Bookmark your
+                favorites to build your wisdom collection.
+              </Text>
+            </VStack>
+          </HStack>
+          <HStack className="mt-4 items-center justify-between gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-xl border-border"
+              onPress={() => {
+                hapticLight();
+                dismissDay0Library();
+              }}
+            >
+              <ButtonText className="text-xs text-ink/60">I know my way around</ButtonText>
+            </Button>
+            <Button
+              size="sm"
+              className="rounded-xl bg-phase-interactive"
+              onPress={() => {
+                hapticSuccess();
+                handleSelectSection('browse');
+                dismissDay0Library();
+              }}
+            >
+              <ButtonText className="text-xs text-white font-bold">Browse Shelves</ButtonText>
+            </Button>
+          </HStack>
+        </Box>
+      ) : null}
 
       <VStack className="px-md pt-sm pb-md gap-2 bg-phase-surface">
         <Text className="text-sm font-bold text-phaseText-primary">Library spaces</Text>

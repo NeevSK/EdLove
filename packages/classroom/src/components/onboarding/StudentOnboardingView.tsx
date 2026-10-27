@@ -1,3 +1,4 @@
+import { FireflyMascot } from '@repo/ui';
 import {
   ChevronRight,
   CircleArrowRight,
@@ -40,15 +41,14 @@ export default function StudentOnboardingView({
       <VStack className="gap-10 py-10">
         {/* Welcome Header */}
         <VStack className="gap-2 items-center">
-          <Box className="p-4 rounded-generous bg-templeGold/10 mb-3">
-            <Icon as={GraduationCap} className="text-templeGold" size="xl" />
+          <Box className="p-2 mb-2 items-center justify-center">
+            <FireflyMascot size={88} mode="glowing" role="guide" />
           </Box>
           <Heading className="text-3xl font-black text-phaseText-primary text-center">
-            Welcome, Student
+            Welcome to Your Sanctuary
           </Heading>
           <Text className="text-center text-phaseText-secondary text-base max-w-[500px] leading-relaxed">
-            Join your sanctuary of learning. Connect with your mentors and peers to begin your
-            journey.
+            Tutii is here to guide your learning journey. Join your classroom, connect with your mentors, and explore your path of growth.
           </Text>
         </VStack>
 

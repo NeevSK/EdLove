@@ -1,11 +1,10 @@
-import {
-  getDomainFeatureRegistry,
-  type MobileDomainRegistry,
-  type MobileFeatureItem,
-} from '@/navigation/registries';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+import {
+  PERSONAL_SCOPE_PERSPECTIVE,
+  useScopeSessionStore,
+} from '@repo/core/store/scopeSession';
 import { ChevronRight, Plus, Search, Sparkles, X } from '@repo/ui/icons';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import {
   Box,
   HStack,
@@ -21,6 +20,11 @@ import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
+import {
+  getDomainFeatureRegistry,
+  type MobileDomainRegistry,
+  type MobileFeatureItem,
+} from '@/navigation/registries';
 
 export interface TabFeatureCatalogSheetProps {
   isOpen: boolean;
@@ -42,18 +46,18 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const activePerspective = usePerspectiveStore((s) => s.activePerspective);
+  const scopeSnapshot = useScopeSessionStore((s) => s.snapshot);
+  const scopeTransitioning = useScopeSessionStore((s) => s.isTransitioning);
+  const activePerspective = scopeSnapshot?.activePerspective ?? PERSONAL_SCOPE_PERSPECTIVE;
   const openTab = useActiveSubTabsStore((s) => s.openTab);
   const preferences = useActiveSubTabsStore((s) => s.preferences);
 
   // Derive role capacity from perspective
   const capacity = useMemo(() => {
-    if (!activePerspective) return null;
-    if (activePerspective.kind === 'institutional') return activePerspective.capacity;
-    if (activePerspective.kind === 'guardian') return 'guardian';
-    if (activePerspective.kind === 'commercial') return activePerspective.role;
-    return 'personal';
-  }, [activePerspective]);
+    if (scopeTransitioning) return null;
+    if (scopeSnapshot?.activeBond) return scopeSnapshot.activeBond.capacity;
+    return activePerspective.kind === 'personal' ? 'personal' : null;
+  }, [activePerspective.kind, scopeSnapshot?.activeBond, scopeTransitioning]);
 
   // Resolve dynamic registry for active domain and capacity
   const registry: MobileDomainRegistry = useMemo(() => {
@@ -66,8 +70,7 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
     const query = searchQuery.toLowerCase();
     return registry.items.filter(
       (item) =>
-        item.title.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query),
+        item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query),
     );
   }, [registry.items, searchQuery]);
 
@@ -251,119 +254,120 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
           </Box>
 
           {/* Catalog Items List */}
-          <ScrollView
+          <SanctuaryFlashList
+            data={filteredItems}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={{
               padding: tokens.spacing.md,
-              gap: tokens.spacing.sm,
             }}
             showsVerticalScrollIndicator={false}
-          >
-            {filteredItems.map((item) => {
+            renderItem={({ item }) => {
               const IconComponent = item.icon || Sparkles;
               return (
-                <Pressable
-                  key={item.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Open ${item.title}`}
-                  accessibilityHint={item.description}
-                  onPress={() => handleSelectFeature(item)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: tokens.semantic.surface.elevated,
-                    borderRadius: tokens.radii.lg,
-                    padding: tokens.spacing.md,
-                    borderWidth: 1,
-                    borderColor: tokens.semantic.border.subtle,
-                    gap: tokens.spacing.md,
-                  }}
-                >
-                  {/* Icon Avatar */}
-                  <Box
+                <Box style={{ marginBottom: tokens.spacing.sm }}>
+                  <Pressable
+                    key={item.id}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Open ${item.title}`}
+                    accessibilityHint={item.description}
+                    onPress={() => handleSelectFeature(item)}
                     style={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: tokens.radii.md,
-                      backgroundColor: tokens.semantic.surface.interactive,
+                      flexDirection: 'row',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      backgroundColor: tokens.semantic.surface.elevated,
+                      borderRadius: tokens.radii.lg,
+                      padding: tokens.spacing.md,
+                      borderWidth: 1,
+                      borderColor: tokens.semantic.border.subtle,
+                      gap: tokens.spacing.md,
                     }}
                   >
-                    <IconComponent size={20} color={tokens.colors.primary} />
-                  </Box>
-
-                  {/* Title & Description */}
-                  <VStack style={{ flex: 1, gap: 2 }}>
-                    <HStack style={{ alignItems: 'center', gap: 6 }}>
-                      <Text
-                        style={{
-                          fontSize: tokens.typography.sizes.sm,
-                          fontWeight: '700',
-                          color: tokens.semantic.text.primary,
-                        }}
-                      >
-                        {item.title}
-                      </Text>
-                      {item.badge ? (
-                        <Box
-                          style={{
-                            backgroundColor: tokens.semantic.surface.interactive,
-                            paddingHorizontal: 6,
-                            paddingVertical: 1,
-                            borderRadius: 4,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 9,
-                              fontWeight: '700',
-                              color: tokens.semantic.text.secondary,
-                            }}
-                          >
-                            {item.badge}
-                          </Text>
-                        </Box>
-                      ) : null}
-                    </HStack>
-
-                    <Text
+                    {/* Icon Avatar */}
+                    <Box
                       style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: tokens.semantic.text.secondary,
-                        lineHeight: 16,
-                      }}
-                      numberOfLines={2}
-                    >
-                      {item.description}
-                    </Text>
-                  </VStack>
-
-                  {/* Actions: Pin to sub-tab + Chevron */}
-                  <HStack style={{ alignItems: 'center', gap: 6 }}>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel={`Pin ${item.title} to active tasks`}
-                      onPress={(e) => handlePinSubTabOnly(item, e)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 14,
+                        width: 42,
+                        height: 42,
+                        borderRadius: tokens.radii.md,
+                        backgroundColor: tokens.semantic.surface.interactive,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: tokens.semantic.surface.interactive,
                       }}
                     >
-                      <Plus size={14} color={tokens.semantic.text.secondary} />
-                    </Pressable>
+                      <IconComponent size={20} color={tokens.colors.primary} />
+                    </Box>
 
-                    <ChevronRight size={16} color={tokens.semantic.text.muted} />
-                  </HStack>
-                </Pressable>
+                    {/* Title & Description */}
+                    <VStack style={{ flex: 1, gap: 2 }}>
+                      <HStack style={{ alignItems: 'center', gap: 6 }}>
+                        <Text
+                          style={{
+                            fontSize: tokens.typography.sizes.sm,
+                            fontWeight: '700',
+                            color: tokens.semantic.text.primary,
+                          }}
+                        >
+                          {item.title}
+                        </Text>
+                        {item.badge ? (
+                          <Box
+                            style={{
+                              backgroundColor: tokens.semantic.surface.interactive,
+                              paddingHorizontal: 6,
+                              paddingVertical: 1,
+                              borderRadius: 4,
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 9,
+                                fontWeight: '700',
+                                color: tokens.semantic.text.secondary,
+                              }}
+                            >
+                              {item.badge}
+                            </Text>
+                          </Box>
+                        ) : null}
+                      </HStack>
+
+                      <Text
+                        style={{
+                          fontSize: tokens.typography.sizes.xs,
+                          color: tokens.semantic.text.secondary,
+                          lineHeight: 16,
+                        }}
+                        numberOfLines={2}
+                      >
+                        {item.description}
+                      </Text>
+                    </VStack>
+
+                    {/* Actions: Pin to sub-tab + Chevron */}
+                    <HStack style={{ alignItems: 'center', gap: 6 }}>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Pin ${item.title} to active tasks`}
+                        onPress={(e) => handlePinSubTabOnly(item, e)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 14,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: tokens.semantic.surface.interactive,
+                        }}
+                      >
+                        <Plus size={14} color={tokens.semantic.text.secondary} />
+                      </Pressable>
+
+                      <ChevronRight size={16} color={tokens.semantic.text.muted} />
+                    </HStack>
+                  </Pressable>
+                </Box>
               );
-            })}
-
-            {filteredItems.length === 0 ? (
+            }}
+            ListEmptyComponent={
               <Box style={{ padding: tokens.spacing.xl, alignItems: 'center' }}>
                 <Text
                   style={{
@@ -374,8 +378,8 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
                   No matching features found.
                 </Text>
               </Box>
-            ) : null}
-          </ScrollView>
+            }
+          />
         </VStack>
       </ModalContent>
     </Modal>

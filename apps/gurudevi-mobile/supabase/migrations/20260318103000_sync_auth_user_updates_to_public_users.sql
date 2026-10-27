@@ -24,7 +24,7 @@ DECLARE
     v_role text;
 BEGIN
     v_provider := COALESCE(new.raw_app_meta_data->>'provider', 'supabase');
-    v_is_anonymous := COALESCE(new.is_anonymous, false);
+    v_is_anonymous := COALESCE((to_jsonb(new)->>'is_anonymous')::boolean, false);
     v_full_name := COALESCE(
         new.raw_user_meta_data->>'full_name',
         new.raw_user_meta_data->>'name',
@@ -84,14 +84,14 @@ EXECUTE FUNCTION public.handle_auth_user_updated();
 -- Backfill current state so existing upgraded users are corrected immediately.
 UPDATE public.users u
 SET
-    email = CASE WHEN au.is_anonymous THEN u.email ELSE COALESCE(au.email, u.email) END,
+    email = CASE WHEN COALESCE((to_jsonb(au)->>'is_anonymous')::boolean, false) THEN u.email ELSE COALESCE(au.email, u.email) END,
     full_name = COALESCE(
         au.raw_user_meta_data->>'full_name',
         au.raw_user_meta_data->>'name',
         u.full_name
     ),
     avatar_url = COALESCE(au.raw_user_meta_data->>'avatar_url', u.avatar_url),
-    is_anonymous = COALESCE(au.is_anonymous, u.is_anonymous),
+    is_anonymous = COALESCE((to_jsonb(au)->>'is_anonymous')::boolean, u.is_anonymous),
     updated_at = now()
 FROM auth.users au
 WHERE au.id = u.id;

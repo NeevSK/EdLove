@@ -77,7 +77,13 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_notify_impact_ripple ON public.impact_ripples;
-CREATE TRIGGER trg_notify_impact_ripple
-    AFTER INSERT ON public.impact_ripples
-    FOR EACH ROW EXECUTE FUNCTION public.notify_on_impact_ripple();
+DO $$
+BEGIN
+  IF to_regclass('public.impact_ripples') IS NOT NULL THEN
+    DROP TRIGGER IF EXISTS trg_notify_impact_ripple ON public.impact_ripples;
+    CREATE TRIGGER trg_notify_impact_ripple
+      AFTER INSERT ON public.impact_ripples
+      FOR EACH ROW EXECUTE FUNCTION public.notify_on_impact_ripple();
+  END IF;
+END;
+$$;

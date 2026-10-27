@@ -4,9 +4,15 @@ import {
   createInitialBond as createCanonicalInitialBond,
   createOnboardingCompletionKey,
 } from '@repo/core/api/onboardingClient';
+import { useActorSnapshot } from '@repo/core/hooks';
+import { showToast } from '@repo/core/lib/feedback';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';
-import { useStore } from '@repo/core/store';
+import {
+  completeLocalGuestOnboarding,
+  createLocalGuestInitialBond,
+} from '@repo/core/native/localGuestOnboarding';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import type { Capacity } from '@repo/core/types';
 import { FireflyFeedbackScene } from '@repo/ui/components/FireflyFeedbackScene';
 import IdentityCard from '@repo/ui/components/IdentityCard';
@@ -14,6 +20,12 @@ import type { MascotArtworkSource } from '@repo/ui/components/Mascot';
 import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { BookOpen, Compass, Flower2, GraduationCap, Lock, School, Sprout } from '@repo/ui/icons';
+import {
+  createOnboardingJourneyActor,
+  executeOnboardingCompletionEffect,
+  type OnboardingJourneyAction,
+  saveOnboardingSnapshot,
+} from '@repo/ui/machines/onboardingJourneyMachine';
 import {
   Box,
   Button,
@@ -616,6 +628,7 @@ interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   onAbandon?: () => Promise<void>;
   isAnonymous?: boolean;
+  isLocalGuest?: boolean;
   userId?: string | null;
   suggestedName?: string;
   onboardingArtwork?: MascotArtworkSource;
@@ -625,20 +638,99 @@ const OnboardingScreen = memo(function OnboardingScreen({
   onComplete,
   onAbandon,
   isAnonymous = false,
+  isLocalGuest = false,
   userId = null,
   suggestedName,
   onboardingArtwork,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
   const [isAbandoning, setIsAbandoning] = useState(false);
+  const isGuestSubject = isAnonymous || isLocalGuest;
 
-  const [state, dispatch] = useReducer(onboardingJourneyReducer, initialOnboardingJourneyState);
+  const actor = useMemo(
+    () => createOnboardingJourneyActor({ userId, isGuest: isGuestSubject }),
+    [userId, isGuestSubject],
+  );
+  const snapshot = useActorSnapshot(actor);
+  const state = snapshot.context;
+  const isProcessing = state.isProcessing || snapshot.value === 'submitting';
+
+  const dispatch = useCallback(
+    (action: OnboardingJourneyAction) => {
+      switch (action.type) {
+        case 'SET_STEP':
+          actor.send({ type: 'SET_STEP', step: action.step });
+          break;
+        case 'SET_NAME':
+          actor.send({ type: 'SET_NAME', name: action.name });
+          break;
+        case 'SET_CAPACITY':
+          actor.send({ type: 'SET_CAPACITY', capacity: action.capacity });
+          break;
+        case 'SET_SCHOOL_ID':
+          actor.send({ type: 'SET_SCHOOL_ID', schoolId: action.schoolId });
+          break;
+        case 'NEXT_STEP':
+          actor.send({ type: 'NEXT_STEP' });
+          break;
+        case 'PREV_STEP':
+          actor.send({ type: 'PREV_STEP' });
+          break;
+        case 'SKIP_TOUR':
+          actor.send({ type: 'SKIP_TOUR' });
+          break;
+        case 'FAST_TRACK':
+          actor.send(action);
+          break;
+        case 'SHOW_DEV_SANDBOX':
+          actor.send({ type: 'SHOW_DEV_SANDBOX', visible: action.visible });
+          break;
+        case 'SET_PRICING':
+          actor.send({ type: 'SET_PRICING', pricing: action.pricing });
+          break;
+        case 'SET_CITIZENSHIP':
+          actor.send({ type: 'SET_CITIZENSHIP', citizenship: action.citizenship });
+          break;
+        case 'RESTORE_PROGRESS':
+          actor.send({ type: 'RESTORE_PROGRESS', progress: action.progress });
+          break;
+        case 'SET_PROCESSING':
+          actor.send({ type: 'SET_PROCESSING', isProcessing: action.isProcessing });
+          break;
+        case 'SET_ERROR':
+          actor.send({ type: 'SET_ERROR', error: action.error });
+          break;
+        case 'BEGIN_COMPLETION':
+        case 'SUBMIT':
+          actor.send({ type: 'SUBMIT' });
+          break;
+        case 'COMPLETE':
+        case 'SUBMIT_SUCCESS':
+          actor.send({ type: 'SUBMIT_SUCCESS' });
+          break;
+        case 'FAIL_COMPLETION':
+          actor.send({ type: 'SUBMIT_FAILURE', error: action.error });
+          break;
+        case 'SUBMIT_FAILURE':
+          actor.send(action);
+          break;
+        case 'RETRY_COMPLETION':
+          actor.send({ type: 'RETRY_COMPLETION' });
+          break;
+        case 'RESET':
+          actor.send({ type: 'RESET' });
+          break;
+      }
+    },
+    [actor],
+  );
+
   const [resolvedSchoolName, setResolvedSchoolName] = useState<string | undefined>(undefined);
 
-  const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
+  const { currentStep, name, selectedCapacity, error, showDevSandbox } = state;
   const currentPhase = getOnboardingPhase(currentStep);
-  const isOnline = useStore((s) => s.isOnline);
-  const showToast = useStore((s) => s.showToast);
+  const { status: networkStatus, isOnline } = useOfflineStatus();
+
   const resolvedInternalIdRef = useRef<string | null>(null);
   const resolvedCitizenRef = useRef<Awaited<
     ReturnType<typeof identityAPI.identifyActiveCitizen>
@@ -647,7 +739,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const anonymousBootstrapRequestedRef = useRef(false);
 
   const resolveOnboardingSubject = useCallback(async () => {
-    if (isAnonymous) {
+    if (isGuestSubject) {
       if (!userId) throw new Error('Guest session is not ready. Please try again.');
       return { internalId: userId, isAnonymous: true };
     }
@@ -665,6 +757,10 @@ const OnboardingScreen = memo(function OnboardingScreen({
       internalId: string,
       isAnonymousSubject: boolean,
     ) => {
+      if (isLocalGuest) {
+        await createLocalGuestInitialBond(internalId, orientation, context);
+        return;
+      }
       if (isAnonymousSubject) {
         await onboardingAPI.createInitialBond(orientation, { ...context, userId: internalId });
         return;
@@ -675,11 +771,15 @@ const OnboardingScreen = memo(function OnboardingScreen({
         context,
       });
     },
-    [],
+    [isLocalGuest],
   );
 
   const completeOnboardingForSubject = useCallback(
     async (internalId: string, isAnonymousSubject: boolean) => {
+      if (isLocalGuest) {
+        await completeLocalGuestOnboarding(internalId);
+        return;
+      }
       if (isAnonymousSubject) {
         await onboardingAPI.completeOnboarding(internalId);
         return;
@@ -690,7 +790,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       await completeCanonicalOnboarding({ idempotencyKey: key });
       completionAttemptRef.current = null;
     },
-    [],
+    [isLocalGuest],
   );
 
   // ── Restore saved progress or pre-fill from existing auth & invites ──
@@ -760,7 +860,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
         console.warn('[Onboarding] Failed to restore progress:', err);
       }
 
-      if (isAnonymous) {
+      if (isGuestSubject) {
         if (suggestedName) {
           dispatch({ type: 'SET_NAME', name: suggestedName });
         }
@@ -811,7 +911,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
           const capacity = (activePerspective?.activeBond?.capacity as Capacity) || 'teacher';
           const resolvedName = profile.display_name || profile.full_name || '';
           dispatch({ type: 'SET_NAME', name: resolvedName });
-          onComplete(resolvedName, capacity, isAnonymous);
+          onComplete(resolvedName, capacity, isGuestSubject);
           return;
         }
 
@@ -832,7 +932,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       }
     };
     void initOnboarding();
-  }, [onComplete, showToast, isAnonymous, userId]);
+  }, [onComplete, showToast, isGuestSubject, userId]);
 
   const tourScreens = useMemo(
     () => [
@@ -883,57 +983,61 @@ const OnboardingScreen = memo(function OnboardingScreen({
   // Save progress whenever step/name/role/seeds change (so app-close resumes correctly)
   useEffect(() => {
     if (currentStep === 0 && !name) return;
-    const userId = resolvedInternalIdRef.current;
-    if (!userId) return;
+    const progressUserId = resolvedInternalIdRef.current || userId;
+    if (!progressUserId) return;
 
     try {
-      storage.set(getOnboardingProgressKey(userId), serializeOnboardingDraft({ userId, state }));
+      storage.set(
+        getOnboardingProgressKey(progressUserId),
+        serializeOnboardingDraft({ userId: progressUserId, state }),
+      );
+      saveOnboardingSnapshot(actor, progressUserId);
     } catch (err: unknown) {
       console.warn('[Onboarding] Failed to save progress:', err);
     }
-  }, [currentStep, name, selectedCapacity, state.schoolId]);
+  }, [actor, userId, currentStep, name, selectedCapacity, state.schoolId, state]);
 
   const clearSavedProgress = useCallback(async () => {
-    const progressUserId = resolvedInternalIdRef.current;
+    const progressUserId = resolvedInternalIdRef.current || userId;
     if (!progressUserId) return;
 
     storage.delete(getOnboardingProgressKey(progressUserId));
-  }, []);
+    saveOnboardingSnapshot(actor, progressUserId);
+  }, [actor, userId]);
 
   const handleCompleteOnboarding = useCallback(async () => {
-    if (isProcessing) return;
-    dispatch({ type: 'BEGIN_COMPLETION' });
+    if (snapshot.value === 'submitting') return;
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
-    try {
-      const { internalId } = await resolveOnboardingSubject();
 
-      // 1. Mark journey as completed in DB
-      await completeOnboardingForSubject(internalId, isAnonymous);
+    const result = await executeOnboardingCompletionEffect(actor, {
+      resolveSubject: resolveOnboardingSubject,
+      createInitialBond: (orientation, context, internalId, isAnon) =>
+        createInitialBondForSubject(orientation, context, internalId, isAnon),
+      completeOnboarding: (internalId, isAnon) => completeOnboardingForSubject(internalId, isAnon),
+    });
 
-      // 2. Finalize persistence
+    if (result.success) {
       await clearSavedProgress();
-      dispatch({ type: 'COMPLETE' });
       hapticSuccess();
       showToast('Sanctuary entry granted! Welcome home.', 'success', 3000);
-      onComplete(name, selectedCapacity, isAnonymous);
-    } catch (err) {
-      console.error('Error completing onboarding:', err);
+      onComplete(name, selectedCapacity, isGuestSubject);
+    } else {
       hapticError();
-      const baseMsg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
-      const guidedMsg = `${baseMsg} Please check your connection and try again to enter the sanctuary.`;
-      dispatch({ type: 'FAIL_COMPLETION', error: guidedMsg });
+      const guidedMsg = `${result.error} Please check your connection and try again to enter the sanctuary.`;
       showToast(guidedMsg, 'error', 5000);
     }
   }, [
+    snapshot.value,
+    actor,
     name,
     selectedCapacity,
     onComplete,
     showToast,
-    isAnonymous,
-    isProcessing,
     clearSavedProgress,
     resolveOnboardingSubject,
+    createInitialBondForSubject,
     completeOnboardingForSubject,
+    isGuestSubject,
   ]);
 
   const handleDevFastTrack = useCallback(
@@ -1002,11 +1106,14 @@ const OnboardingScreen = memo(function OnboardingScreen({
     hapticLight();
 
     // 🛡️ OFFLINE CHECK
-    if (!isOnline && !isAnonymous) {
+    if (networkStatus !== 'online' && !isAnonymous) {
       hapticError();
       dispatch({
         type: 'SET_ERROR',
-        error: 'No internet connection detected. Please try again when you are online.',
+        error:
+          networkStatus === 'offline'
+            ? 'No internet connection detected. Please try again when you are online.'
+            : 'The network connection is not confirmed yet. Please try again shortly.',
       });
       return;
     }
@@ -1113,6 +1220,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     canProceed,
     isProcessing,
     isOnline,
+    networkStatus,
     currentPhase,
     currentStep,
     name,

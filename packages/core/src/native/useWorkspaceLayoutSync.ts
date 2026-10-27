@@ -1,5 +1,8 @@
 import { workspaceLayoutAPI } from '@repo/core/api/workspaceLayout';
+import { submitWorkspaceLayoutPatch } from '@repo/core/api/workspaceLayoutPatch';
+import { storage } from '@repo/core/lib/storage';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-layout.schema';
 import {
   createDefaultWorkspaceLayout,
@@ -13,26 +16,33 @@ import {
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
 } from '@repo/core/logic/workspace/canvas';
+import { buildWorkspaceLayoutIntentStorageKey } from '@repo/core/logic/workspace/layoutIntent';
+import type { WorkspaceLayoutPatch } from '@repo/core/logic/workspace/layoutPatch';
+import { WorkspaceLayoutSession } from '@repo/core/logic/workspace/layoutSession';
 import {
   buildWorkspaceLayoutStorageKey,
-  choosePreferredWorkspaceLayout,
   resolveWorkspaceLayoutTarget,
   toWorkspaceLayoutRecord,
-  toWorkspaceLayoutUpsert,
   WORKSPACE_COMPACT_BREAKPOINT,
   type WorkspaceLayoutPlatformKind,
   type WorkspaceLayoutScreenClass,
 } from '@repo/core/logic/workspace/layoutSync';
+import {
+  shouldRetryWorkspaceSync,
+  workspaceSyncRetryDelay,
+} from '@repo/core/logic/workspace/syncPolicy';
 import type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
 } from '@repo/core/types';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
+import { z } from 'zod';
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const EMPTY_INITIAL_PINS: readonly never[] = [];
 
 export interface UseWorkspaceLayoutSyncOptions<
   TSurfaceId extends string = string,
@@ -49,6 +59,7 @@ export interface UseWorkspaceLayoutSyncOptions<
   platform?: WorkspaceLayoutPlatformKind;
   screenClass?: WorkspaceLayoutScreenClass;
   compactBreakpoint?: number;
+  initialPinnedSurfaceIds?: readonly NoInfer<TSurfaceId>[];
 }
 
 export interface UseWorkspaceLayoutSyncResult<
@@ -63,44 +74,21 @@ export interface UseWorkspaceLayoutSyncResult<
   surfaces: (TDefinition & ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>)[];
   layoutTarget: WorkspaceLayoutTarget;
   isHydrated: boolean;
+  isInitialLayout: boolean;
   isSyncing: boolean;
   syncError: Error | null;
   refreshFromRemote: () => Promise<void>;
+  reapplyLocalChanges: () => Promise<void>;
   setLayout: (next: WorkspaceLayout<TSurfaceId>) => void;
   setSurfaceOrder: (order: TSurfaceId[]) => void;
+  saveSurfaceOrder: (order: TSurfaceId[]) => Promise<void>;
   setSurfaceHidden: (surfaceId: TSurfaceId, hidden: boolean) => void;
   setSurfacePinned: (surfaceId: TSurfaceId, pinned: boolean) => void;
+  toggleSurfacePinned: (surfaceId: TSurfaceId) => void;
   setSurfaceZone: (surfaceId: TSurfaceId, zone: WorkspaceZoneId) => void;
   setAppearance: (appearance: NonNullable<WorkspaceLayout<TSurfaceId>['appearance']>) => void;
   resetAppearance: () => void;
   setGroupOrder: (groupOrder: string[]) => void;
-}
-
-const serializeLayout = <TSurfaceId extends string>(
-  layout: WorkspaceLayout<TSurfaceId> | null,
-): string => (layout ? JSON.stringify(layout) : 'null');
-
-const canUseRemoteSync = (
-  userId: string | null | undefined,
-  enableRemoteSync: boolean,
-): userId is string => Boolean(enableRemoteSync && userId && UUID_PATTERN.test(userId));
-
-async function fetchRemoteLayout<TSurfaceId extends string>(
-  userId: string,
-  workspaceId: string,
-  layoutTarget: WorkspaceLayoutTarget,
-): Promise<WorkspaceLayout<TSurfaceId> | null> {
-  const targeted = await workspaceLayoutAPI.getWorkspaceLayout(userId, workspaceId, layoutTarget);
-  if (targeted) {
-    return toWorkspaceLayoutRecord<TSurfaceId>(targeted);
-  }
-
-  if (layoutTarget === 'shared') {
-    return null;
-  }
-
-  const shared = await workspaceLayoutAPI.getWorkspaceLayout(userId, workspaceId, 'shared');
-  return shared ? toWorkspaceLayoutRecord<TSurfaceId>(shared) : null;
 }
 
 export function useWorkspaceLayoutSync<
@@ -118,314 +106,149 @@ export function useWorkspaceLayoutSync<
   platform,
   screenClass,
   compactBreakpoint = WORKSPACE_COMPACT_BREAKPOINT,
+  initialPinnedSurfaceIds = EMPTY_INITIAL_PINS,
 }: UseWorkspaceLayoutSyncOptions<
   TSurfaceId,
   TCapabilityKey,
   TDefinition
 >): UseWorkspaceLayoutSyncResult<TSurfaceId, TCapabilityKey, TDefinition> {
   const dimensions = useWindowDimensions();
-  const inferredPlatform: WorkspaceLayoutPlatformKind =
-    platform ?? (Platform.OS === 'web' ? 'web' : 'native');
-  const inferredScreenClass: WorkspaceLayoutScreenClass =
-    screenClass ?? (dimensions.width < compactBreakpoint ? 'compact' : 'expanded');
-  const layoutTarget = resolveWorkspaceLayoutTarget(inferredPlatform, inferredScreenClass);
-
-  const [layout, setLayoutState] = useState<WorkspaceLayout<TSurfaceId> | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncError, setSyncError] = useState<Error | null>(null);
-  const lastSyncedLayoutRef = useRef<string | null>(null);
-
-  const storageKey = userId
-    ? buildWorkspaceLayoutStorageKey({
-        userId,
-        workspaceId,
-        layoutTarget,
-      })
-    : null;
-
-  const defaultLayout = useMemo(
-    () =>
-      userId
-        ? createDefaultWorkspaceLayout({
-            workspaceId,
-            userId,
-            surfaces,
-          })
-        : null,
-    [userId, workspaceId, surfaces],
+  const layoutTarget = resolveWorkspaceLayoutTarget(
+    platform ?? (Platform.OS === 'web' ? 'web' : 'native'),
+    screenClass ?? (dimensions.width < compactBreakpoint ? 'compact' : 'expanded'),
   );
-
-  const layoutRef = useRef(layout);
-  useEffect(() => {
-    layoutRef.current = layout;
-  }, [layout]);
-
-  const surfacesHash = useMemo(() => {
-    return surfaces.map((s) => `${s.surfaceId}:${s.defaultZone}:${s.defaultOrder}`).join('|');
-  }, [surfaces]);
-
-  const lastReconciledSurfacesRef = useRef('');
-
-  const setLayout = useCallback(
-    (next: WorkspaceLayout<TSurfaceId>) => {
-      setLayoutState(normalizeWorkspaceLayout(next, surfaces));
+  const client = useQueryClient();
+  const addToQueue = useMutationQueue((state) => state.addToQueue);
+  const { mutateAsync } = useMutation({
+    mutationFn: ({
+      patch,
+      isCurrent,
+    }: {
+      patch: WorkspaceLayoutPatch;
+      isCurrent: () => boolean;
+    }) => {
+      if (!isCurrent()) throw new Error('Workspace layout owner ended before transport.');
+      return submitWorkspaceLayoutPatch(patch);
     },
-    [surfaces],
-  );
+    networkMode: 'always',
+    retry: shouldRetryWorkspaceSync,
+    retryDelay: workspaceSyncRetryDelay,
+  });
+  const remoteEnabled = Boolean(enableRemoteSync && z.uuid().safeParse(userId).success);
 
-  const refreshFromRemote = useCallback(async () => {
-    if (!userId || !canUseRemoteSync(userId, enableRemoteSync)) return;
-
-    setIsSyncing(true);
-    setSyncError(null);
-    try {
-      const remote = await fetchRemoteLayout<TSurfaceId>(userId, workspaceId, layoutTarget);
-      if (!remote) return;
-
-      const normalizedRemote = normalizeWorkspaceLayout(remote, surfaces);
-      const preferred = choosePreferredWorkspaceLayout({
-        local: layoutRef.current,
-        remote: normalizedRemote,
-      });
-
-      if (preferred) {
-        setLayoutState(preferred);
-        lastSyncedLayoutRef.current = serializeLayout(preferred);
-      }
-    } catch (error) {
-      setSyncError(error as Error);
-    } finally {
-      setIsSyncing(false);
-    }
-  }, [userId, enableRemoteSync, workspaceId, layoutTarget, surfaces]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const hydrate = async () => {
-      if (!userId || !defaultLayout || !storageKey) {
-        if (isMounted) {
-          setLayoutState(null);
-          setIsHydrated(true);
-        }
-        return;
-      }
-
-      setIsHydrated(false);
-      setSyncError(null);
-
-      try {
-        const stored = await SafeZustandStorage.getItem(storageKey);
-        const localLayout = stored
-          ? normalizeWorkspaceLayout(JSON.parse(stored) as WorkspaceLayout<TSurfaceId>, surfaces)
-          : defaultLayout;
-
-        let preferred = localLayout;
-
-        if (canUseRemoteSync(userId, enableRemoteSync)) {
-          const remote = await fetchRemoteLayout<TSurfaceId>(userId, workspaceId, layoutTarget);
-          const normalizedRemote = remote ? normalizeWorkspaceLayout(remote, surfaces) : null;
-          preferred =
-            choosePreferredWorkspaceLayout({
-              local: localLayout,
-              remote: normalizedRemote,
-            }) ?? localLayout;
-        }
-
-        if (!isMounted) return;
-
-        setLayoutState(preferred);
-        lastSyncedLayoutRef.current = serializeLayout(preferred);
-        lastReconciledSurfacesRef.current = surfacesHash;
-      } catch (error) {
-        if (!isMounted) return;
-
-        setSyncError(error as Error);
-        setLayoutState(defaultLayout);
-        lastSyncedLayoutRef.current = serializeLayout(defaultLayout);
-        lastReconciledSurfacesRef.current = surfacesHash;
-      } finally {
-        if (isMounted) {
-          setIsHydrated(true);
-        }
-      }
-    };
-
-    void hydrate();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    userId,
-    workspaceId,
-    layoutTarget,
-    storageKey,
-    defaultLayout,
-    surfaces,
-    enableRemoteSync,
-    surfacesHash,
-  ]);
-
-  useEffect(() => {
-    if (!layout || !storageKey || !isHydrated) return;
-    void SafeZustandStorage.setItem(storageKey, JSON.stringify(layout));
-  }, [layout, storageKey, isHydrated]);
-
-  useEffect(() => {
-    if (!layout || !userId || !isHydrated || !canUseRemoteSync(userId, enableRemoteSync)) return;
-
-    const serialized = serializeLayout(layout);
-    if (serialized === lastSyncedLayoutRef.current) return;
-
-    let isCancelled = false;
-
-    const timer = setTimeout(() => {
-      const syncRemote = async () => {
-        setIsSyncing(true);
-        setSyncError(null);
-
-        try {
-          await workspaceLayoutAPI.upsertWorkspaceLayout(
-            toWorkspaceLayoutUpsert(layout, {
+  const session = useMemo(() => {
+    if (!userId) return null;
+    const identity = { userId, workspaceId, layoutTarget };
+    const cacheKey = buildWorkspaceLayoutStorageKey(identity);
+    const intentKey = buildWorkspaceLayoutIntentStorageKey(identity);
+    const initial = createDefaultWorkspaceLayout({ userId, workspaceId, surfaces });
+    return new WorkspaceLayoutSession(identity, initial, remoteEnabled, {
+      readLayout: async () => await SafeZustandStorage.getItem(cacheKey),
+      readIntent: async () => await SafeZustandStorage.getItem(intentKey),
+      writeLayout: async (layout) => {
+        await SafeZustandStorage.setItem(cacheKey, JSON.stringify(layout));
+      },
+      writeIntent: (intent) => storage.setAsync(intentKey, JSON.stringify(intent)),
+      readRemote: () =>
+        client.fetchQuery({
+          queryKey: ['workspace-layout', userId, workspaceId, layoutTarget],
+          networkMode: 'always',
+          retry: false,
+          staleTime: 0,
+          queryFn: async () => {
+            const row = await workspaceLayoutAPI.getWorkspaceLayout(
               userId,
               workspaceId,
               layoutTarget,
-            }),
-          );
-
-          if (!isCancelled) {
-            lastSyncedLayoutRef.current = serialized;
-          }
-        } catch (error) {
-          if (!isCancelled) {
-            setSyncError(error as Error);
-          }
-        } finally {
-          if (!isCancelled) {
-            setIsSyncing(false);
-          }
-        }
-      };
-
-      void syncRemote();
-    }, 1200);
-
-    return () => {
-      isCancelled = true;
-      clearTimeout(timer);
-    };
-  }, [layout, userId, workspaceId, layoutTarget, isHydrated, enableRemoteSync]);
-
-  useEffect(() => {
-    if (!layout || !surfaces.length) return;
-    if (lastReconciledSurfacesRef.current === surfacesHash) return;
-
-    setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) => {
-      if (!current) return defaultLayout;
-
-      const normalized = normalizeWorkspaceLayout(current, surfaces);
-      lastReconciledSurfacesRef.current = surfacesHash;
-      return serializeLayout(normalized) === serializeLayout(current) ? current : normalized;
+            );
+            if (row) return toWorkspaceLayoutRecord(row);
+            if (layoutTarget === 'shared') return null;
+            const shared = await workspaceLayoutAPI.getWorkspaceLayout(
+              userId,
+              workspaceId,
+              'shared',
+            );
+            return shared ? toWorkspaceLayoutRecord(shared) : null;
+          },
+        }),
+      submit: (patch, isCurrent) => mutateAsync({ patch, isCurrent }),
+      enqueue: (patch) =>
+        addToQueue({
+          type: 'PATCH',
+          scope: 'workspace',
+          name: 'workspace.layout.patch',
+          variables: { input: patch },
+          userId,
+          operationId: patch.operationId,
+          inputHash: patch.inputHash,
+        }),
     });
-  }, [surfaces, defaultLayout, surfacesHash]);
+    // Registry changes are projected below; they must not replace a draft owner.
+  }, [userId, workspaceId, layoutTarget, remoteEnabled, client, mutateAsync, addToQueue]);
 
-  const resolvedSurfaces = useMemo(
-    () => (layout ? resolveWorkspaceSurfaceLayout(surfaces, layout) : []),
-    [surfaces, layout],
+  const subscribe = useCallback(
+    (listener: () => void) => session?.subscribe(listener) ?? (() => undefined),
+    [session],
   );
-
-  const setSurfaceOrder = useCallback(
-    (order: TSurfaceId[]) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? setWorkspaceSurfaceOrder(current, order) : current,
-      ),
-    [],
+  const getSnapshot = useCallback(() => session?.getSnapshot() ?? null, [session]);
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => null);
+  useEffect(() => {
+    if (!session) return;
+    void session.start();
+    return () => session.stop();
+  }, [session]);
+  useEffect(() => {
+    session?.seedInitialPins(initialPinnedSurfaceIds);
+  }, [session, initialPinnedSurfaceIds]);
+  const layout = snapshot
+    ? normalizeWorkspaceLayout(snapshot.layout as WorkspaceLayout<TSurfaceId>, surfaces)
+    : null;
+  const edit = useCallback(
+    (
+      update: (current: WorkspaceLayout) => WorkspaceLayout,
+      group: 'arrangement' | 'appearance' | 'groups',
+    ) => {
+      session?.edit(update, [group]);
+    },
+    [session],
   );
-
-  const setSurfaceHidden = useCallback(
-    (surfaceId: TSurfaceId, hidden: boolean) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? setWorkspaceSurfaceHidden(current, surfaceId, hidden) : current,
-      ),
-    [],
-  );
-
-  const setSurfacePinned = useCallback(
-    (surfaceId: TSurfaceId, pinned: boolean) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? setWorkspaceSurfacePinned(current, surfaceId, pinned) : current,
-      ),
-    [],
-  );
-
-  const setSurfaceZone = useCallback(
-    (surfaceId: TSurfaceId, zone: WorkspaceZoneId) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? setWorkspaceSurfaceZone(current, surfaceId, zone) : current,
-      ),
-    [],
-  );
-
-  const setAppearance = useCallback(
-    (appearance: NonNullable<WorkspaceLayout<TSurfaceId>['appearance']>) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? setWorkspaceAppearance(current, appearance) : current,
-      ),
-    [],
-  );
-
-  const resetAppearance = useCallback(
-    () =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? resetWorkspaceAppearance(current) : current,
-      ),
-    [],
-  );
-
-  const setGroupOrder = useCallback(
-    (groupOrder: string[]) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
-        current ? setWorkspaceGroupOrder(current, groupOrder) : current,
-      ),
-    [],
-  );
-
-  return useMemo(
-    () => ({
-      layout,
-      surfaces: resolvedSurfaces,
-      layoutTarget,
-      isHydrated,
-      isSyncing,
-      syncError,
-      refreshFromRemote,
-      setLayout,
-      setSurfaceOrder,
-      setSurfaceHidden,
-      setSurfacePinned,
-      setSurfaceZone,
-      setAppearance,
-      resetAppearance,
-      setGroupOrder,
-    }),
-    [
-      layout,
-      resolvedSurfaces,
-      layoutTarget,
-      isHydrated,
-      isSyncing,
-      syncError,
-      refreshFromRemote,
-      setLayout,
-      setSurfaceOrder,
-      setSurfaceHidden,
-      setSurfacePinned,
-      setSurfaceZone,
-      setAppearance,
-      resetAppearance,
-      setGroupOrder,
-    ],
-  );
+  const refreshFromRemote = useCallback(async () => {
+    if (session && remoteEnabled) await session.refresh();
+  }, [session, remoteEnabled]);
+  return {
+    layout,
+    surfaces: layout ? resolveWorkspaceSurfaceLayout(surfaces, layout) : [],
+    layoutTarget,
+    isHydrated: snapshot?.isHydrated ?? true,
+    isInitialLayout: snapshot?.isInitialLayout ?? true,
+    isSyncing: snapshot?.isSyncing ?? false,
+    syncError: snapshot?.syncError ?? null,
+    refreshFromRemote,
+    reapplyLocalChanges: async () => {
+      await session?.reapply();
+    },
+    setLayout: (next) => session?.edit(() => next, ['arrangement', 'appearance', 'groups']),
+    setSurfaceOrder: (order) =>
+      edit((current) => setWorkspaceSurfaceOrder(current, order), 'arrangement'),
+    saveSurfaceOrder: async (order) => {
+      await session?.saveEdit(
+        (current) => setWorkspaceSurfaceOrder(current, order),
+        ['arrangement'],
+      );
+    },
+    setSurfaceHidden: (id, hidden) =>
+      edit((current) => setWorkspaceSurfaceHidden(current, id, hidden), 'arrangement'),
+    setSurfacePinned: (id, pinned) =>
+      edit((current) => setWorkspaceSurfacePinned(current, id, pinned), 'arrangement'),
+    toggleSurfacePinned: (id) =>
+      edit((current) => {
+        return setWorkspaceSurfacePinned(current, id, !current.pinned.includes(id));
+      }, 'arrangement'),
+    setSurfaceZone: (id, zone) =>
+      edit((current) => setWorkspaceSurfaceZone(current, id, zone), 'arrangement'),
+    setAppearance: (appearance) =>
+      edit((current) => setWorkspaceAppearance(current, appearance), 'appearance'),
+    resetAppearance: () => edit(resetWorkspaceAppearance, 'appearance'),
+    setGroupOrder: (order) => edit((current) => setWorkspaceGroupOrder(current, order), 'groups'),
+  };
 }

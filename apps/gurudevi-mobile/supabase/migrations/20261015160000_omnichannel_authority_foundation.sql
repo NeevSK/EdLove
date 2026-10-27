@@ -5,7 +5,7 @@
 -- ID or chat ID is never an application account or an authorization grant.
 
 create table if not exists public.channel_identities (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   account_id uuid references public.users(id) on delete cascade,
   provider text not null check (provider in ('whatsapp', 'telegram')),
   external_subject_key text not null,
@@ -23,7 +23,7 @@ create index if not exists idx_channel_identities_account_active
   where revoked_at is null;
 
 create table if not exists public.channel_link_attempts (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   account_id uuid not null references public.users(id) on delete cascade,
   provider text not null check (provider in ('whatsapp', 'telegram')),
   channel_identity_id uuid references public.channel_identities(id) on delete set null,
@@ -43,7 +43,7 @@ create index if not exists idx_channel_link_attempts_account_state
   on public.channel_link_attempts (account_id, state, expires_at desc);
 
 create table if not exists public.channel_consent_grants (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   account_id uuid not null references public.users(id) on delete cascade,
   channel_identity_id uuid not null references public.channel_identities(id) on delete cascade,
   purpose text not null check (char_length(purpose) between 1 and 120),
@@ -61,7 +61,7 @@ create index if not exists idx_channel_consent_grants_identity_active
   where revoked_at is null;
 
 create table if not exists public.channel_delegations (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   account_id uuid not null references public.users(id) on delete cascade,
   agent_key text not null check (char_length(agent_key) between 1 and 160),
   capabilities text[] not null check (cardinality(capabilities) between 1 and 64),
@@ -78,7 +78,7 @@ create index if not exists idx_channel_delegations_account_agent_active
   where revoked_at is null;
 
 create table if not exists public.channel_ingress_events (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   provider text not null check (provider in ('whatsapp', 'telegram')),
   provider_event_id text not null check (char_length(provider_event_id) between 1 and 256),
   replay_key text not null check (replay_key ~* '^[a-f0-9]{64}$'),
@@ -102,7 +102,7 @@ create index if not exists idx_channel_ingress_events_status_received
   on public.channel_ingress_events (status, received_at);
 
 create table if not exists public.channel_delivery_intents (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   account_id uuid references public.users(id) on delete set null,
   provider text not null check (provider in ('whatsapp', 'telegram')),
   channel_identity_id uuid references public.channel_identities(id) on delete set null,
@@ -131,7 +131,7 @@ create index if not exists idx_channel_delivery_intents_dispatch
   where status = 'pending';
 
 create table if not exists public.channel_media_jobs (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   ingress_event_id uuid not null references public.channel_ingress_events(id) on delete cascade,
   account_id uuid references public.users(id) on delete set null,
   channel_identity_id uuid references public.channel_identities(id) on delete set null,
@@ -157,7 +157,7 @@ create index if not exists idx_channel_media_jobs_queued_dispatch
   where status = 'queued';
 
 create table if not exists public.channel_ai_proposals (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   account_id uuid references public.users(id) on delete set null,
   channel_identity_id uuid references public.channel_identities(id) on delete set null,
   media_job_id uuid references public.channel_media_jobs(id) on delete set null,

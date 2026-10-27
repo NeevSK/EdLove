@@ -1,3 +1,4 @@
+import { useAuthStore } from '@repo/core/store';
 import { communityAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
 import {
   RELIGIOUS_AFFILIATIONS,
@@ -7,7 +8,7 @@ import {
   STUDENT_TYPES,
 } from '@repo/core/constants';
 import { useEntity, useSchoolCreation } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
+
 
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
@@ -59,8 +60,8 @@ export default function CreateSchoolModal({
   initialData,
 }: CreateSchoolModalProps) {
   const router = useRouter();
-  const user = useStore((state) => state.user);
-  const setUser = useStore((state) => state.setUser);
+  const user = useAuthStore(state => state.user);
+  const setUser = useAuthStore(state => state.setUser);
   const isEdit = !!initialData;
 
   const { updateInstance, create } = useEntity({

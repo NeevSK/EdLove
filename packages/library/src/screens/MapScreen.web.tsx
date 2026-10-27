@@ -1,3 +1,9 @@
+/**
+ * @deprecated Legacy React Native Web screen.
+ * In accordance with AGENTS.md, all modern web experiences are built in `apps/gurudevi-web`.
+ * For modern web map & cosmos topology views, use `apps/gurudevi-web/app/(sanctuary)/library/map`.
+ * Retained solely as a backward-compatible source and historical reference.
+ */
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,

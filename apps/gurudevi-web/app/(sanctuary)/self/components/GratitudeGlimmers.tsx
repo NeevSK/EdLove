@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useGratitude } from '@repo/self/hooks/useGratitude';
+import { useGratitude } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './gratitude-glimmers.module.css';
 
 interface GratitudeGlimmersProps {
@@ -57,7 +57,8 @@ export function GratitudeGlimmers({ userId = 'guest-explorer' }: Readonly<Gratit
           <div>
             <h2 className={styles.title}>Gratitude Glimmers</h2>
             <p className={styles.subtitle}>
-              Attune your senses to microscopic moments of grace, kindness, and small victories throughout the teaching day.
+              Attune your senses to microscopic moments of grace, kindness, and small victories
+              throughout the teaching day.
             </p>
           </div>
         </div>
@@ -110,11 +111,7 @@ export function GratitudeGlimmers({ userId = 'guest-explorer' }: Readonly<Gratit
           {saveError && <p className={styles.error}>{saveError}</p>}
 
           <div className={styles.formActions}>
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={saving || !content.trim()}
-            >
+            <button type="submit" className={styles.submitBtn} disabled={saving || !content.trim()}>
               {saving ? 'Saving…' : 'Record Glimmer 🪷'}
             </button>
           </div>
@@ -126,7 +123,10 @@ export function GratitudeGlimmers({ userId = 'guest-explorer' }: Readonly<Gratit
       ) : entries.length === 0 ? (
         <div className={styles.emptyState}>
           <span style={{ fontSize: '2rem' }}>🌿</span>
-          <p>No glimmers recorded yet today. Take a conscious breath and notice what went gently right.</p>
+          <p>
+            No glimmers recorded yet today. Take a conscious breath and notice what went gently
+            right.
+          </p>
         </div>
       ) : (
         <div className={styles.grid}>
@@ -139,10 +139,12 @@ export function GratitudeGlimmers({ userId = 'guest-explorer' }: Readonly<Gratit
                     {cat?.emoji ?? '✨'} {cat?.label ?? 'Reflection'}
                   </span>
                   <time className={styles.time}>
-                    {item.created_at ? new Date(item.created_at).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                    }) : ''}
+                    {item.created_at
+                      ? new Date(item.created_at).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                        })
+                      : ''}
                   </time>
                 </div>
                 <p className={styles.content}>{item.content || item.category}</p>

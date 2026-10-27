@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen } from '@repo/ui/icons';
+import { BookOpen } from 'lucide-react';
 
 interface WarmMirrorCardProps {
   userId?: string;
@@ -9,7 +9,9 @@ interface WarmMirrorCardProps {
 }
 
 export function WarmMirrorCard({ text, onClose }: WarmMirrorCardProps) {
-  const content = text || 'This week, your reflections centered around creating calm pacing, listening attentively during mentoring sessions, and establishing steady personal boundaries.';
+  const content =
+    text ||
+    'This week, your reflections centered around creating calm pacing, listening attentively during mentoring sessions, and establishing steady personal boundaries.';
 
   return (
     <div
@@ -25,7 +27,14 @@ export function WarmMirrorCard({ text, onClose }: WarmMirrorCardProps) {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0284c7' }}>
         <BookOpen size={16} />
-        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        <span
+          style={{
+            fontSize: '0.75rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}
+        >
           Your Week as a Story
         </span>
       </div>

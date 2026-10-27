@@ -1,15 +1,25 @@
+import { showToast } from '@repo/core/lib/feedback';
 import { classifyError } from '@repo/core/lib/sync/errorClassifier';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 import { migrateQueuedMutation } from '@repo/core/lib/sync/outboxMigration';
 import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
+import {
+  isReplayAdmissionOpen,
+  subscribeReplayAdmission,
+  tryBeginReplay,
+} from '@repo/core/lib/sync/replayAdmission';
+import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity';
+import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
-import { useStore } from '@repo/core/store/useStore';
-import { useCallback, useEffect } from 'react';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 /**
  * SyncManager
@@ -44,7 +54,14 @@ export interface SyncManagerTraceEvent {
 }
 
 export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncManagerProps = {}) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
+  const readPolicy = useTemporalStore((state) => state.readPolicy);
+  const activeAccountId = useAuthStore((state) => state.user?.id);
+  const replayOpen = useSyncExternalStore(
+    subscribeReplayAdmission,
+    () => Boolean(activeAccountId && isReplayAdmissionOpen(activeAccountId)),
+    () => false,
+  );
   const {
     queue,
     removeFromQueue,
@@ -56,7 +73,6 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
   } = useMutationQueue();
   const { updateEntry } = useMutationAuditLog();
   const { addConflict, activeConflicts } = useConflictStore();
-  const showToast = useStore((state) => state.showToast);
 
   const MAX_RETRIES = 5; // Increased for better robustness
 
@@ -87,10 +103,11 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
       return;
     }
 
-    const activeUserId = useStore.getState().user?.id;
+    if (!replayOpen) return;
+    const activeUserId = useAuthStore.getState().user?.id;
     // Fail closed: legacy unbound commands require an explicit migration or
     // discard decision. Never replay them for whichever account is active.
-    const eligibleQueue = activeUserId ? queue.filter((item) => item.userId === activeUserId) : [];
+    const eligibleQueue = planMutationReplay(queue, activeUserId, readPolicy).ready;
 
     if (eligibleQueue.length === 0) {
       trace?.({ event: 'drain', state: 'skipped', reason: 'no-eligible-items', queueDepth: 0 });
@@ -175,9 +192,23 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
         // Schema Evolution / Migration: ensure payload is migrated to current version
         item = migrateQueuedMutation(item);
 
+        const principalId = item.userId;
+        const admission = principalId ? tryBeginReplay(principalId) : null;
+        if (!principalId || !admission) {
+          trace?.({
+            event: 'item',
+            state: 'skipped',
+            reason: 'replay-admission-closed',
+            mutationType: traceMutationType(item.name),
+            queueDepth: itemQueueDepth,
+          });
+          continue;
+        }
+
         // Atomically claim the lease so another foreground/background coordinator
         // cannot replay the same snapshot concurrently.
         if (!tryAcquireMutationLease(item.id, 15000)) {
+          admission.release();
           trace?.({
             event: 'item',
             state: 'skipped',
@@ -197,6 +228,21 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
           queueWaitMs: elapsedBetween(drainStartedAt, itemStartedAt),
         });
         try {
+          if (!(await isReplayPrincipalCurrent(principalId))) {
+            updateMutation(item.id, {
+              commandState: 'auth_paused',
+              lockLeaseExpiresAt: undefined,
+            });
+            trace?.({
+              event: 'item',
+              state: 'skipped',
+              reason: 'credential-owner-mismatch',
+              mutationType: traceMutationType(item.name),
+              queueDepth: itemQueueDepth,
+            });
+            continue;
+          }
+
           const mutationFn = MUTATION_REGISTRY[item.name];
 
           if (!mutationFn) {
@@ -254,6 +300,10 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
           }
 
           updateEntry(item.id, 'syncing');
+          if (isMutationReplayDeferred(item)) {
+            updateMutation(item.id, { commandState: 'queued', lockLeaseExpiresAt: undefined });
+            continue;
+          }
           await mutationFn(item.variables, {
             idempotencyKey: item.idempotencyKey,
             commandId: item.id,
@@ -378,6 +428,8 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
             updateEntry(item.id, 'retrying', error.message);
             failedCount++;
           }
+        } finally {
+          admission.release();
         }
       }
     } catch (error) {
@@ -409,6 +461,8 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
       showToast(`Synced ${processedCount} pending actions`, 'success');
     }
   }, [
+    replayOpen,
+    readPolicy,
     queue,
     removeFromQueue,
     updateMutation,
@@ -425,12 +479,21 @@ export default function SyncManager({ dispatchQueuedMutation, onTrace }: SyncMan
   ]);
 
   useEffect(() => {
-    if (isOnline && queue.length > 0 && !isSyncing) {
-      processQueue().catch((e) => {
+    if (!isOnline || isSyncing || !replayOpen) return;
+    const plan = planMutationReplay(queue, activeAccountId, readPolicy);
+    const drain = () => {
+      void processQueue().catch((e) => {
         console.error('SyncManager: Failed to process sync queue', e);
       });
+    };
+    if (plan.ready.length > 0) {
+      drain();
+      return;
     }
-  }, [isOnline, queue.length, isSyncing, processQueue]);
+    if (plan.nextWakeAt === null) return;
+    const timer = setTimeout(drain, Math.max(0, plan.nextWakeAt - Date.now()));
+    return () => clearTimeout(timer);
+  }, [isOnline, queue, isSyncing, processQueue, replayOpen, activeAccountId, readPolicy]);
 
   return null;
 }

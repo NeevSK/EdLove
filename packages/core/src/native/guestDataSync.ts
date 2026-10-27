@@ -1,8 +1,16 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
+import { identityAPI } from '@repo/core/api/identity';
+import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { readGuestConversionRecord } from '@repo/core/native/guestConversionLedger';
 import { GuestDataManager } from '@repo/core/native/guestDataManager';
+import {
+  defaultGuestDataTransferPolicy,
+  type GuestDataTransferPolicy,
+  getGuestDataTransferAvailability,
+} from '@repo/core/native/guestDataTransferPolicy';
 import { setGuestScope } from '@repo/core/native/guestScope';
 
 let pendingConversionGuestUserId: string | null = null;
@@ -24,7 +32,13 @@ export interface SyncProgress {
 
 export type SyncProgressCallback = (progress: SyncProgress) => void;
 
+export { type GuestDataTransferAvailability } from '@repo/core/native/guestDataTransferPolicy';
+
 export class GuestDataSync {
+  static getTransferAvailability(policy: GuestDataTransferPolicy = defaultGuestDataTransferPolicy) {
+    return getGuestDataTransferAvailability(policy);
+  }
+
   static async rememberGuestSession(userId: string): Promise<void> {
     if (!isValidGuestId(userId)) {
       throw new Error('Cannot preserve an invalid guest identity.');
@@ -74,7 +88,7 @@ export class GuestDataSync {
    * @returns Summary of sync results
    */
   static async syncAllData(
-    userId: string,
+    _requestedUserId: string,
     onProgress?: SyncProgressCallback,
   ): Promise<{
     success: boolean;
@@ -95,11 +109,39 @@ export class GuestDataSync {
     };
 
     try {
-      if (pendingConversionGuestUserId) setGuestScope(pendingConversionGuestUserId);
+      const conversion = await readGuestConversionRecord();
+      if (!conversion?.targetUserId) {
+        throw new Error('Guest data transfer requires a confirmed durable account conversion.');
+      }
+      const availability = GuestDataSync.getTransferAvailability();
+      if (!availability.isAvailable) {
+        throw new Error(availability.reason);
+      }
+      setGuestScope(conversion.sourceGuestId);
       // Check if user is still anonymous
       const isAnon = await authAPI.isAnonymous();
       if (isAnon) {
         throw new Error('Cannot sync data for anonymous user');
+      }
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabaseClient.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('No active authenticated session. Cannot migrate guest data.');
+      }
+      if (session.user.id !== conversion.targetUserId) {
+        throw new Error('Guest data transfer target no longer matches the confirmed account.');
+      }
+      const targetUserId = await identityAPI.getMyInternalId();
+      const current = await supabaseClient.auth.getSession();
+      if (
+        !targetUserId ||
+        !isEdloveAccountId(targetUserId) ||
+        current.error ||
+        current.data.session?.user.id !== session.user.id
+      ) {
+        throw new Error('Guest data transfer requires the verified canonical account.');
       }
 
       // Export all guest data
@@ -142,7 +184,7 @@ export class GuestDataSync {
             op: 'PUT',
             table: 'timetable',
             opData: {
-              user_id: userId,
+              user_id: targetUserId,
               day_of_week: period.day_of_week,
               period_number: period.period_number,
               subject: period.subject,
@@ -167,7 +209,7 @@ export class GuestDataSync {
             op: 'PUT',
             table: 'mood_logs',
             opData: {
-              user_id: userId,
+              user_id: targetUserId,
               mood: moodMap[log.mood],
               note: log.note,
               created_at: log.timestamp,
@@ -187,7 +229,7 @@ export class GuestDataSync {
             op: 'PUT',
             table: 'fire_journal',
             opData: {
-              user_id: userId,
+              user_id: targetUserId,
               content: entry.content,
               created_at: entry.timestamp,
             },
@@ -217,21 +259,15 @@ export class GuestDataSync {
       if (crudBatch.length > 0) {
         updateProgress('Migrating user data payload through Sanctuary Gateway...');
 
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabaseClient.auth.getSession();
-
-        if (sessionError || !session) {
-          throw new Error('No active authenticated session. Cannot migrate guest data.');
-        }
-
-        await orpcClient.sync.uploadBatch({
+        const receipt = await orpcClient.sync.uploadBatch({
           body: {
-            idempotencyKey: `guest-migrate-${session.user.id}-${Date.now()}`,
+            idempotencyKey: conversion.conversionId,
             crud: crudBatch as any,
           },
         });
+        if (!receipt.success || receipt.processedCount !== crudBatch.length) {
+          throw new Error('Guest data transfer did not receive a complete server receipt.');
+        }
 
         synced.timetable = guestData.timetable.length;
         synced.moodLogs = guestData.moodLogs.length;
@@ -245,7 +281,7 @@ export class GuestDataSync {
       // Clear guest data after successful sync
       if (errors.length === 0) {
         await GuestDataManager.clearAllGuestData();
-        await GuestDataSync.clearPendingGuestSession();
+        await SafeZustandStorage.removeItem(PENDING_GUEST_CONVERSION_KEY);
       }
 
       return {
@@ -268,7 +304,11 @@ export class GuestDataSync {
    */
   static async hasGuestData(sourceGuestUserId?: string): Promise<boolean> {
     if (sourceGuestUserId) {
-      await GuestDataSync.rememberGuestSession(sourceGuestUserId);
+      const record = await readGuestConversionRecord();
+      if (!record || record.sourceGuestId !== sourceGuestUserId) {
+        throw new Error('Guest data cannot be selected outside its pending conversion record.');
+      }
+      setGuestScope(sourceGuestUserId);
     }
     const summary = await GuestDataManager.getDataSummary();
     return (

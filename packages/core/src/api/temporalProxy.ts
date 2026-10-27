@@ -2,36 +2,29 @@ import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
-/**
- * createTemporalProxy
- *
- * A high-powered Proxy kernel that intercepts API calls to manage:
- * 1. Temporal Shield: Prevents mutations in past phases.
- * 2. Offline Bridge: Intercepts reads and redirects to local cache if offline.
- * 3. Temporal Lens: Automatically applies temporal filters to query builders.
- */
+/** Admission belongs to invocation: a saved callback can outlive its selected date. */
 export function createTemporalProxy<T extends object>(moduleName: string, target: T): T {
   return new Proxy(target, {
-    get(obj: any, prop: string) {
-      const { phase, isOffline, viewDate, viewScale } = useTemporalStore.getState();
+    get(obj, prop, receiver) {
+      const originalMethod: unknown = Reflect.get(obj, prop, receiver);
+      if (typeof prop !== 'string' || typeof originalMethod !== 'function') return originalMethod;
 
-      // 1. Temporal Shield: prevent mutations in the past
-      const isMutation =
-        prop.startsWith('update') ||
-        prop.startsWith('delete') ||
-        prop.startsWith('insert') ||
-        prop.startsWith('upsert');
+      return async (...args: unknown[]) => {
+        const { phase, readPolicy, viewDate, viewScale } = useTemporalStore.getState();
 
-      if (phase === 'past' && isMutation) {
-        return async () => {
+        const isMutation =
+          prop.startsWith('update') ||
+          prop.startsWith('delete') ||
+          prop.startsWith('insert') ||
+          prop.startsWith('upsert');
+
+        if (phase === 'past' && isMutation) {
           console.warn(`[Temporal Shield] Blocked mutation '${prop}' in past phase.`);
           throw new Error('Cannot modify history while viewing a past temporal context.');
-        };
-      }
+        }
 
-      // 2. Offline Bridge: Intercept select calls if offline
-      if (isOffline && (prop === 'select' || prop.startsWith('get'))) {
-        return async (..._args: any[]) => {
+        // This is a user policy; it does not claim the device has lost connectivity.
+        if (readPolicy === 'cached-only' && (prop === 'select' || prop.startsWith('get'))) {
           if (__DEV__) {
             console.log(`[Offline Bridge] Intercepting request for ${moduleName}.${prop}`);
           }
@@ -39,32 +32,34 @@ export function createTemporalProxy<T extends object>(moduleName: string, target
           const cached = await SafeZustandStorage.getItem(cacheKey);
           if (cached) return { data: JSON.parse(cached), error: null };
 
-          // Fallback or partial data logic could go here
           return { data: [], error: { message: 'Offline: No local cache found' } };
-        };
-      }
+        }
 
-      const originalMethod = obj[prop];
-      if (typeof originalMethod === 'function') {
-        return async (...args: any[]) => {
-          // 3. Automated Temporal Lens (Contextual Injection)
-          // If the method returns a query builder (Supabase-like), we wrap it
-          const result = await originalMethod.apply(obj, args);
+        const result: unknown = await Reflect.apply(originalMethod, obj, args);
 
-          // If it looks like a PostgrestFilterBuilder, apply automated temporal filtering.
-          if (result && typeof result === 'object' && 'select' in result && 'url' in result) {
-            return applyTemporalFilter(result, {
-              column: 'created_at',
-              mode: 'event_time',
-              capability: 'event_stream',
-            });
-          }
+        if (isTemporalQuery(result)) {
+          return applyTemporalFilter(result, {
+            column: 'created_at',
+            mode: 'event_time',
+            capability: 'event_stream',
+          });
+        }
 
-          return result;
-        };
-      }
-
-      return originalMethod;
+        return result;
+      };
     },
   });
+}
+
+function isTemporalQuery(value: unknown): value is Parameters<typeof applyTemporalFilter>[0] {
+  return Boolean(
+    value &&
+      typeof value === 'object' &&
+      'select' in value &&
+      'url' in value &&
+      'gte' in value &&
+      typeof value.gte === 'function' &&
+      'lte' in value &&
+      typeof value.lte === 'function',
+  );
 }

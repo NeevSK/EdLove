@@ -41,9 +41,9 @@ export function ClaimSpotFloor({ mode, subjectId }: ClaimSpotFloorProps) {
         });
         setClaimed({
           id: res.id,
-          studentId: res.studentId,
-          fullName: res.fullName,
-          rollNumber: res.rollNumber,
+          studentId: res.student_id,
+          fullName: res.full_name ?? 'Unnamed learner',
+          rollNumber: res.roll_number,
           carriedRecordsCount: 180,
         });
       } else {

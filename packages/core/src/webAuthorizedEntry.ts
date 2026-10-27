@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { isEdloveAccountId } from './logic/utils/edloveUuidV8';
 
 /**
  * Browser-authorized entry contract.
@@ -81,7 +81,7 @@ export function mapAuthorizedEntry(
     return { kind: 'unavailable', reason: 'profile-unavailable', message: facts.message };
   }
 
-  if (!present(facts.authSubjectId) || !z.uuid().safeParse(facts.accountId).success) {
+  if (!present(facts.authSubjectId) || !isEdloveAccountId(facts.accountId)) {
     return {
       kind: 'unavailable',
       reason: 'invalid-authoritative-entry',

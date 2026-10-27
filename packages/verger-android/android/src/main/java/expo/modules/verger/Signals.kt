@@ -1,7 +1,7 @@
 package expo.modules.verger
 
 /**
- * Pure mappings from Android constants to the governor's vocabulary. Kept free of Android
+ * Pure mappings from Android constants to verger's vocabulary. Kept free of Android
  * imports so they are tested on the desktop JVM alongside the estimator.
  */
 object Signals {
@@ -15,7 +15,7 @@ object Signals {
   private const val TRIM_MEMORY_COMPLETE = 80
 
   /**
-   * `onTrimMemory` level to the governor's `TrimSeverity`, or null when the level says nothing
+   * `onTrimMemory` level to verger's `TrimSeverity`, or null when the level says nothing
    * about memory (UI_HIDDEN is visibility, reported through app state instead).
    */
   @JvmStatic
@@ -30,7 +30,7 @@ object Signals {
     else -> null
   }
 
-  /** `PowerManager.THERMAL_STATUS_*` (0..6) to the governor's `ThermalStatus`. */
+  /** `PowerManager.THERMAL_STATUS_*` (0..6) to verger's `ThermalStatus`. */
   @JvmStatic
   fun thermalStatus(status: Int): String? = when (status) {
     0 -> "none"

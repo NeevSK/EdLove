@@ -1,14 +1,18 @@
-import { useStore } from '@repo/core/logic';
-import { SanctuaryGuard } from '@repo/ui';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { showToast } from '@repo/core/lib/feedback';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
   KnowledgeParser,
 } from '@repo/graphics/algorithms';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { libraryAPI } from '@repo/library/api/library';
+import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
+import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
+import { SanctuaryGuard } from '@repo/ui';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   AstroView,
@@ -18,7 +22,7 @@ import {
   VastuView,
   VatyaView,
 } from '@repo/ui/components/visualization';
-import { useReality, useVisualCapabilities } from '@repo/ui/context';
+import { useVisualCapabilities } from '@repo/ui/context';
 import { useResponsive } from '@repo/ui/hooks';
 import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from '@repo/ui/icons';
 import {
@@ -39,9 +43,6 @@ import { styled } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
-import { libraryAPI } from '@repo/library/api/library';
-import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
-import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
 
 const StyledBlurView = styled(BlurView as React.ComponentType<any>);
 
@@ -110,8 +111,8 @@ export default function MapScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { width, height } = useResponsive();
-  const showToast = useStore((state) => state.showToast);
-  const { reality } = useReality();
+  const { deviceTier } = useVisualCapabilities();
+  const { isOnline } = useOfflineStatus();
   const [activePerspective, setActivePerspective] = useState<PerspectiveId>('astro');
   const [isExporting, setIsExporting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -125,15 +126,15 @@ export default function MapScreen() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
-      try {
-        const topology = await libraryAPI.getMapTopology();
-        setData(topology);
-      } catch (err) {
-        console.error('Failed to fetch map topology:', err);
-        setLoadError('The knowledge map is unavailable right now.');
-      } finally {
-        setLoading(false);
-      }
+    try {
+      const topology = await libraryAPI.getMapTopology();
+      setData(topology);
+    } catch (err) {
+      console.error('Failed to fetch map topology:', err);
+      setLoadError('The knowledge map is unavailable right now.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
   useEffect(() => {
     void fetchData();
@@ -141,10 +142,7 @@ export default function MapScreen() {
   const availablePerspectives = useMemo(() => {
     if (!data) return PERSPECTIVES;
     const engineIds = getEnginePerspectives(data);
-    const isDeviceConstrained =
-      reality.deviceTier === 'low' ||
-      reality.networkQuality === 'poor' ||
-      reality.networkQuality === 'offline';
+    const isDeviceConstrained = deviceTier === 'low' || !isOnline;
     return PERSPECTIVES.map((p) => {
       let isDisabled = !engineIds.includes(p.id);
       // Throttle heavy 'vatya' perspective on constrained devices
@@ -153,7 +151,7 @@ export default function MapScreen() {
       }
       return { ...p, disabled: isDisabled };
     });
-  }, [data, reality.deviceTier, reality.networkQuality]);
+  }, [data, deviceTier, isOnline]);
   const activeData = useMemo(() => {
     if (activePerspective === 'astro' && !data?.nodes?.length) {
       return KnowledgeParser.fromMermaid(`
@@ -203,7 +201,11 @@ export default function MapScreen() {
     if (loading) {
       return (
         <Box className="flex-1 justify-center items-center">
-          <BrandPulse size={40} tintColor={theme.accent.action} accessibilityLabel="Loading knowledge map" />
+          <BrandPulse
+            size={40}
+            tintColor={theme.accent.action}
+            accessibilityLabel="Loading knowledge map"
+          />
         </Box>
       );
     }
@@ -246,10 +248,14 @@ export default function MapScreen() {
     if (loadError) {
       return (
         <BrandedErrorState
-          title={reality.networkQuality === 'offline' ? 'You are offline' : 'Map unavailable'}
-          message={reality.networkQuality === 'offline' ? 'Reconnect to explore the knowledge map.' : loadError}
+          title={!isOnline ? 'You are offline' : 'Map unavailable'}
+          message={!isOnline ? 'Reconnect to explore the knowledge map.' : loadError}
         >
-          <Pressable accessibilityRole="button" accessibilityLabel="Retry loading knowledge map" onPress={() => void fetchData()}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading knowledge map"
+            onPress={() => void fetchData()}
+          >
             <Text className="font-bold text-phaseText-primary">Retry</Text>
           </Pressable>
         </BrandedErrorState>
@@ -257,7 +263,10 @@ export default function MapScreen() {
     }
     return (
       <Box className="flex-1 justify-center items-center">
-        <BrandedEmptyState title="No map view yet" message="Choose another perspective to continue exploring." />
+        <BrandedEmptyState
+          title="No map view yet"
+          message="Choose another perspective to continue exploring."
+        />
       </Box>
     );
   }, [loading, activePerspective, data, layout, handleNodePress, selectedNode, width, height]);
@@ -386,7 +395,9 @@ export default function MapScreen() {
                       }
                     }}
                     accessibilityRole="button"
-                    accessibilityLabel={selectedNode.type === 'topic' ? 'Explore knowledge' : 'Begin learning'}
+                    accessibilityLabel={
+                      selectedNode.type === 'topic' ? 'Explore knowledge' : 'Begin learning'
+                    }
                   >
                     <Text className="text-white font-black uppercase tracking-widest">
                       {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}

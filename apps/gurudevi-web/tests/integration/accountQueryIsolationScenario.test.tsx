@@ -1,11 +1,10 @@
-import { QueryClient } from '@tanstack/react-query';
-import { act, render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as AuthModule from '@/app/(sanctuary)/auth/AuthProvider';
 import type { BrowserSession } from '@/app/(sanctuary)/auth/browserAuth';
 import { AuthQueryCacheBoundary } from '@/lib/query/AuthQueryCacheBoundary';
-import { QueryProvider } from '@/lib/query/QueryProvider';
 
 /**
  * G2 Scenario Contract: Account Transition & Multi-Tenant Query Cache Isolation
@@ -13,7 +12,7 @@ import { QueryProvider } from '@/lib/query/QueryProvider';
  * Grounded in Gurudevi Mobile's account-shell-transition-scenario and reality-signals invariants:
  * - Never allow User A's sensitive financial or academic query state to leak into User B's cache.
  * - In-flight queries belonging to the previous session must be cancelled / purged upon transition.
- * - Public queries remain safely isolated from account-scoped tenant state.
+ * - Query-cache disposal never destroys MutationCache command ownership.
  */
 describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 Contract)', () => {
   let mockAuthSession: BrowserSession | null = null;
@@ -45,7 +44,7 @@ describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 
     vi.restoreAllMocks();
   });
 
-  it('guarantees complete cache purging and in-flight cancellation across account swaps', async () => {
+  it('removes legacy and outgoing scoped queries while preserving MutationCache commands', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -57,7 +56,12 @@ describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 
 
     const clearSpy = vi.spyOn(queryClient, 'clear');
 
-    // 1. User A (Colombo Founder) hydrates sensitive financial & academic records
+    const mutation = queryClient.getMutationCache().build(queryClient, {
+      mutationKey: ['command', 'usr-colombo-founder-001'],
+      mutationFn: async () => undefined,
+    });
+
+    // 1. User A (Colombo Founder) hydrates sensitive financial & academic records.
     queryClient.setQueryData(['tuition', 'batches', 'colombo'], {
       batchId: 'batch-colombo-2026',
       collectedLkr: 450000,
@@ -84,25 +88,13 @@ describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 
     });
 
     // 2. Mount the boundary simulating the active sanctuary application
-    const Harness = ({ session }: { session: BrowserSession | null }) => {
-      vi.spyOn(AuthModule, 'useAuth').mockReturnValue({
-        state: {
-          status: session ? 'authenticated' : 'signed-out',
-          session,
-          error: null,
-        },
-        refresh: vi.fn(),
-        signOut: vi.fn(),
-      });
+    const Harness = () => (
+      <QueryClientProvider client={queryClient}>
+        <AuthQueryCacheBoundary />
+      </QueryClientProvider>
+    );
 
-      return (
-        <QueryProvider>
-          <AuthQueryCacheBoundary />
-        </QueryProvider>
-      );
-    };
-
-    const { rerender } = render(<Harness session={mockAuthSession} />);
+    const { rerender } = render(<Harness />);
 
     // Initial mount does NOT clear User A's hydrated queries
     expect(clearSpy).not.toHaveBeenCalled();
@@ -116,19 +108,18 @@ describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 
       token_type: 'bearer',
     };
 
-    act(() => {
-      // Simulate account swap trigger
-      queryClient.clear();
-      rerender(<Harness session={userBSession} />);
+    mockAuthSession = userBSession;
+    act(() => rerender(<Harness />));
+
+    await waitFor(() => {
+      expect(queryClient.getQueryData(['tuition', 'batches', 'colombo'])).toBeUndefined();
     });
 
-    // Boundary clears cache
-    expect(clearSpy).toHaveBeenCalled();
-
-    // Verify User A's sensitive records are completely wiped from query cache
-    expect(queryClient.getQueryData(['tuition', 'batches', 'colombo'])).toBeUndefined();
+    // Verify User A's sensitive records are completely wiped from QueryCache.
     expect(queryClient.getQueryData(['academic', 'submissions', 'colombo'])).toBeUndefined();
     expect(queryClient.getQueryData(['user', 'profile'])).toBeUndefined();
+    expect(queryClient.getMutationCache().getAll()).toContain(mutation);
+    expect(clearSpy).not.toHaveBeenCalled();
 
     // 4. User B populates their own scoped data
     queryClient.setQueryData(['tuition', 'batches', 'kandy'], {
@@ -149,54 +140,44 @@ describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 
     });
 
     // 5. User signs out to guest (session becomes null)
-    act(() => {
-      queryClient.clear();
-      rerender(<Harness session={null} />);
-    });
+    mockAuthSession = null;
+    act(() => rerender(<Harness />));
 
-    // All authenticated query cache is eradicated upon sign-out
-    expect(queryClient.getQueryData(['tuition', 'batches', 'kandy'])).toBeUndefined();
-    expect(queryClient.getQueryData(['user', 'profile'])).toBeUndefined();
+    await waitFor(() => {
+      expect(queryClient.getQueryData(['tuition', 'batches', 'kandy'])).toBeUndefined();
+      expect(queryClient.getQueryData(['user', 'profile'])).toBeUndefined();
+    });
+    expect(queryClient.getMutationCache().getAll()).toContain(mutation);
   });
 
-  it('tolerates rapid successive account-switching cycles without race conditions', () => {
+  it('tolerates rapid successive account-switching cycles without broad cache clearing', async () => {
     const queryClient = new QueryClient();
     const clearSpy = vi.spyOn(queryClient, 'clear');
 
     const accounts = ['usr-alpha', 'usr-beta', 'usr-gamma', null, 'usr-delta'];
 
-    accounts.forEach((accountId) => {
-      const session = accountId
-        ? ({
+    const Harness = () => (
+      <QueryClientProvider client={queryClient}>
+        <AuthQueryCacheBoundary />
+      </QueryClientProvider>
+    );
+    const { rerender } = render(<Harness />);
+
+    for (const accountId of accounts) {
+      mockAuthSession = accountId
+        ? {
             user: { id: accountId, email: `${accountId}@example.com` },
             access_token: `token-${accountId}`,
             expires_at: 9999999999,
             refresh_token: `refresh-${accountId}`,
             token_type: 'bearer',
-          } satisfies BrowserSession)
+          }
         : null;
+      if (accountId) queryClient.setQueryData(['secret', accountId], `data-for-${accountId}`);
+      act(() => rerender(<Harness />));
+    }
 
-      vi.spyOn(AuthModule, 'useAuth').mockReturnValue({
-        state: {
-          status: session ? 'authenticated' : 'signed-out',
-          session,
-          error: null,
-        },
-        refresh: vi.fn(),
-        signOut: vi.fn(),
-      });
-
-      // Populate dummy query
-      if (accountId) {
-        queryClient.setQueryData(['secret', accountId], `data-for-${accountId}`);
-      }
-
-      // Simulate boundary evaluation
-      queryClient.clear();
-    });
-
-    expect(clearSpy).toHaveBeenCalledTimes(accounts.length);
-    // Cache is clean
-    expect(queryClient.getQueryCache().getAll().length).toBe(0);
+    await waitFor(() => expect(queryClient.getQueryCache().getAll()).toHaveLength(0));
+    expect(clearSpy).not.toHaveBeenCalled();
   });
 });

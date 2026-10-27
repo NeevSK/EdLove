@@ -24,6 +24,7 @@ export const APP_ROUTES = {
   RESET_PASSWORD: { path: '/reset-password', label: 'Reset Password', access: 'public' },
   ONBOARDING: { path: '/onboarding', label: 'Onboarding', access: 'public' },
   QR: { path: '/qr', label: 'QR Scanner', access: 'public' },
+  PULSE: { path: '/pulse', label: 'Sanctuary Pulse', access: 'public' },
   ACCOUNT_RECOVERY: { path: '/account-recovery', label: 'Account Recovery', access: 'public' },
 
   // Core Sanctuary destinations (Protected)

@@ -1,7 +1,8 @@
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { BrandPulse, tokens } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 import React from 'react';
-import { Linking, Modal, StyleSheet, Text, View, Pressable } from 'react-native';
+import { Linking, Modal, StyleSheet, Text, View } from 'react-native';
 
 /**
  * AppVersionGateOverlay

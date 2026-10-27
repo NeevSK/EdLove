@@ -200,13 +200,13 @@ const rawCommunityAPI = {
       viewScale?: import('@repo/core/store').TemporalScale;
     } = {},
   ): Promise<Comment[]> {
-    return coreCommunityAPI.getComments(postId, limit) as Promise<Comment[]>;
+    return coreCommunityAPI.getComments(postId, limit) as unknown as Promise<Comment[]>;
   },
   async createComment(postId: string, content: string, isAnonymous = false): Promise<Comment> {
     return coreCommunityAPI.createComment(postId, {
       content: content.trim(),
       isAnonymous,
-    }) as Promise<Comment>;
+    }) as unknown as Promise<Comment>;
   },
   async deleteComment(commentId: string): Promise<void> {
     await coreCommunityAPI.deleteComment(commentId);

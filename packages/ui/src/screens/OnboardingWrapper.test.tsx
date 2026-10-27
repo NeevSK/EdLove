@@ -3,19 +3,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => {
   const store = {
-    setOnboardingCompleted: vi.fn(),
+    setUser: vi.fn(),
     showToast: vi.fn(),
     user: { id: 'account-1', is_anonymous: false },
   };
-  const useStore = Object.assign(<T,>(selector: (state: typeof store) => T) => selector(store), {
-    getState: () => store,
-  });
+  const useAuthStore = Object.assign(
+    <T,>(selector: (state: typeof store) => T) => selector(store),
+    {
+      getState: () => store,
+    },
+  );
 
   return {
     capturedOnComplete: undefined as undefined | (() => void),
     refreshProfile: vi.fn(),
     store,
-    useStore,
+    useAuthStore,
   };
 });
 
@@ -28,7 +31,13 @@ vi.mock('@repo/core/providers', () => ({
     session: { user: { id: 'account-1', is_anonymous: false } },
   }),
 }));
-vi.mock('@repo/core/store', () => ({ useStore: mocks.useStore }));
+vi.mock('@repo/core/store/useAuthStore', () => ({ useAuthStore: mocks.useAuthStore }));
+vi.mock('@repo/core/lib/feedback', () => ({ showToast: mocks.store.showToast }));
+vi.mock('@repo/core/native', () => ({ discardLocalGuestSession: vi.fn() }));
+vi.mock('@repo/core/native/localGuestOnboarding', () => ({ discardLocalGuestOnboarding: vi.fn() }));
+vi.mock('@repo/core/native/localGuestSession', () => ({
+  restoreLocalGuestSession: async () => null,
+}));
 vi.mock('@repo/ui/components/CelebrationOverlay', () => ({
   CelebrationOverlay: () => null,
 }));
@@ -50,8 +59,22 @@ describe('OnboardingWrapper admission reconciliation', () => {
   beforeEach(() => {
     mocks.capturedOnComplete = undefined;
     mocks.refreshProfile.mockReset();
-    mocks.store.setOnboardingCompleted.mockReset();
+    mocks.store.setUser.mockReset();
+    mocks.store.user.is_anonymous = false;
     mocks.store.showToast.mockReset();
+  });
+
+  it('updates the guest profile completion field without a separate auth completion mirror', async () => {
+    mocks.store.user.is_anonymous = true;
+    await render(<OnboardingWrapper />);
+    await act(async () => {
+      mocks.capturedOnComplete?.();
+    });
+    expect(mocks.store.setUser).toHaveBeenCalledWith({
+      id: 'account-1',
+      is_anonymous: true,
+      onboarding_completed: true,
+    });
   });
 
   it('keeps a saved authenticated onboarding completion retryable when admission refresh fails', async () => {

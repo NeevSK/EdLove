@@ -2,13 +2,22 @@
 -- Evidence: linked Supabase zero-null scan on 2026-08-10.
 -- User growth state was hardened in the preceding growth-state migration.
 
-ALTER TABLE public.feature_flags
-  ALTER COLUMN tenant_kinds SET NOT NULL,
-  ALTER COLUMN citizenships SET NOT NULL,
-  ALTER COLUMN pricing_tiers SET NOT NULL,
-  ALTER COLUMN capacities SET NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL,
-  ALTER COLUMN updated_at SET NOT NULL;
+DO $$
+BEGIN
+  IF to_regclass('public.feature_flags') IS NOT NULL THEN
+    ALTER TABLE public.feature_flags
+      ALTER COLUMN tenant_kinds SET NOT NULL,
+      ALTER COLUMN citizenships SET NOT NULL,
+      ALTER COLUMN pricing_tiers SET NOT NULL,
+      ALTER COLUMN capacities SET NOT NULL,
+      ALTER COLUMN created_at SET NOT NULL,
+      ALTER COLUMN updated_at SET NOT NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.growth_events
-  ALTER COLUMN created_at SET NOT NULL;
+DO $$
+BEGIN
+  IF to_regclass('public.growth_events') IS NOT NULL THEN
+    ALTER TABLE public.growth_events ALTER COLUMN created_at SET NOT NULL;
+  END IF;
+END $$;

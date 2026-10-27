@@ -33,7 +33,7 @@ class FrameWindowEstimatorTest {
       if (candidate.isDirectory) return candidate
       dir = dir.parentFile
     }
-    error("governor fixtures not found; set -Dverger.fixtures")
+    error("verger fixtures not found; set -Dverger.fixtures")
   }
 
   private fun run(tickEveryMs: Double?): Pair<JSONObject, List<Window>> {

@@ -31,7 +31,7 @@ describe('WorkspaceLayoutRecoveryNotice native (G3)', () => {
     const button = renderer?.root.findByProps({ accessibilityRole: 'button' });
     expect(button?.props.disabled).toBe(false);
     act(() => button?.props.onPress());
-    expect(onRetry).toHaveBeenCalledOnce();
+    expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
   it('renders nothing without a sync error', () => {

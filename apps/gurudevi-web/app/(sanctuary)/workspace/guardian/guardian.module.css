@@ -1,0 +1,243 @@
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 3rem) 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-gold-deep, #9a5b2d);
+  margin: 0;
+}
+
+.title {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  color: var(--color-ink, #1f1915);
+  margin: 0.2rem 0;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--color-ink-muted, #62564d);
+  margin: 0;
+}
+
+/* Child Selector Ribbon */
+.childrenRibbon {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.childChip {
+  background: var(--color-surface, #fffdfa);
+  border: 2px solid var(--color-border, #e8ddd3);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 14rem;
+}
+
+.childChip:hover {
+  border-color: var(--color-gold-deep, #9a5b2d);
+}
+
+.activeChildChip {
+  border-color: var(--color-gold-deep, #9a5b2d);
+  background: #fdfaf6;
+  box-shadow: 0 4px 16px rgba(154, 91, 45, 0.08);
+}
+
+.childAvatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: #f0e7df;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--color-gold-deep, #9a5b2d);
+  font-size: 1.1rem;
+}
+
+.childInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.childName {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+}
+
+.childGrade {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted, #74675d);
+  margin: 0;
+}
+
+/* Tab Bar */
+.tabBar {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--color-border-subtle, #f0e7df);
+  padding-bottom: 0.25rem;
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink-soft, #74675d);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.tabButton:hover {
+  color: var(--color-ink, #1f1915);
+}
+
+.activeTab {
+  color: var(--color-gold-deep, #9a5b2d);
+  border-bottom-color: var(--color-gold-deep, #9a5b2d);
+}
+
+/* Sections & Cards */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timelineList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timelineCard {
+  background: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-border, #e8ddd3);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(50, 35, 20, 0.03);
+}
+
+.timelineEvent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.timelineIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: #fdf5ec;
+  color: var(--color-gold-deep, #9a5b2d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timelineDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.timelineTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+}
+
+.timelineMeta {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted, #74675d);
+  margin: 0;
+}
+
+.statusBadge {
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.statusPresent {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Communication Bridge */
+.messageCard {
+  background: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-border, #e8ddd3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.messageAuthor {
+  font-weight: 700;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+}
+
+.messageDate {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted, #74675d);
+}
+
+.messageBody {
+  font-size: 0.95rem;
+  color: var(--color-ink-soft, #52473f);
+  line-height: 1.5;
+  margin: 0;
+}

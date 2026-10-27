@@ -1,4 +1,5 @@
 import { storage } from '@repo/core/native/storage';
+import { useAuth } from '@repo/core/providers/AuthProvider';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCallback, useState } from 'react';
 
@@ -25,15 +26,15 @@ export interface SanctuaryVisitorState {
  * a returning guest, or an existing account holder.
  */
 export function useSanctuaryVisitor(): SanctuaryVisitorState {
-  const authSession = useAuthStore((state) => state.authSession);
-  const onboardingCompleted = useAuthStore((state) => state.onboardingCompleted);
+  const { session, loading } = useAuth();
+  const onboardingCompleted = useAuthStore((state) => Boolean(state.user?.onboarding_completed));
 
-  const [isFirstTime, setIsFirstTime] = useState<boolean>(() => {
+  const [hasVisited, setHasVisited] = useState<boolean>(() => {
     try {
       const firstSeen = storage.getString(VISITOR_FIRST_SEEN_KEY);
-      return !firstSeen && !authSession && !onboardingCompleted;
+      return Boolean(firstSeen);
     } catch {
-      return !authSession && !onboardingCompleted;
+      return false;
     }
   });
 
@@ -53,7 +54,7 @@ export function useSanctuaryVisitor(): SanctuaryVisitorState {
       if (storage.getString(VISITOR_FIRST_SEEN_KEY) == null) {
         storage.set(VISITOR_FIRST_SEEN_KEY, String(now));
       }
-      setIsFirstTime(false);
+      setHasVisited(true);
       setLastVisitedTimestamp(now);
     } catch {
       // Storage failure must never crash UX
@@ -61,8 +62,8 @@ export function useSanctuaryVisitor(): SanctuaryVisitorState {
   }, []);
 
   return {
-    isFirstTime,
-    hasPreviousSession: Boolean(authSession),
+    isFirstTime: !loading && !hasVisited && !session && !onboardingCompleted,
+    hasPreviousSession: Boolean(session),
     onboardingCompleted,
     lastVisitedTimestamp,
     markVisited,

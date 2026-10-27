@@ -12,16 +12,18 @@ Gurudevi backend API — Hono, @orpc, OpenTelemetry, AI SDK, Cedar authorization
 | [@repo/database](../stack-map.md#repodatabase) | core | Data-access layer — ZenStack ORM + Postgres, schema-driven queries. |
 | [@repo/policies](../stack-map.md#repopolicies) | domain | Authorization policy domain — Cedar WASM decision engine (permissions as data). |
 
-## External deps (35 direct)
+## External deps (37 direct)
 
 ```text
 @ai-sdk/anthropic
 @ai-sdk/google
 @ai-sdk/openai
 @growthbook/growthbook
+@hono/bun
 @hono/node-server
 @hono/swagger-ui
 @hono/zod-openapi
+@modelcontextprotocol/server
 @opentelemetry/api
 @opentelemetry/context-async-hooks
 @opentelemetry/core
@@ -31,12 +33,12 @@ Gurudevi backend API — Hono, @orpc, OpenTelemetry, AI SDK, Cedar authorization
 @opentelemetry/semantic-conventions
 @orpc/client
 @orpc/contract
+@orpc/mcp
 @orpc/openapi
-@orpc/opentelemetry
-@orpc/pino
 @orpc/server
 @scalar/hono-api-reference
 @sentry/node
+@supabase/server
 @tanstack/ai
 @tanstack/ai-anthropic
 @tanstack/ai-gemini
@@ -52,11 +54,12 @@ posthog-node
 zod
 ```
 
-## Dev tooling (7)
+## Dev tooling (8)
 
 ```text
 @biomejs/biome
 @vitest/coverage-v8
+cross-env
 tsdown
 tsup
 tsx

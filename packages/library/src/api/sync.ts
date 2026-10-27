@@ -1,4 +1,4 @@
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { libraryAPI as sanctuaryLibraryAPI } from '@repo/core/api/library';
 
 import { type KnowledgeNodeIndex, knowledgeDB } from '@repo/library/api/database';
 
@@ -6,11 +6,11 @@ const SYNC_KEY = 'library_index_sync';
 
 /**
  * Knowledge Sync Manager
- * Orchestrates the "Radio Broadcast" (Uni-directional) sync from Supabase to Local SQLite.
+ * Orchestrates the "Radio Broadcast" (Uni-directional) sync from Sovereign Sanctuary to Local SQLite.
  */
 export const knowledgeSync = {
   /**
-   * Perform a delta sync from Supabase.
+   * Perform a delta sync from Sanctuary API.
    */
   async performSync() {
     // High-fidelity un-shimming: enabled for all platforms including web (IndexedDB)
@@ -29,28 +29,20 @@ export const knowledgeSync = {
       const lastSync = syncState?.last_sync_timestamp || 0;
       const lastSyncIso = new Date(lastSync).toISOString();
 
-      // 3. Fetch resources from Supabase
-      const { data: resourceData, error: resourceError } = await supabase
-        .from('nodes')
-        .select(
-          'id, title, type, subjects, topics, tags, language, map_x, map_y, latitude, longitude, parent_id:parent_node_id, island_id, updated_at',
-        )
-        .gt('updated_at', lastSyncIso)
-        .order('updated_at', { ascending: true });
+      // 3. Fetch resources from Sovereign Sanctuary API
+      const resourceData = (await sanctuaryLibraryAPI.fetchSovereignResources({
+        limit: 500,
+        view_date: lastSyncIso,
+      })) as any[];
 
-      if (resourceError) {
-        console.error('Fetch resources from Supabase failed:', resourceError);
-        throw resourceError;
+      // 4. Fetch map layers from Sovereign Sanctuary API
+      let layerData: any[] = [];
+      try {
+        const topology = await sanctuaryLibraryAPI.fetchMapTopology();
+        layerData = (topology as any)?.layers || [];
+      } catch (e) {
+        console.warn('Map layers fetch skipped:', e);
       }
-
-      // 4. Fetch map layers from Supabase
-      const { data: layerData, error: layerError } = await supabase
-        .from('map_layers')
-        .select('id, name, category, is_geographic, updated_at')
-        .gt('updated_at', lastSyncIso)
-        .order('updated_at', { ascending: true });
-
-      if (layerError) throw layerError;
 
       console.log(
         `Sync status: ${resourceData?.length || 0} resources, ${layerData?.length || 0} layers.`,
@@ -63,18 +55,18 @@ export const knowledgeSync = {
         const nodesToUpsert: KnowledgeNodeIndex[] = resourceData.map((res) => ({
           id: res.id,
           type: 'resource',
-          content_type: res.type,
-          title_si: res.language === 'sinhala' ? res.title : null,
-          title_ta: res.language === 'tamil' ? res.title : null,
-          title_en: res.language === 'english' ? res.title : null,
+          content_type: res.type || res.content_type || null,
+          title_si: res.language === 'sinhala' ? res.title : res.title_si || null,
+          title_ta: res.language === 'tamil' ? res.title : res.title_ta || null,
+          title_en: res.language === 'english' ? res.title : res.title_en || res.title || null,
           tags: Array.isArray(res.tags) ? res.tags.join(', ') : res.tags || '',
           map_x: res.map_x || 0,
           map_y: res.map_y || 0,
-          latitude: res.latitude,
-          longitude: res.longitude,
-          parent_id: res.parent_id,
-          island_id: res.island_id,
-          updated_at: new Date(res.updated_at).getTime(),
+          latitude: res.latitude ?? null,
+          longitude: res.longitude ?? null,
+          parent_id: res.parent_id ?? null,
+          island_id: res.island_id ?? null,
+          updated_at: res.updated_at ? new Date(res.updated_at).getTime() : Date.now(),
         }));
         await knowledgeDB.upsertNodes(nodesToUpsert);
         latestTimestamp = Math.max(
@@ -87,7 +79,7 @@ export const knowledgeSync = {
       if (layerData && layerData.length > 0) {
         const layersToUpsert = layerData.map((l) => ({
           ...l,
-          updated_at: new Date(l.updated_at).getTime(),
+          updated_at: l.updated_at ? new Date(l.updated_at).getTime() : Date.now(),
         }));
         await knowledgeDB.upsertLayers(layersToUpsert);
         latestTimestamp = Math.max(

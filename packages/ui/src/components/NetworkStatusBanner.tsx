@@ -1,4 +1,5 @@
-import { useMutationQueue, useStore } from '@repo/core/logic';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useMutationQueue } from '@repo/core/logic';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { WifiOff } from '@repo/ui/icons';
 import { Box, HStack, Text } from '@repo/ui/primitives';
@@ -13,15 +14,15 @@ import { BrandPulse } from './BrandPulse';
  * Hardened v3 implementation.
  */
 export default function NetworkStatusBanner() {
-  const isOnline = useStore((state) => state.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const { isSyncing, queue } = useMutationQueue();
   const insets = useSafeAreaInsets();
   const visualCapabilities = useVisualCapabilities();
 
   // If online and not syncing, show nothing
-  if (isOnline && !isSyncing) return null;
+  if (networkStatus !== 'offline' && !isSyncing) return null;
 
-  const isOffline = !isOnline;
+  const isOffline = networkStatus === 'offline';
 
   return (
     <Animated.View

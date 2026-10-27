@@ -4,6 +4,9 @@ import type { PerspectiveKind } from '@repo/core/types/Perspective';
 export type WorkspaceRouteTarget =
   | { kind: 'founder' }
   | { kind: 'principal' }
+  | { kind: 'admin' }
+  | { kind: 'section-head' }
+  | { kind: 'grade-head' }
   | { kind: 'guardian' }
   | { kind: 'personal' }
   | { kind: 'commercial'; perspectiveId?: string }
@@ -104,12 +107,21 @@ export function resolveWorkspaceRoute({
     return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
   }
 
+  if (resolvedCapacity.data === 'admin') {
+    return { kind: 'role-ready', target: { kind: 'admin' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'sectionHead') {
+    return { kind: 'role-ready', target: { kind: 'section-head' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'gradeHead') {
+    return { kind: 'role-ready', target: { kind: 'grade-head' }, ...backgroundStatus };
+  }
+
   if (
     resolvedCapacity.data === 'principal' ||
-    resolvedCapacity.data === 'assistantPrincipal' ||
-    resolvedCapacity.data === 'admin' ||
-    resolvedCapacity.data === 'gradeHead' ||
-    resolvedCapacity.data === 'sectionHead'
+    resolvedCapacity.data === 'assistantPrincipal'
   ) {
     return { kind: 'role-ready', target: { kind: 'principal' }, ...backgroundStatus };
   }

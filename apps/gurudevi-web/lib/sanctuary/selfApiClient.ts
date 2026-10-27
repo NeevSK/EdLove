@@ -3,6 +3,7 @@ import {
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 type ORPCResponse<T> = Readonly<{ json?: T }>;
@@ -68,15 +69,27 @@ export async function requestAccountSelfProcedure<
     throw new Error('Your secure session has ended. Please sign in again.');
   }
 
+  const { data: verified, error: verificationError } = await supabase.auth.getClaims(
+    session.access_token,
+  );
+  const accountId = verified?.claims.canonical_account_id;
+  if (
+    verificationError ||
+    verified?.claims.sub !== session.user.id ||
+    typeof accountId !== 'string' ||
+    !isEdloveAccountId(accountId)
+  ) {
+    throw new Error('Your account identity could not be verified. Refresh your session.');
+  }
   const identity = createPersistenceIdentity({
     experience: 'standard',
-    principal: { kind: 'account', id: session.user.id },
+    principal: { kind: 'account', id: accountId },
   });
   if (!resolvePersistenceWriteDecision(identity, 'production').allowed) {
     throw new Error('This Self practice is available only in its local experience.');
   }
 
-  const requestInput = typeof input === 'function' ? input(session.user.id) : input;
+  const requestInput = typeof input === 'function' ? input(accountId) : input;
   let response: Response;
   try {
     response = await fetch(`${origin}/api/self/${procedure}`, {

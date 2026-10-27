@@ -58,7 +58,12 @@ export default async function SecurityPage() {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <SecurityFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <SecurityFloor
+        key={`${entry.accountId}:${entry.authSubjectId}`}
+        displayName={entry.displayName}
+        accountId={entry.accountId}
+        authSubjectId={entry.authSubjectId}
+      />
     </SanctuaryShell>
   );
 }

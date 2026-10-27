@@ -1,3 +1,4 @@
+import { sensoryFeedback } from '@repo/ui/sensory';
 import { CLASSIC_TOKENS } from '@repo/ui/theme/Theme';
 import { Platform, Switch as RNSwitch, type SwitchProps } from 'react-native';
 
@@ -5,7 +6,8 @@ import { Platform, Switch as RNSwitch, type SwitchProps } from 'react-native';
  * Switch Component
  *
  * A high-impact, hardened binary toggle primitive.
- * Optimized for platform-native feel with design system color synchronization.
+ * Optimized for platform-native feel with design system color synchronization
+ * and crisp tactile feedback on toggle.
  */
 
 export interface ISwitchProps extends SwitchProps {
@@ -29,7 +31,12 @@ export const Switch = ({
     true: activeColor,
   };
 
-  const handleValueChange = isDisabled ? undefined : onValueChange;
+  const handleValueChange = (nextValue: boolean) => {
+    if (!isDisabled) {
+      sensoryFeedback.emit('selection');
+      onValueChange?.(nextValue);
+    }
+  };
 
   return (
     <RNSwitch
@@ -40,7 +47,6 @@ export const Switch = ({
       trackColor={trackColorProp || defaultTrackColor}
       thumbColor={Platform.OS === 'ios' ? '#FFFFFF' : value ? '#FFFFFF' : '#f4f3f4'}
       ios_backgroundColor={inactiveTrackColor}
-      // Apply className via style bridge if needed, but NativeWind handles RNSwitch
       style={[{ transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1 }] }]}
     />
   );

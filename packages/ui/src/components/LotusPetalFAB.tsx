@@ -1,7 +1,7 @@
 import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
 import { useFAB } from '@repo/ui/context/FABContext';
-import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { Wind } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -17,6 +17,7 @@ import {
   type PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
+  cancelAnimation,
   Easing,
   type SharedValue,
   useAnimatedStyle,
@@ -27,6 +28,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
+import { useWorld } from '../world/native/WorldContext';
 
 // ============================================================================
 // TYPES
@@ -69,6 +71,27 @@ const fabConfig: Record<TabType, { emoji: string; label: string }> = {
   principal: { emoji: '👑', label: 'Management' },
   founder: { emoji: '🏛️', label: 'Founder' },
 };
+
+/** Workspace screens register their own kinds of action (a principal's, a founder's). */
+const WORKSPACE_FAB_TYPES = new Set<TabType>([
+  'classroom',
+  'section',
+  'grade',
+  'principal',
+  'founder',
+]);
+
+/**
+ * Whether an action registered by a screen belongs to the tab on screen. Tabs keep their other
+ * screens mounted, so a registration alone does not say the screen is the one in front.
+ */
+export function fabBelongsTo(current: TabType, registered: TabType): boolean {
+  if (current === registered) return true;
+  if (current === 'classroom') return WORKSPACE_FAB_TYPES.has(registered);
+  // Public profiles open inside Community as well as Profile.
+  if (current === 'community') return registered === 'profile';
+  return false;
+}
 
 function clampGesturePosition(
   x: number,
@@ -134,12 +157,18 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     className,
   }: LotusPetalFABProps) => {
     const { state: globalState } = useFAB();
-    const { isReduceMotionEnabled } = useAccessibility();
+    // Verger's motion level already includes the OS reduce-motion setting.
+    const motion = useVisualCapabilities().experience.motion;
+    const breathes = motion === 'rich' || motion === 'refined';
+    const world = useWorld().tokens;
     const bottomTabPadding = useBottomTabPadding();
     const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
 
     // Reconcile props with global state
-    const currentTab = (propTab ?? globalState.tabType) as TabType;
+    // The registered kind decides the label: a principal's dashboard is not a teacher's.
+    const currentTab = (
+      useGlobal ? globalState.tabType : (propTab ?? globalState.tabType)
+    ) as TabType;
     const actions = propActions || globalState.actions;
     const hasActiveGaps = propGaps ?? globalState.hasActiveGaps;
     const onPress = propPress || globalState.onPress;
@@ -147,7 +176,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     const isVisible = useGlobal
       ? globalState.visible &&
         propTab !== null &&
-        (propTab === undefined || propTab === globalState.tabType)
+        (propTab === undefined || fabBelongsTo(propTab, globalState.tabType))
       : true;
     const icon = customIcon || globalState.icon;
 
@@ -270,7 +299,11 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
             scheduleOnRN(hapticLight);
           })
           .onUpdate(
-            (event: GestureUpdateEvent<PanGestureHandlerEventPayload & PanGestureChangeEventPayload>) => {
+            (
+              event: GestureUpdateEvent<
+                PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+              >,
+            ) => {
               'worklet';
               const next = clampGesturePosition(
                 dragStartX.value + event.translationX,
@@ -284,15 +317,17 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
               positionY.value = next.y;
             },
           )
-          .onEnd((_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
-            'worklet';
-            pressScale.value = withSpring(1);
-            if (success) {
-              scheduleOnRN(persistWebPosition, positionX.value, positionY.value);
-            }
-            positionX.value = withSpring(positionX.value, { damping: 15 });
-            positionY.value = withSpring(positionY.value, { damping: 15 });
-          })
+          .onEnd(
+            (_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
+              'worklet';
+              pressScale.value = withSpring(1);
+              if (success) {
+                scheduleOnRN(persistWebPosition, positionX.value, positionY.value);
+              }
+              positionX.value = withSpring(positionX.value, { damping: 15 });
+              positionY.value = withSpring(positionY.value, { damping: 15 });
+            },
+          )
           .onFinalize(() => {
             'worklet';
             pressScale.value = withSpring(1);
@@ -330,20 +365,30 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     );
 
     // Breathing Animation
+    // Only while it is on screen and verger allows motion: a hidden FAB must cost nothing.
     useEffect(() => {
-      if (!disabled && !isReduceMotionEnabled) {
-        breathingScale.value = withRepeat(
-          withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
-          -1,
-          true,
-        );
-        pulseOpacity.value = withRepeat(
-          withTiming(0.7, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
-          -1,
-          true,
-        );
+      if (disabled || !isVisible || !breathes) {
+        cancelAnimation(breathingScale);
+        cancelAnimation(pulseOpacity);
+        breathingScale.value = 1;
+        pulseOpacity.value = 0.4;
+        return;
       }
-    }, [disabled, isReduceMotionEnabled, breathingScale, pulseOpacity]);
+      breathingScale.value = withRepeat(
+        withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      );
+      pulseOpacity.value = withRepeat(
+        withTiming(0.7, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      );
+      return () => {
+        cancelAnimation(breathingScale);
+        cancelAnimation(pulseOpacity);
+      };
+    }, [disabled, isVisible, breathes, breathingScale, pulseOpacity]);
 
     const containerStyle = useAnimatedStyle(() => ({
       left: positionX.value,
@@ -385,18 +430,19 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
           >
             {/* Breathing Glow */}
             <Animated.View
-              style={breathingStyle}
-              className={`
-                        absolute w-[72px] h-[72px] rounded-full
-                        ${hasActiveGaps ? 'bg-phase-error opacity-60' : 'bg-phase-accent opacity-40'}
-                    `}
+              style={[
+                { backgroundColor: hasActiveGaps ? world.danger : world.glow },
+                breathingStyle,
+              ]}
+              className="absolute w-[72px] h-[72px] rounded-full"
             />
 
             {/* Main FAB Circle */}
             <Box
+              style={{ backgroundColor: world.lamp, borderColor: world.line }}
               className={`
-                        w-14 h-14 rounded-full items-center justify-center bg-phase-accent
-                        shadow-xl shadow-black/30 border-2 border-white/10
+                        w-14 h-14 rounded-full items-center justify-center
+                        shadow-xl shadow-black/30 border-2
                         ${className || ''}
                     `}
             >

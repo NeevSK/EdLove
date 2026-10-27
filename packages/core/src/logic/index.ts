@@ -7,9 +7,9 @@ export {
   useDeviceAccounts,
 } from '@repo/core/hooks/useDeviceAccounts';
 export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
+export { useScopedDeviceSecurity } from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 // Logic Hooks & Utilities
-export { useNotifications } from '@repo/core/hooks/useNotifications';
 export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
 export {
   type SanctuaryVisitorState,
@@ -181,8 +181,6 @@ export { useAuthStore } from '@repo/core/store/useAuthStore';
 export { useConsentStore } from '@repo/core/store/useConsentStore';
 export { type DraftEntry, type DraftsState, useDraftsStore } from '@repo/core/store/useDraftsStore';
 export { useFeatureStore } from '@repo/core/store/useFeatureStore';
-export { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
-export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
 
 // Types (Agnostic / logic-layer)

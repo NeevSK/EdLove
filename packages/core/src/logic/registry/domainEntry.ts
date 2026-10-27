@@ -26,9 +26,9 @@ export const FeatureFlagClassSchema = z.enum(['release', 'experiment', 'beta', '
 export const FeatureLifecycleSchema = z
   .object({
     owner: z.string().min(1),
-    createdAt: z.string().date(),
-    reviewAt: z.string().date(),
-    removalTarget: z.string().date().optional(),
+    createdAt: z.iso.date(),
+    reviewAt: z.iso.date(),
+    removalTarget: z.iso.date().optional(),
     permanentJustification: z.string().min(1).optional(),
     flagClass: FeatureFlagClassSchema.optional(),
   })
@@ -47,6 +47,132 @@ export const CitizenshipLevelSchema = z.union([
 ]);
 
 export const TabDomainSchema = z.enum(['self', 'workspace', 'community', 'library', 'profile']);
+
+export const WorkspaceRolePersonaSchema = z.enum([
+  'founder',
+  'principal',
+  'assistantPrincipal',
+  'sectionHead',
+  'gradeHead',
+  'teacher',
+  'student',
+  'guardian',
+  'parent',
+  'developer',
+]);
+
+export const FeatureLifecycleStageSchema = z.enum([
+  'day_0_onboarding',
+  'daily_circadian',
+  'mastery_governance',
+]);
+
+export const ScreenSequenceStepSchema = z.object({
+  step: z.number().int().nonnegative(),
+  screenId: z.string(),
+  route: z.string(),
+  title: z.string(),
+  purpose: z.enum(['on_ramp', 'primary_action', 'sub_detail', 'feedback_completion']),
+  fallbackRoute: z.string().optional(),
+});
+
+export const SensoryFeedbackProfileSchema = z.object({
+  tutiiMode: z.enum(['guiding', 'celebrating', 'resting', 'somatic_calm', 'alert']),
+  tutiiRole: z.enum(['guide', 'companion', 'sentinel']).optional(),
+  haptic: z.enum(['light', 'medium', 'success', 'warning', 'selection']),
+  soundChime: z.enum(['arrival', 'celebration', 'pulse', 'subtle_tap']).optional(),
+  scaffoldDismissalKey: z.string().optional(),
+  scaffoldThreshold: z.number().int().positive().optional(),
+});
+
+export const FeatureJourneySchema = z.object({
+  featureId: z.string(),
+  targetPersonas: z.array(WorkspaceRolePersonaSchema),
+  stage: FeatureLifecycleStageSchema,
+  entryRoute: z.string(),
+  sequence: z.array(ScreenSequenceStepSchema),
+  feedback: SensoryFeedbackProfileSchema,
+});
+
+export const FlowTriggerSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('deep_link'),
+    urlPattern: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal('tab_navigation'),
+    tab: TabDomainSchema,
+    floor: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal('dashboard_action'),
+    buttonId: z.string().min(1),
+    surfaceId: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal('push_notification'),
+    category: z.string().min(1),
+    payloadKey: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal('scaffold_onboarding'),
+    dayStage: FeatureLifecycleStageSchema,
+  }),
+]);
+
+export const FlowFallbackConditionSchema = z.enum([
+  'offline_no_cache',
+  'permission_denied',
+  'prerequisite_missing',
+  'account_unlinked',
+  'server_503',
+  'feature_disabled',
+]);
+
+export const FlowFallbackEdgeSchema = z.object({
+  condition: FlowFallbackConditionSchema,
+  fallbackScreenId: z.string().min(1),
+  fallbackRoute: z.string().min(1),
+  guidancePrompt: z.string().min(1),
+  recoveryAction: z.enum([
+    'retry',
+    'switch_role',
+    'open_demo_sandbox',
+    'link_account',
+    'view_cached',
+  ]),
+});
+
+export const FlowNodeStepSchema = z.object({
+  stepId: z.string().min(1),
+  title: z.string().min(1),
+  purpose: z.enum([
+    'on_ramp',
+    'input_form',
+    'preview_confirm',
+    'sub_detail',
+    'terminal_success',
+  ]),
+  mobileRoute: z.string().min(1),
+  webRoute: z.string().min(1),
+  primaryAction: z.string().min(1),
+  fallbacks: z.array(FlowFallbackEdgeSchema).default([]),
+});
+
+export const FeatureJTBDGraphSchema = z.object({
+  featureId: z.string().min(1),
+  jobTitle: z.string().min(1),
+  jobStory: z.string().min(1),
+  targetPersonas: z.array(WorkspaceRolePersonaSchema).min(1),
+  lifecycleStage: FeatureLifecycleStageSchema,
+  triggers: z.array(FlowTriggerSchema).min(1),
+  nodes: z.array(FlowNodeStepSchema).min(1),
+  completion: z.object({
+    sensoryProfile: SensoryFeedbackProfileSchema,
+    nextCircadianRoute: z.string().min(1),
+    scaffoldDismissalKey: z.string().optional(),
+  }),
+});
 
 export const DomainEntrySchema = z.object({
   // ── Identity ──────────────────────────────────────────────────────
@@ -92,6 +218,11 @@ export const DomainEntrySchema = z.object({
   surfaceId: z.string(),
   defaultOrder: z.number(),
 
+  // ── Journey & Interaction Sequencing ──────────────────────────────
+  journey: FeatureJourneySchema.optional(),
+  jtbdFlow: FeatureJTBDGraphSchema.optional(),
+  flowId: z.string().optional(),
+
   // ── Analytics ─────────────────────────────────────────────────────
   // Scoped key for domain-level usage tracking.
   // Format: 'tabDomain.domainId' e.g. 'workspace.teacher_dashboard'
@@ -103,3 +234,13 @@ export type FeatureState = z.infer<typeof FeatureStateSchema>;
 export type FeatureFlagClass = z.infer<typeof FeatureFlagClassSchema>;
 export type FeatureLifecycle = z.infer<typeof FeatureLifecycleSchema>;
 export type TabDomain = z.infer<typeof TabDomainSchema>;
+export type WorkspaceRolePersona = z.infer<typeof WorkspaceRolePersonaSchema>;
+export type FeatureLifecycleStage = z.infer<typeof FeatureLifecycleStageSchema>;
+export type ScreenSequenceStep = z.infer<typeof ScreenSequenceStepSchema>;
+export type SensoryFeedbackProfile = z.infer<typeof SensoryFeedbackProfileSchema>;
+export type FeatureJourneySpec = z.infer<typeof FeatureJourneySchema>;
+export type FlowTrigger = z.infer<typeof FlowTriggerSchema>;
+export type FlowFallbackCondition = z.infer<typeof FlowFallbackConditionSchema>;
+export type FlowFallbackEdge = z.infer<typeof FlowFallbackEdgeSchema>;
+export type FlowNodeStep = z.infer<typeof FlowNodeStepSchema>;
+export type FeatureJTBDGraph = z.infer<typeof FeatureJTBDGraphSchema>;

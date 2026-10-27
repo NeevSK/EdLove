@@ -1,39 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { CommonPowerSyncDatabase } from '@powersync/common';
+import { PowerSyncDatabaseRegistry } from './databaseRegistry';
 import { createSecureDrizzleProxy } from './secureDrizzleProxy';
+import type { PowerSyncRuntimeOwnership } from './singleActivePowerSyncRuntime';
 
-let _instance: CommonPowerSyncDatabase | null = null;
-let _drizzleInstance: any = null;
+const registry = new PowerSyncDatabaseRegistry<ReturnType<typeof createSecureDrizzleProxy>>(
+  createSecureDrizzleProxy,
+);
 
 export function getPowerSyncDB(): CommonPowerSyncDatabase {
-  if (!_instance) throw new Error('PowerSync web runtime is not initialized');
-  return _instance;
+  const database = registry.database;
+  if (!database) throw new Error('PowerSync web runtime is not initialized');
+  return database;
 }
 
 export function getDrizzleDB(): any {
-  if (!_drizzleInstance) throw new Error('PowerSync web Drizzle runtime is not initialized');
-  return _drizzleInstance;
+  const drizzle = registry.getDrizzle();
+  if (!drizzle) throw new Error('PowerSync web Drizzle runtime is not initialized');
+  return drizzle;
 }
 
-export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): void {
-  _instance = nativeDb;
-  _drizzleInstance = createSecureDrizzleProxy(nativeDrizzleDb);
+export function injectNativePowerSyncDB(
+  nativeDb: any,
+  nativeDrizzleDb: any,
+  ownership?: PowerSyncRuntimeOwnership,
+): void {
+  registry.inject(nativeDb, nativeDrizzleDb, ownership);
 }
 
 export function getActivePowerSyncDB(): CommonPowerSyncDatabase | null {
-  return _instance;
+  return registry.activeDatabase;
 }
 
-export async function disconnectPowerSync(options?: { clear?: boolean }): Promise<void> {
-  if (_instance && options?.clear && 'disconnectAndClear' in _instance) {
-    await (_instance as any).disconnectAndClear();
-  } else if (_instance && 'close' in _instance) {
-    await (_instance as any).close({ disconnect: true });
-  } else if (_instance && 'disconnect' in _instance) {
-    await (_instance as any).disconnect();
-  }
-  _instance = null;
-  _drizzleInstance = null;
+export function disconnectPowerSync(options?: { clear?: boolean }): Promise<void> {
+  return registry.disconnect(options);
 }
 
 export async function clearPowerSyncAccount(): Promise<void> {

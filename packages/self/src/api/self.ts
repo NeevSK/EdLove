@@ -1,6 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { growthSignalsAPI } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
+
 import type { ThoughtRecord } from '@repo/core/logic/schemas/self.schema';
 import { APIError } from '@repo/core/types';
 import type { FireJournalEntry, MoodLog } from '@repo/self/types';
@@ -9,7 +10,7 @@ import type { FireJournalEntry, MoodLog } from '@repo/self/types';
  * Helper to enforce client-side defense-in-depth guest blocks.
  */
 function assertAuthenticated() {
-  const state = useStore.getState();
+  const state = useAuthStore.getState();
   if (!state.user || state.user.is_anonymous) {
     throw new APIError('Forbidden', '403');
   }

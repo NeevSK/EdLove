@@ -179,3 +179,13 @@ export const historyAPI = {
 };
 
 void historyContract;
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_TEACHER_PROFESSIONAL_HISTORY } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'history',
+  ghostMethods: ['getTeacherHistory'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_TEACHER_PROFESSIONAL_HISTORY,
+});

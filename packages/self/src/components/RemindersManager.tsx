@@ -7,11 +7,12 @@
 import {
   createReminder,
   fetchReminders as fetchReminderRecords,
+  logReminderFeedback,
   type ReminderRecord,
   deleteReminder as removeReminderRecord,
   updateReminder,
 } from '@repo/self/api/selfFeatureRepository';
-import { Bell, Clock, Droplet, Plus, SquarePen, Trash2 } from '@repo/ui/icons';
+import { Bell, Check, Clock, Droplet, Plus, SquarePen, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -34,7 +35,7 @@ import {
 } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { confirmAction } from '@repo/ui/utils/dialogs';
-import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import { hapticLight, hapticMedium, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -265,6 +266,76 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     }
   };
 
+  const handleActionDone = async (reminder: Reminder) => {
+    if (!userId) return;
+    hapticSuccess();
+    try {
+      await logReminderFeedback(userId, {
+        reminder_id: reminder.id,
+        user_id: userId,
+        action: 'done',
+        category: reminder.category,
+      });
+      showToast({
+        message:
+          reminder.category === 'breathe'
+            ? '✓ Mindful breath recorded! +3m in Somatic Pulse'
+            : reminder.category === 'water'
+              ? '💧 Hydration logged!'
+              : `✓ ${reminder.title} completed!`,
+        type: 'success',
+      });
+    } catch {
+      showToast({ message: 'Care record saved locally.', type: 'info' });
+    }
+  };
+
+  const handleActionSnooze = async (reminder: Reminder, minutes = 15) => {
+    if (!userId) return;
+    hapticLight();
+    try {
+      await logReminderFeedback(userId, {
+        reminder_id: reminder.id,
+        user_id: userId,
+        action: 'snoozed',
+        category: reminder.category,
+        snooze_minutes: minutes,
+      });
+      showToast({ message: `⏳ Snoozed for ${minutes}m. Focus gently.`, type: 'info' });
+      if (Platform.OS !== 'web') {
+        void Notifications.scheduleNotificationAsync({
+          identifier: `${reminder.id}-snooze`,
+          content: {
+            title: `[Snoozed] ${reminder.title}`,
+            body: reminder.description || 'Gentle nudge for self-care',
+            sound: false,
+          },
+          trigger: {
+            seconds: minutes * 60,
+          } as unknown as Notifications.NotificationTriggerInput,
+        });
+      }
+    } catch {
+      showToast({ message: `Snoozed for ${minutes}m.`, type: 'info' });
+    }
+  };
+
+  const handleActionSkip = async (reminder: Reminder) => {
+    if (!userId) return;
+    hapticLight();
+    try {
+      await logReminderFeedback(userId, {
+        reminder_id: reminder.id,
+        user_id: userId,
+        action: 'skipped',
+        category: reminder.category,
+      });
+      showToast({ message: '🌿 Passed for now. Rest is part of the work.', type: 'info' });
+    } catch {
+      showToast({ message: 'Acknowledged.', type: 'info' });
+    }
+  };
+
   if (isLoading) {
     return null;
   }
@@ -382,6 +453,37 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     )}
                   </HStack>
                 </HStack>
+
+                {reminder.is_active ? (
+                  <HStack className="gap-2 mt-3 pt-2 border-t border-dimGray/20 items-center flex-wrap">
+                    <Pressable
+                      onPress={() => void handleActionDone(reminder)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Mark done"
+                      className="px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/40 flex-row items-center gap-1.5"
+                    >
+                      <Icon as={Check} size={12} className="text-emerald-400" />
+                      <Text className="text-emerald-300 text-xs font-semibold">Done</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => void handleActionSnooze(reminder, 15)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Snooze for 15 minutes"
+                      className="px-3 py-1 rounded-full bg-amber-950/40 border border-amber-500/40 flex-row items-center gap-1.5"
+                    >
+                      <Icon as={Clock} size={12} className="text-amber-400" />
+                      <Text className="text-amber-300 text-xs font-semibold">Snooze 15m</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => void handleActionSkip(reminder)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Pass for now"
+                      className="px-3 py-1 rounded-full bg-obsidian border border-dimGray/30 flex-row items-center"
+                    >
+                      <Text className="text-mistGray text-xs font-medium">Pass</Text>
+                    </Pressable>
+                  </HStack>
+                ) : null}
               </Box>
             );
           })

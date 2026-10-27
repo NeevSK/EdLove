@@ -74,6 +74,10 @@ overrides:
   "@eslint-react/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.2"
   "eslint-import-resolver-typescript>typescript": "npm:@typescript/typescript6@^6.0.2"
   "eslint-plugin-deprecation>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@zenstackhq/cli>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@zenstackhq/sdk>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@zenstackhq/orm>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@repo/schema>typescript": "npm:@typescript/typescript6@^6.0.2"
   typescript: '7.1.0-beta'
   '@zenstackhq/cli': '3.9.8'
   '@zenstackhq/orm': '3.9.8'

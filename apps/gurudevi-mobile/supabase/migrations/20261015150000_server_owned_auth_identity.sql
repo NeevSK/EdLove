@@ -1,4 +1,5 @@
 -- Identity bindings are created by trusted Auth provisioning, never client healing.
+BEGIN;
 LOCK TABLE public.auth_identities IN SHARE ROW EXCLUSIVE MODE;
 -- A new account has no role until the existing explicit onboarding flow assigns it.
 ALTER TABLE public.users ALTER COLUMN capacity DROP NOT NULL, ALTER COLUMN capacity DROP DEFAULT;
@@ -64,11 +65,11 @@ BEGIN
     account_id := NEW.id;
     INSERT INTO public.users (id, email, phone, full_name, display_name, first_name,
       last_name, username, avatar_url, is_anonymous, identity_state)
-    VALUES (account_id, NULLIF(NEW.email, ''), NULLIF(NEW.phone, ''), display_label,
+    VALUES (account_id, NULLIF(NEW.email, ''), NULLIF(to_jsonb(NEW)->>'phone', ''), display_label,
       display_label, NULLIF(NEW.raw_user_meta_data->>'first_name', ''),
       NULLIF(NEW.raw_user_meta_data->>'last_name', ''), NULLIF(NEW.raw_user_meta_data->>'username', ''),
-      NEW.raw_user_meta_data->>'avatar_url', COALESCE(NEW.is_anonymous, false),
-      CASE WHEN COALESCE(NEW.is_anonymous, false) THEN 'anonymous' ELSE 'onboarded' END)
+      NEW.raw_user_meta_data->>'avatar_url', COALESCE((to_jsonb(NEW)->>'is_anonymous')::boolean, false),
+      CASE WHEN COALESCE((to_jsonb(NEW)->>'is_anonymous')::boolean, false) THEN 'anonymous' ELSE 'onboarded' END)
     ON CONFLICT (id) DO NOTHING;
     INSERT INTO public.auth_identities (user_id, provider, provider_user_id)
     VALUES (account_id, 'supabase', NEW.id::text)
@@ -79,15 +80,15 @@ BEGIN
 
   UPDATE public.users AS account SET
     email = COALESCE(NULLIF(NEW.email, ''), account.email),
-    phone = COALESCE(NULLIF(NEW.phone, ''), account.phone),
+    phone = COALESCE(NULLIF(to_jsonb(NEW)->>'phone', ''), account.phone),
     display_name = COALESCE(NULLIF(NEW.raw_user_meta_data->>'display_name', ''), account.display_name),
     full_name = COALESCE(NULLIF(NEW.raw_user_meta_data->>'full_name', ''), account.full_name),
     first_name = COALESCE(NULLIF(NEW.raw_user_meta_data->>'first_name', ''), account.first_name),
     last_name = COALESCE(NULLIF(NEW.raw_user_meta_data->>'last_name', ''), account.last_name),
     username = COALESCE(NULLIF(NEW.raw_user_meta_data->>'username', ''), account.username),
     avatar_url = COALESCE(NEW.raw_user_meta_data->>'avatar_url', account.avatar_url),
-    is_anonymous = COALESCE(NEW.is_anonymous, false),
-    identity_state = CASE WHEN COALESCE(NEW.is_anonymous, false) THEN 'anonymous'
+    is_anonymous = COALESCE((to_jsonb(NEW)->>'is_anonymous')::boolean, false),
+    identity_state = CASE WHEN COALESCE((to_jsonb(NEW)->>'is_anonymous')::boolean, false) THEN 'anonymous'
       ELSE COALESCE(NULLIF(account.identity_state, 'anonymous'), 'onboarded') END,
     updated_at = now()
   WHERE account.id = account_id AND account.deleted_at IS NULL;
@@ -103,3 +104,4 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
 CREATE TRIGGER on_auth_user_created AFTER INSERT OR UPDATE ON auth.users
 FOR EACH ROW EXECUTE FUNCTION public.sync_canonical_auth_account();
+COMMIT;

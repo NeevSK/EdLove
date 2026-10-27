@@ -10,6 +10,8 @@
  * - PINs are hashed with SHA-256 and unique per-account salts.
  */
 
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+
 export interface DeviceAccountRecord {
   accountId: string;
   authUserId: string;
@@ -17,7 +19,7 @@ export interface DeviceAccountRecord {
   avatarUrl: string | null;
   maskedEmail: string;
   schoolId: string | null;
-  capacity: 'student' | 'teacher' | 'scholar' | 'guest';
+  capacity: Capacity | 'scholar' | 'guest';
   hasPin: boolean;
   lastActiveAt: string;
 }

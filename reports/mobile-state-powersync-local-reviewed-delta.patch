@@ -1,0 +1,713 @@
+diff --git a/apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx b/apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx
+index 941ff42c9..e768150a2 100644
+--- a/apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx
++++ b/apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx
+@@ -1,46 +1,40 @@
+-/**
+- * PowerSyncProvider — Native Local-First SQLCipher & Drizzle Engine (May 2026)
+- *
+- * This is the heart of the local-first architecture on the native mobile client.
+- * It does the following:
+- * 1. Generates and manages a secure device-bound AES-256 key via Expo SecureStore.
+- * 2. Initializes the high-performance JSI-based C++ database engine (op-sqlite)
+- *    configured with SQLCipher full-disk page encryption.
+- * 3. Bridges the Drizzle ORM schema using DrizzleAppSchema to compile PowerSync sync rules.
+- * 4. Wraps the native connection with Drizzle ORM to provide complete type-safety.
+- * 5. Injects the native JSI database singletons into the shared @repo/core package
+- *    to support zero-latency offline mutations and compiled AST reactive queries.
+- *
+- * @see https://docs.powersync.com/usage/use-case-examples/drizzle
+- */
+-
+-/* eslint-disable @typescript-eslint/no-explicit-any */
+ import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
+ import { PowerSyncContext } from '@powersync/react';
+-import { PowerSyncDatabase } from '@powersync/react-native';
++import { type PowerSyncBackendConnector, PowerSyncDatabase } from '@powersync/react-native';
+ import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
++import { injectNativePowerSyncDB } from '@repo/core/adapters/powersync/database';
+ import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
++import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
++import { AppSchema } from '@repo/core/adapters/powersync/schema';
+ import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+ import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
+-import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
+-import { useStore } from '@repo/core/store/useStore';
++import { networkManager } from '@repo/core/logic/managers/NetworkManager';
++import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
++import { useAuthStore } from '@repo/core/store/useAuthStore';
++import { useFeatureStore } from '@repo/core/store/useFeatureStore';
++import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+ import { type PropsWithChildren, useEffect, useState } from 'react';
+ 
+-type PowerSyncProviderProps = PropsWithChildren;
++type Runtime = {
++  accountId: string;
++  database: PowerSyncDatabase;
++  connector: PowerSyncBackendConnector;
++};
+ const powerSyncRuntime = new SingleActivePowerSyncRuntime<PowerSyncDatabase>();
+ 
+-export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
+-  const [db, setDb] = useState<PowerSyncDatabase | null>(null);
+-  const accountId = useStore((state) => state.user?.id ?? null);
+-  const user = useStore((state) => state.user);
+-  const isPowerSyncEnabled = useStore((state) => state.flags.isPowerSyncEnabled);
++/** Account lifecycle owns local SQL. Rollout/network/read policy only admit remote synchronization. */
++export function PowerSyncProvider({ children }: PropsWithChildren) {
++  const [runtime, setRuntime] = useState<Runtime | null>(null);
++  const user = useAuthStore((state) => state.user);
++  const accountId = user?.id ?? null;
+   const isLocalOnly = isLocalOnlyIdentity(user);
++  const isPowerSyncEnabled = useFeatureStore((state) => state.flags.isPowerSyncEnabled);
++  const readPolicy = useTemporalStore((state) => state.readPolicy);
++  const { isOnline } = useOfflineStatus();
+ 
+   useEffect(() => {
+     let active = true;
+-    const activeAccountId = accountId;
+-
+-    if (!isPowerSyncEnabled || !activeAccountId || isLocalOnly) {
++    if (!accountId || isLocalOnly) {
+       void powerSyncRuntime.deactivate().catch((error) => {
+         console.error('[PowerSync] Failed to deactivate inactive runtime:', error);
+       });
+@@ -48,58 +42,80 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
+         active = false;
+       };
+     }
+-    const resolvedAccountId = activeAccountId as string;
+-
++    const owner = accountId;
+     async function initDB() {
+       try {
+-        const powersyncDb = await powerSyncRuntime.activate(resolvedAccountId, async () => {
+-          const adapter = new OPSQLiteAdapter(resolvedAccountId);
+-          const source = await adapter.createDatabaseFactory(resolvedAccountId);
++        const database = await powerSyncRuntime.activate(owner, async () => {
++          const source = await new OPSQLiteAdapter(owner).createDatabaseFactory(owner);
+           const database = new PowerSyncDatabase({
+             schema: source.schema,
+             database: source.database,
+           });
+-          const drizzleDb = wrapPowerSyncWithDrizzle(database, { schema: AppSchema });
+-
+-          injectNativePowerSyncDB(database, drizzleDb);
+-          if (source.sync) {
+-            void connectPowerSyncRuntime(database, source.sync, resolvedAccountId).catch(
+-              (error) => {
+-                // Local reads/writes remain available while the sync stream is
+-                // offline; PowerSync will retry when connectivity returns.
+-                console.warn('[PowerSync] Native first sync unavailable:', error);
+-              },
+-            );
+-          }
++          const drizzle = wrapPowerSyncWithDrizzle(database, { schema: AppSchema });
++          injectNativePowerSyncDB(database, drizzle, {
++            isActive: () =>
++              useAuthStore.getState().user?.id === owner &&
++              !isLocalOnlyIdentity(useAuthStore.getState().user) &&
++              powerSyncRuntime.isActive(owner, database),
++            release: (clear) => powerSyncRuntime.deactivateIfCurrent(database, clear),
++          });
+           return database;
+         });
+-
+-        if (active) setDb(powersyncDb);
++        if (active) {
++          const connector = new SupabasePowerSyncConnector(
++            owner,
++            () =>
++              useAuthStore.getState().user?.id === owner &&
++              !isLocalOnlyIdentity(useAuthStore.getState().user) &&
++              powerSyncRuntime.isActive(owner, database) &&
++              useFeatureStore.getState().flags.isPowerSyncEnabled &&
++              networkManager.getSnapshot().status === 'online' &&
++              useTemporalStore.getState().readPolicy === 'live',
++          );
++          setRuntime({ accountId: owner, database, connector });
++        }
+       } catch (error) {
+-        console.error('❌ [PowerSync] Native JSI initialization failed:', error);
++        console.error('[PowerSync] Native database initialization failed:', error);
+       }
+     }
+-
+     void initDB();
+-
+     return () => {
+       active = false;
+       void powerSyncRuntime.deactivate().catch((error) => {
+         console.error('[PowerSync] Native runtime cleanup failed:', error);
+       });
+     };
+-  }, [accountId, isLocalOnly, isPowerSyncEnabled]);
++  }, [accountId, isLocalOnly]);
+ 
+-  if (!isPowerSyncEnabled || !accountId || isLocalOnly) {
+-    return <>{children}</>;
+-  }
++  useEffect(() => {
++    if (!runtime || runtime.accountId !== accountId || isLocalOnly) return undefined;
++    const controller = new AbortController();
++    const { database, connector } = runtime;
++    const allowSync = isPowerSyncEnabled && isOnline && readPolicy === 'live';
++    void powerSyncRuntime
++      .runIfActive(runtime.accountId, database, controller, async () => {
++        await database.disconnect();
++        if (controller.signal.aborted || !allowSync) return;
++        await connectPowerSyncRuntime(database, connector, runtime.accountId, controller.signal);
++      })
++      .catch((error: unknown) => {
++        if (!controller.signal.aborted)
++          console.warn(
++            '[PowerSync] Remote synchronization unavailable; local data retained:',
++            error,
++          );
++      });
++    return () => controller.abort();
++  }, [runtime, accountId, isLocalOnly, isPowerSyncEnabled, isOnline, readPolicy]);
+ 
+-  if (!db) {
+-    // Database startup is a capability, not the route-shell render gate.
+-    // Screens render their loading/offline states while the local runtime
+-    // becomes available.
++  if (
++    !runtime ||
++    !accountId ||
++    isLocalOnly ||
++    runtime.accountId !== accountId ||
++    !powerSyncRuntime.isActive(accountId, runtime.database)
++  )
+     return <>{children}</>;
+-  }
+ 
+-  return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
++  return <PowerSyncContext.Provider value={runtime.database}>{children}</PowerSyncContext.Provider>;
+ }
+diff --git a/packages/core/src/adapters/powersync/PowerSyncGate.tsx b/packages/core/src/adapters/powersync/PowerSyncGate.tsx
+deleted file mode 100644
+index 5931a3706..000000000
+--- a/packages/core/src/adapters/powersync/PowerSyncGate.tsx
++++ /dev/null
+@@ -1,43 +0,0 @@
+-/**
+- * PowerSyncProvider — Feature-Gated Context Provider (May 2026)
+- *
+- * Wraps the app with the PowerSync context when `isPowerSyncEnabled` is true.
+- * When the flag is off, renders children directly — zero overhead.
+- *
+- * Placement: Mount this INSIDE the existing AuthProvider/FeatureProvider,
+- * after the user is authenticated (we need a session for fetchCredentials).
+- *
+- * @example
+- * // In the root Expo Router layout, inside your provider tree:
+- * <PowerSyncGate>
+- *   <Stack>...</Stack>
+- * </PowerSyncGate>
+- */
+-
+-import { getActivePowerSyncDB } from '@repo/core/adapters/powersync/database';
+-import { PowerSyncContext } from '@powersync/react';
+-import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
+-import { useStore } from '@repo/core/store/useStore';
+-import { type PropsWithChildren } from 'react';
+-
+-interface PowerSyncGateProps extends PropsWithChildren {
+-  /** Override — if false, renders children without PowerSync context. */
+-  enabled?: boolean;
+-}
+-
+-export function PowerSyncGate({ children, enabled = true }: PowerSyncGateProps) {
+-  const isPowerSyncEnabled = useStore((s) => s.flags.isPowerSyncEnabled);
+-  const user = useStore((s) => s.user);
+-  const isActive = enabled && isPowerSyncEnabled && !isLocalOnlyIdentity(user);
+-
+-  const db = isActive ? getActivePowerSyncDB() : null;
+-
+-  if (!isActive || !db) {
+-    if (isActive && !db) {
+-      console.error('[PowerSync] Feature enabled without an active provider runtime.');
+-    }
+-    return <>{children}</>;
+-  }
+-
+-  return <PowerSyncContext.Provider value={db as any}>{children}</PowerSyncContext.Provider>;
+-}
+diff --git a/packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts b/packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts
+index 69bd57670..a5c9c5b36 100644
+--- a/packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts
++++ b/packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts
+@@ -4,15 +4,17 @@ import type {
+   PowerSyncCredentials,
+ } from '@powersync/common';
+ import { supabaseClient } from '@repo/core/adapters/supabaseClient';
++import { SOVEREIGN_API_URL } from '@repo/core/api/base';
++import { authenticatedSovereignFetch } from '@repo/core/api/clientRuntime';
+ import { orpcClient } from '@repo/core/api/orpcClient';
++import { SyncCredentialsSchema } from '@repo/core/api/syncCredentials';
++import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+ import { runEffect, strictRetryPolicy, tryPromise } from '@repo/core/effect';
+ import { getActiveAccountId } from '@repo/core/lib/accountScope';
+ import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+ import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+ import { Effect } from 'effect';
+ 
+-const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
+-
+ class PowerSyncUploadError {
+   readonly _tag = 'PowerSyncUploadError';
+   constructor(
+@@ -25,6 +27,7 @@ class PowerSyncAccountChangedError extends PowerSyncUploadError {}
+ 
+ function fetchSession$(
+   expectedAccountId: string,
++  isSyncAllowed: () => boolean,
+ ): Effect.Effect<
+   { access_token: string; user_id: string; expires_at?: number },
+   PowerSyncUploadError
+@@ -35,42 +38,101 @@ function fetchSession$(
+       if (getActiveAccountId() !== expectedAccountId) {
+         return Effect.fail(new PowerSyncAccountChangedError(0, 'account_changed'));
+       }
+-      return error ||
+-        !session ||
+-        !session.user ||
+-        session.user.is_anonymous ||
+-        session.user.id !== expectedAccountId
++      if (!isSyncAllowed())
++        return Effect.fail(new PowerSyncUploadError(409, 'sync_admission_closed'));
++      return error || !session || !session.user || session.user.is_anonymous
+         ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
+-        : Effect.succeed({
+-            access_token: session.access_token,
+-            user_id: session.user.id,
+-            expires_at: session.expires_at,
+-          });
++        : tryPromise(() => supabaseClient.auth.getClaims(session.access_token)).pipe(
++            Effect.mapError((cause) => new PowerSyncUploadError(0, cause.message)),
++            Effect.flatMap(({ data, error: claimsError }) => {
++              if (getActiveAccountId() !== expectedAccountId) {
++                return Effect.fail(new PowerSyncAccountChangedError(0, 'account_changed'));
++              }
++              if (!isSyncAllowed())
++                return Effect.fail(new PowerSyncUploadError(409, 'sync_admission_closed'));
++              if (
++                claimsError ||
++                data?.claims.sub !== session.user.id ||
++                data.claims.canonical_account_id !== expectedAccountId
++              ) {
++                return Effect.fail(
++                  new PowerSyncUploadError(401, 'canonical_account_claim_mismatch'),
++                );
++              }
++              return Effect.succeed({
++                access_token: session.access_token,
++                user_id: expectedAccountId,
++                expires_at: session.expires_at,
++              });
++            }),
++          );
+     }),
+   );
+ }
+ 
+ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
+-  constructor(private readonly accountId: string) {}
++  constructor(
++    private readonly accountId: string,
++    private readonly isSyncAllowed: () => boolean,
++  ) {}
++
++  private assertSyncAllowed(): void {
++    if (!this.isSyncAllowed())
++      throw Object.assign(new Error('PowerSync sync admission closed'), { status: 409 });
++  }
+ 
+   async fetchCredentials(): Promise<PowerSyncCredentials> {
+-    const session = await runEffect(fetchSession$(this.accountId), 'POWERSYNC_CREDENTIALS_FAILED');
++    this.assertSyncAllowed();
++    const session = await runEffect(
++      fetchSession$(this.accountId, this.isSyncAllowed),
++      'POWERSYNC_CREDENTIALS_FAILED',
++    );
++    this.assertSyncAllowed();
++    const response = await authenticatedSovereignFetch(
++      `${SOVEREIGN_API_URL.replace(/\/+$/, '')}/api/auth/sync-credentials`,
++      {
++        method: 'POST',
++        headers: { Authorization: `Bearer ${session.access_token}` },
++        cache: 'no-store',
++        signal: AbortSignal.timeout(5000),
++      },
++      this.accountId,
++    );
++    if (!response.ok) {
++      if (response.body) await response.body.cancel();
++      throw new Error(`PowerSync grant admission failed (${response.status})`);
++    }
++    const parsed = SyncCredentialsSchema.safeParse(await response.json().catch(() => null));
++    if (!parsed.success) throw new Error('Invalid PowerSync grant response');
++    const grant = parsed.data;
++    this.assertSyncAllowed();
++    if (getActiveAccountId() !== this.accountId || grant.accountId !== this.accountId) {
++      throw new Error('PowerSync account changed during live session admission');
++    }
++    const now = Math.floor(Date.now() / 1000);
++    // Match the service's clock tolerance without extending the signed grant lifetime.
++    if (grant.expiresAt <= now || grant.expiresAt > now + 360) {
++      throw new Error('Invalid PowerSync grant expiry');
++    }
++    assertSecureApiUrl(grant.endpoint);
+     return {
+-      endpoint: POWERSYNC_URL,
+-      token: session.access_token,
+-      expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : undefined,
++      endpoint: grant.endpoint,
++      token: grant.token,
++      expiresAt: new Date(grant.expiresAt * 1000),
+     };
+   }
+ 
+   async uploadData(database: CommonPowerSyncDatabase): Promise<void> {
+     const accountId = this.accountId;
++    this.assertSyncAllowed();
++    const isSyncAllowed = this.isSyncAllowed;
+ 
+     return runEffect(
+-      (Effect.gen(function* () {
++      Effect.gen(function* () {
+         const batch = yield* tryPromise(() => database.getCrudBatch(200));
+         if (!batch || batch.crud.length === 0) return;
+ 
+-        const session = yield* fetchSession$(accountId);
++        const session = yield* fetchSession$(accountId, isSyncAllowed);
+ 
+         const idempotencyKey = yield* tryPromise(() =>
+           getConsistentIdempotencyKey(batch.crud, `powersync:${session.user_id}`),
+@@ -86,16 +148,18 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
+           idempotencyKey,
+         };
+ 
+-        yield* tryPromise(() =>
+-          orpcClient.sync.uploadBatch(
++        yield* tryPromise(() => {
++          if (!isSyncAllowed())
++            throw Object.assign(new Error('PowerSync sync admission closed'), { status: 409 });
++          return orpcClient.sync.uploadBatch(
+             {
+               body,
+             },
+             {
+               expectedAccountId: accountId,
+             },
+-          ),
+-        ).pipe(
++          );
++        }).pipe(
+           Effect.retry({
+             schedule: strictRetryPolicy,
+             while: (error: any) => error?.status === 0 || (error?.status && error.status >= 500),
+@@ -121,11 +185,15 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
+           Effect.sync(() => {
+             sovereignBus.emit('powersync:unavailable', {
+               reason:
+-                error instanceof PowerSyncAccountChangedError ? 'account_switched' : 'service_down',
++                error instanceof PowerSyncAccountChangedError
++                  ? 'account_switched'
++                  : !isSyncAllowed()
++                    ? 'disabled'
++                    : 'service_down',
+             });
+           }).pipe(Effect.andThen(Effect.fail(error))),
+         ),
+-      ) as Effect.Effect<void, Error | PowerSyncUploadError, never>),
++      ) as Effect.Effect<void, Error | PowerSyncUploadError, never>,
+       'POWERSYNC_UPLOAD_FAILED',
+     );
+   }
+diff --git a/packages/core/src/adapters/powersync/connectionLifecycle.ts b/packages/core/src/adapters/powersync/connectionLifecycle.ts
+index 7da6ee6df..3efa01600 100644
+--- a/packages/core/src/adapters/powersync/connectionLifecycle.ts
++++ b/packages/core/src/adapters/powersync/connectionLifecycle.ts
+@@ -1,59 +1,70 @@
+-import type { CommonPowerSyncDatabase, PowerSyncBackendConnector } from '@powersync/common';
++import type {
++  CommonPowerSyncDatabase,
++  PowerSyncBackendConnector,
++  SyncStatus,
++} from '@powersync/common';
+ import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+ 
+-type LifecycleDatabase = CommonPowerSyncDatabase & {
+-  registerListener?: (listener: { statusChanged?: (status: unknown) => void }) => () => void;
+-  waitForFirstSync?: () => Promise<void>;
++type ConnectionStatus = Pick<
++  SyncStatus,
++  | 'connected'
++  | 'connecting'
++  | 'downloading'
++  | 'uploading'
++  | 'hasSynced'
++  | 'downloadError'
++  | 'uploadError'
++>;
++type LifecycleDatabase = Pick<CommonPowerSyncDatabase, 'connect' | 'waitForFirstSync'> & {
++  registerListener: (listener: { statusChanged: (status: ConnectionStatus) => void }) => () => void;
+ };
+-
+ const FIRST_SYNC_TIMEOUT_MS = 30_000;
+ 
+-function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+-  return new Promise((resolve, reject) => {
+-    const timer = setTimeout(() => reject(new Error('PowerSync first sync timed out')), timeoutMs);
+-    promise.then(
+-      (value) => {
+-        clearTimeout(timer);
+-        resolve(value);
+-      },
+-      (error) => {
+-        clearTimeout(timer);
+-        reject(error);
+-      },
+-    );
+-  });
+-}
+-
+-/** Connects a runtime while keeping offline local operation available. */
++/** Remote connection observation lives until its owner aborts, independently of local database access. */
+ export async function connectPowerSyncRuntime(
+   database: LifecycleDatabase,
+   connector: PowerSyncBackendConnector,
+   accountId: string,
++  signal: AbortSignal,
+ ): Promise<void> {
+-  database.registerListener?.({
+-    statusChanged: (status: any) => {
++  if (signal.aborted) return;
++  const firstSync = new AbortController();
++  const unregister = database.registerListener({
++    statusChanged: (status) => {
++      if (signal.aborted) return;
+       sovereignBus.emit('powersync:status', {
+         accountId,
+-        connected: Boolean(status?.connected),
+-        connecting: Boolean(status?.connecting),
+-        downloading: Boolean(status?.downloading),
+-        uploading: Boolean(status?.uploading),
+-        hasSynced: status?.hasSynced,
+-        error: status?.downloadError?.message ?? status?.uploadError?.message ?? null,
++        connected: status.connected,
++        connecting: status.connecting,
++        downloading: status.downloading,
++        uploading: status.uploading,
++        hasSynced: status.hasSynced,
++        error: status.downloadError?.message ?? status.uploadError?.message ?? null,
+       });
+     },
+   });
+-
++  const dispose = () => {
++    firstSync.abort();
++    unregister();
++  };
++  signal.addEventListener('abort', dispose, { once: true });
++  let timer: ReturnType<typeof setTimeout> | undefined;
+   try {
+     await database.connect(connector);
+-    if (database.waitForFirstSync) {
+-      await withTimeout(database.waitForFirstSync(), FIRST_SYNC_TIMEOUT_MS);
+-    }
++    if (signal.aborted) return;
++    timer = setTimeout(
++      () => firstSync.abort(new Error('PowerSync first sync timed out')),
++      FIRST_SYNC_TIMEOUT_MS,
++    );
++    await database.waitForFirstSync(firstSync.signal);
++    if (signal.aborted) return;
++    if (firstSync.signal.aborted) throw firstSync.signal.reason;
+     sovereignBus.emit('powersync:first_sync_complete', { accountId });
+   } catch (error) {
+-    sovereignBus.emit('powersync:unavailable', {
+-      reason: 'service_down',
+-    });
++    if (signal.aborted) return;
++    sovereignBus.emit('powersync:unavailable', { reason: 'service_down' });
+     throw error;
++  } finally {
++    clearTimeout(timer);
+   }
+ }
+diff --git a/packages/core/src/adapters/powersync/index.ts b/packages/core/src/adapters/powersync/index.ts
+index 04e4a094f..96e1b79e5 100644
+--- a/packages/core/src/adapters/powersync/index.ts
++++ b/packages/core/src/adapters/powersync/index.ts
+@@ -23,7 +23,6 @@ export {
+   usePowerSyncStatus,
+   useStudentsInClassroom,
+ } from '@repo/core/adapters/powersync/hooks';
+-export { PowerSyncGate } from '@repo/core/adapters/powersync/PowerSyncGate';
+ export { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+ export type {
+   Attendance,
+diff --git a/packages/core/src/adapters/powersync/opsqlite.adapter.ts b/packages/core/src/adapters/powersync/opsqlite.adapter.ts
+index 1ef7b1f8c..89c717537 100644
+--- a/packages/core/src/adapters/powersync/opsqlite.adapter.ts
++++ b/packages/core/src/adapters/powersync/opsqlite.adapter.ts
+@@ -1,5 +1,4 @@
+ import { DrizzleAppSchema } from '@powersync/drizzle-driver';
+-import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+ import { AppSchema } from '@repo/core/adapters/powersync/schema';
+ import * as Crypto from 'expo-crypto';
+ import * as SecureStore from 'expo-secure-store';
+@@ -128,7 +127,6 @@ export class OPSQLiteAdapter {
+           onConfigure: applyPragmas,
+         },
+       },
+-      sync: new SupabasePowerSyncConnector(accountId),
+     };
+   }
+ }
+diff --git a/packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts b/packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts
+index 1e3907816..27b54ff63 100644
+--- a/packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts
++++ b/packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts
+@@ -11,29 +11,85 @@ export interface ManagedPowerSyncDatabase {
+   disconnectAndClear?: (options?: { clearLocal?: boolean }) => Promise<void>;
+ }
+ 
++export interface PowerSyncRuntimeOwnership {
++  isActive: () => boolean;
++  release: (clear: boolean) => Promise<void>;
++}
++
+ export class SingleActivePowerSyncRuntime<TDatabase extends ManagedPowerSyncDatabase> {
+-  private active: { accountId: string; database: TDatabase } | null = null;
++  private active: {
++    accountId: string;
++    database: TDatabase;
++    releasing: boolean;
++    clearRequested: boolean;
++    remote: AbortController | null;
++  } | null = null;
+   private transition: Promise<void> = Promise.resolve();
+ 
+   activate(accountId: string, create: () => Promise<TDatabase>): Promise<TDatabase> {
++    if (this.active && this.active.accountId !== accountId) {
++      this.active.releasing = true;
++      this.active.remote?.abort();
++    }
+     return this.enqueue(async () => {
+-      if (this.active?.accountId === accountId) return this.active.database;
++      if (this.active?.accountId === accountId && !this.active.releasing)
++        return this.active.database;
+ 
+       await this.closeActive(false);
+       const database = await create();
+-      this.active = { accountId, database };
++      this.active = { accountId, database, releasing: false, clearRequested: false, remote: null };
+       return database;
+     });
+   }
+ 
+   deactivate(clear = false): Promise<void> {
++    if (this.active) {
++      this.active.releasing = true;
++      this.active.remote?.abort();
++    }
+     return this.enqueue(() => this.closeActive(clear));
+   }
+ 
++  deactivateIfCurrent(database: TDatabase, clear = false): Promise<void> {
++    if (this.active?.database === database) {
++      this.active.releasing = true;
++      this.active.remote?.abort();
++    }
++    return this.enqueue(async () => {
++      if (this.active?.database === database) await this.closeActive(clear);
++    });
++  }
++
+   get activeAccountId(): string | null {
+     return this.active?.accountId ?? null;
+   }
+ 
++  isActive(accountId: string, database: TDatabase): boolean {
++    return (
++      this.active?.accountId === accountId &&
++      this.active.database === database &&
++      !this.active.releasing
++    );
++  }
++
++  runIfActive(
++    accountId: string,
++    database: TDatabase,
++    controller: AbortController,
++    operation: () => Promise<void>,
++  ): Promise<void> {
++    return this.enqueue(async () => {
++      const current = this.active;
++      if (!current || controller.signal.aborted || !this.isActive(accountId, database)) return;
++      current.remote = controller;
++      try {
++        await operation();
++      } finally {
++        if (current.remote === controller) current.remote = null;
++      }
++    });
++  }
++
+   private enqueue<T>(operation: () => Promise<T>): Promise<T> {
+     const next = this.transition.then(operation, operation);
+     this.transition = next.then(
+@@ -45,19 +101,24 @@ export class SingleActivePowerSyncRuntime<TDatabase extends ManagedPowerSyncData
+ 
+   private async closeActive(clear: boolean): Promise<void> {
+     const current = this.active;
+-    this.active = null;
+     if (!current) return;
++    current.releasing = true;
++    current.clearRequested ||= clear;
+ 
+-    if (clear && current.database.disconnectAndClear) {
++    if (current.clearRequested) {
++      if (!current.database.disconnectAndClear)
++        throw new Error('PowerSync runtime cannot clear account data');
+       await current.database.disconnectAndClear();
+-      return;
++      current.clearRequested = false;
+     }
+ 
+     if (current.database.close) {
+       await current.database.close({ disconnect: true });
+-      return;
++    } else if (current.database.disconnect) {
++      await current.database.disconnect();
++    } else {
++      throw new Error('PowerSync runtime cannot release its database');
+     }
+-
+-    await current.database.disconnect?.();
++    this.active = null;
+   }
+ }
+diff --git a/packages/core/src/adapters/powersync/wasqlite.adapter.ts b/packages/core/src/adapters/powersync/wasqlite.adapter.ts
+index 22e53c6ee..8a464a54e 100644
+--- a/packages/core/src/adapters/powersync/wasqlite.adapter.ts
++++ b/packages/core/src/adapters/powersync/wasqlite.adapter.ts
+@@ -1,6 +1,5 @@
+ import { DrizzleAppSchema } from '@powersync/drizzle-driver';
+ import { WASQLiteVFS } from '@powersync/web';
+-import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+ import { AppSchema } from '@repo/core/adapters/powersync/schema';
+ 
+ export class WASQLiteAdapter {
+@@ -19,7 +18,6 @@ export class WASQLiteAdapter {
+       schema: new DrizzleAppSchema(AppSchema),
+       sourceType: 'database' as const,
+       database,
+-      sync: new SupabasePowerSyncConnector(accountId),
+     };
+   }
+ }

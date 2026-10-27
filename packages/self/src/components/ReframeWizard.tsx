@@ -8,7 +8,15 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
-import { deriveReframeOutcome, isFollowUpDue } from '@repo/core/logic/reflection';
+import { isFollowUpDue } from '@repo/core/logic/reflection';
+import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import {
+  clearReframeDraftSnapshot,
+  createCognitiveReframeActor,
+  executeSaveThoughtRecordEffect,
+  restoreReframeDraftSnapshot,
+  saveReframeDraftSnapshot,
+} from '@repo/self/machines/cognitiveReframeMachine';
 import { TRAP_CATALOG } from '@repo/self/constants/trapCatalog';
 import { useThoughtRecords } from '@repo/self/hooks/useThoughtRecords';
 import type {
@@ -36,7 +44,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const STEPS: ReframeStepId[] = [
@@ -186,25 +194,45 @@ export default function ReframeWizard({
   const { records, isLoading, isAnonymous, addThoughtRecord, completeFollowUp } =
     persistence ?? hookResult;
 
-  const [stepIndex, setStepIndex] = useState(0);
-  const [preMood, setPreMood] = useState(3);
-  const [preNote, setPreNote] = useState('');
-  const [automaticThought, setAutomaticThought] = useState('');
-  const [emotion, setEmotion] = useState<ThoughtEmotion>('anxious');
-  const [intensity, setIntensity] = useState(6);
-  const [trapIds, setTrapIds] = useState<string[]>([]);
-  const [customTrap, setCustomTrap] = useState('');
-  const [forThought, setForThought] = useState('');
-  const [againstThought, setAgainstThought] = useState('');
-  const [reframedThought, setReframedThought] = useState('');
-  const [postMood, setPostMood] = useState(3);
-  const [scheduledHours, setScheduledHours] = useState(24);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [savedRecord, setSavedRecord] = useState<ThoughtRecord | null>(null);
+  const actor = useMemo(
+    () => createCognitiveReframeActor({ userId: activeUserId ?? '' }),
+    [activeUserId],
+  );
+  const snapshot = useActorSnapshot(actor);
+  const {
+    preMood,
+    preNote,
+    automaticThought,
+    emotion,
+    intensity,
+    trapIds,
+    customTrap,
+    forThought,
+    againstThought,
+    reframedThought,
+    postMood,
+    scheduledHours,
+    savedRecord,
+    isSaving,
+    error: saveError,
+  } = snapshot.context;
 
-  const step = STEPS[stepIndex] ?? 'checkup';
+  const step = (snapshot.value as ReframeStepId) || 'checkup';
+  const stepIndex = Math.max(0, STEPS.indexOf(step));
   const isLastStep = stepIndex === STEPS.length - 1;
+
+  // Restore draft on mount
+  useEffect(() => {
+    restoreReframeDraftSnapshot(actor, activeUserId);
+  }, [actor, activeUserId]);
+
+  // Persist draft on changes
+  useEffect(() => {
+    if (step !== 'checkup' || automaticThought || preNote) {
+      saveReframeDraftSnapshot(actor, activeUserId);
+    }
+  }, [actor, activeUserId, snapshot.context, step, automaticThought, preNote]);
+
   const canAdvance =
     step === 'thought'
       ? automaticThought.trim().length > 0
@@ -217,61 +245,24 @@ export default function ReframeWizard({
             : true;
 
   const toggleTrap = (id: string) => {
-    setTrapIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    actor.send({ type: 'TOGGLE_TRAP', trapId: id });
   };
 
   const handleFinish = async () => {
     if (isSaving) return;
-    setSaveError(null);
-    setIsSaving(true);
-    try {
-      const record: ThoughtRecord = {
-        id: newRecordId(),
-        userId: activeUserId ?? '',
-        preMood,
-        preNote: preNote.trim() || undefined,
-        automaticThought: automaticThought.trim(),
-        emotion,
-        intensity,
-        trapIds,
-        customTrap: customTrap.trim() || undefined,
-        evidence: {
-          forThought: forThought.trim(),
-          againstThought: againstThought.trim(),
-        },
-        reframedThought: reframedThought.trim(),
-        postMood,
-        postOutcome: deriveReframeOutcome(preMood, postMood),
-        followUp: { dueAt: addHours(scheduledHours) },
-        createdAt: new Date().toISOString(),
-        completedAt: new Date().toISOString(),
-      };
-      const saved = await addThoughtRecord(record);
+    const result = await executeSaveThoughtRecordEffect(
+      actor,
+      addThoughtRecord,
+      () => clearReframeDraftSnapshot(activeUserId),
+    );
+    if (result.success) {
       hapticMedium();
-      setSavedRecord(saved);
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : t('reframe.saveFailed'));
-    } finally {
-      setIsSaving(false);
     }
   };
 
   const handleReset = () => {
-    setSavedRecord(null);
-    setStepIndex(0);
-    setPreMood(3);
-    setPreNote('');
-    setAutomaticThought('');
-    setEmotion('anxious');
-    setIntensity(6);
-    setTrapIds([]);
-    setCustomTrap('');
-    setForThought('');
-    setAgainstThought('');
-    setReframedThought('');
-    setPostMood(3);
-    setScheduledHours(24);
-    setSaveError(null);
+    clearReframeDraftSnapshot(activeUserId);
+    actor.send({ type: 'RESET' });
   };
 
   if (isLoading) {
@@ -361,14 +352,14 @@ export default function ReframeWizard({
             <VStack className="gap-lg">
               <MoodPicker
                 value={preMood}
-                onChange={setPreMood}
+                onChange={(mood) => actor.send({ type: 'SET_PRE_MOOD', mood })}
                 prompt={t('reframe.checkupPrompt')}
               />
               <Input className="border-0">
                 <InputField
                   placeholder={t('reframe.preNotePlaceholder')}
                   value={preNote}
-                  onChangeText={setPreNote}
+                  onChangeText={(note) => actor.send({ type: 'SET_PRE_NOTE', note })}
                   className="text-sacredWhite"
                   placeholderTextColor="#6A6358"
                   maxLength={160}
@@ -385,7 +376,7 @@ export default function ReframeWizard({
                   <InputField
                     placeholder={t('reframe.thoughtPlaceholder')}
                     value={automaticThought}
-                    onChangeText={setAutomaticThought}
+                    onChangeText={(text) => actor.send({ type: 'SET_AUTOMATIC_THOUGHT', text })}
                     multiline
                     className="text-sacredWhite text-lg min-h-[140px] leading-relaxed"
                     placeholderTextColor="#6A6358"
@@ -408,7 +399,7 @@ export default function ReframeWizard({
                         key={option.id}
                         onPress={() => {
                           hapticLight();
-                          setEmotion(option.id);
+                          actor.send({ type: 'SET_EMOTION', emotion: option.id });
                         }}
                         className={`rounded-2xl border px-lg py-sm transition-all ${
                           selected
@@ -436,7 +427,7 @@ export default function ReframeWizard({
                         key={level}
                         onPress={() => {
                           hapticLight();
-                          setIntensity(level);
+                          actor.send({ type: 'SET_INTENSITY', intensity: level });
                         }}
                         className={`flex-1 items-center rounded-full border py-sm transition-all ${
                           selected
@@ -486,7 +477,7 @@ export default function ReframeWizard({
                 <InputField
                   placeholder={t('reframe.customTrapPlaceholder')}
                   value={customTrap}
-                  onChangeText={setCustomTrap}
+                  onChangeText={(text) => actor.send({ type: 'SET_CUSTOM_TRAP', text })}
                   className="text-sacredWhite"
                   placeholderTextColor="#6A6358"
                   maxLength={80}
@@ -503,7 +494,7 @@ export default function ReframeWizard({
                   <InputField
                     placeholder={t('reframe.evidenceForPlaceholder')}
                     value={forThought}
-                    onChangeText={setForThought}
+                    onChangeText={(text) => actor.send({ type: 'SET_FOR_THOUGHT', text })}
                     multiline
                     className="text-sacredWhite min-h-[110px] leading-relaxed"
                     placeholderTextColor="#6A6358"
@@ -517,7 +508,7 @@ export default function ReframeWizard({
                   <InputField
                     placeholder={t('reframe.evidenceAgainstPlaceholder')}
                     value={againstThought}
-                    onChangeText={setAgainstThought}
+                    onChangeText={(text) => actor.send({ type: 'SET_AGAINST_THOUGHT', text })}
                     multiline
                     className="text-sacredWhite min-h-[110px] leading-relaxed"
                     placeholderTextColor="#6A6358"
@@ -536,7 +527,7 @@ export default function ReframeWizard({
                   <InputField
                     placeholder={t('reframe.reframePlaceholder')}
                     value={reframedThought}
-                    onChangeText={setReframedThought}
+                    onChangeText={(text) => actor.send({ type: 'SET_REFRAMED_THOUGHT', text })}
                     multiline
                     className="text-sacredWhite text-lg min-h-[140px] leading-relaxed"
                     placeholderTextColor="#6A6358"
@@ -552,7 +543,7 @@ export default function ReframeWizard({
               <Text className="text-mistGray text-sm">{t('reframe.recheckPrompt')}</Text>
               <MoodPicker
                 value={postMood}
-                onChange={setPostMood}
+                onChange={(mood) => actor.send({ type: 'SET_POST_MOOD', mood })}
                 prompt={t('reframe.postMoodPrompt')}
               />
               <VStack className="gap-sm">
@@ -571,7 +562,7 @@ export default function ReframeWizard({
                         key={option.hours}
                         onPress={() => {
                           hapticLight();
-                          setScheduledHours(option.hours);
+                          actor.send({ type: 'SET_SCHEDULED_HOURS', hours: option.hours });
                         }}
                         className={`flex-1 rounded-full border items-center py-sm ${
                           selected
@@ -602,7 +593,7 @@ export default function ReframeWizard({
                 size="md"
                 onPress={() => {
                   hapticLight();
-                  setStepIndex((i) => Math.max(0, i - 1));
+                  actor.send({ type: 'PREV' });
                 }}
                 isDisabled={isSaving}
                 className="rounded-full bg-white/5 border border-white/10"
@@ -626,7 +617,7 @@ export default function ReframeWizard({
                 size="md"
                 onPress={() => {
                   hapticLight();
-                  setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
+                  actor.send({ type: 'NEXT' });
                 }}
                 isDisabled={!canAdvance}
                 className={`rounded-full px-xl flex-row items-center gap-sm ${

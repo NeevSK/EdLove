@@ -153,7 +153,7 @@ export { default as Monitor } from 'lucide-react-native/icons/monitor';
 export { default as Moon } from 'lucide-react-native/icons/moon';
 export { default as MoveDiagonal2 } from 'lucide-react-native/icons/move-diagonal-2';
 export { default as MoveRight } from 'lucide-react-native/icons/move-right';
-export { default as Music } from 'lucide-react-native/icons/music';
+export { default as Music } from 'lucide-react-native/icons/file-music';
 export { default as Network } from 'lucide-react-native/icons/network';
 export { default as NotebookPen } from 'lucide-react-native/icons/notebook-pen';
 export { default as Orbit } from 'lucide-react-native/icons/orbit';

@@ -1,4 +1,5 @@
 import { auth } from '@repo/core/logic/managers/factory';
+import type { PasswordChangeConfirmation } from '@repo/core/logic/ports/auth.port';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 
 export const authAPI = {
@@ -34,8 +35,16 @@ export const authAPI = {
     return auth.requestPasswordRecovery(email, redirectTo);
   },
 
-  async updatePassword(password: string) {
-    return auth.updatePassword(password);
+  async updatePassword(password: string, confirmation?: PasswordChangeConfirmation) {
+    return auth.updatePassword(password, confirmation);
+  },
+
+  async requestPasswordReauthentication() {
+    return auth.requestPasswordReauthentication();
+  },
+
+  async unlinkIdentity(identityId: string, expectedSubject?: string) {
+    return auth.unlinkIdentity(identityId, expectedSubject);
   },
 
   async linkAnonymousEmail(email: string, emailRedirectTo?: string) {
@@ -143,3 +152,16 @@ export const authAPI = {
     return auth.getAccountLifecycleStatus();
   },
 };
+
+import { registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_USER_PROFILES } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'user',
+  ghostMethods: ['getProfile'],
+  isEmpty: (_, d) => !d || !(d as any).id,
+  getSamples: (_method, args) => {
+    const role = (args?.[0] as string | undefined) ?? 'teacher';
+    return MOCK_USER_PROFILES[role] ?? MOCK_USER_PROFILES.teacher;
+  },
+});

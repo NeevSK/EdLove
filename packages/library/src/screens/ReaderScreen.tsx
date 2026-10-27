@@ -1,5 +1,5 @@
 import { usePermissions } from '@repo/core/logic';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useAuthStore } from '@repo/core/store';
 import { annotationsAPI } from '@repo/library/api/annotations';
 import type {
   AnnotationColor,

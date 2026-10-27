@@ -1,92 +1,186 @@
 import { storage } from '@repo/core/lib/storage';
 import { TenantPartitionedStorageAdapter } from '@repo/core/lib/tenantStorage';
 import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
-import { useStore } from '@repo/core/store/useStore';
-import { useTenantStore } from '@repo/core/store/useTenantStore';
+import type { Bond } from '@repo/core/types/Identity';
+import {
+  PERSONAL_SCOPE_PERSPECTIVE,
+  replaceScopeSessionPerspectives,
+  transitionScopeSession,
+  useAuthStore,
+  useScopeSessionStore,
+} from '@repo/core/store';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 import { useCallback, useMemo } from 'react';
+
+function bondForPerspective(
+  perspective: SanctuaryPerspective,
+  bonds: readonly Bond[],
+) {
+  if (perspective.kind !== 'institutional') return undefined;
+  return bonds.find(
+    (bond) =>
+      bond.id === perspective.id &&
+      bond.entity_type === 'SCHOOL' &&
+      bond.entity_id === perspective.schoolId &&
+      bond.capacity === perspective.capacity,
+  );
+}
+
+function mergeAccountOwnedWorkspaceMetadata(
+  canonical: readonly SanctuaryPerspective[],
+  hydrated: readonly SanctuaryPerspective[],
+): SanctuaryPerspective[] {
+  return [
+    ...canonical,
+    ...hydrated.filter((candidate) => !canonical.some((item) => item.id === candidate.id)),
+  ];
+}
+
+function assertCurrentScopeOwner(
+  snapshot: ReturnType<typeof useScopeSessionStore.getState>['snapshot'],
+  principalId: string | null | undefined,
+): void {
+  if (snapshot?.principalId !== (principalId ?? null)) {
+    throw new Error('Perspective changes require the canonical scope for the current account.');
+  }
+}
 
 /**
  * usePerspectiveSwitch
  *
- * Hook for managing active sanctuary perspectives (Personal Sanctuary vs School Bonds vs Guardian Links).
- * Provides fast atomic context switching, Cedar decision re-hydration, and 0ms state swap.
+ * Hook for managing the canonical scope session and its account-owned workspace metadata.
  */
 export function usePerspectiveSwitch() {
-  const activePerspective = usePerspectiveStore((state) => state.activePerspective);
-  const availablePerspectives = usePerspectiveStore((state) => state.availablePerspectives);
-  const isTransitioning = usePerspectiveStore((state) => state.isTransitioning);
-  const switchPerspectiveState = usePerspectiveStore((state) => state.switchPerspective);
-  const resetToPersonal = usePerspectiveStore((state) => state.resetToPersonalPerspective);
-  const setAvailablePerspectivesState = usePerspectiveStore(
-    (state) => state.setAvailablePerspectives,
+  const scopeSnapshot = useScopeSessionStore((state) => state.snapshot);
+  const scopeTransitioning = useScopeSessionStore((state) => state.isTransitioning);
+  const activePerspective = scopeSnapshot?.activePerspective ?? PERSONAL_SCOPE_PERSPECTIVE;
+  const availablePerspectives = useMemo(
+    () => [...(scopeSnapshot?.availablePerspectives ?? [PERSONAL_SCOPE_PERSPECTIVE])],
+    [scopeSnapshot],
   );
+  const isTransitioning = scopeTransitioning;
 
-  const user = useStore((state) => state.user);
-  const availableBonds = useStore((state) => state.availableBonds);
-  const setPerspective = useStore((state) => state.setPerspective);
-
-  const addPerspectiveState = usePerspectiveStore((state) => state.addPerspective);
-  const removePerspectiveState = usePerspectiveStore((state) => state.removePerspective);
-  const updatePerspectiveState = usePerspectiveStore((state) => state.updatePerspective);
+  const user = useAuthStore((state) => state.user);
+  const availableBonds = scopeSnapshot?.availableBonds ?? [];
 
   const isPersonal = useMemo(() => activePerspective.kind === 'personal', [activePerspective]);
 
   const switchPerspective = useCallback(
     async (perspectiveId: string) => {
-      await switchPerspectiveState(perspectiveId);
-
-      // Keep legacy tenant slice updated for backward compatibility
+      assertCurrentScopeOwner(scopeSnapshot, user?.id);
       const target = availablePerspectives.find((p) => p.id === perspectiveId);
-      if (target && target.kind === 'institutional') {
-        useTenantStore.getState().setSchool(target.schoolId, target.schoolName);
-      } else {
-        useTenantStore.getState().setSchool(null, null);
+      if (!target) {
+        throw new Error(`Perspective '${perspectiveId}' is not available to the current scope.`);
       }
-
-      // Synchronize active bond in root identity store
-      const matchingBond = availableBonds?.find(
-        (b) =>
-          b.id === perspectiveId ||
-          `bond:${b.entity_id}` === perspectiveId ||
-          b.entity_id === perspectiveId,
-      );
-      setPerspective({
-        activeBond: matchingBond,
-        availableBonds: availableBonds ?? [],
+      await transitionScopeSession({
+        principalId: user?.id ?? null,
+        activePerspective: target,
+        availablePerspectives,
+        availableBonds,
+        selectedBond: bondForPerspective(target, availableBonds),
       });
     },
-    [availableBonds, availablePerspectives, setPerspective, switchPerspectiveState],
+    [availableBonds, availablePerspectives, scopeSnapshot, user?.id],
   );
 
   const setAvailablePerspectives = useCallback(
-    (perspectives: SanctuaryPerspective[]) => {
-      setAvailablePerspectivesState(perspectives);
-      useTenantStore.getState().setAvailablePerspectives(perspectives);
+    async (perspectives: SanctuaryPerspective[]) => {
+      assertCurrentScopeOwner(scopeSnapshot, user?.id);
+      await replaceScopeSessionPerspectives({
+        principalId: user?.id ?? null,
+        currentPerspective: activePerspective,
+        availablePerspectives: perspectives,
+        availableBonds,
+      });
     },
-    [setAvailablePerspectivesState],
+    [activePerspective, availableBonds, scopeSnapshot, user?.id],
   );
 
+  const resetToPersonal = useCallback(async () => {
+    assertCurrentScopeOwner(scopeSnapshot, user?.id);
+    const perspectives = availablePerspectives.some(
+      (perspective) => perspective.id === PERSONAL_SCOPE_PERSPECTIVE.id,
+    )
+      ? availablePerspectives
+      : [PERSONAL_SCOPE_PERSPECTIVE, ...availablePerspectives];
+    await transitionScopeSession({
+      principalId: user?.id ?? null,
+      activePerspective: PERSONAL_SCOPE_PERSPECTIVE,
+      availablePerspectives: perspectives,
+      availableBonds,
+      selectedBond: undefined,
+    });
+  }, [availableBonds, availablePerspectives, scopeSnapshot, user?.id]);
+
   const addPerspective = useCallback(
-    (perspective: SanctuaryPerspective) => {
-      addPerspectiveState(perspective);
+    async (perspective: SanctuaryPerspective) => {
+      assertCurrentScopeOwner(scopeSnapshot, user?.id);
+      const nextAvailable = [
+        ...availablePerspectives.filter((candidate) => candidate.id !== perspective.id),
+        perspective,
+      ];
+      await transitionScopeSession({
+        principalId: user?.id ?? null,
+        activePerspective:
+          activePerspective.id === perspective.id ? perspective : activePerspective,
+        availablePerspectives: nextAvailable,
+        availableBonds,
+        selectedBond: bondForPerspective(
+          activePerspective.id === perspective.id ? perspective : activePerspective,
+          availableBonds,
+        ),
+      });
     },
-    [addPerspectiveState],
+    [activePerspective, availableBonds, availablePerspectives, scopeSnapshot, user?.id],
   );
 
   const removePerspective = useCallback(
-    (perspectiveId: string) => {
-      removePerspectiveState(perspectiveId);
+    async (perspectiveId: string) => {
+      assertCurrentScopeOwner(scopeSnapshot, user?.id);
+      if (perspectiveId === PERSONAL_SCOPE_PERSPECTIVE.id) {
+        throw new Error('Personal Sanctuary cannot be removed from scope availability.');
+      }
+      const nextAvailable = availablePerspectives.filter(
+        (perspective) => perspective.id !== perspectiveId,
+      );
+      const nextActive =
+        activePerspective.id === perspectiveId ? PERSONAL_SCOPE_PERSPECTIVE : activePerspective;
+      await replaceScopeSessionPerspectives({
+        principalId: user?.id ?? null,
+        currentPerspective: nextActive,
+        availablePerspectives: nextAvailable,
+        availableBonds,
+        selectedBond: bondForPerspective(nextActive, availableBonds),
+      });
     },
-    [removePerspectiveState],
+    [activePerspective, availableBonds, availablePerspectives, scopeSnapshot, user?.id],
   );
 
   const updatePerspective = useCallback(
-    (perspectiveId: string, updates: Partial<SanctuaryPerspective>) => {
-      updatePerspectiveState(perspectiveId, updates);
+    async (perspectiveId: string, updates: Partial<SanctuaryPerspective>) => {
+      assertCurrentScopeOwner(scopeSnapshot, user?.id);
+      const existing = availablePerspectives.find(
+        (perspective) => perspective.id === perspectiveId,
+      );
+      if (!existing) {
+        throw new Error(`Perspective '${perspectiveId}' is not available to the current scope.`);
+      }
+      const updated = { ...existing, ...updates } as SanctuaryPerspective;
+      const nextAvailable = availablePerspectives.map((perspective) =>
+        perspective.id === perspectiveId ? updated : perspective,
+      );
+      await transitionScopeSession({
+        principalId: user?.id ?? null,
+        activePerspective: activePerspective.id === perspectiveId ? updated : activePerspective,
+        availablePerspectives: nextAvailable,
+        availableBonds,
+        selectedBond: bondForPerspective(
+          activePerspective.id === perspectiveId ? updated : activePerspective,
+          availableBonds,
+        ),
+      });
     },
-    [updatePerspectiveState],
+    [activePerspective, availableBonds, availablePerspectives, scopeSnapshot, user?.id],
   );
 
   /**
@@ -102,10 +196,6 @@ export function usePerspectiveSwitch() {
     [activePerspective.id, user?.id],
   );
 
-  const hydratePerspectivesFromDatabaseState = usePerspectiveStore(
-    (state) => state.hydratePerspectivesFromDatabase,
-  );
-
   const hydratePerspectivesFromDatabase = useCallback(
     async (
       userId: string,
@@ -115,9 +205,46 @@ export function usePerspectiveSwitch() {
         getGuardianBonds?: () => Promise<SanctuaryPerspective[]>;
       },
     ) => {
-      await hydratePerspectivesFromDatabaseState(userId, dependencies);
+      if (
+        !userId ||
+        userId !== user?.id ||
+        useAuthStore.getState().user?.id !== userId
+      ) {
+        throw new Error('Perspective metadata cannot be hydrated for a different account.');
+      }
+      if (useScopeSessionStore.getState().snapshot?.principalId !== userId) return;
+      const [commercial = [], guardian = []] = await Promise.all([
+        dependencies.getCommercialBatches
+          ? dependencies.getCommercialBatches()
+          : Promise.resolve([]),
+        dependencies.getGuardianBonds ? dependencies.getGuardianBonds() : Promise.resolve([]),
+      ]);
+      if (
+        useAuthStore.getState().user?.id !== userId ||
+        useScopeSessionStore.getState().snapshot?.principalId !== userId
+      ) {
+        return;
+      }
+      const retainedAvailability = availablePerspectives.filter(
+        (perspective) =>
+          perspective.kind === 'personal' ||
+          (perspective.kind === 'institutional' && bondForPerspective(perspective, availableBonds)) ||
+          perspective.kind === 'commercial' ||
+          perspective.kind === 'guardian',
+      );
+      const nextAvailable = mergeAccountOwnedWorkspaceMetadata(
+        retainedAvailability.length > 0 ? retainedAvailability : [PERSONAL_SCOPE_PERSPECTIVE],
+        [...commercial, ...guardian],
+      );
+      await replaceScopeSessionPerspectives({
+        principalId: userId,
+        currentPerspective: activePerspective,
+        availablePerspectives: nextAvailable,
+        availableBonds,
+        selectedBond: bondForPerspective(activePerspective, availableBonds),
+      });
     },
-    [hydratePerspectivesFromDatabaseState],
+    [activePerspective, availableBonds, availablePerspectives, user?.id],
   );
 
   return {

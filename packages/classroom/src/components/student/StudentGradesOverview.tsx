@@ -1,5 +1,6 @@
 import { assignmentsAPI, getDemoGrades } from '@repo/core/api/client';
-import { useAuthStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useAuthStore } from '@repo/core/store';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Award, BookMarked } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
@@ -33,35 +34,19 @@ function resolveGradeBgClass(grade: number) {
 }
 
 export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesOverviewProps) {
-  const isExplorerMode = useAuthStore((state) => state.isExplorerMode);
+  const isExplorerMode = useExperienceState((state) => state.isExplorerMode);
   const user = useAuthStore((state) => state.user);
   const isGuest = Boolean(user?.is_anonymous);
   const isDemoExperience = isDemo || isExplorerMode || isGuest;
 
-  const [grades, setGrades] = useState<GradeRow[]>(isDemoExperience ? (getDemoGrades() as any) : []);
+  const [grades, setGrades] = useState<GradeRow[]>(
+    isDemoExperience ? (getDemoGrades() as any) : [],
+  );
   const [isLoading, setIsLoading] = useState(!isDemoExperience);
   const [loadError, setLoadError] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
-    if (isDemo) {
-      setGrades(getDemoGrades() as any);
-      setLoadError(false);
-      setIsLoading(false);
-      return;
-    }
-
-    if (!userId) {
-      if (isExplorerMode || isGuest) {
-        setGrades(getDemoGrades() as any);
-      } else {
-        setGrades([]);
-      }
-      setLoadError(false);
-      setIsLoading(false);
-      return;
-    }
-
     let isActive = true;
 
     const loadGrades = async () => {
@@ -69,21 +54,24 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
       setLoadError(false);
 
       try {
-        const data = await assignmentsAPI.getRecentGradesOverviewForStudent(userId, 4);
+        const targetUserId = userId || (isDemoExperience ? 'demo-student' : '');
+        if (!targetUserId) {
+          setGrades([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const data = await assignmentsAPI.getRecentGradesOverviewForStudent(targetUserId, 4);
 
         if (!isActive) return;
 
-        const filtered = ((data as GradeRow[] | null) ?? []).filter((row) => typeof row.grade === 'number');
-        if (filtered.length > 0) {
-          setGrades(filtered);
-        } else if (isExplorerMode || isGuest) {
-          setGrades(getDemoGrades() as any);
-        } else {
-          setGrades([]);
-        }
+        const filtered = ((data as GradeRow[] | null) ?? []).filter(
+          (row) => typeof row.grade === 'number',
+        );
+        setGrades(filtered);
       } catch {
         if (!isActive) return;
-        if (isExplorerMode || isGuest) {
+        if (isDemoExperience) {
           setGrades(getDemoGrades() as any);
           setLoadError(false);
         } else {
@@ -99,7 +87,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     return () => {
       isActive = false;
     };
-  }, [isDemo, isExplorerMode, isGuest, reloadToken, userId]);
+  }, [userId, isDemo, isExplorerMode, isGuest, isDemoExperience, reloadToken]);
 
   const summary = useMemo(() => {
     if (grades.length === 0) {
@@ -126,7 +114,9 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     <VStack className="gap-4">
       {loadError ? (
         <Box className="rounded-[24px] border border-sanctuary-error/30 bg-sanctuary-error/10 p-4">
-          <Text className="text-sanctuary-text text-sm font-bold">Grades are temporarily unavailable.</Text>
+          <Text className="text-sanctuary-text text-sm font-bold">
+            Grades are temporarily unavailable.
+          </Text>
           <Text className="mt-1 text-sanctuary-text-secondary text-xs">
             Your existing grades are still shown below. Try again when you’re ready.
           </Text>

@@ -127,6 +127,34 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     surfaceId: 'pulse',
     defaultOrder: 20,
     analyticsKey: 'self.pulse',
+    journey: {
+      featureId: 'pulse',
+      targetPersonas: ['student', 'teacher', 'guardian', 'principal', 'founder'],
+      stage: 'daily_circadian',
+      entryRoute: '/self',
+      sequence: [
+        {
+          step: 0,
+          screenId: 'daily_pulse_sensing',
+          route: '/self',
+          title: 'Daily Somatic Lotus Pulse',
+          purpose: 'on_ramp',
+        },
+        {
+          step: 1,
+          screenId: 'somatic_breathing_reset',
+          route: '/self',
+          title: 'Mindful Breathing Reset',
+          purpose: 'feedback_completion',
+        },
+      ],
+      feedback: {
+        tutiiMode: 'somatic_calm',
+        tutiiRole: 'companion',
+        haptic: 'selection',
+        soundChime: 'pulse',
+      },
+    },
   },
   growth: {
     id: 'growth',

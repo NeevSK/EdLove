@@ -1,9 +1,5 @@
 import { api } from '@repo/core/api/client';
-import {
-  coreRuntime,
-  handleAPIError,
-  type PrincipalInviteRole as UserRole,
-} from '@repo/core/logic';
+import { coreRuntime, handleAPIError, type PrincipalInviteRole as UserRole } from '@repo/core/logic';
 import type { InviteCode } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import { ArrowLeft, Copy, Plus, QrCode, Shield, Users } from '@repo/ui/icons';

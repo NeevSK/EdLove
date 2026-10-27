@@ -1,6 +1,7 @@
 import type { Identity } from '@repo/core/api/identity.generated';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import type { ISessionPort } from '@repo/core/logic/ports/session.port';
+import type { ProfileCompletionDetails } from '@repo/core/logic/schemas/profileUpdate.schema';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
 
@@ -55,11 +56,11 @@ export class IdentityManager implements IIdentityPort, ISessionPort {
     return this.adapter.switchPerspective(entityId, capacity);
   }
 
-  async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
+  async createInitialBond(orientation: Capacity, context: Record<string, unknown>): Promise<void> {
     return this.adapter.createInitialBond(orientation, context);
   }
 
-  async completeProfile(userId: string, data: any): Promise<void> {
+  async completeProfile(userId: string, data: ProfileCompletionDetails): Promise<void> {
     return this.adapter.completeProfile(userId, data);
   }
 

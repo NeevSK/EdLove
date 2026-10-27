@@ -24,6 +24,7 @@ function routeState(overrides: Partial<BootstrapRouteState> = {}): BootstrapRout
     hasLiveCapacity: true,
     hasActiveAccessToken: true,
     hasProfileName: true,
+    principalId: 'account-a',
     isProfileForSession: true,
     identityAvailability: 'active',
     isProfileResolving: false,
@@ -184,6 +185,24 @@ describe('bootstrap route-state adapter', () => {
         onboardingCompleted: true,
         pathname: '/self',
         session: anonymousSession,
+      }),
+    );
+
+    expect(target).toMatchObject({ decision: 'app', redirectTo: null });
+  });
+
+  it('admits a completed device-local guest without an auth session', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({
+        hasActiveAccessToken: false,
+        hasLiveCapacity: false,
+        hasLocalGuestSession: true,
+        hasProfileName: false,
+        identityAvailability: 'unknown',
+        isLocalGuestReady: true,
+        onboardingCompleted: true,
+        pathname: '/self',
+        session: null,
       }),
     );
 

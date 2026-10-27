@@ -1,0 +1,35 @@
+\set ON_ERROR_STOP on
+SET search_path=public,extensions;
+\echo APPLY 20261024010000_edlove_durable_account_assignment_handoff.sql
+\i /tmp/auth-rehearsal-migrations/20261024010000_edlove_durable_account_assignment_handoff.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024010000');
+\echo APPLY 20261024183000_external_effect_intents.sql
+\i /tmp/auth-rehearsal-migrations/20261024183000_external_effect_intents.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024183000');
+\echo APPLY 20261024200000_edlove_historical_assignment_operations.sql
+\i /tmp/auth-rehearsal-migrations/20261024200000_edlove_historical_assignment_operations.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024200000');
+\echo APPLY 20261024201000_edlove_historical_assignment_operation_summary.sql
+\i /tmp/auth-rehearsal-migrations/20261024201000_edlove_historical_assignment_operation_summary.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024201000');
+\echo APPLY 20261024202000_edlove_historical_assignment_checkpoint_guard.sql
+\i /tmp/auth-rehearsal-migrations/20261024202000_edlove_historical_assignment_checkpoint_guard.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024202000');
+\echo APPLY 20261024203000_edlove_historical_assignment_failure_threshold_order.sql
+\i /tmp/auth-rehearsal-migrations/20261024203000_edlove_historical_assignment_failure_threshold_order.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261024203000');
+\echo APPLY 20261025010000_canonical_uuidv8_accounts.sql
+\i /tmp/auth-rehearsal-migrations/20261025010000_canonical_uuidv8_accounts.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025010000');
+\echo APPLY 20261025011000_user_profile_contract_convergence.sql
+\i /tmp/auth-rehearsal-migrations/20261025011000_user_profile_contract_convergence.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025011000');
+\echo APPLY 20261025012000_profile_and_onboarding_contract_convergence.sql
+\i /tmp/auth-rehearsal-migrations/20261025012000_profile_and_onboarding_contract_convergence.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025012000');
+\echo APPLY 20261025013000_account_lifecycle_write_authority.sql
+\i /tmp/auth-rehearsal-migrations/20261025013000_account_lifecycle_write_authority.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025013000');
+\echo APPLY 20261025014000_account_issuer_operating_contract.sql
+\i /tmp/auth-rehearsal-migrations/20261025014000_account_issuer_operating_contract.sql
+INSERT INTO supabase_migrations.schema_migrations(version) VALUES ('20261025014000');

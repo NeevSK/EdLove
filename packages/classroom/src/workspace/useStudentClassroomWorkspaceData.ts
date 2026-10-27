@@ -1,5 +1,6 @@
-import { api, interceptApiCall } from '@repo/core/api/client';
-import { type Assignment, type Lesson, type LessonMaterial, useAuthStore } from '@repo/core/logic';
+import { api } from '@repo/core/api/client';
+import { useAuthStore } from '@repo/core/store';
+import { type Assignment, type Lesson, type LessonMaterial } from '@repo/core/logic';
 import type { Classroom } from '@repo/core/types';
 
 import { useCallback, useEffect, useState } from 'react';
@@ -57,12 +58,7 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
         api.lessonMaterials.getAll(classroomId),
         api.assignments.getAll(classroomId),
         api.classroomNotes.getAll(classroomId),
-        userId
-          ? api.assignments.getSubmissionHistoryForStudent(userId, classroomId)
-          : (interceptApiCall('assignments', 'getSubmissionHistoryForStudent', [
-              'sample-s1',
-              classroomId,
-            ]) ?? Promise.resolve([])),
+        api.assignments.getSubmissionHistoryForStudent(userId || 'sample-s1', classroomId),
       ]);
 
       setData({

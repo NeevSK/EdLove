@@ -1,4 +1,5 @@
 import { useWorkspaceLayoutSync as usePersistentLayoutSync } from '@repo/core/native';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useResponsiveGrid } from '@repo/ui';
@@ -46,12 +47,14 @@ export function useSelfCanvas() {
   const { width } = useWindowDimensions();
   const { columns, gutter } = useResponsiveGrid();
   const user = useAuthStore((state) => state.user);
-  const availableBonds = useAuthStore((state) => state.availableBonds);
+  const availableBonds = useScopeSessionStore((state) => state.snapshot?.availableBonds ?? []);
   const displayName = user?.display_name?.split(' ')[0] || 'Seeker';
 
   const [selectedCategory, setSelectedCategory] = useState<SelfCategory>('all');
   const openTab = useActiveSubTabsStore((state) => state.openTab);
-  const localPinnedIds = useActiveSubTabsStore((state) => state.pinnedFeatureIdsByDomain.self || []);
+  const localPinnedIds = useActiveSubTabsStore(
+    (state) => state.pinnedFeatureIdsByDomain.self || [],
+  );
   const toggleLocalPin = useActiveSubTabsStore((state) => state.togglePinFeature);
 
   // Derive the complete set of capacities this human holds across all active bonds
@@ -88,21 +91,24 @@ export function useSelfCanvas() {
     workspaceId: 'self',
     userId: user?.id,
     surfaces: surfaceDefinitions,
+    initialPinnedSurfaceIds: localPinnedIds,
   });
 
   const preset: SelfAtmospherePreset =
     (canvasSync.layout?.appearance?.preset as SelfAtmospherePreset) ?? 'default';
 
-  const syncedPinnedIds = canvasSync.layout?.pinned ?? [];
-  const effectivePinnedIds = syncedPinnedIds.length > 0 ? syncedPinnedIds : localPinnedIds;
+  const effectivePinnedIds =
+    canvasSync.layout && !canvasSync.isInitialLayout ? canvasSync.layout.pinned : localPinnedIds;
 
   const togglePin = useCallback(
     (featureId: string) => {
-      const isPinned = effectivePinnedIds.includes(featureId);
-      toggleLocalPin('self', featureId);
-      canvasSync.setSurfacePinned(featureId, !isPinned);
+      if (!canvasSync.layout) {
+        toggleLocalPin('self', featureId);
+        return;
+      }
+      canvasSync.toggleSurfacePinned(featureId);
     },
-    [canvasSync, effectivePinnedIds, toggleLocalPin],
+    [canvasSync, toggleLocalPin],
   );
 
   const pinnedFeatures = useMemo(

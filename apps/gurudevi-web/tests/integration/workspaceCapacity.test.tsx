@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -16,6 +18,15 @@ const mocks = vi.hoisted(() => ({
     },
   },
 }));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
+}));
+
+function renderWorkspace(children: ReactNode) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>);
+}
 
 vi.mock('@/lib/workspace/attendance', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/workspace/attendance')>();
@@ -50,14 +61,14 @@ describe('Workspace capacity contextualization (G1 boundary)', () => {
   });
 
   it('renders daily attendance workspace for teacher capacity', async () => {
-    render(<WorkspaceFloor capacity="teacher" mode="explore" />);
+    renderWorkspace(<WorkspaceFloor capacity="teacher" mode="explore" />);
     expect(await screen.findByRole('heading', { name: 'Daily Attendance Roll Call' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Take Attendance' })).toBeTruthy();
     expect(screen.getByText(/take a classroom roll call/i)).toBeTruthy();
   });
 
   it('renders school coordination workspace for principal capacity', async () => {
-    render(<WorkspaceFloor capacity="principal" mode="explore" />);
+    renderWorkspace(<WorkspaceFloor capacity="principal" mode="explore" />);
     expect(
       await screen.findByRole('heading', { name: 'Real-Time Campus Presence & Kiosks' }),
     ).toBeTruthy();
@@ -66,14 +77,14 @@ describe('Workspace capacity contextualization (G1 boundary)', () => {
   });
 
   it('renders learning studio workspace for student capacity', async () => {
-    render(<WorkspaceFloor capacity="student" mode="explore" />);
+    renderWorkspace(<WorkspaceFloor capacity="student" mode="explore" />);
     expect(await screen.findByRole('heading', { name: 'Today’s Classes & Daily Presence' })).toBeTruthy();
     expect(screen.getByRole('link', { name: /open daily check-in/i })).toBeTruthy();
     expect(screen.getByRole('link', { name: /view timetable/i })).toBeTruthy();
   });
 
   it('renders family space workspace for guardian capacity', async () => {
-    render(<WorkspaceFloor capacity="guardian" mode="explore" />);
+    renderWorkspace(<WorkspaceFloor capacity="guardian" mode="explore" />);
     expect(await screen.findByRole('heading', { name: 'Daily Family Space & Presence' })).toBeTruthy();
     expect(screen.getByRole('link', { name: /open family space/i })).toBeTruthy();
     expect(screen.getByRole('link', { name: /community dialogues/i })).toBeTruthy();

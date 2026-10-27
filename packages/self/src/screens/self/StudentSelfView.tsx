@@ -1,5 +1,6 @@
 import { useBanyanGrowth } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import WelcomeModal from '@repo/self/components/WelcomeModal';
@@ -27,8 +28,8 @@ export default function StudentSelfView() {
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
   const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
 
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
 
   const domainContent = registeredDomains.map((domain) => {
     // Custom handling for the Journey domain (Holistic)
@@ -50,10 +51,7 @@ export default function StudentSelfView() {
       id: fId,
       label: fId.replace('_', ' '), // Default label, registry might override
       content: (
-        <SelfFeatureRenderer
-          featureId={canonicalSelfFeatureId(fId)}
-          userId={userId ?? undefined}
-        />
+        <SelfFeatureRenderer featureId={canonicalSelfFeatureId(fId)} userId={userId ?? undefined} />
       ),
       // Specific history overrides if needed
       historyContent:

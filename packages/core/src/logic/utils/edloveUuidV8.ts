@@ -184,3 +184,15 @@ export function parseEdloveUuidV8(value: string): ParsedEdloveUuidV8 | null {
 export function isEdloveUuidV8(value: string): boolean {
   return parseEdloveUuidV8(value) !== null;
 }
+
+/** Canonical accounts accept only the registered central Identity/account profile. */
+export function isEdloveAccountId(value: string): boolean {
+  const parts = parseEdloveUuidV8(value);
+  return (
+    parts !== null &&
+    parts.domain === edloveUuidV8Domain.identity &&
+    parts.subtype.value === edloveUuidV8Subtype.account.value &&
+    (parts.mintOrigin === edloveUuidV8MintOrigin.centralProduction ||
+      parts.mintOrigin === edloveUuidV8MintOrigin.nonProduction)
+  );
+}

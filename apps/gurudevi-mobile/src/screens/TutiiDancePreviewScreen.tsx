@@ -1,9 +1,9 @@
 import LottieView from 'lottie-react-native';
 import { useEffect, useRef, useState } from 'react';
+import { Pressable } from '@repo/ui/primitives';
 import {
   AccessibilityInfo,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   View,
@@ -53,10 +53,16 @@ export default function TutiiDancePreviewScreen() {
         <Text style={styles.title}>A happy little dance</Text>
         <Text style={styles.subtitle}>A small celebration, just because.</Text>
 
-        <View style={[styles.animationStage, { width: animationWidth, height: animationHeight }]}>
+        <View
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={
+            showStill ? 'Tutii smiling in a joyful dance pose' : 'Tutii dances in a joyful circle'
+          }
+          style={[styles.animationStage, { width: animationWidth, height: animationHeight }]}
+        >
           {showStill ? (
             <Image
-              accessibilityLabel="Tutii smiling in a joyful dance pose"
               resizeMode="contain"
               source={danceStill}
               style={styles.character}
@@ -64,7 +70,6 @@ export default function TutiiDancePreviewScreen() {
           ) : (
             <LottieView
               ref={animationRef}
-              accessibilityLabel="Tutii dances in a joyful circle"
               autoPlay
               cacheComposition
               loop

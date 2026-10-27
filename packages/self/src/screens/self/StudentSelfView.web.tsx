@@ -1,5 +1,6 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
 import FireJournal from '@repo/self/components/FireJournal';
@@ -28,8 +29,8 @@ export default function StudentSelfView() {
   const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
   const { holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
-  const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((s) => s.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((s) => s.setJustFinishedOnboarding);
 
   const domainContent = registeredDomains.map((domain) => {
     const features = domain.features.map((fId) => {

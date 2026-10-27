@@ -1,0 +1,57 @@
+i Auditing codebase imports in: C:\x\apps\gurudevi-web\app (projectRoot: C:\x\apps\gurudevi-web)
+[
+  {
+    "filePath": "C:\\x\\apps\\gurudevi-web\\app\\(sanctuary)\\auth\\PasswordlessEntry.test.tsx",
+    "line": 1,
+    "column": 1,
+    "packageName": "@testing-library/react",
+    "importedSymbol": "screen",
+    "kind": "PHANTOM_IMPORT",
+    "suggestion": "Symbol 'screen' is not exported by '@testing-library/react@16.3.3'. Verified exports: Config, ConfigFn, configure, getConfig, RenderResult..."
+  },
+  {
+    "filePath": "C:\\x\\apps\\gurudevi-web\\app\\(sanctuary)\\auth\\PhoneOtpEntry.test.tsx",
+    "line": 1,
+    "column": 1,
+    "packageName": "@testing-library/react",
+    "importedSymbol": "fireEvent",
+    "kind": "PHANTOM_IMPORT",
+    "suggestion": "Symbol 'fireEvent' is not exported by '@testing-library/react@16.3.3'. Verified exports: Config, ConfigFn, configure, getConfig, RenderResult..."
+  },
+  {
+    "filePath": "C:\\x\\apps\\gurudevi-web\\app\\(sanctuary)\\auth\\PhoneOtpEntry.test.tsx",
+    "line": 1,
+    "column": 1,
+    "packageName": "@testing-library/react",
+    "importedSymbol": "screen",
+    "kind": "PHANTOM_IMPORT",
+    "suggestion": "Symbol 'screen' is not exported by '@testing-library/react@16.3.3'. Verified exports: Config, ConfigFn, configure, getConfig, RenderResult..."
+  },
+  {
+    "filePath": "C:\\x\\apps\\gurudevi-web\\app\\(sanctuary)\\components\\CapacityPerspectiveSwitcher.test.tsx",
+    "line": 1,
+    "column": 1,
+    "packageName": "@testing-library/react",
+    "importedSymbol": "screen",
+    "kind": "PHANTOM_IMPORT",
+    "suggestion": "Symbol 'screen' is not exported by '@testing-library/react@16.3.3'. Verified exports: Config, ConfigFn, configure, getConfig, RenderResult..."
+  },
+  {
+    "filePath": "C:\\x\\apps\\gurudevi-web\\app\\(sanctuary)\\self\\components\\ReframeWizard.browser.test.tsx",
+    "line": 1,
+    "column": 1,
+    "packageName": "@testing-library/react",
+    "importedSymbol": "fireEvent",
+    "kind": "PHANTOM_IMPORT",
+    "suggestion": "Symbol 'fireEvent' is not exported by '@testing-library/react@16.3.3'. Verified exports: Config, ConfigFn, configure, getConfig, RenderResult..."
+  },
+  {
+    "filePath": "C:\\x\\apps\\gurudevi-web\\app\\(sanctuary)\\self\\components\\ReframeWizard.browser.test.tsx",
+    "line": 1,
+    "column": 1,
+    "packageName": "@testing-library/react",
+    "importedSymbol": "screen",
+    "kind": "PHANTOM_IMPORT",
+    "suggestion": "Symbol 'screen' is not exported by '@testing-library/react@16.3.3'. Verified exports: Config, ConfigFn, configure, getConfig, RenderResult..."
+  }
+]

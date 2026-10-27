@@ -1,9 +1,13 @@
 import { replayAssignmentSubmission } from '@repo/core/api/assignmentCommands';
 import { attendanceAPI } from '@repo/core/api/attendance';
+import { replayChatSendCommand } from '@repo/core/api/chatCommands';
 import { api } from '@repo/core/api/client';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { submitWorkspaceLayoutPatch } from '@repo/core/api/workspaceLayoutPatch';
 import { resolveGradeClassFromClassroom } from '@repo/core/logic/classroomResolver';
+import { CHAT_SEND_COMMAND } from '@repo/core/logic/schemas/chat-command.schema';
+import { WorkspaceLayoutPatchSchema } from '@repo/core/logic/workspace/layoutPatch';
 
 /**
  * Mutation Registry
@@ -27,6 +31,19 @@ function requireIdempotencyKey(context: MutationExecutionContext | undefined): s
 }
 
 export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
+  [CHAT_SEND_COMMAND]: (variables: unknown, context) =>
+    replayChatSendCommand(variables, context?.userId),
+  'workspace.layout.patch': (variables: unknown, context) => {
+    const envelope =
+      variables && typeof variables === 'object' && 'input' in variables
+        ? variables.input
+        : undefined;
+    const patch = WorkspaceLayoutPatchSchema.parse(envelope);
+    if (!context?.userId || patch.userId !== context.userId) {
+      throw new Error('Workspace patch owner does not match the queued principal.');
+    }
+    return submitWorkspaceLayoutPatch(patch);
+  },
   'assignment.submit': (variables, context) => replayAssignmentSubmission(variables, context ?? {}),
   'classroom.attendance.batchRecord': async (vars) => {
     const rows = vars?.rows ?? (Array.isArray(vars) ? vars : []);

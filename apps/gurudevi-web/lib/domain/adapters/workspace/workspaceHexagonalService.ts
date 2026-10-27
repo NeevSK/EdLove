@@ -15,7 +15,6 @@ import {
   loadAccountAttendance,
   loadAccountAttendanceDraft,
   loadAccountClassrooms,
-  restoreAccountAttendanceDraft,
   saveAccountAttendance,
   saveAccountAttendanceDraft,
   type WorkspaceClassroom,
@@ -32,37 +31,45 @@ export class WorkspaceHexagonalService implements IWorkspacePort, IWorkspaceStor
   private toDraftScope(scope: WorkspaceDraftScope): AccountAttendanceDraftScope {
     return {
       accountId: scope.accountId,
-      bondId: scope.bondId ?? 'default-bond',
-      entityId: scope.entityId ?? 'default-entity',
+      bondId: scope.bondId,
+      entityId: scope.entityId,
       classroomId: scope.classroomId,
       date: scope.date,
     };
   }
 
-  async getClassrooms(subjectId: string): Promise<readonly WorkspaceClassroom[]> {
-    return loadAccountClassrooms(subjectId);
+  async getClassrooms(
+    subjectId: string,
+    signal?: AbortSignal,
+  ): Promise<readonly WorkspaceClassroom[]> {
+    return loadAccountClassrooms(subjectId, signal);
   }
 
   async getAttendanceRoster(
     classroom: WorkspaceClassroom,
     date: string,
     subjectId: string,
+    signal?: AbortSignal,
   ): Promise<readonly WorkspaceStudent[]> {
-    const roster = await loadAccountAttendance(classroom, date, subjectId);
-    const draft = this.loadDraft({ accountId: subjectId, classroomId: classroom.id, date });
-    if (!draft) return roster;
-    const restored = restoreAccountAttendanceDraft(roster, draft);
-    return restored.students;
+    return loadAccountAttendance(classroom, date, subjectId, signal);
   }
 
   async submitAttendance(
+    draftScope: WorkspaceDraftScope,
     classroom: WorkspaceClassroom,
     date: string,
     subjectId: string,
     students: readonly WorkspaceStudent[],
   ): Promise<AttendanceSubmissionResult> {
+    if (
+      draftScope.accountId !== subjectId ||
+      draftScope.classroomId !== classroom.id ||
+      draftScope.date !== date
+    ) {
+      throw new Error('Workspace draft scope does not match the attendance command.');
+    }
     await saveAccountAttendance(classroom, date, students, subjectId);
-    this.clearDraft({ accountId: subjectId, classroomId: classroom.id, date });
+    this.clearDraft(draftScope);
 
     return {
       classroomId: classroom.id,

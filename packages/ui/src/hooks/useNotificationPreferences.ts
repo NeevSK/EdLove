@@ -1,8 +1,9 @@
-import { profile, type UserPreferences, useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { profile, type UserPreferences } from '@repo/core/logic';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useNotificationPreferences = () => {
-  const userId = useStore((state) => state.user?.id);
+  const userId = useAuthStore((state) => state.user?.id);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

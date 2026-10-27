@@ -1,6 +1,6 @@
 ---
 title: "Architectural Report: The GuruDevi Identity Sanctuary"
-status: "active"
+status: "historical"
 created: 2026-03-08
 updated: 2026-03-20
 author: "Naveen"
@@ -9,6 +9,10 @@ tags: [apps, gurudevi-mobile, historical]
 ---
 
 # Architectural Report: The GuruDevi Identity Sanctuary
+
+> **Historical record — not current policy.** The guest-sync claims below do
+> not authorize automatic migration. Current behavior is governed by the
+> [Guest Data Transfer Policy Authority](../../../../docs/architecture/2026-10-24-guest-data-transfer-policy.md).
 
 ## 1. Executive Summary: "The Shift to Internal Sovereignty"
 

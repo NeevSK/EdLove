@@ -8,7 +8,7 @@ describe('Invariant 1: Temporal Mutation Shield & RBAC Scope Boundary', () => {
     useTemporalStore.setState({
       phase: 'present',
       isPastView: false,
-      isOffline: false,
+      readPolicy: 'live',
       viewDate: new Date().toISOString().split('T')[0],
     });
   });
@@ -17,7 +17,7 @@ describe('Invariant 1: Temporal Mutation Shield & RBAC Scope Boundary', () => {
     useTemporalStore.setState({
       phase: 'present',
       isPastView: false,
-      isOffline: false,
+      readPolicy: 'live',
       viewDate: undefined,
     });
   });
@@ -54,9 +54,7 @@ describe('Invariant 1: Temporal Mutation Shield & RBAC Scope Boundary', () => {
         'Cannot modify history',
       );
 
-      await expect(proxy.updateLayout({ grid: 'custom' })).rejects.toThrow(
-        'Cannot modify history',
-      );
+      await expect(proxy.updateLayout({ grid: 'custom' })).rejects.toThrow('Cannot modify history');
     });
 
     it('permits read-only queries during past phase without interference', async () => {

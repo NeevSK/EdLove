@@ -1,9 +1,11 @@
 'use client';
 
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import Link from 'next/link';
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { useQuery } from '@tanstack/react-query';
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
@@ -36,48 +38,25 @@ const CATALOG_TASK = {
   localStatePolicy: 'none',
 } as const;
 
-export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = [
-  {
-    id: 'res-contemplative-pedagogy',
-    title: 'Mindfulness & Contemplative Pedagogy',
-    description:
-      'A foundational guide on stillness, deep inquiry, and intentional study in modern learning environments.',
-    type: 'Guide',
-    verified: true,
-    subjects: ['Pedagogy', 'Mindfulness'],
-    url: 'https://gurudevi.app',
-  },
-  {
-    id: 'res-dialogues-truth',
-    title: 'Dialogues on Living and Truth',
-    description:
-      'Selections and commentaries exploring ethical living, personal reflection, and the quiet mind.',
-    type: 'Manuscript',
-    verified: true,
-    subjects: ['Philosophy', 'Ethics'],
-    url: 'https://gurudevi.app',
-  },
-  {
-    id: 'res-reflective-journaling',
-    title: 'Principles of Reflective Journaling',
-    description:
-      'Techniques for capturing daily observations, self-discovery, and cultivating honest self-awareness.',
-    type: 'Practice',
-    verified: true,
-    subjects: ['Self', 'Reflection'],
-    url: 'https://gurudevi.app',
-  },
-  {
-    id: 'res-quiet-classrooms',
-    title: 'The Quiet Classroom: Space for Inquiry',
-    description:
-      'Designing classroom rhythms that balance shared collaboration with restorative personal quiet.',
-    type: 'Guide',
-    verified: true,
-    subjects: ['Classroom', 'Restoration'],
-    url: 'https://gurudevi.app',
-  },
-];
+export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] =
+  getSandboxSamples<any[]>('library', 'getResources', [], []).map((r) => ({
+    id: r.id,
+    title: r.title,
+    description: r.description,
+    type: r.type,
+    verified: Boolean(r.verified),
+    subjects: r.subject ? [r.subject] : ['Sanctuary'],
+    url: r.url ?? 'https://gurudevi.app',
+  }));
+
+export const EXPLORE_COLLECTIONS = getSandboxSamples<any[]>('library', 'getCollections', [], []).map((c) => ({
+  id: c.id,
+  name: c.name,
+  description: c.description,
+  subjects: ['Curriculum', 'Pedagogy'],
+  resource_ids: c.resource_ids,
+  is_official: true,
+}));
 
 function collectionLabel(category: string): string {
   const map: Record<string, string> = {
@@ -106,7 +85,20 @@ export function LibraryFloor({
       mode === 'account' && Boolean(accountId) && accountId !== 'explore' && accountId !== 'guest',
   });
   const workbench = useDomainWorkbench('library');
+  const searchSeqRef = useRef(0);
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed'>('recent');
+  const [cardLayout, setCardLayout] = useState<'grid' | 'list'>('grid');
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem('gurudevi_library_bookmarks');
+      return stored ? new Set(JSON.parse(stored)) : new Set(['mangroves']);
+    } catch {
+      return new Set(['mangroves']);
+    }
+  });
+  const [endorsedIds, setEndorsedIds] = useState<Set<string>>(new Set());
   const [resources, setResources] = useState<readonly BrowserLibraryResource[]>([]);
   const [status, setStatus] = useState<LibraryLoadState>('loading');
   const [notice, setNotice] = useState<string | null>(null);
@@ -118,32 +110,82 @@ export function LibraryFloor({
     catalogTask && catalogTask.taskKey === workbench.state.focusedTaskKey,
   );
 
+  const toggleBookmark = async (id: string) => {
+    const next = new Set(bookmarkedIds);
+    const isAdding = !next.has(id);
+    if (isAdding) next.add(id);
+    else next.delete(id);
+    setBookmarkedIds(next);
+    try {
+      localStorage.setItem('gurudevi_library_bookmarks', JSON.stringify(Array.from(next)));
+    } catch {}
+
+    void orpcClient.library.engage({
+      params: { id },
+      body: { engagement_type: 'bookmark', toggle: true },
+    }).catch(() => {});
+  };
+
+  const toggleEndorse = async (id: string) => {
+    const next = new Set(endorsedIds);
+    const isAdding = !next.has(id);
+    if (isAdding) next.add(id);
+    else next.delete(id);
+    setEndorsedIds(next);
+
+    void orpcClient.library.engage({
+      params: { id },
+      body: { engagement_type: 'endorse' },
+    }).catch(() => {});
+  };
+
   const loadResources = useCallback(
-    async (search: string) => {
+    async (search: string, cat: string = selectedCategory, sort: 'recent' | 'popular' | 'most_endorsed' = selectedSort) => {
+      const seq = ++searchSeqRef.current;
       await Promise.resolve();
       setStatus('loading');
       setNotice(null);
 
+      if (cat === 'saved') {
+        try {
+          const client = orpcClient.library as any;
+          if (typeof client.getBookmarkedResources === 'function') {
+            const saved = await client.getBookmarkedResources({ query: {} });
+            if (seq !== searchSeqRef.current) return;
+            setResources(parseBrowserLibraryResources(saved));
+            setStatus('ready');
+            return;
+          }
+        } catch {}
+        if (seq !== searchSeqRef.current) return;
+        setResources(EXPLORE_LIBRARY_RESOURCES.filter((r) => bookmarkedIds.has(r.id)));
+        setStatus('ready');
+        return;
+      }
+
       if (mode === 'explore') {
         const q = search.trim().toLowerCase();
-        if (!q) {
-          setResources(EXPLORE_LIBRARY_RESOURCES);
-        } else {
-          setResources(
-            EXPLORE_LIBRARY_RESOURCES.filter(
-              (r) =>
-                r.title.toLowerCase().includes(q) ||
-                (r.description && r.description.toLowerCase().includes(q)) ||
-                r.subjects.some((s) => s.toLowerCase().includes(q)),
-            ),
+        let list = EXPLORE_LIBRARY_RESOURCES;
+        if (cat !== 'All') {
+          list = list.filter((r) => r.type?.toLowerCase() === cat.toLowerCase());
+        }
+        if (q) {
+          list = list.filter(
+            (r) =>
+              (r.title ?? '').toLowerCase().includes(q) ||
+              (r.description && r.description.toLowerCase().includes(q)) ||
+              (r.subjects ?? []).some((s) => s.toLowerCase().includes(q)),
           );
         }
+        if (seq !== searchSeqRef.current) return;
+        setResources(list);
         setStatus('ready');
         return;
       }
 
       const supabase = createBrowserSupabaseClient();
       if (!supabase) {
+        if (seq !== searchSeqRef.current) return;
         setStatus('error');
         setNotice('Library sign-in is not configured in this browser.');
         return;
@@ -159,6 +201,7 @@ export function LibraryFloor({
         const { data, error } = await supabase.auth.getSession();
         if (error) throw error;
         if (!data.session?.access_token) {
+          if (seq !== searchSeqRef.current) return;
           setStatus('denied');
           setNotice('Your secure session has ended. Sign in again to browse your Library.');
           return;
@@ -166,15 +209,18 @@ export function LibraryFloor({
 
         const next = await orpcClient.library.getResources({
           query: {
-            limit: 30,
+            limit: 40,
             offset: 0,
             search: search.trim() || undefined,
-            sort_by: 'recent',
+            type: cat === 'All' ? undefined : (cat as any),
+            sort_by: sort,
           },
         });
+        if (seq !== searchSeqRef.current) return;
         setResources(parseBrowserLibraryResources(next));
         setStatus('ready');
       } catch (error) {
+        if (seq !== searchSeqRef.current) return;
         setStatus(classifyLibraryFailure(error));
         setNotice(
           classifyLibraryFailure(error) === 'denied'
@@ -183,7 +229,7 @@ export function LibraryFloor({
         );
       }
     },
-    [mode],
+    [mode, selectedCategory, selectedSort, bookmarkedIds],
   );
 
   const { data: queryResult, error: queryError } = useQuery({
@@ -233,11 +279,33 @@ export function LibraryFloor({
     staleTime: 60_000,
   });
 
+  const { data: collections = EXPLORE_COLLECTIONS } = useQuery({
+    queryKey: ['library', 'overview-collections', mode],
+    queryFn: async () => {
+      if (mode === 'explore') return EXPLORE_COLLECTIONS;
+      try {
+        const next = await orpcClient.library.getCollections({
+          query: { limit: 6 },
+        });
+        return Array.isArray(next) && next.length > 0 ? next : EXPLORE_COLLECTIONS;
+      } catch {
+        return EXPLORE_COLLECTIONS;
+      }
+    },
+    staleTime: 60_000,
+  });
+
   useEffect(() => {
     if (queryResult) {
-      setResources(queryResult.resources);
-      setStatus(queryResult.status);
-      setNotice(queryResult.notice);
+      if (Array.isArray(queryResult.resources)) {
+        setResources(queryResult.resources);
+      }
+      if (queryResult.status) {
+        setStatus(queryResult.status);
+      }
+      if (queryResult.notice !== undefined) {
+        setNotice(queryResult.notice);
+      }
     } else if (queryError) {
       setStatus(classifyLibraryFailure(queryError));
       setNotice(
@@ -391,6 +459,74 @@ export function LibraryFloor({
                     {isSearching ? 'Searching…' : 'Search'}
                   </button>
                 </div>
+
+                {/* Modernized Category Filter Row & Sorting Bar */}
+                <div className={styles.filterToolbar}>
+                  <div className={styles.categoryRow}>
+                    {[
+                      { id: 'All', label: 'All Items' },
+                      { id: 'lesson', label: 'Lessons' },
+                      { id: 'video', label: 'Lectures 🎬' },
+                      { id: 'pdf', label: 'Documents 📖' },
+                      { id: 'worksheet', label: 'Worksheets' },
+                      { id: 'past_paper', label: 'Past Papers' },
+                      { id: 'saved', label: '★ Saved Desk' },
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        className={styles.categoryPill}
+                        data-active={selectedCategory === cat.id}
+                        onClick={() => {
+                          setSelectedCategory(cat.id);
+                          void loadResources(query, cat.id, selectedSort);
+                        }}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className={styles.controlsRow}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--ink-soft)' }}>Sort by:</span>
+                      <select
+                        className={styles.sortSelect}
+                        value={selectedSort}
+                        onChange={(e) => {
+                          const val = e.target.value as 'recent' | 'popular' | 'most_endorsed';
+                          setSelectedSort(val);
+                          void loadResources(query, selectedCategory, val);
+                        }}
+                      >
+                        <option value="recent">Most Recent</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="most_endorsed">Most Endorsed</option>
+                      </select>
+                    </div>
+
+                    <div className={styles.viewModeToggle}>
+                      <button
+                        type="button"
+                        className={styles.viewModeBtn}
+                        data-active={cardLayout === 'grid'}
+                        onClick={() => setCardLayout('grid')}
+                        title="Grid Layout"
+                      >
+                        ⊞ Grid
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.viewModeBtn}
+                        data-active={cardLayout === 'list'}
+                        onClick={() => setCardLayout('list')}
+                        title="List Layout"
+                      >
+                        ☰ List
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </form>
 
               {status === 'loading' ? (
@@ -435,15 +571,55 @@ export function LibraryFloor({
                               <span key={subject}>{subject}</span>
                             ))}
                           </div>
-                          {url ? (
-                            <a href={url} rel="noreferrer" target="_blank">
-                              Open resource <span aria-hidden="true">↗</span>
-                            </a>
-                          ) : (
-                            <span className={styles.unavailableLink}>
-                              Resource link unavailable
-                            </span>
-                          )}
+                          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                            {resource.type === 'Video' ? (
+                              <Link
+                                href={`/library/video/${resource.id}`}
+                                style={{
+                                  fontSize: '0.85rem',
+                                  fontWeight: 650,
+                                  color: 'var(--color-action, #a85022)',
+                                  textDecoration: 'none',
+                                }}
+                              >
+                                Watch Lecture 🎬
+                              </Link>
+                            ) : (
+                              <Link
+                                href={`/library/reader/${resource.id}`}
+                                style={{
+                                  fontSize: '0.85rem',
+                                  fontWeight: 650,
+                                  color: 'var(--color-action, #a85022)',
+                                  textDecoration: 'none',
+                                }}
+                              >
+                                Open Reader 📖
+                              </Link>
+                            )}
+                            {url ? (
+                              <a href={url} rel="noreferrer" target="_blank" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                                External Link <span aria-hidden="true">↗</span>
+                              </a>
+                            ) : null}
+                          </div>
+
+                          <div className={styles.cardActions}>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${bookmarkedIds.has(resource.id) ? styles.actionBtnActive : ''}`}
+                              onClick={() => toggleBookmark(resource.id)}
+                            >
+                              {bookmarkedIds.has(resource.id) ? '★ Saved' : '☆ Save'}
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${endorsedIds.has(resource.id) ? styles.actionBtnActive : ''}`}
+                              onClick={() => toggleEndorse(resource.id)}
+                            >
+                              {endorsedIds.has(resource.id) ? '♥ Endorsed' : '♡ Endorse'}
+                            </button>
+                          </div>
                         </LivingCard>
                       </li>
                     );
@@ -454,7 +630,8 @@ export function LibraryFloor({
           </div>
         </div>
       ) : (
-        <section className={styles.overview} aria-labelledby="library-overview-title">
+        <>
+          <section className={styles.overview} aria-labelledby="library-overview-title">
           <div>
             <p className={styles.eyebrow}>Overview</p>
             <h2 id="library-overview-title">Start with the catalog</h2>
@@ -464,7 +641,7 @@ export function LibraryFloor({
             </p>
           </div>
           <div className={styles.overviewAside}>
-            <p className={styles.count}>{status === 'ready' ? resources.length : '—'}</p>
+            <p className={styles.count}>{status === 'ready' && Array.isArray(resources) ? resources.length : '—'}</p>
             <p>resources currently shown</p>
             <button onClick={openCatalog} type="button">
               Browse resources
@@ -480,6 +657,189 @@ export function LibraryFloor({
             </div>
           ) : null}
         </section>
+
+        <div className={styles.shelvesContainer}>
+          {/* Curated Collections Shelf */}
+          <section className={styles.shelfSection} aria-labelledby="collections-shelf-heading">
+            <div className={styles.shelfHeader}>
+              <h3 id="collections-shelf-heading">Curated Study Collections</h3>
+              <p>Themed curricular paths gathered for deep inquiry</p>
+            </div>
+            <ul className={styles.shelfGrid} aria-label="Curated collections">
+              {(Array.isArray(collections) ? collections : EXPLORE_COLLECTIONS).map((col) => (
+                <li key={col.id}>
+                  <Link href={`/library/collections/${col.id}`} className={styles.collectionCard}>
+                    <div>
+                      <div className={styles.collectionMeta}>
+                        <span>{col.subjects?.[0] || 'Curriculum'}</span>
+                        {col.is_official ? <span>• Official</span> : null}
+                      </div>
+                      <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: 'var(--ink)' }}>{col.name}</h4>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--ink-soft)', lineHeight: 1.5 }}>
+                        {col.description || 'Guided study sequence.'}
+                      </p>
+                    </div>
+                    <span style={{ marginTop: '1rem', fontSize: '0.85rem', fontWeight: 650, color: 'var(--lotus)' }}>
+                      Explore Collection →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Continue Learning Shelf */}
+          <section className={styles.shelfSection} aria-labelledby="continue-shelf-heading">
+            <div className={styles.shelfHeader}>
+              <h3 id="continue-shelf-heading">Continue Learning & Field Guides</h3>
+              <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
+            </div>
+            <ul className={styles.shelfGrid} aria-label="Continue learning resources">
+              {((Array.isArray(resources) && resources.length > 0) ? resources.slice(0, 4) : EXPLORE_LIBRARY_RESOURCES).map((res) => (
+                <li key={res.id}>
+                  <LivingCard className={styles.resourceCard} variant="glass" elevation="floating">
+                    <div className={styles.resourceMeta}>
+                      <span>{res.type || 'Guide'}</span>
+                      {res.verified ? <span>Verified</span> : null}
+                    </div>
+                    <h3>{res.title}</h3>
+                    <p>{res.description || 'Verified pedagogical material.'}</p>
+                    <div style={{ marginTop: '0.75rem' }}>
+                      {res.type === 'Video' ? (
+                        <Link
+                          href={`/library/video/${res.id}`}
+                          style={{
+                            fontSize: '0.85rem',
+                            fontWeight: 650,
+                            color: 'var(--color-action, #a85022)',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          Watch Lecture 🎬
+                        </Link>
+                      ) : (
+                        <Link
+                          href={`/library/reader/${res.id}`}
+                          style={{
+                            fontSize: '0.85rem',
+                            fontWeight: 650,
+                            color: 'var(--color-action, #a85022)',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          Open Reader 📖
+                        </Link>
+                      )}
+                    </div>
+                  </LivingCard>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Knowledge Tools & Spatial Map Gateway */}
+          <section
+            className={styles.shelfSection}
+            style={{
+              padding: '1.5rem',
+              borderRadius: '1.2rem',
+              border: '1px solid var(--line)',
+              background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1.5rem',
+            }}
+          >
+            <div>
+              <span className={styles.eyebrow}>Document Workbench</span>
+              <h3 style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}>
+                Knowledge Tools Hub
+              </h3>
+              <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
+                Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline export archive.
+              </p>
+              <Link
+                href="/library/tools"
+                style={{
+                  display: 'inline-block',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '9999px',
+                  background: 'var(--ink)',
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                }}
+              >
+                Launch Knowledge Tools →
+              </Link>
+            </div>
+
+            <div>
+              <span className={styles.eyebrow}>Spatial & Topological Map</span>
+              <h3 style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}>
+                Learning Centers & Knowledge Cosmos
+              </h3>
+              <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
+                Explore Sri Lankan physical resource centers and topological concept cluster relationships.
+              </p>
+              <Link
+                href="/library/map"
+                style={{
+                  display: 'inline-block',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '9999px',
+                  background: 'color-mix(in srgb, var(--ink) 10%, transparent)',
+                  color: 'var(--ink)',
+                  border: '1px solid var(--line)',
+                  textDecoration: 'none',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                }}
+              >
+                View Library Map →
+              </Link>
+            </div>
+          </section>
+
+          {/* Living Sanctuary Studio Invitation */}
+          <section
+            className={styles.shelfSection}
+            style={{
+              padding: '1.5rem',
+              borderRadius: '1.2rem',
+              border: '1px dashed var(--line)',
+              background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <span className={styles.eyebrow}>Curator Studio</span>
+                <h3 style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.35rem' }}>
+                  Pedagogical Curation & Content Review
+                </h3>
+                <p style={{ margin: 0, color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
+                  Review staged community submissions, verify curricular alignment, and resolve broken link reports.
+                </p>
+              </div>
+              <Link
+                href="/library/curator"
+                style={{
+                  padding: '0.6rem 1.25rem',
+                  borderRadius: '9999px',
+                  background: 'var(--ink)',
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                }}
+              >
+                Open Curator Studio
+              </Link>
+            </div>
+          </section>
+        </div>
+        </>
       )}
     </SanctuaryFloorCanvas>
   );

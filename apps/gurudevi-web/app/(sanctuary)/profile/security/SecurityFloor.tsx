@@ -1,174 +1,163 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useState } from 'react';
+import { useSecurityControls } from '@/lib/sanctuary/useSecurityControls';
 import styles from './security.module.css';
-
-interface SessionItem {
-  id: string;
-  device: string;
-  location: string;
-  lastActive: string;
-  isCurrent: boolean;
-}
 
 interface SecurityFloorProps {
   displayName: string;
-  capacity?: string;
+  accountId: string;
+  authSubjectId: string;
 }
 
-export function SecurityFloor({ displayName, capacity }: Readonly<SecurityFloorProps>) {
-  const [sessions, setSessions] = useState<SessionItem[]>([
-    {
-      id: 'sess-current',
-      device: 'Current Browser (Next.js 16 Web Sanctuary)',
-      location: 'Colombo, Western Province, LK',
-      lastActive: 'Just now',
-      isCurrent: true,
-    },
-    {
-      id: 'sess-mobile-1',
-      device: 'Gurudevi Mobile (Expo 58 / Android)',
-      location: 'Kandy, Central Province, LK',
-      lastActive: 'Yesterday at 18:42',
-      isCurrent: false,
-    },
-  ]);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  const handleRevoke = (id: string) => {
-    setSessions((prev) => prev.filter((s) => s.id !== id));
-    setNotice('Device session revoked successfully.');
-    setTimeout(() => setNotice(null), 3000);
-  };
-
-  const handleRevokeAllOther = () => {
-    setSessions((prev) => prev.filter((s) => s.isCurrent));
-    setNotice('All other active sessions have been terminated.');
-    setTimeout(() => setNotice(null), 3000);
-  };
-
+export function SecurityFloor({
+  displayName,
+  accountId,
+  authSubjectId,
+}: Readonly<SecurityFloorProps>) {
+  const security = useSecurityControls({ accountId, authSubjectId });
+  const snapshot = security.snapshot;
   return (
     <div className={styles.container}>
       <header className={styles.headerBar}>
-        <div style={{ marginBottom: '0.5rem' }}>
-          <Link
-            href="/profile"
-            style={{
-              fontSize: '0.8rem',
-              fontWeight: 650,
-              color: 'var(--color-action, #a85022)',
-              textDecoration: 'none',
-            }}
-          >
-            ← Back to Profile
-          </Link>
-        </div>
-        <h1>Device Security Center</h1>
-        <p>
-          Review trusted devices, evaluate browser session security, and manage institutional
-          credentials.
-        </p>
+        <Link href="/profile">← Back to Profile</Link>
+        <h1>Account security</h1>
+        <p>Review sign-in methods for {displayName} and verify sensitive account changes.</p>
       </header>
-
-      {notice && (
-        <div aria-live="polite" style={{ color: '#2e5d32', fontWeight: 700, fontSize: '0.85rem' }}>
-          ✓ {notice}
+      {security.notice && <p role="status">{security.notice}</p>}
+      {security.error && <p role="alert">{security.error}</p>}
+      {security.query.isPending && !security.blocked && (
+        <p role="status">Loading account security…</p>
+      )}
+      {security.query.isError && !security.blocked && (
+        <div role="alert">
+          <p>
+            Security details could not be refreshed.{' '}
+            {snapshot
+              ? 'The details below were loaded earlier.'
+              : 'No credential inventory is available.'}
+          </p>
+          <button
+            type="button"
+            className={styles.actionButton}
+            disabled={security.pending}
+            onClick={() => void security.query.refetch()}
+          >
+            Retry security details
+          </button>
         </div>
       )}
-
-      {/* Trust Evaluation */}
-      <section className={styles.card}>
-        <h2 className={styles.cardTitle}>
-          <span>🛡️</span>
-          <span>Browser Trust & Health Evaluation</span>
-        </h2>
-        <div className={styles.trustScoreBadge}>
-          <span>Verified Trusted Environment</span>
-          <span>•</span>
-          <span>Score: 98/100</span>
-        </div>
-        <p className={styles.cardDescription}>
-          Your browser session is secured via HTTP-only partitioned cookies (`@supabase/ssr`), PKCE
-          OAuth verification, and SameSite strict protection. Local offline practice drafts are
-          isolated to private browser storage.
-        </p>
-      </section>
-
-      {/* Active Sessions */}
-      <section className={styles.card}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-          }}
-        >
-          <div>
-            <h2 className={styles.cardTitle}>
-              <span>💻</span>
-              <span>Active Institutional Sessions</span>
-            </h2>
+      {snapshot && (
+        <>
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Linked sign-in methods</h2>
             <p className={styles.cardDescription}>
-              Devices currently authorized for account <strong>{displayName}</strong>.
+              Unlinking Google keeps your Gurudevi account. A confirmed email sign-in method must
+              remain.
             </p>
-          </div>
-          {sessions.length > 1 && (
-            <button className={styles.revokeButton} onClick={handleRevokeAllOther} type="button">
-              Sign out other devices
-            </button>
-          )}
-        </div>
-
-        <div className={styles.sessionsList}>
-          {sessions.map((sess) => (
-            <div key={sess.id} className={styles.sessionItem}>
-              <div className={styles.sessionMeta}>
-                <div className={styles.sessionTitle}>
-                  <span>{sess.device}</span>
-                  {sess.isCurrent && <span className={styles.currentBadge}>This Device</span>}
-                </div>
-                <div className={styles.sessionSub}>
-                  {sess.location} • Last active {sess.lastActive}
-                </div>
-              </div>
-              {!sess.isCurrent && (
+            {snapshot.identities.length === 0 && <p>No linked sign-in methods were returned.</p>}
+            <ul className={styles.sessionsList}>
+              {snapshot.identities.map((identity) => (
+                <li key={identity.id} className={styles.sessionItem}>
+                  <span>
+                    {identity.provider === 'email'
+                      ? 'Email sign-in'
+                      : identity.provider === 'google'
+                        ? 'Google sign-in'
+                        : identity.provider}
+                  </span>
+                  {identity.provider === 'google' && (
+                    <button
+                      type="button"
+                      className={styles.revokeButton}
+                      disabled={security.pending}
+                      onClick={() => security.selectTarget(identity.id)}
+                    >
+                      Unlink Google
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {security.target && (
+              <div>
+                <p>Confirm unlinking Google from this account. Verify your authenticator first.</p>
                 <button
-                  aria-label={`Revoke session on ${sess.device}`}
-                  className={styles.revokeButton}
-                  onClick={() => handleRevoke(sess.id)}
                   type="button"
+                  className={styles.revokeButton}
+                  disabled={security.pending}
+                  onClick={() => void security.unlink()}
                 >
-                  Revoke
+                  Confirm unlink Google
                 </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Two-Factor Authentication & Passkeys */}
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  disabled={security.pending}
+                  onClick={() => security.selectTarget(null)}
+                >
+                  Cancel unlink
+                </button>
+              </div>
+            )}
+          </section>
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Authenticator verification</h2>
+            <p className={styles.cardDescription}>
+              Current session assurance:{' '}
+              {snapshot.assurance === 'aal2' ? 'second factor verified' : 'first factor only'}.
+              Sensitive changes require a recent verification.
+            </p>
+            {snapshot.factors.length === 0 ? (
+              <p>
+                No verified authenticator is available. Authenticator setup and recovery are not
+                available on this page yet.
+              </p>
+            ) : (
+              <>
+                <label htmlFor="security-factor">Authenticator</label>
+                <select
+                  id="security-factor"
+                  value={security.factorId}
+                  disabled={security.pending}
+                  onChange={(event) => security.selectFactor(event.target.value)}
+                >
+                  {snapshot.factors.map((factor, index) => (
+                    <option key={factor.id} value={factor.id}>
+                      {factor.friendly_name || `Authenticator ${index + 1}`}
+                    </option>
+                  ))}
+                </select>
+                <label htmlFor="security-code">Six-digit authenticator code</label>
+                <input
+                  id="security-code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={security.code}
+                  disabled={security.pending}
+                  onChange={(event) => security.editCode(event.target.value)}
+                />
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  disabled={security.pending}
+                  onClick={() => void security.verify()}
+                >
+                  Verify authenticator
+                </button>
+              </>
+            )}
+          </section>
+        </>
+      )}
       <section className={styles.card}>
-        <h2 className={styles.cardTitle}>
-          <span>🔑</span>
-          <span>Two-Factor Authentication (2FA)</span>
-        </h2>
+        <h2 className={styles.cardTitle}>Device sessions and passkeys</h2>
         <p className={styles.cardDescription}>
-          Add a hardware security key (FIDO2/WebAuthn) or time-based authenticator (TOTP) to protect
-          sensitive institutional student records.
+          Device inventory, individual device revocation and passkey setup are not available here
+          yet. This page does not assign a browser trust score.
         </p>
-        <button
-          className={styles.actionButton}
-          onClick={() => {
-            setNotice('Passkey registration wizard initialized.');
-            setTimeout(() => setNotice(null), 3000);
-          }}
-          type="button"
-        >
-          Configure WebAuthn Passkey
-        </button>
+        <Link href="/profile">Return to profile</Link>
       </section>
     </div>
   );

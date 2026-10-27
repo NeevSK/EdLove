@@ -4,7 +4,7 @@ import { communityAPI } from '@repo/core/api/community';
 import { growthSignalsAPI } from '@repo/core/api/growthSignals';
 import { identityAPI } from '@repo/core/api/identity';
 import { socialAPI } from '@repo/core/api/social';
-import { useStore, useTemporalStore } from '@repo/core/store';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError } from '@repo/core/types/API';
 import type { Post } from '@repo/core/types/Community';
@@ -80,8 +80,7 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
  */
 export function useCreatePostMutation() {
   const queryClient = useQueryClient();
-  const { user: storeUser } = useStore();
-  const _activeBond = useAuthStore((state) => state.activeBond);
+  const storeUser = useAuthStore((state) => state.user);
 
   return useMutation({
     mutationFn: async (input: any) => {

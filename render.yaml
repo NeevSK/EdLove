@@ -6,16 +6,26 @@ services:
     dockerContext: .
     plan: standard
     region: oregon
-    healthCheckPath: /health
+    healthCheckPath: /health/live
     autoDeploy: true
     envVars:
       - key: PORT
         value: "3000"
       - key: NODE_ENV
         value: "production"
+      - key: SANCTUARY_TLS_TERMINATION
+        value: "render"
       - key: DATABASE_URL
         sync: false
+      - key: BYOK_ENCRYPTION_SECRET
+        sync: false
       - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: POWERSYNC_URL
+        sync: false
+      - key: POWERSYNC_SIGNING_JWK
         sync: false
       - key: SUPABASE_ANON_KEY
         sync: false
@@ -26,7 +36,7 @@ services:
       - key: RATE_LIMIT_STORE
         value: "postgres"
       - key: RATE_LIMIT_TRUSTED_PROXY_HEADER
-        value: "x-forwarded-for"
+        value: "CF-Connecting-IP"
       - key: SANCTUARY_CEDAR_SOCKET_PATH
         value: "/tmp/cedar.sock"
       - key: SANCTUARY_RUST_EVALUATOR_URL

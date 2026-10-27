@@ -1,7 +1,8 @@
+import { useAuthStore } from '@repo/core/store';
 import { gradingAPI, growthSignalsAPI, studentsAPI } from '@repo/core/api/client';
 import type { GradeMark } from '@repo/core/logic/schemas/grade-domain.schema';
 import { type ClassroomGradingSettings, type StudentGrade } from '@repo/core/types';
-import { useStore } from '@repo/core/logic';
+
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -37,7 +38,7 @@ export const useGradebook = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('rank');
-  const currentUser = useStore((state) => state.user);
+  const currentUser = useAuthStore(state => state.user);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);

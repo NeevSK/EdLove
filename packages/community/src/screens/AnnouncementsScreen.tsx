@@ -5,12 +5,16 @@
  * Refactored for Sanctuary V3.
  */
 
+import { communityAPI as community } from '@repo/community/api/community';
+import type { AnnouncementWithAuthor } from '@repo/community/types/Community';
 import { usePermissions } from '@repo/core/logic';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Globe, Megaphone, Pin, Plus } from '@repo/ui/icons';
 import {
@@ -27,13 +31,12 @@ import {
 } from '@repo/ui/primitives';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTemporalStore } from '@repo/core/store';
-import { communityAPI as community } from '@repo/community/api/community';
-import type { AnnouncementWithAuthor } from '@repo/community/types/Community';
 
 interface AnnouncementsScreenProps {
   schoolId: string;
   userId: string;
+  isEmbedded?: boolean;
+  headerComponent?: React.ReactElement | null;
 }
 
 type State = {
@@ -103,10 +106,15 @@ const initialState: State = {
   error: null,
 };
 
-export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsScreenProps) {
+export default function AnnouncementsScreen({
+  schoolId,
+  userId,
+  isEmbedded = false,
+  headerComponent = null,
+}: AnnouncementsScreenProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
-  const isOffline = useTemporalStore((store) => store.isOffline);
+  const { isOffline } = useOfflineStatus();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
@@ -123,7 +131,7 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
     dispatch({ type: 'LOAD_START' });
     try {
       const data = await community.getAnnouncements(schoolId);
-      dispatch({ type: 'LOAD_SUCCESS', announcements: data });
+      dispatch({ type: 'LOAD_SUCCESS', announcements: data as any });
     } catch (err: unknown) {
       console.error('Failed to load announcements:', err);
       dispatch({
@@ -182,144 +190,161 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
   const pinnedAnnouncements = announcements.filter((a) => a.is_pinned);
   const regularAnnouncements = announcements.filter((a) => !a.is_pinned);
 
-  return (
-    <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-        <VStack className="p-5 gap-6">
-          {/* Hero Section */}
-          <Box className="bg-phase-surface p-6 rounded-[32px] border border-border shadow-sm">
-            <VStack className="gap-4">
-              <HStack className="items-center gap-3">
-                <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
-                  <Icon as={Megaphone} size="md" className="text-phase-interactive" />
-                </Box>
-                <VStack className="gap-0.5">
-                  <Heading className="text-2xl font-black text-ink">The Broadcaster</Heading>
-                  <Text className="text-ink/60 text-sm">
-                    School-wide resonance and critical updates.
-                  </Text>
-                </VStack>
-              </HStack>
+  const renderAnnouncementItem = useCallback(
+    ({ item }: { item: AnnouncementWithAuthor }) => (
+      <Box className="px-5 pb-4">
+        <Box className="p-5 bg-phase-surface rounded-3xl border border-border shadow-sm">
+          <VStack className="gap-3">
+            <HStack className="justify-between items-center">
+              <Text className="text-ink font-bold text-sm">
+                {item.author_name || 'Staff Member'}
+              </Text>
+              <Text className="text-ink/40 text-[10px] font-bold">
+                {formatDate(item.created_at)}
+              </Text>
+            </HStack>
+            <Text className="text-ink/70 text-base leading-relaxed">
+              {item.content}
+            </Text>
+          </VStack>
+        </Box>
+      </Box>
+    ),
+    [formatDate]
+  );
 
-              {can('create', 'Announcement') && (
-                <SanctuaryButton
-                  action="primary"
-                  className="h-12 rounded-xl mt-2"
-                  onPress={() => dispatch({ type: 'SET_CREATE_MODAL', open: true })}
-                >
-                  <HStack className="items-center gap-2">
-                    <Icon as={Plus} size="sm" className="text-white" />
-                    <Text className="text-white font-bold">New Announcement</Text>
-                  </HStack>
-                </SanctuaryButton>
-              )}
+  const listHeader = (
+    <VStack className="p-5 gap-6">
+      {headerComponent}
+      {/* Hero Section */}
+      <Box className="bg-phase-surface p-6 rounded-[32px] border border-border shadow-sm">
+        <VStack className="gap-4">
+          <HStack className="items-center gap-3">
+            <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+              <Icon as={Megaphone} size="md" className="text-phase-interactive" />
+            </Box>
+            <VStack className="gap-0.5">
+              <Heading className="text-2xl font-black text-ink">The Broadcaster</Heading>
+              <Text className="text-ink/60 text-sm">
+                School-wide resonance and critical updates.
+              </Text>
             </VStack>
-          </Box>
+          </HStack>
 
-          {/* Loading State */}
-          {isLoading && (
-            <Box className="py-20 items-center">
-              <BrandPulse size={32} accessibilityLabel="Loading announcements" />
-              <Text className="text-ink/40 text-sm mt-4 font-medium uppercase tracking-widest">
-                Gathering Updates...
-              </Text>
-            </Box>
-          )}
-
-          {/* Error State */}
-          {isOffline && !isLoading && (
-            <Box className="p-4 bg-phase-warning/10 rounded-2xl border border-phase-warning/20">
-              <Text className="text-phase-warning font-medium text-center">
-                You are offline. Reconnect to check for newer announcements.
-              </Text>
-            </Box>
-          )}
-
-          {error && !isLoading && (
-            <BrandedErrorState
-              title="Announcements could not settle"
-              message={isOffline ? 'Reconnect to try again.' : 'We could not load the latest announcements.'}
+          {can('create', 'Announcement') && (
+            <SanctuaryButton
+              action="primary"
+              className="h-12 rounded-xl mt-2"
+              onPress={() => dispatch({ type: 'SET_CREATE_MODAL', open: true })}
             >
-              <SanctuaryButton action="secondary" onPress={() => void loadAnnouncements()}>
-                <Text className="text-ink font-bold">Try again</Text>
-              </SanctuaryButton>
-            </BrandedErrorState>
-          )}
-
-          {/* Pinned Announcements */}
-          {!isLoading && pinnedAnnouncements.length > 0 && (
-            <VStack className="gap-4">
-              <HStack className="items-center gap-2 px-1">
-                <Icon as={Pin} size="xs" className="text-phase-interactive" />
-                <Text className="text-ink/40 text-[10px] font-bold tracking-[2px] uppercase">
-                  {t('announcements.pinned') || 'Pinned to Top'}
-                </Text>
+              <HStack className="items-center gap-2">
+                <Icon as={Plus} size="sm" className="text-white" />
+                <Text className="text-white font-bold">New Announcement</Text>
               </HStack>
-              {pinnedAnnouncements.map((announcement) => (
-                <Box
-                  key={announcement.id}
-                  className="p-5 bg-phase-interactive/5 rounded-3xl border border-phase-interactive/20"
-                >
-                  <VStack className="gap-3">
-                    <HStack className="justify-between items-center">
-                      <Text className="text-ink font-bold text-sm">
-                        {announcement.author_name || 'Authority'}
-                      </Text>
-                      <Text className="text-ink/40 text-[10px] font-bold">
-                        {formatDate(announcement.created_at)}
-                      </Text>
-                    </HStack>
-                    <Text className="text-ink text-base leading-relaxed">
-                      {announcement.content}
-                    </Text>
-                  </VStack>
-                </Box>
-              ))}
-            </VStack>
-          )}
-
-          {/* Regular Announcements */}
-          {!isLoading && regularAnnouncements.length > 0 && (
-            <VStack className="gap-4">
-              <HStack className="items-center gap-2 px-1">
-                <Icon as={Globe} size="xs" className="text-ink/40" />
-                <Text className="text-ink/40 text-[10px] font-bold tracking-[2px] uppercase">
-                  {t('announcements.recent') || 'Recent Streams'}
-                </Text>
-              </HStack>
-
-              {regularAnnouncements.map((announcement) => (
-                <Box
-                  key={announcement.id}
-                  className="p-5 bg-phase-surface rounded-3xl border border-border shadow-sm"
-                >
-                  <VStack className="gap-3">
-                    <HStack className="justify-between items-center">
-                      <Text className="text-ink font-bold text-sm">
-                        {announcement.author_name || 'Staff Member'}
-                      </Text>
-                      <Text className="text-ink/40 text-[10px] font-bold">
-                        {formatDate(announcement.created_at)}
-                      </Text>
-                    </HStack>
-                    <Text className="text-ink/70 text-base leading-relaxed">
-                      {announcement.content}
-                    </Text>
-                  </VStack>
-                </Box>
-              ))}
-            </VStack>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && announcements.length === 0 && (
-            <BrandedEmptyState
-              title="No announcements yet"
-              message="There are no school-wide updates to share right now. Check back when something new needs your attention."
-            />
+            </SanctuaryButton>
           )}
         </VStack>
-      </ScrollView>
+      </Box>
+
+      {/* Loading State */}
+      {isLoading && (
+        <Box className="py-20 items-center">
+          <BrandPulse size={32} accessibilityLabel="Loading announcements" />
+          <Text className="text-ink/40 text-sm mt-4 font-medium uppercase tracking-widest">
+            Gathering Updates...
+          </Text>
+        </Box>
+      )}
+
+      {/* Error State */}
+      {isOffline && !isLoading && (
+        <Box className="p-4 bg-phase-warning/10 rounded-2xl border border-phase-warning/20">
+          <Text className="text-phase-warning font-medium text-center">
+            You are offline. Reconnect to check for newer announcements.
+          </Text>
+        </Box>
+      )}
+
+      {error && !isLoading && (
+        <BrandedErrorState
+          title="Announcements could not settle"
+          message={
+            isOffline
+              ? 'Reconnect to try again.'
+              : 'We could not load the latest announcements.'
+          }
+        >
+          <SanctuaryButton action="secondary" onPress={() => void loadAnnouncements()}>
+            <Text className="text-ink font-bold">Try again</Text>
+          </SanctuaryButton>
+        </BrandedErrorState>
+      )}
+
+      {/* Pinned Announcements */}
+      {!isLoading && pinnedAnnouncements.length > 0 && (
+        <VStack className="gap-4">
+          <HStack className="items-center gap-2 px-1">
+            <Icon as={Pin} size="xs" className="text-phase-interactive" />
+            <Text className="text-ink/40 text-[10px] font-bold tracking-[2px] uppercase">
+              {t('announcements.pinned') || 'Pinned to Top'}
+            </Text>
+          </HStack>
+          {pinnedAnnouncements.map((announcement) => (
+            <Box
+              key={announcement.id}
+              className="p-5 bg-phase-interactive/5 rounded-3xl border border-phase-interactive/20"
+            >
+              <VStack className="gap-3">
+                <HStack className="justify-between items-center">
+                  <Text className="text-ink font-bold text-sm">
+                    {announcement.author_name || 'Authority'}
+                  </Text>
+                  <Text className="text-ink/40 text-[10px] font-bold">
+                    {formatDate(announcement.created_at)}
+                  </Text>
+                </HStack>
+                <Text className="text-ink text-base leading-relaxed">
+                  {announcement.content}
+                </Text>
+              </VStack>
+            </Box>
+          ))}
+        </VStack>
+      )}
+
+      {/* Regular Announcements Header */}
+      {!isLoading && regularAnnouncements.length > 0 && (
+        <HStack className="items-center gap-2 px-1">
+          <Icon as={Globe} size="xs" className="text-ink/40" />
+          <Text className="text-ink/40 text-[10px] font-bold tracking-[2px] uppercase">
+            {t('announcements.recent') || 'Recent Streams'}
+          </Text>
+        </HStack>
+      )}
+    </VStack>
+  );
+
+  const content = (
+    <>
+      <SanctuaryFlashList
+        data={regularAnnouncements}
+        renderItem={renderAnnouncementItem}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={listHeader}
+        ListEmptyComponent={
+          !isLoading && announcements.length === 0 ? (
+            <Box className="px-5 pb-10">
+              <BrandedEmptyState
+                title="No announcements yet"
+                message="There are no school-wide updates to share right now. Check back when something new needs your attention."
+              />
+            </Box>
+          ) : null
+        }
+        refreshing={isLoading}
+        onRefresh={loadAnnouncements}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      />
 
       <SanctuaryModal
         isOpen={showCreateModal}
@@ -378,7 +403,11 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
               isDisabled={isCreating}
             >
               {isCreating ? (
-                <BrandPulse size={24} tintColor="var(--phase-canvas)" accessibilityLabel="Broadcasting announcement" />
+                <BrandPulse
+                  size={24}
+                  tintColor="var(--phase-canvas)"
+                  accessibilityLabel="Broadcasting announcement"
+                />
               ) : (
                 <Text className="text-white font-bold text-lg">Broadcast</Text>
               )}
@@ -386,6 +415,16 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
           </HStack>
         </VStack>
       </SanctuaryModal>
+    </>
+  );
+
+  if (isEmbedded) {
+    return <Box className="flex-1 bg-phase-canvas">{content}</Box>;
+  }
+
+  return (
+    <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
+      {content}
     </ScreenWrapper>
   );
 }

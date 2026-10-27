@@ -1,4 +1,6 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createSleepLog, fetchSleepLogs } from '@repo/self/api/selfFeatureRepository';
 import type { SleepLog } from '@repo/self/types';
@@ -13,7 +15,7 @@ const SLEEP_CACHE_KEY = 'gurudevi-sleep-cache';
  * - Syncs with Supabase in background.
  */
 export function useSleepTracker(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [sleepLogs, setSleepLogs] = useState<SleepLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

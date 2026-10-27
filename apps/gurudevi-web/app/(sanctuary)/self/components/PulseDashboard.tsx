@@ -1,7 +1,7 @@
 'use client';
 
-import { usePendingActions } from '@repo/core/hooks';
-import { BookOpen, Calendar, CircleCheck, Clock, Sparkles } from '@repo/ui/icons';
+import { BookOpen, Calendar, CircleCheck, Clock, Sparkles } from 'lucide-react';
+import { useSanctuaryHealth } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './pulse-dashboard.module.css';
 
 interface PulseDashboardProps {
@@ -10,7 +10,7 @@ interface PulseDashboardProps {
 }
 
 export function PulseDashboard({ userId, onClose }: PulseDashboardProps) {
-  const { data: pendingActions = [] } = usePendingActions(userId ?? 'guest');
+  const { mindfulMinutesToday, recoverySignal, recordSession } = useSanctuaryHealth(userId);
 
   return (
     <div className={styles.container}>
@@ -24,6 +24,30 @@ export function PulseDashboard({ userId, onClose }: PulseDashboardProps) {
       </div>
 
       <div className={styles.quickPills}>
+        <div
+          className={styles.pulseCard}
+          style={{ cursor: 'pointer' }}
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            void recordSession(180, 'sanctuary_pulse');
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              void recordSession(180, 'sanctuary_pulse');
+            }
+          }}
+          title="Click to anchor a 3-minute Sanctuary Breath"
+        >
+          <div className={styles.iconCircle}>🌿</div>
+          <div className={styles.pulseInfo}>
+            <span className={styles.pulseLabel}>Somatic Sanctuary</span>
+            <span className={styles.pulseValue}>
+              {mindfulMinutesToday} mindful min today • {recoverySignal?.level ?? 'serene'} flow
+            </span>
+          </div>
+        </div>
+
         <div className={styles.pulseCard}>
           <div className={styles.iconCircle}>🪷</div>
           <div className={styles.pulseInfo}>
@@ -35,8 +59,17 @@ export function PulseDashboard({ userId, onClose }: PulseDashboardProps) {
         <div className={styles.pulseCard}>
           <div className={styles.iconCircle}>⚡</div>
           <div className={styles.pulseInfo}>
-            <span className={styles.pulseLabel}>Vitality Status</span>
-            <span className={styles.pulseValue}>Level 4 (High Flow)</span>
+            <span className={styles.pulseLabel}>Vitality & Recovery</span>
+            <span className={styles.pulseValue}>
+              {recoverySignal?.level === 'serene'
+                ? 'High Flow (Serene Reserve)'
+                : recoverySignal?.level === 'moderate'
+                  ? 'Balanced Pacing'
+                  : 'Restorative Care Advised'}
+              {recoverySignal?.sleepDurationHours
+                ? ` · ${recoverySignal.sleepDurationHours}h sleep`
+                : ''}
+            </span>
           </div>
         </div>
 
@@ -44,9 +77,7 @@ export function PulseDashboard({ userId, onClose }: PulseDashboardProps) {
           <div className={styles.iconCircle}>📋</div>
           <div className={styles.pulseInfo}>
             <span className={styles.pulseLabel}>Pending Commitments</span>
-            <span className={styles.pulseValue}>
-              {pendingActions.length > 0 ? `${pendingActions.length} Actions due today` : 'Runway clear'}
-            </span>
+            <span className={styles.pulseValue}>Pending commitments are unavailable offline</span>
           </div>
         </div>
       </div>

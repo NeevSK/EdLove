@@ -13,4 +13,5 @@ export const StorageKeys = {
   CACHED_GROUPS: 'cached_groups',
   DRAFT_FORM: 'draft_form',
   DRAFT_STUDENTS: 'draft_students',
+  DRAFT_THOUGHT_RECORD: 'draft_thought_record',
 };

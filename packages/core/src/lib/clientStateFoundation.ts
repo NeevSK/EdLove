@@ -147,6 +147,36 @@ export function scopedQueryKey<T extends readonly unknown[]>(
   return [...queryScopePrefix(scope), ...resourceKey];
 }
 
+/**
+ * Makes an existing non-abortable transport respect a Query cancellation. The
+ * underlying transport can still settle, but its late value cannot repopulate
+ * a Query that was disposed during an account or scope transition.
+ */
+export function abortableQueryRead<T>(
+  signal: AbortSignal,
+  operation: () => Promise<T>,
+): Promise<T> {
+  if (signal.aborted) return Promise.reject(signal.reason);
+  return new Promise((resolve, reject) => {
+    const abort = () => {
+      const error = new Error('Query read aborted.');
+      error.name = 'AbortError';
+      reject(signal.reason ?? error);
+    };
+    signal.addEventListener('abort', abort, { once: true });
+    void operation().then(
+      (value) => {
+        signal.removeEventListener('abort', abort);
+        resolve(value);
+      },
+      (error) => {
+        signal.removeEventListener('abort', abort);
+        reject(error);
+      },
+    );
+  });
+}
+
 function queryMatchesScope(query: Query, prefix: QueryScopePrefix): boolean {
   const key = query.queryKey;
   return prefix.every((segment, index) => key[index] === segment);
@@ -160,6 +190,12 @@ export interface QueryScopeDisposalResult {
 export interface QueryScopeInvalidationResult {
   readonly scope: QueryScopePrefix;
   readonly matchedQueryCount: number;
+}
+
+export interface QueryAccountBoundaryDisposalResult {
+  readonly outgoingPrincipalId: string | null;
+  readonly scopedQueryCount: number;
+  readonly legacyQueryCount: number;
 }
 
 /**
@@ -177,6 +213,42 @@ export async function disposeQueryScope(
   await queryClient.cancelQueries({ predicate });
   queryClient.removeQueries({ predicate });
   return { scope: prefix, matchedQueryCount };
+}
+
+/**
+ * Removes Query cache entries at an account boundary without touching the
+ * MutationCache. Scoped entries for the outgoing principal are removed by
+ * their namespace; legacy unscoped entries use the existing broad-query
+ * fallback until their resource family adopts `scopedQueryKey`.
+ */
+export async function disposeAccountBoundaryQueries(
+  queryClient: QueryClient,
+  outgoingPrincipalId: string | null,
+): Promise<QueryAccountBoundaryDisposalResult> {
+  const scopedPredicate = (query: Query) =>
+    query.queryKey[0] === 'scope' &&
+    typeof query.queryKey[1] === 'string' &&
+    query.queryKey[1] === outgoingPrincipalId;
+  const legacyPredicate = (query: Query) => query.queryKey[0] !== 'scope';
+  const scopedQueryCount = outgoingPrincipalId
+    ? queryClient.getQueryCache().findAll({ predicate: scopedPredicate }).length
+    : 0;
+  const legacyQueryCount = queryClient
+    .getQueryCache()
+    .findAll({ predicate: legacyPredicate }).length;
+
+  const capturedQueries = new Set(
+    queryClient.getQueryCache().findAll({
+      predicate: (query) =>
+        legacyPredicate(query) || (outgoingPrincipalId !== null && scopedPredicate(query)),
+    }),
+  );
+  const predicate = (query: Query) => capturedQueries.has(query);
+  const cancellation = queryClient.cancelQueries({ predicate });
+  queryClient.removeQueries({ predicate });
+  await cancellation;
+
+  return { outgoingPrincipalId, scopedQueryCount, legacyQueryCount };
 }
 
 /**
@@ -214,6 +286,8 @@ export interface StateRegistryEntry {
   readonly scope: PersistedRecordScope | 'component';
   readonly disposition:
     | 'retain'
+    | 'consolidated'
+    | 'query'
     | 'query-review'
     | 'scope-session-review'
     | 'protocol-review'
@@ -225,6 +299,22 @@ export interface StateRegistryEntry {
  * that prevents this foundation from becoming another global state mechanism.
  */
 export const CLIENT_STATE_REGISTRY = [
+  {
+    id: 'scope-session',
+    source: 'packages/core/src/store/scopeSession.ts',
+    owner: 'identity',
+    stateClass: 'scope-session',
+    scope: 'principal',
+    disposition: 'retain',
+  },
+  {
+    id: 'perspective',
+    source: 'packages/core/src/store/scopeSession.ts',
+    owner: 'identity',
+    stateClass: 'scope-session',
+    scope: 'perspective',
+    disposition: 'consolidated',
+  },
   {
     id: 'auth',
     source: 'packages/core/src/store/useAuthStore.ts',
@@ -242,24 +332,16 @@ export const CLIENT_STATE_REGISTRY = [
     disposition: 'scope-session-review',
   },
   {
-    id: 'perspective',
-    source: 'packages/core/src/store/usePerspectiveStore.ts',
-    owner: 'identity',
-    stateClass: 'scope-session',
-    scope: 'perspective',
-    disposition: 'scope-session-review',
-  },
-  {
     id: 'feature',
     source: 'packages/core/src/store/useFeatureStore.ts',
     owner: 'platform',
     stateClass: 'server-state-candidate',
     scope: 'principal',
-    disposition: 'query-review',
+    disposition: 'retain',
   },
   {
     id: 'entitlement',
-    source: 'packages/core/src/store/useEntitlementStore.ts',
+    source: 'packages/core/src/hooks/useEntitlementQuery.ts',
     owner: 'authorization',
     stateClass: 'server-state-candidate',
     scope: 'principal',
@@ -275,7 +357,7 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'notification',
-    source: 'packages/core/src/store/useNotificationStore.ts',
+    source: 'packages/core/src/hooks/useScopedNotifications.ts',
     owner: 'notification-domain',
     stateClass: 'server-state-candidate',
     scope: 'principal',
@@ -283,7 +365,7 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'device-security',
-    source: 'packages/core/src/store/useDeviceSecurityStore.ts',
+    source: 'packages/core/src/hooks/useScopedDeviceSecurity.ts',
     owner: 'security',
     stateClass: 'server-state-candidate',
     scope: 'principal',
@@ -363,11 +445,11 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'growth',
-    source: 'packages/core/src/store/useGrowthStore.ts',
+    source: 'packages/core/src/hooks/useGrowthQuery.ts',
     owner: 'growth-domain',
     stateClass: 'domain-projection-review',
     scope: 'principal',
-    disposition: 'split-review',
+    disposition: 'query',
   },
   {
     id: 'temporal',

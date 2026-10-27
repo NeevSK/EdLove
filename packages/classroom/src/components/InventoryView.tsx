@@ -2,7 +2,9 @@ import { useInventory } from '@repo/classroom/hooks/useInventory';
 import { api } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { CLASSROOM_RESOURCE_SCOPE } from '@repo/core/lib';
-import { useStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback';
+import { useAuthStore } from '@repo/core/store';
+
 import type { InventoryCategory, InventoryCondition, InventoryItem } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { useThemedColors } from '@repo/ui/hooks';
@@ -111,8 +113,8 @@ interface InventoryAPIProxy {
 export default function InventoryView({ classroomId }: InventoryViewProps) {
   const { t } = useTranslation();
   const colors = useThemedColors();
-  const { user } = useStore();
-  const showToast = useStore((state) => state.showToast);
+  const user = useAuthStore((state) => state.user);
+
   const { items, isLoading, setItems } = useInventory(classroomId);
 
   const [state, dispatch] = useReducer(inventoryReducer, {

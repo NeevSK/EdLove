@@ -1,4 +1,10 @@
 import type { AttendanceBatchRecordCommand } from './contract';
+import type {
+  CapabilityTransactionPort,
+  OperationReceipt,
+  OperationReceiptClaim,
+  OperationReceiptPort,
+} from '../../../api/capabilityFoundation';
 
 export type AttendanceBatchAuthority = Readonly<{
   principalId: string;
@@ -15,33 +21,15 @@ export type AttendanceBatchRecordedItem = Readonly<{
   status: 'present' | 'absent' | 'late' | 'excused';
 }>;
 
-export type AttendanceBatchReceipt = Readonly<{
-  operationId: string;
-  status: 'pending' | 'completed' | 'failed';
-  payloadHash: string;
-  result: readonly AttendanceBatchRecordedItem[] | null;
-}>;
+export type AttendanceBatchReceipt = OperationReceipt<readonly AttendanceBatchRecordedItem[]>;
 
-export type AttendanceBatchReceiptClaim =
-  | Readonly<{ kind: 'claimed'; receipt: AttendanceBatchReceipt }>
-  | Readonly<{ kind: 'replay'; receipt: AttendanceBatchReceipt }>
-  | Readonly<{ kind: 'payload-conflict'; receipt: AttendanceBatchReceipt }>
-  | Readonly<{ kind: 'in-progress'; receipt: AttendanceBatchReceipt }>;
+export type AttendanceBatchReceiptClaim = OperationReceiptClaim<
+  readonly AttendanceBatchRecordedItem[]
+>;
 
-export interface AttendanceBatchReceiptPort {
-  claim(input: {
-    capability: string;
-    principalId: string;
-    idempotencyKey: string;
-    payloadHash: string;
-  }): Promise<AttendanceBatchReceiptClaim>;
-  complete(input: {
-    operationId: string;
-    payloadHash: string;
-    result: readonly AttendanceBatchRecordedItem[];
-  }): Promise<AttendanceBatchReceipt>;
-  fail(input: { operationId: string; payloadHash: string; failureCode: string }): Promise<void>;
-}
+export type AttendanceBatchReceiptPort = OperationReceiptPort<
+  readonly AttendanceBatchRecordedItem[]
+>;
 
 export interface AttendanceBatchRepository {
   recordBatch(input: {
@@ -50,8 +38,17 @@ export interface AttendanceBatchRepository {
   }): Promise<readonly AttendanceBatchRecordedItem[]>;
 }
 
-export type AttendanceBatchCommandDependencies = Readonly<{
+/**
+ * The receipt and attendance write must share one durable transaction. This is
+ * deliberately a capability-local boundary: the command cannot infer atomicity
+ * from unrelated repository implementations.
+ */
+export type AttendanceBatchTransactionPort = CapabilityTransactionPort<{
   receipts: AttendanceBatchReceiptPort;
   attendance: AttendanceBatchRepository;
-  hashPayload: (command: AttendanceBatchRecordCommand) => string;
+}>;
+
+export type AttendanceBatchCommandDependencies = Readonly<{
+  transaction: AttendanceBatchTransactionPort;
+  hashPayload: (command: AttendanceBatchRecordCommand) => string | Promise<string>;
 }>;

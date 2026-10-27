@@ -1,8 +1,8 @@
 'use client';
 
-import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
-import { Check, Mic, Play, Square, Trash2 } from '@repo/ui/icons';
+import { Check, Mic, Play, Square, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { saveVoiceJournalRecord } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './voice-journaling.module.css';
 
 interface VoiceJournalingProps {
@@ -98,7 +98,9 @@ export function VoiceJournaling({ userId, onClose }: VoiceJournalingProps) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>Voice Sanctuary</h2>
-        <p className={styles.subtitle}>Speak your mind unhurriedly into a confidential audio space</p>
+        <p className={styles.subtitle}>
+          Speak your mind unhurriedly into a confidential audio space
+        </p>
       </div>
 
       <div className={styles.recordCard}>
@@ -114,26 +116,20 @@ export function VoiceJournaling({ userId, onClose }: VoiceJournalingProps) {
             </button>
             <div className={styles.timer}>{formatTimer(recordSeconds)}</div>
             <p className={styles.subtitle}>
-              {isRecording ? 'Listening carefully... Click square to finish.' : 'Click to begin speaking.'}
+              {isRecording
+                ? 'Listening carefully... Click square to finish.'
+                : 'Click to begin speaking.'}
             </p>
           </>
         ) : (
           <div className={styles.audioPreview}>
             <audio src={audioUrl} controls className={styles.audioPlayer} />
             <div className={styles.actionRow}>
-              <button
-                type="button"
-                onClick={discardAudio}
-                className={styles.discardBtn}
-              >
+              <button type="button" onClick={discardAudio} className={styles.discardBtn}>
                 <Trash2 size={15} />
                 <span>Discard</span>
               </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className={styles.saveBtn}
-              >
+              <button type="button" onClick={handleSave} className={styles.saveBtn}>
                 {savedSuccess ? <Check size={15} /> : <Play size={15} />}
                 <span>{savedSuccess ? 'Saved' : 'Save Voice Reflection'}</span>
               </button>

@@ -1,5 +1,5 @@
-import { classifyAuthCallback } from '@repo/core/logic/auth/authCallbackPolicy';
 import { secureApiFetch } from '@repo/core/api/transportSecurity';
+import { classifyAuthCallback } from '@repo/core/logic/auth/authCallbackPolicy';
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '../../../lib/supabase/config';
@@ -24,6 +24,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (!config) return signInRedirect(request, returnTo);
 
   const destination = new URL(next, request.url);
+  if (destination.pathname === '/reset-password')
+    destination.searchParams.set('returnTo', returnTo);
   const response = NextResponse.redirect(destination);
   response.headers.set('Cache-Control', 'private, no-store');
   const supabase = createServerClient(config.url, config.publishableKey, {

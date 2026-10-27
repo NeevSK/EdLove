@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useVisualCapabilities } from '../context/VisualCapabilities';
-import { tokens } from '../tokens';
+import { useWorld } from '../world/native/WorldContext';
 
 export type MascotPodVariant = 'halo' | 'glassPod' | 'avatar' | 'raw';
 
@@ -18,10 +18,12 @@ export function MascotPod({
   children,
   variant = 'halo',
   size = 120,
-  glowColor = tokens.colors.primary,
+  glowColor: glowOverride,
   style,
 }: MascotPodProps) {
   const visualCapabilities = useVisualCapabilities();
+  const t = useWorld().tokens;
+  const glowColor = glowOverride ?? t.glow;
 
   if (variant === 'raw') {
     return <View style={[styles.container, style]}>{children}</View>;
@@ -37,6 +39,7 @@ export function MascotPod({
         style={[
           styles.container,
           styles.avatarPod,
+          { backgroundColor: t.raised },
           {
             width: size,
             height: size,
@@ -66,6 +69,7 @@ export function MascotPod({
         style={[
           styles.container,
           styles.glassPodContainer,
+          { backgroundColor: t.raised, borderColor: t.line, shadowColor: t.ink },
           {
             padding: size * 0.08,
             borderRadius: size * 0.22,
@@ -140,16 +144,12 @@ const styles = StyleSheet.create({
   avatarPod: {
     borderWidth: 2,
     overflow: 'hidden',
-    backgroundColor: tokens.colors.surface,
   },
   avatarGlow: {
     opacity: 0.12,
   },
   glassPodContainer: {
-    backgroundColor: tokens.colors.glass,
     borderWidth: 1,
-    borderColor: tokens.colors.borderSubtle,
-    shadowColor: tokens.colors.shadowColor,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,

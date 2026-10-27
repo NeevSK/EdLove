@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type AccountAttendanceDraftScope,
   type AttendanceStatus,
+  getCanonicalSampleStudents,
   loadAccountAttendance,
   loadAccountClassrooms,
   saveAccountAttendanceDraft,
@@ -121,43 +122,10 @@ export function KioskFloor({ mode, subjectId, scope }: KioskFloorProps) {
           };
           setClassrooms([sampleClassroom]);
           setSelectedClassroom(sampleClassroom);
-          const sampleStudents: WorkspaceStudent[] = [
-            {
-              id: 'st-01',
-              studentId: 'st-01',
-              name: 'Nimal Bandara',
-              rollNumber: 1,
-              status: 'absent',
-            },
-            {
-              id: 'st-02',
-              studentId: 'st-02',
-              name: 'Kasun Perera',
-              rollNumber: 2,
-              status: 'absent',
-            },
-            {
-              id: 'st-03',
-              studentId: 'st-03',
-              name: 'Ananya Sharma',
-              rollNumber: 3,
-              status: 'absent',
-            },
-            {
-              id: 'st-04',
-              studentId: 'st-04',
-              name: 'Devinda Silva',
-              rollNumber: 4,
-              status: 'absent',
-            },
-            {
-              id: 'st-05',
-              studentId: 'st-05',
-              name: 'Fatima Zahra',
-              rollNumber: 5,
-              status: 'absent',
-            },
-          ];
+          const sampleStudents: WorkspaceStudent[] = getCanonicalSampleStudents().map((s) => ({
+            ...s,
+            status: 'absent',
+          }));
           setStudents(sampleStudents);
         }
       } catch {

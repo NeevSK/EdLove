@@ -1,5 +1,11 @@
 import { classroomRepository } from '@repo/core/adapters/supabase/educational/classroomRepository';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_CLASSROOMS,
+  MOCK_STUDENT_STATS,
+  MOCK_TEACHER_STATS,
+} from '@repo/core/api/mockData';
 import { APIError } from '@repo/core/types/API';
 
 /**
@@ -144,3 +150,46 @@ export const classroomsAPI = {
     }
   },
 };
+
+// ---------------------------------------------------------------------------
+// Sandbox ghost-seeding registration for this domain.
+// The resonantProxy reads this config instead of a hardcoded if-block.
+// ---------------------------------------------------------------------------
+registerSandboxDomain({
+  domain: 'classrooms',
+  ghostMethods: ['getByTeacher', 'getByStudent', 'getBySchool', 'getTeacherStats', 'getStudentStats'],
+  isEmpty: (method, data) => {
+    if (method === 'getTeacherStats') {
+      return !data || (data as any).active_classes === 0;
+    }
+    if (method === 'getStudentStats') {
+      return !data || ((data as any).active_sanctuaries === 0 && (data as any).goals_set === 0);
+    }
+    return isEmptyArray(data);
+  },
+  getSamples: (method) => {
+    if (method === 'getTeacherStats') return { ...MOCK_TEACHER_STATS, is_sample: true };
+    if (method === 'getStudentStats') return { ...MOCK_STUDENT_STATS, is_sample: true };
+    return MOCK_CLASSROOMS;
+  },
+});
+
+import {
+  MOCK_CLASSROOM_DETAIL_ASSIGNMENTS,
+  MOCK_CLASSROOM_DETAIL_LESSONS,
+  MOCK_CLASSROOM_DETAIL_OBSERVATIONS,
+  MOCK_CLASSROOM_DETAIL_STUDENTS,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'classroomDetail',
+  ghostMethods: ['getStudents', 'getLessons', 'getAssignments', 'getObservations'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getStudents') return MOCK_CLASSROOM_DETAIL_STUDENTS;
+    if (method === 'getLessons') return MOCK_CLASSROOM_DETAIL_LESSONS;
+    if (method === 'getAssignments') return MOCK_CLASSROOM_DETAIL_ASSIGNMENTS;
+    return MOCK_CLASSROOM_DETAIL_OBSERVATIONS;
+  },
+});
+

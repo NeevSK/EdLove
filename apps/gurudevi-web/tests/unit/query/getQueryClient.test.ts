@@ -1,3 +1,6 @@
+import type { NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { onlineManager } from '@tanstack/react-query';
 import { describe, expect, it } from 'vitest';
 import {
   getQueryClient,
@@ -6,6 +9,36 @@ import {
 } from '../../../lib/query/getQueryClient';
 
 describe('getQueryClient', () => {
+  it('schedules from the shared network snapshot and keeps unknown distinct from offline', () => {
+    let snapshot: NetworkSnapshot = {
+      status: 'unknown',
+      source: 'browser-navigator',
+      connection: null,
+    };
+    const listeners = new Set<() => void>();
+    networkManager.registerAdapter({
+      getSnapshot: () => snapshot,
+      subscribe: (listener) => {
+        listeners.add(listener);
+        return () => {
+          listeners.delete(listener);
+        };
+      },
+    });
+    const stop = onlineManager.subscribe(() => {});
+    try {
+      expect(onlineManager.isOnline()).toBe(true);
+      snapshot = { ...snapshot, status: 'offline' };
+      for (const listener of listeners) listener();
+      expect(onlineManager.isOnline()).toBe(false);
+      snapshot = { ...snapshot, status: 'unknown' };
+      for (const listener of listeners) listener();
+      expect(onlineManager.isOnline()).toBe(true);
+    } finally {
+      stop();
+    }
+  });
+
   it('instantiates QueryClient with production defaults', () => {
     const client = makeQueryClient();
     const defaultQueries = client.getDefaultOptions().queries;

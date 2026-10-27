@@ -1,6 +1,7 @@
 import { api, MOCK_SCHOOL_STATS } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import type { School, SchoolStats } from '@repo/core/types';
 import { useCallback, useEffect, useReducer } from 'react';
@@ -109,7 +110,7 @@ const ecosystemStatsReducer = (
   }
 };
 export function useFounderEcosystemStats() {
-  const isDemoMode = useStore((state) => state.isDemoMode);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
   const [state, dispatch] = useReducer(ecosystemStatsReducer, {
     stats: null,
     schools: [],
@@ -275,7 +276,7 @@ const schoolStatsReducer = (
 };
 export function useFounderSchoolStats(schoolId: string) {
   const viewDate = useTemporalStore((s) => s.viewDate);
-  const isDemoMode = useStore((state) => state.isDemoMode);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
   const isGuest = useIsGuest();
   const [state, dispatch] = useReducer(schoolStatsReducer, {
     stats: null,

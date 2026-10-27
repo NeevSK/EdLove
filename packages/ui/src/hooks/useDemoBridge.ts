@@ -1,5 +1,5 @@
-import { api } from '@repo/core/api/client';
-import { useAuthStore } from '@repo/core/store';
+import { replayDemoLogs } from '@repo/core/api/sandboxBridge';
+import { useExperienceState } from '@repo/core/lib/experienceState';
 import { hapticSuccess, hapticWarning } from '@repo/ui/utils/haptics';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,32 +11,9 @@ import { Alert, Platform } from 'react-native';
  */
 export function useDemoBridge() {
   const { t } = useTranslation();
-  const demoLogs = useAuthStore((state) => state.demoLogs);
-  const clearDemoLogs = useAuthStore((state) => state.clearDemoLogs);
-  const setDemoMode = useAuthStore((state) => state.setDemoMode);
-
-  /**
-   * Processes the shadow logs and executes real API calls.
-   */
-  const processDemoLogs = useCallback(
-    async (logs: Array<{ module: string; method: string; payload: any }>) => {
-      console.log(`[DemoBridge] Processing ${logs.length} logs for reality...`);
-
-      for (const log of logs) {
-        try {
-          const apiModule = (api as Record<string, Record<string, unknown>>)[log.module];
-          if (apiModule && typeof apiModule[log.method] === 'function') {
-            console.log(`[DemoBridge] Realizing: ${log.module}.${log.method}`);
-            const method = apiModule[log.method] as (payload: unknown) => Promise<void>;
-            await method(log.payload);
-          }
-        } catch (err) {
-          console.error(`[DemoBridge] Failed to realize ${log.module}.${log.method}:`, err);
-        }
-      }
-    },
-    [],
-  );
+  const demoLogs = useExperienceState((state) => state.demoLogs);
+  const clearDemoLogs = useExperienceState((state) => state.clearDemoLogs);
+  const setDemoMode = useExperienceState((state) => state.setDemoMode);
 
   const exitDemoWithBridge = useCallback(async () => {
     if (demoLogs.length === 0) {
@@ -55,8 +32,17 @@ export function useDemoBridge() {
 
     hapticWarning();
 
+    const executeReplay = async () => {
+      const report = await replayDemoLogs({ clearOnComplete: true });
+      if (report.failed.length === 0) {
+        hapticSuccess();
+      } else {
+        console.warn(`[DemoBridge] ${report.failed.length} operations failed to replay:`, report.failed);
+      }
+      setDemoMode(false);
+    };
+
     if (Platform.OS === 'web') {
-      // Two-action demo bridge - window.confirm is acceptable for this destructive choice on web
       const save = window.confirm(
         t('demoMode.bridgeMessage', {
           count: demoLogs.length,
@@ -64,16 +50,7 @@ export function useDemoBridge() {
         }),
       );
       if (save) {
-        const setBridging = useAuthStore.getState().setBridging;
-        try {
-          setBridging(true);
-          await processDemoLogs(demoLogs);
-          hapticSuccess();
-        } finally {
-          setBridging(false);
-          clearDemoLogs();
-          setDemoMode(false);
-        }
+        await executeReplay();
       } else {
         clearDemoLogs();
         setDemoMode(false);
@@ -99,27 +76,12 @@ export function useDemoBridge() {
         {
           text: t('demoMode.bridgeSave'),
           onPress: () => {
-            void (async () => {
-              const setBridging = useAuthStore.getState().setBridging;
-              try {
-                // Enable bridging mode to bypass API interception
-                setBridging(true);
-
-                // Bridge the data to reality
-                await processDemoLogs(demoLogs);
-
-                hapticSuccess();
-              } finally {
-                setBridging(false);
-                clearDemoLogs();
-                setDemoMode(false);
-              }
-            })();
+            void executeReplay();
           },
         },
       ],
     );
-  }, [demoLogs, setDemoMode, clearDemoLogs, t, processDemoLogs]);
+  }, [demoLogs, setDemoMode, clearDemoLogs, t]);
 
   return useMemo(() => ({ exitDemoWithBridge }), [exitDemoWithBridge]);
 }

@@ -78,10 +78,19 @@ export interface AcademicSubmissionView {
   status: 'pending_review' | 'graded' | 'resubmit';
 }
 
+export interface GradebookStudent {
+  id: string;
+  name: string;
+  rollNumber: number;
+  marks: number;
+  feedback?: string;
+}
+
 /** Inbound Port Driving the Submissions Floor UI */
 export interface IAcademicPort {
   getAssignments(classroomId?: string): Promise<AssignmentQuest[]>;
   getSubmissions(studentId?: string): Promise<AcademicSubmissionView[]>;
+  getGradebookRoster(): Promise<readonly GradebookStudent[]>;
   submitAssignment(
     input: SubmitAssignmentInput,
   ): Promise<{ submission: AssignmentSubmissionItem; status: 'synced' | 'queued_offline' }>;

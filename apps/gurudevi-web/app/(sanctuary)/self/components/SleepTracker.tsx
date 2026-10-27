@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useSleepTracker } from '@repo/self/hooks/useSleepTracker';
+import React, { useEffect, useState } from 'react';
+import { useSleepTracker } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './sleep-tracker.module.css';
 
 interface SleepTrackerProps {
@@ -65,7 +65,7 @@ export function SleepTracker({ userId = 'guest-explorer' }: Readonly<SleepTracke
 
       <div className={styles.card}>
         <span className={styles.cardEyebrow}>How did you wake this morning?</span>
-        
+
         <div className={styles.levelSelector}>
           {QUALITY_LEVELS.map((level) => (
             <button
@@ -94,19 +94,19 @@ export function SleepTracker({ userId = 'guest-explorer' }: Readonly<SleepTracke
             onChange={(e) => setQuality(Number(e.target.value))}
             className={styles.rangeInput}
           />
-          <div className={styles.selectedFeedback} style={{ color: selectedLevel?.color ?? '#0284c7' }}>
+          <div
+            className={styles.selectedFeedback}
+            style={{ color: selectedLevel?.color ?? '#0284c7' }}
+          >
             <span>{selectedLevel?.emoji ?? '✨'}</span>
-            <strong>{selectedLevel?.label ?? 'Balanced'} ({quality}/5)</strong>
+            <strong>
+              {selectedLevel?.label ?? 'Balanced'} ({quality}/5)
+            </strong>
           </div>
         </div>
 
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.saveBtn}
-            onClick={handleSave}
-            disabled={saving}
-          >
+          <button type="button" className={styles.saveBtn} onClick={handleSave} disabled={saving}>
             {saving ? 'Logging…' : saved ? '✓ Sleep Logged' : 'Log Sleep Rhythm 🪷'}
           </button>
         </div>

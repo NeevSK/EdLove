@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -83,6 +84,28 @@ describe('Workspace attendance account boundary', () => {
 
     await expect(loadAccountClassrooms(subject)).rejects.toThrow('Your secure session has ended');
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('forwards query cancellation to the protected classroom request', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
+    setSession();
+    const controller = new AbortController();
+    const fetchMock = vi.fn<typeof fetch>().mockImplementation(
+      (_input, init) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () =>
+            reject(new DOMException('aborted', 'AbortError')),
+          );
+        }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const pending = loadAccountClassrooms(subject, controller.signal);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    controller.abort();
+
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    expect(fetchMock.mock.calls[0]?.[1]?.signal).toBe(controller.signal);
   });
 
   it('rejects an insecure API origin before session lookup or fetch', async () => {

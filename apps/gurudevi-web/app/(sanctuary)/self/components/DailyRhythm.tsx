@@ -1,9 +1,8 @@
 'use client';
 
-import { useTimetable } from '@repo/self/hooks/useTimetable';
-import type { Period } from '@repo/self/types';
-import { Calendar, Clock, MapPin, Plus, Trash2 } from '@repo/ui/icons';
+import { Calendar, Clock, MapPin, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { type Period, useTimetable } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './daily-rhythm.module.css';
 
 interface DailyRhythmProps {
@@ -36,7 +35,7 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
   const [startTime, setStartTime] = useState('08:30');
   const [endTime, setEndTime] = useState('09:30');
 
-  const { periods, loading, addPeriod, deletePeriod } = useTimetable(activeDay);
+  const { periods, loading, addPeriod, deletePeriod } = useTimetable(activeDay, userId);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +61,9 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <h2 className={styles.title}>Daily Rhythm & Timetable</h2>
-          <p className={styles.subtitle}>Curate your focus slots, classroom duties, and renewal periods</p>
+          <p className={styles.subtitle}>
+            Curate your focus slots, classroom duties, and renewal periods
+          </p>
         </div>
         <div className={styles.dayTabs}>
           {DAYS.map((day) => (
@@ -92,7 +93,9 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
               <div className={styles.periodMeta}>
                 <div className={styles.periodTime}>
                   <Clock size={13} />
-                  <span>{period.start_time || '08:30'} - {period.end_time || '09:30'}</span>
+                  <span>
+                    {period.start_time || '08:30'} - {period.end_time || '09:30'}
+                  </span>
                 </div>
                 <div className={styles.periodDetails}>
                   <span className={styles.periodSubject}>{period.subject}</span>
@@ -162,11 +165,7 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
             />
           </div>
           <div className={styles.actionRow}>
-            <button
-              type="button"
-              onClick={() => setIsAdding(false)}
-              className={styles.cancelBtn}
-            >
+            <button type="button" onClick={() => setIsAdding(false)} className={styles.cancelBtn}>
               Cancel
             </button>
             <button type="submit" className={styles.submitBtn}>

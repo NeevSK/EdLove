@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDrizzleDB, injectNativePowerSyncDB, registerPermissionValidator } from '../powersync/database';
 
-// We will use a mock DB object and wrap it ourselves, or mock useStore to verify behavior
-vi.mock('../../store/useStore', () => ({
-  useStore: {
+// We will use a mock DB object and wrap it ourselves, or mock useAuthStore to verify behavior
+vi.mock('../../store/useAuthStore', () => ({
+  useAuthStore: {
     getState: vi.fn(() => ({
       user: {
         id: 'user-123',

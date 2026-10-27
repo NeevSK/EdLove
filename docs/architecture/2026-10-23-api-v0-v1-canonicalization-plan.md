@@ -2,7 +2,7 @@
 title: "API v0 Compatibility and v1 Canonicalization Plan"
 status: "draft"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-24
 author: "Naveen"
 scribe: "Codex"
 tags: [architecture, api, versioning, orpc, migration, bff, compatibility]
@@ -207,3 +207,38 @@ source before any document is marked superseded.
 
 This is a design plan, not an implementation claim. It proves no v1 mount,
 client, database transaction, BFF, or v0 compatibility behavior yet exists.
+
+## Implementation checkpoint — 2026-10-24
+
+The plan's design-only boundary above is now historically accurate but no
+longer describes the current implementation. The following additive foundation
+has been implemented in the shared working tree; it does **not** authorize v0
+retirement, broad client migration, or admission of unrelated domains.
+
+| Foundation concern | Implemented source seam | Consumer/evidence | Remaining limit |
+| --- | --- | --- | --- |
+| Canonical v1 composition | `canonicalV1Registry.ts`, literal `/api/v1/*` mount | Attendance is admitted once; registry rejects duplicate keys/descriptor ids. | Attendance remains the sole admitted v1 domain capability. |
+| Server-derived authority | `resolveServerDerivedAuthority()` in `router.ts`; native oRPC, canonical HTTP, and policy middleware consume it | Persisted active bond and relationship facts construct principal/scope server-side. | Cedar/ZenStack/handler parity needs live database evidence. |
+| Capability/failure lifecycle | `capabilityFoundation.ts`, `capabilityErrorEnvelope.ts` | Attendance declares lifecycle, privacy, receipt, audit/activity/telemetry/effect and typed failure envelopes. | Other capability contracts remain v0/specialised/blocked until admitted. |
+| Durable operations | `operationReceiptStore.ts` over `operation_receipts` | Attendance and workspace provisioning both consume payload-bound claim/replay/conflict/failed receipt behavior. | Real Postgres contention and recovery-worker evidence remains unproven. |
+| Accountability and emissions | `capabilityObservability.ts` | Audit is transaction-bound, descriptor identity is server-authoritative, activity is separately disabled for attendance, telemetry is allowlisted operational metadata. | No product activity feed exists; consent/audience/retention/replay must be designed before one is admitted. |
+| External effects | `external_effect_intents` migration, `externalEffectOutbox.ts`, `externalEffects.ts` dispatcher | Transaction-bound enqueue, descriptor-owned event name + Zod-minimized payload, fenced lease claim, idempotent Inngest handoff, exponential retry and terminal failed-for-repair state exist. | No product capability currently claims an external effect; a dispatched handoff is not provider delivery truth. |
+
+### Evidence achieved
+
+- G0: `pnpm --filter @repo/core check-types` and Sanctuary API TypeScript checks pass for the scoped changes.
+- G1/G2: capability foundation, attendance command, receipt-state, guardian-link eligibility, observability, workspace-provisioning and error-wire tests cover replay, conflict, failed receipt state, audit provenance, server-derived authority consumers and typed error behavior.
+- G3: canonical attendance HTTP composition is tested through the production canonical router.
+
+These tests use substituted databases/transactions where noted. They do not
+prove live RLS/Cedar parity, real concurrent PostgreSQL locking, deployed
+Inngest delivery, client adoption, or production observability retention.
+
+### Next required implementation boundary
+
+Finish the **external-effect** seam as platform operations: a transactionally
+persisted effect intent, idempotent dispatcher, bounded retry/repair and safe
+provider status projection. That work must remain separate from audit, product
+activity and telemetry, and must not turn `events.dispatch` or SSE into a
+generic activity lake. Only after that is proved should a capability whose
+truth includes provider delivery be admitted to v1.

@@ -1,3 +1,4 @@
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { HStack } from '@repo/ui/components/ui/hstack';
 import { Text } from '@repo/ui/components/ui/text';
 import { Toast, ToastTitle } from '@repo/ui/components/ui/toast';
@@ -35,7 +36,8 @@ export interface ToastItem {
 
 type ToastAction =
   | { type: 'ADD_TOAST'; payload: Omit<ToastItem, 'count'> }
-  | { type: 'REMOVE_TOAST'; id: string };
+  | { type: 'REMOVE_TOAST'; id: string }
+  | { type: 'CLEAR_TOASTS' };
 
 interface ToastContextType {
   showToast: (options: Omit<ToastItem, 'id' | 'count'>) => void;
@@ -66,6 +68,8 @@ function toastReducer(state: ToastItem[], action: ToastAction): ToastItem[] {
     }
     case 'REMOVE_TOAST':
       return state.filter((t) => t.id !== action.id);
+    case 'CLEAR_TOASTS':
+      return [];
     default:
       return state;
   }
@@ -199,6 +203,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [],
   );
 
+  useEffect(() => sovereignBus.on('feedback:toast', showToast), [showToast]);
+  useEffect(
+    () =>
+      sovereignBus.on('feedback:clear', () => {
+        timersRef.current.forEach((timer) => clearTimeout(timer));
+        timersRef.current.clear();
+        dispatch({ type: 'CLEAR_TOASTS' });
+      }),
+    [],
+  );
   const contextValue = useMemo(() => ({ showToast, removeToast }), [showToast, removeToast]);
 
   return (

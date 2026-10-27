@@ -18,3 +18,4 @@ export * from '@repo/self/hooks/useTimetable';
 export * from '@repo/self/hooks/useTomorrowPrep';
 export * from '@repo/self/hooks/useWellbeingEnrichment';
 export * from '@repo/self/hooks/useWisdom';
+export * from '@repo/self/hooks/useSanctuaryHealth';

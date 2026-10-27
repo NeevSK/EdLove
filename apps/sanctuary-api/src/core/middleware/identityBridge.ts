@@ -1,6 +1,6 @@
+import type { MiddlewareHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { endTime, startTime } from 'hono/timing';
-import type { MiddlewareHandler } from 'hono';
 import { CompositeAuthProvider } from '../adapters/CompositeAuthProvider';
 import { CompositeDatabaseProvider } from '../adapters/CompositeDatabaseProvider';
 import { resolveAuthenticatedAccount } from '../authenticatedAccount';
@@ -33,6 +33,11 @@ export function createIdentityBridge(options?: IdentityBridgeOptions): Middlewar
 
   return async (c, next) => {
     const authHeader = c.req.header('Authorization');
+    const expectedSubject = c.req.header('X-Expected-Auth-Subject');
+    if (expectedSubject !== undefined && !authHeader)
+      throw new HTTPException(401, {
+        message: 'An authenticated session is required for subject continuity.',
+      });
     const dbUrl = (c.env as any)?.DATABASE_URL || getEnvVar('DATABASE_URL', c.env as any);
     let user: AuthenticatedUser = { id: 'anonymous', provider: 'anonymous' };
 
@@ -57,6 +62,10 @@ export function createIdentityBridge(options?: IdentityBridgeOptions): Middlewar
       }
 
       // Resolve internal canonical account identifier from provider credentials
+      if (expectedSubject !== undefined && expectedSubject !== verifiedResult.sub)
+        throw new HTTPException(401, {
+          message: 'The authenticated subject does not match this request.',
+        });
       const account = await resolveAuthenticatedAccount(
         verifiedResult.sub,
         dbUrl,

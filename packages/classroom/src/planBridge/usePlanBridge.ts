@@ -1,9 +1,11 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import {
   type CreatePlanEventInput,
   planBridgeAPI,
   type ScheduleNoticeInput,
 } from '@repo/core/api/planBridge';
-import { useStore } from '@repo/core/store/useStore';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const planBridgeKeys = {
@@ -22,8 +24,8 @@ export const planBridgeKeys = {
  */
 export function usePlanBridge(selectedGradeClassId: string | null) {
   const queryClient = useQueryClient();
-  const isOnline = useStore((state) => state.isOnline);
-  const enabled = isOnline !== false;
+  const { isOnline, isOffline } = useOfflineStatus();
+  const enabled = isOnline;
 
   const gradeClasses = useQuery({
     queryKey: planBridgeKeys.classes(),
@@ -76,7 +78,7 @@ export function usePlanBridge(selectedGradeClassId: string | null) {
 
   return {
     gradeClassId,
-    isOffline: isOnline === false,
+    isOffline,
     gradeClasses,
     settings,
     events,

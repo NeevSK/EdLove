@@ -1,6 +1,7 @@
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
+import { sensoryFeedback } from '@repo/ui/sensory';
 import { Check } from '@repo/ui/icons';
 import { tokens } from '@repo/ui/tokens';
 import ExpoCheckbox from 'expo-checkbox';
@@ -144,6 +145,8 @@ export const Checkbox = ({
 
   const handlePress = () => {
     if (isDisabled) return;
+
+    sensoryFeedback.emit('selection');
 
     if (groupContext) {
       groupContext.onValueChange(value);

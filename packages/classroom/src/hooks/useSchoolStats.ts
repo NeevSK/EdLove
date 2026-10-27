@@ -1,7 +1,9 @@
-import { api, MOCK_SCHOOL, MOCK_SCHOOL_STATS } from '@repo/core/api/client';
+import { api } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { School, SchoolStats } from '@repo/core/types';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -16,10 +18,9 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
  * - Shared across Admin, Principal, and Founder views.
  */
 export function useSchoolStats(schoolId: string) {
-  const _isOnline = useStore((state) => state.isOnline);
   const { viewDate } = useTemporalStore();
-  const isDemoMode = useStore((state) => state.isDemoMode);
-  const isExplorerMode = useStore((state) => state.isExplorerMode);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
+  const isExplorerMode = useExperienceState((state) => state.isExplorerMode);
   const isGuest = useIsGuest();
   const [stats, setStats] = useState<SchoolStats | null>(null);
   const [school, setSchool] = useState<School | null>(null);
@@ -54,21 +55,11 @@ export function useSchoolStats(schoolId: string) {
       return;
     }
     try {
-      let schoolData: School;
-      let statsData: SchoolStats;
-      if (
-        shouldProvideSample &&
-        (!schoolId || schoolId === 'sample-school' || schoolId === 'sample-school-1')
-      ) {
-        // Return canonical mock data for demo/guest/explorer flow
-        schoolData = { ...MOCK_SCHOOL, is_sample: true } as any;
-        statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as any;
-      } else {
-        [schoolData, statsData] = await Promise.all([
-          api.school.getSchool(schoolId),
-          api.school.getSchoolStats(schoolId, viewDate),
-        ]);
-      }
+      const targetSchoolId = schoolId || 'sample-school-1';
+      const [schoolData, statsData] = await Promise.all([
+        api.school.getSchool(targetSchoolId),
+        api.school.getSchoolStats(targetSchoolId, viewDate),
+      ]);
       setSchool(schoolData);
       setStats(statsData);
       // Persist to cache if we have a real schoolId

@@ -1,8 +1,8 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { lessonsAPI } from '@repo/core/api/classroom';
 import { selfContract } from '@repo/core/api/self.contract';
-import type { TotalState } from '@repo/core/store';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const TEACHER_ID = '11111111-1111-4111-8111-111111111111';
@@ -14,10 +14,14 @@ describe('POA enforcement', () => {
   });
 
   it('throws Forbidden before lessonsAPI.create reaches Supabase without capacity', async () => {
-    vi.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useAuthStore, 'getState').mockReturnValue({
+      ...useAuthStore.getState(),
       user: null,
+    });
+    vi.spyOn(useTenantStore, 'getState').mockReturnValue({
+      ...useTenantStore.getState(),
       schoolType: null,
-    } as unknown as TotalState);
+    });
 
     const fromSpy = vi.spyOn(supabase, 'from');
 

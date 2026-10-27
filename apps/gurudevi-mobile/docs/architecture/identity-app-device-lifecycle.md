@@ -2,7 +2,7 @@
 title: "Gurudevi Identity, App, Device, and Account Lifecycle"
 status: "active"
 created: 2026-07-26
-updated: 2026-07-26
+updated: 2026-10-23
 author: "Naveen"
 tags: [architecture, identity, app, device, onboarding, citizenship, entitlement, offline-first]
 ---
@@ -84,26 +84,30 @@ onboarding history.
 
 ### Road A: Guest exploration
 
-The user enters through Supabase anonymous auth and receives a local account.
-This is a deliberate product path, not a fake unauthenticated screen.
+The user first attempts Supabase anonymous auth when connectivity is available.
+When the request cannot be made or fails, the app creates a versioned,
+device-local `local-<uuid-v4>` principal instead. Both are deliberate product
+paths, not fake unauthenticated screens. The device-local principal is not an
+Auth session, database subject, capability grant, membership, or EdLove ID.
 
 Guest rules:
 
-- The anonymous session is a valid onboarding identity.
+- An anonymous Auth session or a device-local principal is a valid local
+  onboarding identity.
 - The user must still complete onboarding before entering the app.
 - The user selects the name the app should use and a primary capacity/role.
 - The user is `THIRD_CLASS` during this local exploration period.
-- Domain data remains local-only while the account is anonymous.
-- Anonymous local data must not enter ordinary cloud synchronization or server
+- Domain data remains local-only while the account is anonymous or
+  device-local. Neither may enter ordinary cloud synchronization or server
   domain persistence.
 - Anonymous users have no individual pricing plan yet; `FREE` is the default
   individual plan only after a durable account exists. This avoids treating a
   guest as a billable or institutionally entitled subject.
 - There is no guest-specific Cedar policy. If local authorization is needed,
   it uses the normal policy vocabulary with the anonymous user's context.
-- The guest account has a conversion deadline. The duration is a product
-  policy value of either 7 or 14 days and must be configured centrally; code
-  must not independently hardcode 7 or 14.
+- The guest account has the centrally governed fifteen-day conversion lease
+  accepted in the platform [Guest Local-First Lease ADR](../../../../docs/decisions/2026-09-10-guest-local-first-lease.md).
+  Code must not independently choose another duration.
 - Before the deadline, the app must clearly offer signup or verification and
   explain what happens to local data.
 - At expiry, the product must use an explicit policy: restrict new use while
@@ -298,9 +302,9 @@ The model is not fully implemented until these seams are closed:
 
 | Priority | Closure | Required outcome |
 | --- | --- | --- |
-| P0 | Anonymous Supabase link | Every guest journey first obtains one Supabase anonymous identity for measurement, abuse controls, and conversion; failure stays on public entry rather than creating an untracked identity. |
-| P0 | Anonymous local boundary | Anonymous onboarding uses local domain-account storage only; the anonymous identity must not create ordinary cloud domain rows or enter normal PowerSync sync. |
-| P0 | Conversion transaction | Signup/verification converts the local account exactly once, migrates eligible local data, creates the durable profile and personal bond, and then enables server sync. |
+| P0 | Offline guest entry | A guest journey attempts Supabase anonymous auth when online, but a failed or unavailable request creates one persisted device-local principal and continues through local onboarding without fabricating an Auth session. |
+| P0 | Guest local boundary | Anonymous and device-local onboarding use scoped local domain-account storage only; neither identity may create ordinary cloud domain rows or enter normal PowerSync sync. |
+| P0 | Conversion transaction | New credentials retain the anonymous subject through provider linking. Existing-account sign-in creates a durable, explicit transfer/discard decision. Remote migration remains disabled until Sanctuary owns eligible-data policy, target authorization, conflict resolution, and receipt semantics. |
 | P0 | Entry state machine | Anonymous and durable sessions both route through onboarding; app entry requires persisted primary capacity, personal bond, and `onboarding_completed = true`. |
 | P0 | Active perspective | The initial personal bond is selected explicitly; later bond switching is persisted and every server request verifies the selected bond. |
 | P1 | School projection cleanup | Keep `users.school_id` only as a nullable compatibility/resource projection while bonds become the authority; remove it from identity and authorization predicates incrementally. |
@@ -308,24 +312,30 @@ The model is not fully implemented until these seams are closed:
 | P1 | Entitlement applicability | `FREE`/`PRO` remain valid individual plans; school/institution grants are separate scoped entitlements and may apply to a First Class user with either plan. |
 | P1 | Official invite claim | Generic school discovery never mutates identity; the authenticated invite-claim transaction validates the code, creates the school bond, promotes citizenship, and grants only school-scoped access. |
 | P1 | Default normalization | New records default to `THIRD_CLASS`, `is_anonymous = false` for durable users, `onboarding_completed = false`, null primary capacity, and null school projection until a valid relationship exists. |
-| P1 | Guest expiry | Add one centrally configured 7- or 14-day conversion policy, expiry handling, local-data preservation, and tests. Do not choose the duration in scattered code. |
+| P1 | Guest expiry | Enforce the centrally governed fifteen-day lease, its expiry handling, local-data preservation, and tests. Do not choose the duration in scattered code. |
 | P2 | Terminology migration | Replace active `WANDERER`, `guest capacity`, `guest bond`, `school_id as identity`, and `institutional pricing as citizenship` references; preserve only explicit legacy adapters/migrations. |
 | P2 | Multi-account isolation | Verify local storage, session registry, PowerSync database, authorization snapshot, and active perspective are all scoped by app/device/account. |
 | P2 | Quality gate | Add parity checks and tests for both entry roads, conversion, expiry, school promotion, entitlement applicability, account switching, and offline isolation. |
 
 ### Current implementation disposition
 
-- Supabase anonymous sign-in is enabled in the local project configuration and
-  is required for the guest road.
+- Supabase anonymous sign-in is enabled in the local project configuration.
+  The Welcome route attempts it when online and falls back to one persisted
+  device-local principal when offline or unavailable.
 - The AuthManager reuses an anonymous session and does not create a guest Cedar
-  policy.
-- Anonymous onboarding now uses a local identity/bond record and does not call
-  the durable onboarding API. Conversion still needs an explicit transaction
-  that migrates eligible local data and then creates the durable profile/bond.
-- Anonymous users are deliberately excluded from Cedar snapshot loading,
-  entitlement loading, and ordinary PowerSync replication. The Supabase
-  anonymous identity remains the conversion, abuse-control, and measurement
-  link; it is not a durable domain account.
+  policy. A device-local guest does not invoke AuthManager at all.
+- Anonymous and device-local onboarding use a local identity/bond record and
+  do not call the durable onboarding API. The local route gate admits a
+  completed device-local guest without mounting cloud sync or capability
+  services.
+- A credential link preserves its anonymous subject. Existing-account sign-in
+  records an explicit source/target conversion ledger; its UI offers keep-local
+  or confirmed discard. Remote migration fails closed until an authorized,
+  record-level Sanctuary contract exists.
+- Anonymous and device-local guests are deliberately excluded from Cedar
+  snapshot loading, entitlement loading, ordinary PowerSync replication, and
+  EdLove assignment. The Supabase anonymous identity remains the conversion,
+  abuse-control, and measurement link; it is not a durable domain account.
 - Scoped entitlement authority is now represented by
   `user_entitlement_grants`. The legacy `users.pricing_tier` value remains the
   individual-plan compatibility projection; active bond/entity features must
@@ -334,8 +344,9 @@ The model is not fully implemented until these seams are closed:
   pass because many domain tables still reference them. They require a staged
   bond-authority migration.
 
-## 12. Open product decision
+## 12. Guest lease authority
 
-The guest conversion window must be selected explicitly: 7 days or 14 days.
-Until that decision is recorded, implementation should expose a configuration
-value and should not silently choose one.
+The accepted [Guest Local-First Lease ADR](../../../../docs/decisions/2026-09-10-guest-local-first-lease.md)
+sets the centrally governed guest conversion window to fifteen days. Future
+changes require a new approved decision; implementation must not silently
+choose a different duration.

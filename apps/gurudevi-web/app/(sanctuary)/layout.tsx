@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '@/lib/host-routing';
 import { QueryProvider } from '@/lib/query/QueryProvider';
+import { GurudeviWebVerger } from '@/lib/runtime/GurudeviWebVerger';
 import { AuthProvider } from './auth/AuthProvider';
 import { ExploreMuseumModal } from './components/ExploreMuseumModal';
 import { SkipLink } from './components/SkipLink';
@@ -27,21 +28,25 @@ export default async function SanctuaryLayout({ children }: Readonly<{ children:
 
   if (isExploreHost) {
     return (
-      <QueryProvider>
-        <SkipLink />
-        {children}
-        <ExploreMuseumModal isExploreHost />
-      </QueryProvider>
+      <GurudeviWebVerger>
+        <QueryProvider>
+          <SkipLink />
+          {children}
+          <ExploreMuseumModal isExploreHost />
+        </QueryProvider>
+      </GurudeviWebVerger>
     );
   }
 
   return (
-    <AuthProvider>
-      <QueryProvider>
-        <SkipLink />
-        {children}
-        <ExploreMuseumModal isExploreHost={false} />
-      </QueryProvider>
-    </AuthProvider>
+    <GurudeviWebVerger>
+      <AuthProvider>
+        <QueryProvider>
+          <SkipLink />
+          {children}
+          <ExploreMuseumModal isExploreHost={false} />
+        </QueryProvider>
+      </AuthProvider>
+    </GurudeviWebVerger>
   );
 }

@@ -69,6 +69,11 @@
       "import": "./src/world/index.ts",
       "default": "./src/world/index.ts"
     },
+    "./scene/native": {
+      "types": "./src/scene/native/index.ts",
+      "import": "./src/scene/native/index.ts",
+      "default": "./src/scene/native/index.ts"
+    },
     "./world/native": {
       "types": "./src/world/native/index.ts",
       "import": "./src/world/native/index.ts",
@@ -86,6 +91,7 @@
     },
     "./icons": {
       "types": "./src/icons.ts",
+      "browser": "./src/icons.web.ts",
       "import": "./src/icons.ts",
       "default": "./src/icons.ts"
     },
@@ -787,6 +793,11 @@
       "import": "./src/screens/index.ts",
       "default": "./src/screens/index.ts"
     },
+    "./machines/*": {
+      "types": "./src/machines/*.ts",
+      "import": "./src/machines/*.ts",
+      "default": "./src/machines/*.ts"
+    },
     "./screens/*": {
       "types": "./src/screens/*",
       "import": "./src/screens/*",
@@ -912,6 +923,7 @@
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@react-native-community/slider": "5.2.1",
     "@repo/core": "workspace:*",
+    "@repo/verger-react": "workspace:*",
     "@tanstack/react-query": "^5.104.5",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.21",
@@ -937,7 +949,9 @@
     "sonner-native": "^0.27.0",
     "tailwindcss": "4.3.3",
     "victory-native": "^42.0.1",
-    "xstate": "^5.33.3"
+    "xstate": "6.0.0-alpha.70",
+    "effect": "^4.0.5",
+    "zod": "4.6.7"
   },
   "peerDependencies": {
     "@legendapp/list": "3.6.0",
@@ -974,6 +988,7 @@
     "@legendapp/list": "3.6.0",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
+    "@repo/verger-react-native": "workspace:*",
     "@shopify/flash-list": "2.3.3",
     "@types/apca-w3": "^0.1.3",
     "@types/culori": "^4.0.1",

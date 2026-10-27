@@ -49,9 +49,15 @@ BEGIN
     END IF;
 END $$;
 
-ALTER TABLE public.community_reports 
-ADD COLUMN IF NOT EXISTS report_target report_target_type DEFAULT 'platform',
-ADD COLUMN IF NOT EXISTS assigned_handler_id UUID REFERENCES public.users(id);
+DO $$
+BEGIN
+  IF to_regclass('public.community_reports') IS NOT NULL THEN
+    ALTER TABLE public.community_reports
+      ADD COLUMN IF NOT EXISTS report_target report_target_type DEFAULT 'platform',
+      ADD COLUMN IF NOT EXISTS assigned_handler_id UUID REFERENCES public.users(id);
+  END IF;
+END;
+$$;
 
 -- ── Row Level Security ────────────────────────────────────────
 

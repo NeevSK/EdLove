@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/schema/opencode.json",
+  "plugin": [
+    "./.opencode/plugins/rn-terrain.ts"
+  ],
+  "mcp": {
+    "rn-terrain": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@intuitui-labs/rn-terrain",
+        "mcp"
+      ]
+    }
+  }
+}

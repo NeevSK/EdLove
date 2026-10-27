@@ -1,7 +1,9 @@
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
-import { tokens } from '@repo/ui/tokens';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
+import { Perch } from '../world/native/Perch';
+import { useWorld } from '../world/native/WorldContext';
+import type { WorldTokens } from '../world/types';
 import { type FireflyFeedbackState, getFireflyFeedbackPresentation } from './fireflyFeedback';
 import { Mascot, type MascotArtworkSource, useMascot } from './Mascot';
 import { mascotStateForFeedback } from './mascotStateMachine';
@@ -14,12 +16,19 @@ export type FireflyFeedbackSceneProps = {
   artwork?: MascotArtworkSource;
 };
 
-const glowForState = {
-  active: tokens.colors.loading,
-  quiet: tokens.colors.primary,
-  interrupted: tokens.colors.warning,
-  complete: tokens.colors.accentLiving,
-} as const;
+/** The path's light in the world's colours: lit while working, quiet when waiting. */
+function glowForState(t: WorldTokens, state: 'active' | 'quiet' | 'interrupted' | 'complete') {
+  switch (state) {
+    case 'active':
+      return t.lamp;
+    case 'quiet':
+      return t.ornament;
+    case 'interrupted':
+      return t.inkFaint;
+    case 'complete':
+      return t.success;
+  }
+}
 
 /** A compact field scene that points toward the next action without replacing copy. */
 export function FireflyFeedbackScene({
@@ -32,7 +41,9 @@ export function FireflyFeedbackScene({
   const mascot = useMascot();
   const visualCapabilities = useVisualCapabilities();
   const presentation = getFireflyFeedbackPresentation(state);
-  const glow = glowForState[presentation.pathState];
+  const world = useWorld();
+  const t = world.tokens;
+  const glow = glowForState(t, presentation.pathState);
   const isInterrupted = presentation.pathState === 'interrupted';
   const isComplete = presentation.pathState === 'complete';
   const resolvedState = mascotStateForFeedback(state);
@@ -49,6 +60,7 @@ export function FireflyFeedbackScene({
       style={[styles.scene, { width: size, height: size * 0.74 }]}
       testID={`firefly-feedback-${mascot.id}-${state}`}
     >
+      {!hasApprovedArtwork ? <Perch width={size} height={size * 0.74} /> : null}
       {!hasApprovedArtwork ? (
         <Svg
           height={size * 0.74}
@@ -56,14 +68,6 @@ export function FireflyFeedbackScene({
           viewBox="0 0 220 164"
           width={size}
         >
-          <Path
-            d="M 17 128 C 50 111, 71 143, 104 125 S 152 105, 201 128"
-            fill="none"
-            stroke={tokens.colors.accentLiving}
-            strokeLinecap="round"
-            strokeOpacity={0.46}
-            strokeWidth={3}
-          />
           <Path
             d="M 20 119 C 56 95, 80 147, 115 112 S 166 87, 202 113"
             fill="none"
@@ -74,14 +78,7 @@ export function FireflyFeedbackScene({
             strokeWidth={5}
           />
           {isInterrupted ? (
-            <Line
-              x1="112"
-              x2="128"
-              y1="103"
-              y2="120"
-              stroke={tokens.colors.error}
-              strokeWidth={3}
-            />
+            <Line x1="112" x2="128" y1="103" y2="120" stroke={t.danger} strokeWidth={3} />
           ) : null}
           <Circle cx="194" cy="111" fill={glow} opacity={isComplete ? 0.9 : 0.45} r="5" />
         </Svg>

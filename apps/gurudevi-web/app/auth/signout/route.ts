@@ -7,7 +7,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const response = new NextResponse(null, { status: 204 });
   response.headers.set('Cache-Control', 'private, no-store');
   const config = supabaseConfig();
-  if (!config) return response;
+  if (!config) return new NextResponse(null, { status: 503, headers: response.headers });
 
   const supabase = createServerClient(config.url, config.publishableKey, {
     global: { fetch: secureApiFetch },
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (error) {
     return new NextResponse(null, {
       status: 503,
-      headers: { 'Cache-Control': 'private, no-store' },
+      headers: response.headers,
     });
   }
   return response;

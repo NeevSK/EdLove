@@ -1,5 +1,4 @@
-import { ProfileScreen, ProfileScreenWeb } from '@repo/profile/own';
-import { Platform } from 'react-native';
+import { ProfileScreen } from '@repo/profile/own';
 
 export { RouteErrorBoundary as ErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-export default Platform.OS === 'web' ? ProfileScreenWeb : ProfileScreen;
+export default ProfileScreen;

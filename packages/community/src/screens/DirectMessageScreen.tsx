@@ -5,16 +5,14 @@
  * Wires up DM-specific data sources (fetch, send, realtime subscription).
  */
 
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-
-import { useTemporalStore } from '@repo/core/store';
-import { useAuthStore } from '@repo/core/store';
-import { router, useLocalSearchParams } from 'expo-router';
-import React from 'react';
 import { communityAPI } from '@repo/community/api/community';
 import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
-import type { ChatMessage } from '@repo/community/types';
 import BaseChatScreen, { type SubscriptionConfig } from '@repo/community/screens/BaseChatScreen';
+import type { ChatMessage } from '@repo/community/types';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { useAuthStore, useTemporalStore } from '@repo/core/store';
+import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
 
 export default function DirectMessageScreen() {
   const params = useLocalSearchParams<{ conversationId?: string; userName?: string }>();
@@ -52,26 +50,17 @@ export default function DirectMessageScreen() {
     void fetchContext();
   }, [conversationId, user]);
 
-  const fetchMessages = React.useCallback(async (): Promise<ChatMessage[]> => {
-    return communityAPI.getDirectMessages(conversationId, 60, viewDate) as Promise<ChatMessage[]>;
-  }, [conversationId, viewDate]);
+  const fetchMessages = React.useCallback(
+    async (cutoff: string): Promise<ChatMessage[]> => {
+      return communityAPI.getDirectMessages(conversationId, 60, cutoff) as Promise<ChatMessage[]>;
+    },
+    [conversationId],
+  );
 
-  const sendMessage = React.useCallback(async (content: string): Promise<ChatMessage> => {
-    if (isPastView) throw new Error('Cannot send messages in historical view');
-    return communityAPI.sendDirectMessage(conversationId, content) as Promise<ChatMessage>;
-  }, [conversationId, isPastView]);
-
-  const subscription = React.useMemo<SubscriptionConfig>(() => ({
+  const subscription = React.useMemo<SubscriptionConfig>(
+    () => ({
       table: 'direct_messages',
       filter: `conversation_id=eq.${conversationId}`,
-      fetchById: async (id: string) => {
-        const { data } = await supabase
-          .from('direct_messages')
-          .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-          .eq('id', id)
-          .single();
-        return data as ChatMessage | null;
-      },
     }),
     [conversationId],
   );
@@ -82,7 +71,7 @@ export default function DirectMessageScreen() {
       title={userName}
       subtitle="Direct Message"
       fetchMessages={fetchMessages}
-      sendMessage={sendMessage}
+      channel={{ kind: 'direct', id: conversationId }}
       subscription={subscription}
       onPressAuthor={(userId) => {
         router.push({

@@ -1,8 +1,8 @@
 'use client';
 
-import { useDecisionJournal } from '@repo/self/hooks/useDecisionJournal';
-import { History, Send } from '@repo/ui/icons';
+import { History, Send } from 'lucide-react';
 import { useState } from 'react';
+import { useDecisionJournal } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './decision-journal.module.css';
 
 interface DecisionJournalProps {
@@ -39,7 +39,8 @@ export function DecisionJournalSection({ userId, onClose }: DecisionJournalProps
       <div className={styles.header}>
         <h2 className={styles.title}>Decision Journal</h2>
         <p className={styles.subtitle}>
-          Document choices and rationale so future retrospectives reveal clarity rather than hindsight bias
+          Document choices and rationale so future retrospectives reveal clarity rather than
+          hindsight bias
         </p>
       </div>
 

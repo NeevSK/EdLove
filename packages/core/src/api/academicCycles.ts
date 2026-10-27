@@ -49,3 +49,19 @@ export const academicCyclesAPI = {
     return educational.institutions.deleteAcademicCycle(id);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_TIMETABLE_PREP_ITEMS,
+  MOCK_TIMETABLE_SCHEDULE,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'timetable',
+  ghostMethods: ['getPrepItems', 'getSchedule'],
+  isEmpty: (_, d) => !d || (Array.isArray(d) && d.length === 0),
+  getSamples: (method) => {
+    if (method === 'getPrepItems') return MOCK_TIMETABLE_PREP_ITEMS;
+    return MOCK_TIMETABLE_SCHEDULE;
+  },
+});

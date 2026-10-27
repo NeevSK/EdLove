@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage';
 import {
   closeWorkbenchTask,
   createDomainWorkbenchState,
@@ -426,7 +426,7 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
     }),
     {
       name: 'gurudevi-active-subtabs-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => createScopedStateStorage()),
       version: 2,
       migrate: migrateActiveSubTabsStateForV2,
       partialize: (state) => ({

@@ -1,3 +1,4 @@
+import { useAuthStore } from '@repo/core/store';
 /**
  * FounderDashboard.web.tsx  (app-level web view)
  *
@@ -16,7 +17,7 @@ import {
   useGlobalUsersQuery,
   useSentinelGovernanceQuery,
 } from '@repo/core/api/client';
-import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import { usePermissions, useTemporalStore } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
 
 import { FounderGlow } from '@repo/ui/components/FounderGlow';
@@ -49,8 +50,8 @@ type DashboardTab = 'pulse' | 'institutions' | 'staff' | 'sentinel';
 export default function FounderDashboardWeb() {
   const router = useRouter();
   const { can } = usePermissions();
-  // Use user from useStore to get the full user object with full_name, etc.
-  const user = useStore((state) => state.user);
+  // Auth owns the canonical profile object used by this dashboard.
+  const user = useAuthStore(state => state.user);
   const isPastView = useTemporalStore((s) => s.isPastView);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

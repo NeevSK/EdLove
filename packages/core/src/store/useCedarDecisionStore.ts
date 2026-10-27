@@ -23,6 +23,8 @@ import { create } from 'zustand';
 export type CedarDecision = 'allow' | 'deny' | 'no_decision';
 export type DecisionMap = Record<string, Record<string, CedarDecision>>;
 
+let decisionLoadGeneration = 0;
+
 export interface CedarDecisionState {
   decisions: DecisionMap | null;
   snapshotLoaded: boolean;
@@ -45,12 +47,25 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
   snapshotScopeId: null,
 
   loadDecisions: async (userId: string, scopeId?: string | null) => {
+    const generation = ++decisionLoadGeneration;
     if (!userId) {
-      set({ decisions: null, snapshotLoaded: false, isLoading: false, snapshotScopeId: null });
+      set({
+        decisions: null,
+        snapshotLoaded: false,
+        isLoading: false,
+        snapshotScopeId: null,
+        error: null,
+      });
       return;
     }
 
-    set({ isLoading: true, error: null });
+    set({
+      decisions: null,
+      snapshotLoaded: false,
+      isLoading: true,
+      error: null,
+      snapshotScopeId: scopeId ?? null,
+    });
 
     try {
       const db = getDrizzleDB();
@@ -63,6 +78,8 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
           : eq(permissionSnapshots.userId, userId),
       });
 
+      if (generation !== decisionLoadGeneration) return;
+
       if (!record) {
         set({
           decisions: null,
@@ -73,18 +90,22 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         return;
       }
 
-      if (scopeId && record.activeBondId !== scopeId) {
+      if (record.userId !== userId || (scopeId && record.activeBondId !== scopeId)) {
         set({
           decisions: null,
           snapshotLoaded: false,
           isLoading: false,
-          snapshotScopeId: scopeId,
-          error: 'Permission snapshot scope mismatch',
+          snapshotScopeId: scopeId ?? null,
+          error:
+            record.userId !== userId
+              ? 'Permission snapshot principal mismatch'
+              : 'Permission snapshot scope mismatch',
         });
         return;
       }
 
       const currentPolicyVersion = await db.query.policyVersion?.findFirst?.();
+      if (generation !== decisionLoadGeneration) return;
       if (
         (scopeId &&
           (!currentPolicyVersion?.hash ||
@@ -106,6 +127,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
 
       // Ed25519 signature verification
       const isSignatureValid = await verifySnapshotSignature(record);
+      if (generation !== decisionLoadGeneration) return;
       if (!isSignatureValid) {
         console.error('[CedarDecisionStore] Cryptographic tamper detected on permission snapshot');
         set({
@@ -120,7 +142,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
 
       // Expiration check
       const expiresAt = new Date(record.expiresAt);
-      if (expiresAt < new Date()) {
+      if (!Number.isFinite(expiresAt.getTime()) || expiresAt.getTime() <= Date.now()) {
         set({
           decisions: null,
           snapshotLoaded: false,
@@ -153,6 +175,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         snapshotScopeId: scopeId ?? record.activeBondId ?? record.schoolId,
       });
     } catch (err) {
+      if (generation !== decisionLoadGeneration) return;
       console.error('[CedarDecisionStore] Error loading decisions:', err);
       set({
         decisions: null,
@@ -170,12 +193,14 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
     return decisions[subject]?.[action] ?? 'no_decision';
   },
 
-  clearDecisions: () =>
+  clearDecisions: () => {
+    decisionLoadGeneration += 1;
     set({
       decisions: null,
       snapshotLoaded: false,
       isLoading: false,
       error: null,
       snapshotScopeId: null,
-    }),
+    });
+  },
 }));

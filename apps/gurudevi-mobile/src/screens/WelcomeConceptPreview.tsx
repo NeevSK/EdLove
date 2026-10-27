@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Pressable } from '@repo/ui/primitives';
 import {
-  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,

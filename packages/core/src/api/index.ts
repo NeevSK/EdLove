@@ -83,8 +83,11 @@ export * from '@repo/core/api/community.contract';
 export * from '@repo/core/api/contextualChallenges';
 export * from '@repo/core/api/contractCoverage';
 export * from '@repo/core/api/contracts';
-export * from '@repo/core/api/decisionJournal.contract';
+/** @deprecated [USE resonantProxy / sandboxDataset] Legacy provider export retained for backward compatibility. */
 export * from '@repo/core/api/demoProvider';
+export * from '@repo/core/api/sandboxMode';
+export * from '@repo/core/api/sandboxDataset';
+export * from '@repo/core/api/sandboxBridge';
 export * from '@repo/core/api/durableAgents.contract';
 export * from '@repo/core/api/editorial.contract';
 export * from '@repo/core/api/educational.contract';
@@ -109,6 +112,7 @@ export * from '@repo/core/api/longitudinal';
 export * from '@repo/core/api/longitudinal.contract';
 export * from '@repo/core/api/mapping';
 export * from '@repo/core/api/mapping.contract';
+/** @deprecated [INTERNAL FIXTURE REGISTRY] Do NOT import directly in UI components or domain hooks. */
 export * from '@repo/core/api/mockData';
 export * from '@repo/core/api/moonPhase';
 export * from '@repo/core/api/naturePaths';
@@ -195,37 +199,92 @@ export {
   writeLocalFirst,
 };
 
+const domainApiMap: Record<string, any> = {
+  academicCycles: academicCyclesAPI,
+  accounting: accountingAPI,
+  agent: agentAPI,
+  announcements: announcementAPI,
+  assignments: assignmentsAPI,
+  attendance: attendanceAPI,
+  auth: authAPI,
+  circles: circleAPI,
+  classroomGroups: classroomGroupsAPI,
+  classroomNotes: classroomNotesAPI,
+  classroomStudents: classroomStudentsAPI,
+  classrooms: classroomsAPI,
+  community: communityAPI,
+  contextualChallenges: contextualChallengesAPI,
+  dailyContent: dailyContentAPI,
+  demo: demoAPI,
+  deviceTrust: deviceTrustAPI,
+  echo: echoAPI,
+  formTemplates: formTemplatesAPI,
+  founder: founderAPI,
+  grading: gradingAPI,
+  groups: groupsAPI,
+  growth: growthAPI,
+  guardian: guardianAPI,
+  history: historyAPI,
+  identity: identityAPI,
+  inventory: inventoryAPI,
+  lessonMaterials: lessonMaterialsAPI,
+  lessons: lessonsAPI,
+  library: libraryAPI,
+  longitudinal: longitudinalAPI,
+  mapping: mappingAPI,
+  media: mediaAPI,
+  messaging: messagingAPI,
+  missions: missionsAPI,
+  moonPhase: moonPhaseAPI,
+  naturePaths: naturePathsAPI,
+  notes: classroomNotesAPI,
+  onboarding: onboardingAPI,
+  payments: paymentsAPI,
+  planBridge: planBridgeAPI,
+  presence: presenceAPI,
+  principalNotes: principalNotesAPI,
+  principalWorkspace: principalWorkspaceAPI,
+  privacy: privacyAPI,
+  profile: profileAPI,
+  resources: resourcesAPI,
+  rewards: rewardsAPI,
+  school: schoolAPI,
+  schoolForest: schoolForestAPI,
+  social: socialAPI,
+  staffManagement: staffManagementAPI,
+  studentObservations: studentObservationsAPI,
+  studentPotential: studentPotentialAPI,
+  students: studentsAPI,
+  tasks: tasksAPI,
+  teacherInsights: teacherInsightsAPI,
+  tracking: trackingAPI,
+  warmMirror: warmMirrorAPI,
+};
+
 /**
  * Modern Sovereign oRPC v2 Dynamic Client Proxy
  *
- * Replaces the monolithic 70-entry manual API object with a lightweight,
- * zero-overhead proxy over `orpcClient`.
+ * Bridges domain orchestrations (resonantProxy + temporalProxy + oRPC) and
+ * direct procedures on `orpcClient`.
  *
- * Procedure calls route directly through orpcClient.<domain>.<procedure>().
  * Deleted or non-existent legacy methods throw loud, actionable errors.
  */
 export const api: any = new Proxy(orpcClient, {
   get(target: any, domainProp: string) {
+    if (domainProp in domainApiMap) {
+      return domainApiMap[domainProp];
+    }
     if (domainProp in target) {
       return target[domainProp];
     }
-    // Domain aliases for existing consumers
-    if (domainProp === 'academicCycles') return target.educational;
-    if (domainProp === 'tasks') return target.educational;
-    if (domainProp === 'notes') return target.classroomNotes ?? target.educational;
-    if (domainProp === 'lessons') return target.educational;
-    if (domainProp === 'students') return target.educational;
-    if (domainProp === 'accounting' || domainProp === 'payments') return target.erp;
+    // Direct oRPC domain aliases
     if (domainProp === 'challenges') return target.growth;
-    if (domainProp === 'missions') return target.sacredMissions;
     if (domainProp === 'pro') return target.thuthimal;
-    if (domainProp === 'echo') return target.echoes;
     if (domainProp === 'forms') return target.forms;
-    if (domainProp === 'school') return target.admin;
 
     // Loud break for deleted/unmapped domain properties
     throw new Error(
-      `[NUCLEAR-HARD-CUT] Domain property "api.${domainProp}" does not exist in oRPC v2. Migrate directly to orpcClient.${domainProp}.*`,
+      `[NUCLEAR-HARD-CUT] Domain property "api.${domainProp}" does not exist in domain orchestration or oRPC v2. Migrate directly to orpcClient.${domainProp}.*`,
     );
   },
 });

@@ -2,16 +2,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Children, Fragment, isValidElement, type ReactNode } from 'react';
 import {
   Text as RNText,
-  StyleSheet,
   type StyleProp,
+  StyleSheet,
   useWindowDimensions,
   View,
   type ViewStyle,
 } from 'react-native';
 import { alpha } from '../color';
 import type { SectionDensity, SectionRecipe } from '../types';
-import { glowStyle, radiusStyle, shadowStyle, typeStyle } from './style';
 import { InnerFrame, surfaceStyle } from './Surface';
+import { glowStyle, radiusStyle, shadowStyle, typeStyle } from './style';
 import { useWorldContext } from './WorldContext';
 
 export interface SectionProps {
@@ -61,7 +61,7 @@ export function Section({
   const { width } = useWindowDimensions();
 
   const titleStyle = [
-    typeStyle(r.title, language),
+    typeStyle(r.title, language, world),
     signal && r.kind !== 'thread' ? { color: t.lampDeep } : null,
   ];
   const heading = (
@@ -70,7 +70,7 @@ export function Section({
     </RNText>
   );
   const voiceLine = voice ? (
-    <RNText style={[typeStyle(r.voice, language), { marginTop: 2, marginBottom: 10 }]}>
+    <RNText style={[typeStyle(r.voice, language, world), { marginTop: 2, marginBottom: 10 }]}>
       {voice}
     </RNText>
   ) : null;

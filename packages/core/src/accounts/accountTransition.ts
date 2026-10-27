@@ -1,4 +1,5 @@
-import { clearPowerSyncAccount } from '@repo/core/adapters/powersync/database';
+import { clearPowerSyncAccount, disconnectPowerSync } from '@repo/core/adapters/powersync/database';
+import { closeReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import type {
   AccountTransitionOutcome,
@@ -12,6 +13,9 @@ function ownedByPrincipal(userId: string | undefined, principalId: string | null
 
 class LocalAccountTransitionAdapter implements AccountTransitionPort {
   async transition(request: AccountTransitionRequest): Promise<AccountTransitionOutcome> {
+    if (request.disposition === 'preserve-and-quarantine' && request.clearReplicatedData)
+      throw new Error('Preserving account work cannot clear its PowerSync database.');
+
     if (request.outgoingPrincipalId === request.incomingPrincipalId) {
       return {
         disposition: request.disposition,
@@ -24,7 +28,14 @@ class LocalAccountTransitionAdapter implements AccountTransitionPort {
       };
     }
 
-    if (request.clearReplicatedData) {
+    const principalsToClose = [request.outgoingPrincipalId, request.incomingPrincipalId].filter(
+      (principalId): principalId is string => principalId !== null,
+    );
+    await Promise.all(principalsToClose.map((principalId) => closeReplayAdmission(principalId)));
+
+    if (request.disposition === 'preserve-and-quarantine') {
+      await disconnectPowerSync();
+    } else if (request.clearReplicatedData) {
       await clearPowerSyncAccount();
     }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Moon, Sparkles, Sun, X, Zap } from '@repo/ui/icons';
+import { Moon, Sparkles, Sun, X, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import styles from './shadow-agent-drawer.module.css';
 
@@ -67,7 +67,15 @@ export function ShadowAgentDrawer({ userId }: ShadowAgentDrawerProps) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  color: '#64748b',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
                 Thought Seeds for Contemplation
               </div>
               <div className={styles.seedList}>

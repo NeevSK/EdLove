@@ -2,51 +2,9 @@
 
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import type { MockOfficialCircularDoc as DocumentItem } from '@repo/core/api/formTemplates';
 import styles from './documents.module.css';
-
-interface DocumentItem {
-  id: string;
-  title: string;
-  category: 'circular' | 'curriculum' | 'administrative' | 'policy';
-  issueDate: string;
-  status: 'published' | 'review';
-  documentNo: string;
-}
-
-const initialDocs: DocumentItem[] = [
-  {
-    id: 'doc-1',
-    title: 'National Guidelines for Mindfulness & Contemplative Education in Schools',
-    category: 'policy',
-    issueDate: '2026-09-15',
-    status: 'published',
-    documentNo: 'MOE/CIRC/2026/41',
-  },
-  {
-    id: 'doc-2',
-    title: 'Grade 10 Ecology & Biological Diversity Curricular Specification',
-    category: 'curriculum',
-    issueDate: '2026-08-20',
-    status: 'published',
-    documentNo: 'NIE/SYLL/BIO/G10',
-  },
-  {
-    id: 'doc-3',
-    title: 'Inter-School Learning Forest & Community Exchange Protocols',
-    category: 'administrative',
-    issueDate: '2026-10-01',
-    status: 'published',
-    documentNo: 'SANCT/ADMIN/2026/08',
-  },
-  {
-    id: 'doc-4',
-    title: 'Draft: Student Voice Journal Privacy & PDPA Compliance Directives',
-    category: 'policy',
-    issueDate: '2026-10-05',
-    status: 'review',
-    documentNo: 'SANCT/LEGAL/PDPA/DRAFT',
-  },
-];
 
 interface DocumentListFloorProps {
   displayName: string;
@@ -55,8 +13,11 @@ interface DocumentListFloorProps {
 
 export function DocumentListFloor({ displayName, capacity }: Readonly<DocumentListFloorProps>) {
   const [filter, setFilter] = useState<'all' | 'circular' | 'curriculum' | 'policy'>('all');
+  const [documents] = useState<readonly DocumentItem[]>(() =>
+    getSandboxSamples<DocumentItem[]>('documents', 'getOfficialCirculars', [], []),
+  );
 
-  const filteredDocs = initialDocs.filter((d) => {
+  const filteredDocs = documents.filter((d) => {
     if (filter === 'all') return true;
     return d.category === filter;
   });

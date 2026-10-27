@@ -1,12 +1,8 @@
+import { useAuthStore } from '@repo/core/store';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import {
-  clearPendingGateAction,
-  getPendingGateAction,
-  setPendingGateAction,
-  usePermissions,
-} from '@repo/core/logic';
+import { clearPendingGateAction, getPendingGateAction, setPendingGateAction, usePermissions } from '@repo/core/logic';
 
-import { useStore, useTemporalStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
@@ -53,8 +49,8 @@ export default function GroupDetailsScreen() {
   const { t } = useTranslation();
   const groupId = Array.isArray(groupIdParam) ? groupIdParam[0] : groupIdParam;
   const { can, flags } = usePermissions();
-  const user = useStore((state) => state.user);
-  const isOffline = useTemporalStore((state) => state.isOffline);
+  const user = useAuthStore(state => state.user);
+  const { isOffline } = useOfflineStatus();
   const { showToast } = useLotusToast();
   const {
     joinGroup,

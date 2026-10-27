@@ -1,6 +1,6 @@
+import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { secureApiFetch } from '@repo/core/api/transportSecurity';
 
 const mocks = vi.hoisted(() => ({ signOut: vi.fn(), createServerClient: vi.fn() }));
 
@@ -39,5 +39,29 @@ describe('POST /auth/signout', () => {
 
     expect(response.status).toBe(503);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
+  });
+  it('preserves cookie clearing even when remote logout reports failure', async () => {
+    mocks.signOut.mockImplementation(async () => {
+      mocks.createServerClient.mock.calls[0]?.[2].cookies.setAll([
+        { name: 'sb-fixture-auth-token', value: '', options: { path: '/', maxAge: 0 } },
+        { name: 'sb-fixture-auth-token.1', value: '', options: { path: '/', maxAge: 0 } },
+      ]);
+      return { error: new Error('Remote outage after local removal') };
+    });
+    const response = await POST(
+      new NextRequest('https://sanctuary.gurudevi.app/auth/signout', { method: 'POST' }),
+    );
+    expect(response.status).toBe(503);
+    expect(response.headers.get('set-cookie')).toContain('sb-fixture-auth-token=');
+    expect(response.headers.get('set-cookie')).toContain('sb-fixture-auth-token.1=');
+    expect(response.headers.get('set-cookie')).toContain('Max-Age=0');
+  });
+  it('does not claim cleanup without provider configuration', async () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = '';
+    const response = await POST(
+      new NextRequest('https://sanctuary.gurudevi.app/auth/signout', { method: 'POST' }),
+    );
+    expect(response.status).toBe(503);
+    expect(mocks.createServerClient).not.toHaveBeenCalled();
   });
 });

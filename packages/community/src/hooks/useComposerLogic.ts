@@ -33,7 +33,7 @@ export function useComposerLogic(groupId: string, onClose: () => void) {
     if (!state.content.trim() && !state.selectedImage) return;
 
     const myId = await identityAPI.getMyInternalId();
-    if (!myId || !context.schoolId) return;
+    if (!myId) return;
 
     dispatch({ type: 'SET_SUBMITTING', payload: true });
     let mediaUrl = '';

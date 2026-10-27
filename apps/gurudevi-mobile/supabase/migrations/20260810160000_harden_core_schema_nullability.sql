@@ -1,44 +1,35 @@
--- Core schema parity batch: all rows were verified non-null before this
--- migration was prepared. These constraints make the live database match the
--- required ZModel contracts instead of allowing invalid partial records.
-
-ALTER TABLE public.users
-  ALTER COLUMN subjects_taught SET NOT NULL,
-  ALTER COLUMN qualifications SET NOT NULL;
-
-ALTER TABLE public.assignments
-  ALTER COLUMN max_points SET NOT NULL;
-
-ALTER TABLE public.student_grades
-  ALTER COLUMN classroom_id SET NOT NULL,
-  ALTER COLUMN student_id SET NOT NULL,
-  ALTER COLUMN graded_by SET NOT NULL,
-  ALTER COLUMN marks SET NOT NULL,
-  ALTER COLUMN grade SET NOT NULL,
-  ALTER COLUMN gpa SET NOT NULL,
-  ALTER COLUMN updated_at SET NOT NULL;
-
-ALTER TABLE public.classroom_join_requests
-  ALTER COLUMN user_id SET NOT NULL,
-  ALTER COLUMN classroom_id SET NOT NULL,
-  ALTER COLUMN status SET NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL,
-  ALTER COLUMN updated_at SET NOT NULL;
-
-ALTER TABLE public.classroom_legacy_records
-  ALTER COLUMN classroom_id SET NOT NULL,
-  ALTER COLUMN teacher_id SET NOT NULL,
-  ALTER COLUMN student_count SET NOT NULL,
-  ALTER COLUMN top_achievements SET NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL,
-  ALTER COLUMN updated_at SET NOT NULL;
-
-ALTER TABLE public.notifications
-  ALTER COLUMN user_id SET NOT NULL,
-  ALTER COLUMN body SET NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL;
-
-ALTER TABLE public.inventory_items
-  ALTER COLUMN condition SET NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL,
-  ALTER COLUMN updated_at SET NOT NULL;
+-- Core schema parity batch. The retained ledger supports multiple historical
+-- shapes, so only harden a contract when its table and column are present.
+DO $$
+DECLARE
+  entry record;
+BEGIN
+  FOR entry IN
+    SELECT * FROM (VALUES
+      ('public.users', 'subjects_taught'), ('public.users', 'qualifications'),
+      ('public.assignments', 'max_points'),
+      ('public.student_grades', 'classroom_id'), ('public.student_grades', 'student_id'),
+      ('public.student_grades', 'graded_by'), ('public.student_grades', 'marks'),
+      ('public.student_grades', 'grade'), ('public.student_grades', 'gpa'),
+      ('public.student_grades', 'updated_at'),
+      ('public.classroom_join_requests', 'user_id'), ('public.classroom_join_requests', 'classroom_id'),
+      ('public.classroom_join_requests', 'status'), ('public.classroom_join_requests', 'created_at'),
+      ('public.classroom_join_requests', 'updated_at'),
+      ('public.classroom_legacy_records', 'classroom_id'), ('public.classroom_legacy_records', 'teacher_id'),
+      ('public.classroom_legacy_records', 'student_count'), ('public.classroom_legacy_records', 'top_achievements'),
+      ('public.classroom_legacy_records', 'created_at'), ('public.classroom_legacy_records', 'updated_at'),
+      ('public.notifications', 'user_id'), ('public.notifications', 'body'), ('public.notifications', 'created_at'),
+      ('public.inventory_items', 'condition'), ('public.inventory_items', 'created_at'), ('public.inventory_items', 'updated_at')
+    ) AS entries(table_name, column_name)
+  LOOP
+    IF to_regclass(entry.table_name) IS NOT NULL
+       AND EXISTS (
+         SELECT 1 FROM information_schema.columns
+         WHERE table_schema = split_part(entry.table_name, '.', 1)
+           AND table_name = split_part(entry.table_name, '.', 2)
+           AND column_name = entry.column_name
+       ) THEN
+      EXECUTE format('ALTER TABLE %s ALTER COLUMN %I SET NOT NULL', entry.table_name, entry.column_name);
+    END IF;
+  END LOOP;
+END $$;

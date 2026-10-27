@@ -2,17 +2,25 @@ package expo.modules.verger
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.TrafficStats
+import android.os.BatteryManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
 import android.os.Process
+import android.os.health.SystemHealthManager
 import android.system.Os
 import android.system.OsConstants
 import android.view.FrameMetrics
@@ -30,8 +38,12 @@ data class SenseConfig(
   val windowMs: Double,
   val classification: FrameClassification,
   val headroomWarm: Double,
-  /** Thread load the governor calls saturated; crossing it is always reported. */
+  /** Thread load verger calls saturated; crossing it is always reported. */
   val saturationCores: Double,
+  /** CPU headroom verger calls a busy system (R11); crossing it is always reported. */
+  val cpuHeadroomBusyPercent: Double,
+  /** Which sensors run; [setSensors] changes it while running. */
+  val sensors: Sensors = Sensors.ALL,
 )
 
 /**
@@ -46,7 +58,9 @@ data class SenseConfig(
  *   background levels to apps, so on current devices this mostly reports pressure while hidden.
  * - power: the battery-saver broadcast.
  * - threads: CPU time per role (main, JS, render, GC, ...) from procfs at 1 Hz, so stress is
- *   attributed to the thread that causes it, whatever code runs there.
+ *   attributed to the thread that causes it, whatever code runs there. With them, on API 36,
+ *   the system's CPU headroom ([CpuHeadroomPoller]) every 5 s at most: how busy the whole
+ *   device is, which the app's own threads cannot show.
  * - memory: free system memory and the low-memory flag every 10 s, and this process's
  *   resident size, because trims alone are withheld from foreground apps on API 34+.
  *
@@ -71,6 +85,8 @@ class VergerSense(
   private var lastLowMemory = false
   private var cpuBoostWanted = false
   private val power = app.getSystemService(Context.POWER_SERVICE) as PowerManager
+  private val connectivity = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  private var lastNetwork: Map<String, Any?>? = null
   // Default priority, not background: on Android 9–13 the background group is starved under
   // exactly the load the runtime must see, and the platform then drops frame reports.
   private val thread = HandlerThread("VergerSense", Process.THREAD_PRIORITY_DEFAULT).apply { start() }
@@ -82,6 +98,30 @@ class VergerSense(
   private var window: WeakReference<Window>? = null
   private var foreground = isProcessForeground()
   private var flushPending = false
+
+  // Foreground and background come from the platform's activity callbacks, not from Expo's
+  // lifecycle hooks: sensing keeps no Expo-only dependency (Expo Modules 2.0 readiness). The
+  // callbacks run on the main thread, where [presence] lives; the work goes to [handler].
+  private val presence = Presence(startedAlready = foreground)
+  private val lifecycle = object : Application.ActivityLifecycleCallbacks {
+    override fun onActivityStarted(activity: Activity) {
+      if (presence.onStarted() == Presence.Action.FOREGROUND) onForeground(activity)
+    }
+    override fun onActivityResumed(activity: Activity) {
+      if (presence.onResumed() == Presence.Action.REBIND) rebind(activity)
+    }
+    override fun onActivityStopped(activity: Activity) {
+      if (presence.onStopped() == Presence.Action.BACKGROUND) onBackground()
+    }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+    override fun onActivityPaused(activity: Activity) {}
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+    override fun onActivityDestroyed(activity: Activity) {}
+  }
+
+  init {
+    (app as? Application)?.registerActivityLifecycleCallbacks(lifecycle)
+  }
   @Volatile private var destroyed = false
 
   private var thermalStatus = -1
@@ -95,24 +135,98 @@ class VergerSense(
   /** Starts sensing (idempotent; a second call replaces the config). */
   fun start(next: SenseConfig, activity: Activity?) {
     handler.post {
-      val wasRunning = config != null
+      // A second start replaces the config: take the old sensors down before the new go up.
+      if (config != null) {
+        if (foreground) pause()
+        unregisterCallbacks()
+      }
       config = next
       estimator?.close()
       estimator = FrameWindowEstimator(next.windowMs, next.classification, ::onWindow).also {
         levers.currentRefreshHz()?.let { hz -> it.defaultTargetMs = 1000.0 / hz }
       }
-      if (!wasRunning) {
-        app.registerComponentCallbacks(memoryCallbacks)
-        val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          app.registerReceiver(powerReceiver, filter, null, handler, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-          app.registerReceiver(powerReceiver, filter, null, handler)
-        }
-        emitPower()
-      }
+      registerCallbacks(next.sensors)
       if (foreground) resume(activity)
     }
+  }
+
+  /**
+   * Switches sensors on or off while running. Goes through the same pause and resume the app
+   * takes on leaving and returning to the foreground, so no other lifecycle exists.
+   */
+  fun setSensors(next: Sensors) {
+    handler.post {
+      val current = config ?: return@post
+      if (current.sensors == next) return@post
+      if (foreground) pause()
+      unregisterCallbacks()
+      config = current.copy(sensors = next)
+      registerCallbacks(next)
+      if (foreground) resume(currentActivity())
+    }
+  }
+
+  private var memoryRegistered = false
+  private var powerRegistered = false
+  private var networkRegistered = false
+  private var batteryRegistered = false
+  private var lastBattery: Map<String, Any?>? = null
+
+  private fun registerCallbacks(sensors: Sensors) {
+    if (sensors.memory) {
+      app.registerComponentCallbacks(memoryCallbacks)
+      memoryRegistered = true
+    }
+    if (sensors.power) {
+      val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        app.registerReceiver(powerReceiver, filter, null, handler, Context.RECEIVER_NOT_EXPORTED)
+      } else {
+        app.registerReceiver(powerReceiver, filter, null, handler)
+      }
+      powerRegistered = true
+      emitPower()
+      // Sticky: registering returns the current battery state, emitted at once.
+      val current = runCatching {
+        val batteryFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          app.registerReceiver(batteryReceiver, batteryFilter, null, handler, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+          app.registerReceiver(batteryReceiver, batteryFilter, null, handler)
+        }
+      }
+      batteryRegistered = current.isSuccess
+      current.getOrNull()?.let(::emitBattery)
+    }
+    if (sensors.network) {
+      val ok = runCatching {
+        connectivity.registerDefaultNetworkCallback(networkCallback, handler)
+        val filter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          app.registerReceiver(dataSaverReceiver, filter, null, handler, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+          app.registerReceiver(dataSaverReceiver, filter, null, handler)
+        }
+      }.isSuccess
+      networkRegistered = ok
+      if (ok) emitNetwork(connectivity.getNetworkCapabilities(connectivity.activeNetwork))
+    }
+  }
+
+  private fun unregisterCallbacks() {
+    if (memoryRegistered) runCatching { app.unregisterComponentCallbacks(memoryCallbacks) }
+    if (powerRegistered) runCatching { app.unregisterReceiver(powerReceiver) }
+    if (batteryRegistered) runCatching { app.unregisterReceiver(batteryReceiver) }
+    if (networkRegistered) {
+      runCatching { connectivity.unregisterNetworkCallback(networkCallback) }
+      runCatching { app.unregisterReceiver(dataSaverReceiver) }
+    }
+    memoryRegistered = false
+    powerRegistered = false
+    networkRegistered = false
+    batteryRegistered = false
+    lastNetwork = null
+    lastBattery = null
   }
 
   fun stop() {
@@ -121,28 +235,38 @@ class VergerSense(
       pause()
       levers.releaseRefresh()
       levers.closeSession()
-      runCatching { app.unregisterComponentCallbacks(memoryCallbacks) }
-      runCatching { app.unregisterReceiver(powerReceiver) }
+      unregisterCallbacks()
       config = null
       estimator = null
     }
   }
 
-  fun onForeground(activity: Activity?) {
+  private fun onForeground(activity: Activity?) {
     handler.post {
       foreground = true
       if (config != null) resume(activity)
     }
   }
 
-  fun onBackground() {
+  private fun onBackground() {
     handler.post {
       foreground = false
       if (config != null) pause()
     }
   }
 
+  /** Another activity came to the front while the app stayed visible: follow its window. */
+  private fun rebind(activity: Activity) {
+    handler.post {
+      val sensors = config?.sensors ?: return@post
+      if (!foreground) return@post
+      if (sensors.frames) attachFrames(activity)
+      levers.reapply()
+    }
+  }
+
   fun destroy() {
+    (app as? Application)?.unregisterActivityLifecycleCallbacks(lifecycle)
     stop()
     handler.post {
       // After teardown nothing may reach the JS side: the runtime is gone and an emit throws.
@@ -173,11 +297,16 @@ class VergerSense(
     }
   }
 
-  /** Opens or closes the ADPF hint session for the UI and render threads. */
+  /**
+   * Opens or closes the ADPF hint session for the UI and render threads. The session acts on the
+   * frame work reported to it, which comes from frame metrics: with the frames sensor off it would
+   * boost blind, so it is refused.
+   */
   fun setCpuBoost(enabled: Boolean) {
     handler.post {
       cpuBoostWanted = enabled
-      val open = levers.setCpuBoost(enabled && foreground, estimator?.defaultTargetMs ?: 16.667)
+      val framesOn = (config?.sensors ?: Sensors.ALL).frames
+      val open = levers.setCpuBoost(enabled && foreground && framesOn, estimator?.defaultTargetMs ?: 16.667)
       emit(EVENT_LEVER, mapOf("lever" to "cpu-boost", "requested" to enabled, "applied" to open))
     }
   }
@@ -187,16 +316,19 @@ class VergerSense(
   // region lifecycle
 
   private fun resume(activity: Activity?) {
-    attachFrames(activity)
+    val sensors = config?.sensors ?: Sensors.ALL
+    if (sensors.frames) attachFrames(activity)
     estimator?.resetForwarding()
-    attachThermal()
+    if (sensors.thermal) attachThermal()
     lastThreadCores.fill(Double.NaN)
     handler.removeCallbacks(sampleThreads)
-    handler.postDelayed(sampleThreads, THREAD_SAMPLE_MS)
+    if (sensors.threads) handler.postDelayed(sampleThreads, THREAD_SAMPLE_MS)
+    handler.removeCallbacks(pollCpuHeadroom)
+    if (sensors.threads && cpuHeadroom() != null) handler.post(pollCpuHeadroom)
     handler.removeCallbacks(pollMemory)
-    handler.post(pollMemory)
+    if (sensors.memory || sensors.network) handler.post(pollMemory)
     levers.reapply()
-    if (cpuBoostWanted) levers.setCpuBoost(true, estimator?.defaultTargetMs ?: 16.667)
+    if (cpuBoostWanted && sensors.frames) levers.setCpuBoost(true, estimator?.defaultTargetMs ?: 16.667)
   }
 
   private fun pause() {
@@ -204,6 +336,7 @@ class VergerSense(
     estimator?.close()
     detachThermal()
     handler.removeCallbacks(sampleThreads)
+    handler.removeCallbacks(pollCpuHeadroom)
     handler.removeCallbacks(pollMemory)
     levers.closeSession()
   }
@@ -384,6 +517,36 @@ class VergerSense(
     }
   }
 
+  /** Built on first use, on API 36 only; null where the platform has no headroom support. */
+  private var headroomPoller: CpuHeadroomPoller? = null
+  private var headroomProbedOnce = false
+
+  private fun cpuHeadroom(): CpuHeadroomPoller? {
+    if (headroomProbedOnce) return headroomPoller?.takeIf { it.supported }
+    val busy = config?.cpuHeadroomBusyPercent ?: return null
+    headroomProbedOnce = true
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return null
+    val health = app.getSystemService(SystemHealthManager::class.java) ?: return null
+    // Throws UnsupportedOperationException where the device has no CPU headroom support.
+    val minInterval = runCatching { health.cpuHeadroomMinIntervalMillis }.getOrNull() ?: return null
+    headroomPoller = CpuHeadroomPoller(busy, minInterval)
+    return headroomPoller
+  }
+
+  private val pollCpuHeadroom = object : Runnable {
+    override fun run() {
+      if (config == null || !foreground) return
+      val poller = cpuHeadroom() ?: return
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return
+      val health = app.getSystemService(SystemHealthManager::class.java) ?: return
+      // Default params: the platform's own window and calculation over the whole device.
+      if (poller.read { health.getCpuHeadroom(null) }) {
+        emit(EVENT_CPU_HEADROOM, mapOf("percent" to poller.percent))
+      }
+      if (poller.supported) handler.postDelayed(this, poller.intervalMs)
+    }
+  }
+
   private fun emitThreadLoadIfChanged() {
     val load = threads.load
     var changed = false
@@ -392,7 +555,7 @@ class VergerSense(
       val before = lastThreadCores[role.ordinal]
       val now = load.of(role)
       // Report any move of 0.1 cores, and always a crossing of the saturation line, so the
-      // governor's saturated flag can never be left set (or unset) by a small change.
+      // verger's saturated flag can never be left set (or unset) by a small change.
       val crossed = !before.isNaN() && ((before >= line) != (now >= line))
       if (before.isNaN() || crossed || kotlin.math.abs(now - before) >= THREAD_CHANGE_CORES) changed = true
     }
@@ -413,30 +576,45 @@ class VergerSense(
     )
   }
 
+  /**
+   * The slow poll: memory, and with the network sensor this app's bytes (B3.1), so the byte
+   * counter adds no timer of its own. Bytes moved while hidden are counted at the next sample.
+   */
   private val pollMemory = object : Runnable {
     override fun run() {
-      if (config == null || !foreground) return
-      val info = ActivityManager.MemoryInfo()
-      if (runCatching { activityManager.getMemoryInfo(info) }.isFailure) {
-        handler.postDelayed(this, MEMORY_POLL_MS)
-        return
-      }
-      val availMb = info.availMem / MB
-      val moved = lastAvailMb.isNaN() || kotlin.math.abs(availMb - lastAvailMb) >= lastAvailMb * 0.05
-      if (moved || info.lowMemory != lastLowMemory) {
-        lastAvailMb = availMb
-        lastLowMemory = info.lowMemory
-        emit(
-          EVENT_MEMORY,
-          mapOf(
-            "availableMb" to availMb,
-            "thresholdMb" to info.threshold / MB,
-            "lowMemory" to info.lowMemory,
-            "rssMb" to residentMb(),
-          ),
-        )
-      }
+      val sensors = config?.sensors ?: return
+      if (!foreground) return
+      if (sensors.network) sampleDataUsage()
+      if (sensors.memory) sampleMemory()
       handler.postDelayed(this, MEMORY_POLL_MS)
+    }
+  }
+
+  private val dataUsage = DataUsageReporter(DataUsageReporter.BUCKET_BYTES, DataUsageReporter.HEARTBEAT_MS)
+  private val uid = Process.myUid()
+
+  private fun sampleDataUsage() {
+    val total = DataUsageSignals.totalBytes(TrafficStats.getUidRxBytes(uid), TrafficStats.getUidTxBytes(uid))
+    if (dataUsage.shouldSend(total, nowMs())) emit(EVENT_DATA_USAGE, DataUsageSignals.payload(total))
+  }
+
+  private fun sampleMemory() {
+    val info = ActivityManager.MemoryInfo()
+    if (runCatching { activityManager.getMemoryInfo(info) }.isFailure) return
+    val availMb = info.availMem / MB
+    val moved = lastAvailMb.isNaN() || kotlin.math.abs(availMb - lastAvailMb) >= lastAvailMb * 0.05
+    if (moved || info.lowMemory != lastLowMemory) {
+      lastAvailMb = availMb
+      lastLowMemory = info.lowMemory
+      emit(
+        EVENT_MEMORY,
+        mapOf(
+          "availableMb" to availMb,
+          "thresholdMb" to info.threshold / MB,
+          "lowMemory" to info.lowMemory,
+          "rssMb" to residentMb(),
+        ),
+      )
     }
   }
 
@@ -474,9 +652,75 @@ class VergerSense(
     override fun onReceive(context: Context, intent: Intent) = emitPower()
   }
 
+  private val batteryReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) = emitBattery(intent)
+  }
+
+  private fun emitBattery(intent: Intent) {
+    val payload = BatterySignals.payload(
+      BatterySignals.levelPercent(
+        intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1),
+        intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1),
+      ),
+      BatterySignals.pluggedIn(intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)),
+      BatterySignals.temperatureC(intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, Int.MIN_VALUE)),
+    )
+    // The broadcast repeats often (voltage and current change); only a change of what verger reads crosses.
+    if (payload == lastBattery) return
+    lastBattery = payload
+    emit(EVENT_BATTERY, payload)
+  }
+
   private fun emitPower() {
     val saver = runCatching { power.isPowerSaveMode }.getOrNull() ?: return
     emit(EVENT_POWER_SAVER, mapOf("saver" to saver))
+  }
+
+  // endregion
+
+  // region network
+
+  private var lastCapabilities: NetworkCapabilities? = null
+
+  private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+    // Delivered on [handler]'s thread.
+    override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) =
+      emitNetwork(capabilities)
+
+    override fun onLost(network: Network) = emitNetwork(null)
+  }
+
+  /** Data Saver changes arrive only to registered receivers; the capabilities do not change with it. */
+  private val dataSaverReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) = emitNetwork(lastCapabilities)
+  }
+
+  private fun emitNetwork(capabilities: NetworkCapabilities?) {
+    lastCapabilities = capabilities
+    val c = capabilities
+    val payload = NetworkSignals.payload(
+      transport = NetworkSignals.transport(
+        present = c != null,
+        wifi = c?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true,
+        cellular = c?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true,
+        ethernet = c?.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) == true,
+      ),
+      validated = c?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED),
+      metered = c?.let { !it.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) },
+      downKbps = c?.let { NetworkSignals.bucketKbps(it.linkDownstreamBandwidthKbps) },
+      dataSaver = runCatching {
+        NetworkSignals.dataSaver(
+          connectivity.restrictBackgroundStatus,
+          ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED,
+          ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED,
+          ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED,
+        )
+      }.getOrNull(),
+    )
+    // Only a change crosses to JavaScript.
+    if (payload == lastNetwork) return
+    lastNetwork = payload
+    emit(EVENT_NETWORK, payload)
   }
 
   // endregion
@@ -507,9 +751,14 @@ class VergerSense(
     const val EVENT_THREAD_LOAD = "onThreadLoad"
     const val EVENT_MEMORY = "onMemory"
     const val EVENT_LEVER = "onLever"
+    const val EVENT_NETWORK = "onNetwork"
+    const val EVENT_BATTERY = "onBattery"
+    const val EVENT_CPU_HEADROOM = "onCpuHeadroom"
+    const val EVENT_DATA_USAGE = "onDataUsage"
     val EVENTS = arrayOf(
       EVENT_FRAME_WINDOW, EVENT_THERMAL, EVENT_MEMORY_TRIM, EVENT_POWER_SAVER,
-      EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER,
+      EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER, EVENT_NETWORK, EVENT_BATTERY,
+      EVENT_CPU_HEADROOM, EVENT_DATA_USAGE,
     )
 
     private const val THREAD_SAMPLE_MS = 1_000L

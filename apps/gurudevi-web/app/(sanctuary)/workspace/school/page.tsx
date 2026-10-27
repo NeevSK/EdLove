@@ -58,9 +58,14 @@ export default async function SchoolProfileWorkspacePage() {
 
   const isLeader =
     entry.activeCapacity === 'principal' ||
+    entry.activeCapacity === 'assistantPrincipal' ||
+    entry.activeCapacity === 'sectionHead' ||
     entry.activeCapacity === 'section_head' ||
+    entry.activeCapacity === 'gradeHead' ||
+    entry.activeCapacity === 'founder' ||
+    entry.activeCapacity === 'developer' ||
     entry.activeCapacity === 'admin' ||
-    (entry.activeScope?.roles?.includes('principal') ?? false);
+    (entry.activeScope?.roles?.some((r) => ['principal', 'admin', 'founder'].includes(r)) ?? false);
 
   return (
     <SanctuaryShell

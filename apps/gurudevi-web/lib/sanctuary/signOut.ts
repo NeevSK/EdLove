@@ -1,4 +1,4 @@
-import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+import { assertSecureApiUrl, secureApiFetch } from '@repo/core/api/transportSecurity';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 function apiOrigin(): string | null {
@@ -12,65 +12,103 @@ function apiOrigin(): string | null {
   }
 }
 
-/**
- * Executes an atomic 4-stage sovereign sign-out:
- * 1. Revokes server-side bearer session on sanctuary-api (/api/auth/sign-out)
- * 2. Clears HTTP-only SSR session cookies on Next.js (/auth/signout)
- * 3. Clears local client-side Supabase session state
- * 4. Flushes transient sessionStorage to prevent student data leaks on shared terminals
- */
+export class SignOutIncompleteError extends Error {
+  constructor(
+    readonly localCleanupComplete: boolean,
+    readonly remoteRevocationConfirmed: boolean,
+  ) {
+    super(
+      localCleanupComplete
+        ? 'Signed out on this device. Sign-out on other devices could not be confirmed. Sign in again to review your sessions.'
+        : 'Sign-out could not be completed on this device. Please try again before leaving it.',
+    );
+    this.name = 'SignOutIncompleteError';
+  }
+}
+
+/** Local cleanup must proceed even when remote revocation is unavailable. */
 export async function executeSovereignSignOut(redirectTo = '/'): Promise<void> {
   const origin = apiOrigin();
   const supabase = createBrowserSupabaseClient();
   let token: string | undefined;
+  let sessionRead = false;
+  let remoteRevocationConfirmed = false;
+  let cookiesCleared = false;
+  let localSessionCleared = false;
+  let transientStorageCleared = true;
 
   if (supabase) {
     try {
-      const { data } = await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
       token = data.session?.access_token;
+      sessionRead = !error;
     } catch {
-      // Session read error ignored during sign-out
+      sessionRead = false;
     }
   }
 
   // 1. Invalidate server-side session on sanctuary-api
   if (origin && token) {
     try {
-      await fetch(`${origin}/api/auth/sign-out`, {
+      const response = await secureApiFetch(`${origin}/api/auth/sign-out`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
       });
+      const receipt: unknown = response.ok ? await response.json() : null;
+      remoteRevocationConfirmed =
+        response.ok &&
+        typeof receipt === 'object' &&
+        receipt !== null &&
+        'ok' in receipt &&
+        receipt.ok === true;
+      if (!response.ok && response.body) await response.body.cancel();
     } catch {
-      // Best-effort server token revocation
+      remoteRevocationConfirmed = false;
     }
   }
+  const remoteRevocationRequired = !sessionRead || Boolean(token);
 
   // 2. Clear local Next.js HTTP-only session cookies
   try {
-    await fetch('/auth/signout', { method: 'POST', credentials: 'same-origin' });
+    const response = await fetch('/auth/signout', {
+      method: 'POST',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      redirect: 'error',
+      signal: AbortSignal.timeout(5000),
+    });
+    cookiesCleared = response.ok;
+    if (response.body) await response.body.cancel();
   } catch {
-    // Best-effort cookie clear
+    cookiesCleared = false;
   }
 
   // 3. Clear Supabase local client session if present
   if (supabase) {
     try {
       await supabase.auth.signOut({ scope: 'local' });
+      const current = await supabase.auth.getSession();
+      localSessionCleared = !current.error && !current.data.session;
     } catch {
-      // Safe local clear
+      localSessionCleared = false;
     }
   }
 
-  // 4. Flush transient session storage to ensure zero leftover student records in memory
+  // Transient browser storage must not survive a user-initiated sign-out.
   if (typeof window !== 'undefined') {
     try {
       window.sessionStorage?.clear();
     } catch {
-      // Safe fallback
+      transientStorageCleared = false;
+    }
+    const localCleanupComplete = cookiesCleared && localSessionCleared && transientStorageCleared;
+    if (!localCleanupComplete || (remoteRevocationRequired && !remoteRevocationConfirmed)) {
+      throw new SignOutIncompleteError(localCleanupComplete, remoteRevocationConfirmed);
     }
     window.location.replace(redirectTo);
   }

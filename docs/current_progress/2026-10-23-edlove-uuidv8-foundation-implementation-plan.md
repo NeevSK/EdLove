@@ -1,14 +1,21 @@
 ---
 title: "EdLove UUIDv8 Foundation: Step 1 Implementation Plan"
-status: "active"
+status: "superseded"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-25
+superseded_by: "2026-10-25-canonical-uuidv8-account-cutover.md"
 author: "Naveen"
 scribe: "Codex"
 tags: [plan, edlove, uuidv8, identity, migration, verification]
 ---
 
-# EdLove UUIDv8 Foundation: Step 1 Implementation Plan
+# EdLove UUIDv8 Foundation: Step 1 Implementation Plan (Superseded)
+
+> **Status:** Historical planning record, superseded on 2026-10-24 by the
+> [EdLove Identity Foundation Phase 2 ledger](2026-10-24-edlove-identity-foundation-phase-2-plan.md).
+> Both are now superseded by the [canonical UUIDv8 cutover](2026-10-25-canonical-uuidv8-account-cutover.md).
+> Use the cutover ledger for current implementation status. This plan's pre-migration
+> checkpoint below is historical and does not describe the current repository.
 
 ## Objective
 
@@ -44,14 +51,16 @@ foreign key, or production route is migrated.
 - No new encoded authorization, role, tenant, provider, or personal data.
 - No removal of UUIDv4/v7 producers or compatibility paths.
 
-## Current implementation checkpoint (2026-10-23)
+## Historical implementation checkpoint (2026-10-23)
 
-- Completed: read-only inventory, profile-v1 registry, deterministic TypeScript
-  encoder/parser, and the first documented conformance vector.
-- Deferred by design: collision retry, database implementation, and any schema
-  adoption. The API issuer now provides CSPRNG minting and bounded clock
-  monotonicity; persistence remains the final uniqueness authority and requires
-  the selected additive target.
+- At the time this plan was written, the initial scope was framed as an
+  inventory, profile-v1 registry, deterministic TypeScript encoder/parser, and
+  a documented conformance vector. Subsequent implementation is recorded in
+  the 2026-10-24 Phase 2 ledger and linked authority completion record.
+- The deferrals below describe the plan as of 2026-10-23. They are not current
+  status: the later ledger records the nullable unique account handle, private
+  writer, assignment service, and a route-unattached backfill helper, while
+  operational backfill and integrated Phase 2 remain incomplete.
 - Inventory decision: existing Supabase/Postgres UUIDv4/random defaults and
   UUIDv7 operational identifiers remain unchanged. They are not evidence that
   a live identifier can be silently migrated to UUIDv8.
@@ -65,7 +74,7 @@ foreign key, or production route is migrated.
   provider subjects, or existing foreign keys. The migration and backfill stay
   deferred until collision-retry persistence evidence is implemented.
 
-### Read-only producer inventory decision
+### Historical producer inventory decision (2026-10-23)
 
 | Existing producer/consumer | Current owner | Decision |
 |---|---|---|

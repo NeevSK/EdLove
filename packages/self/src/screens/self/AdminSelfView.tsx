@@ -1,4 +1,6 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useUIStore } from '@repo/core/store/useUIStore';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
@@ -27,7 +29,7 @@ export default function AdminSelfView() {
   // State & Kernel Hooks
   const { context } = usePermissions();
   const userId = context.userId;
-  const user = useStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
   const {
     logs: moodHistory,
@@ -42,8 +44,8 @@ export default function AdminSelfView() {
   // UI State
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
 
   const handleMoodSelect = async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
     setIsSavingMood(true);

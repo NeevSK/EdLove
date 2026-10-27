@@ -1,13 +1,15 @@
 'use client';
 
 import { startEventsReceiver } from '@repo/core/api/eventsReceiver';
+import { disposeAccountBoundaryQueries } from '@repo/core/lib/clientStateFoundation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { useAuth } from '../../app/(sanctuary)/auth/AuthProvider';
 
 /**
- * Clears account-bound and tenant-bound query data whenever the authenticated user ID changes,
- * preventing cross-tenant or cross-session cache leaks in browser memory,
+ * Removes account-bound Query data whenever the authenticated user ID changes,
+ * preserving MutationCache ownership for the command lifecycle while preventing
+ * cross-tenant or cross-session cache leaks in browser memory,
  * and maintains an active real-time SSE stream for tab-aware cache invalidation.
  */
 export function AuthQueryCacheBoundary() {
@@ -28,7 +30,11 @@ export function AuthQueryCacheBoundary() {
 
   useEffect(() => {
     if (previousSubjectId.current !== undefined && previousSubjectId.current !== subjectId) {
-      queryClient.clear();
+      void disposeAccountBoundaryQueries(queryClient, previousSubjectId.current).catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[Query cache] Account-bound query disposal failed:', error);
+        }
+      });
     }
     previousSubjectId.current = subjectId;
   }, [queryClient, subjectId]);
@@ -51,4 +57,3 @@ export function AuthQueryCacheBoundary() {
 
   return null;
 }
-

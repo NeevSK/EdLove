@@ -1,4 +1,5 @@
 let activeAccountId: string | null = null;
+let accountScopeRevision = 0;
 
 const ANONYMOUS_SCOPE = 'anonymous';
 
@@ -7,7 +8,12 @@ export function getActiveAccountId(): string | null {
 }
 
 export function setActiveAccountId(accountId: string | null) {
+  if (activeAccountId !== accountId) accountScopeRevision += 1;
   activeAccountId = accountId;
+}
+
+export function getAccountScopeRevision(): number {
+  return accountScopeRevision;
 }
 
 export function getActiveAccountScope(): string {

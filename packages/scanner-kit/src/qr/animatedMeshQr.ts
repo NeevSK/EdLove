@@ -11,6 +11,31 @@ export interface DecodedMeshBatch<T = any> {
   totalFrames: number;
 }
 
+function utf8ToBase64(str: string): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str, 'utf-8').toString('base64');
+  }
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+  return btoa(binary);
+}
+
+function base64ToUtf8(base64: string): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(base64, 'base64').toString('utf-8');
+  }
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
+}
+
 /**
  * Encodes an object payload into chunked QR frames for cyclic animated scanning.
  */
@@ -20,10 +45,7 @@ export function encodePayloadToMeshQrFrames<T = any>(
   chunkSize: number = 300,
 ): string[] {
   const serialized = JSON.stringify(payload);
-  const base64Data =
-    typeof btoa !== 'undefined'
-      ? btoa(unescape(encodeURIComponent(serialized)))
-      : Buffer.from(serialized, 'utf-8').toString('base64');
+  const base64Data = utf8ToBase64(serialized);
 
   const totalFrames = Math.max(1, Math.ceil(base64Data.length / chunkSize));
   const frames: string[] = [];
@@ -90,11 +112,7 @@ export class AnimatedMeshQrDecoder {
       }
 
       try {
-        const decodedStr =
-          typeof atob !== 'undefined'
-            ? decodeURIComponent(escape(atob(fullBase64)))
-            : Buffer.from(fullBase64, 'base64').toString('utf-8');
-
+        const decodedStr = base64ToUtf8(fullBase64);
         const parsedData = JSON.parse(decodedStr);
         this.batches.delete(batchId); // Clean up memory
         return {

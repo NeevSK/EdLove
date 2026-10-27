@@ -1,5 +1,5 @@
 import { useAIAgent } from '@repo/ai';
-import { useStore } from '@repo/core/logic';
+
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -19,7 +19,6 @@ export default function SectionHeadDashboard({
   const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } =
     useAIAgent();
   const { showToast } = useSanctuaryToast();
-  const _userRole = useStore((state: any) => state.userRole);
 
   const handleExecuteRelief = React.useCallback((action: string) => {
     showToast({

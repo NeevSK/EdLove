@@ -483,4 +483,20 @@ config.resolver.sourceExts = [...config.resolver.sourceExts, 'mjs', 'cjs'];
 // 10. Main Field Priority
 config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
 
+// 11. Production Performance & Hermes Heap Preservation (2GB RAM Budget)
+// On low-end Android hardware, hundreds of unmanaged console.* calls cause Hermes GC stutter.
+// Strip non-error logs in production builds while leaving console.warn & console.error for Sentry.
+if (process.env.NODE_ENV === 'production') {
+  config.transformer = {
+    ...config.transformer,
+    minifierConfig: {
+      ...config.transformer?.minifierConfig,
+      compress: {
+        ...config.transformer?.minifierConfig?.compress,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+      },
+    },
+  };
+}
+
 module.exports = withNativewind(config);

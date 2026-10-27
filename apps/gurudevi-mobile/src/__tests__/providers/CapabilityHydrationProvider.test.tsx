@@ -5,12 +5,17 @@ const mocks = vi.hoisted(() => ({
   auth: {
     identityAvailability: 'active',
     loading: false,
+    resolvedAuthSubjectId: 'user-1',
     session: null as { user: { id: string; is_anonymous?: boolean } } | null,
   },
   user: { id: 'user-1' },
-  perspective: { kind: 'personal' as const },
-  loadEntitlements: vi.fn(async () => undefined),
-  clearEntitlements: vi.fn(),
+  scope: {
+    snapshot: { principalId: 'user-1', activeBond: null } as
+      | { principalId: string; activeBond: unknown }
+      | null,
+    isTransitioning: false,
+  },
+  entitlementQuery: vi.fn(() => ({ error: null, isLoading: false, refetch: vi.fn() })),
   error: null as string | null,
   isLoading: false,
 }));
@@ -24,27 +29,14 @@ vi.mock('@repo/core/store/useAuthStore', () => ({
     selector({ user: mocks.user }),
 }));
 
-vi.mock('@repo/core/store/usePerspectiveStore', () => ({
-  usePerspectiveStore: (
-    selector: (state: { activePerspective: typeof mocks.perspective }) => unknown,
-  ) => selector({ activePerspective: mocks.perspective }),
+vi.mock('@repo/core/store/scopeSession', () => ({
+  PERSONAL_SCOPE_PERSPECTIVE: { id: 'personal', kind: 'personal', displayName: 'Personal Sanctuary' },
+  useScopeSessionStore: (selector: (state: typeof mocks.scope) => unknown) =>
+    selector(mocks.scope),
 }));
 
-vi.mock('@repo/core/store/useEntitlementStore', () => ({
-  useEntitlementStore: (
-    selector: (state: {
-      loadEntitlements: typeof mocks.loadEntitlements;
-      clearEntitlements: typeof mocks.clearEntitlements;
-      error: string | null;
-      isLoading: boolean;
-    }) => unknown,
-  ) =>
-    selector({
-      loadEntitlements: mocks.loadEntitlements,
-      clearEntitlements: mocks.clearEntitlements,
-      error: mocks.error,
-      isLoading: mocks.isLoading,
-    }),
+vi.mock('@repo/core/hooks/useEntitlementQuery', () => ({
+  useEntitlementQuery: mocks.entitlementQuery,
 }));
 
 import { CapabilityHydrationProvider } from '@repo/core/providers/CapabilityHydrationProvider';
@@ -53,11 +45,11 @@ describe('CapabilityHydrationProvider (component-real scenarios)', () => {
   beforeEach(() => {
     mocks.auth.identityAvailability = 'active';
     mocks.auth.loading = false;
+    mocks.auth.resolvedAuthSubjectId = 'user-1';
     mocks.auth.session = { user: { id: 'user-1' } };
     mocks.user = { id: 'user-1' };
-    mocks.perspective = { kind: 'personal' };
-    mocks.loadEntitlements.mockClear();
-    mocks.clearEntitlements.mockClear();
+    mocks.scope.snapshot = { principalId: 'user-1', activeBond: null };
+    mocks.entitlementQuery.mockClear();
   });
 
   it('hydrates free capability state for the active personal account', async () => {
@@ -70,12 +62,11 @@ describe('CapabilityHydrationProvider (component-real scenarios)', () => {
       await Promise.resolve();
     });
 
-    expect(mocks.loadEntitlements).toHaveBeenCalledWith('user-1', {
+    expect(mocks.entitlementQuery).toHaveBeenCalledWith('user-1', {
       activeBondId: null,
       activeEntityId: null,
       activeEntityType: null,
-    });
-    expect(mocks.clearEntitlements).not.toHaveBeenCalled();
+    }, true);
   });
 
   it('keeps cached capability state while auth is still booting', async () => {
@@ -90,8 +81,11 @@ describe('CapabilityHydrationProvider (component-real scenarios)', () => {
       await Promise.resolve();
     });
 
-    expect(mocks.loadEntitlements).not.toHaveBeenCalled();
-    expect(mocks.clearEntitlements).not.toHaveBeenCalled();
+    expect(mocks.entitlementQuery).toHaveBeenCalledWith('user-1', {
+      activeBondId: null,
+      activeEntityId: null,
+      activeEntityType: null,
+    }, false);
   });
 
   it('clears capability state after the account signs out', async () => {
@@ -107,8 +101,11 @@ describe('CapabilityHydrationProvider (component-real scenarios)', () => {
       await Promise.resolve();
     });
 
-    expect(mocks.clearEntitlements).toHaveBeenCalledTimes(1);
-    expect(mocks.loadEntitlements).not.toHaveBeenCalled();
+    expect(mocks.entitlementQuery).toHaveBeenCalledWith('', {
+      activeBondId: null,
+      activeEntityId: null,
+      activeEntityType: null,
+    }, false);
   });
 
   it('does not hydrate cloud capabilities for an admitted anonymous guest', async () => {
@@ -124,7 +121,10 @@ describe('CapabilityHydrationProvider (component-real scenarios)', () => {
       await Promise.resolve();
     });
 
-    expect(mocks.loadEntitlements).not.toHaveBeenCalled();
-    expect(mocks.clearEntitlements).not.toHaveBeenCalled();
+    expect(mocks.entitlementQuery).toHaveBeenCalledWith('guest-1', {
+      activeBondId: null,
+      activeEntityId: null,
+      activeEntityType: null,
+    }, false);
   });
 });

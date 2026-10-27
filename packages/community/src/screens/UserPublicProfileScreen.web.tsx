@@ -1,7 +1,8 @@
+import { useAuthStore } from '@repo/core/store';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { usePermissions } from '@repo/core/logic';
 
-import { useStore } from '@repo/core/store';
+
 import { GiveThuthimalModal } from '@repo/profile';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -54,7 +55,7 @@ export default function UserPublicProfileScreen() {
   const userId = userIdParam || id || '';
   const { context, can } = usePermissions();
   const currentUserId = context.userId;
-  const currentUser = useStore((state) => state.user);
+  const currentUser = useAuthStore(state => state.user);
 
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);

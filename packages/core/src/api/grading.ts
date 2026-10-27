@@ -226,3 +226,13 @@ export const gradingAPI = {
     return gradingProjectionServices.getSchoolPublishedGradingCompletion(schoolId, viewDate);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_GRADEBOOK_ROSTER } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'gradebook',
+  ghostMethods: ['getRoster'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_GRADEBOOK_ROSTER,
+});

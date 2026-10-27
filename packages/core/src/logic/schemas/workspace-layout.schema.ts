@@ -40,6 +40,8 @@ export const WorkspaceLayoutRecordSchema = z.object({
   is_default: z.boolean().default(true),
   surface_metadata: z.record(z.string(), z.unknown()).default({}),
   layout_version: WorkspaceLayoutVersionSchema.default(2),
+  revision: z.number().int().nonnegative().default(0),
+  last_operation_id: z.uuid().nullable().default(null),
   created_at: z.string(),
   updated_at: z.string(),
 });

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi, waitFor } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   getLayout: vi.fn(),
@@ -40,13 +40,16 @@ vi.mock('@repo/core/api/workspaceLayout', () => ({
 vi.mock('@repo/core/hooks', () => ({
   useTeacherClassroom: () => ({ students: [], loading: false }),
 }));
-vi.mock('@repo/core/logic', () => ({
-  useStore: (selector: (state: { user: { id: string } }) => unknown) =>
+vi.mock('@repo/core/store/useAuthStore', () => ({
+  useAuthStore: (selector: (state: { user: { id: string } }) => unknown) =>
     selector({ user: { id: '11111111-1111-4111-8111-111111111111' } }),
 }));
 vi.mock('@repo/core/lib/storageWrapper', () => ({
-  SafeZustandStorage: { getItem: mocks.getItem },
+  SafeZustandStorage: { getItem: mocks.getItem, setItem: vi.fn(async () => undefined) },
   setStorageItemDurably: mocks.setStorageItemDurably,
+}));
+vi.mock('@repo/core/lib/storage', () => ({
+  storage: { setAsync: mocks.setStorageItemDurably },
 }));
 vi.mock('@repo/core/lib/sync/useMutationQueue', () => ({
   useMutationQueue: (selector: (state: { addToQueue: typeof mocks.addToQueue }) => unknown) =>
@@ -95,7 +98,9 @@ describe('Classroom teacher layout sync lifecycle', () => {
       defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
     });
     mocks.intent = null;
-    mocks.getItem.mockImplementation(async () => mocks.intent);
+    mocks.getItem.mockImplementation(async (key: string) =>
+      key.startsWith('workspace-layout-intent:') ? mocks.intent : null,
+    );
     mocks.getLayout.mockResolvedValue(remoteLayout());
     mocks.setStorageItemDurably.mockImplementation(async (_key: string, value: string) => {
       mocks.intent = value;
@@ -139,7 +144,7 @@ describe('Classroom teacher layout sync lifecycle', () => {
     expect(stored.pendingPatch?.changes).toHaveProperty('arrangement');
     expect(mocks.patchWorkspaceLayout).toHaveBeenCalledWith({ body: stored.pendingPatch });
     expect(mocks.setStorageItemDurably.mock.invocationCallOrder[1]).toBeLessThan(
-      mocks.patchWorkspaceLayout.mock.invocationCallOrder[0],
+      mocks.patchWorkspaceLayout.mock.invocationCallOrder[0]!,
     );
   });
 

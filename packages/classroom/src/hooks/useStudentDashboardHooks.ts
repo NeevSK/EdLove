@@ -6,7 +6,7 @@ import {
   useStudentStatsQuery,
 } from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
-import { useAuthStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 

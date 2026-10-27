@@ -1,4 +1,10 @@
 import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
+import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import {
+  createWindDownRitualActor,
+  executeSaveWindDownRitualEffect,
+  type WindDownStep,
+} from '@repo/self/machines/windDownRitualMachine';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { CircleCheck, Moon } from '@repo/ui/icons';
 import {
@@ -17,7 +23,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // —————————————————————————————————————————————————————————————————————————————
@@ -46,15 +52,20 @@ interface WindDownRitualProps {
 export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [completed, setCompleted] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  // Wind-down steps state
-  const [wentWell, setWentWell] = useState('');
-  const [toRelease, setToRelease] = useState('');
-  const [tomorrowIntent, setTomorrowIntent] = useState('');
+  const actor = useMemo(
+    () => createWindDownRitualActor({ userId: userId ?? '' }),
+    [userId],
+  );
+  const snapshot = useActorSnapshot(actor);
+  const { wentWell, toRelease, tomorrowIntent, error: saveError, isSaving: saving } =
+    snapshot.context;
+  const step = snapshot.value as WindDownStep | 'saving' | 'completed';
+  const stepOrder: WindDownStep[] = ['breathe', 'reflect', 'release', 'intent'];
+  const currentStep =
+    step === 'completed' || step === 'saving'
+      ? 3
+      : Math.max(0, stepOrder.indexOf(step as WindDownStep));
+  const completed = step === 'completed';
 
   const steps: Step[] = [
     {
@@ -70,7 +81,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       title: t('self.reflect') || 'Daily Reflection',
       input: true,
       value: wentWell,
-      setValue: setWentWell,
+      setValue: (text) => actor.send({ type: 'SET_WENT_WELL', text }),
       placeholder: t('self.oneThingWentWell') || 'One thing that went well today...',
     },
     {
@@ -78,7 +89,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       title: t('self.release') || 'Letting Go',
       input: true,
       value: toRelease,
-      setValue: setToRelease,
+      setValue: (text) => actor.send({ type: 'SET_TO_RELEASE', text }),
       placeholder: t('self.oneThingRelease') || 'One thing I am releasing tonight...',
     },
     {
@@ -86,7 +97,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       title: t('self.tomorrowIntent') || "Tomorrow's Intent",
       input: true,
       value: tomorrowIntent,
-      setValue: setTomorrowIntent,
+      setValue: (text) => actor.send({ type: 'SET_TOMORROW_INTENT', text }),
       placeholder: t('self.gentleIntentTomorrow') || 'A gentle intention for tomorrow...',
     },
   ];
@@ -97,41 +108,25 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const handleNext = async () => {
     hapticLight();
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      actor.send({ type: 'NEXT' });
     } else {
-      setSaving(true);
-      setSaveError(null);
-      try {
-        if (userId) {
-          await saveWindDownRitual(userId, {
-            went_well: wentWell,
-            to_release: toRelease,
-            tomorrow_intent: tomorrowIntent,
-          });
+      if (userId) {
+        const result = await executeSaveWindDownRitualEffect(actor, saveWindDownRitual);
+        if (result.success) {
+          hapticSuccess();
         }
-        hapticSuccess();
-        setCompleted(true);
-      } catch {
-        setSaveError(
-          'Your ritual could not be saved. Your reflections are still here—please try again.',
-        );
-      } finally {
-        setSaving(false);
       }
     }
   };
 
   const handleBack = () => {
     hapticLight();
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    actor.send({ type: 'PREV' });
   };
 
   const handleReset = () => {
     hapticLight();
-    setCurrentStep(0);
-    setCompleted(false);
+    actor.send({ type: 'RESET' });
   };
 
   if (completed) {

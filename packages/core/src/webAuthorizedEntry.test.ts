@@ -7,7 +7,7 @@ const activeScope = {
   entityType: 'PERSONAL_CLASSROOM',
   roles: ['TEACHER'],
 } as const;
-const accountId = '00000000-0000-4000-8000-000000000002';
+const accountId = '01234567-89ab-8101-8000-010203040506';
 
 describe('mapAuthorizedEntry', () => {
   it('maps complete authoritative facts into a route-safe ready result', () => {

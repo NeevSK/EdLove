@@ -1,3 +1,4 @@
+import type { SessionContinuity } from '@repo/core/api/clientRuntime';
 import { ScopeBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
 import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract';
 import { orpcClient } from '@repo/core/api/orpcClient';
@@ -64,13 +65,19 @@ function requestWithEffect<T>(
 /** Effect v4 program for creating the authenticated user's initial bond. */
 export function createInitialBondEffect(
   input: InitialBondInput,
+  expectedSession?: SessionContinuity,
 ): Effect.Effect<InitialBondResult, OnboardingCommandError> {
   return Effect.gen(function* () {
     const body = yield* parseWithEffect('createInitialBond.input', () =>
       onboardingORPCContract.createInitialBond.request.body.parse(input),
     );
     const result = yield* requestWithEffect('createInitialBond.request', () =>
-      orpcClient.onboarding.createInitialBond({ body }),
+      expectedSession
+        ? orpcClient.onboarding.createInitialBond(
+            { body },
+            { context: { expectedSession, retry: 0 } },
+          )
+        : orpcClient.onboarding.createInitialBond({ body }),
     );
     return yield* parseWithEffect('createInitialBond.response', () =>
       initialBondResponseSchema.parse(result),
@@ -89,10 +96,16 @@ export function createOnboardingCompletionKey(): string {
 
 export function completeOnboardingEffect(
   input: CompleteOnboardingInput = {},
+  expectedSession?: SessionContinuity,
 ): Effect.Effect<CompleteOnboardingResult, OnboardingCommandError> {
   return Effect.gen(function* () {
     const result = yield* requestWithEffect('completeOnboarding.request', () =>
-      orpcClient.onboarding.completeOnboarding({ body: input }),
+      expectedSession
+        ? orpcClient.onboarding.completeOnboarding(
+            { body: input },
+            { context: { expectedSession, retry: 0 } },
+          )
+        : orpcClient.onboarding.completeOnboarding({ body: input }),
     );
     return yield* parseWithEffect('completeOnboarding.response', () =>
       completeOnboardingResponseSchema.parse(result),
@@ -101,13 +114,17 @@ export function completeOnboardingEffect(
 }
 
 /** Canonical onboarding commands with legacy callers left untouched. */
-export async function createInitialBond(input: InitialBondInput): Promise<InitialBondResult> {
-  return Effect.runPromise(createInitialBondEffect(input));
+export async function createInitialBond(
+  input: InitialBondInput,
+  expectedSession?: SessionContinuity,
+): Promise<InitialBondResult> {
+  return Effect.runPromise(createInitialBondEffect(input, expectedSession));
 }
 
 /** Completion derives the account from the authenticated request context. */
 export async function completeOnboarding(
   input: CompleteOnboardingInput = {},
+  expectedSession?: SessionContinuity,
 ): Promise<CompleteOnboardingResult> {
-  return Effect.runPromise(completeOnboardingEffect(input));
+  return Effect.runPromise(completeOnboardingEffect(input, expectedSession));
 }

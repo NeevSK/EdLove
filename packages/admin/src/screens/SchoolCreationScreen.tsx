@@ -1,10 +1,16 @@
+// Step Components
+import StepBasicInfo from '@repo/admin/components/school/StepBasicInfo';
+import StepDemographics from '@repo/admin/components/school/StepDemographics';
+import StepHierarchy from '@repo/admin/components/school/StepHierarchy';
+import StepLocation from '@repo/admin/components/school/StepLocation';
 import { communityAPI } from '@repo/community';
 import { schoolAPI } from '@repo/core/api/client';
 import { useSchoolCreation } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
 import { KeyboardAwareForm } from '@repo/core/hooks/useKeyboard';
-
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useAuthStore } from '@repo/core/store';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
+import { FireflyMascot } from '@repo/ui';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -15,12 +21,6 @@ import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-// Step Components
-import StepBasicInfo from '@repo/admin/components/school/StepBasicInfo';
-import StepDemographics from '@repo/admin/components/school/StepDemographics';
-import StepHierarchy from '@repo/admin/components/school/StepHierarchy';
-import StepLocation from '@repo/admin/components/school/StepLocation';
 
 const TOTAL_STEPS = 4;
 const STEP_LABELS = [
@@ -33,9 +33,9 @@ const STEP_LABELS = [
 export default function SchoolCreationScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const user = useStore((s) => s.user);
-  const setUser = useStore((s) => s.setUser);
-  const setDemoMode = useStore((s) => s.setDemoMode);
+  const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
+  const setDemoMode = useExperienceState((s) => s.setDemoMode);
   const { showToast } = useSanctuaryToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{
@@ -164,8 +164,13 @@ export default function SchoolCreationScreen() {
           contentContainerStyle={{ padding: 24, paddingBottom: 120 }}
         >
           <VStack className="gap-8 items-center mt-8">
-            <Box className="w-24 h-24 rounded-full bg-phase-interactive items-center justify-center shadow-lg">
-              <Icon as={Check} size={48} className="text-white" strokeWidth={3} />
+            <Box className="relative items-center justify-center">
+              <Box className="w-24 h-24 rounded-full bg-phase-interactive items-center justify-center shadow-lg">
+                <Icon as={Check} size={48} className="text-white" strokeWidth={3} />
+              </Box>
+              <Box className="absolute -top-4 -right-4">
+                <FireflyMascot size={48} mode="glowing" state="complete" role="guide" />
+              </Box>
             </Box>
 
             <VStack className="gap-1 items-center">

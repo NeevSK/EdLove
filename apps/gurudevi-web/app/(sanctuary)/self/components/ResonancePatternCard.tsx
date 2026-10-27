@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, Sparkles } from '@repo/ui/icons';
+import { Activity, Sparkles } from 'lucide-react';
 
 interface ResonancePatternCardProps {
   userId?: string;
@@ -22,12 +22,20 @@ export function ResonancePatternCard({ onClose }: ResonancePatternCardProps) {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#8b5cf6' }}>
         <Sparkles size={16} />
-        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        <span
+          style={{
+            fontSize: '0.75rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}
+        >
           Emotional Resonance Fingerprint
         </span>
       </div>
       <p style={{ margin: 0, fontSize: '0.875rem', color: '#475569' }}>
-        Your energy shows steady morning alignment and reflective depth in early evenings. Focus blocks feel most natural between 09:00 and 11:30.
+        Your energy shows steady morning alignment and reflective depth in early evenings. Focus
+        blocks feel most natural between 09:00 and 11:30.
       </p>
       <div
         style={{
@@ -40,8 +48,12 @@ export function ResonancePatternCard({ onClose }: ResonancePatternCardProps) {
           color: '#334155',
         }}
       >
-        <div><strong>Primary Anchor:</strong> Serene Insight</div>
-        <div><strong>Flow Rhythm:</strong> Morning Focus</div>
+        <div>
+          <strong>Primary Anchor:</strong> Serene Insight
+        </div>
+        <div>
+          <strong>Flow Rhythm:</strong> Morning Focus
+        </div>
       </div>
     </div>
   );

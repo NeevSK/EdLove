@@ -3,14 +3,15 @@
  * Unit tests for SSE real-time event receiver and atomic cache invalidator.
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { notificationQueryKeys } from '@repo/core/lib/notificationQueryKeys';
+import { QueryClient } from '@tanstack/react-query';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   dispatchEventInvalidation,
+  isEventsReceiverActive,
   startEventsReceiver,
   stopEventsReceiver,
-  isEventsReceiverActive,
 } from '../eventsReceiver';
-import { QueryClient } from '@tanstack/react-query';
 
 describe('eventsReceiver', () => {
   let queryClient: QueryClient;
@@ -44,11 +45,24 @@ describe('eventsReceiver', () => {
       expect(queryClient.invalidateQueries).toHaveBeenCalled();
     });
 
-    it('invalidates notification queries on notification_sent event', async () => {
+    it('invalidates only the recipient-scoped notification keys on notification_sent', async () => {
       await dispatchEventInvalidation(queryClient, 'notification_sent', {
         userId: 'user-1',
       });
-      expect(queryClient.invalidateQueries).toHaveBeenCalled();
+      expect(queryClient.invalidateQueries).toHaveBeenNthCalledWith(1, {
+        queryKey: notificationQueryKeys.list({ principalId: 'user-1' }),
+        exact: true,
+      });
+      expect(queryClient.invalidateQueries).toHaveBeenNthCalledWith(2, {
+        queryKey: notificationQueryKeys.count({ principalId: 'user-1' }),
+        exact: true,
+      });
+      expect(queryClient.invalidateQueries).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not invalidate notification data without a recipient principal', async () => {
+      await dispatchEventInvalidation(queryClient, 'notification_sent', {});
+      expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
     });
 
     it('invalidates profile queries on profile_updated event', async () => {
@@ -97,6 +111,53 @@ describe('eventsReceiver', () => {
       cleanup();
 
       expect(isEventsReceiverActive()).toBe(false);
+    });
+
+    it('reconnects after a transient transport failure', async () => {
+      vi.useFakeTimers();
+      try {
+        vi.spyOn(Math, 'random').mockReturnValue(0);
+        const mockReader = {
+          read: vi.fn().mockImplementation(() => new Promise(() => {})),
+          releaseLock: vi.fn(),
+        };
+        vi.spyOn(globalThis, 'fetch')
+          .mockRejectedValueOnce(new Error('temporary network failure'))
+          .mockResolvedValueOnce({ ok: true, body: { getReader: () => mockReader } } as any);
+
+        const cleanup = startEventsReceiver({
+          queryClient,
+          baseUrl: 'http://localhost:3000',
+        });
+
+        await Promise.resolve();
+        await Promise.resolve();
+        await vi.advanceTimersByTimeAsync(1000);
+        expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+        cleanup();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('uses an injected native lifecycle adapter without importing React Native', () => {
+      const mockReader = { read: vi.fn().mockImplementation(() => new Promise(() => {})) };
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true,
+        body: { getReader: () => mockReader },
+      } as any);
+      const unsubscribe = vi.fn();
+      const subscribe = vi.fn().mockReturnValue(unsubscribe);
+
+      const cleanup = startEventsReceiver({
+        queryClient,
+        baseUrl: 'http://localhost:3000',
+        lifecycle: { subscribe },
+      });
+
+      expect(subscribe).toHaveBeenCalledTimes(1);
+      cleanup();
+      expect(unsubscribe).toHaveBeenCalledTimes(1);
     });
   });
 });

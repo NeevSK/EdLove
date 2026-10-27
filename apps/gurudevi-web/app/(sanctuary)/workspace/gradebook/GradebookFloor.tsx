@@ -2,46 +2,10 @@
 
 import { useEffect, useId, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain/hooks/useAcademicDomain';
+import type { GradebookStudent } from '@/lib/domain/ports/academic.port';
 import styles from './gradebook.module.css';
 
 type GradeLetter = 'A' | 'B' | 'C' | 'S' | 'W';
-
-type StudentEntry = {
-  id: string;
-  name: string;
-  rollNumber: number;
-  marks: number;
-  feedback: string;
-};
-
-function getDefaultRoster(): StudentEntry[] {
-  return [
-    {
-      id: 'st-1',
-      name: 'Amara Perera',
-      rollNumber: 1,
-      marks: 88,
-      feedback: 'Strong conceptual clarity',
-    },
-    { id: 'st-2', name: 'Kavi Fernando', rollNumber: 2, marks: 76, feedback: 'Active participation' },
-    {
-      id: 'st-3',
-      name: 'Mihiri Silva',
-      rollNumber: 3,
-      marks: 62,
-      feedback: 'Improving in problem solving',
-    },
-    { id: 'st-4', name: 'Nila Sen', rollNumber: 4, marks: 94, feedback: 'Exemplary work' },
-    {
-      id: 'st-5',
-      name: 'Ravi Das',
-      rollNumber: 5,
-      marks: 44,
-      feedback: 'Needs additional practice on fractions',
-    },
-    { id: 'st-6', name: 'Mira Anand', rollNumber: 6, marks: 71, feedback: 'Consistent progress' },
-  ];
-}
 
 function calculateLetter(score: number): GradeLetter {
   if (score >= 75) return 'A';
@@ -71,18 +35,110 @@ interface GradebookFloorProps {
   capacity?: string;
 }
 
-export function GradebookFloor({ displayName }: GradebookFloorProps) {
-  const { submissions, gradeSubmission } = useAcademicDomain();
-  const [students, setStudents] = useState<StudentEntry[]>(getDefaultRoster);
+export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
+  const { submissions, roster, gradeSubmission } = useAcademicDomain();
+  const [students, setStudents] = useState<GradebookStudent[]>([]);
   const [subject, setSubject] = useState('Integrated Mathematics');
   const [assessment, setAssessment] = useState('Mid-Term Assessment 2026');
   const [sortBy, setSortBy] = useState<'roll' | 'name' | 'marks'>('roll');
   const tableCaptionId = useId();
 
+  useEffect(() => {
+    if (roster && roster.length > 0 && students.length === 0) {
+      setStudents([...roster]);
+    }
+  }, [roster, students.length]);
+
+  // If viewing as a student, render sealed personal competency record (no peer marks or edit controls)
+  if (capacity?.toLowerCase() === 'student') {
+    return (
+      <div className={styles.container}>
+        <div className={styles.headerBar}>
+          <div className={styles.titleArea}>
+            <h1>My Learning Progress & Competency</h1>
+            <p>Personal academic progress for {displayName}. Sealed from peer comparison.</p>
+          </div>
+          <div className={styles.controlsArea}>
+            <label className="sr-only" htmlFor="subject-select-student">
+              Select Subject
+            </label>
+            <select
+              id="subject-select-student"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className={styles.selectInput}
+            >
+              <option value="Integrated Mathematics">Integrated Mathematics</option>
+              <option value="Environmental Studies">Environmental Studies</option>
+              <option value="Language & Literacy">Language & Literacy</option>
+            </select>
+          </div>
+        </div>
+
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <p className={styles.statLabel}>Current Subject</p>
+            <p className={styles.statValue} style={{ fontSize: '1.1rem' }}>{subject}</p>
+          </div>
+          <div className={styles.statCard}>
+            <p className={styles.statLabel}>Competency Rating</p>
+            <p className={styles.statValue} style={{ fontSize: '1.25rem', color: '#1b633e' }}>Distinction (A)</p>
+          </div>
+          <div className={styles.statCard}>
+            <p className={styles.statLabel}>Learning Posture</p>
+            <p className={styles.statValue} style={{ fontSize: '1.1rem', color: '#1b633e' }}>Consistent Progress</p>
+          </div>
+        </div>
+
+        <div className={styles.tableWrapper}>
+          <table className={styles.gradeTable}>
+            <caption className="sr-only">Personal assessment grades and teacher feedback</caption>
+            <thead>
+              <tr>
+                <th scope="col">Assessment</th>
+                <th scope="col" style={{ width: '9rem', textAlign: 'center' }}>Grade Band</th>
+                <th scope="col">Pedagogical Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ fontWeight: 600 }}>Mid-Term Assessment 2026</td>
+                <td style={{ textAlign: 'center' }}>
+                  <span className={styles.badgeA}>A · Distinction</span>
+                </td>
+                <td style={{ color: 'var(--color-ink-soft, #453c35)' }}>
+                  Strong conceptual clarity and active participation in practical demonstrations.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: 600 }}>Unit 3 Practical Demonstration</td>
+                <td style={{ textAlign: 'center' }}>
+                  <span className={styles.badgeB}>B · Very Good</span>
+                </td>
+                <td style={{ color: 'var(--color-ink-soft, #453c35)' }}>
+                  Solid understanding of fundamentals. Continue to practice complex problem-solving.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: 600 }}>Reflective Journal Portfolio</td>
+                <td style={{ textAlign: 'center' }}>
+                  <span className={styles.badgeA}>A · Distinction</span>
+                </td>
+                <td style={{ color: 'var(--color-ink-soft, #453c35)' }}>
+                  Thoughtful reflections and well-structured documentation of daily experiments.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
   // Synchronize from live academic domain submissions when available
   useEffect(() => {
     if (submissions && submissions.length > 0) {
-      const liveEntries: StudentEntry[] = submissions.map((sub, idx) => ({
+      const liveEntries: GradebookStudent[] = submissions.map((sub, idx) => ({
         id: sub.student_id,
         name:
           sub.student_id

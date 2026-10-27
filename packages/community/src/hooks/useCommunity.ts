@@ -1,10 +1,11 @@
+import { useAuthStore } from '@repo/core/store';
 import { identityAPI } from '@repo/core/api/client';
 import {
   useCreatePostMutation,
   useGroupsInfiniteQuery,
   usePostsInfiniteQuery,
 } from '@repo/core/api/hooks';
-import { useStore, useTemporalStore } from '@repo/core/store';
+import { useTemporalStore } from '@repo/core/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { communityAPI } from '@repo/community/api/community';
@@ -21,7 +22,7 @@ export const useCommunity = (
   options: { searchQuery?: string; isPublicOnly?: boolean } = {},
 ) => {
   const queryClient = useQueryClient();
-  const user = useStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
   const viewDate = useTemporalStore((state) => state.viewDate);
   const viewScale = useTemporalStore((state) => state.viewScale);
 

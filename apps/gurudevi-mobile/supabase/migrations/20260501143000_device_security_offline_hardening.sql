@@ -226,7 +226,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.list_my_devices()
+DROP FUNCTION IF EXISTS public.list_my_devices();
+CREATE FUNCTION public.list_my_devices()
 RETURNS TABLE (
     device_id UUID,
     install_id TEXT,

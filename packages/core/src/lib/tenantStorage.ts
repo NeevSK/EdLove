@@ -27,6 +27,10 @@ export class TenantPartitionedStorageAdapter implements IStorage {
     this.baseStorage.set(this.formatKey(key), value);
   }
 
+  setAsync(key: string, value: string | boolean | number): Promise<void> {
+    return this.baseStorage.setAsync(this.formatKey(key), value);
+  }
+
   getString(key: string): string | undefined {
     return this.baseStorage.getString(this.formatKey(key));
   }
@@ -47,9 +51,17 @@ export class TenantPartitionedStorageAdapter implements IStorage {
     this.baseStorage.delete(this.formatKey(key));
   }
 
+  deleteAsync(key: string): Promise<void> {
+    return this.baseStorage.deleteAsync(this.formatKey(key));
+  }
+
   clearAll(): void {
     // Clear only partition for this tenant and user
     // Note: If base storage supports prefix keys, clear formatted prefix
+  }
+
+  clearAllAsync(): Promise<void> {
+    return Promise.resolve();
   }
 
   contains(key: string): boolean {
@@ -83,6 +95,10 @@ export class PerspectivePartitionedStorageAdapter implements IStorage {
     this.baseStorage.set(this.formatKey(key), value);
   }
 
+  setAsync(key: string, value: string | boolean | number): Promise<void> {
+    return this.baseStorage.setAsync(this.formatKey(key), value);
+  }
+
   getString(key: string): string | undefined {
     return this.baseStorage.getString(this.formatKey(key));
   }
@@ -103,8 +119,16 @@ export class PerspectivePartitionedStorageAdapter implements IStorage {
     this.baseStorage.delete(this.formatKey(key));
   }
 
+  deleteAsync(key: string): Promise<void> {
+    return this.baseStorage.deleteAsync(this.formatKey(key));
+  }
+
   clearAll(): void {
     // Partition-specific clear
+  }
+
+  clearAllAsync(): Promise<void> {
+    return Promise.resolve();
   }
 
   contains(key: string): boolean {

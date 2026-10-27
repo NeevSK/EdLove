@@ -1,9 +1,4 @@
-import {
-  getMaxPinnedForWorkspace,
-  groupResolvedWorkspaceSurfacesByZone,
-  MAX_PINNED_WORKSPACE_SURFACES,
-  resolveWorkspaceSurfaceLayout,
-} from '@repo/core/logic';
+import { getMaxPinnedForWorkspace, groupResolvedWorkspaceSurfacesByZone, MAX_PINNED_WORKSPACE_SURFACES, resolveWorkspaceSurfaceLayout } from '@repo/core/logic';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
 import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';

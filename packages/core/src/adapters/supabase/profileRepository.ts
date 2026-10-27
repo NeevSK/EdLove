@@ -1,5 +1,6 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { mediaAPI } from '@repo/core/api/media';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -12,6 +13,7 @@ import type {
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
 } from '@repo/core/logic/domains/profile/ports';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { APIError, type SocialLink, type User } from '@repo/core/types';
 import type { UserGrowthState } from '@repo/schema/contracts';
@@ -333,14 +335,16 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       .slice(0, limit);
   },
   async updateUserProfile(userId, updates) {
-    const { data, error } = await supabaseClient
-      .from('users')
-      .update(updates)
-      .eq('id', userId)
-      .select()
-      .single();
-    if (error) throw new APIError('Failed to update profile', error.code, error);
-    return normalizeUser(data);
+    const data = await orpcClient.profile.updateProfile(
+      { params: { id: userId }, body: UserProfilePatchSchema.parse(updates) },
+      { context: { expectedAccountId: userId, retry: 0 } },
+    );
+    if (data.id !== userId)
+      throw new APIError(
+        'The profile response belongs to another account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
+    return normalizeUser({ ...data, id: userId });
   },
   async getAnonymousFlag(userId) {
     const { data, error } = await supabaseClient

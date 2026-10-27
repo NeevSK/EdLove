@@ -1,7 +1,8 @@
 'use client';
 
-import { useTeacherProfessionalHistory } from '@repo/profile';
-import { Award, BookOpen, Calendar, School, Users } from '@repo/ui/icons';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import { Award, BookOpen, Calendar, School, Users } from 'lucide-react';
+import { useTeacherProfessionalHistory } from '../../../../lib/sanctuary/useTeacherProfessionalHistory';
 import styles from './teaching-history.module.css';
 
 interface TeachingHistoryProps {
@@ -9,32 +10,10 @@ interface TeachingHistoryProps {
   onClose?: () => void;
 }
 
-const SAMPLE_HISTORY = [
-  {
-    id: 'th-1',
-    academic_year: '2025 - 2026',
-    designation: 'Senior Faculty & Department Lead',
-    school_name: 'Dharmaraja National College',
-    subjects: ['Advanced Physics', 'Applied Mathematics'],
-    classrooms_count: 4,
-    students_count: 142,
-    achievements: ['District Science Olympiad 1st Place Mentor', 'Curriculum Innovator Award'],
-  },
-  {
-    id: 'th-2',
-    academic_year: '2023 - 2025',
-    designation: 'Secondary Educator',
-    school_name: 'Ananda Balika Vidyalaya',
-    subjects: ['General Science', 'Mathematics'],
-    classrooms_count: 3,
-    students_count: 108,
-    achievements: ['100% G.C.E. O/L Pass Rate in Mathematics'],
-  },
-];
-
 export function TeachingHistoryTimeline({ userId, onClose }: TeachingHistoryProps) {
-  const { data: history = [], isLoading } = useTeacherProfessionalHistory(userId ?? 'guest');
-  const records = history.length > 0 ? history : SAMPLE_HISTORY;
+  const { data: history = [], isLoading } = useTeacherProfessionalHistory(userId);
+  const fallback = getSandboxSamples<any[]>('history', 'getTeacherHistory', [], []);
+  const records = history.length > 0 ? history : fallback;
 
   return (
     <div className={styles.container}>
@@ -71,7 +50,7 @@ export function TeachingHistoryTimeline({ userId, onClose }: TeachingHistoryProp
 
             {rec.subjects.length > 0 && (
               <div className={styles.tags}>
-                {rec.subjects.map((sub) => (
+                {rec.subjects.map((sub: string) => (
                   <span key={sub} className={styles.tag}>
                     {sub}
                   </span>

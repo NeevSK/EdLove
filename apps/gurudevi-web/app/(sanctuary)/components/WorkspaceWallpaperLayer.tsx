@@ -1,8 +1,10 @@
 'use client';
 
-import { resolveWallpaperPresentation } from '@repo/core/efficiency';
 import type { WorkspaceWallpaper } from '@repo/core/types';
-import { useBrowserVisualBudget } from '../../../lib/runtime/useBrowserVisualBudget';
+import { type WallpaperPresentation, wallpaperOf } from '@repo/core/verger';
+import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
+
+const OFF: WallpaperPresentation = { enabled: false, allowBlur: false, opacity: 0, url: null };
 
 export function WorkspaceWallpaperLayer({
   wallpaper,
@@ -17,20 +19,21 @@ export function WorkspaceWallpaperLayer({
   fixed?: boolean;
   pure?: boolean;
 }>) {
-  const budget = useBrowserVisualBudget();
+  // Verger decides; until it is known (server, hydration), no wallpaper is requested.
+  const view = useGurudeviView();
   const viewportWidth = typeof window === 'undefined' ? undefined : window.innerWidth;
-  const presentation = resolveWallpaperPresentation(wallpaper ?? undefined, budget, viewportWidth);
-  const nextPresentation = nextWallpaper
-    ? resolveWallpaperPresentation(nextWallpaper, budget, viewportWidth)
-    : null;
+  const present = (asset: WorkspaceWallpaper | null | undefined) =>
+    view === null
+      ? OFF
+      : wallpaperOf(asset ?? undefined, view.experience, view.reading, viewportWidth);
+  const presentation = present(wallpaper);
+  const nextPresentation = nextWallpaper ? present(nextWallpaper) : null;
 
   if (!presentation.enabled || !presentation.url) {
     if (!nextPresentation?.enabled || !nextPresentation?.url) return null;
   }
 
-  const opacity = pure
-    ? Math.min(presentation.opacity * 2.2, 0.42)
-    : presentation.opacity;
+  const opacity = pure ? Math.min(presentation.opacity * 2.2, 0.42) : presentation.opacity;
 
   const nextOpacity = pure
     ? Math.min((nextPresentation?.opacity ?? 0.16) * 2.2, 0.42)

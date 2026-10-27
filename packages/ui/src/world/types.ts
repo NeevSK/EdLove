@@ -13,7 +13,21 @@
  * (DOM + CSS variables) render from one source.
  */
 
-export type WorldId = 'sanctuary' | 'kandyan' | 'wewa' | 'kele' | 'angampora' | 'ratna';
+export type WorldId =
+  | 'sanctuary'
+  | 'wewa'
+  | 'ratna'
+  | 'kele'
+  | 'tea'
+  | 'kandyan'
+  | 'angampora'
+  | 'perahera'
+  | 'rosa'
+  | 'colombo'
+  | 'spark';
+
+/** Worlds are chosen by mood and place; the family groups them in the picker. */
+export type WorldFamily = 'quiet' | 'nature' | 'cultural' | 'bloom' | 'modern';
 
 export type WorldPhase = 'predawn' | 'dawn' | 'morning' | 'afternoon' | 'dusk' | 'night';
 
@@ -223,7 +237,75 @@ export interface SectionRecipe {
   box: SurfaceToneRecipe;
 }
 
-export type OrnamentKind = 'hairline' | 'liyawela' | 'ripple' | 'branch' | 'stance' | 'lace';
+export type OrnamentKind =
+  | 'hairline'
+  | 'liyawela'
+  | 'ripple'
+  | 'branch'
+  | 'stance'
+  | 'lace'
+  | 'rows'
+  | 'flag'
+  | 'pichcha'
+  | 'grid'
+  | 'bolt';
+
+/**
+ * One typeface as the app embeds it. Every name is the font's file name and
+ * its PostScript name at once (scripts/fonts/build-world-fonts.py makes them
+ * match), so the same string finds the face on Android, iOS and the web.
+ */
+export interface FaceSpec {
+  /** The upright face. */
+  upright: string;
+  /** The italic face; without one, italic roles stay upright in this face. */
+  italic?: string;
+  /**
+   * How each role weight is drawn. A number is a `wght` axis value on a
+   * variable face (so 380 is fine); a string is a static file for that weight.
+   * Missing weights fall back to the nearest lighter one.
+   */
+  weights: Partial<Record<FontWeight, number | string>>;
+  /** Axes held for this face, such as `{ opsz: 60 }` or `{ wdth: 82 }`. */
+  axes?: Readonly<Record<string, number>>;
+  /** Axes that change after dark (Wewa's letters soften, Spark's stretch). */
+  nightAxes?: Readonly<Record<string, number>>;
+  /** An `opsz` axis range: the optical size then follows the font size. */
+  optical?: readonly [number, number];
+  /** Size multiplier for a face that draws small beside the others. */
+  scale?: number;
+}
+
+export interface WorldFaces {
+  /** The world's voice: display, titles, captions, values. */
+  serif: FaceSpec;
+  /** The working face: body, labels, buttons, fields. */
+  sans: FaceSpec;
+  si: { serif: FaceSpec; sans: FaceSpec };
+  ta: { serif: FaceSpec; sans: FaceSpec };
+}
+
+/**
+ * How a world moves, on top of the fixed purposes in `components/motion.ts`
+ * (micro, transition, shared, meaningful, breathe). Verger can always calm it:
+ * see `worldMotion` in `motion.ts`.
+ */
+export interface WorldMotion {
+  /** Multiplier on every duration. */
+  tempo: number;
+  /** Easing family for entrances. */
+  curve: 'decelerate' | 'standard' | 'sharp' | 'spring';
+  /** How far things travel as they enter, in dp. */
+  travel: number;
+  /** Which way they travel. */
+  axis: 'up' | 'side' | 'none';
+  /** How they come to rest: a dead stop, an eased stop, or a small overshoot. */
+  settle: 'none' | 'eased' | 'overshoot';
+  /** Delay between items entering together (a list, a row of chips), in ms. */
+  stagger: number;
+  /** Haptic character for presses and confirmations. */
+  haptic: 'soft' | 'crisp';
+}
 
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
@@ -250,7 +332,9 @@ export interface WorldStyle {
   field: 'underline' | 'box';
   chip: 'underline' | 'outlined';
   /** Small labels: spaced small capitals, or a soft italic. */
-  label: 'smallcaps' | 'italic';
+  label: 'smallcaps' | 'italic' | 'boldcaps';
+  /** How the display role is set; titles and captions follow the voice face. */
+  display?: { weight?: FontWeight; italic?: boolean; uppercase?: boolean; letterSpacing?: number };
   lineWeight: number;
   boundary: Record<SectionDensity, BoundaryKind>;
   ornament: OrnamentKind;
@@ -267,6 +351,9 @@ export interface WorldDefinition {
   names: Record<WorldLanguage, string>;
   /** One human line describing the world, in English. */
   description: string;
+  family: WorldFamily;
+  faces: WorldFaces;
+  motion: WorldMotion;
   /** The mode this world is happiest in, used by previews. */
   preferredMode: WorldMode;
   palette: WorldPalette;

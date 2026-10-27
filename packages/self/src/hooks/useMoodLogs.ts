@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { authAPI } from '@repo/core/api/client';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
@@ -21,7 +23,7 @@ const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
  * - Syncs with the repository layer in the background.
  */
 export const useMoodLogs = (userId?: string) => {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const { viewDate, phase } = useTemporalStore();
   const [moodHistory, setMoodHistory] = useState<MoodLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);

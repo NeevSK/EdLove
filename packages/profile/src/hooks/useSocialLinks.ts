@@ -1,7 +1,8 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { profileAPI } from '@repo/core/api/client';
-import { handleAPIError, useStore } from '@repo/core/logic';
+import { handleAPIError } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { SocialLink } from '@repo/core/types';
 import { useCallback, useEffect, useReducer } from 'react';
 
@@ -47,7 +48,7 @@ export function useSocialLinks(userId?: string) {
 
   const authUser = useAuthStore((s) => s.user);
   const isAnonymous = !authUser || authUser.is_anonymous;
-  const isOnline = useStore((s) => s.isOnline);
+  const { isOnline } = useOfflineStatus();
 
   const { links, loading } = state;
 

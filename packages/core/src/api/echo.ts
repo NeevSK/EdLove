@@ -97,3 +97,20 @@ const rawEchoAPI = {
 };
 
 export const echoAPI = createResonantProxy('echo', rawEchoAPI);
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_ECHOES } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'echo',
+  ghostMethods: ['getTeacherEchoes', 'getEchoesByClassroom', 'getMyEchoes'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_ECHOES,
+});
+
+registerSandboxDomain({
+  domain: 'echoes',
+  ghostMethods: ['getTeacherEchoes', 'getEchoesByClassroom', 'getMyEchoes'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_ECHOES,
+});

@@ -10,7 +10,7 @@
  * Pro-gated: same as GoogleVisionProvider.
  */
 
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { invokeEdgeFunction } from '@repo/core/api/functions';
 
 import type { OCRProvider, OCRRawResult } from '@repo/scanner-kit/ocr/types';
 
@@ -20,7 +20,7 @@ export class OpenAIVisionProvider implements OCRProvider {
   async recognize(imageUri: string): Promise<OCRRawResult> {
     const base64 = await uriToBase64(imageUri);
 
-    const { data, error } = await supabase.functions.invoke('ocr-proxy', {
+    const { data, error } = await invokeEdgeFunction<OCRRawResult>('ocr-proxy', {
       body: { provider: 'openai_vision', imageBase64: base64 },
     });
 

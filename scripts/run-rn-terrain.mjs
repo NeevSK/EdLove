@@ -52,10 +52,12 @@ if (!binaryPath) {
   process.exit(0);
 }
 
-const result = spawnSync('node', [binaryPath, ...filteredArgs], {
+const result = spawnSync(process.execPath, [binaryPath, ...filteredArgs], {
   stdio: 'inherit',
   cwd: ROOT_DIR,
-  shell: process.platform === 'win32',
+  shell: false,
+  windowsHide: true,
 });
 
-process.exit(result.status ?? 0);
+if (result.error) console.error(result.error.message);
+process.exit(result.status ?? 1);

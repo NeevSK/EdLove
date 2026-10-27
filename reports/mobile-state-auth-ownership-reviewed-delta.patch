@@ -1,0 +1,1215 @@
+diff --git a/apps/gurudevi-mobile/src/__tests__/integration/app-bootstrap-hydration.test.ts b/apps/gurudevi-mobile/src/__tests__/integration/app-bootstrap-hydration.test.ts
+index fbd668c6f..3c24bc46e 100644
+--- a/apps/gurudevi-mobile/src/__tests__/integration/app-bootstrap-hydration.test.ts
++++ b/apps/gurudevi-mobile/src/__tests__/integration/app-bootstrap-hydration.test.ts
+@@ -7,8 +7,6 @@ describe('Suite A: Full App Bootstrap, Rehydration & Essential Startup Gate', ()
+     useAuthStore.setState({
+       isStoreHydrated: false,
+       user: null,
+-      authSession: null,
+-      authSessionResolved: false,
+     });
+   });
+ 
+diff --git a/packages/core/src/hooks/__tests__/useAuthLifecycle.bootstrap.test.ts b/packages/core/src/hooks/__tests__/useAuthLifecycle.bootstrap.test.ts
+index 4f855e840..029333dd1 100644
+--- a/packages/core/src/hooks/__tests__/useAuthLifecycle.bootstrap.test.ts
++++ b/packages/core/src/hooks/__tests__/useAuthLifecycle.bootstrap.test.ts
+@@ -6,12 +6,18 @@ const lifecycleMocks = vi.hoisted(() => ({
+     | ((event: AuthChangeEvent, session: AuthSession | null) => Promise<void>)
+     | undefined,
+   getAuthSession: vi.fn(),
++  signOut: vi.fn(),
++  captureAccount: vi.fn(),
++  retainRefreshedSession: vi.fn(),
++  listAccounts: vi.fn(),
++  identifySubject: vi.fn(),
+   onAuthStateChange: vi.fn(),
++  clearScopeSessionCompatibility: vi.fn(),
++  commitIdentityScopeSession: vi.fn().mockResolvedValue(undefined),
+   resolveAuthProfile: vi.fn().mockResolvedValue({ kind: 'unavailable', profileError: 'offline' }),
+   stateSetters: [] as ReturnType<typeof vi.fn>[],
++  cleanups: [] as (() => void)[],
+   storeState: {
+-    setAuthSession: vi.fn(),
+-    setAuthSessionResolved: vi.fn(),
+     setAvailableBonds: vi.fn(),
+     setDemoMode: vi.fn(),
+     setOnboardingCompleted: vi.fn(),
+@@ -20,12 +26,15 @@ const lifecycleMocks = vi.hoisted(() => ({
+     setUser: vi.fn(),
+     user: null as { id: string } | null,
+   },
++  scopeSnapshot: null as { principalId: string | null } | null,
+ }));
+ 
+ vi.mock('react', () => ({
+   useCallback: <Callback extends (...args: never[]) => unknown>(callback: Callback) => callback,
++  useEffectEvent: <Callback extends (...args: never[]) => unknown>(callback: Callback) => callback,
+   useEffect: (effect: () => void | (() => void)) => {
+-    effect();
++    const cleanup = effect();
++    if (cleanup) lifecycleMocks.cleanups.push(cleanup);
+   },
+   useMemo: <Value>(factory: () => Value) => factory(),
+   useRef: <Value>(current: Value) => ({ current }),
+@@ -37,11 +46,14 @@ vi.mock('react', () => ({
+ }));
+ 
+ vi.mock('@repo/core/accounts/authenticatedAccountCapture', () => ({
+-  captureAuthenticatedDeviceAccount: vi.fn(),
++  captureAuthenticatedDeviceAccount: lifecycleMocks.captureAccount,
+   getVerifiedDeviceAccountProfile: vi.fn(),
+ }));
+ vi.mock('@repo/core/accounts/deviceAccounts', () => ({
+-  deviceAccounts: { list: vi.fn().mockResolvedValue([]) },
++  deviceAccounts: {
++    list: lifecycleMocks.listAccounts,
++    retainRefreshedSession: lifecycleMocks.retainRefreshedSession,
++  },
+ }));
+ vi.mock('@repo/core/logic/managers/factory', () => ({
+   realtime: {
+@@ -53,7 +65,7 @@ vi.mock('@repo/core/api/auth', () => ({
+     getAccountLifecycleStatus: vi.fn(),
+     getAuthSession: lifecycleMocks.getAuthSession,
+     onAuthStateChange: lifecycleMocks.onAuthStateChange,
+-    signOut: vi.fn(),
++    signOut: lifecycleMocks.signOut,
+   },
+ }));
+ vi.mock('@repo/core/api/school', () => ({
+@@ -68,19 +80,29 @@ vi.mock('@repo/core/logic/auth/profileResolution', () => ({
+ }));
+ vi.mock('@repo/core/monitoring', () => ({
+   clearAuthSubject: vi.fn(),
+-  identifyAuthSubject: vi.fn(),
++  identifyAuthSubject: lifecycleMocks.identifySubject,
+   initSentry: vi.fn(),
+   leaveBreadcrumb: vi.fn(),
+ }));
+-vi.mock('@repo/core/store/useStore', () => {
++vi.mock('@repo/core/store/useAuthStore', () => {
+   const mockUseStore = Object.assign(
+     <Value>(selector: (store: typeof lifecycleMocks.storeState) => Value) =>
+       selector(lifecycleMocks.storeState),
+     { getState: () => lifecycleMocks.storeState },
+   );
+-  return { useStore: mockUseStore };
++  return { useAuthStore: mockUseStore };
+ });
++vi.mock('@repo/core/store/scopeSession', () => ({
++  useScopeSessionStore: {
++    getState: () => ({ snapshot: lifecycleMocks.scopeSnapshot }),
++  },
++}));
++vi.mock('@repo/core/store/scopeSessionCoordinator', () => ({
++  clearScopeSessionCompatibility: lifecycleMocks.clearScopeSessionCompatibility,
++  commitIdentityScopeSession: lifecycleMocks.commitIdentityScopeSession,
++}));
+ 
++import { APIError } from '../../types/API';
+ import { useAuthLifecycle } from '../useAuthLifecycle';
+ 
+ function session(overrides: Record<string, unknown> = {}): AuthSession {
+@@ -105,17 +127,176 @@ describe('useAuthLifecycle bootstrap ordering', () => {
+   beforeEach(() => {
+     lifecycleMocks.authStateListener = undefined;
+     lifecycleMocks.getAuthSession.mockReset();
++    lifecycleMocks.signOut.mockReset().mockResolvedValue(undefined);
++    lifecycleMocks.captureAccount.mockReset().mockResolvedValue(undefined);
++    lifecycleMocks.retainRefreshedSession.mockReset().mockResolvedValue('account-1');
++    lifecycleMocks.listAccounts.mockReset().mockResolvedValue([]);
++    lifecycleMocks.identifySubject.mockReset();
+     lifecycleMocks.onAuthStateChange.mockReset();
+     lifecycleMocks.resolveAuthProfile.mockReset().mockResolvedValue({
+       kind: 'unavailable',
+       profileError: 'offline',
+     });
+     lifecycleMocks.stateSetters.length = 0;
++    lifecycleMocks.cleanups.length = 0;
+     lifecycleMocks.storeState.user = null;
++    lifecycleMocks.scopeSnapshot = null;
++    lifecycleMocks.clearScopeSessionCompatibility.mockReset();
++    lifecycleMocks.commitIdentityScopeSession.mockReset().mockResolvedValue(undefined);
+     lifecycleMocks.storeState.setUser.mockReset();
+     lifecycleMocks.storeState.setOnboardingCompleted.mockReset();
+   });
+ 
++  function startLifecycle(initialSession: Promise<AuthSession | null> = Promise.resolve(null)) {
++    lifecycleMocks.getAuthSession.mockReturnValue(initialSession);
++    lifecycleMocks.onAuthStateChange.mockImplementation((listener) => {
++      lifecycleMocks.authStateListener = listener;
++      return { data: { subscription: { unsubscribe: vi.fn() } } };
++    });
++    return useAuthLifecycle();
++  }
++
++  function activeIdentity(id: string) {
++    return {
++      kind: 'active',
++      identity: { id, availableBonds: [], activeBond: null, onboarding_completed: true },
++      schoolType: null,
++    };
++  }
++
++  it('does not sign out a newer login when the old bootstrap lookup rejects', async () => {
++    const pending = Promise.withResolvers<AuthSession | null>();
++    startLifecycle(pending.promise);
++    lifecycleMocks.resolveAuthProfile.mockResolvedValueOnce(activeIdentity('canonical-b'));
++    const currentSession = session({ id: 'subject-b' });
++    await lifecycleMocks.authStateListener!('SIGNED_IN', currentSession);
++    pending.reject(new APIError('Refresh Token from old bootstrap', 'AUTH_ERROR'));
++    await Promise.resolve();
++    await Promise.resolve();
++    expect(lifecycleMocks.signOut).not.toHaveBeenCalled();
++    expect(lifecycleMocks.stateSetters[0]).toHaveBeenLastCalledWith(currentSession);
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenLastCalledWith(
++      expect.objectContaining({ id: 'canonical-b' }),
++    );
++  });
++
++  it.each(['resolve', 'reject'] as const)('ignores profile %s after sign-out', async (outcome) => {
++    const pending = Promise.withResolvers<ReturnType<typeof activeIdentity>>();
++    startLifecycle();
++    await Promise.resolve();
++    lifecycleMocks.resolveAuthProfile.mockReturnValueOnce(pending.promise);
++    const oldEvent = lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-a' }));
++    await lifecycleMocks.authStateListener!('SIGNED_OUT', null);
++    const writes = lifecycleMocks.storeState.setUser.mock.calls.length;
++    if (outcome === 'reject') pending.reject(new Error('old profile failed'));
++    else pending.resolve(activeIdentity('canonical-a'));
++    await oldEvent;
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenCalledTimes(writes);
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenLastCalledWith(null);
++    expect(lifecycleMocks.commitIdentityScopeSession).not.toHaveBeenCalled();
++  });
++
++  it('invalidates pending profile work when the lifecycle subscription is cleaned up', async () => {
++    const pending = Promise.withResolvers<ReturnType<typeof activeIdentity>>();
++    startLifecycle();
++    await Promise.resolve();
++    lifecycleMocks.resolveAuthProfile.mockReturnValueOnce(pending.promise);
++    const oldEvent = lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-a' }));
++    for (const cleanup of lifecycleMocks.cleanups) cleanup();
++    const writes = lifecycleMocks.storeState.setUser.mock.calls.length;
++    pending.resolve(activeIdentity('canonical-a'));
++    await oldEvent;
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenCalledTimes(writes);
++    expect(lifecycleMocks.commitIdentityScopeSession).not.toHaveBeenCalled();
++  });
++
++  it.each(['resolve', 'reject'] as const)(
++    'ignores old scope %s after the new identity commits',
++    async (outcome) => {
++      const pending = Promise.withResolvers<void>();
++      startLifecycle();
++      await Promise.resolve();
++      lifecycleMocks.resolveAuthProfile
++        .mockResolvedValueOnce(activeIdentity('canonical-a'))
++        .mockResolvedValueOnce(activeIdentity('canonical-b'));
++      lifecycleMocks.commitIdentityScopeSession.mockReturnValueOnce(pending.promise);
++      const oldEvent = lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-a' }));
++      await vi.waitFor(() =>
++        expect(lifecycleMocks.commitIdentityScopeSession).toHaveBeenCalledOnce(),
++      );
++      await lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-b' }));
++      const writes = lifecycleMocks.storeState.setUser.mock.calls.length;
++      if (outcome === 'reject') pending.reject(new Error('Scope transition superseded'));
++      else pending.resolve();
++      await oldEvent;
++      expect(lifecycleMocks.storeState.setUser).toHaveBeenCalledTimes(writes);
++      expect(lifecycleMocks.storeState.setUser).toHaveBeenLastCalledWith(
++        expect.objectContaining({ id: 'canonical-b' }),
++      );
++      expect(lifecycleMocks.captureAccount).toHaveBeenCalledOnce();
++    },
++  );
++
++  it('does not publish old onboarding or monitoring after delayed account capture', async () => {
++    const pending = Promise.withResolvers<void>();
++    startLifecycle();
++    await Promise.resolve();
++    lifecycleMocks.resolveAuthProfile
++      .mockResolvedValueOnce(activeIdentity('canonical-a'))
++      .mockResolvedValueOnce(activeIdentity('canonical-b'));
++    lifecycleMocks.captureAccount.mockReturnValueOnce(pending.promise);
++    const oldEvent = lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-a' }));
++    await vi.waitFor(() => expect(lifecycleMocks.captureAccount).toHaveBeenCalledOnce());
++    await lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-b' }));
++    const onboardingWrites = lifecycleMocks.storeState.setOnboardingCompleted.mock.calls.length;
++    pending.resolve();
++    await oldEvent;
++    expect(lifecycleMocks.storeState.setOnboardingCompleted).toHaveBeenCalledTimes(
++      onboardingWrites,
++    );
++    expect(lifecycleMocks.identifySubject).toHaveBeenCalledOnce();
++    expect(lifecycleMocks.identifySubject).toHaveBeenLastCalledWith(
++      expect.objectContaining({ id: 'canonical-b' }),
++    );
++  });
++
++  it('does not clear the new identity after old offline ownership verification completes', async () => {
++    const pending = Promise.withResolvers<{ accountId: string; authUserId: string }[]>();
++    startLifecycle();
++    await Promise.resolve();
++    lifecycleMocks.storeState.user = { id: 'canonical-a' };
++    lifecycleMocks.listAccounts.mockReturnValueOnce(pending.promise);
++    lifecycleMocks.resolveAuthProfile
++      .mockResolvedValueOnce({ kind: 'unavailable', profileError: 'old account offline' })
++      .mockResolvedValueOnce(activeIdentity('canonical-b'));
++    const oldEvent = lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-a' }));
++    await vi.waitFor(() => expect(lifecycleMocks.listAccounts).toHaveBeenCalledOnce());
++    await lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-b' }));
++    const writes = lifecycleMocks.storeState.setUser.mock.calls.length;
++    pending.resolve([]);
++    await oldEvent;
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenCalledTimes(writes);
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenLastCalledWith(
++      expect.objectContaining({ id: 'canonical-b' }),
++    );
++  });
++
++  it('ignores an older refresh session lookup after a new auth event', async () => {
++    const pending = Promise.withResolvers<AuthSession | null>();
++    const lifecycle = startLifecycle();
++    await Promise.resolve();
++    lifecycleMocks.getAuthSession.mockReturnValueOnce(pending.promise);
++    const refresh = lifecycle.refreshProfile();
++    lifecycleMocks.resolveAuthProfile.mockResolvedValueOnce(activeIdentity('canonical-b'));
++    await lifecycleMocks.authStateListener!('SIGNED_IN', session({ id: 'subject-b' }));
++    pending.resolve(session({ id: 'subject-a' }));
++    await refresh;
++    expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledOnce();
++    expect(lifecycleMocks.storeState.setUser).toHaveBeenLastCalledWith(
++      expect.objectContaining({ id: 'canonical-b' }),
++    );
++  });
++
+   it('keeps a newer auth event when the initial session lookup resolves late', async () => {
+     let resolveInitialSession: (value: AuthSession | null) => void = () => undefined;
+     lifecycleMocks.getAuthSession.mockImplementation(
+@@ -169,11 +350,72 @@ describe('useAuthLifecycle bootstrap ordering', () => {
+     await lifecycleMocks.authStateListener?.('TOKEN_REFRESHED', activeSession);
+ 
+     expect(lifecycleMocks.resolveAuthProfile.mock.calls.length).toBe(initialCalls);
++    expect(lifecycleMocks.retainRefreshedSession).toHaveBeenCalledWith(activeSession);
+   });
+ 
++  it('bootstraps canonical identity when refresh has no remembered account binding', async () => {
++    const active = session();
++    lifecycleMocks.resolveAuthProfile.mockResolvedValue(activeIdentity('canonical-a'));
++    lifecycleMocks.retainRefreshedSession.mockResolvedValue(null);
++    startLifecycle(Promise.resolve(active));
++    await vi.waitFor(() => expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledOnce());
++    await lifecycleMocks.authStateListener?.('TOKEN_REFRESHED', active);
++    expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledTimes(2);
++  });
++
++  it('surfaces retention failure without provider details and clears only that error after recovery', async () => {
++    const active = session();
++    lifecycleMocks.resolveAuthProfile.mockResolvedValue(activeIdentity('canonical-a'));
++    startLifecycle(Promise.resolve(active));
++    await vi.waitFor(() => expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledOnce());
++    lifecycleMocks.retainRefreshedSession.mockRejectedValueOnce(
++      new Error('private credential fixture detail'),
++    );
++    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
++    try {
++      await lifecycleMocks.authStateListener?.('TOKEN_REFRESHED', active);
++      const setter = lifecycleMocks.stateSetters[4]!;
++      expect(setter).toHaveBeenCalledWith('Unable to retain refreshed device credentials.');
++      expect(warning).toHaveBeenCalledWith('[auth] Refreshed device credential retention failed.');
++      await lifecycleMocks.authStateListener?.('TOKEN_REFRESHED', active);
++      const recover = setter.mock.lastCall?.[0];
++      if (typeof recover !== 'function')
++        throw new Error('Expected retention error recovery updater');
++      expect(recover('Unable to retain refreshed device credentials.')).toBeNull();
++      expect(recover('Unrelated profile error')).toBe('Unrelated profile error');
++      expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledOnce();
++    } finally {
++      warning.mockRestore();
++    }
++  });
++
++  it.each(['failure', 'missing-binding'] as const)(
++    'ignores a stale refresh %s after a newer sign-out event',
++    async (outcome) => {
++      const active = session();
++      lifecycleMocks.resolveAuthProfile.mockResolvedValue(activeIdentity('canonical-a'));
++      startLifecycle(Promise.resolve(active));
++      await vi.waitFor(() => expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledOnce());
++      const pending = Promise.withResolvers<string | null>();
++      lifecycleMocks.retainRefreshedSession.mockReturnValueOnce(pending.promise);
++      const refreshing = lifecycleMocks.authStateListener?.('TOKEN_REFRESHED', active);
++      await lifecycleMocks.authStateListener?.('SIGNED_OUT', null);
++      if (outcome === 'failure') pending.reject(new Error('old fixture error'));
++      else pending.resolve(null);
++      await refreshing;
++      expect(lifecycleMocks.stateSetters[4]).not.toHaveBeenCalledWith(
++        'Unable to retain refreshed device credentials.',
++      );
++      expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalledOnce();
++    },
++  );
++
+   it('preserves local user state on cold boot when offline resolution is unavailable', async () => {
+     const activeSession = session({ id: 'account-1' });
+     lifecycleMocks.storeState.user = { id: 'account-1' };
++    lifecycleMocks.listAccounts.mockResolvedValue([
++      { accountId: 'account-1', authUserId: 'account-1' },
++    ]);
+     lifecycleMocks.getAuthSession.mockResolvedValue(activeSession);
+     lifecycleMocks.resolveAuthProfile.mockResolvedValue({
+       kind: 'unavailable',
+@@ -185,14 +427,93 @@ describe('useAuthLifecycle bootstrap ordering', () => {
+     });
+ 
+     useAuthLifecycle();
+-    await Promise.resolve();
+-    await Promise.resolve();
++    await vi.waitFor(() => expect(lifecycleMocks.stateSetters[5]).toHaveBeenCalledWith('active'));
+ 
+-    // Must NOT have wiped the matching local user or onboarding state
+     expect(lifecycleMocks.storeState.setUser).not.toHaveBeenCalledWith(null);
+     expect(lifecycleMocks.storeState.setOnboardingCompleted).not.toHaveBeenCalledWith(false);
+   });
+ 
++  it('retains a persisted canonical account bound to a different credential subject ID', async () => {
++    lifecycleMocks.scopeSnapshot = { principalId: 'canonical-account' };
++    lifecycleMocks.storeState.user = { id: 'canonical-account' };
++    lifecycleMocks.listAccounts.mockResolvedValue([
++      { accountId: 'canonical-account', authUserId: 'credential-subject' },
++    ]);
++    lifecycleMocks.resolveAuthProfile.mockResolvedValue({
++      kind: 'active',
++      identity: { id: 'canonical-account', availableBonds: [], activeBond: null },
++      schoolType: null,
++    });
++
++    startLifecycle(Promise.resolve(session({ id: 'credential-subject' })));
++
++    await vi.waitFor(() => expect(lifecycleMocks.commitIdentityScopeSession).toHaveBeenCalled());
++    expect(lifecycleMocks.clearScopeSessionCompatibility).not.toHaveBeenCalled();
++    expect(lifecycleMocks.storeState.setUser).not.toHaveBeenCalledWith(null);
++  });
++
++  it('discards a stale bootstrap ownership lookup after a newer auth event', async () => {
++    const ownerLookup = Promise.withResolvers<never[]>();
++    lifecycleMocks.scopeSnapshot = { principalId: 'old-account' };
++    lifecycleMocks.listAccounts.mockReturnValue(ownerLookup.promise);
++    startLifecycle(Promise.resolve(session({ id: 'old-subject' })));
++    await vi.waitFor(() => expect(lifecycleMocks.listAccounts).toHaveBeenCalled());
++
++    await lifecycleMocks.authStateListener?.('SIGNED_OUT', null);
++    const clearCount = lifecycleMocks.clearScopeSessionCompatibility.mock.calls.length;
++    ownerLookup.resolve([]);
++    await Promise.resolve();
++    await Promise.resolve();
++
++    expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalledTimes(clearCount);
++    expect(lifecycleMocks.stateSetters[0]).not.toHaveBeenCalledWith(
++      expect.objectContaining({ user: expect.objectContaining({ id: 'old-subject' }) }),
++    );
++  });
++
++  it('clears a persisted account scope before resolving an unbound initial subject', async () => {
++    const initialSession = session({ id: 'account-b' });
++    lifecycleMocks.scopeSnapshot = { principalId: 'account-a' };
++    lifecycleMocks.getAuthSession.mockResolvedValue(initialSession);
++    lifecycleMocks.resolveAuthProfile.mockResolvedValue({
++      kind: 'active',
++      identity: {
++        id: 'account-b',
++        availableBonds: [],
++        activeBond: null,
++      },
++      schoolType: null,
++    });
++    lifecycleMocks.onAuthStateChange.mockImplementation((listener) => {
++      lifecycleMocks.authStateListener = listener;
++      return { data: { subscription: { unsubscribe: vi.fn() } } };
++    });
++
++    useAuthLifecycle();
++    await vi.waitFor(() => expect(lifecycleMocks.resolveAuthProfile).toHaveBeenCalled());
++
++    expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalledTimes(1);
++    expect(lifecycleMocks.clearScopeSessionCompatibility.mock.invocationCallOrder[0]).toBeLessThan(
++      lifecycleMocks.resolveAuthProfile.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
++    );
++  });
++
++  it('clears a persisted account scope for an initially signed-out session', async () => {
++    lifecycleMocks.scopeSnapshot = { principalId: 'account-a' };
++    lifecycleMocks.getAuthSession.mockResolvedValue(null);
++    lifecycleMocks.onAuthStateChange.mockImplementation((listener) => {
++      lifecycleMocks.authStateListener = listener;
++      return { data: { subscription: { unsubscribe: vi.fn() } } };
++    });
++
++    useAuthLifecycle();
++    await vi.waitFor(() =>
++      expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalled(),
++    );
++
++    expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalledTimes(1);
++  });
++
+   it('does not resolve a cloud profile for an anonymous bootstrap or auth event', async () => {
+     const anonymousSession = session({ id: 'guest-1', is_anonymous: true });
+     lifecycleMocks.getAuthSession.mockResolvedValue(anonymousSession);
+diff --git a/packages/core/src/hooks/useAuthLifecycle.ts b/packages/core/src/hooks/useAuthLifecycle.ts
+index 62fc1339c..4c7b91751 100644
+--- a/packages/core/src/hooks/useAuthLifecycle.ts
++++ b/packages/core/src/hooks/useAuthLifecycle.ts
+@@ -6,6 +6,8 @@ import { assertHighway } from '@repo/core/api/highways';
+ import { identityAPI } from '@repo/core/api/identity';
+ import { schoolAPI } from '@repo/core/api/school';
+ import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
++import { getActiveAccountId } from '@repo/core/lib/accountScope';
++import { openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
+ import {
+   getSessionIdentityMode,
+   type IdentityAvailability,
+@@ -16,17 +18,22 @@ import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
+ import { realtime } from '@repo/core/logic/managers/factory';
+ import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
+ import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
+-import { useStore } from '@repo/core/store/useStore';
++import { useScopeSessionStore } from '@repo/core/store/scopeSession';
++import {
++  clearScopeSessionCompatibility,
++  commitIdentityScopeSession,
++} from '@repo/core/store/scopeSessionCoordinator';
++import { useAuthStore } from '@repo/core/store/useAuthStore';
+ import type { User } from '@repo/core/types';
+ import { APIError } from '@repo/core/types/API';
+-import type { Bond } from '@repo/core/types/Identity';
+-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
++import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+ import { AppState, type AppStateStatus } from 'react-native';
+ 
+ export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture';
+ 
+ /** Throttle minimum interval for mobile AppState wake-up profile reconciliation. */
+ const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;
++const REMEMBERED_SESSION_ERROR = 'Unable to retain refreshed device credentials.';
+ 
+ /**
+  * useAuthLifecycle
+@@ -54,20 +61,13 @@ export function useAuthLifecycle() {
+   const previousUserIdRef = useRef<string | null>(null);
+   const lastReconciledAtRef = useRef<number>(Date.now());
+ 
+-  const setUser = useStore((state) => state.setUser);
+-  const setPerspective = useStore((state) => state.setPerspective);
+-  const setAvailableBonds = useStore((state) => state.setAvailableBonds);
+-  const setSchoolType = useStore((state) => state.setSchoolType);
+-  const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
+-  const setAuthSession = useStore((state) => state.setAuthSession);
+-  const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
+-  const setDemoMode = useStore((state) => state.setDemoMode);
++  const setUser = useAuthStore((state) => state.setUser);
++  const setOnboardingCompleted = useAuthStore((state) => state.setOnboardingCompleted);
++  const setDemoMode = useAuthStore((state) => state.setDemoMode);
+ 
+   const clearDerivedIdentityState = useCallback(() => {
++    clearScopeSessionCompatibility();
+     setUser(null);
+-    setPerspective(null);
+-    setAvailableBonds([]);
+-    setSchoolType(null);
+     setOnboardingCompleted(false);
+     setIdentityAvailability('unknown');
+     resolvedAuthSubjectIdRef.current = null;
+@@ -75,12 +75,9 @@ export function useAuthLifecycle() {
+     setAccountLifecycleStatus(null);
+   }, [
+     setAccountLifecycleStatus,
+-    setAvailableBonds,
+     setIdentityAvailability,
+     setResolvedAuthSubjectId,
+     setOnboardingCompleted,
+-    setPerspective,
+-    setSchoolType,
+     setUser,
+   ]);
+ 
+@@ -117,7 +114,31 @@ export function useAuthLifecycle() {
+       const isFirstLoad = !hasBootstrappedRef.current;
+       const resolutionGeneration = identityResolutionGenerationRef.current + 1;
+       identityResolutionGenerationRef.current = resolutionGeneration;
++      const isCurrentResolution = () =>
++        isCurrentIdentityResolutionGeneration(
++          resolutionGeneration,
++          identityResolutionGenerationRef.current,
++        );
+       const authSubjectId = sessionToCapture?.user.id ?? null;
++      const restoreVerifiedLocalIdentity = async (): Promise<boolean> => {
++        const existingUser = useAuthStore.getState().user;
++        const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
++          existingUser?.id,
++          authSubjectId,
++        );
++        if (!isCurrentResolution()) return false;
++        if (hasMatchingLocalUser) {
++          setIdentityAvailability('active');
++          resolvedAuthSubjectIdRef.current = authSubjectId;
++          setResolvedAuthSubjectId(authSubjectId);
++          if (existingUser && getActiveAccountId() === existingUser.id) {
++            openReplayAdmission(existingUser.id);
++          }
++        } else {
++          clearDerivedIdentityState();
++        }
++        return true;
++      };
+       setIsProfileResolving(true);
+       setProfileError(null);
+       if (isFirstLoad) {
+@@ -140,28 +161,22 @@ export function useAuthLifecycle() {
+           },
+         });
+ 
+-        if (
+-          !isCurrentIdentityResolutionGeneration(
+-            resolutionGeneration,
+-            identityResolutionGenerationRef.current,
+-          )
+-        ) {
+-          return;
+-        }
++        if (!isCurrentResolution()) return;
+ 
+         if (resolution.kind === 'active') {
+           const { identity, schoolType } = resolution;
++          await commitIdentityScopeSession({
++            principalId: identity.id,
++            availableBonds: identity.availableBonds,
++            selectedBond: identity.activeBond,
++            schoolType,
++          });
++          if (!isCurrentResolution()) return;
+           setIdentityAvailability('active');
+           resolvedAuthSubjectIdRef.current = authSubjectId;
+           setResolvedAuthSubjectId(authSubjectId);
+           setAccountLifecycleStatus(null);
+           setUser(identity as unknown as User);
+-          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
+-          setPerspective({
+-            activeBond: identity.activeBond as unknown as Bond | undefined,
+-            availableBonds: identity.availableBonds as unknown as Bond[],
+-          });
+-
+           await captureAuthenticatedDeviceAccount({
+             capturedSessionKeys: capturedSessionKeysRef.current,
+             capturingSessionKeys: capturingSessionKeysRef.current,
+@@ -169,9 +184,10 @@ export function useAuthLifecycle() {
+             resolvedAuthSubjectId: authSubjectId,
+             session: sessionToCapture ?? null,
+           });
++          if (!isCurrentResolution()) return;
+ 
++          if (getActiveAccountId() === identity.id) openReplayAdmission(identity.id);
+           setOnboardingCompleted(Boolean(identity.onboarding_completed));
+-          setSchoolType(schoolType);
+ 
+           identifyAuthSubject({
+             id: identity.id,
+@@ -194,42 +210,19 @@ export function useAuthLifecycle() {
+           // resolution.kind === 'unavailable'
+           // Non-destructive offline fallback: If a valid local user exists in persisted storage,
+           // preserve their offline state and mark identity active rather than kicking them to onboarding.
+-          const existingUser = useStore.getState().user;
+-          const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
+-            existingUser?.id,
+-            authSubjectId,
+-          );
+-
+-          if (hasMatchingLocalUser) {
+-            setIdentityAvailability('active');
+-            resolvedAuthSubjectIdRef.current = authSubjectId;
+-            setResolvedAuthSubjectId(authSubjectId);
+-          } else {
+-            clearDerivedIdentityState();
+-          }
++          if (!(await restoreVerifiedLocalIdentity())) return;
+ 
+           if (resolution.profileError) {
+             setProfileError(resolution.profileError);
+           }
+         }
+       } catch (error) {
++        if (!isCurrentResolution()) return;
+         console.warn('❌ Profile: Fetching encountered an error:', error);
+-        const existingUser = useStore.getState().user;
+-        if (await hasVerifiedLocalIdentityForSubject(existingUser?.id, authSubjectId)) {
+-          setIdentityAvailability('active');
+-          resolvedAuthSubjectIdRef.current = authSubjectId;
+-          setResolvedAuthSubjectId(authSubjectId);
+-        } else {
+-          clearDerivedIdentityState();
+-        }
++        if (!(await restoreVerifiedLocalIdentity())) return;
+         setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
+       } finally {
+-        if (
+-          isCurrentIdentityResolutionGeneration(
+-            resolutionGeneration,
+-            identityResolutionGenerationRef.current,
+-          )
+-        ) {
++        if (isCurrentResolution()) {
+           setIsProfileResolving(false);
+           if (isFirstLoad) {
+             setIsProfileLoading(false);
+@@ -244,18 +237,46 @@ export function useAuthLifecycle() {
+       clearDerivedIdentityState,
+       hasVerifiedLocalIdentityForSubject,
+       setUser,
+-      setPerspective,
+-      setAvailableBonds,
+-      setSchoolType,
+       setOnboardingCompleted,
+     ],
+   );
+ 
+   const refreshProfile = useCallback(async () => {
++    const generation = authEventGenerationRef.current;
+     const currentSession = await authAPI.getAuthSession();
++    if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
+     await fetchAndSetUserProfile(currentSession);
+   }, [fetchAndSetUserProfile]);
+ 
++  const retainRefreshedDeviceSession = useCallback(
++    async (current: AuthSession | null, generation: number) => {
++      try {
++        const retained = await deviceAccounts.retainRefreshedSession(current);
++        if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
++        if (retained) {
++          setProfileError((error) => (error === REMEMBERED_SESSION_ERROR ? null : error));
++        } else {
++          await fetchAndSetUserProfile(current);
++        }
++      } catch {
++        if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
++        setProfileError(REMEMBERED_SESSION_ERROR);
++        console.warn('[auth] Refreshed device credential retention failed.');
++      }
++    },
++    [fetchAndSetUserProfile],
++  );
++
++  const handleAppStateChange = useEffectEvent((nextState: AppStateStatus) => {
++    if (nextState !== 'active' || getSessionIdentityMode(session) !== 'authenticated') return;
++    const now = Date.now();
++    if (now - lastReconciledAtRef.current < APP_STATE_RECONCILE_THROTTLE_MS) return;
++    lastReconciledAtRef.current = now;
++    refreshProfile().catch((error) => {
++      console.warn('Auth: Background AppState profile refresh failed', error);
++    });
++  });
++
+   useEffect(() => {
+     // 1. Initialize error monitoring. Product analytics is initialized by the
+     // application shell so there is only one provider/transport instance.
+@@ -271,9 +292,25 @@ export function useAuthLifecycle() {
+         ) {
+           return;
+         }
++        const initialSubjectId = initialSession?.user?.id ?? null;
++        const persistedScopePrincipalId =
++          useScopeSessionStore.getState().snapshot?.principalId ??
++          useAuthStore.getState().user?.id ??
++          null;
++        if (persistedScopePrincipalId) {
++          const hasMatchingOwner = await hasVerifiedLocalIdentityForSubject(
++            persistedScopePrincipalId,
++            initialSubjectId,
++          );
++          if (
++            !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
++          ) {
++            return;
++          }
++          if (!hasMatchingOwner) clearDerivedIdentityState();
++        }
+         setSession(initialSession);
+-        setAuthSession(initialSession);
+-        previousUserIdRef.current = initialSession?.user?.id ?? null;
++        previousUserIdRef.current = initialSubjectId;
+ 
+         const sessionMode = getSessionIdentityMode(initialSession);
+         if (sessionMode === 'authenticated') {
+@@ -282,19 +319,25 @@ export function useAuthLifecycle() {
+           clearDerivedIdentityState();
+         }
+       } catch (error) {
++        if (!isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current))
++          return;
+         if (error instanceof APIError) {
+           if (
+             error.message?.includes('Refresh Token') ||
+             (error as { status?: number }).status === 400
+           ) {
+             await authAPI.signOut({ scope: 'local' });
++            if (
++              !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
++            )
++              return;
+             setSession(null);
+-            setAuthSession(null);
+           }
+         }
+       } finally {
+-        setLoading(false);
+-        setAuthSessionResolved(true);
++        if (isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)) {
++          setLoading(false);
++        }
+       }
+     };
+ 
+@@ -306,34 +349,37 @@ export function useAuthLifecycle() {
+     } = authAPI.onAuthStateChange(async (event, currentSession) => {
+       authEventGenerationRef.current += 1;
+       setSession(currentSession);
+-      setAuthSession(currentSession);
+-      setAuthSessionResolved(true);
++      setLoading(false);
+ 
+       const currentUserId = currentSession?.user?.id ?? null;
++      const isSubjectChanged = currentUserId !== previousUserIdRef.current;
+       const isTokenOnlyRefresh =
+         event === 'TOKEN_REFRESHED' &&
+         currentUserId !== null &&
+         currentUserId === previousUserIdRef.current;
+ 
+       previousUserIdRef.current = currentUserId;
++      const currentMode = getSessionIdentityMode(currentSession);
++      if (isSubjectChanged || currentMode !== 'authenticated') {
++        identityResolutionGenerationRef.current += 1;
++        setIsProfileResolving(false);
++        setIsProfileLoading(false);
++        setProfileError(null);
++      }
+ 
+-      if (isTokenOnlyRefresh) {
+-        // Only the auth token refreshed in the background for the same active user.
+-        // Skip redundant remote RPCs to preserve radio bandwidth and battery.
++      if (isSubjectChanged) {
++        clearDerivedIdentityState();
++      }
++
++      if (isTokenOnlyRefresh && currentMode === 'authenticated') {
++        await retainRefreshedDeviceSession(currentSession, authEventGenerationRef.current);
+         return;
+       }
+ 
+-      const currentMode = getSessionIdentityMode(currentSession);
+       if (currentMode === 'authenticated') {
+         await fetchAndSetUserProfile(currentSession);
+       } else if (currentSession?.user) {
+-        setUser(null);
+-        setPerspective(null);
+-        setAvailableBonds([]);
+-        setSchoolType(null);
+-        setOnboardingCompleted(false);
+-        setIdentityAvailability('unknown');
+-        setAccountLifecycleStatus(null);
++        clearDerivedIdentityState();
+       } else if (event === 'SIGNED_OUT') {
+         clearAuthSubject();
+         clearDerivedIdentityState();
+@@ -343,19 +389,6 @@ export function useAuthLifecycle() {
+       }
+     });
+ 
+-    // 4. Mobile AppState Wake-Up Reconciler
+-    const handleAppStateChange = (nextState: AppStateStatus) => {
+-      if (nextState === 'active' && getSessionIdentityMode(session) === 'authenticated') {
+-        const now = Date.now();
+-        if (now - lastReconciledAtRef.current >= APP_STATE_RECONCILE_THROTTLE_MS) {
+-          lastReconciledAtRef.current = now;
+-          refreshProfile().catch((e) => {
+-            console.warn('Auth: Background AppState profile refresh failed', e);
+-          });
+-        }
+-      }
+-    };
+-
+     const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+ 
+     checkSession().catch((e) => {
+@@ -363,25 +396,24 @@ export function useAuthLifecycle() {
+     });
+ 
+     return () => {
++      authEventGenerationRef.current += 1;
++      identityResolutionGenerationRef.current += 1;
+       subscription.unsubscribe();
+       appStateSubscription.remove();
+     };
+   }, [
+-    setAuthSession,
+-    setAuthSessionResolved,
+     clearDerivedIdentityState,
+     fetchAndSetUserProfile,
++    hasVerifiedLocalIdentityForSubject,
++    retainRefreshedDeviceSession,
+     refreshProfile,
+     setDemoMode,
+     setUser,
+-    setPerspective,
+-    setAvailableBonds,
+-    setSchoolType,
+     setOnboardingCompleted,
+   ]);
+ 
+   // 4. Realtime Profile Updates (Capability Sync)
+-  const currentUser = useStore((state) => state.user);
++  const currentUser = useAuthStore((state) => state.user);
+   useEffect(() => {
+     if (!currentUser?.id || getSessionIdentityMode(session) !== 'authenticated') return;
+ 
+diff --git a/packages/core/src/hooks/useSanctuaryVisitor.ts b/packages/core/src/hooks/useSanctuaryVisitor.ts
+index 14d9bb685..e0569b580 100644
+--- a/packages/core/src/hooks/useSanctuaryVisitor.ts
++++ b/packages/core/src/hooks/useSanctuaryVisitor.ts
+@@ -1,4 +1,5 @@
+ import { storage } from '@repo/core/native/storage';
++import { useAuth } from '@repo/core/providers/AuthProvider';
+ import { useAuthStore } from '@repo/core/store/useAuthStore';
+ import { useCallback, useState } from 'react';
+ 
+@@ -25,15 +26,15 @@ export interface SanctuaryVisitorState {
+  * a returning guest, or an existing account holder.
+  */
+ export function useSanctuaryVisitor(): SanctuaryVisitorState {
+-  const authSession = useAuthStore((state) => state.authSession);
++  const { session, loading } = useAuth();
+   const onboardingCompleted = useAuthStore((state) => state.onboardingCompleted);
+ 
+-  const [isFirstTime, setIsFirstTime] = useState<boolean>(() => {
++  const [hasVisited, setHasVisited] = useState<boolean>(() => {
+     try {
+       const firstSeen = storage.getString(VISITOR_FIRST_SEEN_KEY);
+-      return !firstSeen && !authSession && !onboardingCompleted;
++      return Boolean(firstSeen);
+     } catch {
+-      return !authSession && !onboardingCompleted;
++      return false;
+     }
+   });
+ 
+@@ -53,7 +54,7 @@ export function useSanctuaryVisitor(): SanctuaryVisitorState {
+       if (storage.getString(VISITOR_FIRST_SEEN_KEY) == null) {
+         storage.set(VISITOR_FIRST_SEEN_KEY, String(now));
+       }
+-      setIsFirstTime(false);
++      setHasVisited(true);
+       setLastVisitedTimestamp(now);
+     } catch {
+       // Storage failure must never crash UX
+@@ -61,8 +62,8 @@ export function useSanctuaryVisitor(): SanctuaryVisitorState {
+   }, []);
+ 
+   return {
+-    isFirstTime,
+-    hasPreviousSession: Boolean(authSession),
++    isFirstTime: !loading && !hasVisited && !session && !onboardingCompleted,
++    hasPreviousSession: Boolean(session),
+     onboardingCompleted,
+     lastVisitedTimestamp,
+     markVisited,
+diff --git a/packages/core/src/store/resetScopedStores.ts b/packages/core/src/store/resetScopedStores.ts
+index 753008709..2504ea29a 100644
+--- a/packages/core/src/store/resetScopedStores.ts
++++ b/packages/core/src/store/resetScopedStores.ts
+@@ -1,18 +1,16 @@
++import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage';
+ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+-import type { UISlice } from '@repo/core/store/slices/ui.slice';
+-import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
++import { useScopeSessionStore } from '@repo/core/store/scopeSession';
++import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
+ import { useAuthStore } from '@repo/core/store/useAuthStore';
++import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+ import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+-import { useGrowthStore } from '@repo/core/store/useGrowthStore';
+-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
+ import { useTenantStore } from '@repo/core/store/useTenantStore';
+-import { useUIStore } from '@repo/core/store/useUIStore';
++import { migrateLegacyDismissalsForCurrentOwner, useUIStore } from '@repo/core/store/useUIStore';
+ 
+ const authScopedDefaults = {
+   userName: 'Gurudevi',
+   user: null,
+-  authSession: null,
+-  authSessionResolved: false,
+   onboardingCompleted: false,
+   justFinishedOnboarding: false,
+   experienceMode: 'live' as const,
+@@ -20,46 +18,55 @@ const authScopedDefaults = {
+   isSandboxMode: false,
+   isExplorerMode: true,
+   isBridging: false,
+-  dismissedSampleIds: [],
+   demoLogs: [],
+-  isOnline: true,
+   toast: null,
+ };
+ 
+ const tenantScopedDefaults = {
+-  schoolId: null,
+-  schoolName: null,
+   tenantResolved: false,
+   schoolType: 'generic',
+   realClassCount: 0,
+ };
+ 
+-const uiScopedDefaults: Partial<UISlice> = {
++const uiScopedDefaults = {
+   isSidebarCollapsed: false,
+-  theme: 'system' as UISlice['theme'],
+-  themeMode: 'system' as NonNullable<UISlice['themeMode']>,
+   dismissedSampleIds: [],
+   deskItems: [],
+   isBreathingOpen: false,
++  scaffoldCompletions: {},
+ };
+ 
+-const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
++const activeSubTabsScopedDefaults = {
++  tabsByDomain: {},
++  activeTabByDomain: {},
++  pinnedFeatureIdsByDomain: {
++    self: ['daily_rhythm', 'mood_lotus', 'decision_journal'],
++    workspace: ['attendance', 'gradebook', 'curriculum'],
++  },
++  preferences: {
++    headerStyle: 'adaptive' as const,
++    catalogDefaultAction: 'open_in_subtab' as const,
++    showActiveSubTabs: true,
++    autoHideChromeOnScroll: true,
++    maxTabsPerDomain: 5,
++  },
++  isChromeVisible: true,
++};
+ 
+ export const resetScopedStores = () => {
+-  useAuthStore.setState(authScopedDefaults);
+-  useTenantStore.setState(tenantScopedDefaults);
+-  usePerspectiveStore.getState().resetToPersonalPerspective();
+-  useUIStore.setState(uiScopedDefaults);
+-  useGrowthStore.getState().resetGrowthState();
+-  useFeatureStore.setState((state) => ({
+-    ...state,
+-    flags: featureScopedDefaults,
+-    snapshot: null,
+-  }));
+-  // Commands are partitioned by their original principal. Account lifecycle
+-  // owns an explicit preserve/quarantine/discard transition; a UI-store reset
+-  // must never silently destroy work that still needs reconciliation.
+-  useMutationQueue.setState({ isSyncing: false });
++  withScopedStateWritesPaused(() => {
++    useScopeSessionStore.getState().clear();
++    useCedarDecisionStore.getState().clearDecisions();
++    useAuthStore.setState(authScopedDefaults);
++    useTenantStore.setState(tenantScopedDefaults);
++    useUIStore.setState(uiScopedDefaults);
++    useActiveSubTabsStore.setState(activeSubTabsScopedDefaults);
++    useFeatureStore.getState().clear();
++    // Commands are partitioned by their original principal. Account lifecycle
++    // owns an explicit preserve/quarantine/discard transition; a UI-store reset
++    // must never silently destroy work that still needs reconciliation.
++    useMutationQueue.setState({ isSyncing: false });
++  });
+ };
+ 
+ export const rehydrateScopedStores = async () => {
+@@ -67,8 +74,8 @@ export const rehydrateScopedStores = async () => {
+     useAuthStore.persist?.rehydrate?.(),
+     useTenantStore.persist?.rehydrate?.(),
+     useUIStore.persist?.rehydrate?.(),
+-    useGrowthStore.persist?.rehydrate?.(),
+-    useFeatureStore.persist?.rehydrate?.(),
++    useActiveSubTabsStore.persist?.rehydrate?.(),
+     useMutationQueue.persist?.rehydrate?.(),
+   ]);
++  await migrateLegacyDismissalsForCurrentOwner();
+ };
+diff --git a/packages/core/src/store/slices/auth.slice.ts b/packages/core/src/store/slices/auth.slice.ts
+index dbebcba37..027623d42 100644
+--- a/packages/core/src/store/slices/auth.slice.ts
++++ b/packages/core/src/store/slices/auth.slice.ts
+@@ -1,29 +1,14 @@
+-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+ import { leaveBreadcrumb } from '@repo/core/monitoring';
+ import type { User } from '@repo/core/types';
+-import type { Bond, Perspective } from '@repo/core/types/Identity';
+ import type { StateCreator } from 'zustand';
+ 
+ export interface AuthSlice {
+-  // Sovereign Identity (ReBAC)
+-  activePerspective: Perspective | null;
+-  activeBond: Bond | null;
+-  availableBonds: Bond[];
+-  setPerspective: (perspective: Perspective | null) => void;
+-  setAvailableBonds: (bonds: Bond[]) => void;
+-
+   // Profile & User
+   userName: string;
+   setUserName: (name: string) => void;
+   user: User | null;
+   setUser: (user: User | null) => void;
+ 
+-  // Auth Session
+-  authSession: AuthSession | null;
+-  authSessionResolved: boolean;
+-  setAuthSession: (session: AuthSession | null) => void;
+-  setAuthSessionResolved: (resolved: boolean) => void;
+-
+   // Onboarding
+   onboardingCompleted: boolean;
+   setOnboardingCompleted: (completed: boolean) => void;
+@@ -37,8 +22,6 @@ export interface AuthSlice {
+   setExplorerMode: (isExplorer: boolean) => void;
+   isBridging: boolean;
+   setBridging: (isBridging: boolean) => void;
+-  dismissedSampleIds: string[];
+-  dismissSample: (id: string) => void;
+   demoLogs: Array<{
+     module: string;
+     method: string;
+@@ -47,8 +30,6 @@ export interface AuthSlice {
+   }>;
+   addDemoLog: (log: { module: string; method: string; payload: unknown }) => void;
+   clearDemoLogs: () => void;
+-  isOnline: boolean;
+-  setIsOnline: (isOnline: boolean) => void;
+   toast: {
+     message: string;
+     type: 'success' | 'error' | 'info';
+@@ -75,16 +56,6 @@ export interface AuthSlice {
+ }
+ 
+ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
+-  activePerspective: null,
+-  activeBond: null,
+-  availableBonds: [],
+-  setPerspective: (perspective) =>
+-    set({
+-      activePerspective: perspective,
+-      activeBond: perspective?.activeBond || null,
+-    }),
+-  setAvailableBonds: (bonds) => set({ availableBonds: bonds }),
+-
+   userName: 'Gurudevi',
+   setUserName: (name) => set({ userName: name }),
+   user: null,
+@@ -92,10 +63,6 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
+     leaveBreadcrumb('auth', user ? `User set: ${user.id}` : 'User cleared', 'info');
+     set({ user });
+   },
+-  authSession: null,
+-  authSessionResolved: false,
+-  setAuthSession: (authSession) => set({ authSession }),
+-  setAuthSessionResolved: (authSessionResolved) => set({ authSessionResolved }),
+   onboardingCompleted: false,
+   setOnboardingCompleted: (completed) => {
+     leaveBreadcrumb('journey', completed ? 'Onboarding completed' : 'Onboarding reset', 'info');
+@@ -109,22 +76,12 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
+   setExplorerMode: (isExplorer) => set({ isExplorerMode: isExplorer }),
+   isBridging: false,
+   setBridging: (isBridging) => set({ isBridging }),
+-  dismissedSampleIds: [],
+-  dismissSample: (id) =>
+-    set((state) => ({
+-      dismissedSampleIds: [...state.dismissedSampleIds, id],
+-    })),
+   demoLogs: [],
+   addDemoLog: (log) =>
+     set((state) => ({
+       demoLogs: [...state.demoLogs, { ...log, timestamp: Date.now() }],
+     })),
+   clearDemoLogs: () => set({ demoLogs: [] }),
+-  isOnline: true,
+-  setIsOnline: (isOnline) => {
+-    leaveBreadcrumb('network', isOnline ? 'Online' : 'Offline', isOnline ? 'info' : 'warning');
+-    set({ isOnline });
+-  },
+   toast: null,
+   showToast: (message, type, duration = 3000) => set({ toast: { message, type, duration } }),
+   hideToast: () => set({ toast: null }),
+diff --git a/packages/core/src/testing/scenarioHarness.ts b/packages/core/src/testing/scenarioHarness.ts
+index da46a3fe6..20313c61a 100644
+--- a/packages/core/src/testing/scenarioHarness.ts
++++ b/packages/core/src/testing/scenarioHarness.ts
+@@ -1,8 +1,9 @@
+ import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
++import type { INetwork, NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
++import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+ import { useAuthStore } from '@repo/core/store/useAuthStore';
+ import { useConflictStore } from '@repo/core/store/useConflictStore';
+-import { useStore } from '@repo/core/store/useStore';
+ import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+ import { vi } from 'vitest';
+ 
+@@ -15,8 +16,26 @@ export interface ScenarioTestHarness {
+ }
+ 
+ export function createScenarioTestContext(): ScenarioTestHarness {
++  let networkSnapshot: NetworkSnapshot = {
++    status: 'online',
++    source: 'native-netinfo',
++    connection: null,
++  };
++  const networkListeners = new Set<() => void>();
++  const scenarioNetwork: INetwork = {
++    getSnapshot: () => networkSnapshot,
++    subscribe: (listener) => {
++      networkListeners.add(listener);
++      return () => networkListeners.delete(listener);
++    },
++  };
++  networkManager.registerAdapter(scenarioNetwork);
++
+   const setOnline = (isOnline: boolean) => {
+-    useAuthStore.setState({ isOnline });
++    const status = isOnline ? 'online' : 'offline';
++    if (networkSnapshot.status === status) return;
++    networkSnapshot = { ...networkSnapshot, status };
++    for (const listener of networkListeners) listener();
+   };
+ 
+   const setGuestUser = () => {
+@@ -30,8 +49,6 @@ export function createScenarioTestContext(): ScenarioTestHarness {
+         aud: 'authenticated',
+         created_at: '2026-01-01T00:00:00.000Z',
+       } as any,
+-      authSession: null,
+-      authSessionResolved: true,
+     });
+   };
+ 
+@@ -46,8 +63,6 @@ export function createScenarioTestContext(): ScenarioTestHarness {
+         aud: 'authenticated',
+         created_at: '2026-01-01T00:00:00.000Z',
+       } as any,
+-      authSession: { access_token: 'valid_token' } as any,
+-      authSessionResolved: true,
+     });
+   };
+ 
+@@ -59,7 +74,7 @@ export function createScenarioTestContext(): ScenarioTestHarness {
+     useMutationQueue.getState().clearQueue();
+     useMutationQueue.getState().clearDeadLetterQueue();
+     useConflictStore.setState({ activeConflicts: [] });
+-    useAuthStore.setState({ isOnline: true });
++    setOnline(true);
+     useTemporalStore.setState({ viewDate: '2026-09-07' });
+     vi.restoreAllMocks();
+   };

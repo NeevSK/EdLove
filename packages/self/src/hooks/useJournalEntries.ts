@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { authAPI, growthSignalsAPI, identityAPI } from '@repo/core/api/client';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createJournalEntry, fetchJournalEntries } from '@repo/self/api/selfFeatureRepository';
@@ -9,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 const JOURNAL_ENTRIES_CACHE_KEY = 'gurudevi-journal-entries-cache';
 
 export const useJournalEntries = () => {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAnonymous, setIsAnonymous] = useState(false);

@@ -11,6 +11,10 @@ export class MemoryStorageAdapter implements IStorage {
     this.data.set(key, value);
   }
 
+  async setAsync(key: string, value: string | boolean | number) {
+    this.set(key, value);
+  }
+
   getString(key: string) {
     const val = this.data.get(key);
     return typeof val === 'string' ? val : undefined;
@@ -34,8 +38,16 @@ export class MemoryStorageAdapter implements IStorage {
     this.data.delete(key);
   }
 
+  async deleteAsync(key: string) {
+    this.delete(key);
+  }
+
   clearAll() {
     this.data.clear();
+  }
+
+  async clearAllAsync() {
+    this.clearAll();
   }
 
   contains(key: string) {

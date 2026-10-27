@@ -13,6 +13,7 @@ export const runOnJS = <T extends (...args: never[]) => unknown>(fn: T) => fn;
 export const Easing = {
   linear: (value: number) => value,
   ease: (value: number) => value,
+  bezier: () => (value: number) => value,
   in: (value: unknown) => value,
   out: (value: unknown) => value,
   inOut: (value: unknown) => value,

@@ -25,6 +25,34 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     capabilityRequirement: { action: 'read', subject: 'CommunityFeed' },
     tabDomain: 'community',
     analyticsKey: 'community.hearth',
+    journey: {
+      featureId: 'hearth',
+      targetPersonas: ['student', 'teacher', 'guardian', 'principal', 'founder'],
+      stage: 'daily_circadian',
+      entryRoute: '/community',
+      sequence: [
+        {
+          step: 0,
+          screenId: 'community_feed',
+          route: '/community',
+          title: 'The Hearth Gathering',
+          purpose: 'on_ramp',
+        },
+        {
+          step: 1,
+          screenId: 'circles_view',
+          route: '/community/circles',
+          title: 'Circles of Trust',
+          purpose: 'primary_action',
+        },
+      ],
+      feedback: {
+        tutiiMode: 'resting',
+        tutiiRole: 'companion',
+        haptic: 'light',
+        soundChime: 'subtle_tap',
+      },
+    },
   },
   circles: {
     id: 'circles',

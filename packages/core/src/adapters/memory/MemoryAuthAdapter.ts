@@ -138,6 +138,23 @@ export class MemoryAuthAdapter implements IAuthPort {
 
   async resetPasswordForEmail(_email: string, _redirectTo?: string): Promise<void> {}
 
+  async requestPasswordReauthentication(): Promise<void> {
+    throw new APIError(
+      'Confirmation delivery is unavailable in memory authentication.',
+      'AUTH_REAUTHENTICATION_UNAVAILABLE',
+    );
+  }
+
+  async unlinkIdentity(_params: {
+    identityId: string;
+    expectedSubject?: string;
+  }): Promise<{ user: AuthUser | null }> {
+    throw new APIError(
+      'Credential unlink is unavailable in memory authentication.',
+      'CREDENTIAL_UNLINK_UNAVAILABLE',
+    );
+  }
+
   async signInWithPhoneOtp(
     _params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest,
   ): Promise<void> {
@@ -311,6 +328,7 @@ export class MemoryAuthAdapter implements IAuthPort {
   }
 
   async signOut(options?: { scope?: 'global' | 'local' | 'others' }): Promise<void> {
+    if (options?.scope === 'others') return;
     this.currentSession = null;
     this.currentUser = null;
     this.notify('SIGNED_OUT', null);

@@ -1,6 +1,6 @@
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { educationalContract } from '@repo/core/api/educational.contract';
-import { useStore } from '@repo/core/store/useStore';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError } from '@repo/core/types/API';
 import { SovereignError } from '@repo/core/types/Errors';
 
@@ -13,7 +13,7 @@ import { SovereignError } from '@repo/core/types/Errors';
 
 export const lessonsAPI = {
   async create(lesson: any) {
-    const state = useStore.getState();
+    const state = useAuthStore.getState();
     if (!state.user || state.user.is_anonymous) {
       throw SovereignError.unauthorized('create', 'Lesson');
     }
@@ -163,3 +163,20 @@ export const studentsAPI = {
 };
 
 void educationalContract;
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_LESSONS, MOCK_STUDENTS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'lessons',
+  ghostMethods: ['getAll', 'getByClassroom'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_LESSONS,
+});
+
+registerSandboxDomain({
+  domain: 'students',
+  ghostMethods: ['getAll'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_STUDENTS,
+});

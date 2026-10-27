@@ -1,11 +1,20 @@
-import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import type { SensoryPreferenceKey, SensoryPreferences } from '@repo/ui/context/SensoryProvider';
+import type { TFunction } from 'i18next';
 import { authAPI } from '@repo/core/api/auth';
+import { getPendingReplaySummary, replayDemoLogs, useSandboxMode } from '@repo/core/api/client';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { accountPin, coreRuntime, cryptoManager, storage } from '@repo/core/logic';
+import { useAuthStore, useUIStore } from '@repo/core/store';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
 import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import { useResponsiveGrid } from '@repo/ui/components/layout';
 import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { useEnvironment, useFeedbackOptional, useSensoryPreferences } from '@repo/ui/context';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { GURUDEVI_SUPPORT_EMAIL } from '@repo/ui/utils';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import {
   Button,
   Chip,
@@ -15,22 +24,102 @@ import {
   Switch,
   TextField,
   useWorld,
-  Text as WText,
   WorldPicker,
+  Text as WText,
 } from '@repo/ui/world/native';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { GURUDEVI_SUPPORT_EMAIL } from '@repo/ui/utils';
-import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import type { NetworkLimit } from '@repo/core/verger';
+import { useVergerSnapshot } from '@repo/verger-react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, ScrollView, View } from 'react-native';
 
 interface SettingsNavigation {
   navigate: (route: string, params?: Record<string, unknown>) => void;
 }
+
+interface ChoiceChipRowProps<T extends string> {
+  choices: readonly { id: T; label: string; lang?: 'en' | 'si' | 'ta' }[];
+  selectedId: T;
+  onSelect: (id: T) => void;
+}
+
+function ChoiceChipRow<T extends string>({ choices, selectedId, onSelect }: ChoiceChipRowProps<T>) {
+  return (
+    <>
+      {choices.map((c) => (
+        <Chip
+          key={c.id}
+          kind="radio"
+          lang={c.lang}
+          label={c.label}
+          selected={selectedId === c.id}
+          onPress={() => onSelect(c.id)}
+        />
+      ))}
+    </>
+  );
+}
+
+const SensoryOptionsSection = memo(function SensoryOptionsSection({
+  sensoryPreferences,
+  onToggle,
+  t,
+}: {
+  sensoryPreferences: Required<SensoryPreferences>;
+  onToggle: (key: SensoryPreferenceKey, value: boolean) => void;
+  t: TFunction;
+}) {
+  const options = [
+    {
+      key: 'hapticsEnabled',
+      title: t('settings.sensory.haptics', 'Haptic feedback'),
+      note: t(
+        'settings.sensory.haptics_desc',
+        'Gentle tactile confirmation for meaningful actions.',
+      ),
+    },
+    {
+      key: 'soundEnabled',
+      title: t('settings.sensory.sound', 'Sound feedback'),
+      note: t('settings.sensory.sound_desc', 'Optional short sounds for meaningful moments.'),
+    },
+    {
+      key: 'quietMode',
+      title: t('settings.sensory.quiet', 'Quiet mode'),
+      note: t('settings.sensory.quiet_desc', 'Silences sound and reduces sensory intensity.'),
+    },
+  ] as const;
+
+  return (
+    <>
+      {options.map((option) => (
+        <Row
+          key={option.key}
+          label={option.title}
+          note={option.note}
+          accessory={
+            <Switch
+              value={sensoryPreferences[option.key]}
+              onValueChange={(value) => onToggle(option.key, value)}
+              label={option.title}
+            />
+          }
+        />
+      ))}
+    </>
+  );
+});
+/** Verger's network limit, as the device panel shows it (diagnostic, not translated, as before). */
+const NETWORK_LIMIT_LABEL: Readonly<Record<NetworkLimit, string>> = {
+  none: 'Good',
+  slow: 'Slow',
+  unstable: 'Unstable',
+  'data-saver': 'Data Saver',
+  offline: 'Offline',
+};
 
 const AppSettingsScreen = memo(function AppSettingsScreen({
   navigation,
@@ -52,7 +141,6 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     setLanguage,
     isVeilActive,
     toggleVeil,
-    reality,
     enableLivingTheme,
     setEnableLivingTheme,
     visualCapabilities,
@@ -60,11 +148,101 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     setWorld,
   } = useEnvironment();
   const { preferences: sensoryPreferences, setPreference } = useSensoryPreferences();
+  const networkLimit = useVergerSnapshot()?.networkLimit ?? null;
+  const { isOnline } = useOfflineStatus();
+  const totalMemoryGB = useMemo(() => {
+    try {
+      const bytes = coreRuntime.device.getTotalMemory?.();
+      return typeof bytes === 'number' && bytes > 0 ? bytes / 1024 ** 3 : null;
+    } catch (error) {
+      console.warn('[settings] total memory unavailable', error);
+      return null;
+    }
+  }, []);
   const { emit: emitFeedback } = useFeedbackOptional();
-  const _isDemoMode = useStore((state) => state.isDemoMode);
-  const _setDemoMode = useStore((state) => state.setDemoMode);
-  const user = useStore((state) => state.user);
   const { showToast } = useSanctuaryToast();
+  const user = useAuthStore((state) => state.user);
+
+  // Sandbox & Simulation Developer State
+  const sandboxMode = useSandboxMode();
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
+  const setDemoMode = useExperienceState((state) => state.setDemoMode);
+  const isExplorerMode = useExperienceState((state) => state.isExplorerMode);
+  const setExplorerMode = useExperienceState((state) => state.setExplorerMode);
+  const isBridging = useExperienceState((state) => state.isBridging);
+  const demoLogs = useExperienceState((state) => state.demoLogs);
+  const clearDemoLogs = useExperienceState((state) => state.clearDemoLogs);
+  const [isReplayingSandbox, setIsReplayingSandbox] = useState(false);
+
+  const sandboxSummary = useMemo(() => {
+    return getPendingReplaySummary();
+  }, [demoLogs]);
+
+  const handleSelectSandboxMode = useCallback(
+    (mode: 'live' | 'ghost' | 'demo') => {
+      hapticLight();
+      if (mode === 'demo') {
+        setDemoMode(true);
+        setExplorerMode(false);
+        showToast({
+          message: 'Full Demo: running with complete synthetic datasets and mutation capture.',
+          type: 'info',
+        });
+      } else if (mode === 'ghost') {
+        setDemoMode(false);
+        setExplorerMode(true);
+        showToast({
+          message: 'Ghost Mode: local-first queries with sample seeding when empty.',
+          type: 'info',
+        });
+      } else {
+        setDemoMode(false);
+        setExplorerMode(false);
+        showToast({
+          message: 'Live Mode: direct production queries without sample fallbacks.',
+          type: 'success',
+        });
+      }
+    },
+    [setDemoMode, setExplorerMode, showToast],
+  );
+
+  const handleReplaySandbox = useCallback(async () => {
+    if (demoLogs.length === 0) {
+      showToast({
+        message: 'There are no pending sandbox mutations to graduate.',
+        type: 'info',
+      });
+      return;
+    }
+    setIsReplayingSandbox(true);
+    try {
+      const result = await replayDemoLogs({ clearOnComplete: true });
+      hapticSuccess();
+      const failedCount = result.failed.length;
+      showToast({
+        message: `Sandbox graduation complete: ${result.replayed} action(s) replayed (${failedCount} failed).`,
+        type: failedCount > 0 ? 'warning' : 'success',
+      });
+    } catch (e: any) {
+      showToast({
+        message: e?.message || 'Error executing sandbox replay bridge.',
+        type: 'error',
+      });
+    } finally {
+      setIsReplayingSandbox(false);
+    }
+  }, [demoLogs.length, showToast]);
+
+  const handleResetSandbox = useCallback(() => {
+    hapticLight();
+    useUIStore.setState({ dismissedSampleIds: [] });
+    clearDemoLogs();
+    showToast({
+      message: 'Sandbox reset: restored dismissed sample cards and cleared mutation logs.',
+      type: 'info',
+    });
+  }, [clearDemoLogs, showToast]);
 
   const navPreferences = useActiveSubTabsStore((s) => s.preferences);
   const updateNavPreferences = useActiveSubTabsStore((s) => s.updatePreferences);
@@ -607,18 +785,14 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
       <Section title={t('settings.light.title', 'Light')}>
         <Row label={t('settings.light.choose', 'Day or night')} />
         <Chips single label={t('settings.light.title', 'Light')} style={{ paddingBottom: 10 }}>
-          {lightChoices.map((c) => (
-            <Chip
-              key={c.id}
-              kind="radio"
-              label={c.label}
-              selected={themeMode === c.id}
-              onPress={() => {
-                void setThemeMode(c.id);
-                hapticSuccess();
-              }}
-            />
-          ))}
+          <ChoiceChipRow
+            choices={lightChoices}
+            selectedId={themeMode}
+            onSelect={(id) => {
+              void setThemeMode(id);
+              hapticSuccess();
+            }}
+          />
         </Chips>
         <Row label={t('settings.motion.title', 'Motion and detail')} note={fidelityDescription} />
         <Chips
@@ -626,60 +800,22 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
           label={t('settings.motion.title', 'Motion and detail')}
           style={{ paddingBottom: 10 }}
         >
-          {fidelityChoices.map((c) => (
-            <Chip
-              key={c.id}
-              kind="radio"
-              label={c.label}
-              selected={fidelityLevel === c.id}
-              onPress={() => void handleFidelityChange(c.id)}
-            />
-          ))}
+          <ChoiceChipRow
+            choices={fidelityChoices}
+            selectedId={fidelityLevel}
+            onSelect={(id) => void handleFidelityChange(id)}
+          />
         </Chips>
       </Section>
 
       <Section title={t('settings.sensory.title', 'Feel and sound')}>
-        {(
-          [
-            {
-              key: 'hapticsEnabled',
-              title: t('settings.sensory.haptics', 'Haptic feedback'),
-              note: t(
-                'settings.sensory.haptics_desc',
-                'Gentle tactile confirmation for meaningful actions.',
-              ),
-            },
-            {
-              key: 'soundEnabled',
-              title: t('settings.sensory.sound', 'Sound feedback'),
-              note: t(
-                'settings.sensory.sound_desc',
-                'Optional short sounds for meaningful moments.',
-              ),
-            },
-            {
-              key: 'quietMode',
-              title: t('settings.sensory.quiet', 'Quiet mode'),
-              note: t(
-                'settings.sensory.quiet_desc',
-                'Silences sound and reduces sensory intensity.',
-              ),
-            },
-          ] as const
-        ).map((option) => (
-          <Row
-            key={option.key}
-            label={option.title}
-            note={option.note}
-            accessory={
-              <Switch
-                value={sensoryPreferences[option.key]}
-                onValueChange={(value) => void handleSensoryToggle(option.key, value)}
-                label={option.title}
-              />
-            }
-          />
-        ))}
+        <SensoryOptionsSection
+          sensoryPreferences={sensoryPreferences}
+          onToggle={(key, value) =>
+            void handleSensoryToggle(key as keyof typeof sensoryPreferences, value)
+          }
+          t={t}
+        />
         <Row
           label={t('settings.sensory.profile', 'Motion on this phone')}
           detail={capitalise(visualCapabilities.experience.motion)}
@@ -693,18 +829,14 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
           label={t('settings.nav.header.title', 'Header')}
           style={{ paddingBottom: 10 }}
         >
-          {headerChoices.map((c) => (
-            <Chip
-              key={c.id}
-              kind="radio"
-              label={c.label}
-              selected={navPreferences.headerStyle === c.id}
-              onPress={() => {
-                hapticSuccess();
-                updateNavPreferences({ headerStyle: c.id });
-              }}
-            />
-          ))}
+          <ChoiceChipRow
+            choices={headerChoices}
+            selectedId={navPreferences.headerStyle}
+            onSelect={(id) => {
+              hapticSuccess();
+              updateNavPreferences({ headerStyle: id });
+            }}
+          />
         </Chips>
         <Row
           label={t('settings.nav.subtabs', 'Running tasks strip')}
@@ -757,16 +889,11 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
       <Section title={t('settings.language.title')}>
         <Row label={t('settings.language.current')} note={t('settings.language.change_desc')} />
         <Chips single label={t('settings.language.title')} style={{ paddingBottom: 10 }}>
-          {languageChoices.map((c) => (
-            <Chip
-              key={c.id}
-              kind="radio"
-              lang={c.id}
-              label={c.label}
-              selected={language === c.id}
-              onPress={() => void handleLanguageChange(c.id)}
-            />
-          ))}
+          <ChoiceChipRow
+            choices={languageChoices}
+            selectedId={language}
+            onSelect={(id) => void handleLanguageChange(id)}
+          />
         </Chips>
       </Section>
 
@@ -802,15 +929,11 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
           label={t('settings.ai.select_mode', 'How it is paid for')}
           style={{ paddingBottom: 10 }}
         >
-          {aiChoices.map((c) => (
-            <Chip
-              key={c.id}
-              kind="radio"
-              label={c.label}
-              selected={aiBillingMode === c.id}
-              onPress={() => void handleAiBillingModeChange(c.id)}
-            />
-          ))}
+          <ChoiceChipRow
+            choices={aiChoices}
+            selectedId={aiBillingMode}
+            onSelect={(id) => void handleAiBillingModeChange(id)}
+          />
         </Chips>
         {aiBillingMode === 'byok' ? (
           <View style={{ gap: 6, paddingBottom: 12 }}>
@@ -935,13 +1058,22 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
       </Section>
 
       <Section title={t('settings.device.title')}>
-        <Row label={t('settings.device.tier')} detail={capitalise(reality.deviceTier)} />
+        <Row label={t('settings.device.tier')} detail={capitalise(visualCapabilities.deviceTier)} />
         <Row
           label={t('settings.device.memory')}
-          detail={`${reality.totalMemoryGB.toFixed(1)} GB`}
+          detail={totalMemoryGB === null ? '—' : `${totalMemoryGB.toFixed(1)} GB`}
         />
-        <Row label={t('settings.device.network')} detail={capitalise(reality.networkQuality)} />
-        {reality.isDataSaverMode ? (
+        <Row
+          label={t('settings.device.network')}
+          detail={
+            networkLimit === null
+              ? isOnline
+                ? 'Online'
+                : 'Offline'
+              : NETWORK_LIMIT_LABEL[networkLimit]
+          }
+        />
+        {networkLimit === 'data-saver' ? (
           <Row
             label={t('settings.device.data_saver')}
             signal
@@ -976,15 +1108,72 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
           accessibilityHint={t('settings.support.contact_hint', 'Open the support email composer')}
         />
         {__DEV__ ? (
-          <View style={{ paddingVertical: 12 }}>
-            <Button
-              variant="danger"
-              size="sm"
-              label="Developer: reset all local data"
-              accessibilityHint="Wipe all local storage and reset to a fresh install."
-              onPress={() => void handleDevClearAllCache()}
-            />
-          </View>
+          <>
+            <Section title="Developer Sandbox & Simulation">
+              <Row
+                label="Active Operating Mode"
+                note={
+                  sandboxMode === 'demo'
+                    ? 'Full Demo: synthetic sample data with write capture.'
+                    : sandboxMode === 'ghost'
+                      ? 'Ghost Mode: real backend with ghost seeding on empty data.'
+                      : 'Live Mode: pure production with zero sample injection.'
+                }
+              />
+              <Chips single label="Sandbox Mode" style={{ paddingBottom: 10 }}>
+                <ChoiceChipRow
+                  choices={[
+                    { id: 'live', label: 'Live' },
+                    { id: 'ghost', label: 'Ghost (Samples)' },
+                    { id: 'demo', label: 'Full Demo' },
+                  ] as const}
+                  selectedId={sandboxMode === 'bridging' ? 'demo' : sandboxMode}
+                  onSelect={(id) => handleSelectSandboxMode(id as 'live' | 'ghost' | 'demo')}
+                />
+              </Chips>
+
+              <Row
+                label="Pending Write Mutations"
+                note={
+                  demoLogs.length === 0
+                    ? 'No pending write intents queued.'
+                    : `${demoLogs.length} action(s) queued (${sandboxSummary.replayable} replayable).`
+                }
+              />
+
+              <View style={{ flexDirection: 'row', gap: 8, paddingVertical: 8 }}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  label={
+                    isReplayingSandbox || isBridging
+                      ? 'Graduating…'
+                      : `Graduate Bridge (${demoLogs.length})`
+                  }
+                  disabled={demoLogs.length === 0 || isReplayingSandbox || isBridging}
+                  onPress={() => void handleReplaySandbox()}
+                  accessibilityHint="Replay recorded demo actions to the live database"
+                />
+                <Button
+                  variant="quiet"
+                  size="sm"
+                  label="Reset Samples & Logs"
+                  onPress={handleResetSandbox}
+                  accessibilityHint="Restore dismissed sample cards and purge demo logs"
+                />
+              </View>
+            </Section>
+
+            <View style={{ paddingVertical: 12 }}>
+              <Button
+                variant="danger"
+                size="sm"
+                label="Developer: reset all local data"
+                accessibilityHint="Wipe all local storage and reset to a fresh install."
+                onPress={() => void handleDevClearAllCache()}
+              />
+            </View>
+          </>
         ) : null}
       </Section>
 

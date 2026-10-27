@@ -1,5 +1,7 @@
+import { useFounderSchoolStats } from '@repo/admin/bridge/founderWorkspace';
+import { CreateSchoolModal } from '@repo/admin/components';
 import { useIsGuest } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
@@ -18,11 +20,8 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFounderSchoolStats } from '@repo/admin/bridge/founderWorkspace';
-import { CreateSchoolModal } from '@repo/admin/components';
 
 interface FounderSchoolDashboardProps {
   schoolId: string;
@@ -38,7 +37,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
   const { school, stats, isLoading, refreshData } = useFounderSchoolStats(schoolId);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const isDemoMode = useStore((s) => s.isDemoMode);
+  const isDemoMode = useExperienceState((s) => s.isDemoMode);
 
   return (
     <ScreenWrapper noTopInset={true}>

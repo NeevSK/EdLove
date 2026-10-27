@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useWisdom } from '@repo/self/hooks/useWisdom';
+import { useWisdom } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './wisdom-seeds.module.css';
 
 interface WisdomSeedsProps {
@@ -37,7 +37,8 @@ export function WisdomSeeds({ userId = 'guest-explorer' }: Readonly<WisdomSeedsP
           <div>
             <h2 className={styles.title}>Wisdom Seeds</h2>
             <p className={styles.subtitle}>
-              Spontaneous pedagogical insights, aphorisms, and grounding reminders planted during the rhythm of teaching.
+              Spontaneous pedagogical insights, aphorisms, and grounding reminders planted during
+              the rhythm of teaching.
             </p>
           </div>
         </div>
@@ -70,11 +71,7 @@ export function WisdomSeeds({ userId = 'guest-explorer' }: Readonly<WisdomSeedsP
           </div>
 
           <div className={styles.formActions}>
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={saving || !insight.trim()}
-            >
+            <button type="submit" className={styles.submitBtn} disabled={saving || !insight.trim()}>
               {saving ? 'Planting…' : 'Plant in Wisdom Soil 🪷'}
             </button>
           </div>
@@ -95,10 +92,12 @@ export function WisdomSeeds({ userId = 'guest-explorer' }: Readonly<WisdomSeedsP
               <span className={styles.seedSprout}>🌱</span>
               <p className={styles.seedText}>"{seed.insight}"</p>
               <time className={styles.seedTime}>
-                {seed.created_at ? new Date(seed.created_at).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                }) : ''}
+                {seed.created_at
+                  ? new Date(seed.created_at).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  : ''}
               </time>
             </article>
           ))}

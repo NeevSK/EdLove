@@ -1,8 +1,9 @@
 'use client';
 
 import type { FloorWallpaperConfig, WorkspaceWallpaper } from '@repo/core/types';
+import { wallpaperAllowed } from '@repo/core/verger';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useBrowserVisualBudget } from '../runtime/useBrowserVisualBudget';
+import { useGurudeviView } from '../runtime/useGurudeviView';
 
 export interface UseFloorSlideshowResult {
   activeWallpaper: WorkspaceWallpaper | null;
@@ -22,10 +23,15 @@ export function useFloorSlideshow(
   config?: FloorWallpaperConfig | null,
   fallbackWallpaper?: WorkspaceWallpaper | null,
 ): UseFloorSlideshowResult {
-  const budget = useBrowserVisualBudget();
+  // Rotating wallpapers download more images: only while verger allows wallpapers at all.
+  const view = useGurudeviView();
   const items = config?.items ?? [];
   const mode = config?.mode ?? (fallbackWallpaper ? 'single' : 'off');
-  const isSlideshowActive = mode === 'slideshow' && items.length > 1 && budget.quality !== 'essential';
+  const isSlideshowActive =
+    mode === 'slideshow' &&
+    items.length > 1 &&
+    view !== null &&
+    wallpaperAllowed(view.experience, view.reading);
 
   const [currentIndex, setCurrentIndex] = useState(() => {
     if (config?.activeId) {

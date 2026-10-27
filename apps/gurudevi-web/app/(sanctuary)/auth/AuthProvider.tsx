@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { SignOutIncompleteError, sanctuarySignOut } from '@/lib/sanctuary/signOut';
 import { type BrowserAuthRuntime, type BrowserSession, browserAuthRuntime } from './browserAuth';
-import { sanctuarySignOut } from '@/lib/sanctuary/signOut';
 
 type AuthState = Readonly<{
   status: 'loading' | 'authenticated' | 'signed-out' | 'unavailable';
@@ -53,10 +53,16 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const signOut = async () => {
     try {
       await sanctuarySignOut();
-    } catch {
-      if (runtime) {
-        await runtime.client.auth.signOut({ scope: 'local' }).catch(() => {});
-      }
+    } catch (cause) {
+      setState({
+        status:
+          cause instanceof SignOutIncompleteError && cause.localCleanupComplete
+            ? 'signed-out'
+            : 'unavailable',
+        session: null,
+        error: cause instanceof Error ? cause : new Error('Sign-out could not be completed.'),
+      });
+      return;
     }
     setState({ status: 'signed-out', session: null, error: null });
   };

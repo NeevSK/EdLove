@@ -1,4 +1,6 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+
 import { SkeletonAvatar, SkeletonTextLine } from '@repo/ui/components/SkeletonLoader';
 import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from '@repo/ui/icons';
 import { tokens } from '@repo/ui/tokens';
@@ -81,7 +83,7 @@ export default function NotificationDrawer({
 }: NotificationDrawerProps) {
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
-  const isOnline = useStore((state) => state.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const drawerWidth = Math.min(windowWidth * 0.82, 420);
   const [isPresent, setIsPresent] = useState(isVisible);
 
@@ -177,7 +179,7 @@ export default function NotificationDrawer({
                       <Text className="text-[10px] text-green-500 font-bold uppercase tracking-wider">
                         Live • Connected
                       </Text>
-                    ) : isOnline ? (
+                    ) : networkStatus !== 'offline' ? (
                       <Text className="text-[10px] text-phase-text-secondary font-bold uppercase tracking-wider">
                         Saved view • Live updates paused
                       </Text>

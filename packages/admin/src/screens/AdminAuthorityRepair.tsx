@@ -8,7 +8,7 @@ import { commitGuardedRepair, stageGuardedRepair } from '@repo/admin/admin/admin
 import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
-export default function AdminAuthorityRepair() {
+export default function AdminAuthorityRepair({ onBack }: { onBack?: () => void } = {}) {
   const router = useRouter();
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const { flags } = usePermissions();
@@ -30,7 +30,7 @@ export default function AdminAuthorityRepair() {
       title="Authority integrity"
       description="Repair role drift, capability mismatch, and POA boundary problems across tenants without crossing into tenant-side admin behavior."
       caution="This room should stay narrowly scoped to maintenance. Any repair should be explicit, reversible, and reviewable."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
       stats={[
         {
           label: 'Users in scope',

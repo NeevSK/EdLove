@@ -2,7 +2,7 @@
 title: "Sanctuary API Render Deployment Playbook"
 status: "active"
 created: 2026-10-25
-updated: 2026-10-25
+updated: 2026-10-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [sanctuary-api, infra, render, deployment, monorepo, sse, pnpm]
@@ -13,6 +13,16 @@ tags: [sanctuary-api, infra, render, deployment, monorepo, sse, pnpm]
 This document establishes the official operational standard for deploying `apps/sanctuary-api` to **Render** within the polymath monorepo. It synthesizes our historical architecture audits ([Infrastructure & Cost Evaluation](../architecture/infrastructure-and-cost-evaluation.md), [Transport Security](../architecture/transport-security.md), [Environment Topology](../../../docs/architecture/environment-topology-and-promotion.md)) with real-world developer experience, monorepo nuances, and platform-specific pitfalls.
 
 > **Note on Agent Skills:** The repo rejects the generic, handwaved `.agents/skills/render-deploy/skill.md`. All deployments must follow the empirical, verified commands and configuration contracts codified in this runbook.
+
+The [2026-10-26 ingress admission record](../current_progress/2026-10-26-render-auth-ingress-admission.md)
+records the verified transport implementation and remaining deployment gates.
+Render deployment requires `SANCTUARY_TLS_TERMINATION=render` with the platform's
+`RENDER=true` and `RENDER_SERVICE_ID` runtime markers. Application requests must
+carry exactly `X-Forwarded-Proto: https`; the internal GET `/health/live` probe
+is the sole HTTP exception. Direct deployment retains local TLS certificates.
+Use `CF-Connecting-IP` for the public Render service's rate-limit identity;
+the leftmost `X-Forwarded-For` value can be supplied by a caller. Actual edge
+header handling, container build and public auth acceptance remain required.
 
 ---
 
@@ -96,7 +106,7 @@ Our historical infrastructure audit (`infrastructure-and-cost-evaluation.md`) be
 ### Pitfall 5: Zero-Downtime Health Check Deadlocks
 * **The Reality:** Render checks your service's `healthCheckPath` before switching traffic over. If your health check route connects to the database, and the cloud database pool takes 10 seconds to establish a TLS handshake on container startup, Render marks the new deployment as dead and rolls back.
 * **The Countermeasure:** 
-  - Ensure the liveness check (`GET /health`) only checks internal event-loop responsiveness.
+  - Ensure the liveness check (`GET /health/live`) only checks internal event-loop responsiveness.
   - Deep dependency diagnostics should live on a secondary route (e.g. `/health/ready`).
 
 ---
@@ -123,16 +133,25 @@ When configuring the service manually in the Render Web Console:
 | **Build Command** | `npx pnpm install --frozen-lockfile && npx pnpm --filter @repo/sanctuary-api build` | Builds monorepo dependencies and emits `dist/entry-node.js` |
 | **Start Command** | `node apps/sanctuary-api/dist/entry-node.js` | Runs production Node entrypoint |
 | **Instance Type** | Starter ($7/mo) or Free (for staging) | Starter provides 24/7 uptime without 50s cold sleeps |
-| **Health Check Path**| `/health` | Verified in [apps/sanctuary-api/src/core/routes/health.ts](../../src/core/routes/health.ts) |
+| **Health Check Path**| `/health/live` | Implemented in [apps/sanctuary-api/src/core/routes/health.ts](../../src/core/routes/health.ts) |
 
 ### Required Environment Variables
 
 ```ini
 NODE_ENV=production
+SANCTUARY_TLS_TERMINATION=render
 PORT=10000
 NODE_OPTIONS=--max-old-space-size=460
-DATABASE_URL=postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres?sslmode=require
-SUPABASE_JWT_SECRET=your_supabase_jwt_secret
+DATABASE_URL=postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres?sslmode=verify-full
+SUPABASE_URL=https://[PROJECT_REF].supabase.co
+SUPABASE_PUBLISHABLE_KEY=[DOPPLER_VALUE]
+SUPABASE_JWT_ISSUER=https://[PROJECT_REF].supabase.co/auth/v1
+SUPABASE_JWT_AUDIENCE=authenticated
+POWERSYNC_URL=[AUTHORIZED_ENVIRONMENT_ENDPOINT]
+POWERSYNC_SIGNING_JWK=[DOPPLER_PRIVATE_JWK]
+BYOK_ENCRYPTION_SECRET=[DOPPLER_SECRET_AT_LEAST_32_CHARACTERS]
+RATE_LIMIT_STORE=postgres
+RATE_LIMIT_TRUSTED_PROXY_HEADER=CF-Connecting-IP
 SENTRY_DSN=https://...
 ```
 
@@ -144,8 +163,8 @@ Once deployed, run these empirical checks:
 
 1. **Verify Liveness:**
    ```bash
-   curl -I https://sanctuary-api.onrender.com/health
-   # Expected: HTTP/1.1 200 OK
+   curl --fail --include "$SANCTUARY_DEV_API_URL/health/live"
+   # Expected: status 200
    ```
 
 2. **Verify SSE Unbuffered Streaming:**

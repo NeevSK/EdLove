@@ -1,4 +1,5 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useWisdom } from '@repo/self/wisdom';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ChevronLeft, Leaf } from '@repo/ui/icons';
@@ -12,7 +13,7 @@ export default function WisdomDetailRoute() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { context } = usePermissions();
-  const userId = useStore((state) => state.user?.id) ?? context?.userId;
+  const userId = useAuthStore((state) => state.user?.id) ?? context?.userId;
   const { notes, isLoading } = useWisdom(userId ?? undefined);
 
   const note = useMemo(() => notes.find((entry) => entry.id === id), [notes, id]);

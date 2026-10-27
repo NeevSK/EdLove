@@ -1,4 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -14,6 +15,7 @@ import type {
   WhisperedMomentSnapshot,
 } from '@repo/core/logic/domains/profile/ports';
 import type { IFileStoragePort } from '@repo/core/logic/ports/storage.port';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { APIError, type SocialLink, type User } from '@repo/core/types';
 import type { User as ZenStackUser } from '@repo/schema/contracts';
@@ -38,7 +40,7 @@ const getPreviousRange = (start: string, end: string) => {
 
 type AuthUserResolver = () => { id: string | null };
 
-const normalizeUser = (record: ZenStackUser | null | undefined): User | null => {
+const normalizeUser = (record: Partial<ZenStackUser> | null | undefined): User | null => {
   if (!record) return null;
   const user = record as any;
   return {
@@ -335,11 +337,15 @@ export const createZenStackProfileRepository = (
         .slice(0, limit);
     },
     async updateUserProfile(userId, updates) {
-      const db = await getDb();
-      const updated = await db.user.update({
-        where: { id: userId },
-        data: updates,
-      });
+      const updated = await orpcClient.profile.updateProfile(
+        { params: { id: userId }, body: UserProfilePatchSchema.parse(updates) },
+        { context: { expectedAccountId: userId, retry: 0 } },
+      );
+      if (updated.id !== userId)
+        throw new APIError(
+          'The profile response belongs to another account.',
+          'AUTH_ACCOUNT_MISMATCH',
+        );
       const normalized = normalizeUser(updated);
       if (!normalized)
         throw new APIError('Failed to normalize updated user profile', 'INTERNAL_ERROR');

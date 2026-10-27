@@ -1,3 +1,5 @@
+import { useUIStore } from '@repo/core/store';
+import { useAuthStore } from '@repo/core/store';
 import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '@repo/classroom/components';
 import CreateSchoolModal from '@repo/classroom/components/CreateSchoolModal';
 import { useClassroomRoleData } from '@repo/classroom/hooks';
@@ -6,7 +8,7 @@ import { useClassroomWorkspaceInsights } from '@repo/classroom/workspace/useClas
 import { useClassroomWorkspaceLayout } from '@repo/classroom/workspace/useClassroomWorkspaceLayout';
 import { useClassroomWorkspaceSurfaces } from '@repo/classroom/workspace/useClassroomWorkspaceSurfaces';
 import { useIsGuest } from '@repo/core/hooks';
-import { resolveWorkspaceAppearanceColor, usePermissions, useStore } from '@repo/core/logic';
+import { resolveWorkspaceAppearanceColor, usePermissions } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -24,9 +26,9 @@ export default function ClassroomScreen() {
   const canForWorkspace = (action: string, subject: string, _field?: string) =>
     can(action as Parameters<typeof can>[0], subject as Parameters<typeof can>[1]);
   const isGuest = useIsGuest();
-  const storeSchoolId = useStore((state) => state.user?.school_id);
-  const storeUserId = useStore((state) => state.user?.id);
-  const setBreathingOpen = useStore((state) => state.setBreathingOpen);
+  const storeSchoolId = useAuthStore(state => state.user?.school_id);
+  const storeUserId = useAuthStore(state => state.user?.id);
+  const setBreathingOpen = useUIStore(state => state.setBreathingOpen);
   const [refreshTrigger, _setRefreshTrigger] = useState(0);
   const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
   const [isCreateSchoolOpen, setIsCreateSchoolOpen] = useState(false);

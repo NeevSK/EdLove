@@ -1,4 +1,5 @@
 import type { Identity } from '@repo/core/api/identity.generated';
+import type { ProfileCompletionDetails } from '@repo/core/logic/schemas/profileUpdate.schema';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
 
@@ -53,7 +54,7 @@ export interface IIdentityPort {
   /**
    * Onboarding: Creates the inaugural Bond for a new user.
    */
-  createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void>;
+  createInitialBond(orientation: Capacity, context: Record<string, unknown>): Promise<void>;
 
   /**
    * Profiles: Updates the user's profile.
@@ -73,7 +74,7 @@ export interface IIdentityPort {
   /**
    * Profiles: Completes the user profile.
    */
-  completeProfile(userId: string, data: any): Promise<void>;
+  completeProfile(userId: string, data: ProfileCompletionDetails): Promise<void>;
 
   /**
    * Onboarding: Marks the onboarding journey as officially completed.

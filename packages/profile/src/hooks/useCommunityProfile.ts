@@ -1,10 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { profileAPI } from '@repo/core/api/client';
-import {
-  type CommunityProfile,
-  handleAPIError,
-  useStore,
-  useTemporalStore,
-} from '@repo/core/logic';
+import { type CommunityProfile, handleAPIError, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useReducer } from 'react';
 
@@ -37,8 +34,8 @@ type EditableCommunityField = 'name' | 'description';
 const COMMUNITY_CACHE_PREFIX = 'gurudevi-community-profile-cache';
 
 export function useCommunityProfile(communityId: string) {
-  const userId = useStore((state) => state.user?.id);
-  const isOnline = useStore((state) => state.isOnline);
+  const userId = useAuthStore(state => state.user?.id);
+  const { isOnline } = useOfflineStatus();
   const viewDate = useTemporalStore((state) => state.viewDate);
   const phase = useTemporalStore((state) => state.phase);
   const [state, dispatch] = useReducer(communityReducer, {

@@ -56,6 +56,10 @@ export function SchoolFloor({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLeader) {
+      setNotice('Unauthorized: Only school leadership can modify the institutional profile.');
+      return;
+    }
     try {
       const updated = await schoolHexagonalService.updateSchoolProfile(schoolId, formData);
       setData(updated);
@@ -147,7 +151,7 @@ export function SchoolFloor({
           </button>
 
           <Link
-            href={`/school/${fact.handle}`}
+            href={`/school/${fact.handle || fact.id}`}
             className={styles.secondaryBtn}
             target="_blank"
             rel="noopener noreferrer"
@@ -183,8 +187,8 @@ export function SchoolFloor({
         </div>
       </section>
 
-      {/* Editing Form when active */}
-      {isEditing && (
+      {/* Editing Form when active (Strictly gated to leadership) */}
+      {isEditing && isLeader && (
         <form className={styles.editForm} onSubmit={handleSave} aria-label="Edit school profile">
           <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>
             Edit Institutional Profile Facts

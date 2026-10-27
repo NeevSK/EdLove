@@ -152,3 +152,42 @@ export const staffManagementAPI = {
     return result.success;
   },
 };
+
+import { isEmptyArray, isEmptyOrNull, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_PENDING_LEAVES,
+  MOCK_STAFF_PRESENCE,
+  MOCK_STUDENT_PULSE,
+  MOCK_TEACHER_CAROUSEL,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'staffManagement',
+  ghostMethods: [
+    'getStaffPresenceSummary',
+    'getTeacherCarousel',
+    'getStudentAttendancePulse',
+    'getPendingLeaves',
+  ],
+  isEmpty: (method, data) => {
+    if (method === 'getStaffPresenceSummary') {
+      const p = data as any;
+      return !p || (p.total === 0 && p.present === 0);
+    }
+    if (method === 'getStudentAttendancePulse') {
+      const p = data as any;
+      return !p || (p.todayRate === 0 && p.yesterdayRate === 0);
+    }
+    if (method === 'getTeacherCarousel' || method === 'getPendingLeaves') {
+      return isEmptyArray(data);
+    }
+    return isEmptyOrNull(data);
+  },
+  getSamples: (method) => {
+    if (method === 'getStaffPresenceSummary') return { ...MOCK_STAFF_PRESENCE, is_sample: true };
+    if (method === 'getTeacherCarousel') return MOCK_TEACHER_CAROUSEL;
+    if (method === 'getStudentAttendancePulse') return { ...MOCK_STUDENT_PULSE, is_sample: true };
+    if (method === 'getPendingLeaves') return MOCK_PENDING_LEAVES;
+    return null;
+  },
+});

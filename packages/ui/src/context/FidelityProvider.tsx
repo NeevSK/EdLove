@@ -8,13 +8,10 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useRealityOptional } from './RealityProvider';
 import type { FidelityLevel } from './types';
-import { computeEffectiveFidelity } from './visualPolicy';
 
 interface FidelityContextValue {
   fidelityLevel: FidelityLevel;
-  effectiveFidelity: 'low' | 'high';
   setFidelityLevel: (level: FidelityLevel) => Promise<void>;
 }
 
@@ -27,7 +24,6 @@ function isFidelityLevel(value: string): value is FidelityLevel {
 }
 
 export function FidelityProvider({ children }: { children: ReactNode }) {
-  const { reality } = useRealityOptional();
   const [fidelityLevel, setFidelityLevelState] = useState<FidelityLevel>('auto');
 
   useEffect(() => {
@@ -42,11 +38,6 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
     void loadFidelity();
   }, []);
 
-  const effectiveFidelity = useMemo(
-    () => computeEffectiveFidelity(fidelityLevel, reality.deviceTier),
-    [fidelityLevel, reality.deviceTier],
-  );
-
   const setFidelityLevel = useCallback(async (level: FidelityLevel) => {
     if (!isFidelityLevel(level)) return;
     setFidelityLevelState(level);
@@ -60,10 +51,9 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       fidelityLevel,
-      effectiveFidelity,
       setFidelityLevel,
     }),
-    [fidelityLevel, effectiveFidelity, setFidelityLevel],
+    [fidelityLevel, setFidelityLevel],
   );
 
   return <FidelityContext value={value}>{children}</FidelityContext>;
@@ -79,7 +69,6 @@ export function useFidelityOptional(): FidelityContextValue {
   return (
     useContext(FidelityContext) ?? {
       fidelityLevel: 'auto',
-      effectiveFidelity: 'high',
       setFidelityLevel: async () => undefined,
     }
   );

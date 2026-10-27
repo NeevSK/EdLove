@@ -51,4 +51,38 @@ describe('Unit/Integration: AuthProvider Atomic SignOut Seam', () => {
     expect(result.current.state.status).toBe('signed-out');
     expect(result.current.state.session).toBeNull();
   });
+  it('retains an explicit warning when only local cleanup is confirmed', async () => {
+    vi.spyOn(SignOutModule, 'sanctuarySignOut').mockRejectedValue(
+      new SignOutModule.SignOutIncompleteError(true, false),
+    );
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: ({ children }) => <AuthProvider>{children}</AuthProvider>,
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    await act(async () => {
+      await result.current.signOut();
+    });
+    expect(result.current.state.status).toBe('signed-out');
+    expect(result.current.state.session).toBeNull();
+    expect(result.current.state.error?.message).toContain('other devices could not be confirmed');
+  });
+  it('does not claim local sign-out after incomplete cleanup', async () => {
+    vi.spyOn(SignOutModule, 'sanctuarySignOut').mockRejectedValue(
+      new SignOutModule.SignOutIncompleteError(false, false),
+    );
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: ({ children }) => <AuthProvider>{children}</AuthProvider>,
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    await act(async () => {
+      await result.current.signOut();
+    });
+    expect(result.current.state.status).toBe('unavailable');
+    expect(result.current.state.session).toBeNull();
+    expect(result.current.state.error).toBeInstanceOf(SignOutModule.SignOutIncompleteError);
+  });
 });

@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
+import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
+import { getDeviceAccounts, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
 import styles from './auth.module.css';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
-import { maskEmail, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
 
@@ -27,33 +28,31 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
     }
 
     setState('submitting');
-    const result = typeof runtime.signInWithPassword === 'function'
-      ? await runtime.signInWithPassword({ email, password })
-      : await runtime.client.auth.signInWithPassword({ email, password });
+    const result = await runtime.signInWithPassword({ email, password });
     const { data, error } = result;
     if (error) {
       setState('error');
-      setMessage(error.message || 'We could not sign in with those details. Check them and try again.');
+      setMessage(
+        error.message || 'We could not sign in with those details. Check them and try again.',
+      );
       return;
     }
 
-    // Set session duration preference (non-blocking)
-    runtime.setSessionDuration(remember).catch(() => {});
-
-    // Register device account record on shared device (no password/token stored)
-    if (data.user) {
-      const userMeta = (data.user as { user_metadata?: Record<string, unknown> }).user_metadata || {};
-      saveDeviceAccount({
-        accountId: data.user.id,
-        authUserId: data.user.id,
-        displayName: String(userMeta.display_name || email.split('@')[0] || 'Scholar'),
-        avatarUrl: typeof userMeta.avatar_url === 'string' ? userMeta.avatar_url : null,
-        maskedEmail: maskEmail(email),
-        schoolId: typeof userMeta.school_id === 'string' ? userMeta.school_id : null,
-        capacity: (userMeta.capacity as 'student' | 'teacher' | 'scholar') || 'student',
-        hasPin: false,
+    try {
+      if (!data.session) throw new Error('A browser session is required.');
+      const account = await resolveCanonicalDeviceAccount(runtime.client, {
+        accessToken: data.session.access_token,
+        subject: data.session.user.id,
       });
+      const existing = getDeviceAccounts().find((entry) => entry.accountId === account.accountId);
+      saveDeviceAccount({ ...account, hasPin: existing?.hasPin ?? false });
+    } catch {
+      setState('error');
+      setMessage('Signed in, but your account could not be verified. Please retry.');
+      return;
     }
+
+    runtime.setSessionDuration(remember).catch(() => {});
 
     // Give Supabase client time to persist session to cookies before navigation
     if (data.session) {
@@ -66,7 +65,10 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
   }
 
   return (
-    <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(event) => void signIn(event)}>
+    <form
+      style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      onSubmit={(event) => void signIn(event)}
+    >
       <div className={styles.inputGroup}>
         <label className={styles.inputLabel} htmlFor="email">
           Email address
@@ -105,7 +107,16 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
         />
       </div>
 
-      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#453c35', cursor: 'pointer' }}>
+      <label
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          fontSize: '13px',
+          color: '#453c35',
+          cursor: 'pointer',
+        }}
+      >
         <input
           id="remember"
           name="remember"
@@ -122,11 +133,7 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
         </div>
       ) : null}
 
-      <button
-        className={styles.submitBtn}
-        disabled={state === 'submitting'}
-        type="submit"
-      >
+      <button className={styles.submitBtn} disabled={state === 'submitting'} type="submit">
         {state === 'submitting' ? 'Signing in…' : 'Sign in with password'}
       </button>
     </form>

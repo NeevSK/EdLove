@@ -1,13 +1,14 @@
 import { PrincipalNativeDashboardShell } from '@repo/admin/bridge/PrincipalNativeDashboardShell';
-import { CreateSchoolModal, PrincipalNotes } from '@repo/admin/components';
+import { CreateSchoolModal, PrincipalNotes, PrincipalSetupWizard } from '@repo/admin/components';
 import { useSchoolStats } from '@repo/admin/hooks/useSchoolStats';
 import { usePrincipalWorkspaceSurfaces } from '@repo/admin/principal/usePrincipalWorkspaceSurfaces';
 import type { PrincipalWorkspaceView, PrincipalZoneId } from '@repo/admin/principal/workspace';
 import AcademicCycleManager from '@repo/admin/screens/AcademicCycleManager';
 import { PrincipalNativeWorkspace } from '@repo/admin/screens/PrincipalNativeWorkspace';
-import { useIsGuest } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
-import type { TotalState } from '@repo/core/store';
+import { useIsGuest, useScaffoldDismissal } from '@repo/core/hooks';
+import { useExperienceState } from '@repo/core/lib/experienceState';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store';
 import { QRBuilder } from '@repo/scanner-kit';
 import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
@@ -37,8 +38,8 @@ export default function PrincipalDashboard({
   const router = useRouter();
   const isGuest = useIsGuest();
   const { can } = usePermissions();
-  const isDemoMode = useStore((state: TotalState) => state.isDemoMode);
-  const setBreathingOpen = useStore((state: TotalState) => state.setBreathingOpen);
+  const isDemoMode = useExperienceState((state) => state.isDemoMode);
+  const setBreathingOpen = useUIStore((state) => state.setBreathingOpen);
   const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
 
   const isDemoExperience = isDemoMode || forceDemo === true;
@@ -49,6 +50,9 @@ export default function PrincipalDashboard({
   const [activeZone, setActiveZone] = useState<PrincipalZoneId>('today');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+
+  const { isDismissed: isSchoolScaffoldDismissed, completeScaffold: completeSchoolScaffold } =
+    useScaffoldDismissal('principal_first_school_scaffold', 1);
 
   const { zoneCounts, surfaces } = usePrincipalWorkspaceSurfaces({
     schoolId,
@@ -120,6 +124,19 @@ export default function PrincipalDashboard({
               isLoading={isLoading}
               error={error}
             >
+              {!isSchoolScaffoldDismissed &&
+              (!school || schoolId === 'demo-school' || isDemoExperience) ? (
+                <Box className="px-4 pb-4">
+                  <PrincipalSetupWizard
+                    userId={userId}
+                    onComplete={() => {
+                      completeSchoolScaffold();
+                      refreshData();
+                    }}
+                    onDismiss={() => completeSchoolScaffold()}
+                  />
+                </Box>
+              ) : null}
               {surfaces[activeZone].content}
             </PrincipalNativeDashboardShell>
           </ScreenWrapper>
@@ -158,6 +175,7 @@ export default function PrincipalDashboard({
             : undefined
         }
         onSuccess={() => {
+          completeSchoolScaffold();
           onRefresh?.();
           refreshData();
         }}
