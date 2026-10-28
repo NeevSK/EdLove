@@ -64,7 +64,7 @@ export function SelfCanvas({
         workspaceId: 'self',
         title: feature.label,
         ownerPackage: 'core' as WorkspaceOwnerPackage,
-        capabilityKey: feature.cedar?.resource ?? feature.id,
+        capabilityKey: feature.requiredCapabilities[0] ?? 'read:SelfJourney',
         defaultZone,
         defaultOrder: index * 10,
       };

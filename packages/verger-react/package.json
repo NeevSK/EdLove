@@ -22,7 +22,7 @@
     "@repo/verger-core": "workspace:*"
   },
   "peerDependencies": {
-    "react": "19.3.1"
+    "react": "*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

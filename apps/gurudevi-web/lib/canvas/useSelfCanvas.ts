@@ -88,18 +88,14 @@ export function isUniversalFeature(feature: SelfFeatureManifestItem): boolean {
   const universalDomains = ['pulse', 'care', 'reflection', 'journey'];
   if (feature.domain && universalDomains.includes(feature.domain)) return true;
 
-  // 2. Canonical Cedar resources open to any human irrespective of institutional standing
-  const universalResources: readonly string[] = [
-    'FireJournal',
-    'MoodLog',
-    'Wellbeing',
-    'JoyMoments',
-    'GratitudeEntries',
-    'EnergyForecasts',
-    'LearningReflection',
-    'User',
+  // 2. Core universal capabilities (open to any human irrespective of institutional role)
+  const universalCaps = [
+    'read:InnerPulse',
+    'read:SelfCare',
+    'read:SelfReflection',
+    'read:SelfJourney',
   ];
-  if (feature.cedar?.resource && universalResources.includes(feature.cedar.resource)) return true;
+  if (feature.requiredCapabilities?.some((cap) => universalCaps.includes(cap))) return true;
 
   // 3. Fallback: if all four major educational capacities (teacher, student, principal, guardian) have weights > 0
   const weights = feature.roleWeights;

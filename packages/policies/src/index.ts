@@ -2,9 +2,6 @@ export {
   AUTHORIZATION_ACTIONS,
   AUTHORIZATION_RESOURCES,
   BOND_ENTITY_TYPES,
-  type AuthorizationAction,
-  type AuthorizationResource,
-  type BondEntityType,
 } from './authorizationRegistry';
 export { check, reinitializeCedar } from './engine/evaluator';
 export type { AuthRequest, AuthResponse } from './engine/types';

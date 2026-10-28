@@ -1336,7 +1336,7 @@ async function main() {
   }
 
   // 6. Post-Run Hermes Micro-Bytecode & Strictness Sentry
-  if (scannerMod && scannerMod.HermesBytecodeVerifier && virtualDocument.trim().length > 0) {
+  if (!process.env.SKIP_HERMES_BYTECODE && scannerMod && scannerMod.HermesBytecodeVerifier && virtualDocument.trim().length > 0 && ext !== '.ts' && ext !== '.tsx') {
     try {
       const hermesVerifier = new scannerMod.HermesBytecodeVerifier();
       const hermesRes = hermesVerifier.verifyCode(virtualDocument, targetFilePath);

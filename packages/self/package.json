@@ -105,7 +105,6 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@repo/core": "workspace:*",
-    "@repo/policies": "workspace:*",
     "@repo/profile": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.104.5",

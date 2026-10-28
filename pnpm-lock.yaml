@@ -3081,9 +3081,6 @@ importers:
       '@repo/core':
         specifier: workspace:*
         version: link:../core
-      '@repo/policies':
-        specifier: workspace:*
-        version: link:../policies
       '@repo/profile':
         specifier: workspace:*
         version: link:../profile

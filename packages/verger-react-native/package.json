@@ -23,9 +23,9 @@
     "@repo/verger-react": "workspace:*"
   },
   "peerDependencies": {
-    "react": "19.3.1",
-    "react-native": "0.88.0",
-    "react-native-reanimated": "4.7.1"
+    "react": "*",
+    "react-native": "*",
+    "react-native-reanimated": "*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
